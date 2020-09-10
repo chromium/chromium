@@ -16,7 +16,6 @@
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/ble_scanner_impl.h"
-#include "chromeos/services/secure_channel/ble_synchronizer.h"
 #include "chromeos/services/secure_channel/ble_weave_client_connection.h"
 #include "chromeos/services/secure_channel/latency_metrics_logger.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -59,15 +58,19 @@ BleConnectionManagerImpl::Factory*
 std::unique_ptr<BleConnectionManager> BleConnectionManagerImpl::Factory::Create(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     BleServiceDataHelper* ble_service_data_helper,
+    BleSynchronizerBase* ble_synchronizer,
+    BleScanner* ble_scanner,
     TimerFactory* timer_factory,
     base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
-        bluetooth_adapter, ble_service_data_helper, timer_factory, clock);
+        bluetooth_adapter, ble_service_data_helper, ble_synchronizer,
+        ble_scanner, timer_factory, clock);
   }
 
   return base::WrapUnique(new BleConnectionManagerImpl(
-      bluetooth_adapter, ble_service_data_helper, timer_factory, clock));
+      bluetooth_adapter, ble_service_data_helper, ble_synchronizer, ble_scanner,
+      timer_factory, clock));
 }
 
 // static
@@ -204,20 +207,18 @@ void BleConnectionManagerImpl::ConnectionAttemptTimestamps::
 BleConnectionManagerImpl::BleConnectionManagerImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     BleServiceDataHelper* ble_service_data_helper,
+    BleSynchronizerBase* ble_synchronizer,
+    BleScanner* ble_scanner,
     TimerFactory* timer_factory,
     base::Clock* clock)
     : bluetooth_adapter_(bluetooth_adapter),
-      ble_service_data_helper_(ble_service_data_helper),
       clock_(clock),
-      ble_synchronizer_(BleSynchronizer::Factory::Create(bluetooth_adapter)),
+      ble_scanner_(ble_scanner),
       ble_advertiser_(
           BleAdvertiserImpl::Factory::Create(this /* delegate */,
-                                             ble_service_data_helper_,
-                                             ble_synchronizer_.get(),
+                                             ble_service_data_helper,
+                                             ble_synchronizer,
                                              timer_factory)),
-      ble_scanner_(BleScannerImpl::Factory::Create(ble_service_data_helper_,
-                                                   ble_synchronizer_.get(),
-                                                   bluetooth_adapter)),
       secure_channel_disconnector_(
           SecureChannelDisconnectorImpl::Factory::Create()) {
   ble_scanner_->AddObserver(this);

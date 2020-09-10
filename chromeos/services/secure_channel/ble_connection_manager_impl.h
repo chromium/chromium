@@ -49,6 +49,8 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     static std::unique_ptr<BleConnectionManager> Create(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
         BleServiceDataHelper* ble_service_data_helper,
+        BleSynchronizerBase* ble_synchronizer,
+        BleScanner* ble_scanner,
         TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance());
     static void SetFactoryForTesting(Factory* test_factory);
@@ -58,6 +60,8 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     virtual std::unique_ptr<BleConnectionManager> CreateInstance(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
         BleServiceDataHelper* ble_service_data_helper,
+        BleSynchronizerBase* ble_synchronizer,
+        BleScanner* ble_scanner,
         TimerFactory* timer_factory,
         base::Clock* clock = base::DefaultClock::GetInstance()) = 0;
 
@@ -103,6 +107,8 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   BleConnectionManagerImpl(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
       BleServiceDataHelper* ble_service_data_helper,
+      BleSynchronizerBase* ble_synchronizer,
+      BleScanner* ble_scanner,
       TimerFactory* timer_factory,
       base::Clock* clock);
 
@@ -197,12 +203,10 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       const std::string& remote_device_id);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  BleServiceDataHelper* ble_service_data_helper_;
   base::Clock* clock_;
+  BleScanner* ble_scanner_;
 
-  std::unique_ptr<BleSynchronizerBase> ble_synchronizer_;
   std::unique_ptr<BleAdvertiser> ble_advertiser_;
-  std::unique_ptr<BleScanner> ble_scanner_;
   std::unique_ptr<SecureChannelDisconnector> secure_channel_disconnector_;
 
   using SecureChannelWithRole =

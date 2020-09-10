@@ -16,12 +16,16 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/active_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/ble_connection_manager_impl.h"
+#include "chromeos/services/secure_channel/ble_scanner_impl.h"
 #include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
+#include "chromeos/services/secure_channel/ble_synchronizer.h"
 #include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/fake_active_connection_manager.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_connection_manager.h"
+#include "chromeos/services/secure_channel/fake_ble_scanner.h"
 #include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_manager.h"
@@ -123,16 +127,81 @@ class FakeBleServiceDataHelperFactory
   DISALLOW_COPY_AND_ASSIGN(FakeBleServiceDataHelperFactory);
 };
 
+class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
+ public:
+  FakeBleSynchronizerFactory() = default;
+  ~FakeBleSynchronizerFactory() override = default;
+
+  FakeBleSynchronizer* instance() { return instance_; }
+
+ private:
+  // BleSynchronizer::Factory:
+  std::unique_ptr<BleSynchronizerBase> CreateInstance(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override {
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeBleSynchronizer>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeBleSynchronizer* instance_ = nullptr;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeBleSynchronizerFactory);
+};
+
+class FakeBleScannerFactory : public BleScannerImpl::Factory {
+ public:
+  FakeBleScannerFactory(
+      FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory,
+      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory)
+      : fake_ble_service_data_helper_factory_(
+            fake_ble_service_data_helper_factory),
+        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory) {}
+
+  ~FakeBleScannerFactory() override = default;
+
+  FakeBleScanner* instance() { return instance_; }
+
+ private:
+  // BleScannerImpl::Factory:
+  std::unique_ptr<BleScanner> CreateInstance(
+      BleServiceDataHelper* service_data_helper,
+      BleSynchronizerBase* ble_synchronizer_base,
+      scoped_refptr<device::BluetoothAdapter> adapter) override {
+    EXPECT_EQ(fake_ble_service_data_helper_factory_->instance(),
+              service_data_helper);
+    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(),
+              ble_synchronizer_base);
+    EXPECT_FALSE(instance_);
+
+    auto instance = std::make_unique<FakeBleScanner>();
+    instance_ = instance.get();
+    return instance;
+  }
+
+  FakeBleScanner* instance_ = nullptr;
+
+  FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory_;
+  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerFactory);
+};
+
 class FakeBleConnectionManagerFactory
     : public BleConnectionManagerImpl::Factory {
  public:
   FakeBleConnectionManagerFactory(
       device::BluetoothAdapter* expected_bluetooth_adapter,
       FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory,
+      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory,
+      FakeBleScannerFactory* fake_ble_scanner_factory,
       FakeTimerFactoryFactory* fake_timer_factory_factory)
       : expected_bluetooth_adapter_(expected_bluetooth_adapter),
         fake_ble_service_data_helper_factory_(
             fake_ble_service_data_helper_factory),
+        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory),
+        fake_ble_scanner_factory_(fake_ble_scanner_factory),
         fake_timer_factory_factory_(fake_timer_factory_factory) {}
 
   ~FakeBleConnectionManagerFactory() override = default;
@@ -144,12 +213,16 @@ class FakeBleConnectionManagerFactory
   std::unique_ptr<BleConnectionManager> CreateInstance(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
       BleServiceDataHelper* ble_service_data_helper,
+      BleSynchronizerBase* ble_synchronizer,
+      BleScanner* ble_scanner,
       TimerFactory* timer_factory,
       base::Clock* clock) override {
     EXPECT_FALSE(instance_);
     EXPECT_EQ(expected_bluetooth_adapter_, bluetooth_adapter.get());
     EXPECT_EQ(fake_ble_service_data_helper_factory_->instance(),
               ble_service_data_helper);
+    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(), ble_synchronizer);
+    EXPECT_EQ(fake_ble_scanner_factory_->instance(), ble_scanner);
     EXPECT_EQ(fake_timer_factory_factory_->instance(), timer_factory);
 
     auto instance = std::make_unique<FakeBleConnectionManager>();
@@ -159,6 +232,8 @@ class FakeBleConnectionManagerFactory
 
   device::BluetoothAdapter* expected_bluetooth_adapter_;
   FakeBleServiceDataHelperFactory* fake_ble_service_data_helper_factory_;
+  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
+  FakeBleScannerFactory* fake_ble_scanner_factory_;
   FakeTimerFactoryFactory* fake_timer_factory_factory_;
 
   FakeBleConnectionManager* instance_ = nullptr;
@@ -358,10 +433,22 @@ class SecureChannelServiceTest : public testing::Test {
     BleServiceDataHelperImpl::Factory::SetFactoryForTesting(
         fake_ble_service_data_helper_factory_.get());
 
+    fake_ble_synchronizer_factory_ =
+        std::make_unique<FakeBleSynchronizerFactory>();
+    BleSynchronizer::Factory::SetFactoryForTesting(
+        fake_ble_synchronizer_factory_.get());
+
+    fake_ble_scanner_factory_ = std::make_unique<FakeBleScannerFactory>(
+        fake_ble_service_data_helper_factory_.get(),
+        fake_ble_synchronizer_factory_.get());
+    BleScannerImpl::Factory::SetFactoryForTesting(
+        fake_ble_scanner_factory_.get());
+
     fake_ble_connection_manager_factory_ =
         std::make_unique<FakeBleConnectionManagerFactory>(
             mock_adapter_.get(), fake_ble_service_data_helper_factory_.get(),
-            fake_timer_factory_factory_.get());
+            fake_ble_synchronizer_factory_.get(),
+            fake_ble_scanner_factory_.get(), fake_timer_factory_factory_.get());
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(
         fake_ble_connection_manager_factory_.get());
 
@@ -396,6 +483,8 @@ class SecureChannelServiceTest : public testing::Test {
     TimerFactoryImpl::Factory::SetFactoryForTesting(nullptr);
     multidevice::RemoteDeviceCache::Factory::SetFactoryForTesting(nullptr);
     BleServiceDataHelperImpl::Factory::SetFactoryForTesting(nullptr);
+    BleSynchronizer::Factory::SetFactoryForTesting(nullptr);
+    BleScannerImpl::Factory::SetFactoryForTesting(nullptr);
     BleConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     PendingConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
     ActiveConnectionManagerImpl::Factory::SetFactoryForTesting(nullptr);
@@ -870,6 +959,8 @@ class SecureChannelServiceTest : public testing::Test {
       test_remote_device_cache_factory_;
   std::unique_ptr<FakeBleServiceDataHelperFactory>
       fake_ble_service_data_helper_factory_;
+  std::unique_ptr<FakeBleSynchronizerFactory> fake_ble_synchronizer_factory_;
+  std::unique_ptr<FakeBleScannerFactory> fake_ble_scanner_factory_;
   std::unique_ptr<FakeBleConnectionManagerFactory>
       fake_ble_connection_manager_factory_;
   std::unique_ptr<FakePendingConnectionManagerFactory>

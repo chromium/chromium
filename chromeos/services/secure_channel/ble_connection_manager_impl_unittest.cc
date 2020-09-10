@@ -22,8 +22,6 @@
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
-#include "chromeos/services/secure_channel/ble_scanner_impl.h"
-#include "chromeos/services/secure_channel/ble_synchronizer.h"
 #include "chromeos/services/secure_channel/ble_weave_client_connection.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_advertiser.h"
@@ -56,46 +54,15 @@ constexpr base::TimeDelta kAdvertisementToConnectionTime =
 constexpr base::TimeDelta kConnectionToAuthenticationTime =
     base::TimeDelta::FromSeconds(1);
 
-class FakeBleSynchronizerFactory : public BleSynchronizer::Factory {
- public:
-  FakeBleSynchronizerFactory(
-      scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
-          expected_mock_adapter)
-      : expected_mock_adapter_(expected_mock_adapter) {}
-
-  ~FakeBleSynchronizerFactory() override = default;
-
-  FakeBleSynchronizer* instance() { return instance_; }
-
- private:
-  // BleSynchronizer::Factory:
-  std::unique_ptr<BleSynchronizerBase> CreateInstance(
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override {
-    EXPECT_EQ(expected_mock_adapter_, bluetooth_adapter);
-    EXPECT_FALSE(instance_);
-
-    auto instance = std::make_unique<FakeBleSynchronizer>();
-    instance_ = instance.get();
-    return instance;
-  }
-
-  FakeBleSynchronizer* instance_ = nullptr;
-
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
-      expected_mock_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleSynchronizerFactory);
-};
-
 class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
  public:
   FakeBleAdvertiserFactory(
       FakeBleServiceDataHelper* expected_fake_ble_service_data_helper,
-      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory,
+      FakeBleSynchronizer* expected_fake_ble_synchronizer,
       FakeTimerFactory* expected_fake_timer_factory)
       : expected_fake_ble_service_data_helper_(
             expected_fake_ble_service_data_helper),
-        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory),
+        expected_fake_ble_synchronizer_(expected_fake_ble_synchronizer),
         expected_fake_timer_factory_(expected_fake_timer_factory) {}
 
   ~FakeBleAdvertiserFactory() override = default;
@@ -111,8 +78,7 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
       TimerFactory* timer_factory,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) override {
     EXPECT_EQ(expected_fake_ble_service_data_helper_, ble_service_data_helper);
-    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(),
-              ble_synchronizer_base);
+    EXPECT_EQ(expected_fake_ble_synchronizer_, ble_synchronizer_base);
     EXPECT_EQ(expected_fake_timer_factory_, timer_factory);
     EXPECT_FALSE(instance_);
 
@@ -124,53 +90,10 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
   FakeBleAdvertiser* instance_ = nullptr;
 
   FakeBleServiceDataHelper* expected_fake_ble_service_data_helper_;
-  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
+  FakeBleSynchronizer* expected_fake_ble_synchronizer_;
   FakeTimerFactory* expected_fake_timer_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertiserFactory);
-};
-
-class FakeBleScannerFactory : public BleScannerImpl::Factory {
- public:
-  FakeBleScannerFactory(
-      scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
-          expected_mock_adapter,
-      FakeBleServiceDataHelper* expected_fake_ble_service_data_helper,
-      FakeBleSynchronizerFactory* fake_ble_synchronizer_factory)
-      : expected_mock_adapter_(expected_mock_adapter),
-        expected_fake_ble_service_data_helper_(
-            expected_fake_ble_service_data_helper),
-        fake_ble_synchronizer_factory_(fake_ble_synchronizer_factory) {}
-
-  ~FakeBleScannerFactory() override = default;
-
-  FakeBleScanner* instance() { return instance_; }
-
- private:
-  // BleScannerImpl::Factory:
-  std::unique_ptr<BleScanner> CreateInstance(
-      BleServiceDataHelper* service_data_helper,
-      BleSynchronizerBase* ble_synchronizer_base,
-      scoped_refptr<device::BluetoothAdapter> adapter) override {
-    EXPECT_EQ(expected_fake_ble_service_data_helper_, service_data_helper);
-    EXPECT_EQ(fake_ble_synchronizer_factory_->instance(),
-              ble_synchronizer_base);
-    EXPECT_EQ(expected_mock_adapter_, adapter);
-    EXPECT_FALSE(instance_);
-
-    auto instance = std::make_unique<FakeBleScanner>();
-    instance_ = instance.get();
-    return instance;
-  }
-
-  FakeBleScanner* instance_ = nullptr;
-
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
-      expected_mock_adapter_;
-  FakeBleServiceDataHelper* expected_fake_ble_service_data_helper_;
-  FakeBleSynchronizerFactory* fake_ble_synchronizer_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleScannerFactory);
 };
 
 class FakeSecureChannelDisconnectorFactory
@@ -338,28 +261,19 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
     fake_ble_service_data_helper_ =
         std::make_unique<FakeBleServiceDataHelper>();
+    fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
+    fake_ble_scanner_ = std::make_unique<FakeBleScanner>();
 
     fake_timer_factory_ = std::make_unique<FakeTimerFactory>();
 
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     test_clock_->SetNow(base::Time::UnixEpoch());
 
-    fake_ble_synchronizer_factory_ =
-        std::make_unique<FakeBleSynchronizerFactory>(mock_adapter_);
-    BleSynchronizer::Factory::SetFactoryForTesting(
-        fake_ble_synchronizer_factory_.get());
-
     fake_ble_advertiser_factory_ = std::make_unique<FakeBleAdvertiserFactory>(
-        fake_ble_service_data_helper_.get(),
-        fake_ble_synchronizer_factory_.get(), fake_timer_factory_.get());
+        fake_ble_service_data_helper_.get(), fake_ble_synchronizer_.get(),
+        fake_timer_factory_.get());
     BleAdvertiserImpl::Factory::SetFactoryForTesting(
         fake_ble_advertiser_factory_.get());
-
-    fake_ble_scanner_factory_ = std::make_unique<FakeBleScannerFactory>(
-        mock_adapter_, fake_ble_service_data_helper_.get(),
-        fake_ble_synchronizer_factory_.get());
-    BleScannerImpl::Factory::SetFactoryForTesting(
-        fake_ble_scanner_factory_.get());
 
     fake_secure_channel_disconnector_factory_ =
         std::make_unique<FakeSecureChannelDisconnectorFactory>();
@@ -383,13 +297,12 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
     manager_ = BleConnectionManagerImpl::Factory::Create(
         mock_adapter_, fake_ble_service_data_helper_.get(),
+        fake_ble_synchronizer_.get(), fake_ble_scanner_.get(),
         fake_timer_factory_.get(), test_clock_.get());
   }
 
   void TearDown() override {
-    BleSynchronizer::Factory::SetFactoryForTesting(nullptr);
     BleAdvertiserImpl::Factory::SetFactoryForTesting(nullptr);
-    BleScannerImpl::Factory::SetFactoryForTesting(nullptr);
     SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(nullptr);
     weave::BluetoothLowEnergyWeaveClientConnection::Factory::
         SetFactoryForTesting(nullptr);
@@ -420,13 +333,13 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     if (expected_to_add_request) {
       EXPECT_EQ(connection_priority,
                 *fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_TRUE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kInitiatorRole)));
     } else {
       EXPECT_FALSE(
           fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kInitiatorRole)));
     }
@@ -445,13 +358,13 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     if (expected_to_update_priority) {
       EXPECT_EQ(connection_priority,
                 *fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_TRUE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kInitiatorRole)));
     } else {
       EXPECT_FALSE(
           fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kInitiatorRole)));
     }
@@ -462,7 +375,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                                           ConnectionRole::kInitiatorRole);
     manager_->CancelBleInitiatorConnectionAttempt(device_id_pair);
     EXPECT_FALSE(fake_ble_advertiser()->GetPriorityForRequest(device_id_pair));
-    EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+    EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
         device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
         ConnectionRole::kInitiatorRole)));
   }
@@ -486,11 +399,11 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
             should_cancel_attempt_on_failure));
 
     if (expected_to_add_request) {
-      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_TRUE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kListenerRole)));
     } else {
-      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kListenerRole)));
     }
@@ -507,11 +420,11 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                                                   connection_priority);
 
     if (expected_to_update_priority) {
-      EXPECT_TRUE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_TRUE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kListenerRole)));
     } else {
-      EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+      EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
           device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
           ConnectionRole::kListenerRole)));
     }
@@ -521,7 +434,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     RemoveFromRemoteDeviceIdToMetadataMap(device_id_pair,
                                           ConnectionRole::kListenerRole);
     manager_->CancelBleListenerConnectionAttempt(device_id_pair);
-    EXPECT_FALSE(fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+    EXPECT_FALSE(fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
         device_id_pair, ConnectionMedium::kBluetoothLowEnergy,
         ConnectionRole::kListenerRole)));
   }
@@ -562,7 +475,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     fake_weave_client_connection_factory_->set_expected_bluetooth_device(
         mock_bluetooth_device.get());
 
-    fake_ble_scanner()->NotifyReceivedAdvertisementFromDevice(
+    fake_ble_scanner_->NotifyReceivedAdvertisementFromDevice(
         remote_device, mock_bluetooth_device.get(),
         ConnectionMedium::kBluetoothLowEnergy, connection_role);
 
@@ -572,7 +485,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                     ->GetAllRequestsForRemoteDevice(remote_device.GetDeviceId())
                     .empty());
     EXPECT_TRUE(
-        fake_ble_scanner()
+        fake_ble_scanner_
             ->GetAllScanRequestsForRemoteDevice(remote_device.GetDeviceId())
             .empty());
 
@@ -649,7 +562,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                     *fake_ble_advertiser()->GetPriorityForRequest(
                         std::get<0>(tuple)));
           EXPECT_TRUE(
-              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+              fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
                   std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
                   ConnectionRole::kInitiatorRole)));
           break;
@@ -657,7 +570,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
         case ConnectionRole::kListenerRole: {
           EXPECT_TRUE(
-              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+              fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
                   std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
                   ConnectionRole::kListenerRole)));
           break;
@@ -696,7 +609,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
                     *fake_ble_advertiser()->GetPriorityForRequest(
                         std::get<0>(tuple)));
           EXPECT_TRUE(
-              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+              fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
                   std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
                   ConnectionRole::kInitiatorRole)));
           break;
@@ -704,7 +617,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
         case ConnectionRole::kListenerRole: {
           EXPECT_TRUE(
-              fake_ble_scanner()->HasScanRequest(ConnectionAttemptDetails(
+              fake_ble_scanner_->HasScanRequest(ConnectionAttemptDetails(
                   std::get<0>(tuple), ConnectionMedium::kBluetoothLowEnergy,
                   ConnectionRole::kListenerRole)));
           break;
@@ -851,10 +764,6 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     return fake_ble_advertiser_factory_->instance();
   }
 
-  FakeBleScanner* fake_ble_scanner() {
-    return fake_ble_scanner_factory_->instance();
-  }
-
   FakeSecureChannelDisconnector* fake_secure_channel_disconnector() {
     return fake_secure_channel_disconnector_factory_->instance();
   }
@@ -876,9 +785,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
   std::vector<std::pair<DeviceIdPair, BleListenerFailureType>>
       ble_listener_failures_;
 
-  std::unique_ptr<FakeBleSynchronizerFactory> fake_ble_synchronizer_factory_;
   std::unique_ptr<FakeBleAdvertiserFactory> fake_ble_advertiser_factory_;
-  std::unique_ptr<FakeBleScannerFactory> fake_ble_scanner_factory_;
   std::unique_ptr<FakeSecureChannelDisconnectorFactory>
       fake_secure_channel_disconnector_factory_;
   std::unique_ptr<FakeWeaveClientConnectionFactory>
@@ -889,6 +796,8 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;
+  std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
+  std::unique_ptr<FakeBleScanner> fake_ble_scanner_;
   std::unique_ptr<FakeTimerFactory> fake_timer_factory_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
