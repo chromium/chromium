@@ -29,6 +29,7 @@ void DisableSystemServices() {
   CHECK_EQ(result, kCGErrorSuccess);
 
   sandbox::DisableLaunchServices();
+  sandbox::DisableCoreServicesCheckFix();
 }
 
 }  // namespace
