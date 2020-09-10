@@ -257,7 +257,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
   "//third_party/blink/renderer/modules/webtransport:*",  # 16 errors
   "//third_party/blink/renderer/modules:*",  # 321 errors
-  "//third_party/blink/renderer/platform/loader:*",  # 180 errors
   "//third_party/blink/renderer/platform/network:*",  # 15 errors
   "//third_party/blink/renderer/platform:*",  # 72 errors
 

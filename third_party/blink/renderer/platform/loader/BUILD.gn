@@ -141,9 +141,15 @@ blink_platform_sources("loader") {
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
     "//components/web_package",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_blink",
+    "//third_party/blink/renderer/platform/blob:blob",
+    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
+    "//third_party/blink/renderer/platform/network:network",
+    "//third_party/blink/renderer/platform/scheduler:scheduler",
   ]
+  public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
 }
 
 source_set("unit_tests") {
@@ -187,11 +193,16 @@ source_set("unit_tests") {
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
 
   deps = [
+    "//base/test:test_support",
     "//components/web_package:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform:test_support",
   ]
 }
 
@@ -232,6 +243,7 @@ source_set("test_support") {
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform/blob:generator",
+    "//third_party/blink/renderer/platform/scheduler:test_support",
     "//third_party/icu",
   ]
 }

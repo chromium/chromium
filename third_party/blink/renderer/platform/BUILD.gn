@@ -1563,6 +1563,7 @@ component("platform") {
     "//third_party/blink/renderer/platform/blob",
     "//third_party/blink/renderer/platform/heap:heap",
     "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/blink/renderer/platform/loader:loader",
     "//third_party/blink/renderer/platform/scheduler",
   ]
 
@@ -1820,6 +1821,8 @@ static_library("test_support") {
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/network:test_support",
   ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/platform/loader:test_support" ]
 
   if (is_win) {
     cflags = [ "/wd4267" ]  # Truncation from size_t to int.

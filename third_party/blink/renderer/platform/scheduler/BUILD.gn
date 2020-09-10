@@ -7,11 +7,6 @@ import("//third_party/blink/renderer/platform/platform.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 blink_platform_sources("scheduler") {
-  visibility = [
-    "//third_party/blink/renderer/platform",
-    "//third_party/blink/renderer/platform/blob",
-  ]
-
   sources = [
     "common/cancelable_closure_holder.cc",
     "common/cancelable_closure_holder.h",
