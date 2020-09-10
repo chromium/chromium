@@ -40,6 +40,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -294,7 +295,9 @@ void SessionCrashedBubbleView::StyledLabelLinkClicked(views::StyledLabel* label,
                                                       int event_flags) {
   browser_->OpenURL(content::OpenURLParams(
       GURL("https://support.google.com/chrome/answer/96817"),
-      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      content::Referrer(),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
       ui::PAGE_TRANSITION_LINK, false));
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);
 }

@@ -33,6 +33,7 @@ class LegalMessageLine {
     gfx::Range range;
     GURL url;
   };
+  using Links = std::vector<Link>;
 
   LegalMessageLine();
   LegalMessageLine(const LegalMessageLine& other);
@@ -75,7 +76,7 @@ class LegalMessageLine {
                     bool escape_apostrophes = false);
 
   const base::string16& text() const { return text_; }
-  const std::vector<Link>& links() const { return links_; }
+  const Links& links() const { return links_; }
 
  private:
   friend class TestLegalMessageLine;
@@ -83,7 +84,7 @@ class LegalMessageLine {
   bool ParseLine(const base::Value& line, bool escape_apostrophes);
 
   base::string16 text_;
-  std::vector<Link> links_;
+  Links links_;
 };
 
 }  // namespace autofill

@@ -7,7 +7,6 @@
 
 #include "ash/app_list/views/privacy_info_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 namespace ash {
 

@@ -305,14 +305,13 @@ class LocalCardMigrationOfferView : public views::View {
 
     AddChildView(new views::Separator());
 
-    legal_message_container_ = new LegalMessageView(
+    legal_message_container_ = AddChildView(std::make_unique<LegalMessageView>(
         controller->GetLegalMessageLines(),
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
-            base::Unretained(controller_)));
+            base::Unretained(controller_))));
     legal_message_container_->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
-    AddChildView(legal_message_container_);
   }
 
   ~LocalCardMigrationOfferView() override {}

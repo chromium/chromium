@@ -123,7 +123,9 @@ void PromptForScanningModalDialog::StyledLabelLinkClicked(
     int event_flags) {
   web_contents_->OpenURL(content::OpenURLParams(
       GURL(chrome::kAdvancedProtectionDownloadLearnMoreURL),
-      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      content::Referrer(),
+      ui::DispositionFromEventFlags(event_flags,
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
 }
 

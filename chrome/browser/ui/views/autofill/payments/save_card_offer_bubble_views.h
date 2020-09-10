@@ -42,14 +42,14 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                        const base::string16& new_contents) override;
 
  private:
+  ~SaveCardOfferBubbleViews() override;
+
   std::unique_ptr<views::View> CreateMainContentView() override;
 
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
 
   void LinkClicked(const GURL& url);
-
-  ~SaveCardOfferBubbleViews() override;
 
   views::Textfield* cardholder_name_textfield_ = nullptr;
 

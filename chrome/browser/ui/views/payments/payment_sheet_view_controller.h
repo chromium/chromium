@@ -13,10 +13,6 @@
 #include "components/payments/content/payment_request_state.h"
 #include "ui/views/controls/styled_label_listener.h"
 
-namespace views {
-class StyledLabel;
-}
-
 namespace payments {
 
 class PaymentRequestDialogView;

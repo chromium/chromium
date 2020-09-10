@@ -260,6 +260,10 @@ void SafetyTipPageInfoBubbleView::StyledLabelLinkClicked(
     views::StyledLabel* label,
     const gfx::Range& range,
     int event_flags) {
+  OpenHelpCenter();
+}
+
+void SafetyTipPageInfoBubbleView::OpenHelpCenter() {
   action_taken_ = SafetyTipInteraction::kLearnMore;
   OpenHelpCenterFromSafetyTip(web_contents());
 }

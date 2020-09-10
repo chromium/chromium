@@ -21,6 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -180,8 +181,7 @@ TEST_F(SharingDialogViewTest, HelpTextClickedEmpty) {
   auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/0);
   auto dialog = CreateDialogView(std::move(dialog_data));
 
-  dialog->StyledLabelLinkClicked(/*label=*/nullptr, /*range=*/{},
-                                 /*event_flags=*/0);
+  dialog->StyledLabelLinkClicked(nullptr, gfx::Range(), ui::EF_NONE);
 }
 
 TEST_F(SharingDialogViewTest, HelpTextClickedOnlyApps) {
@@ -191,8 +191,7 @@ TEST_F(SharingDialogViewTest, HelpTextClickedOnlyApps) {
   auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/1);
   auto dialog = CreateDialogView(std::move(dialog_data));
 
-  dialog->StyledLabelLinkClicked(/*label=*/nullptr, /*range=*/{},
-                                 /*event_flags=*/0);
+  dialog->StyledLabelLinkClicked(nullptr, gfx::Range(), ui::EF_NONE);
 }
 
 TEST_F(SharingDialogViewTest, ThemeChangedEmptyList) {

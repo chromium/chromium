@@ -59,6 +59,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -128,9 +129,9 @@ std::unique_ptr<views::View> CreateSiteSettingsLink(
 
 }  // namespace
 
-// |BubbleHeaderView| is the UI element (view) that represents the header of the
-// |PageInfoBubbleView|. The header shows the status of the site's
-// identity check and the name of the site's identity.
+// BubbleHeaderView is the UI element (view) that represents the header of a
+// PageInfoBubbleView. The header shows the status of the site's identity check
+// and the name of the site's identity.
 class BubbleHeaderView : public views::View, public views::StyledLabelListener {
  public:
   BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin);
@@ -237,7 +238,7 @@ BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
                       views::GridLayout::FILL, views::GridLayout::LEADING);
 }
 
-BubbleHeaderView::~BubbleHeaderView() {}
+BubbleHeaderView::~BubbleHeaderView() = default;
 
 void BubbleHeaderView::StyledLabelLinkClicked(views::StyledLabel* label,
                                               const gfx::Range& range,
@@ -472,8 +473,9 @@ void PageInfoBubbleView::SecurityDetailsClicked(int event_flags) {
   } else {
     web_contents()->OpenURL(content::OpenURLParams(
         GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-        false));
+        ui::DispositionFromEventFlags(
+            event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
+        ui::PAGE_TRANSITION_LINK, false));
     presenter_->RecordPageInfoAction(
         PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);
   }

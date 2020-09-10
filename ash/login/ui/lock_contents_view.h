@@ -32,7 +32,6 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -42,7 +41,6 @@ class KeyboardUIController;
 
 namespace views {
 class BoxLayout;
-class StyledLabel;
 }  // namespace views
 
 namespace ash {
@@ -69,7 +67,6 @@ class ASH_EXPORT LockContentsView
       public LoginDataDispatcher::Observer,
       public SystemTrayFocusObserver,
       public display::DisplayObserver,
-      public views::StyledLabelListener,
       public KeyboardControllerObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
@@ -212,11 +209,6 @@ class ASH_EXPORT LockContentsView
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override {}
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool is_visible) override;

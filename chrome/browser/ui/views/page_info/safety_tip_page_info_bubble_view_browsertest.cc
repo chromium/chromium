@@ -308,8 +308,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     // This class is a friend to SafetyTipPageInfoBubbleView.
     auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
         PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
-    bubble->StyledLabelLinkClicked(bubble->GetLearnMoreLinkForTesting(),
-                                   gfx::Range(), 0);
+    bubble->OpenHelpCenter();
   }
 
   void CloseWarningLeaveSite(Browser* browser) {

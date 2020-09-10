@@ -191,27 +191,13 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
 }
 
 void AppUninstallDialogView::InitializeCheckbox(const GURL& app_launch_url) {
-  std::unique_ptr<views::StyledLabel> checkbox_label;
   std::vector<base::string16> replacements;
-  size_t offset;
-  base::string16 learn_more_text =
-      l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_LEARN_MORE);
-
   replacements.push_back(url_formatter::FormatUrlForSecurityDisplay(
       app_launch_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
-  if (google_util::IsGoogleHostname(app_launch_url.host_piece(),
-                                    google_util::ALLOW_SUBDOMAIN)) {
-    replacements.push_back(learn_more_text);
-
-    checkbox_label = std::make_unique<views::StyledLabel>(this);
-    std::vector<size_t> offsets;
-    checkbox_label->SetText(l10n_util::GetStringFUTF16(
-        IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE, replacements,
-        &offsets));
-    DCHECK_EQ(replacements.size(), offsets.size());
-    offset = offsets.back();
-  } else {
+  const bool is_google = google_util::IsGoogleHostname(
+      app_launch_url.host_piece(), google_util::ALLOW_SUBDOMAIN);
+  if (!is_google) {
     auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
         app_launch_url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -219,16 +205,20 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_launch_url) {
     domain[0] = base::ToUpperASCII(domain[0]);
 
     replacements.push_back(base::ASCIIToUTF16(domain));
-    replacements.push_back(learn_more_text);
-
-    checkbox_label = std::make_unique<views::StyledLabel>(this);
-    std::vector<size_t> offsets;
-    checkbox_label->SetText(l10n_util::GetStringFUTF16(
-        IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_NON_GOOGLE,
-        replacements, &offsets));
-    DCHECK_EQ(replacements.size(), offsets.size());
-    offset = offsets.back();
   }
+
+  base::string16 learn_more_text =
+      l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_LEARN_MORE);
+  replacements.push_back(learn_more_text);
+
+  auto checkbox_label = std::make_unique<views::StyledLabel>(this);
+  std::vector<size_t> offsets;
+  checkbox_label->SetText(l10n_util::GetStringFUTF16(
+      is_google ? IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE
+                : IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_NON_GOOGLE,
+      replacements, &offsets));
+  DCHECK_EQ(replacements.size(), offsets.size());
+  const size_t offset = offsets.back();
 
   checkbox_label->AddStyleRange(
       gfx::Range(offset, offset + learn_more_text.length()),

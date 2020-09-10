@@ -575,13 +575,10 @@ void PaymentSheetViewController::StyledLabelLinkClicked(
     views::StyledLabel* label,
     const gfx::Range& range,
     int event_flags) {
-  if (!dialog()->IsInteractive())
-    return;
-
-  // The only thing that can trigger this is the user clicking on the "settings"
-  // link in the data attribution text.
-  chrome::ShowSettingsSubPageForProfile(dialog()->GetProfile(),
-                                        chrome::kPaymentsSubPage);
+  if (dialog()->IsInteractive()) {
+    chrome::ShowSettingsSubPageForProfile(dialog()->GetProfile(),
+                                          chrome::kPaymentsSubPage);
+  }
 }
 
 void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {

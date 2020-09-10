@@ -21,8 +21,7 @@ class TestLegalMessageLine : public LegalMessageLine {
 
   TestLegalMessageLine(const std::string& ascii_text) { set_text(ascii_text); }
 
-  TestLegalMessageLine(const std::string& ascii_text,
-                       const std::vector<Link>& links) {
+  TestLegalMessageLine(const std::string& ascii_text, const Links& links) {
     set_text(ascii_text);
     set_links(links);
   }
@@ -33,7 +32,7 @@ class TestLegalMessageLine : public LegalMessageLine {
     text_ = base::ASCIIToUTF16(ascii_text);
   }
 
-  void set_links(const std::vector<Link>& links) { links_ = links; }
+  void set_links(const Links& links) { links_ = links; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestLegalMessageLine);

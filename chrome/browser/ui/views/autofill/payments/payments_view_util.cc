@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 
+#include "base/util/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -148,26 +149,18 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
   }
 }
 
-LegalMessageView::~LegalMessageView() {}
+LegalMessageView::~LegalMessageView() = default;
 
 void LegalMessageView::StyledLabelLinkClicked(views::StyledLabel* label,
                                               const gfx::Range& range,
                                               int event_flags) {
-  // Index of |label| within its parent's view hierarchy is the same as the
-  // legal message line index. DCHECK this assumption to guard against future
-  // layout changes.
-  DCHECK_EQ(label->parent()->children().size(), legal_message_lines_.size());
-
-  const std::vector<LegalMessageLine::Link>& links =
-      legal_message_lines_[label->parent()->GetIndexOf(label)].links();
-  for (const LegalMessageLine::Link& link : links) {
-    if (link.range == range) {
-      callback_.Run(link.url);
-      return;
-    }
-  }
-  // |range| was not found.
-  NOTREACHED();
+  const int label_index = GetIndexOf(label);
+  DCHECK_LT(size_t{label_index}, legal_message_lines_.size());
+  const auto& links = legal_message_lines_[label_index].links();
+  const auto it =
+      util::ranges::find(links, range, &LegalMessageLine::Link::range);
+  DCHECK(it != links.end());
+  callback_.Run(it->url);
 }
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
