@@ -43,6 +43,11 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isPasswordAutofillEnabled)
     BOOL passwordAutofillEnabled;
 
+// Whether or not password leak checks will be performed after successful form
+// submission. Defaults to |YES|.
+@property(nonatomic, assign, getter=isPasswordLeakCheckEnabled)
+    BOOL passwordLeakCheckEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will

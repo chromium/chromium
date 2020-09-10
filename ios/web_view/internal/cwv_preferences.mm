@@ -72,4 +72,14 @@
       password_manager::prefs::kCredentialsEnableService);
 }
 
+- (void)setPasswordLeakCheckEnabled:(BOOL)enabled {
+  _prefService->SetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled, enabled);
+}
+
+- (BOOL)isPasswordLeakCheckEnabled {
+  return _prefService->GetBoolean(
+      password_manager::prefs::kPasswordLeakDetectionEnabled);
+}
+
 @end
