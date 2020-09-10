@@ -176,6 +176,15 @@
           'shards': 1,
         },
       },
+      'android_sync_integration_tests': {
+        'swarming': {
+          'shards': 1,
+        },
+        'args': [
+          '--test-launcher-batch-limit=1',
+        ],
+        'experiment_percentage': 100,
+      },
       'android_webview_unittests': {},
       'breakpad_unittests': {},
       'chrome_public_test_apk': {

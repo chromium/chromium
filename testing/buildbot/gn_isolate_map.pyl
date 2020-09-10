@@ -98,6 +98,10 @@
     "label": "//chrome/test:android_browsertests",
     "type": "windowed_test_launcher",
   },
+  "android_sync_integration_tests": {
+    "label": "//chrome/test:android_sync_integration_tests",
+    "type": "windowed_test_launcher",
+  },
   "android_webview_junit_tests": {
     "label": "//android_webview/test:android_webview_junit_tests",
     "type": "junit_test",

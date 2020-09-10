@@ -37,6 +37,13 @@
       },
     },
   },
+  'android_sync_integration_tests': {
+   'remove_from': [
+     # Remove from CQ bots due to capacity.
+     'android-marshmallow-arm64-rel',
+     'android-lollipop-arm-rel',
+   ],
+  },
   'android_webview_unittests': {
     'remove_from': [
       # On chromium.android, these do not need to run prior to M.
