@@ -7,8 +7,8 @@ package chromeos.ime;
 // Wrapper message to contain either internal messages or public messages.
 message Wrapper {
   oneof param {
-    string internal_request = 1;
-    string internal_reply = 2;
+    bytes internal_request = 1;
+    bytes internal_reply = 2;
     Request request = 3;
     Reply reply = 4;
   }
