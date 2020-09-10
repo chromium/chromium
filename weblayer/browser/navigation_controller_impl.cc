@@ -14,6 +14,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
+#include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -147,10 +148,12 @@ void NavigationControllerImpl::SetNavigationControllerImpl(
   java_controller_ = java_controller;
 }
 
-void NavigationControllerImpl::Navigate(JNIEnv* env,
-                                        const JavaParamRef<jstring>& url,
-                                        jboolean should_replace_current_entry,
-                                        jboolean disable_intent_processing) {
+void NavigationControllerImpl::Navigate(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& url,
+    jboolean should_replace_current_entry,
+    jboolean disable_intent_processing,
+    jboolean disable_network_error_auto_reload) {
   auto params = std::make_unique<content::NavigationController::LoadURLParams>(
       GURL(base::android::ConvertJavaStringToUTF8(env, url)));
   params->should_replace_current_entry = should_replace_current_entry;
@@ -161,6 +164,9 @@ void NavigationControllerImpl::Navigate(JNIEnv* env,
   params->transition_type = disable_intent_processing
                                 ? ui::PAGE_TRANSITION_TYPED
                                 : ui::PAGE_TRANSITION_LINK;
+  if (disable_network_error_auto_reload)
+    params->navigation_ui_data = std::make_unique<NavigationUIDataImpl>(true);
+
   DoNavigate(std::move(params));
 }
 
@@ -228,6 +234,10 @@ void NavigationControllerImpl::Navigate(
       std::make_unique<content::NavigationController::LoadURLParams>(url);
   load_params->should_replace_current_entry =
       params.should_replace_current_entry;
+  if (params.disable_network_error_auto_reload) {
+    load_params->navigation_ui_data =
+        std::make_unique<NavigationUIDataImpl>(true);
+  }
   DoNavigate(std::move(load_params));
 }
 

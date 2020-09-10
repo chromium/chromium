@@ -59,13 +59,14 @@ public class NavigationController {
             throw new UnsupportedOperationException();
         }
         try {
-            if (params == null || WebLayer.getSupportedMajorVersionInternal() < 87) {
+            if (params == null || WebLayer.getSupportedMajorVersionInternal() < 86) {
                 mNavigationController.navigate(
                         uri.toString(), params == null ? null : params.toInterfaceParams());
             } else {
                 mNavigationController.navigate2(uri.toString(),
                         params == null ? false : params.getShouldReplaceCurrentEntry(),
-                        params == null ? false : params.isIntentProcessingDisabled());
+                        params == null ? false : params.isIntentProcessingDisabled(),
+                        params == null ? false : params.isNetworkErrorAutoReloadDisabled());
             }
         } catch (RemoteException e) {
             throw new APICallException(e);
