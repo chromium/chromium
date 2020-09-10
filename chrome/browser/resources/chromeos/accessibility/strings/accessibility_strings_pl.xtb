@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Kliknij</translation>
 <translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">wiersz</translation>
 <translation id="8186185314313222077">przełącz pełny ekran</translation>
 <translation id="8199231515320852133">Przeczytaj nagłówki bieżącej komórki</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">w<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Nie ma poprzedniej opcji</translation>
 <translation id="8970172509886453271">Nie ma poprzedniej sekcji</translation>
+<translation id="89720367119469899">Ucieczka</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Zapomnij</translation>
 <translation id="9040132695316389094">Nagłówek 1</translation>

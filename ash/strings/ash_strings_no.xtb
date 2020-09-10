@@ -67,7 +67,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
-<translation id="1665244008632896072">Slå av/på mørk modus. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Den nøytrale fargemodusen bruker ikke farger som er hentet fra bakgrunnen. I stedet brukes et nøytralt utvalg av lyse eller mørke fargetoner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
 <translation id="1698080062160024910">Nedtelling på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
 <translation id="1761222317188459878">Slå av/på nettverkstilkobling. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
-<translation id="1776485282219497802">Mørk modus er på.</translation>
 <translation id="1782199038061388045">oversettelse</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="1812997170047690955">Hva er på skjermen?</translation>
@@ -152,7 +150,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2484513351006226581">Trykk på <ph name="KEYBOARD_SHORTCUT" /> for å bytte tastaturoppsett.</translation>
 <translation id="2501920221385095727">Trege taster</translation>
 <translation id="2509468283778169019">Caps Lock er på</translation>
-<translation id="2517829236324128850">Vis innstillinger for mørk modus</translation>
 <translation id="2542089167727451762">Trykk på profilbildet ditt</translation>
 <translation id="255671100581129685">Google-assistenten er ikke tilgjengelig i offentlige økter.</translation>
 <translation id="256712445991462162">den dokkede lupen</translation>
@@ -440,7 +437,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5837036133683224804">Stopp <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5876666360658629066">Angi foreldrekoden</translation>
-<translation id="5887866489674258948">Mørk modus</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inaktivt skrivebord.</translation>
@@ -541,7 +537,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6972754398087986839">Kom i gang</translation>
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="698231206551913481">Alle filer og lokale data som er tilknyttet denne brukeren, slettes permanent når brukeren fjernes.</translation>
-<translation id="6990778048354947307">Mørkt tema</translation>
 <translation id="7007983414944123363">PIN-koden eller passordet kunne ikke verifiseres. Prøv på nytt.</translation>
 <translation id="7015766095477679451">Kom tilbake <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Koble <ph name="DEVICE_NAME" /> til telefonen</translation>
@@ -598,7 +593,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eier)</translation>
 <translation id="7647488630410863958">Lås opp enheten for å se varslene dine</translation>
 <translation id="7649070708921625228">Hjelp</translation>
-<translation id="7653418004652142983">På</translation>
 <translation id="7654687942625752712">Trykk og hold på begge volumknappene i fem sekunder for å slå av taletilbakemelding.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7933084174919150729">Google-assistenten er bare tilgjengelig for den primære profilen.</translation>
 <translation id="79341161159229895">Kontoen er administrert av <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Høykontrastmodus</translation>
-<translation id="7977639574084142279">Av</translation>
 <translation id="7977927628060636163">Søker etter mobilnettverk …</translation>
 <translation id="7980780401175799550">Prøv nye måter å navigere i Chrome OS på</translation>
 <translation id="7982789257301363584">Nettverk</translation>
@@ -732,7 +725,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8936501819958976551">deaktivert</translation>
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Mørk modus er av.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Bruker <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>

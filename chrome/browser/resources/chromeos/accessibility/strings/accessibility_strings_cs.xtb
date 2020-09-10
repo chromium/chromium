@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Dotykové</translation>
 <translation id="8173092779156526980">Přejeďte čtyřmi prsty doleva</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podtržítko}few{# podtržítka}many{# underscores}other{# podtržítek}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">řádek</translation>
 <translation id="8186185314313222077">přepnout zobrazení na celou obrazovku</translation>
 <translation id="8199231515320852133">Oznámit záhlaví aktuální buňky</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">ř<ph name="TABLECELLROWINDEX" />s<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Žádný předchozí přepínač není</translation>
 <translation id="8970172509886453271">Žádná předchozí sekce není</translation>
+<translation id="89720367119469899">Escapovat</translation>
 <translation id="8978496506222343566">popisek</translation>
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="9040132695316389094">Nadpis 1</translation>

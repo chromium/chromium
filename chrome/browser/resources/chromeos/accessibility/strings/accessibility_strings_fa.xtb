@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">لمس</translation>
 <translation id="8173092779156526980">با چهار انگشت تند به چپ بکشید</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{زیرخط}one{# زیرخط}other{# زیرخط}}</translation>
+<translation id="8179976553408161302">ورود</translation>
 <translation id="8184828902145951186">ردیف</translation>
 <translation id="8186185314313222077">جابه‌جایی به حالت تمام صفحه</translation>
 <translation id="8199231515320852133">اعلان عناوین سلول کنونی</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">ر<ph name="TABLECELLROWINDEX" />س<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">دکمه رادیویی قبلی وجود ندارد</translation>
 <translation id="8970172509886453271">بخش قبلی وجود ندارد</translation>
+<translation id="89720367119469899">فرار</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="9040132695316389094">عنوان ۱</translation>

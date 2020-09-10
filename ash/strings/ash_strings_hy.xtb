@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
-<translation id="1665244008632896072">Միացնել/անջատել մուգ ռեժիմը։ <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Չեզոք գույների ռեժիմում ձեր պաստառների գույները չեն օգտագործվում։ Դրանց փոխարեն միջերեսը գունավորվում է չեզոք բաց կամ մուգ գույնի երանգներով։</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Ժամաչափ՝ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
 <translation id="1761222317188459878">Միացնել/անջատել կապը: <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
-<translation id="1776485282219497802">Մուգ ռեժիմը միացված է։</translation>
 <translation id="1782199038061388045">թարգմանություն</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1812997170047690955">Ի՞նչ է ցուցադրվում էկրանին</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
 <translation id="2509468283778169019">CAPS LOCK-ը միացված է</translation>
-<translation id="2517829236324128850">Ցույց տալ մուգ ռեժիմի կարգավորումները</translation>
 <translation id="2542089167727451762">Հպեք ձեր պրոֆիլի նկարին</translation>
 <translation id="255671100581129685">Google Օգնականը հասանելի չէ հանրային աշխատաշրջանում։</translation>
 <translation id="256712445991462162">Ամրացված խոշորացույց</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Դադարեցնել <ph name="ROUTE_TITLE" /> ներդիրի հեռարձակումը «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="5860033963881614850">Անջատ.</translation>
 <translation id="5876666360658629066">Մուտքագրեք ծնողի մուտքի կոդը</translation>
-<translation id="5887866489674258948">Մուգ ռեժիմ</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Աշխատասեղանն ակտիվ չէ։</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Սկսել աշխատանքը</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="698231206551913481">Այս օգտատիրոջ հետ կապված բոլոր ֆայլերը և տեղային տվյալներն ընդմիշտ կջնջվեն, եթե հեռացնեք այս պրոֆիլը:</translation>
-<translation id="6990778048354947307">Մուգ թեմա</translation>
 <translation id="7007983414944123363">Չհաջողվեց հաստատել ձեր PIN կոդը կամ գաղտնաբառը։ Նորից փորձեք։</translation>
 <translation id="7015766095477679451">Վերադարձեք <ph name="COME_BACK_TIME" />։</translation>
 <translation id="7025533177575372252">Կապեք ձեր <ph name="DEVICE_NAME" /> սարքը ձեր հեռախոսի հետ</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7647488630410863958">Ծանուցումները դիտելու համար ապակողպեք սարքը</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
-<translation id="7653418004652142983">Միացնել</translation>
 <translation id="7654687942625752712">Ձայնային ուղեկցումն անջատելու համար սեղմեք և պահեք ձայնի երկու կոճակները հինգ վայրկյան:</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -620,12 +614,11 @@
 <translation id="7886277072580235377">Հաշվից դուրս գալուց հետո համացանցում ձեր գործողությունների մասին տվյալները կջնջվեն: <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Ուղարկել նամակ</translation>
 <translation id="7897375687985782769">Դուք սեղմել եք էկրանի պտտման դյուրանցման ստեղները: Ուզում եք պտտե՞լ էկրանը:</translation>
-<translation id="7901405293566323524">Հեռախոսային հանգույց</translation>
+<translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>
 <translation id="7933084174919150729">Google Օգնականը հասանելի է միայն հիմնական պրոֆիլում։</translation>
 <translation id="79341161159229895">Հաշվի կառավարիչներ՝ <ph name="FIRST_PARENT_EMAIL" /> և <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Բարձր կոնտրաստի ռեժիմ</translation>
-<translation id="7977639574084142279">Անջատել</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7980780401175799550">Փորձեք նավարկման նոր եղանակներ Chrome OS-ում</translation>
 <translation id="7982789257301363584">Ցանց</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">անջատվեց</translation>
 <translation id="8938800817013097409">USB-C սարք (հետևի աջ միացք)</translation>
 <translation id="8940956008527784070">Մարտկոցի լիցքն սպառվում է (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Մուգ ռեժիմն անջատված է։</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Օգտագործվում է՝ <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը որպես <ph name="LOGIN_ID" /></translation>

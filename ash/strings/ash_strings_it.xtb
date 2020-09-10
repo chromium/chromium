@@ -67,7 +67,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
-<translation id="1665244008632896072">Attiva/disattiva la modalità Buio. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">La modalità colore Neutra non usa i colori estratti dallo sfondo, che sostituisce con un insieme di tonalità neutre chiare o scure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
 <translation id="1761222317188459878">Attiva/disattiva connessione di rete. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Scorri a destra</translation>
-<translation id="1776485282219497802">Modalità Buio attiva.</translation>
 <translation id="1782199038061388045">traduzione</translation>
 <translation id="181103072419391116">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="1812997170047690955">Cosa c'è sul mio schermo?</translation>
@@ -152,7 +150,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
 <translation id="2509468283778169019">BLOC MAIUSC è attivo</translation>
-<translation id="2517829236324128850">Mostra le impostazioni della modalità Buio</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
@@ -441,7 +438,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">OFF</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
-<translation id="5887866489674258948">Modalità Buio</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
 <translation id="5909862606227538307">Scrivania inattiva.</translation>
@@ -542,7 +538,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6972754398087986839">Inizia</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="698231206551913481">Tutti i file e i dati locali associati a questo utente verranno eliminati definitivamente in seguito alla rimozione dell'utente.</translation>
-<translation id="6990778048354947307">Tema scuro</translation>
 <translation id="7007983414944123363">Impossibile verificare il PIN o la password. Riprova.</translation>
 <translation id="7015766095477679451">Ritorna alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connetti il tuo dispositivo <ph name="DEVICE_NAME" /> con il telefono</translation>
@@ -599,7 +594,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietario)</translation>
 <translation id="7647488630410863958">Sblocca il dispositivo per visualizzare le notifiche</translation>
 <translation id="7649070708921625228">Guida</translation>
-<translation id="7653418004652142983">On</translation>
 <translation id="7654687942625752712">Tieni premuti entrambi i tasti del volume per cinque secondi per disattivare la funzione di lettura vocale.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7933084174919150729">L'Assistente Google è disponibile solo per il profilo principale.</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modalità ad alto contrasto</translation>
-<translation id="7977639574084142279">Off</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
 <translation id="7980780401175799550">Prova nuove modalità di esplorazione di Chrome OS</translation>
 <translation id="7982789257301363584">Rete</translation>
@@ -733,7 +726,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8936501819958976551">disattivato</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="8940956008527784070">Batteria in esaurimento (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Modalità Buio non attiva.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">In uso: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Sblocca il dispositivo con l'account <ph name="LOGIN_ID" /> per eseguire l'azione di notifica</translation>

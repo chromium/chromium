@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Cảm ứng</translation>
 <translation id="8173092779156526980">Vuốt sang trái bằng 4 ngón tay</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{dấu gạch dưới}other{# dấu gạch dưới}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">hàng</translation>
 <translation id="8186185314313222077">chuyển đổi chế độ toàn màn hình</translation>
 <translation id="8199231515320852133">Thông báo các tiêu đề của ô hiện tại</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">h<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Không có nút chọn nào trước đó</translation>
 <translation id="8970172509886453271">Không có phần nào trước đó</translation>
+<translation id="89720367119469899">Thoát</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Quên</translation>
 <translation id="9040132695316389094">Tiêu đề 1</translation>

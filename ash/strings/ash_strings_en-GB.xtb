@@ -67,7 +67,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
-<translation id="1665244008632896072">Toggle dark mode. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">The neutral colour mode does not use wallpaper extracted colours, replacing them by a set of neutrally toned light or dark hues.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
 <translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Scroll right</translation>
-<translation id="1776485282219497802">Dark mode is on.</translation>
 <translation id="1782199038061388045">translation</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1812997170047690955">What's on my screen?</translation>
@@ -152,7 +150,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2484513351006226581">Hit <ph name="KEYBOARD_SHORTCUT" /> to switch keyboard layout.</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2509468283778169019">CAPS LOCK is on</translation>
-<translation id="2517829236324128850">Show dark mode settings</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
@@ -440,7 +437,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
-<translation id="5887866489674258948">Dark mode</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inactive desk.</translation>
@@ -541,7 +537,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6972754398087986839">Get Started</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
-<translation id="6990778048354947307">Dark Theme</translation>
 <translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>
 <translation id="7015766095477679451">Come back at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connect your <ph name="DEVICE_NAME" /> with your phone</translation>
@@ -598,7 +593,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
 <translation id="7647488630410863958">Unlock device to view your notifications</translation>
 <translation id="7649070708921625228">Help</translation>
-<translation id="7653418004652142983">On</translation>
 <translation id="7654687942625752712">Press and hold both volume keys for five seconds to disable spoken feedback.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="7933084174919150729">The Google Assistant is only available for primary profile.</translation>
 <translation id="79341161159229895">Account managed by <ph name="FIRST_PARENT_EMAIL" /> and <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">High-contrast mode</translation>
-<translation id="7977639574084142279">Off</translation>
 <translation id="7977927628060636163">Searching for mobile networks...</translation>
 <translation id="7980780401175799550">Try new ways to navigate Chrome OS</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -732,7 +725,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8940956008527784070">Battery low (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Dark mode is off.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>

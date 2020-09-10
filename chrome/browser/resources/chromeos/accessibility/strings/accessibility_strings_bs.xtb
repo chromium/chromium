@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Dodirnuti</translation>
 <translation id="8173092779156526980">Prevucite s četiri prsta ulijevo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{donja crta}one{# donja crta}few{# donje crte}other{# donjih crti}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">red</translation>
 <translation id="8186185314313222077">isključivanje/uključivanje prikaza preko cijelog ekrana</translation>
 <translation id="8199231515320852133">Najavljuje naslove trenutne ćelije</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Nema prethodnog dugmeta za izbor</translation>
 <translation id="8970172509886453271">Nema prethodnog odjeljka</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">savjet</translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="9040132695316389094">Naslov 1</translation>

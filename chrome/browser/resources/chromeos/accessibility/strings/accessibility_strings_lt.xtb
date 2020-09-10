@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Jutiklinis</translation>
 <translation id="8173092779156526980">Perbraukite keturiais pirštais kairėn</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{apatinis brūkšnys}one{# apatinis brūkšnys}few{# apatiniai brūkšniai}many{# underscores}other{# apatinių brūkšnių}}</translation>
+<translation id="8179976553408161302">Įvesti</translation>
 <translation id="8184828902145951186">eil.</translation>
 <translation id="8186185314313222077">viso ekrano režimo perjungimas</translation>
 <translation id="8199231515320852133">Pranešti apie dabartinio langelio antraštes</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" /> e. <ph name="TABLECELLCOLUMNINDEX" /> s.</translation>
 <translation id="8952400011684167587">Nėra ankstesnės akutės</translation>
 <translation id="8970172509886453271">Nėra ankstesnės skilties</translation>
+<translation id="89720367119469899">Grįžimo klavišas</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="9040132695316389094">1 antraštė</translation>

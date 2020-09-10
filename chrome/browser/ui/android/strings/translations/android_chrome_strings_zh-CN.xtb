@@ -245,8 +245,8 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 存储数据</translation>
 <translation id="2942036813789421260">预览标签页已关闭</translation>
 <translation id="2956410042958133412">该帐号由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
-<translation id="2962095958535813455">已切换到隐身标签页</translation>
-<translation id="2979025552038692506">所选的隐身标签页</translation>
+<translation id="2962095958535813455">已切换到无痕模式标签页</translation>
+<translation id="2979025552038692506">所选的无痕模式标签页</translation>
 <translation id="2987620471460279764">从其他设备分享的文字</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2996291259634659425">创建密码</translation>
@@ -259,7 +259,7 @@
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
-<translation id="3089395242580810162">在隐身标签页中打开</translation>
+<translation id="3089395242580810162">在无痕模式标签页中打开</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
 <translation id="3137521801621304719">退出隐身模式</translation>
@@ -292,7 +292,7 @@
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
 <translation id="3341058695485821946">查看您已节省多少数据流量</translation>
-<translation id="3350687908700087792">关闭所有隐身标签页</translation>
+<translation id="3350687908700087792">关闭所有无痕模式标签页</translation>
 <translation id="3353615205017136254">由 Google 提供的精简版网页。点按“加载原始网页”按钮即可加载原始网页。</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3367813778245106622">重新登录以开始同步</translation>
@@ -339,7 +339,7 @@
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中添加书签</translation>
 <translation id="3749259744154402564">不支持</translation>
 <translation id="3771001275138982843">无法下载此项更新</translation>
-<translation id="3771033907050503522">隐身标签页</translation>
+<translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3773755127849930740">请<ph name="BEGIN_LINK" />开启蓝牙<ph name="END_LINK" />以允许配对</translation>
@@ -567,7 +567,7 @@
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5524843473235508879">已禁止重定向。</translation>
 <translation id="5527082711130173040">Chrome 需要拥有位置信息使用权才能扫描设备。请<ph name="BEGIN_LINK1" />更新权限<ph name="END_LINK1" />。<ph name="BEGIN_LINK2" />此设备的位置信息使用权也已被停用<ph name="END_LINK2" />。</translation>
-<translation id="5530766185686772672">关闭隐身标签页</translation>
+<translation id="5530766185686772672">关闭无痕模式标签页</translation>
 <translation id="5534640966246046842">已复制网站</translation>
 <translation id="5561549206367097665">正在等待连接到网络…</translation>
 <translation id="55737423895878184">允许使用位置信息以及显示通知</translation>
@@ -600,7 +600,7 @@
 <translation id="5749068826913805084">Chrome 需要具备存储空间使用权限，才能下载文件。</translation>
 <translation id="5749237766298580851">已关闭 <ph name="SEPARATOR" /> 不推荐</translation>
 <translation id="5754350196967618083">无法刷新“探索”</translation>
-<translation id="5763382633136178763">隐身标签页</translation>
+<translation id="5763382633136178763">无痕模式标签页</translation>
 <translation id="5763514718066511291">点按即可复制该应用的网址</translation>
 <translation id="5765780083710877561">说明：</translation>
 <translation id="5776970333778123608">不重要的数据</translation>
@@ -920,7 +920,7 @@
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8084114998886531721">保存的密码</translation>
-<translation id="8103578431304235997">隐身标签页</translation>
+<translation id="8103578431304235997">无痕模式标签页</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">要将您的书签同步到您的所有设备上，请开启同步功能</translation>
 <translation id="8110087112193408731">在“数字健康”应用中显示您的 Chrome 活动记录？</translation>

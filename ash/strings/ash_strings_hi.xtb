@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">इस सत्र में अपनी सभी गतिविधि ऐक्सेस करें</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
-<translation id="1665244008632896072">गहरे रंग वाले मोड को टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">न्यूट्रल कलर मोड, वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल नहीं करता है. इनकी जगह न्यूट्रल टोन के हल्के या गहरे रंगों के सेट का इस्तेमाल करता है.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ऑन-स्‍क्रीन कीबोर्ड सक्षम है</translation>
 <translation id="1761222317188459878">नेटवर्क कनेक्शन टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">दाईं तरफ़ स्क्रोल करें</translation>
-<translation id="1776485282219497802">गहरे रंग वाला मोड चालू है.</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="1812997170047690955">मेरी स्क्रीन पर क्या है?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">कीबोर्ड लेआउट स्विच करने के लिए <ph name="KEYBOARD_SHORTCUT" /> दबाएं.</translation>
 <translation id="2501920221385095727">स्टिकी बटन</translation>
 <translation id="2509468283778169019">CAPS LOCK चालू है</translation>
-<translation id="2517829236324128850">गहरे रंग वाले मोड की सेटिंग दिखाएं</translation>
 <translation id="2542089167727451762">अपनी प्रोफ़ाइल फ़ोटो पर टैप करें</translation>
 <translation id="255671100581129685">सार्वजनिक सत्र में Google Assistant उपलब्ध नहीं है.</translation>
 <translation id="256712445991462162">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
@@ -441,7 +438,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876666360658629066">अभिभावक वाला कोड डालें</translation>
-<translation id="5887866489674258948">गहरे रंग वाला मोड</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">यह डेस्क इस्तेमाल में नहीं है.</translation>
@@ -542,7 +538,6 @@
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6981982820502123353">सुलभता</translation>
 <translation id="698231206551913481">इस उपयोगकर्ता को हटाए जाने पर, इससे जुड़ीं सभी फ़ाइलों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
-<translation id="6990778048354947307">गहरे रंग की थीम</translation>
 <translation id="7007983414944123363">आपके पिन या पासवर्ड की पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="7025533177575372252">अपने <ph name="DEVICE_NAME" /> को अपने फ़ोन से कनेक्ट करें</translation>
@@ -599,7 +594,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
 <translation id="7647488630410863958">अपने नोटिफ़िकेशन देखने के लिए डिवाइस अनलॉक करें</translation>
 <translation id="7649070708921625228">सहायता</translation>
-<translation id="7653418004652142983">चालू</translation>
 <translation id="7654687942625752712">कंप्यूटर का बोलकर दिया गया जवाब बंद करने के लिए दोनों वॉल्यूम की पांच सेकंड तक दबाकर रखें.</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7705524343798198388">वीपीएन</translation>
@@ -626,7 +620,6 @@
 <translation id="7933084174919150729">Google Assistant सिर्फ़ प्राथमिक प्रोफ़ाइल के लिए उपलब्ध है.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> और <ph name="SECOND_PARENT_EMAIL" /> खाता संभालते हैं</translation>
 <translation id="7955885781510802139">हाई-कंट्रास्ट मोड</translation>
-<translation id="7977639574084142279">बंद</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क खोजे जा रहे हैं...</translation>
 <translation id="7980780401175799550">Chrome OS पर नेविगेट करने के नए तरीके आज़माएं</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -733,7 +726,6 @@
 <translation id="8936501819958976551">बंद की गई</translation>
 <translation id="8938800817013097409">USB-C डिवाइस (पीछे की ओर दायां पोर्ट)</translation>
 <translation id="8940956008527784070">बैटरी कम (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">गहरे रंग वाला मोड बंद है.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> का इस्तेमाल करें</translation>
 <translation id="899350903320462459">सूचना से जुड़ी कार्रवाई करने के लिए डिवाइस को <ph name="LOGIN_ID" /> के तौर पर अनलॉक करें</translation>

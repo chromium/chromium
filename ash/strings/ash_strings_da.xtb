@@ -67,7 +67,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1589090746204042747">Få adgang til al din aktivitet i denne session</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
-<translation id="1665244008632896072">Slå mørk tilstand til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Tilstanden med neutrale farver anvender ikke farver fra baggrunden, men erstatter dem med et sæt lyse og mørke nuancer i neutrale farver.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1747827819627189109">Skærmtastaturet er aktiveret</translation>
 <translation id="1761222317188459878">Slå netværksforbindelse til eller fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Rul til højre</translation>
-<translation id="1776485282219497802">Mørk tilstand er slået til.</translation>
 <translation id="1782199038061388045">oversættelse</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
 <translation id="1812997170047690955">Hvad vises der på min skærm?</translation>
@@ -152,7 +150,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2484513351006226581">Tryk på <ph name="KEYBOARD_SHORTCUT" /> for at skifte tastaturlayout.</translation>
 <translation id="2501920221385095727">Træge taster</translation>
 <translation id="2509468283778169019">CAPS LOCK er slået til</translation>
-<translation id="2517829236324128850">Vis indstillingerne for mørk tilstand</translation>
 <translation id="2542089167727451762">Tryk på dit profilbillede</translation>
 <translation id="255671100581129685">Google Assistent er ikke tilgængelig i en offentlig session.</translation>
 <translation id="256712445991462162">den fastgjorte lup</translation>
@@ -440,7 +437,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5876666360658629066">Angiv forældrekode</translation>
-<translation id="5887866489674258948">Mørk tilstand</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inaktivt skrivebord.</translation>
@@ -542,7 +538,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="698231206551913481">Alle filer og lokale data, der er knyttet til denne bruger, slettes permanent, når brugeren fjernes.</translation>
-<translation id="6990778048354947307">Mørkt tema</translation>
 <translation id="7007983414944123363">Din pin- eller adgangskode kunne ikke bekræftes. Prøv igen.</translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Slut <ph name="DEVICE_NAME" /> til din telefon</translation>
@@ -599,7 +594,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ejer)</translation>
 <translation id="7647488630410863958">Lås enheden op for at se dine notifikationer</translation>
 <translation id="7649070708921625228">Hjælp</translation>
-<translation id="7653418004652142983">Til</translation>
 <translation id="7654687942625752712">Tryk på begge lydstyrketaster, og hold dem nede i fem sekunder for at deaktivere oplæsning.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,13 +620,12 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7933084174919150729">Google Assistent kan kun bruges via den primære profil.</translation>
 <translation id="79341161159229895">Kontoen administreres af <ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Tilstanden Høj kontrast</translation>
-<translation id="7977639574084142279">Fra</translation>
 <translation id="7977927628060636163">Søger efter mobilnetværk...</translation>
 <translation id="7980780401175799550">Prøv nye måder at navigere på i Chrome OS</translation>
 <translation id="7982789257301363584">Netværk</translation>
 <translation id="7984197416080286869">Du har brugt for mange forsøg på at logge ind med fingeraftryk</translation>
 <translation id="7994370417837006925">Samlet login fra flere konti</translation>
-<translation id="7995804128062002838">Screenshottet blev ikke taget</translation>
+<translation id="7995804128062002838">Screenshottet blev ikke gemt</translation>
 <translation id="8000066093800657092">Intet netværk</translation>
 <translation id="8004512796067398576">Forøg</translation>
 <translation id="8029629653277878342">Der kræves en pinkode eller adgangskode som ekstra sikkerhed</translation>
@@ -733,7 +726,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="8936501819958976551">deaktiverede</translation>
 <translation id="8938800817013097409">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="8940956008527784070">Batteriniveauet er lavt (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Mørk tilstand er slået fra.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> anvendes</translation>
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>

@@ -67,7 +67,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1589090746204042747">Sessiyadakı bütün fəaliyyətlərə daxil olun</translation>
 <translation id="1632985212731562677">Dəyişdirici Girişini Ayarlar &gt; Əlçatımlıq bölməsində deaktiv edə bilərsiniz.</translation>
 <translation id="1654477262762802994">Səsli sorğuya başlayın</translation>
-<translation id="1665244008632896072">Qaranlıq Rejimi dəyişdirin. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neytral rəng rejimi divar kağızının çıxarılmış rənglərini istifadə etmir, onları neytral tonlu açıq və ya tünd çalarlarla əvəz edir.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymeri · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1747827819627189109">Ekrandakı klaviaturanı aktiv edin</translation>
 <translation id="1761222317188459878">Şəbəkə bağlantısını aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
-<translation id="1776485282219497802">Qaranlıq rejim aktivdir.</translation>
 <translation id="1782199038061388045">tərcümə</translation>
 <translation id="181103072419391116">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="1812997170047690955">Ekranımda nə var?</translation>
@@ -152,7 +150,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2484513351006226581">Klaviatura düzülüşünü dəyişmək üçün <ph name="KEYBOARD_SHORTCUT" /> süyməsinə klikləyin.</translation>
 <translation id="2501920221385095727">Əvəzedici açarlar</translation>
 <translation id="2509468283778169019">CAPS LOCK aktivdir</translation>
-<translation id="2517829236324128850">Qaranlıq rejim ayarlarını göstərin</translation>
 <translation id="2542089167727451762">Profil şəklinizə toxunun</translation>
 <translation id="255671100581129685">Google Assistent ictimai sessiyada əlçatan deyil.</translation>
 <translation id="256712445991462162">iç böyüdücü</translation>
@@ -440,7 +437,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /> dayandırma düyməsi</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5876666360658629066">Valideyn kodunu daxil edin</translation>
-<translation id="5887866489674258948">Qaranlıq rejim</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Deaktiv masa.</translation>
@@ -541,7 +537,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="698231206551913481">İstifadəçi silinən kimi onunla əlaqədar bütün fayl və data həmişəlik silinəcək.</translation>
-<translation id="6990778048354947307">Qara Tema</translation>
 <translation id="7007983414944123363">PIN və ya parolunuzu doğrulamaq mümkün olmadı. Yenidən sınayın.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> olduqda yenidən davam edin.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazını telefonla əlaqələndirin</translation>
@@ -598,7 +593,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (sahib)</translation>
 <translation id="7647488630410863958">Bildirişlərinizi görmək üçün cihazın kilidini açın</translation>
 <translation id="7649070708921625228">Yardım</translation>
-<translation id="7653418004652142983">Aktiv</translation>
 <translation id="7654687942625752712">Səsləndirilmiş rəyi deaktiv etmək üçün hər iki səs düyməsinə beş saniyə basıb saxlayın.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7933084174919150729">Google Assistent yalnız ilkin profildə əlçatandır.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> və <ph name="SECOND_PARENT_EMAIL" /> tərəfindən idarə edilən hesab</translation>
 <translation id="7955885781510802139">Yüksək kontrast rejimi</translation>
-<translation id="7977639574084142279">Deaktiv</translation>
 <translation id="7977927628060636163">Mobil şəbəkələr axtarılır...</translation>
 <translation id="7980780401175799550">Chrome ƏS-də naviqasiyanın yeni yollarını sınayın</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
@@ -732,7 +725,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8936501819958976551">deaktiv</translation>
 <translation id="8938800817013097409">USB-C cihazı (arxadakı sağ port)</translation>
 <translation id="8940956008527784070">Enerji Azdır (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Qaranlıq Rejim deaktivdir.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> işlədilir</translation>
 <translation id="899350903320462459">Bildiriş əməliyyatını icra etmək üçün cihazı <ph name="LOGIN_ID" /> olaraq kiliddən çıxarın</translation>

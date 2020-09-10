@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Торкнутися</translation>
 <translation id="8173092779156526980">Проведіть чотирма пальцями ліворуч</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{підкреслення}one{# підкреслення}few{# підкреслення}many{# підкреслень}other{# underscores}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">рядок</translation>
 <translation id="8186185314313222077">увімкнути або вимкнути повноекранний режим</translation>
 <translation id="8199231515320852133">Повідомити заголовки поточної клітинки</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">р<ph name="TABLECELLROWINDEX" />с<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Немає попереднього перемикача</translation>
 <translation id="8970172509886453271">Немає попереднього розділу</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">підказка</translation>
 <translation id="8986362086234534611">Видалити</translation>
 <translation id="9040132695316389094">Заголовок 1</translation>

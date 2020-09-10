@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం కార్యకలాపాన్ని యాక్సెస్ చేయండి</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
-<translation id="1665244008632896072">డార్క్ మోడ్‌ను టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">'న్యూట్రల్ రంగు మోడ్'లో వాల్‌పేపర్ నుండి సంగ్రహించిన రంగులు ఉపయోగించబడవు, వాటి స్థానంలో తటస్థంగా కనిపించే పలుచని లేదా ముదురు రంగులు ఉపయోగించబడతాయి.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> మిగిలి ఉంది</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> టైమర్ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">స్క్రీన్‌పై కనిపించే కీబోర్డ్ ప్రారంభించబడింది</translation>
 <translation id="1761222317188459878">నెట్‌వర్క్ కనెక్షన్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">కుడికి స్క్రోల్ చేయి</translation>
-<translation id="1776485282219497802">'డార్క్ మోడ్' ఆన్‌లో ఉంది.</translation>
 <translation id="1782199038061388045">అనువాదం</translation>
 <translation id="181103072419391116">సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="1812997170047690955">నా స్క్రీన్‌పై ఏమి ఉన్నాయి?</translation>
@@ -116,7 +114,7 @@
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
 <translation id="2135456203358955318">డాక్ చేయబడిన మాగ్నిఫైయర్</translation>
 <translation id="2144487987174258011">Adobe Flash Playerను అప్‌డేట్ చేయ‌డానికి పున:ప్రారంభించండి</translation>
-<translation id="2180011262286780504">మీ అడ్మినిస్ట్రేట‌ర్ స్క్రీన్‌ను క్యాప్చర్ చేయగల సామర్థ్యాన్ని డిజేబుల్ చేశారు.</translation>
+<translation id="2180011262286780504">స్క్రీన్‌ను క్యాప్చర్ చేయగల సామర్థ్యాన్ని మీ అడ్మినిస్ట్రేట‌ర్ డిజేబుల్ చేశారు.</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222338659135520253">సైన్ ఇన్ చేయాలి</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">కీబోర్డ్ లేఅవుట్‌ను మార్చడానికి <ph name="KEYBOARD_SHORTCUT" />ని నొక్కండి.</translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
 <translation id="2509468283778169019">CAPS LOCK ఆన్‌లో ఉంది</translation>
-<translation id="2517829236324128850">డార్క్ మోడ్ సెట్టింగ్‌లను చూపించు</translation>
 <translation id="2542089167727451762">మీ ప్రొఫైల్ చిత్రాన్ని నొక్కండి</translation>
 <translation id="255671100581129685">Google అసిస్టెంట్ పబ్లిక్ సెషన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="256712445991462162">డాక్ చేసిన మాగ్నిఫైయర్</translation>
@@ -441,7 +438,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /> ఆపివేయి</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5876666360658629066">తల్లిదండ్రుల కోడ్‌ను ఎంటర్ చేయండి</translation>
-<translation id="5887866489674258948">డార్క్ మోడ్</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ఇన్‌యాక్టివ్ డెస్క్.</translation>
@@ -542,7 +538,6 @@
 <translation id="6972754398087986839">ప్రారంభించండి</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="698231206551913481">ఈ వినియోగదారును తీసివేసిన తర్వాత ఈ వినియోగదారుతో అనుబంధించిన అన్ని ఫైల్‌లు మరియు స్థానిక డేటా శాశ్వతంగా తొలగించబడతాయి.</translation>
-<translation id="6990778048354947307">ముదురు థీమ్</translation>
 <translation id="7007983414944123363">మీ పిన్ లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7015766095477679451">తిరిగి <ph name="COME_BACK_TIME" />కి రండి.</translation>
 <translation id="7025533177575372252">మీ <ph name="DEVICE_NAME" />ని మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
@@ -599,7 +594,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (యజమాని)</translation>
 <translation id="7647488630410863958">మీ నోటిఫికేషన్‌లను వీక్షించడానికి పరికరాన్ని అన్‌లాక్ చేయండి</translation>
 <translation id="7649070708921625228">సహాయం</translation>
-<translation id="7653418004652142983">ఆన్ చేయి</translation>
 <translation id="7654687942625752712">ప్రసంగ రూప ప్రతిస్పందనను నిలిపివేయడానికి ఒకేసారి రెండు వాల్యూమ్ కీలను ఐదు సెకన్ల పాటు నొక్కి, పట్టుకోండి.</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@
 <translation id="7933084174919150729">ప్రాథమిక ప్రొఫైల్‌కు మాత్రమే Google అసిస్టెంట్ అందుబాటులో ఉంటుంది.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> మరియు <ph name="SECOND_PARENT_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>
 <translation id="7955885781510802139">అధిక-కాంట్రాస్ట్ మోడ్</translation>
-<translation id="7977639574084142279">ఆఫ్ చేయి</translation>
 <translation id="7977927628060636163">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది...</translation>
 <translation id="7980780401175799550">Chrome OSలో నావిగేట్ చేయడానికి కొత్త మార్గాలను ట్రై చేయండి</translation>
 <translation id="7982789257301363584">నెట్‌వర్క్</translation>
@@ -733,7 +726,6 @@
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">డార్క్ మోడ్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ఉపయోగిస్తోంది</translation>
 <translation id="899350903320462459">నోటిఫికేషన్ చర్యను నిర్వహించడానికి <ph name="LOGIN_ID" />గా పరికరాన్ని అన్‌లాక్ చేయండి</translation>

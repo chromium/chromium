@@ -901,8 +901,9 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="812886159861361726">डाउनलोड बंद हो गया <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">ऊपर कोई सेल नहीं है</translation>
 <translation id="8138880386467279117">स्पर्श करें</translation>
-<translation id="8173092779156526980">चार उंगलियों को बाईं ओर स्वाइप करें</translation>
+<translation id="8173092779156526980">चार उंगलियों से बाईं ओर स्वाइप करें</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{अंडरस्कोर}one{# अंडरस्कोर}other{# अंडरस्कोर}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">पंक्ति</translation>
 <translation id="8186185314313222077">फ़ुल स्‍क्रीन टॉगल करें</translation>
 <translation id="8199231515320852133">वर्तमान सेल के शीर्षलेखों को प्रदर्शित करें</translation>
@@ -988,6 +989,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8946628535652548639">पंक्ति<ph name="TABLECELLROWINDEX" />कॉलम<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">पहले से कोई रेडियो बटन नहीं है</translation>
 <translation id="8970172509886453271">पहले से कोई सेक्शन नहीं है</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="9040132695316389094">शीर्षक 1</translation>

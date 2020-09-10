@@ -2641,6 +2641,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4104163789986725820">Voer uit …</translation>
 <translation id="4107048419833779140">Identifiseer en maak bergingtoestelle los</translation>
 <translation id="4109135793348361820">Beweeg venster na <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Pasmaak onderskrifgrootte en -styl vir programme wat hierdie instelling ondersteun</translation>
 <translation id="4110490973560452005">Aflaai is voltooi: <ph name="FILE_NAME" />. Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="4110686435123617899">Kies album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Blaai deur die web in hoëkontras-modus</translation>
@@ -2840,6 +2841,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4390000551125140321">{0,plural, =1{Incognito}other{# oop incognitovensters}}</translation>
 <translation id="439266289085815679">Bluetooth-opstelling word beheer deur <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Wysig die opstellinglêer</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> het ADB-ontfouting gedeaktiveer. Jy sal nie programme direk kan laai nadat jy jou <ph name="DEVICE_TYPE" /> herbegin het nie.</translation>
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="439817266247065935">Jou toestel het nie reg afgeskakel nie. Herbegin Linux om Linux-programme te gebruik.</translation>
 <translation id="4400367121200150367">Werwe wat nooit wagwoorde stoor nie, sal hier verskyn</translation>
@@ -3529,6 +3531,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5265797726250773323">Kon nie installeer nie</translation>
 <translation id="5266113311903163739">Sertifiseringoutoriteit-invoerfout</translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
+<translation id="5274738462757057090">Skep outomaties onderskrifte vir media in Chrome-blaaier (tans net in Engels beskikbaar)</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">Laat JavaScript altyd op <ph name="HOST" /> toe.</translation>
 <translation id="5278823018825269962">Status-ID</translation>
@@ -3965,6 +3968,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5794700615121138172">Linux- gedeelde lêers</translation>
 <translation id="5794786537412027208">Beëindig alle Chrome-programme</translation>
 <translation id="5797070761912323120">Google kan jou geskiedenis gebruik om Search, advertensies en ander Google-dienste te personaliseer</translation>
+<translation id="5798301976526354562">Teksgrootte (is ook van toepassing op Intydse Onderskrifte)</translation>
 <translation id="579915268381781820">Jou sekuriteitsleutel is verwyder.</translation>
 <translation id="5799508265798272974">Linux- virtuele masjien: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Bestemminglêer is afgekap of verwyder sedert die laaste aflaai.</translation>
@@ -4873,6 +4877,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6911324888870229398">Netwerkverbinding is onderbreek. Gaan asseblief jou netwerkverbinding na of probeer 'n ander Wi-Fi-netwerk.</translation>
 <translation id="6911734910326569517">Berginggebruik</translation>
 <translation id="6912007319859991306">Sellulêre SIM-PIN</translation>
+<translation id="691289340230098384">Onderskrifvoorkeure</translation>
 <translation id="6914783257214138813">Jou wagwoorde sal sigbaar wees aan enigiemand wat die uitgevoerde lêer kan sien.</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6916590542764765824">Bestuur uitbreidings</translation>
@@ -6160,6 +6165,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8467326454809944210">Kies 'n ander taal</translation>
 <translation id="8470214316007448308">Ander mense</translation>
 <translation id="8470513973197838199">Gestoorde wagwoorde vir <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> deaktiveer tans ADB-ontfouting. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
 <translation id="8472623782143987204">hardeware-gerugsteun</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="8475313423285172237">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat Chrome se werkwyse kan verander.</translation>

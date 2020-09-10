@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
-<translation id="1665244008632896072">Включить или отключить тёмную тему. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
 <translation id="1761222317188459878">Изменить настройки сетевого подключения. <ph name="STATE_TEXT" />.</translation>
 <translation id="1771761307086386028">Вправо</translation>
-<translation id="1776485282219497802">Сейчас она включена.</translation>
 <translation id="1782199038061388045">перевести</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1812997170047690955">Объекты на экране</translation>
@@ -116,7 +114,7 @@
 <translation id="2127372758936585790">Маломощное зарядное устройство</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2144487987174258011">Перезагрузите, чтобы обновить Adobe Flash Player</translation>
-<translation id="2180011262286780504">Функция демонстрации экрана отключена администратором.</translation>
+<translation id="2180011262286780504">Функция записи экрана отключена администратором.</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222338659135520253">Требуется выполнить вход.</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
-<translation id="2517829236324128850">Показать настройки тёмной темы</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="255671100581129685">Google Ассистент не работает в сеансе общего доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5876666360658629066">Введите родительский код</translation>
-<translation id="5887866489674258948">Тёмная тема</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Рабочий стол неактивен.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Начать</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
-<translation id="6990778048354947307">Тёмная тема</translation>
 <translation id="7007983414944123363">Введенный PIN-код или пароль недействителен. Повторите попытку.</translation>
 <translation id="7015766095477679451">Увидимся снова в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
 <translation id="7647488630410863958">Чтобы просмотреть уведомления, разблокируйте устройство</translation>
 <translation id="7649070708921625228">Справка</translation>
-<translation id="7653418004652142983">Включено</translation>
 <translation id="7654687942625752712">Чтобы отключить озвучивание текста на экране, удерживайте обе кнопки громкости в течение пяти секунд.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,13 +619,12 @@
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Режим высокой контрастности</translation>
-<translation id="7977639574084142279">Отключено</translation>
 <translation id="7977927628060636163">Поиск мобильных сетей...</translation>
 <translation id="7980780401175799550">Новые способы навигации в Chrome OS</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7984197416080286869">Вы сделали слишком много попыток</translation>
 <translation id="7994370417837006925">Множественный вход</translation>
-<translation id="7995804128062002838">Ошибка демонстрации экрана</translation>
+<translation id="7995804128062002838">Ошибка записи экрана</translation>
 <translation id="8000066093800657092">Нет сети</translation>
 <translation id="8004512796067398576">Увеличить</translation>
 <translation id="8029629653277878342">В качестве дополнительной меры безопасности введите PIN-код или пароль.</translation>
@@ -719,7 +712,7 @@
 <translation id="8843682306134542540">Изменить настройки автоповорота экрана. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Клавиша поиска + Esc</translation>
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
-<translation id="885387440427703469">Демонстрация экрана отключена</translation>
+<translation id="885387440427703469">Запись экрана отключена</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">отключила</translation>
 <translation id="8938800817013097409">Устройство USB-C (порт справа на задней панели)</translation>
 <translation id="8940956008527784070">Низкий заряд батареи (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Сейчас она отключена.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>

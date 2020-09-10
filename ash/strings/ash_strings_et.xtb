@@ -67,7 +67,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
-<translation id="1665244008632896072">Vahetage tumeda režiimi olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neutraalne värvirežiim ei kasuta taustapildist tuletatud värve, vaid asendab need neutraalsete heledate või tumedate toonidega.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taimer · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
 <translation id="1761222317188459878">Lülitab võrguühenduse sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Keri paremale</translation>
-<translation id="1776485282219497802">Tume režiim on sees.</translation>
 <translation id="1782199038061388045">tõlge</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1812997170047690955">Mis on minu ekraanil?</translation>
@@ -152,7 +150,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2484513351006226581">Klaviatuuripaigutuse muutmiseks vajutage klahvikombinatsiooni <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
 <translation id="2509468283778169019">SUURTÄHELUKK on sisse lülitatud</translation>
-<translation id="2517829236324128850">Kuva tumeda režiimi seaded</translation>
 <translation id="2542089167727451762">Puudutage oma profiilipilti</translation>
 <translation id="255671100581129685">Google'i assistent ei ole avalikus seansis saadaval.</translation>
 <translation id="256712445991462162">dokitud luup</translation>
@@ -441,7 +438,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5876666360658629066">Sisestage vanema kood</translation>
-<translation id="5887866489674258948">Tume režiim</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5901316534475909376">Tõstuklahv + ESC</translation>
 <translation id="5909862606227538307">Inaktiivne töölaud.</translation>
@@ -542,7 +538,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6972754398087986839">Alustamine</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
-<translation id="6990778048354947307">Tume teema</translation>
 <translation id="7007983414944123363">Teie PIN-koodi või parooli ei saanud kinnitada. Proovige uuesti.</translation>
 <translation id="7015766095477679451">Tulge tagasi kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Ühendage seade <ph name="DEVICE_NAME" /> oma telefoniga</translation>
@@ -599,7 +594,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omanik)</translation>
 <translation id="7647488630410863958">Märguannete vaatamiseks avage seade</translation>
 <translation id="7649070708921625228">Abi</translation>
-<translation id="7653418004652142983">Sees</translation>
 <translation id="7654687942625752712">Suulise tagasiside keelamiseks hoidke mõlemat helitugevuse klahvi viis sekundit all.</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7933084174919150729">Google'i assistent on saadaval ainult peamisel profiilil.</translation>
 <translation id="79341161159229895">Kontohaldurid: <ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Suure kontrastsusega režiim</translation>
-<translation id="7977639574084142279">Väljas</translation>
 <translation id="7977927628060636163">Mobiilsidevõrkude otsimine …</translation>
 <translation id="7980780401175799550">Proovige uusi võimalusi Chrome OS-is navigeerimiseks</translation>
 <translation id="7982789257301363584">Võrk</translation>
@@ -733,7 +726,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8936501819958976551">inaktiveeritud</translation>
 <translation id="8938800817013097409">C-tüüpi USB-seade (parempoolne port taga)</translation>
 <translation id="8940956008527784070">Aku tühjeneb (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Tume režiim on väljas.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>

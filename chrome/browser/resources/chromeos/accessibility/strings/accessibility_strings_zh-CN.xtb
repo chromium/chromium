@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">触摸</translation>
 <translation id="8173092779156526980">四根手指向左滑动</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1个下划线}other{#个下划线}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">行</translation>
 <translation id="8186185314313222077">切换全屏模式</translation>
 <translation id="8199231515320852133">读出当前单元格的标题</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">行 <ph name="TABLECELLROWINDEX" />，列 <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">没有上一个单选按钮</translation>
 <translation id="8970172509886453271">没有上一个章节</translation>
+<translation id="89720367119469899">转义</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">不保存</translation>
 <translation id="9040132695316389094">1级标题标记</translation>

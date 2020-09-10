@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
-<translation id="1665244008632896072">Превключване на тъмния режим. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">При режима за неутрални цветове не се извличат цветовете от тапета, а се използва набор от неутрални светли или тъмни нюанси.</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Екранната клавиатура е активирана</translation>
 <translation id="1761222317188459878">Превключване на връзката с мрежа. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>
-<translation id="1776485282219497802">Тъмният режим е включен.</translation>
 <translation id="1782199038061388045">превод</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
 <translation id="1812997170047690955">Какво има на екрана ми?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
 <translation id="2501920221385095727">Оставащи клавиши</translation>
 <translation id="2509468283778169019">„CAPS LOCK“ е включен</translation>
-<translation id="2517829236324128850">Показване на настройките за тъмния режим</translation>
 <translation id="2542089167727451762">Докоснете изображението на потребителския си профил</translation>
 <translation id="255671100581129685">Google Асистент не е налице по време на публична сесия.</translation>
 <translation id="256712445991462162">лупата в прикрепен режим</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5876666360658629066">Въведете код на родител</translation>
-<translation id="5887866489674258948">Тъмен режим</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Неактивен работен кът.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Първи стъпки</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="698231206551913481">След като този потребител бъде премахнат, всички свързани с него файлове и локални данни ще се изтрият за постоянно.</translation>
-<translation id="6990778048354947307">Тъмна тема</translation>
 <translation id="7007983414944123363">ПИН кодът или паролата ви не бяха потвърдени. Опитайте отново.</translation>
 <translation id="7015766095477679451">Ще бъда отново на ваше разположение в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Свързване на устройството ви <ph name="DEVICE_NAME" /> с телефона ви</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (собственик)</translation>
 <translation id="7647488630410863958">Отключете устройството, за да прегледате известията си</translation>
 <translation id="7649070708921625228">Помощ</translation>
-<translation id="7653418004652142983">Вкл.</translation>
 <translation id="7654687942625752712">Натиснете и двата бутона за силата на звука и ги задръжте за пет секунди, за да деактивирате обратната връзка с говор.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Асистент е налице само за основния потребителски профил.</translation>
 <translation id="79341161159229895">Профилът се управлява от <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Режим на висок контраст</translation>
-<translation id="7977639574084142279">Изкл.</translation>
 <translation id="7977927628060636163">Търсят се мобилни мрежи...</translation>
 <translation id="7980780401175799550">Изпробвайте нови начини за навигиране в Chrome OS</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">деактивирана</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>
 <translation id="8940956008527784070">Батерията е изтощена (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Тъмният режим е изключен.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Използвате <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Отключете устройството като <ph name="LOGIN_ID" />, за да се изпълни действието от известието</translation>

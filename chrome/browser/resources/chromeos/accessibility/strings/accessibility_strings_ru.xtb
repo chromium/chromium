@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Нажмите</translation>
 <translation id="8173092779156526980">Проведите четырьмя пальцами влево</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{символ подчеркивания}one{# символ подчеркивания}few{# символа подчеркивания}many{# символов подчеркивания}other{# underscores}}</translation>
+<translation id="8179976553408161302">ВВОД</translation>
 <translation id="8184828902145951186">стрк</translation>
 <translation id="8186185314313222077">включить полноэкранный режим</translation>
 <translation id="8199231515320852133">Назвать заголовки текущей ячейки</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">стр<ph name="TABLECELLROWINDEX" />стлб<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Предыдущего переключателя нет</translation>
 <translation id="8970172509886453271">Предыдущего раздела нет</translation>
+<translation id="89720367119469899">Отключить</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="9040132695316389094">Заголовок первого уровня</translation>

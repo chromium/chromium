@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Touch</translation>
 <translation id="8173092779156526980">Scorri verso sinistra con quattro dita</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{carattere di sottolineatura}other{# caratteri di sottolineatura}}</translation>
+<translation id="8179976553408161302">Invio</translation>
 <translation id="8184828902145951186">riga</translation>
 <translation id="8186185314313222077">attiva/disattiva schermo intero</translation>
 <translation id="8199231515320852133">Pronuncia le intestazioni della cella corrente</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Nessun pulsante di opzione precedente</translation>
 <translation id="8970172509886453271">Nessuna sezione precedente</translation>
+<translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="9040132695316389094">Intestazione 1</translation>

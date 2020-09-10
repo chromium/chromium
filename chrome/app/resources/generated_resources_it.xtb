@@ -2640,6 +2640,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4104163789986725820">E&amp;sporta...</translation>
 <translation id="4107048419833779140">Identifica ed espelli i dispositivi di archiviazione</translation>
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Personalizza dimensioni e stile dei sottotitoli per le app che supportano questa impostazione</translation>
 <translation id="4110490973560452005">Download completato: <ph name="FILE_NAME" />. Premi MAIUSC+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4110686435123617899">Seleziona l'album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Naviga sul Web in modalità Contrasto elevato</translation>
@@ -2839,6 +2840,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4390000551125140321">{0,plural, =1{Navigazione in incognito}other{# finestre di navigazione in incognito aperte}}</translation>
 <translation id="439266289085815679">Configurazione Bluetooth controllata da <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifica il file di configurazione</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> ha disattivato il debug ADB. Dopo il riavvio del dispositivo <ph name="DEVICE_TYPE" /> non potrai installare app tramite sideload.</translation>
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="439817266247065935">Il dispositivo non è stato spento correttamente. Riavvia Linux per usare le relative app.</translation>
 <translation id="4400367121200150367">I siti che non salvano mai le password verranno visualizzati qui</translation>
@@ -3528,6 +3530,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5265797726250773323">Errore durante l'installazione</translation>
 <translation id="5266113311903163739">Errore di importazione dell'autorità di certificazione</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
+<translation id="5274738462757057090">Vengono creati automaticamente i sottotitoli per i contenuti multimediali nel browser Chrome (funzionalità attualmente disponibile soltanto in inglese)</translation>
 <translation id="5275352920323889391">Cane</translation>
 <translation id="527605982717517565">Consenti sempre JavaScript su <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID stato</translation>
@@ -3963,6 +3966,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5794700615121138172">Cartelle condivise di Linux</translation>
 <translation id="5794786537412027208">Chiudi tutte le app di Chrome</translation>
 <translation id="5797070761912323120">Google può utilizzare la tua cronologia per personalizzare la Ricerca, gli annunci e altri servizi Google</translation>
+<translation id="5798301976526354562">Dimensioni testo (si applicano anche a Sottotitoli in tempo reale)</translation>
 <translation id="579915268381781820">Il token di sicurezza è stato rimosso.</translation>
 <translation id="5799508265798272974">Macchina virtuale Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Il file di destinazione è stato troncato o rimosso dall'ultimo download.</translation>
@@ -4871,6 +4875,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6911324888870229398">Connessione di rete interrotta. Controlla la connessione o prova a usare un'altra rete Wi-Fi.</translation>
 <translation id="6911734910326569517">Footprint di memoria</translation>
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
+<translation id="691289340230098384">Preferenze sottotitoli</translation>
 <translation id="6914783257214138813">Le tue password saranno visibili a chiunque abbia accesso al file esportato.</translation>
 <translation id="6915804003454593391">Utente:</translation>
 <translation id="6916590542764765824">Gestisci estensioni</translation>
@@ -6158,6 +6163,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8467326454809944210">Seleziona un'altra lingua</translation>
 <translation id="8470214316007448308">Altre persone</translation>
 <translation id="8470513973197838199">Password salvate per il sito <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> disattiverà il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="8472623782143987204">basato sull'hardware</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8475313423285172237">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.</translation>

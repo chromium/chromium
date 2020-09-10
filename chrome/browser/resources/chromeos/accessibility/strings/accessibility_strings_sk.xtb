@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Klepnúť</translation>
 <translation id="8173092779156526980">Potiahnite štyrmi prstami doľava</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podčiarkovník}few{# podčiarkovníky}many{# underscores}other{# podčiarkovníkov}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">riadok</translation>
 <translation id="8186185314313222077">prepnutie na celú obrazovku</translation>
 <translation id="8199231515320852133">Oznámiť hlavičky aktuálnej bunky</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />s<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Žiadny predchádzajúci prepínač</translation>
 <translation id="8970172509886453271">Žiadna predchádzajúca sekcia</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Odstrániť</translation>
 <translation id="9040132695316389094">Nadpis 1</translation>

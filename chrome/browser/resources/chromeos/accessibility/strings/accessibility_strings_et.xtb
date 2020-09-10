@@ -904,6 +904,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8138880386467279117">Puudutage valikut</translation>
 <translation id="8173092779156526980">Pühkige nelja sõrmega vasakule</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alljoon}other{# alljoont}}</translation>
+<translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8184828902145951186">rida</translation>
 <translation id="8186185314313222077">lülitab täisekraani sisse/välja</translation>
 <translation id="8199231515320852133">Esita praeguse lahtri päised</translation>
@@ -989,6 +990,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />v<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Eelmist raadionuppu ei ole</translation>
 <translation id="8970172509886453271">Eelmist jaotist ei ole</translation>
+<translation id="89720367119469899">Klahv Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="9040132695316389094">1. pealkiri</translation>

@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">اللمس</translation>
 <translation id="8173092779156526980">مرِّر سريعًا بأربعة أصابع إلى يمين الشاشة.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{شرطة سفلية واحدة}zero{# underscores}two{شرطتان سفليتان (#)}few{# شرطات سفلية}many{# شرطة سفلية}other{# من الشرطات السفلية}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">الصف</translation>
 <translation id="8186185314313222077">تبديل وضع ملء الشاشة</translation>
 <translation id="8199231515320852133">الإعلان عن عناوين الخلية الحالية</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">ص<ph name="TABLECELLROWINDEX" />ع<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">ليس هناك زر اختيار سابق.</translation>
 <translation id="8970172509886453271">ليس هناك قسم سابق.</translation>
+<translation id="89720367119469899">خروج</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">حذف</translation>
 <translation id="9040132695316389094">العنوان الأول</translation>

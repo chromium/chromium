@@ -67,7 +67,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1589090746204042747">Atzitu saio honetan egin dituzun jarduera guztiak</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
-<translation id="1665244008632896072">Aktibatu edo desaktibatu modu iluna. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Kolore neutroaren moduak ez ditu erabiltzen horma-paperetik ateratako koloreak, baizik eta tonu neutroko ñabardura argien edo ilunen multzo batekin ordezkatzen.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> geratzen dira</translation>
 <translation id="1698080062160024910">Tenporizadorea: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1747827819627189109">Pantailako teklatua gaitu egin da</translation>
 <translation id="1761222317188459878">Gaitu/Desgaitu sareko konexioa. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Egin eskuinera</translation>
-<translation id="1776485282219497802">Modu iluna aktibatuta dago.</translation>
 <translation id="1782199038061388045">itzulpena</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
 <translation id="1812997170047690955">Zer dago pantailan?</translation>
@@ -116,7 +114,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2127372758936585790">Potentzia gutxiko kargagailua</translation>
 <translation id="2135456203358955318">Lupa ainguratua</translation>
 <translation id="2144487987174258011">Eguneratzeko, berrabiarazi Adobe Flash Player</translation>
-<translation id="2180011262286780504">Administratzaileak desgaitu egin du argazki-pantailak ateratzeko modua.</translation>
+<translation id="2180011262286780504">Administratzaileak desgaitu egin du pantaila-argazkiak ateratzeko modua.</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
 <translation id="2220572644011485463">PIN kodea edo pasahitza</translation>
 <translation id="2222338659135520253">Saioa hasi egin behar da</translation>
@@ -152,7 +150,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2484513351006226581">Teklatuaren diseinua aldatzeko, sakatu <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Tekla itsaskorrak</translation>
 <translation id="2509468283778169019">BLOK MAIUS aktibatuta dago</translation>
-<translation id="2517829236324128850">Erakutsi modu ilunaren ezarpenak</translation>
 <translation id="2542089167727451762">Sakatu profileko irudia</translation>
 <translation id="255671100581129685">Google-ren Laguntzailea ez dago erabilgarri saio publikoetan.</translation>
 <translation id="256712445991462162">ainguratutako lupa</translation>
@@ -441,7 +438,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5837036133683224804">Utzi <ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura igortzeari</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5876666360658629066">Idatzi gurasoen sarbide-kodea</translation>
-<translation id="5887866489674258948">Modu iluna</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5901316534475909376">Maius + Ihes</translation>
 <translation id="5909862606227538307">Lan-eremu inaktiboa.</translation>
@@ -542,7 +538,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6972754398087986839">Hasi erabiltzen</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="698231206551913481">Erabiltzailea kentzen denean, harekin erlazionatutako fitxategi eta gailuko datu guztiak betiko ezabatuko dira.</translation>
-<translation id="6990778048354947307">Gai iluna</translation>
 <translation id="7007983414944123363">Ezin izan da egiaztatu PIN kodea edo pasahitza. Saiatu berriro.</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Konektatu <ph name="DEVICE_NAME" /> telefonoarekin</translation>
@@ -599,7 +594,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (jabea)</translation>
 <translation id="7647488630410863958">Desblokeatu gailua jakinarazpenak ikusteko</translation>
 <translation id="7649070708921625228">Laguntza</translation>
-<translation id="7653418004652142983">Aktibatuta</translation>
 <translation id="7654687942625752712">Ahozko argibideak desgaitzeko, eduki sakatuta bi bolumen-botoiak bost segundoz.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,13 +620,12 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7933084174919150729">Profil nagusian soilik erabil daiteke Google-ren Laguntzailea.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>
 <translation id="7955885781510802139">Kontraste handiko modua</translation>
-<translation id="7977639574084142279">Desaktibatuta</translation>
 <translation id="7977927628060636163">Sare mugikorren bila…</translation>
 <translation id="7980780401175799550">Probatu Chrome OS sisteman nabigatzeko modu berriak</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
 <translation id="7994370417837006925">Saio-hasiera anitza</translation>
-<translation id="7995804128062002838">Ezin izan da atera argazki-pantaila</translation>
+<translation id="7995804128062002838">Ezin izan da atera pantaila-argazkia</translation>
 <translation id="8000066093800657092">Ez dago sarerik</translation>
 <translation id="8004512796067398576">Gehikuntza</translation>
 <translation id="8029629653277878342">PIN kodea edo pasahitza behar da gailua babestuago edukitzeko</translation>
@@ -720,7 +713,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>
 <translation id="8853703225951107899">Oraindik ezin izan da egiaztatu PIN kodea edo pasahitza. Oharra: pasahitza duela gutxi aldatu baduzu, erabili pasahitz zaharra. Saioa amaitu eta gero aplikatuko da pasahitz berria.</translation>
-<translation id="885387440427703469">Desgaituta dago argazki-pantailak ateratzeko modua</translation>
+<translation id="885387440427703469">Desgaituta dago pantaila-argazkiak ateratzeko modua</translation>
 <translation id="8870509716567206129">Aplikazioak ez du onartzen pantaila zatitua erabiltzea.</translation>
 <translation id="8874184842967597500">Konektatu gabe</translation>
 <translation id="8877788021141246043">Ezarri abisu bat</translation>
@@ -733,7 +726,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="8940956008527784070">Bateria gutxi (% <ph name="PERCENTAGE" />)</translation>
-<translation id="8958665219764428373">Modu iluna desaktibatuta dago.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> erabiltzen</translation>
 <translation id="899350903320462459">Desblokeatu gailua <ph name="LOGIN_ID" /> gisa jakinarazpen-ekintza gauzatzeko</translation>

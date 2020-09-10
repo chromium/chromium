@@ -67,7 +67,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
-<translation id="1665244008632896072">Přepnout tmavý režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neutrální režim barvy nepoužívá barvy z tapety, ale nahrazuje je sadou neutrálních tónů ve světlých nebo tmavých odstínech.</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1747827819627189109">Softwarová klávesnice je aktivována</translation>
 <translation id="1761222317188459878">Přepnout připojení k síti. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Posunout doprava</translation>
-<translation id="1776485282219497802">Tmavý režim je zapnutý.</translation>
 <translation id="1782199038061388045">překlad</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
 <translation id="1812997170047690955">Co je na obrazovce?</translation>
@@ -152,7 +150,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2484513351006226581">Rozložení klávesnice změníte stisknutím kláves <ph name="KEYBOARD_SHORTCUT" /></translation>
 <translation id="2501920221385095727">Jedním prstem</translation>
 <translation id="2509468283778169019">CAPS LOCK je zapnutý</translation>
-<translation id="2517829236324128850">Zobrazit nastavení tmavého režimu</translation>
 <translation id="2542089167727451762">Klepněte na profilovou fotku</translation>
 <translation id="255671100581129685">Asistent Google není ve veřejné relaci k dispozici.</translation>
 <translation id="256712445991462162">zabudovaná lupa</translation>
@@ -440,7 +437,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5837036133683224804">Zastavit <ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5876666360658629066">Zadejte rodičovský kód</translation>
-<translation id="5887866489674258948">Tmavý režim</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Neaktivní plocha.</translation>
@@ -541,7 +537,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6972754398087986839">Začínáme</translation>
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="698231206551913481">Po odebrání tohoto uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena.</translation>
-<translation id="6990778048354947307">Tmavý motiv</translation>
 <translation id="7007983414944123363">Váš PIN nebo heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="7015766095477679451">Vraťte se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Propojte zařízení <ph name="DEVICE_NAME" /> s telefonem</translation>
@@ -598,7 +593,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7647488630410863958">Chcete-li zobrazit oznámení, odemkněte zařízení</translation>
 <translation id="7649070708921625228">Nápověda</translation>
-<translation id="7653418004652142983">Zapnuto</translation>
 <translation id="7654687942625752712">Hlasovou odezvu vypnete podržením obou tlačítek hlasitosti po dobu pěti sekund.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozici pouze pro primární profil.</translation>
 <translation id="79341161159229895">Správci účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Režim vysokého kontrastu</translation>
-<translation id="7977639574084142279">Vypnuto</translation>
 <translation id="7977927628060636163">Vyhledávání mobilních sítí...</translation>
 <translation id="7980780401175799550">Vyzkoušejte nové způsoby navigace v Chrome OS</translation>
 <translation id="7982789257301363584">Síť</translation>
@@ -732,7 +725,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8936501819958976551">deaktivovala</translation>
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="8940956008527784070">Slabá baterie (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Tmavý režim je vypnutý.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Metoda zadávání: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Chcete-li provést akci s oznámením, odemkněte zařízení jako <ph name="LOGIN_ID" /></translation>

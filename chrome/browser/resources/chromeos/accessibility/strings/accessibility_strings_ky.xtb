@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Тийип коюу</translation>
 <translation id="8173092779156526980">Төрт манжаңыз менен экранды солго сүрүңүз</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{төмөнкү сызык}other{# төмөнкү сызык}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">сап</translation>
 <translation id="8186185314313222077">толук экранга которуу</translation>
 <translation id="8199231515320852133">Бул уячанын баш аттары жарыялансын</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">с<ph name="TABLECELLROWINDEX" />т<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Мурунку радио баскычы жок</translation>
 <translation id="8970172509886453271">Мурунку бөлүм жок</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Унутуу</translation>
 <translation id="9040132695316389094">1-баш аты</translation>

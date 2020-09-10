@@ -2641,6 +2641,7 @@ Pretende pará-lo?</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Personalize o tamanho e o estilo das legendas para apps que suportam esta definição.</translation>
 <translation id="4110490973560452005">Transferência concluída: <ph name="FILE_NAME" />. Prima Shift+F6 para aceder à área da barra de transferências.</translation>
 <translation id="4110686435123617899">Selecionar o álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Navegar na Web no Modo de alto contraste</translation>
@@ -2840,6 +2841,7 @@ Pretende pará-lo?</translation>
 <translation id="4390000551125140321">{0,plural, =1{Navegação anónima}other{# janelas de navegação anónima abertas}}</translation>
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edite o ficheiro de configuração.</translation>
+<translation id="4393691030048716353">O domínio <ph name="DOMAIN" /> desativou a depuração do ADB. Quando reiniciar o seu dispositivo <ph name="DEVICE_TYPE" />, não poderá fazer sideload de apps.</translation>
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439817266247065935">O seu dispositivo não foi encerrado corretamente. Reinicie o Linux para utilizar apps do Linux.</translation>
 <translation id="4400367121200150367">Os sites que nunca guardam a palavra-passe aparecem aqui</translation>
@@ -3529,6 +3531,7 @@ Pretende pará-lo?</translation>
 <translation id="5265797726250773323">Ocorreu um erro ao instalar</translation>
 <translation id="5266113311903163739">Erro ao importar autoridade de certificação</translation>
 <translation id="5269977353971873915">Falha de Impressão</translation>
+<translation id="5274738462757057090">Cria automaticamente legendas para conteúdos multimédia no navegador Chrome (atualmente, apenas disponível em inglês).</translation>
 <translation id="5275352920323889391">Cão</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript em <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de estado</translation>
@@ -3965,6 +3968,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5794700615121138172">Pastas partilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todas as Apps do Chrome</translation>
 <translation id="5797070761912323120">A Google pode utilizar o seu histórico para personalizar a Pesquisa, os anúncios e outros serviços Google.</translation>
+<translation id="5798301976526354562">Tamanho do texto (também se aplica às Legendas instantâneas)</translation>
 <translation id="579915268381781820">A sua chave de segurança foi removida.</translation>
 <translation id="5799508265798272974">Máquina virtual do Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O ficheiro de destino foi truncado ou removido desde a última transferência.</translation>
@@ -4873,6 +4877,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6911324888870229398">A ligação à rede falhou. Verifique a sua ligação ou experimente outra rede Wi-Fi.</translation>
 <translation id="6911734910326569517">Pegada da memória</translation>
 <translation id="6912007319859991306">PIN do SIM de rede móvel</translation>
+<translation id="691289340230098384">Preferências de legendas</translation>
 <translation id="6914783257214138813">As suas palavras-passe serão visíveis para todas as pessoas que consigam ver o ficheiro exportado.</translation>
 <translation id="6915804003454593391">Utilizador:</translation>
 <translation id="6916590542764765824">Gerir extensões</translation>
@@ -6160,6 +6165,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8467326454809944210">Selecionar outro idioma</translation>
 <translation id="8470214316007448308">Outras Pessoas</translation>
 <translation id="8470513973197838199">Palavras-passe guardadas para <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232">O domínio <ph name="DOMAIN" /> está a desativar a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que pretende manter.</translation>
 <translation id="8472623782143987204">suporte de hardware</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8475313423285172237">Outro programa do computador adicionou uma extensão que pode alterar o funcionamento do Chrome.</translation>

@@ -4633,9 +4633,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
        Esta política já foi ativada no Android por engano, mas a funcionalidade nunca foi totalmente compatível com ele.</translation>
 <translation id="7614663184588396421">Lista dos esquemas de protocolo desativados</translation>
-<translation id="7617319494457709698">Esta política especifica as extensões que podem usar a função <ph name="CHALLENGE_USER_KEY_FUNCTION" /> da API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para declaração remota. As extensões devem ser adicionadas a esta lista para usar a API.
-
-          Se uma extensão não estiver na lista ou se a lista não for definida, a chamada para a API falhará com um código de erro.</translation>
 <translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso dos pais.
 
       A |current_config| sempre é usada para gerar o código de acesso e precisa ser usada para a validação dele apenas quando o código não pode ser validado com |future_config|.
@@ -5068,6 +5065,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="8274603902181597201">Faz a limpeza do diretório inicial do ecryptfs do usuário e começa com um novo diretório inicial ext4-encrypted.</translation>
+<translation id="8284296539558710573">Prompts de autenticação HTTP de origem cruzada</translation>
 <translation id="8285435910062771358">Lupa de tela inteira ativada</translation>
 <translation id="8288199156259560552">Ativar o Serviço de Localização do Google para Android</translation>
 <translation id="8290875622178450531">Ativar o recurso de acessibilidade de ditado.

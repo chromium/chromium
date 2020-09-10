@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">या सेशनमध्ये तुमची सर्व अ‍ॅक्टिव्हिटी अ‍ॅक्सेस करा</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
 <translation id="1654477262762802994">व्हॉइस क्वेरी सुरू करा</translation>
-<translation id="1665244008632896072">गडद मोड टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">न्यूट्रल रंगीत मोड हा तटस्थपणे टोन केलेल्या फिकट किंवा गडद रंगछटांचा सेट वापरतो आणि वॉलपेपरमधून निवडलेल्या रंगांचा वापर करत नाही.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टायमर· <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1761222317188459878">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
-<translation id="1776485282219497802">गडद मोड सुरू आहे.</translation>
 <translation id="1782199038061388045">भाषांतर</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="1812997170047690955">माझ्या स्क्रीनवर काय आहे?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">कीबोर्डचा लेआउट स्विच करण्यासाठी <ph name="KEYBOARD_SHORTCUT" /> दाबा.</translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
 <translation id="2509468283778169019">CAPS LOCK सुरू आहे</translation>
-<translation id="2517829236324128850">गडद मोड सेटिंग्ज दाखवा</translation>
 <translation id="2542089167727451762">तुमच्या प्रोफाइल इमेजवर टॅप करा</translation>
 <translation id="255671100581129685">सार्वजनिक सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="256712445991462162">डॉक केलेले मॅग्निफायर</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876666360658629066">पालक कोड एंटर करा</translation>
-<translation id="5887866489674258948">गडद मोड</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">इनॅक्टिव्ह डेस्‍क.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">प्रारंभ करा</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
-<translation id="6990778048354947307">गडद थीम</translation>
 <translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="7025533177575372252">तुमचे <ph name="DEVICE_NAME" /> तुमच्या फोनशी कनेक्ट करा</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालक)</translation>
 <translation id="7647488630410863958">आपल्या सूचना पाहण्यासाठी डिव्हाइस अनलॉक करा</translation>
 <translation id="7649070708921625228">मदत</translation>
-<translation id="7653418004652142983">सुरू करा</translation>
 <translation id="7654687942625752712">वाचिक फीडबॅक बंद करण्यासाठी दोन्ही व्हॉल्युम की पाच सेकंदांसाठी दाबा आणि धरून ठेवा.</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Assistant फक्त प्राथमिक प्रोफाइलवर उपलब्ध आहे.</translation>
 <translation id="79341161159229895">खाते <ph name="FIRST_PARENT_EMAIL" /> आणि <ph name="SECOND_PARENT_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
 <translation id="7955885781510802139">उच्च काँट्रास्ट मोड</translation>
-<translation id="7977639574084142279">बंद करा</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्क शोधत आहे...</translation>
 <translation id="7980780401175799550">Chrome OS नेव्हिगेट करण्याचे नवीन मार्ग वापरून पहा</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
 <translation id="8940956008527784070">बॅटरी कमी झाली (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">गडद मोड बंद आहे.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>

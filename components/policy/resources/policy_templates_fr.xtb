@@ -4430,7 +4430,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle n'est pas configurée, aucune exception n'est autorisée.
 
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="7260204423892780600">Contrôle les paramètres de l'Assistant Google.</translation>
 <translation id="7260277299188117560">Mise à jour automatique avec connexion P2P activée</translation>
 <translation id="7261252191178797385">Image de fond d'écran de l'appareil</translation>
@@ -4678,9 +4678,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
        Notez que cette règle était auparavant activée par erreur sous Android. En outre, cette fonctionnalité n'a jamais été entièrement compatible avec Android.</translation>
 <translation id="7614663184588396421">Liste des schémas de protocole désactivés</translation>
-<translation id="7617319494457709698">Cette règle définit les extensions autorisées à utiliser la fonction <ph name="CHALLENGE_USER_KEY_FUNCTION" /> de l'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> pour l'attestation à distance. Pour pouvoir utiliser cette API, les extensions doivent être ajoutées à cette liste.
-
-          Si une extension ne figure pas dans la liste, ou si la liste n'est pas définie, l'appel vers l'API échoue, et un code d'erreur est renvoyé.</translation>
 <translation id="7620869951155758729">Cette règle définit la configuration utilisée pour générer et valider le code d'accès parental.
 
       |current_config| est toujours utilisée pour générer le code d'accès et ne doit être employée pour valider le code d'accès que lorsque ce dernier ne peut pas être validé avec |future_config|.

@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
-<translation id="1665244008632896072">ダークモードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">壁紙から抽出した色の代わりに、ライトまたはダークな色調の中間色を使用します。</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> タイマー · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
 <translation id="1761222317188459878">ネットワーク接続を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">右にスクロール</translation>
-<translation id="1776485282219497802">ダークモードはオンです。</translation>
 <translation id="1782199038061388045">翻訳</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
 <translation id="1812997170047690955">画面上のアイテムを検索します</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">キーボード レイアウトを切り替えるには <ph name="KEYBOARD_SHORTCUT" /> キーを押します。</translation>
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2509468283778169019">Caps Lock がオンになっています</translation>
-<translation id="2517829236324128850">ダークモード設定を表示</translation>
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> の「<ph name="ROUTE_TITLE" />」を停止します</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5876666360658629066">保護者のコードを入力してください</translation>
-<translation id="5887866489674258948">ダークモード</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">アクティブでないデスクです。</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">開始する</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="698231206551913481">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。</translation>
-<translation id="6990778048354947307">暗色系テーマ</translation>
 <translation id="7007983414944123363">PIN またはパスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="7025533177575372252">スマートフォンを使って <ph name="DEVICE_NAME" /> を接続する</translation>
@@ -599,7 +594,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7647488630410863958">デバイスのロックを解除して通知を確認してください</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
-<translation id="7653418004652142983">オン</translation>
 <translation id="7654687942625752712">音声フィードバックを無効にするには、音量大と音量小の両方のボタンを 5 秒間押し続けてください。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@
 <translation id="7933084174919150729">Google アシスタントはメインのプロフィールでのみご利用いただけます。</translation>
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
 <translation id="7955885781510802139">ハイコントラスト モード</translation>
-<translation id="7977639574084142279">オフ</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>
 <translation id="7980780401175799550">Chrome OS の新しい操作方法をお試しください</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
@@ -733,7 +726,6 @@
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>
-<translation id="8958665219764428373">ダークモードはオフです。</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>

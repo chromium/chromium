@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1632985212731562677">A Kapcsolóalapú hozzáférés a Beállítások Kisegítő lehetőségek pontjában kapcsolható ki.</translation>
 <translation id="1654477262762802994">Hangalapú lekérdezés indítása</translation>
-<translation id="1665244008632896072">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">A semleges színmód nem használja a háttérkép alapján megállapított színeket, hanem semleges világos vagy sötét színárnyalatra cseréli őket.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1698080062160024910">Időzítő a következő időtartamra: <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
 <translation id="1761222317188459878">Hálózati kapcsolat ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Görgetés jobbra</translation>
-<translation id="1776485282219497802">Sötét mód bekapcsolva.</translation>
 <translation id="1782199038061388045">Fordítás</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1812997170047690955">Mi van a képernyőn?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">A billentyűzetkiosztás átváltásához nyomja meg a(z) <ph name="KEYBOARD_SHORTCUT" /> billentyűparancsot.</translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
 <translation id="2509468283778169019">A CAPS LOCK be van kapcsolva</translation>
-<translation id="2517829236324128850">Sötét mód beállításainak megjelenítése</translation>
 <translation id="2542089167727451762">Koppintson a profilképre</translation>
 <translation id="255671100581129685">A Google Segéd nem áll rendelkezésre nyilvános munkamenetben.</translation>
 <translation id="256712445991462162">dokkolt nagyító</translation>
@@ -441,7 +438,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5876666360658629066">Adja meg a szülői kódot</translation>
-<translation id="5887866489674258948">Sötét mód</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Inaktív asztal.</translation>
@@ -542,7 +538,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6972754398087986839">Első lépések</translation>
 <translation id="6981982820502123353">Kisegítő opciók</translation>
 <translation id="698231206551913481">A felhasználó eltávolításakor az összes hozzá tartozó fájl és helyi adat is véglegesen törlődik.</translation>
-<translation id="6990778048354947307">Sötét téma</translation>
 <translation id="7007983414944123363">PIN-kódjának vagy jelszavának ellenőrzése nem sikerült. Próbálja újra.</translation>
 <translation id="7015766095477679451">Térjen vissza ekkor: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">A(z) <ph name="DEVICE_NAME" /> eszköz csatlakoztatása a telefonjával</translation>
@@ -599,7 +594,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (tulajdonos)</translation>
 <translation id="7647488630410863958">Az eszköz zárolásának feloldása az értesítések megtekintéséhez</translation>
 <translation id="7649070708921625228">Súgó</translation>
-<translation id="7653418004652142983">Be</translation>
 <translation id="7654687942625752712">A hangos visszajelzés kikapcsolásához öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7933084174919150729">A Google Segéd csak az elsődleges profilhoz áll rendelkezésre.</translation>
 <translation id="79341161159229895">A fiókot a(z) <ph name="FIRST_PARENT_EMAIL" /> és a(z) <ph name="SECOND_PARENT_EMAIL" /> kezeli</translation>
 <translation id="7955885781510802139">Nagy kontrasztú mód</translation>
-<translation id="7977639574084142279">Ki</translation>
 <translation id="7977927628060636163">Mobilhálózatok keresése…</translation>
 <translation id="7980780401175799550">Új navigációs módszerek Chrome OS rendszeren</translation>
 <translation id="7982789257301363584">Hálózat</translation>
@@ -733,7 +726,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8936501819958976551">deaktiválva</translation>
 <translation id="8938800817013097409">C típusú USB-vel kompatibilis eszköz (jobb hátsó port)</translation>
 <translation id="8940956008527784070">Alacsony akkumulátortöltöttség (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Sötét mód kikapcsolva.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> használata</translation>
 <translation id="899350903320462459">Az eszköz zárolásának feloldása az értesítési művelet végrehajtásához a következő felhasználó által: <ph name="LOGIN_ID" />.</translation>

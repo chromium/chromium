@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
-<translation id="1665244008632896072">روشن/خاموش کردن «حالت تاریک». <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">حالت «رنگ خنثی» از رنگ‌های استخراج‌شده از کاغذدیواری استفاده نمی‌کند، بلکه آن‌ها را با مجموعه‌ای از ته‌رنگ‌های تیره و روشن خنثی جایگزین می‌کند.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
 <translation id="1698080062160024910">زمان‌سنج <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
 <translation id="1761222317188459878">تغییر وضعیت اتصال شبکه. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">پیمایش به راست</translation>
-<translation id="1776485282219497802">«حالت تاریک» روشن است.</translation>
 <translation id="1782199038061388045">ترجمه</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="1812997170047690955">چه چیزی در صفحه‌نمایش من نشان داده می‌شود؟</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">برای تغییر جانمایی صفحه‌کلید، <ph name="KEYBOARD_SHORTCUT" /> را فشار دهید.</translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
 <translation id="2509468283778169019">‏CAPS LOCK روشن است</translation>
-<translation id="2517829236324128850">نمایش تنظیمات حالت تاریک</translation>
 <translation id="2542089167727451762">روی تصویر نمایه ضربه بزنید</translation>
 <translation id="255671100581129685">‏«دستیار Google» در جلسه عمومی در دسترس نیست.</translation>
 <translation id="256712445991462162">ذره‌بین متصل</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">توقف <ph name="ROUTE_TITLE" /> به <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5876666360658629066">کد ولی را وارد کنید</translation>
-<translation id="5887866489674258948">حالت تاریک</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">میزکار غیرفعال است.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">شروع به کار</translation>
 <translation id="6981982820502123353">قابلیت دسترسی</translation>
 <translation id="698231206551913481">اگر کاربر حذف شود، همه فایل‌ها و داده‌های محلی مربوط به او به‌طور دائم حذف خواهند شد.</translation>
-<translation id="6990778048354947307">زمینه تیره</translation>
 <translation id="7007983414944123363">نمی‌توان پین یا گذرواژه را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="7015766095477679451">ساعت <ph name="COME_BACK_TIME" /> دوباره برگردید.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> را به تلفنتان متصل کنید</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7647488630410863958">برای مشاهده اعلان‌هایتان، قفل دستگاه را باز کنید</translation>
 <translation id="7649070708921625228">راهنما</translation>
-<translation id="7653418004652142983">روشن</translation>
 <translation id="7654687942625752712">برای غیرفعال کردن بازخورد گفتاری، هردو کلید تنظیم صدا را پنج ثانیه فشار دهید و نگه‌دارید.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">‏«دستیار Google» فقط برای نمایه اصلی دردسترس است.</translation>
 <translation id="79341161159229895">حساب تحت مدیریت <ph name="FIRST_PARENT_EMAIL" /> و <ph name="SECOND_PARENT_EMAIL" /> است</translation>
 <translation id="7955885781510802139">حالت کنتراست بالا</translation>
-<translation id="7977639574084142279">خاموش</translation>
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
 <translation id="7980780401175799550">‏راه‌های جدید پیمایش Chrome OS را امتحان کنید</translation>
 <translation id="7982789257301363584">شبکه</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">غیرفعال</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="8940956008527784070">باتری ضعیف است (<ph name="PERCENTAGE" />٪)</translation>
-<translation id="8958665219764428373">«حالت تاریک» خاموش است.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>

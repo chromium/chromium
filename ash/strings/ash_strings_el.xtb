@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Αποκτήσει πρόσβαση σε όλη τη δραστηριότητά σας από αυτήν την περίοδο λειτουργίας</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1654477262762802994">Έναρξη φωνητικού ερωτήματος</translation>
-<translation id="1665244008632896072">Εναλλαγή κατάστασης λειτουργίας χαμηλού φωτισμού. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Η λειτουργία ουδέτερου χρώματος δεν χρησιμοποιεί χρώματα που έχουν εξαχθεί από την ταπετσαρία, αλλά τα αντικαθιστά με ένα σύνολο ουδέτερων σκούρων ή φωτεινών αποχρώσεων.</translation>
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Χρονόμετρο <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Το πληκτρολόγιο οθόνης είναι ενεργοποιημένο</translation>
 <translation id="1761222317188459878">Εναλλαγή σύνδεσης δικτύου. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
-<translation id="1776485282219497802">Η λειτουργία χαμηλού φωτισμού είναι ενεργοποιημένη.</translation>
 <translation id="1782199038061388045">μετάφραση</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="1812997170047690955">Τι υπάρχει στην οθόνη μου;</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Πατήστε <ph name="KEYBOARD_SHORTCUT" />, για να αλλάξετε διάταξη πληκτρολογίου.</translation>
 <translation id="2501920221385095727">Σταθερά πλήκτρα</translation>
 <translation id="2509468283778169019">Το CAPS LOCK είναι ενεργοποιημένο</translation>
-<translation id="2517829236324128850">Εμφάνιση ρυθμίσεων λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="2542089167727451762">Πατήστε την εικόνα προφίλ σας</translation>
 <translation id="255671100581129685">Ο Βοηθός Google δεν διατίθεται σε δημόσιες περιόδους λειτουργίας.</translation>
 <translation id="256712445991462162">ο μεγεθυντικός φακός σε παράθυρο</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Διακοπή <ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
 <translation id="5876666360658629066">Εισαγάγετε κωδικό γονέα</translation>
-<translation id="5887866489674258948">Χαμηλός φωτισμός</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Ανενεργό γραφείο.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Έναρξη</translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
 <translation id="698231206551913481">Όλα τα αρχεία και τα τοπικά δεδομένα που σχετίζονται με τον χρήστη θα διαγραφούν οριστικά μόλις καταργηθεί ο χρήστης.</translation>
-<translation id="6990778048354947307">Σκούρο θέμα</translation>
 <translation id="7007983414944123363">Δεν ήταν δυνατή η επαλήθευση του PIN ή του κωδικού πρόσβασής σας. Δοκιμάστε ξανά.</translation>
 <translation id="7015766095477679451">Επιστρέψτε ξανά στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Συνδέστε τη συσκευή <ph name="DEVICE_NAME" /> με το τηλέφωνό σας</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (κάτοχος)</translation>
 <translation id="7647488630410863958">Ξεκλειδώστε τη συσκευή για να δείτε τις ειδοποιήσεις σας</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
-<translation id="7653418004652142983">Ενεργός</translation>
 <translation id="7654687942625752712">Πατήστε παρατεταμένα και τα δύο πλήκτρα έντασης ήχου για πέντε δευτερόλεπτα, για να απενεργοποιήσετε τα εκφωνημένα σχόλια.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Ο Βοηθός Google είναι διαθέσιμος μόνο για το κύριο προφίλ.</translation>
 <translation id="79341161159229895">Ο λογαριασμός είναι διαχειριζόμενος από τους χρήστες <ph name="FIRST_PARENT_EMAIL" /> και <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Λειτουργία υψηλής αντίθεσης</translation>
-<translation id="7977639574084142279">Ανενεργός</translation>
 <translation id="7977927628060636163">Αναζήτηση για δίκτυα κινητής τηλεφωνίας…</translation>
 <translation id="7980780401175799550">Δοκιμάστε νέους τρόπους πλοήγησης στο Chrome OS</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">απενεργοποιημένο</translation>
 <translation id="8938800817013097409">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
 <translation id="8940956008527784070">Χαμηλή στάθμη μπαταρίας (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Η λειτουργία χαμηλού φωτισμού είναι απενεργοποιημένη.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Χρήση <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ξεκλειδώστε τη συσκευή ως <ph name="LOGIN_ID" /> για εκτέλεση της ενέργειας ειδοποίησης</translation>

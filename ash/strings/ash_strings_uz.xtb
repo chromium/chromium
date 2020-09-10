@@ -67,7 +67,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1589090746204042747">Bu seansdagi barcha harakatlaringizga ruxsat</translation>
 <translation id="1632985212731562677">Switch Access funksiyasini Sozlamalar &gt; Maxsus imkoniyatlar orqali faolsizlantirish mumkin.</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
-<translation id="1665244008632896072">Tungi rejimga oʻtish. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neytral ranglar rejimida fon uchun yorqin yoki xira tusdagi toʻplam koʻrinishidagi ixtiyoriy ranglar ishlatiladi.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymer · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
 <translation id="1761222317188459878">Tarmoq aloqasini yoqish/o‘chirish. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Oʻngga aylantirish</translation>
-<translation id="1776485282219497802">Tungi rejim yoniq.</translation>
 <translation id="1782199038061388045">tarjima</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
 <translation id="1812997170047690955">Ekranda nimalar bor?</translation>
@@ -152,7 +150,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2484513351006226581">Klaviatura terilmasini almashtirish uchun <ph name="KEYBOARD_SHORTCUT" /> tugmalarini bosing.</translation>
 <translation id="2501920221385095727">Yopishqoq tugmalar</translation>
 <translation id="2509468283778169019">CAPS LOCK yoniq</translation>
-<translation id="2517829236324128850">Tungi rejim sozlamalarini chiqarish</translation>
 <translation id="2542089167727451762">Profil rasmingizni bosing</translation>
 <translation id="255671100581129685">Google Assistent demo seansda ishlamaydi.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
@@ -440,7 +437,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinishi to‘xtatilsin</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5876666360658629066">Ota-ona kodini kiriting</translation>
-<translation id="5887866489674258948">Tungi rejim</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Nofaol ish stoli.</translation>
@@ -541,7 +537,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6972754398087986839">Boshlash</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
 <translation id="698231206551913481">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy ma’lumotlar foydalanuvchi olib tashlanganda butunlay o‘chib ketadi.</translation>
-<translation id="6990778048354947307">Qorong‘i mavzu</translation>
 <translation id="7007983414944123363">PIN kod yoki parolingiz tekshirilmadi. Qayta urining.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> da qayting.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> qurilmasini telefoningiz bilan ulang</translation>
@@ -598,7 +593,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (egasi)</translation>
 <translation id="7647488630410863958">Bildirishnomalarni ko‘rish uchun qurilmangizni qulfdan chiqaring</translation>
 <translation id="7649070708921625228">Yordam</translation>
-<translation id="7653418004652142983">Yoniq</translation>
 <translation id="7654687942625752712">Ekrandagi matn talaffuz qilinishi funksiyasini faolsizlantirish uchun 5 soniya har ikki tovush tugmasini bosib turing.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7933084174919150729">Google Assistent faqat asosiy profilda ishlaydi xolos.</translation>
 <translation id="79341161159229895">Hisobni <ph name="FIRST_PARENT_EMAIL" /> va <ph name="SECOND_PARENT_EMAIL" /> boshqaradi</translation>
 <translation id="7955885781510802139">Yuqori kontrastli rejim</translation>
-<translation id="7977639574084142279">Yoqilmagan</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>
 <translation id="7980780401175799550">Chrome OS tizimini yangi usulda boshqaring</translation>
 <translation id="7982789257301363584">Tarmoq</translation>
@@ -732,7 +725,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8936501819958976551">faolsizlantirildi</translation>
 <translation id="8938800817013097409">USB-C qurilma (orqa tomondagi o‘ng port)</translation>
 <translation id="8940956008527784070">Batareya zaryadi kam (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Tungi rejim faolsizlantirilgan.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ishlatilmoqda</translation>
 <translation id="899350903320462459">Bildirishnomani amalga oshirish uchun <ph name="LOGIN_ID" /> sifatida qurilmani qulfdan chiqaring</translation>

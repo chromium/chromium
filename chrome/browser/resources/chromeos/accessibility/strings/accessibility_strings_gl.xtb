@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Tocar</translation>
 <translation id="8173092779156526980">Pasa catro dedos cara á esquerda</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{guión baixo}other{# guións baixos}}</translation>
+<translation id="8179976553408161302">Intro</translation>
 <translation id="8184828902145951186">fila</translation>
 <translation id="8186185314313222077">alterna a pantalla completa</translation>
 <translation id="8199231515320852133">Anuncia as cabeceiras da cela actual</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">f<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Non hai ningún botón de opción anterior</translation>
 <translation id="8970172509886453271">Non hai ningunha sección anterior</translation>
+<translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="9040132695316389094">Título 1</translation>

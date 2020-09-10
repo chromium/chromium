@@ -510,7 +510,7 @@
 <translation id="158849752021629804">Потрібна домашня мережа</translation>
 <translation id="1588870296199743671">Відкрити посилання за допомогою...</translation>
 <translation id="1589055389569595240">Показати опцію "Правопис і граматика"</translation>
-<translation id="1591679663873027990">Надати додатку Parallels Desktop доступ до пристроїв USB. Додаток Parallels Desktop не зберігатиме дані про пристрій USB після його вилучення.</translation>
+<translation id="1591679663873027990">Додатку Parallels Desktop можна дозволити доступ до пристроїв USB. Коли ви вилучите пристрій USB, дані про нього не зберігатимуться в Parallels Desktop.</translation>
 <translation id="1593594475886691512">Форматування…</translation>
 <translation id="159359590073980872">Кеш зображень</translation>
 <translation id="1593926297800505364">Зберегти спосіб оплати</translation>
@@ -1879,7 +1879,7 @@
 <translation id="3246107497225150582">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – помилка мережі</translation>
 <translation id="3248902735035392926">Безпека важлива. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
-<translation id="325036368918787455">Вийти з анонімного режиму</translation>
+<translation id="325036368918787455">Закрити вікна в анонімному режимі</translation>
 <translation id="3251759466064201842">&lt;Не є частиною сертифіката&gt;</translation>
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3253448572569133955">Невідомий обліковий запис</translation>
@@ -2511,7 +2511,7 @@
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Імпортовано із IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Цей додаток може бути небезпечним}one{Ці додатки можуть бути небезпечними}few{Ці додатки можуть бути небезпечними}many{Ці додатки можуть бути небезпечними}other{Ці додатки можуть бути небезпечними}}</translation>
-<translation id="3950820424414687140">Увійти</translation>
+<translation id="3950820424414687140">Вхід</translation>
 <translation id="3953834000574892725">Мої облікові записи</translation>
 <translation id="3954354850384043518">Завантаження триває</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> герц)</translation>
@@ -2641,6 +2641,7 @@
 <translation id="4104163789986725820">Е&amp;кспортувати...</translation>
 <translation id="4107048419833779140">Виявляти й вилучати пристрої пам’яті</translation>
 <translation id="4109135793348361820">Перемістити вікно на робочий стіл користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Налаштуйте розмір і стиль субтитрів для додатків, що підтримують цю функцію</translation>
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4110895898888439383">Переглядати сторінки в режимі високого контрасту</translation>
@@ -2840,6 +2841,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Режим анонімного перегляду}one{У режимі анонімного перегляду відкрито # вікно}few{У режимі анонімного перегляду відкрито # вікна}many{У режимі анонімного перегляду відкрито # вікон}other{У режимі анонімного перегляду відкрито # вікна}}</translation>
 <translation id="439266289085815679">Налаштуваннями Bluetooth керує <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Змінити файл конфігурації</translation>
+<translation id="4393691030048716353">Сторінка <ph name="DOMAIN" /> вимкнула налагодження ADB. Коли ви перезапустите пристрій <ph name="DEVICE_TYPE" />, то більше не зможете завантажувати додатки з невідомого джерела.</translation>
 <translation id="4394049700291259645">Вимкнути</translation>
 <translation id="439817266247065935">Ваш пристрій завершив роботу неналежним чином. Щоб користуватися додатками Linux, перезапустіть Linux.</translation>
 <translation id="4400367121200150367">Тут відображатимуться сайти, які ніколи не зберігають паролі</translation>
@@ -3529,6 +3531,7 @@
 <translation id="5265797726250773323">Помилка під час встановлення</translation>
 <translation id="5266113311903163739">Помилка імпортування центру сертифікації</translation>
 <translation id="5269977353971873915">Помилка друку</translation>
+<translation id="5274738462757057090">Автоматично створює субтитри для медіаконтенту в Chrome (наразі лише англійською мовою)</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Завжди дозволяти JavaScript на хості <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Ідентифікатор статусу</translation>
@@ -3964,6 +3967,7 @@
 <translation id="5794700615121138172">Спільні папки Linux</translation>
 <translation id="5794786537412027208">Вийти з усіх додатків Chrome</translation>
 <translation id="5797070761912323120">Google може використовувати вашу історію, щоб персоналізувати Пошук, оголошення й інші сервіси Google</translation>
+<translation id="5798301976526354562">Розмір тексту (також застосовується до живих субтитрів)</translation>
 <translation id="579915268381781820">Ключ безпеки вилучено.</translation>
 <translation id="5799508265798272974">Віртуальна машина Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">З часу останнього завантаження кінцевий файл було скорочено або вилучено.</translation>
@@ -4872,6 +4876,7 @@
 <translation id="6911324888870229398">З’єднання з мережею втрачено. Перевірте з’єднання або під’єднайтеся до іншої мережі Wi-Fi.</translation>
 <translation id="6911734910326569517">Використання пам’яті</translation>
 <translation id="6912007319859991306">PIN-код SIM-карти</translation>
+<translation id="691289340230098384">Налаштування субтитрів</translation>
 <translation id="6914783257214138813">Ваші паролі бачитимуть усі, хто може переглядати експортований файл.</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916590542764765824">Керувати розширеннями</translation>
@@ -6160,6 +6165,7 @@
 <translation id="8467326454809944210">Вибрати іншу мову</translation>
 <translation id="8470214316007448308">Інші люди</translation>
 <translation id="8470513973197838199">Збережені паролі для <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232">Сторінка <ph name="DOMAIN" /> вимикає налагодження ADB. Через це налаштування вашого пристрою <ph name="DEVICE_TYPE" /> буде скинуто через 24 години. Створіть резервну копію потрібних вам файлів.</translation>
 <translation id="8472623782143987204">з апаратною підтримкою</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8475313423285172237">Інша програма на вашому комп’ютері додала розширення, яке може змінити роботу Chrome.</translation>
@@ -6531,7 +6537,7 @@
 <translation id="8898840733695078011">Рівень сигналу</translation>
 <translation id="8899851313684471736">Відкрити посилання у новому &amp;вікні</translation>
 <translation id="8900413463156971200">Увімкнути мобільну мережу</translation>
-<translation id="8902667442496790482">Відкрити налаштування служби Читання з екрана</translation>
+<translation id="8902667442496790482">Відкрити налаштування функції читання з екрана</translation>
 <translation id="8903263458134414071">Виберіть обліковий запис для входу</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
@@ -6811,7 +6817,7 @@
 <translation id="947329552760389097">&amp;Перевірити елементи</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="952992212772159698">Не активовано</translation>
-<translation id="956444359529327203">Вийти з гостьового режиму</translation>
+<translation id="956444359529327203">Закрити вікна в гостьовому режимі</translation>
 <translation id="956500788634395331">Пристрій захищено від потенційно шкідливих розширень</translation>
 <translation id="957960681186851048">Цей сайт намагався автоматично завантажити декілька файлів</translation>
 <translation id="9580706199804957">Не вдалося під’єднатися до служб Google</translation>

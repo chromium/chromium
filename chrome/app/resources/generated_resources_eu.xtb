@@ -510,7 +510,7 @@
 <translation id="158849752021629804">Sare lokala behar da</translation>
 <translation id="1588870296199743671">Ireki esteka honekin…</translation>
 <translation id="1589055389569595240">Erakutsi ortografia eta gramatika</translation>
-<translation id="1591679663873027990">Eman USB gailuak atzitzeko baimena Parallels Desktop aplikazioari. USB gailu bat kendu ondoren, Parallels Desktop aplikazioak ez du gogoratuko.</translation>
+<translation id="1591679663873027990">Eman USB bidezkogailuak atzitzeko baimena Parallels Desktop aplikazioari. USB bidezko gailuak kenduz gero, Parallels Desktop aplikazioak ez ditu gogoratuko.</translation>
 <translation id="1593594475886691512">Formateatzen…</translation>
 <translation id="159359590073980872">Irudien cachea</translation>
 <translation id="1593926297800505364">Gorde ordainketa-metodoa</translation>
@@ -1866,7 +1866,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="321834671654278338">Linux desinstalatzailea</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> konektorearen prozesuan hutsegite bat izan da. Berrabiarazi egin nahi duzu?</translation>
 <translation id="3222066309010235055">Aurrerrendatzea: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
-<translation id="3222779980972075989">Konektatu <ph name="USB_VM_NAME" /> makina birtualera</translation>
+<translation id="3222779980972075989">Konektatu <ph name="USB_VM_NAME" />-era</translation>
 <translation id="3223531857777746191">Berrezartzeko botoia</translation>
 <translation id="3225084153129302039">Abatar more lehenetsia</translation>
 <translation id="3225319735946384299">Kode-sinadura</translation>
@@ -5189,7 +5189,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7303900363563182677">Webgune honi arbelean kopiatzen dituzun testuak eta irudiak ikusteko aukera blokeatu zaio</translation>
 <translation id="7305123176580523628">Konektatu da USB bidezko inprimagailua</translation>
 <translation id="730515362922783851">Trukatu datuak tokiko sarera edo Internetera konektatutako edozein gailurekin</translation>
-<translation id="7306521477691455105">Ireki ezarpenak <ph name="USB_DEVICE_NAME" /> <ph name="USB_VM_NAME" /> makina birtualera konektatzeko</translation>
+<translation id="7306521477691455105">Ireki ezarpenak <ph name="USB_DEVICE_NAME" /> <ph name="USB_VM_NAME" />-era konektatzeko</translation>
 <translation id="7307129035224081534">Pausatuta</translation>
 <translation id="7308002049209013926">Erabili abiarazlea aplikazio eta jarduera berriak bizkor atzitzeko. Hona teklatuaren bidez etortzeko, sakatu Alt + Maius + L.</translation>
 <translation id="7309257895202129721">Erakutsi &amp;kontrolak</translation>
@@ -5554,7 +5554,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7766082757934713382">Sareko datuen erabilera murrizten laguntzen du, aplikazioen eta sistemaren eguneratze automatikoak pausatzen baititu</translation>
 <translation id="7766807826975222231">Eman txangoa</translation>
 <translation id="7766838926148951335">Eman baimenak</translation>
-<translation id="7768507955883790804">Webguneek automatikoki jarraitzen dute ezarpen hau haiek bisitatzen dituzunean</translation>
+<translation id="7768507955883790804">Webguneetan sartzen zarenean, webguneek automatikoki jarraitzen diote ezarpen honi</translation>
 <translation id="7768770796815395237">Aldatu</translation>
 <translation id="7768784765476638775">Hautatu ozen irakurtzeko</translation>
 <translation id="7769672763586021400">Modeloaren IDa</translation>

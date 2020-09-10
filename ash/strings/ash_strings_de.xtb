@@ -67,7 +67,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1589090746204042747">Auf alle Ihre Aktivitäten in dieser Sitzung zugreifen</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
-<translation id="1665244008632896072">Dunklen Modus ein-/ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Der neutrale Farbmodus verwendet keine aus dem Hintergrund extrahierten Farben, sondern ersetzt sie durch neutrale helle und dunkle Farbtöne.</translation>
 <translation id="1677472565718498478">Verbleibende Zeit: <ph name="TIME" /> h</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1747827819627189109">Bildschirmtastatur aktiviert</translation>
 <translation id="1761222317188459878">Netzwerkverbindung aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Nach rechts scrollen</translation>
-<translation id="1776485282219497802">Dunkler Modus ist an.</translation>
 <translation id="1782199038061388045">Übersetzung</translation>
 <translation id="181103072419391116">Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von Ihrem Administrator verwaltet</translation>
 <translation id="1812997170047690955">Was wird auf meinem Bildschirm angezeigt?</translation>
@@ -116,7 +114,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="2135456203358955318">Angedockte Lupe</translation>
 <translation id="2144487987174258011">Neu starten, um den Adobe Flash Player zu aktualisieren</translation>
-<translation id="2180011262286780504">Bildschirmaufnahmen wurden von Ihrem Administrator deaktiviert.</translation>
+<translation id="2180011262286780504">Bildschirmaufnahmen wurden vom Administrator deaktiviert.</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222338659135520253">Anmeldung erforderlich</translation>
@@ -152,7 +150,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2484513351006226581">Drücken Sie <ph name="KEYBOARD_SHORTCUT" />, um das Tastaturlayout zu ändern.</translation>
 <translation id="2501920221385095727">Sticky Keys</translation>
 <translation id="2509468283778169019">Feststelltaste aktiviert</translation>
-<translation id="2517829236324128850">Einstellungen für den dunklen Modus anzeigen</translation>
 <translation id="2542089167727451762">Tippen Sie auf Ihr Profilbild</translation>
 <translation id="255671100581129685">In öffentlichen Sitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="256712445991462162">die angedockte Lupe</translation>
@@ -440,7 +437,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5876666360658629066">Elterncode eingeben</translation>
-<translation id="5887866489674258948">Dunkler Modus</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5901316534475909376">Umschalttaste + Esc</translation>
 <translation id="5909862606227538307">Inaktiver Desktop.</translation>
@@ -541,7 +537,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6972754398087986839">Erste Schritte</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="698231206551913481">Durch das Entfernen des Nutzers werden alle mit ihm verknüpften Dateien und lokalen Daten endgültig gelöscht.</translation>
-<translation id="6990778048354947307">Dunkles Design</translation>
 <translation id="7007983414944123363">Deine PIN oder dein Passwort konnten nicht bestätigt werden. Bitte versuche es noch einmal.</translation>
 <translation id="7015766095477679451">Um <ph name="COME_BACK_TIME" /> kannst du weitermachen.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> mit Ihrem Smartphone verbinden</translation>
@@ -598,7 +593,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (Eigentümer)</translation>
 <translation id="7647488630410863958">Gerät entsperren, um Benachrichtigungen zu sehen</translation>
 <translation id="7649070708921625228">Hilfe</translation>
-<translation id="7653418004652142983">An</translation>
 <translation id="7654687942625752712">Sie können gesprochenes Feedback deaktivieren, indem Sie die beiden Lautstärketasten fünf Sekunden lang gedrückt halten.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7933084174919150729">Google Assistant ist nur für das Hauptprofil verfügbar.</translation>
 <translation id="79341161159229895">Konto verwaltet von <ph name="FIRST_PARENT_EMAIL" /> und <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modus mit hohem Kontrast</translation>
-<translation id="7977639574084142279">Aus</translation>
 <translation id="7977927628060636163">Nach Mobilfunknetzen wird gesucht…</translation>
 <translation id="7980780401175799550">Neue Navigationsoptionen für Chrome OS</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
@@ -732,7 +725,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8940956008527784070">Niedriger Akkustand (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Dunkler Modus ist aus.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> aktiv</translation>
 <translation id="899350903320462459">Wenn Sie die Benachrichtigungsaktion ausführen möchten, entsperren Sie das Gerät als <ph name="LOGIN_ID" /></translation>

@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Raak</translation>
 <translation id="8173092779156526980">Swiep vier vingers na links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{onderstreep}other{# onderstrepe}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ry</translation>
 <translation id="8186185314313222077">wissel volskerm</translation>
 <translation id="8199231515320852133">Kondig die opskrifte van die huidige sel aan</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Geen vorige radioknoppie nie</translation>
 <translation id="8970172509886453271">Geen vorige afdeling nie</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">nutswenk</translation>
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="9040132695316389094">Opskrif 1</translation>

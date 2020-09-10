@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
-<translation id="1665244008632896072">تاریک وضع ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ٹائمر · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">آن اسکرین کی بورڈ فعال ہے</translation>
 <translation id="1761222317188459878">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
-<translation id="1776485282219497802">تاریک وضع آن ہے۔</translation>
 <translation id="1782199038061388045">ترجمہ</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1812997170047690955">میری اسکرین پر کیا ہے؟</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">کی بورڈ کا لے آؤٹ سوئچ کرنے کے لیے <ph name="KEYBOARD_SHORTCUT" /> دبائیں۔</translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
-<translation id="2517829236324128850">تاریک وضع کی ترتیبات دکھائیں</translation>
 <translation id="2542089167727451762">اپنے پروفائل کی تصویر پر تھپتھپائیں</translation>
 <translation id="255671100581129685">‏Google اسسٹنٹ عوامی سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="256712445991462162">ڈاک کردہ میگنیفائر</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5860033963881614850">آف</translation>
 <translation id="5876666360658629066">والد/والدہ کا کوڈ درج کریں</translation>
-<translation id="5887866489674258948">تاریک وضع</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">غیر فعال ڈیسک۔</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">شروع کریں</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="698231206551913481">اس صارف کو ہٹانے کے بعد اس صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
-<translation id="6990778048354947307">گہرا تھیم</translation>
 <translation id="7007983414944123363">‏آپ کے PIN یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7647488630410863958">اپنی اطلاعات دیکھنے کیلئے آلہ کو غیر مقفل کریں</translation>
 <translation id="7649070708921625228">مدد</translation>
-<translation id="7653418004652142983">آن</translation>
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">‏Google اسسٹنٹ صرف بنیادی پروفائل کے لیے دستیاب ہے۔</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> اور <ph name="SECOND_PARENT_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
 <translation id="7955885781510802139">اعلی تناسب امتزاج وضع</translation>
-<translation id="7977639574084142279">آف</translation>
 <translation id="7977927628060636163">موبائل نیٹ ورکس کو تلاش کیا جا رہا ہے…</translation>
 <translation id="7980780401175799550">‏Chrome OS پر نیویگیٹ کرنے کیلئے نئے طریقے آزمائیں</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
 <translation id="8940956008527784070">‏بیٹری کم ہے (‎<ph name="PERCENTAGE" />%‎)</translation>
-<translation id="8958665219764428373">تاریک وضع آف ہے۔</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> کے ذریعے</translation>
 <translation id="899350903320462459">اطلاع کی کارروائی کرنے کیلئے، آلے کو بطور <ph name="LOGIN_ID" /> غیر مقفل کریں</translation>

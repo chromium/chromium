@@ -67,7 +67,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
-<translation id="1665244008632896072">Aktivizo/çaktivizo modalitetin e errët. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Modaliteti me ngjyra neutrale nuk përdor ngjyrat e nxjerra nga imazhi i sfondit, duke i zëvendësuar me një grupim me nuanca me tonalitet të çelur ose të errët.</translation>
 <translation id="1677472565718498478">Koha e mbetur <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Kohëmatësi: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
 <translation id="1761222317188459878">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
-<translation id="1776485282219497802">Modaliteti i errët është aktiv</translation>
 <translation id="1782199038061388045">përkthimi</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
@@ -152,7 +150,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2484513351006226581">Shtyp <ph name="KEYBOARD_SHORTCUT" /> për të ndryshuar planin e tastierës.</translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
 <translation id="2509468283778169019">KYÇJA E KAPITALEVE është aktive</translation>
-<translation id="2517829236324128850">Shfaq cilësimet e modalitetit të errët</translation>
 <translation id="2542089167727451762">Trokit imazhin e profilit tënd</translation>
 <translation id="255671100581129685">"Asistenti i Google" nuk ofrohet në një sesion publik.</translation>
 <translation id="256712445991462162">zmadhuesi i lidhur me stacionin</translation>
@@ -440,7 +437,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5876666360658629066">Fut kodin e prindit</translation>
-<translation id="5887866489674258948">Modaliteti i errët</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Tavolinë pune joaktive.</translation>
@@ -541,7 +537,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
-<translation id="6990778048354947307">Temë e errët</translation>
 <translation id="7007983414944123363">Kod yt PIN ose fjalëkalimi nuk mund të verifikoheshin. Provo përsëri.</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Lidhe <ph name="DEVICE_NAME" /> me telefonin tënd</translation>
@@ -598,7 +593,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7647488630410863958">Shkyçe pajisjen për të parë njoftimet e tua</translation>
 <translation id="7649070708921625228">Ndihma</translation>
-<translation id="7653418004652142983">Aktiv</translation>
 <translation id="7654687942625752712">Shtyp dhe mbaj të dy butonat e volumit për pesë sekonda për të çaktivizuar komentet me zë.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7933084174919150729">"Asistenti i Google" ofrohet vetëm për profilin kryesor.</translation>
 <translation id="79341161159229895">Llogaria menaxhohet nga <ph name="FIRST_PARENT_EMAIL" /> dhe <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modaliteti i kontrastit të lartë</translation>
-<translation id="7977639574084142279">Joaktiv</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>
 <translation id="7980780401175799550">Provo mënyra të reja për të naviguar Chrome OS</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
@@ -732,7 +725,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8936501819958976551">çaktivizuar</translation>
 <translation id="8938800817013097409">Pajisja USB-C (porta djathtas, prapa)</translation>
 <translation id="8940956008527784070">Nivel i ulët baterie (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Modaliteti i errët është joaktiv.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Po përdor <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>

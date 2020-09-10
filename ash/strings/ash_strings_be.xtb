@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1654477262762802994">Пачаць галасавы запыт</translation>
-<translation id="1665244008632896072">Уключыць або выключыць цёмны рэжым. (<ph name="STATE_TEXT" />)</translation>
 <translation id="1667964833127753507">У рэжыме нейтральнага колеру атрыманыя са шпалер колеры не выкарыстоўваюцца – замест іх прымяняецца набор нейтральных светлых або цёмных адценняў.</translation>
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
 <translation id="1761222317188459878">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>
-<translation id="1776485282219497802">Цёмны рэжым уключаны.</translation>
 <translation id="1782199038061388045">пераклад</translation>
 <translation id="181103072419391116">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />; сетка знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="1812997170047690955">Што на маім экране?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Каб пераключыць раскладку клавіятуры, націсніце <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
 <translation id="2509468283778169019">CAPS LOCK уключаны</translation>
-<translation id="2517829236324128850">Паказаць налады цёмнага рэжыму</translation>
 <translation id="2542089167727451762">Націсніце відарыс профілю</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Спыніць трансляцыю <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5876666360658629066">Увядзіце бацькоўскі код</translation>
-<translation id="5887866489674258948">Цёмны рэжым</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Неактыўны працоўны стол.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Пачатак працы</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
-<translation id="6990778048354947307">Цёмная тэма</translation>
 <translation id="7007983414944123363">Пароль або PIN-код спраўдзіць не ўдалося. Паўтарыце спробу.</translation>
 <translation id="7015766095477679451">Можна будзе прадоўжыць у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Падключыце прыладу "<ph name="DEVICE_NAME" />" да тэлефона</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (уладальнік)</translation>
 <translation id="7647488630410863958">Каб прагледзець апавяшчэнні, разблакіруйце прыладу</translation>
 <translation id="7649070708921625228">Даведка</translation>
-<translation id="7653418004652142983">Уключаны</translation>
 <translation id="7654687942625752712">Каб выключыць галасавую зваротную сувязь, націсніце і ўтрымлівайце на працягу пяці секунд абедзве клавішы гучнасці.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Рэжым высокай кантраснасці</translation>
-<translation id="7977639574084142279">Выключаны</translation>
 <translation id="7977927628060636163">Ідзе пошук мабільных сетак...</translation>
 <translation id="7980780401175799550">Апрабуйце новыя магчымасці навігацыі ў Chrome OS</translation>
 <translation id="7982789257301363584">Сетка</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">выключыла</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
 <translation id="8940956008527784070">Нізкі зарад акумулятара (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Цёмны рэжым выключаны.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>

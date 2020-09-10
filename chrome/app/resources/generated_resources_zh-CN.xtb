@@ -996,7 +996,7 @@
 <translation id="2174948148799307353">该帐号由 <ph name="PARENT_EMAIL" /> 管理。如需在此设备上退出主帐号，请点击屏幕上的时间。在随即显示的菜单中，点击“退出”。</translation>
 <translation id="2175607476662778685">快速启动栏</translation>
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
-<translation id="2177950615300672361">隐身标签页：<ph name="TAB_NAME" /></translation>
+<translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
 <translation id="2178098616815594724"><ph name="PEPPER_PLUGIN_DOMAIN" /> 上的“<ph name="PEPPER_PLUGIN_NAME" />”想访问您的计算机</translation>
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
@@ -3740,7 +3740,7 @@
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
 <translation id="5527463195266282916">已尝试对扩展程序降级。</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
-<translation id="5530766185686772672">关闭隐身标签页</translation>
+<translation id="5530766185686772672">关闭无痕模式标签页</translation>
 <translation id="5532223876348815659">全局</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />想要</translation>
 <translation id="5534304873398226603">舍弃照片或视频</translation>

@@ -2642,6 +2642,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Personalizar o tamanho e o estilo das legendas em apps compatíveis com esta configuração</translation>
 <translation id="4110490973560452005">Download concluído: <ph name="FILE_NAME" />. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4110686435123617899">Selecionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Navegue na Web usando o modo de alto contraste</translation>
@@ -2841,6 +2842,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4390000551125140321">{0,plural, =1{Anônima}one{# janela anônima aberta}other{# janelas anônimas abertas}}</translation>
 <translation id="439266289085815679">A configuração do Bluetooth é controlada por <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Editar o arquivo de configuração</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> desativou a depuração do adb. Não será possível transferir apps por sideload depois de reiniciar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4394049700291259645">Desativar</translation>
 <translation id="439817266247065935">Seu dispositivo não foi desligado corretamente. Reinicie-o para usar apps do Linux.</translation>
 <translation id="4400367121200150367">Sites que nunca salvam senhas serão mostrados aqui</translation>
@@ -3530,6 +3532,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="5266113311903163739">Erro de importação da Autoridade de certificação</translation>
 <translation id="5269977353971873915">Falha ao imprimir</translation>
+<translation id="5274738462757057090">Cria legendas automaticamente para mídia no navegador Chrome. Atualmente disponível apenas em inglês</translation>
 <translation id="5275352920323889391">Cachorro</translation>
 <translation id="527605982717517565">Sempre permitir JavaScript em <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de status</translation>
@@ -3966,6 +3969,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5794700615121138172">Pastas compartilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todos os aplicativos do Google Chrome</translation>
 <translation id="5797070761912323120">O Google pode usar seu histórico para personalizar a Pesquisa, os anúncios e outros serviços que ele oferece</translation>
+<translation id="5798301976526354562">Tamanho do texto (também se aplica ao recurso Legenda instantânea)</translation>
 <translation id="579915268381781820">Sua chave de segurança foi removida.</translation>
 <translation id="5799508265798272974">Máquina virtual Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O arquivo de destino foi truncado ou removido desde o último download.</translation>
@@ -4875,6 +4879,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6911324888870229398">A conexão de rede foi perdida. Verifique a conexão ou tente outra rede Wi-Fi.</translation>
 <translation id="6911734910326569517">Ocupação da memória</translation>
 <translation id="6912007319859991306">PIN do chip da rede celular</translation>
+<translation id="691289340230098384">Preferências de legenda</translation>
 <translation id="6914783257214138813">Suas senhas ficarão visíveis para qualquer pessoa que tiver acesso ao arquivo exportado.</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916590542764765824">Gerenciar extensões</translation>
@@ -6163,6 +6168,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8467326454809944210">Escolher outro idioma</translation>
 <translation id="8470214316007448308">Outras pessoas</translation>
 <translation id="8470513973197838199">Senhas salvas para <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> está desativando a depuração do adb. O <ph name="DEVICE_TYPE" /> será redefinido em 24 horas. Faça backup dos arquivos importantes para você.</translation>
 <translation id="8472623782143987204">suportado por hardware</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8475313423285172237">Outro programa em seu computador adicionou uma extensão que pode mudar a forma como o Google Chrome funciona.</translation>

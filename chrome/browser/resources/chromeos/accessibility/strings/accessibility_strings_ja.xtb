@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">タップ</translation>
 <translation id="8173092779156526980">4 本の指で左にスワイプします</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{アンダースコア}other{# 個のアンダースコア}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">行</translation>
 <translation id="8186185314313222077">全画面表示の切り替え</translation>
 <translation id="8199231515320852133">現在のセルの見出しを読み上げる</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">行<ph name="TABLECELLROWINDEX" />列<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">前のラジオボタンはありません</translation>
 <translation id="8970172509886453271">前のセクションはありません</translation>
+<translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">ツールチップ</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="9040132695316389094">見出し 1</translation>

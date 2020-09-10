@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ಈ ಸೆಶನ್‌ನಲ್ಲಿ ನೀವು ನಡೆಸುವ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಯನ್ನು ಪ್ರವೇಶಿಸುವುದು</translation>
 <translation id="1632985212731562677">ಪ್ರವೇಶ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
-<translation id="1665244008632896072">ಕತ್ತಲೆ ಮೋಡ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ತಟಸ್ಥ ಬಣ್ಣ ಮೋಡ್, ವಾಲ್‌ಪೇಪರ್‌ನಿಂದ ಆಯ್ದು ತೆಗೆದ ಬಣ್ಣಗಳನ್ನು ಬಳಸುವುದಿಲ್ಲ, ಅವುಗಳನ್ನು ತಟಸ್ಥ ಛಾಯೆಯ ಬೆಳಕು ಅಥವಾ ಗಾಢ ವರ್ಣಗಳಿಂದ ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ಟೈಮರ್ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1761222317188459878">ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ಬಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
-<translation id="1776485282219497802">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="1782199038061388045">ಅನುವಾದ</translation>
 <translation id="181103072419391116">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>
 <translation id="1812997170047690955">ನನ್ನ ಪರದೆಯಲ್ಲಿ ಏನಿದೆ?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">ಕೀಬೋರ್ಡ್ ಲೇಔಟ್ ಬದಲಾಯಿಸಲು <ph name="KEYBOARD_SHORTCUT" /> ಒತ್ತಿರಿ.</translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
 <translation id="2509468283778169019">CAPS LOCK ಆನ್ ಆಗಿದೆ</translation>
-<translation id="2517829236324128850">ಕತ್ತಲೆ ಮೋಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2542089167727451762">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಚಿತ್ರದ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="255671100581129685">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಸಾರ್ವಜನಿಕ ಸೆಶನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="256712445991462162">ಡಾಕ್ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /> ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5860033963881614850">ಆಫ್</translation>
 <translation id="5876666360658629066">ಪೋಷಕ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
-<translation id="5887866489674258948">ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ನಿಷ್ಕ್ರಿಯ ಡೆಸ್ಕ್.</translation>
@@ -542,7 +538,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6972754398087986839">ಪ್ರಾರಂಭಗೊಂಡಿದೆ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="698231206551913481">ಒಮ್ಮೆ ಈ ಬಳಕೆದಾರರನ್ನು ತೆಗೆದುಹಾಕಿದಾಗ ಈ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="6990778048354947307">ಗಾಢ ಥೀಮ್</translation>
 <translation id="7007983414944123363">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ಸಮಯಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="7025533177575372252">ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಸಾಧನವನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
@@ -599,7 +594,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ಮಾಲೀಕರು)</translation>
 <translation id="7647488630410863958">ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
-<translation id="7653418004652142983">ಆನ್</translation>
 <translation id="7654687942625752712">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಎರಡೂ ವಾಲ್ಯೂಮ್ ಕೀಗಳನ್ನು ಐದು ಸೆಕೆಂಡ್‌ಗಳ ಕಾಲ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7933084174919150729">ಪ್ರಾಥಮಿಕ ಪ್ರೊಫೈಲ್‌ಗೆ ಮಾತ್ರ Google ಸಹಾಯಕ ಲಭ್ಯವಿದೆ.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ಮತ್ತು <ph name="SECOND_PARENT_EMAIL" /> ಮೂಲಕ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="7955885781510802139">ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
-<translation id="7977639574084142279">ಆಫ್</translation>
 <translation id="7977927628060636163">ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7980780401175799550">Chrome OS ನಲ್ಲಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು, ಹೊಸ ಮಾರ್ಗಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ ನೋಡಿ</translation>
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
@@ -733,7 +726,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8936501819958976551">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8938800817013097409">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿನ ಬಲ ಪೋರ್ಟ್‌)</translation>
 <translation id="8940956008527784070">ಬ್ಯಾಟರಿ ಕಡಿಮೆ (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">ಕತ್ತಲೆ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="899350903320462459">ಅಧಿಸೂಚನೆ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು <ph name="LOGIN_ID" /> ನಂತೆ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>

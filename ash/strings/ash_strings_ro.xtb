@@ -67,7 +67,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
-<translation id="1665244008632896072">Activează/dezactivează modul întunecat. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Modul de culoare neutru nu folosește culori extrase din imaginea de fundal, ci le înlocuiește cu un set de culori deschise sau închise în tonuri neutre.</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Temporizator de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1747827819627189109">Tastatură pe ecran activată</translation>
 <translation id="1761222317188459878">Comută conexiunea la rețea. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Derulează la dreapta</translation>
-<translation id="1776485282219497802">Modul întunecat este activat.</translation>
 <translation id="1782199038061388045">traducere</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="1812997170047690955">Ce este pe ecranul meu?</translation>
@@ -152,7 +150,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2484513351006226581">Apasă <ph name="KEYBOARD_SHORTCUT" /> pentru a schimba aspectul tastaturii.</translation>
 <translation id="2501920221385095727">Taste adezive</translation>
 <translation id="2509468283778169019">Tasta CAPS LOCK este activată</translation>
-<translation id="2517829236324128850">Afișează setările modului întunecat</translation>
 <translation id="2542089167727451762">Atinge imaginea de profil</translation>
 <translation id="255671100581129685">Asistentul Google nu este disponibil într-o sesiune publică.</translation>
 <translation id="256712445991462162">lupa andocată</translation>
@@ -440,7 +437,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5837036133683224804">Întrerupe <ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5876666360658629066">Introdu codul pentru părinte</translation>
-<translation id="5887866489674258948">Mod întunecat</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Desktop inactiv.</translation>
@@ -541,7 +537,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6972754398087986839">Începe</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="698231206551913481">Toate fișierele și datele locale asociate acestui utilizator vor fi șterse definitiv după eliminarea utilizatorului.</translation>
-<translation id="6990778048354947307">Temă în culori întunecate</translation>
 <translation id="7007983414944123363">Codul PIN sau parola nu au putut fi confirmate. Încearcă din nou.</translation>
 <translation id="7015766095477679451">Revino la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Conectează-ți dispozitivul <ph name="DEVICE_NAME" /> cu telefonul</translation>
@@ -598,7 +593,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietar)</translation>
 <translation id="7647488630410863958">Deblochează dispozitivul pentru a vedea notificările</translation>
 <translation id="7649070708921625228">Ajutor</translation>
-<translation id="7653418004652142983">Activat</translation>
 <translation id="7654687942625752712">Apasă lung ambele taste de volum timp de cinci secunde ca să dezactivezi feedbackul rostit.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7933084174919150729">Asistentul Google este disponibil numai pentru profilul principal.</translation>
 <translation id="79341161159229895">Cont gestionat de <ph name="FIRST_PARENT_EMAIL" /> și de <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modul de contrast ridicat</translation>
-<translation id="7977639574084142279">Dezactivat</translation>
 <translation id="7977927628060636163">Se caută rețele mobile…</translation>
 <translation id="7980780401175799550">Încearcă moduri noi de a naviga prin sistemul de operare Chrome</translation>
 <translation id="7982789257301363584">Rețea</translation>
@@ -732,7 +725,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8936501819958976551">dezactivată</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
 <translation id="8940956008527784070">Baterie slabă (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Modul întunecat este dezactivat.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Se folosește <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Deblochează dispozitivul ca <ph name="LOGIN_ID" /> pentru efectuarea acțiunii de notificare</translation>

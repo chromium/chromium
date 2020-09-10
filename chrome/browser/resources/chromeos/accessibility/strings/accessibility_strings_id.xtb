@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">Sentuh</translation>
 <translation id="8173092779156526980">Geser empat jari ke kiri</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{garis bawah}other{# garis bawah}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">baris</translation>
 <translation id="8186185314313222077">beralih ke layar penuh</translation>
 <translation id="8199231515320852133">Mengumumkan judul sel saat ini</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639">b<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Tidak ada tombol pilihan sebelumnya</translation>
 <translation id="8970172509886453271">Tidak ada bagian sebelumnya</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Lupakan</translation>
 <translation id="9040132695316389094">Judul 1</translation>

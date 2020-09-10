@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ဤစက်ရှင်ရှိ သင့်လုပ်ဆောင်ချက်အားလုံးကို ဝင်ကြည့်နိုင်သည်</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
-<translation id="1665244008632896072">'အမှောင်မုဒ်' ပြောင်းရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">သဘာဝအရောင်မုဒ်သည် နောက်ခံမှ ထုတ်ထားသည့်အရောင်ကို မသုံးပါ၊ ၎င်းတို့ကို သဘာဝအရောင်စပ် အလင်း သို့မဟုတ် အမှောင် အရောင်ဖြင့် အစားထိုးသည်။</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> တိုင်မာ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ဖွင့်ထား</translation>
 <translation id="1761222317188459878">ကွန်ရက်ချိတ်ဆက်မှုကို အဖွင့်အပိတ်ပြုလုပ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
-<translation id="1776485282219497802">'အမှောင်မုဒ်' ဖွင့်ထားသည်။</translation>
 <translation id="1782199038061388045">ဘာသာပြန်ခြင်း</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားပါသည်</translation>
 <translation id="1812997170047690955">ကျွန်ုပ်၏ ဖန်သားပြင်ပေါ်တွင် မည်သည့်အရာများ ရှိပါသလဲ။</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">ကီးဘုတ်လက်ကွက် ပြောင်းရန် <ph name="KEYBOARD_SHORTCUT" /> ကို နှိပ်ပါ။</translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2509468283778169019">စာလုံးကြီးရန် သော့ခလုတ် ပွင့်နေ</translation>
-<translation id="2517829236324128850">'အမှောင်မုဒ်' ဆက်တင်များကို ပြရန်</translation>
 <translation id="2542089167727451762">သင့်ပရိုဖိုင်ပုံကို တို့ရန်</translation>
 <translation id="255671100581129685">အများသုံးစက်ရှင်တွင် Google Assistant အသုံးပြု၍ မရပါ။</translation>
 <translation id="256712445991462162">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
 <translation id="5876666360658629066">မိဘကုဒ်ကို ထည့်ပါ</translation>
-<translation id="5887866489674258948">အမှောင်မုဒ်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">အသုံးမပြုသော မျက်နှာပြင်နေရာ။</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="698231206551913481">ဤအသုံးပြုသူကို ဖယ်ရှားလိုက်သည်နှင့် ၎င်းနှင့်ဆက်စပ်နေသော ဖိုင်များနှင့် စက်တွင်းဒေတာများအားလုံး အပြီးတိုင် ပျက်သွားလိမ့်မည်။</translation>
-<translation id="6990778048354947307">မှောင်မည်းသော အပြင်အဆင်</translation>
 <translation id="7007983414944123363">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ၌ ပြန်လာပါ။</translation>
 <translation id="7025533177575372252">သင်၏ <ph name="DEVICE_NAME" /> ကို သင့်ဖုန်းဖြင့် ချိတ်ဆက်ပါ</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ပိုင်ရှင်)</translation>
 <translation id="7647488630410863958">အကြောင်းကြားချက်များကို ကြည့်ရန် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
-<translation id="7653418004652142983">ဖွင့်ရန်</translation>
 <translation id="7654687942625752712">စကားပြော အကြံပြုချက်ကို ပိတ်ရန် အသံအတိုးအလျှော့ခလုတ် နှစ်ခုလုံးကို ၅ စက္ကန့်ကြာ ဖိထားပါ။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Assistant သည် ပင်မပရိုဖိုင်အတွက်သာ ရနိုင်ပါသည်။</translation>
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="7955885781510802139">အရောင်ခြားနားချက်မြင့်သော မုဒ်</translation>
-<translation id="7977639574084142279">ပိတ်</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>
 <translation id="7980780401175799550">Chrome OS တွင် လမ်းညွှန်ရန်နည်းလမ်းအသစ်များကို စမ်းကြည့်ပါ</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">ရပ်ထားသည်</translation>
 <translation id="8938800817013097409">USB-C ကိရိယာ (ကျောဘက် ညာ ပို့တ်)</translation>
 <translation id="8940956008527784070">ဓာတ်ခဲအားနည်း (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">'အမှောင်မုဒ်' ပိတ်ထားသည်။</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ကို အသုံးပြုနေသည်</translation>
 <translation id="899350903320462459">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် <ph name="LOGIN_ID" /> အဖြစ် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>

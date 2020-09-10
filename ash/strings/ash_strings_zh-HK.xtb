@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
-<translation id="1665244008632896072">切換「暗光模式」。<ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">中性色調模式不會使用從桌布擷取的顏色，而是改用一組中性的淺色或深色調。</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 計時器 · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">屏幕鍵盤已啟用</translation>
 <translation id="1761222317188459878">切換網絡連線。<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">向右捲動</translation>
-<translation id="1776485282219497802">「暗光模式」已開啟。</translation>
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1812997170047690955">我嘅畫面上面有咩？</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" /> 鍵可切換鍵盤配置。</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
-<translation id="2517829236324128850">顯示暗光模式設定</translation>
 <translation id="2542089167727451762">輕按您的個人檔案圖片</translation>
 <translation id="255671100581129685">「Google 助理」不適用於公開工作階段。</translation>
 <translation id="256712445991462162">固定的放大鏡</translation>
@@ -240,7 +237,7 @@
 <translation id="3428447136709161042">中斷同<ph name="NETWORK_NAME" />嘅連線</translation>
 <translation id="3430396595145920809">從螢幕右側向左滑動即可返回</translation>
 <translation id="343571671045587506">編輯提醒</translation>
-<translation id="3435967511775410570">識別咗指紋</translation>
+<translation id="3435967511775410570">成功識別指紋</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
 <translation id="3454224730401036106">連線已切換至更安全的網絡</translation>
 <translation id="3465223694362104965">自您上次登入以來，有另一個鍵盤連接到此裝置。請在使用前確定您信任此鍵盤。</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
-<translation id="5887866489674258948">暗光模式</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
 <translation id="5909862606227538307">唔係用緊嘅桌面。</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="698231206551913481">移除這位使用者後，系統便會永久刪除所有與該使用者相關的檔案和本機數據。</translation>
-<translation id="6990778048354947307">暗色主題</translation>
 <translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結至您的手機</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7647488630410863958">解鎖裝置即可查看您的通知</translation>
 <translation id="7649070708921625228">說明</translation>
-<translation id="7653418004652142983">開啟</translation>
 <translation id="7654687942625752712">同時按住兩個音量鍵五秒，即可停用朗讀功能。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">「Google 助理」僅適用於主要設定檔。</translation>
 <translation id="79341161159229895">帳戶由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="7955885781510802139">高對比模式</translation>
-<translation id="7977639574084142279">關閉</translation>
 <translation id="7977927628060636163">正在搜尋流動網絡…</translation>
 <translation id="7980780401175799550">試用導覽 Chrome 作業系統的新方式</translation>
 <translation id="7982789257301363584">網絡</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (後方右側連接埠)</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">「暗光模式」已關閉。</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">正在使用<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>

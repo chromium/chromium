@@ -507,7 +507,7 @@
 <translation id="158849752021629804">Heimnetzwerk erforderlich</translation>
 <translation id="1588870296199743671">Link öffnen mit...</translation>
 <translation id="1589055389569595240">Rechtschreibung und Grammatik einblenden</translation>
-<translation id="1591679663873027990">Du kannst Parallels Desktop erlauben, auf USB-Geräte zuzugreifen. Parallels Desktop merkt sich USB-Geräte nicht, nachdem sie entfernt wurden.</translation>
+<translation id="1591679663873027990">Parallels Desktop erlauben, auf USB-Geräte zuzugreifen. Parallels Desktop merkt sich keine USB-Geräte, nachdem sie entfernt wurden.</translation>
 <translation id="1593594475886691512">Formatierung wird ausgeführt...</translation>
 <translation id="159359590073980872">Bilder-Cache</translation>
 <translation id="1593926297800505364">Zahlungsmethode speichern</translation>
@@ -3125,7 +3125,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
-<translation id="4752124003533492687">Öffnen Sie die Einstellungen, um <ph name="USB_DEVICE_NAME" /> zu verbinden</translation>
+<translation id="4752124003533492687">Bitte die Einstellungen öffnen, um <ph name="USB_DEVICE_NAME" /> zu verbinden</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -5185,7 +5185,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7303900363563182677">Diese Website wurde daran gehindert, Texte und Bilder aus der Zwischenablage abzurufen</translation>
 <translation id="7305123176580523628">USB-Drucker verbunden</translation>
 <translation id="730515362922783851">Daten mit einem beliebigen Gerät im lokalen Netzwerk oder Internet austauschen</translation>
-<translation id="7306521477691455105">Öffnen Sie die Einstellungen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
+<translation id="7306521477691455105">Bitte die Einstellungenöffnen, um <ph name="USB_DEVICE_NAME" /> mit <ph name="USB_VM_NAME" /> zu verbinden</translation>
 <translation id="7307129035224081534">Pausiert</translation>
 <translation id="7308002049209013926">Über den Launcher gelangen Sie schnell zu neuen Apps und Aktivitäten. Zum Öffnen über die Tastatur drücken Sie Alt + Umschalttaste + L.</translation>
 <translation id="7309257895202129721">&amp;Steuerelemente anzeigen</translation>

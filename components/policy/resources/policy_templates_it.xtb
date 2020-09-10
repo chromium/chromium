@@ -4649,9 +4649,6 @@ Se l'impostazione viene disattivata, questa funzione non sarà disponibile.</tra
 
        Tieni presente che in precedenza questo criterio è stato erroneamente abilitato su Android, ma questa funzionalità non è mai stata completamente supportata su Android.</translation>
 <translation id="7614663184588396421">Elenco degli schemi di protocollo disabilitati</translation>
-<translation id="7617319494457709698">Questa norma consente di specificare le estensioni autorizzate a usare la funzione <ph name="CHALLENGE_USER_KEY_FUNCTION" /> dell'<ph name="ENTERPRISE_PLATFORM_KEYS_API" /> per l'attestazione da remoto. Le estensioni devono essere aggiunte a questo elenco per utilizzare l'API.
-
-          Se un'estensione non è presente nell'elenco o l'elenco non è impostato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
 <translation id="7620869951155758729">Questa norma consente di specificare la configurazione utilizzata per generare e verificare il codice di accesso genitori.
 
       La configurazione |current_config| viene sempre utilizzata per generare un codice di accesso e deve essere utilizzata per convalidare il codice di accesso solo quando non può essere convalidato con |future_config|.
@@ -5084,6 +5081,7 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
+<translation id="8284296539558710573">Prompt di autenticazione HTTP multiorigine</translation>
 <translation id="8285435910062771358">Ingrandimento a schermo intero attivo</translation>
 <translation id="8288199156259560552">Attiva il servizio di geolocalizzazione di Google per Android</translation>
 <translation id="8290875622178450531">Consente di attivare la funzione di accessibilità di dettatura.

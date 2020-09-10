@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
-<translation id="1665244008632896072">ଡାର୍କ ମୋଡ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ନ୍ୟୁଟ୍ରାଲ୍ କଲର ମୋଡ୍ ୱାଲପେପରରୁ ବାହାର କରାଯାଇଥିବା ରଙ୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ ନାହିଁ, ତାହା ପରିବର୍ତ୍ତେ ନ୍ୟୁଟ୍ରାଲ୍ ଟୋନ୍ ଥିବା ଫିକା କିମ୍ବା ଗାଢ଼ା ରଙ୍ଗର ଏକ ସେଟ୍ ବ୍ୟବହାର କରେ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ଟାଇମର୍ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ଅନ୍ ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1761222317188459878">ନେଟ୍‌ୱର୍କ ସଂଯୋଗ ଟୋଗଲ୍‌ କରନ୍ତୁ।<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
-<translation id="1776485282219497802">ଡାର୍କ ମୋଡ୍ ଚାଲୁ ଅଛି।</translation>
 <translation id="1782199038061388045">ଅନୁବାଦ</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1812997170047690955">ମୋ ସ୍କ୍ରିନ୍‌ରେ କ’ଣ ଅଛି?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">କୀ'ବୋର୍ଡ ଲେଆଉଟ୍‌କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ <ph name="KEYBOARD_SHORTCUT" /> ଦବାନ୍ତୁ।</translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
 <translation id="2509468283778169019">CAPS LOCK ଅନ୍ ଅଛି</translation>
-<translation id="2517829236324128850">ଡାର୍କ ମୋଡ୍ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="2542089167727451762">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ଛବି ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="255671100581129685">Google ଆସିଷ୍ଟାଣ୍ଟ ଏକ ସାର୍ବଜନିକ ଅବଧିରେ ଉପଲବ୍ଧ ନୁହେଁ।</translation>
 <translation id="256712445991462162">ଡକ୍ ହୋଇଥିବା ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
 <translation id="5876666360658629066">ବାପାମା କୋଡ୍ ଲେଖନ୍ତୁ</translation>
-<translation id="5887866489674258948">ଡାର୍କ ମୋଡ୍</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ନିଷ୍କ୍ରିୟ ଡେସ୍କ।</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
 <translation id="698231206551913481">ଥରେ ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ିଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ।</translation>
-<translation id="6990778048354947307">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="7007983414944123363">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />ରେ ଆସନ୍ତୁ।</translation>
 <translation id="7025533177575372252">ଆପଣଙ୍କର <ph name="DEVICE_NAME" />କୁ ନିଜ ଫୋନ୍ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ମାଲିକ)</translation>
 <translation id="7647488630410863958">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତି ଦେଖିବାକୁ ଡିଭାଇସ୍‌ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
-<translation id="7653418004652142983">ଚାଲୁ</translation>
 <translation id="7654687942625752712">କୁହାଯାଇଥିବା ମତାମତ ଅକ୍ଷମ କରିବାକୁ ଉଭୟ ଭଲ୍ୟୁମ୍‍ କୀ ଦବାଇ ରଖନ୍ତୁ।</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Assistant କେବଳ ପ୍ରାଥମିକ ପ୍ରୋଫାଇଲ୍ ପାଇଁ ଉପଲବ୍ଧ ଅଟେ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ଏବଂ <ph name="SECOND_PARENT_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="7955885781510802139">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ ମୋଡ୍</translation>
-<translation id="7977639574084142279">ବନ୍ଦ</translation>
 <translation id="7977927628060636163">ମୋବାଇଲ୍ ନେଟ୍‌ୱର୍କ ଖୋଜୁଛି...</translation>
 <translation id="7980780401175799550">Chrome OSକୁ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ନୂଆ ଉପାୟଗୁଡ଼ିକ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="7982789257301363584">ନେଟୱାର୍କ</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">ନିଷ୍କ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="8938800817013097409">USB-C ଡିଭାଇସ୍‌ (ପଛରେ ଥିବା ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="8940956008527784070">ବ୍ୟାଟେରୀ କମ୍ ଅଛି (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">ଡାର୍କ ମୋଡ୍ ବନ୍ଦ ଅଛି।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ବ୍ୟବହାର କରି</translation>
 <translation id="899350903320462459">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ <ph name="LOGIN_ID" /> ଭାବେ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>

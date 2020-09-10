@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
 <translation id="1654477262762802994">વૉઇસ ક્વેરી શરૂ કરો</translation>
-<translation id="1665244008632896072">ઘેરો મોડને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ન્યૂટ્રલ કલર મોડ વૉલપેપરમાંથી મેળવવામાં આવેલા રંગોનો ઉપયોગ કરતો નથી, તેને બદલે તટસ્થપણે ટોન કરેલી આછી કે ઘેરી રંગછટાના સેટનો ઉપયોગ કરે છે.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> બાકી</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ટાઇમર · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
 <translation id="1761222317188459878">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">જમણે સ્ક્રોલ કરો</translation>
-<translation id="1776485282219497802">ઘેરો મોડ ચાલુ છે.</translation>
 <translation id="1782199038061388045">અનુવાદ</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1812997170047690955">મારી સ્ક્રીન પર શું છે?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">કીબોર્ડ લેઆઉટ સ્વિચ કરવા માટે <ph name="KEYBOARD_SHORTCUT" />ને દબાવો.</translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
 <translation id="2509468283778169019">CAPS LOCK ચાલુ છે</translation>
-<translation id="2517829236324128850">ઘેરો મોડ સેટિંગ બતાવો</translation>
 <translation id="2542089167727451762">તમારા પ્રોફાઇલ ફોટા પર ટૅપ કરો</translation>
 <translation id="255671100581129685">જાહેર સત્રમાં Google આસિસ્ટંટ ઉપલબ્ધ હોતું નથી.</translation>
 <translation id="256712445991462162">ડૉક કરેલું મૅગ્નિફાયર</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" />ને રોકો</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5876666360658629066">માતાપિતાનો કોડ દાખલ કરો</translation>
-<translation id="5887866489674258948">ઘેરો મોડ</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">નિષ્ક્રિય ડેસ્કટૉપ.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">પ્રારંભ કરો</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="698231206551913481">આ વપરાશકર્તા દૂર કરી દેવામાં આવે તે પછી આ વપરાશકર્તા સાથે સંકળાયેલ તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમીરૂપે કાઢી નાખવામાં આવશે.</translation>
-<translation id="6990778048354947307">ઘાટી થીમ</translation>
 <translation id="7007983414944123363">તમારો પિન કે પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવો.</translation>
 <translation id="7025533177575372252">તમારા <ph name="DEVICE_NAME" />ને તમારા ફોન સાથે કનેક્ટ કરો</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (માલિક)</translation>
 <translation id="7647488630410863958">તમારી સૂચનાઓ જોવા માટે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="7649070708921625228">સહાય</translation>
-<translation id="7653418004652142983">ચાલુ</translation>
 <translation id="7654687942625752712">બોલાયેલ પ્રતિસાદ બંધ કરવા પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કીને દબાવી રાખો.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google સહાયક માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="7955885781510802139">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
-<translation id="7977639574084142279">બંધ</translation>
 <translation id="7977927628060636163">મોબાઇલ નેટવર્કની શોધ કરી રહ્યું છે...</translation>
 <translation id="7980780401175799550">Chrome OS પર નૅવિગેટ કરવાની નવી રીતો અજમાવી જુઓ</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>
 <translation id="8940956008527784070">બૅટરી ઓછી (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">ઘેરો મોડ બંધ છે.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
 <translation id="899350903320462459">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને <ph name="LOGIN_ID" /> તરીકે અનલૉક કરો</translation>

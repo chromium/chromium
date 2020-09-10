@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
-<translation id="1665244008632896072">Вклучете/исклучете „Темен режим“. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Режимот во неутрални бои не користи бои од тапетот, туку ги заменува со збир од неутрални светли или темни нијанси.</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Тајмер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
 <translation id="1761222317188459878">Вклучи/исклучи мрежна врска. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Лизгај надесно</translation>
-<translation id="1776485282219497802">„Темниот режим“ е вклучен.</translation>
 <translation id="1782199038061388045">превод</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1812997170047690955">Што има на мојот екран?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Притиснете <ph name="KEYBOARD_SHORTCUT" /> за да го префрлите распоредот на тастатурата.</translation>
 <translation id="2501920221385095727">Лепливи копчиња</translation>
 <translation id="2509468283778169019">Вклучено е CAPS LOCK</translation>
-<translation id="2517829236324128850">Прикажи ги поставките за темниот режим</translation>
 <translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
@@ -441,7 +438,6 @@
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
-<translation id="5887866489674258948">Темен режим</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Неактивна работна површина.</translation>
@@ -542,7 +538,6 @@
 <translation id="6972754398087986839">Започни</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
-<translation id="6990778048354947307">Темна тема</translation>
 <translation id="7007983414944123363">Не можеше да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
 <translation id="7015766095477679451">Вратете се во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Поврзете го вашиот <ph name="DEVICE_NAME" /> со телефонот</translation>
@@ -599,7 +594,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (сопственик)</translation>
 <translation id="7647488630410863958">Отклучете го уредот за приказ на известувањата</translation>
 <translation id="7649070708921625228">Помош</translation>
-<translation id="7653418004652142983">Вклучено</translation>
 <translation id="7654687942625752712">Притиснете ги и задржете ги двете копчиња за јачина на звук пет секунди за да оневозможите говорни повратни информации.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@
 <translation id="7933084174919150729">„Помошникот на Google“ е достапен само за примарниот профил.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /> управуваат со сметката</translation>
 <translation id="7955885781510802139">Режим на висок контраст</translation>
-<translation id="7977639574084142279">Исклучено</translation>
 <translation id="7977927628060636163">Се пребаруваат мобилни мрежи…</translation>
 <translation id="7980780401175799550">Испробајте нови начини на навигација низ Chrome OS</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -733,7 +726,6 @@
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>
 <translation id="8940956008527784070">Слаба батерија (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">„Темниот режим“ е исклучен.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Се користи <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Отклучете го уредот како <ph name="LOGIN_ID" /> за да се изврши дејството од известувањето</translation>

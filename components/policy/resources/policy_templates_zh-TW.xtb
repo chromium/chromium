@@ -4075,9 +4075,9 @@
       如果某個語言同時列在這項政策和 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 政策中，系統會優先執行後者，為該語言啟用拼字檢查功能。
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
-<translation id="6924916062195228978">你可以透過這項政策，針對列出的網址提供存取權，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許存取數量有限的列出網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定機制、其他網域的子網域、通訊埠或特定路徑設為例外。最精確的篩選器會判定系統要封鎖還是允許網址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。最多只能為這項政策輸入 1000 個項目。
+<translation id="6924916062195228978">你可以設定這項政策，讓使用者存取允許清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。最多只能為這項政策輸入 1000 個項目。
 
-      你也可以透過這項政策列出「tel:」或「ssh:」等通訊協定，針對註冊為通訊協定處理常式的外部應用程式，啟用瀏覽器的自動叫用功能。
+      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理允許清單中的通訊協定，例如「tel:」或「ssh:」)。
 
       如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外。
 
@@ -4374,9 +4374,9 @@
 <translation id="7258823566580374486">啟用遠端存取主機遮幕</translation>
 <translation id="7259664319370317355">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
 
-      你可以透過這項政策，針對列出的網址提供存取權，這些網址是網址封鎖清單的例外。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許存取數量有限的列出網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定機制、其他網域的子網域、通訊埠或特定路徑設為例外。最精確的篩選器會判定系統要封鎖還是允許網址。允許清單的優先順序高於封鎖清單。最多只能為這項政策輸入 1000 個項目。
+      你可以設定這項政策，讓使用者存取允許清單中的網址，這些網址是網址封鎖清單的例外項目。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://www.chromium.org/administrators/url-blacklist-filter-format 網頁中所指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。需要判定是否封鎖某一個網址時，則會以條件最精確的篩選器做為判定依據。允許清單的優先順序高於封鎖清單。最多只能為這項政策輸入 1000 個項目。
 
-      你也可以透過這項政策列出「tel:」或「ssh:」等通訊協定，針對註冊為通訊協定處理常式的外部應用程式，啟用瀏覽器的自動叫用功能。
+      這項政策還可以讓瀏覽器叫用一些外部的應用程式，也就是註冊為協定處理常式的應用程式 (用於處理允許清單中的通訊協定，例如「tel:」或「ssh:」)。
 
       如果未設定這項政策，就不會有例外。
 
@@ -4624,9 +4624,6 @@
 
       請注意，先前我們誤在 Android 裝置上啟用這項政策，但這項功能從未針對 Android 裝置提供完整支援。</translation>
 <translation id="7614663184588396421">停用的通訊協定機制清單</translation>
-<translation id="7617319494457709698">這項政策可讓你指定允許從遠端使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函式「<ph name="CHALLENGE_USER_KEY_FUNCTION" />」證明身分的擴充功能。只有加入這份清單的擴充功能可以使用該 API。
-
-          如果不是清單中的擴充功能，或是未設定清單，API 呼叫作業將會失敗，並傳回錯誤代碼。</translation>
 <translation id="7620869951155758729">這項政策可讓你指定用來產生及驗證家長存取碼的設定。請一律使用 |current_config| 來產生存取碼，而且只有在無法透過 |future_config| 驗證存取碼時，才能使用這項設定進行驗證。
       |future_config| 是驗證存取碼時主要使用的設定。只有在 |future_config| 和 |current_config| 兩者都無法用於驗證存取碼時，才能使用 |old_configs| 進行驗證。
 

@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Tàctil</translation>
 <translation id="8173092779156526980">Fes lliscar quatre dits cap a l'esquerra</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ratlla baixa}other{# ratlles baixes}}</translation>
+<translation id="8179976553408161302">Retorn</translation>
 <translation id="8184828902145951186">fila</translation>
 <translation id="8186185314313222077">activa la pantalla completa</translation>
 <translation id="8199231515320852133">Presenta les capçaleres de la cel·la actual.</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">No hi ha cap botó d'opció anterior</translation>
 <translation id="8970172509886453271">No hi ha cap secció anterior</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="9040132695316389094">Capçalera 1</translation>

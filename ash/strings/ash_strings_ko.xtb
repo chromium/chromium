@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
-<translation id="1665244008632896072">어두운 모드로 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">중성 색상 모드는 배경화면에서 추출한 색상을 사용하지 않고 밝거나 어두운 중성 색상으로 대체합니다.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> 타이머 · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
 <translation id="1761222317188459878">네트워크 연결을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
-<translation id="1776485282219497802">어두운 모드를 사용 중입니다.</translation>
 <translation id="1782199038061388045">번역</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
 <translation id="1812997170047690955">화면에 표시된 내용 찾아보기</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">키보드 레이아웃을 전환하려면 <ph name="KEYBOARD_SHORTCUT" />을(를) 누르세요.</translation>
 <translation id="2501920221385095727">고정키</translation>
 <translation id="2509468283778169019">CAPS LOCK이 켜져 있습니다.</translation>
-<translation id="2517829236324128850">어두운 모드 설정 표시</translation>
 <translation id="2542089167727451762">프로필 이미지 탭</translation>
 <translation id="255671100581129685">공개 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="256712445991462162">고정 돋보기</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />에서 <ph name="ROUTE_TITLE" /> 중지</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5876666360658629066">부모 코드 입력</translation>
-<translation id="5887866489674258948">어두운 모드</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">비활성 데스크입니다.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">시작하기</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="698231206551913481">이 사용자를 제거하면 해당 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다.</translation>
-<translation id="6990778048354947307">다크 테마</translation>
 <translation id="7007983414944123363">PIN 또는 비밀번호를 확인할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="7025533177575372252">휴대전화와 <ph name="DEVICE_NAME" /> 연결</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" />(소유자)</translation>
 <translation id="7647488630410863958">기기를 잠금 해제하여 알림 보기</translation>
 <translation id="7649070708921625228">도움말</translation>
-<translation id="7653418004652142983">켜짐</translation>
 <translation id="7654687942625752712">음성 피드백을 사용 중지하려면 두 볼륨 키를 5초 동안 길게 누르세요.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google 어시스턴트는 기본 프로필에서만 사용할 수 있습니다.</translation>
 <translation id="79341161159229895">계정 관리자: <ph name="FIRST_PARENT_EMAIL" /> 및 <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">고대비 모드</translation>
-<translation id="7977639574084142279">꺼짐</translation>
 <translation id="7977927628060636163">모바일 네트워크 검색 중...</translation>
 <translation id="7980780401175799550">Chrome OS의 새로운 탐색 방법 사용해 보기</translation>
 <translation id="7982789257301363584">네트워크</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">비활성화됨</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
 <translation id="8940956008527784070">배터리 부족(<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">어두운 모드가 사용 중지되어 있습니다.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> 사용 중</translation>
 <translation id="899350903320462459">알림 작업을 실행하려면 <ph name="LOGIN_ID" />(으)로 기기의 잠금을 해제하세요.</translation>

@@ -2452,7 +2452,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Si no se le asigna ningún valor, la búsqueda de elementos compartidos en la red estará inhabilitada de forma predeterminada para los usuarios administrados y estará habilitada para los usuarios no administrados.</translation>
 <translation id="4555850956567117258">Habilitar confirmación remota para el usuario</translation>
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
-<translation id="4562165737444703281">Permitir a los usuarios [habilitar/configurar] la Redirección de puertos a Crostini</translation>
+<translation id="4562165737444703281">Permitir a los usuarios [habilitar/configurar] la redirección de puertos a Crostini</translation>
 <translation id="456686782928669977">Esta política controla si se cargarán las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 
       Si se le asigna el valor "true" a esta política, <ph name="PRODUCT_NAME" /> usará la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> para obtener la URL de la lista de sitios web. Después, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="BROWSER_SWITCHER_URL_LIST_POLICY_NAME" />.
@@ -3013,11 +3013,11 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, el teclado en pantalla está en un principio desactivado, pero los usuarios pueden activarlo en cualquier momento.</translation>
 <translation id="537786648513450280">Controlar el uso de aplicaciones Android de fuentes que no son de confianza para el dispositivo</translation>
-<translation id="5379858577608862519">Especifica si está permitida la Redirección de puertos a contenedores de Crostini.
+<translation id="5379858577608862519">Especifica si está permitida la redirección de puertos a contenedores de Crostini.
 
-      Si se le asigna el valor "true" a esta política o no se establece, los usuarios podrán configurar la Redirección de puertos a sus contenedores de Crostini.
+      Si se le asigna el valor "true" a esta política o no se establece, los usuarios podrán configurar la redirección de puertos a sus contenedores de Crostini.
 
-      Si se le asigna el valor "false", se inhabilitará la Redirección de puertos a contenedores de Crostini.</translation>
+      Si se le asigna el valor "false", se inhabilitará la redirección de puertos a contenedores de Crostini.</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que se indican a continuación.</translation>
 <translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite a los usuarios enviar texto entre versiones de Chrome para ordenador y dispositivos Android cuando la sincronización está habilitada y el usuario ha iniciado sesión.
 
@@ -4692,9 +4692,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
        Ten en cuenta que esta política se ha habilitado anteriormente en Android por error, pero la función nunca ha sido totalmente compatible con Android.</translation>
 <translation id="7614663184588396421">Lista de esquemas de protocolo inhabilitados</translation>
-<translation id="7617319494457709698">Esta política especifica las extensiones que pueden usar la función <ph name="CHALLENGE_USER_KEY_FUNCTION" /> de la API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para la confirmación remota. Las extensiones se deben añadir a esta lista para usar la API.
-
-          Si la lista no se ha configurado o si una extensión no está incluida en ella, aparecerá un código de error en la llamada a la API.</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se utiliza para generar y verificar códigos de acceso parental.
 
       |current_config| siempre se utiliza para generar un código de acceso y solo se debe utilizar para validarlo cuando no se pueda validar con |future_config|.

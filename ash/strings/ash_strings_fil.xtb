@@ -67,7 +67,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
-<translation id="1665244008632896072">I-toggle ang Dark Mode. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Ang neutral color mode ay hindi gumagamit ng mga kulay na na-extract sa wallpaper, at pinapalitan nito ang mga ito ng isang hanay ng mga neutral na maliwanag o madilim na kulay.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1747827819627189109">Naka-enable ang on-screen na keyboard</translation>
 <translation id="1761222317188459878">I-toggle ang koneksyon sa network. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
-<translation id="1776485282219497802">Naka-on ang Dark Mode.</translation>
 <translation id="1782199038061388045">pagsasalin</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
 <translation id="1812997170047690955">Ano ang nasa screen ko?</translation>
@@ -152,7 +150,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2484513351006226581">Pindutin ang <ph name="KEYBOARD_SHORTCUT" /> upang palitan ang layout ng keyboard.</translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
 <translation id="2509468283778169019">Naka-on ang CAPS LOCK</translation>
-<translation id="2517829236324128850">Ipakita ang mga setting ng dark mode</translation>
 <translation id="2542089167727451762">I-tap ang iyong larawan sa profile</translation>
 <translation id="255671100581129685">Hindi available ang Google Assistant sa isang pampublikong session.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
@@ -440,7 +437,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5876666360658629066">Ilagay ang code ng magulang</translation>
-<translation id="5887866489674258948">Dark Mode</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Hindi aktibong desk.</translation>
@@ -541,7 +537,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6972754398087986839">Magsimula</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">Permanenteng made-delete ang lahat ng file at lokal na data na nauugnay sa user na ito kapag inalis na ang user na ito.</translation>
-<translation id="6990778048354947307">Madilim na Tema</translation>
 <translation id="7007983414944123363">Hindi ma-verify ang iyong PIN o password. Subukan ulit.</translation>
 <translation id="7015766095477679451">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Ikonekta ang iyong <ph name="DEVICE_NAME" /> sa telepono mo</translation>
@@ -598,7 +593,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
 <translation id="7647488630410863958">I-unlock ang device upang tingnan ang iyong mga notification</translation>
 <translation id="7649070708921625228">Tulong</translation>
-<translation id="7653418004652142983">Naka-on</translation>
 <translation id="7654687942625752712">Pindutin nang matagal ang parehong volume key sa loob ng limang segundo para i-disable ang pasalitang feedback.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7933084174919150729">Available lang ang Google Assistant para sa pangunahing profile.</translation>
 <translation id="79341161159229895">Pinamamahalaan nina <ph name="FIRST_PARENT_EMAIL" /> at <ph name="SECOND_PARENT_EMAIL" /> ang account</translation>
 <translation id="7955885781510802139">High-contrast mode</translation>
-<translation id="7977639574084142279">Naka-off</translation>
 <translation id="7977927628060636163">Naghahanap ng mga mobile network...</translation>
 <translation id="7980780401175799550">Sumubok ng mga bagong paraan para i-navigate ang Chrome OS</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -732,7 +725,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8940956008527784070">Mahina na ang baterya (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Naka-off ang Dark Mode.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">I-unlock ang device bilang <ph name="LOGIN_ID" /> para maisagawa ang pagkilos sa notification</translation>

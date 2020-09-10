@@ -67,7 +67,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="1654477262762802994">Mulakan pertanyaan suara</translation>
-<translation id="1665244008632896072">Togol Mod Gelap. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Mod warna neutral tidak menggunakan warna yang diekstrak daripada kertas dinding, menggantikan warna tersebut dengan sekumpulan warna cerah bertona neutral atau warna gelap.</translation>
 <translation id="1677472565718498478">Berbaki <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Pemasa <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
 <translation id="1761222317188459878">Togol sambungan rangkaian. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
-<translation id="1776485282219497802">Mod Gelap dihidupkan.</translation>
 <translation id="1782199038061388045">terjemahan</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="1812997170047690955">Apakah yang terdapat pada skrin saya?</translation>
@@ -152,7 +150,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk menukar atur letak papan kekunci.</translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
 <translation id="2509468283778169019">Kekunci CAPS LOCK dihidupkan</translation>
-<translation id="2517829236324128850">Tunjukkan tetapan mod gelap</translation>
 <translation id="2542089167727451762">Ketik imej profil anda</translation>
 <translation id="255671100581129685">Google Assistant tidak tersedia dalam sesi awam.</translation>
 <translation id="256712445991462162">penggadang yang didokkan</translation>
@@ -441,7 +438,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5876666360658629066">Masukkan kod ibu bapa</translation>
-<translation id="5887866489674258948">Mod Gelap</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Meja tidak aktif.</translation>
@@ -542,7 +538,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6972754398087986839">Bermula</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="698231206551913481">Semua fail dan data yang berkaitan dengan pengguna ini akan dipadamkan secara kekal selepas pengguna ini dialih keluar.</translation>
-<translation id="6990778048354947307">Tema Gelap</translation>
 <translation id="7007983414944123363">PIN atau kata laluan anda tidak dapat disahkan. Cuba lagi.</translation>
 <translation id="7015766095477679451">Datang semula pada <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Sambungkan <ph name="DEVICE_NAME" /> anda dengan telefon anda</translation>
@@ -599,7 +594,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7647488630410863958">Buka kunci peranti untuk melihat pemberitahuan anda</translation>
 <translation id="7649070708921625228">Bantuan</translation>
-<translation id="7653418004652142983">Hidup</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk melumpuhkan maklum balas yang dituturkan.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7933084174919150729">Google Assistant hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Mod kontras tinggi</translation>
-<translation id="7977639574084142279">Mati</translation>
 <translation id="7977927628060636163">Mencari rangkaian mudah alih...</translation>
 <translation id="7980780401175799550">Cuba cara baharu untuk menavigasi OS Chrome</translation>
 <translation id="7982789257301363584">Rangkaian</translation>
@@ -733,7 +726,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8936501819958976551">dinyahaktifkan</translation>
 <translation id="8938800817013097409">Peranti USB-C (port kanan di belakang)</translation>
 <translation id="8940956008527784070">Bateri lemah (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Mod Gelap dimatikan.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>

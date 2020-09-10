@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
-<translation id="1665244008632896072">Қараңғы режимді қосыңыз немесе өшіріңіз. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Бейтарап түс режимінде тұсқағаздарыңыздың түстері пайдаланылмайды. Олардың орнына интерфейс бейтарап ашық немесе күңгірт реңктерге боялады.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> таймер · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
 <translation id="1761222317188459878">Желі байланысын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Оңға айналдыру</translation>
-<translation id="1776485282219497802">Қараңғы режим қосулы.</translation>
 <translation id="1782199038061388045">аударма</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
 <translation id="1812997170047690955">Экранда не бар?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Пернетақтаны ауыстыру үшін <ph name="KEYBOARD_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="2501920221385095727">Жабысқақ пернелер</translation>
 <translation id="2509468283778169019">CAPS LOCK қосулы</translation>
-<translation id="2517829236324128850">Қараңғы режим параметрлерін көрсету</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
 <translation id="255671100581129685">Google Assistant жалпыға қолжетімді сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5876666360658629066">Ата-ана кодын енгізіңіз</translation>
-<translation id="5887866489674258948">Қараңғы режим</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Жұмыс үстелі белсенді емес.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Іске кірісу</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
 <translation id="698231206551913481">Бұл пайдаланушы өшірілгеннен кейін, оған қатысты барлық файлдар және жергілікті деректер біржола жойылады.</translation>
-<translation id="6990778048354947307">Күңгірт тақырып</translation>
 <translation id="7007983414944123363">PIN кодыңыз не құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
 <translation id="7015766095477679451">Сағат <ph name="COME_BACK_TIME" /> болғанда, қайта қолданып көріңіз.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> құрылғысын телефонға жалғаңыз</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (иесі)</translation>
 <translation id="7647488630410863958">Хабарландыруларды көру үшін құрылғының құлпын ашыңыз</translation>
 <translation id="7649070708921625228">Анықтама</translation>
-<translation id="7653418004652142983">Қосу</translation>
 <translation id="7654687942625752712">Дауыстап оқу функциясын өшіру үшін дыбыс түймелерін бірге бес секунд басып тұрыңыз.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Assistant тек негізгі профиль үшін қолжетімді.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> және <ph name="SECOND_PARENT_EMAIL" /> басқаратын есептік жазба</translation>
 <translation id="7955885781510802139">Жоғары контраст режимі</translation>
-<translation id="7977639574084142279">Өшіру</translation>
 <translation id="7977927628060636163">Мобильдік желілер ізделуде…</translation>
 <translation id="7980780401175799550">Chrome OS жүйесінде жылжудың жаңа тәсілдері</translation>
 <translation id="7982789257301363584">Желі</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">өшірілді</translation>
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>
 <translation id="8940956008527784070">Батарея заряды төмен (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Қараңғы режим өшірулі.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> пайдалану</translation>
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>

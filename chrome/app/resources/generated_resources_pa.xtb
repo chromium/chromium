@@ -1877,7 +1877,7 @@
 <translation id="3246107497225150582">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ ਇੱਕ ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਦਿਨਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ਨੈੱਟਵਰਕ ਗੜਬੜ</translation>
 <translation id="3248902735035392926">ਸੁਰੱਖਿਆ ਮਾਈਨੇ ਰੱਖਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੁਣੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ<ph name="END_LINK" /> ਲਈ ਸਮਾਂ ਕੱਢੋ</translation>
-<translation id="325036368918787455">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਬੰਦ ਕਰੋ</translation>
+<translation id="325036368918787455">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="3251759466064201842">&lt;ਸਰਟੀਫਿਕੇਟ ਦਾ ਭਾਗ ਨਹੀਂ&gt;</translation>
 <translation id="3253225298092156258">ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="3253448572569133955">ਅਗਿਆਤ ਖਾਤਾ</translation>
@@ -6806,7 +6806,7 @@
 <translation id="947329552760389097">&amp;ਅੰਸ਼ਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="951991426597076286">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="952992212772159698">ਸਕਿਰਿਆ ਨਹੀਂ ਕੀਤਾ</translation>
-<translation id="956444359529327203">ਮਹਿਮਾਨ ਵਿੰਡੋ ਬੰਦ ਕਰੋ</translation>
+<translation id="956444359529327203">ਮਹਿਮਾਨ ਵਿੰਡੋਆਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="956500788634395331">ਤੁਸੀਂ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੋ</translation>
 <translation id="957960681186851048">ਇਸ ਸਾਈਟ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ</translation>
 <translation id="9580706199804957">Google ਸੇਵਾਵਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>

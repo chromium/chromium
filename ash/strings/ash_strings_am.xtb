@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">በዚህ ክፍለ-ጊዜ ውስጥ ያለው ሁሉንም እንቅስቃሴዎን ይድረሱ</translation>
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
-<translation id="1665244008632896072">የጨለማ ሁነታን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ገለልተኛ የቀለም ሁነታ ከልጣፍ የወጡ ቀለማትን አይጠቀምም፣ በገለልተኛ ፈካ ያሉ ወይም ደማቅ ቅልመቶችን ይተካቸዋል።</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ሰዓት ቆጣሪ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">በማያ ገጽ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
 <translation id="1761222317188459878">የአውታረ መረብ ግንኙነትን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
-<translation id="1776485282219497802">የጨለማ ሁነታ በርቷል።</translation>
 <translation id="1782199038061388045">ትርጉም</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1812997170047690955">ማያ ገጼ ላይ ምን አለ?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">የቁልፍ ሰሌዳ አቀማመጥን ለመቀየር <ph name="KEYBOARD_SHORTCUT" />ን ይጫኑ</translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
 <translation id="2509468283778169019">CAPS LOCK በርቷል</translation>
-<translation id="2517829236324128850">የጨለማ ሁነታ ቅንብሮችን አሳይ</translation>
 <translation id="2542089167727451762">የመገለጫ ምስልዎን መታ ያድርጉ</translation>
 <translation id="255671100581129685">የGoogle ረዳቱ በይፋዊ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
 <translation id="256712445991462162">የተተከለው ማጉያ</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ላይ <ph name="ROUTE_TITLE" />ን አስቁም</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
 <translation id="5876666360658629066">የወላጅ ኮድ ያስገቡ</translation>
-<translation id="5887866489674258948">የጨለማ ሁነታ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">የቦዘነ ዴስክ።</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">አስጀማሪ መመሪያ</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="698231206551913481">አንዴ ይህ ተጠቃሚ ከተወገደ በኋላ ከዚህ ተጠቃሚ ጋር የተጎዳኙ ሁሉም ፋይሎች እና አካባቢያዊ ውሂብ በቋሚነት ይሰረዛሉ።</translation>
-<translation id="6990778048354947307">ጨለማ ገጽታ</translation>
 <translation id="7007983414944123363">የእርስዎ ፒን ወይም ይለፍ ቃል ሊረጋገጥ አልቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ላይ ተመልሰው ይምጡ።</translation>
 <translation id="7025533177575372252">የእርስዎን <ph name="DEVICE_NAME" /> ከስልክዎ ጋር ያገናኙት</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ባለቤት)</translation>
 <translation id="7647488630410863958">የእርስዎን ማሳወቂያዎች ለማየት መሣሪያውን ይክፈቱ</translation>
 <translation id="7649070708921625228">እገዛ</translation>
-<translation id="7653418004652142983">አብራ</translation>
 <translation id="7654687942625752712">የሚነገር ግብረመልስን ለማሰናከል ለአምስት ሰከንዶች ሁለቱንም የድምፅ ቁልፎች ተጭነው ያይዙ።</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google ረዳቱ ለዋናው መገለጫ ብቻ የሚገኝ ነው።</translation>
 <translation id="79341161159229895">መለያው በ<ph name="FIRST_PARENT_EMAIL" /> እና <ph name="SECOND_PARENT_EMAIL" /> ነው የሚቀናበረው</translation>
 <translation id="7955885781510802139">ባለከፍተኛ ንፅፅር ሁነታ</translation>
-<translation id="7977639574084142279">አጥፋ</translation>
 <translation id="7977927628060636163">የተንቀሳቃሽ ስልክ አውታረ መረቦችን በመፈለግ ላይ...</translation>
 <translation id="7980780401175799550">Chrome OSን የሚዳስሱበት አዲስ መንገዶችን ይሞክሩ</translation>
 <translation id="7982789257301363584">አውታረ መረብ</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">ቦዝኗል</translation>
 <translation id="8938800817013097409">USB-C መሣሪያ (የቀኝ ወደብ ከኋላ በኩል)</translation>
 <translation id="8940956008527784070">ባትሪ ዝቅተኛ ነው (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">የጨለማ ሁነታ ጠፍቷል።</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />ን በመጠቀም ላይ</translation>
 <translation id="899350903320462459">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን እንደ <ph name="LOGIN_ID" /> ይክፈቱ</translation>

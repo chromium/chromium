@@ -905,6 +905,7 @@
 <translation id="8138880386467279117">Допир</translation>
 <translation id="8173092779156526980">Повлечете налево со четири прста</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{долна црта}one{# долна црта}other{# долни црти}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ред</translation>
 <translation id="8186185314313222077">префрли на цел екран</translation>
 <translation id="8199231515320852133">Објави заглавија од тековната ќелија</translation>
@@ -990,6 +991,7 @@
 <translation id="8946628535652548639">р<ph name="TABLECELLROWINDEX" />к<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Нема претходно тркалезно копче</translation>
 <translation id="8970172509886453271">Нема претходна секција</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Заборави</translation>
 <translation id="9040132695316389094">Заглавие 1</translation>

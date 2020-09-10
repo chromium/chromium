@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">स्पर्श</translation>
 <translation id="8173092779156526980">चार औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ अन्डरस्कोर}other{ # अन्डरस्कोरहरू}}</translation>
+<translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8184828902145951186">पङ्क्ति</translation>
 <translation id="8186185314313222077">फुल स्क्रिन टगल गर्नुहोस्</translation>
 <translation id="8199231515320852133">वर्तमान कक्षको हेडर घोषणा गर्नुहोस्</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">अघिल्लो कुनै पनि रेडियो बटन छैन</translation>
 <translation id="8970172509886453271">अघिल्लो कुनै पनि खण्ड छैन</translation>
+<translation id="89720367119469899">भाग</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="9040132695316389094">शीर्षक 1</translation>

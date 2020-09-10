@@ -905,6 +905,7 @@
 <translation id="8138880386467279117">Άγγιγμα</translation>
 <translation id="8173092779156526980">Σύρετε με τέσσερα δάχτυλα προς τα αριστερά.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{σύμβολο υπογράμμισης}other{# σύμβολα υπογράμμισης}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">σειρά</translation>
 <translation id="8186185314313222077">εναλλαγή πλήρους οθόνης</translation>
 <translation id="8199231515320852133">Ανακοίνωση των κεφαλίδων του τρέχοντος κελιού</translation>
@@ -990,6 +991,7 @@
 <translation id="8946628535652548639">σ<ph name="TABLECELLROWINDEX" />σ<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Δεν υπάρχει προηγούμενο κουμπί επιλογής.</translation>
 <translation id="8970172509886453271">Δεν υπάρχει προηγούμενη ενότητα.</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">επεξήγηση εργαλείου</translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="9040132695316389094">Επικεφαλίδα 1</translation>

@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
-<translation id="1665244008632896072">הפעלה או כיבוי של מצב כהה. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">במצב 'צבעים ניטרליים' לא נעשה שימוש בצבעים שנשלפו מהטפט, אלא בערכת גוונים ניטרליים, בהירים וכהים.</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1698080062160024910">טיימר של <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
 <translation id="1761222317188459878">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>
-<translation id="1776485282219497802">המצב הכהה פועל.</translation>
 <translation id="1782199038061388045">תרגום</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="1812997170047690955">מה מופיע במסך שלי?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">צריך להקיש על <ph name="KEYBOARD_SHORTCUT" /> כדי להחליף פריסת מקלדת.</translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
 <translation id="2509468283778169019">‏CAPS LOCK מופעל</translation>
-<translation id="2517829236324128850">הצגת ההגדרות של מצב כהה</translation>
 <translation id="2542089167727451762">יש להקיש על תמונת הפרופיל</translation>
 <translation id="255671100581129685">‏Google Assistant אינו זמין בסשן ציבורי.</translation>
 <translation id="256712445991462162">הזכוכית המגדלת שהוצמדה</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5876666360658629066">יש להזין קוד גישה להורים</translation>
-<translation id="5887866489674258948">מצב כהה</translation>
 <translation id="5895138241574237353">הפעל מחדש</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">שולחן עבודה וירטואלי לא פעיל.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">תחילת העבודה</translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="698231206551913481">כל הקבצים והנתונים המשויכים למשתמש זה יימחקו לצמיתות ברגע שהמשתמש יוסר.</translation>
-<translation id="6990778048354947307">עיצוב כהה</translation>
 <translation id="7007983414944123363">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. אפשר לנסות שוב.</translation>
 <translation id="7015766095477679451">אפשר לחזור בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">חיבור <ph name="DEVICE_NAME" /> לטלפון</translation>
@@ -600,7 +595,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
 <translation id="7647488630410863958">בטל את נעילת המכשיר כדי להציג את ההודעות</translation>
 <translation id="7649070708921625228">עזרה</translation>
-<translation id="7653418004652142983">פועל</translation>
 <translation id="7654687942625752712">כדי להשבית את קורא המסך הקולי, צריך ללחוץ על שני לחצני עוצמת הקול למשך חמש שניות.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -627,7 +621,6 @@
 <translation id="7933084174919150729">‏Google Assistant זמין רק לפרופיל ראשי.</translation>
 <translation id="79341161159229895">החשבון מנוהל על-ידי <ph name="FIRST_PARENT_EMAIL" /> ועל-ידי <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">מצב ניגודיות גבוהה</translation>
-<translation id="7977639574084142279">כבוי</translation>
 <translation id="7977927628060636163">מחפש רשתות סלולריות...</translation>
 <translation id="7980780401175799550">‏דרכים חדשות לנווט ב-Chrome OS</translation>
 <translation id="7982789257301363584">רשת</translation>
@@ -734,7 +727,6 @@
 <translation id="8936501819958976551">מושבתת</translation>
 <translation id="8938800817013097409">‏מכשיר עם יציאת USB-C (יציאה ימנית מאחור)</translation>
 <translation id="8940956008527784070">‏סוללה חלשה (‎<ph name="PERCENTAGE" />%‎)</translation>
-<translation id="8958665219764428373">המצב הכהה כבוי.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">סוג מקלדת בשימוש - <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>

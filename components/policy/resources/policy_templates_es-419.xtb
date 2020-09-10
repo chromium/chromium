@@ -4662,9 +4662,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 
        Ten en cuenta que esta política estaba habilitada en Android por error, pero esta funcionalidad nunca fue totalmente compatible en ese SO.</translation>
 <translation id="7614663184588396421">Lista de los esquemas de protocolo inhabilitados</translation>
-<translation id="7617319494457709698">Esta política especifica las extensiones con permiso para usar la API <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> con la función <ph name="CHALLENGE_USER_KEY_FUNCTION" /> para la verificación remota. Para poder usar la API, las extensiones deben agregarse a esta lista.
-
-          Si una extensión no está en la lista o no se establece la lista, las llamadas a la API fallarán y se mostrará un código de error.</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se usa para generar y verificar el código de acceso superior.
 
       |current_config| se utiliza siempre para generar el código de acceso; sin embargo, debe usarse para validarlo solo cuando no puede validarse con |future_config|.

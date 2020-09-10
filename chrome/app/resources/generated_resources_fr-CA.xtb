@@ -5555,7 +5555,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7766082757934713382">Aide à réduire l'utilisation de données réseau en interrompant les mises à jour automatiques des applications et des systèmes</translation>
 <translation id="7766807826975222231">Visite guidée</translation>
 <translation id="7766838926148951335">Accepter les autorisations</translation>
-<translation id="7768507955883790804">Les sites respectent automatiquement ce paramètres quand vous les visitez</translation>
+<translation id="7768507955883790804">Les sites respectent automatiquement ce paramètre quand vous les visitez</translation>
 <translation id="7768770796815395237">Changer</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769672763586021400">Identifiant de modèle</translation>
@@ -6811,7 +6811,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="947329552760389097">&amp;Inspecter des éléments</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952992212772159698">Désactivé</translation>
-<translation id="956444359529327203">Fermer la fenêtre d'invité</translation>
+<translation id="956444359529327203">Fermer les fenêtres d'invité</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
 <translation id="9580706199804957">Impossible de se connecter aux services Google</translation>

@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1654477262762802994">आवाजमार्फत गरिने क्वेरी सुरु गर्नुहोस्</translation>
-<translation id="1665244008632896072">अँध्यारो मोड अन/अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">'तटस्थ रङ' मोडमा वालपेपरबाट निकालिएका रङहरू प्रयोग गरिँदैन। बरु यो मोडमा तटस्थ रङहरू मिसाएर बनाइएको हल्का वा गाढा प्रकारको रङ प्रयोग गरिन्छ।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
 <translation id="1761222317188459878">नेटवर्क जडान टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
-<translation id="1776485282219497802">अँध्यारो मोड अन छ।</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1812997170047690955">मेरो स्क्रिनमा के छ?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">किबोर्डको लेआउट स्विच गर्न <ph name="KEYBOARD_SHORTCUT" /> मा थिच्नुहोस्।</translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
 <translation id="2509468283778169019">CAPS LOCK खुला छ</translation>
-<translation id="2517829236324128850">अँध्यारो मोडसम्बन्धी सेटिङ देखाउनुहोस्</translation>
 <translation id="2542089167727451762">आफ्नो प्रोफाइल छविमा ट्याप गर्नुहोस्</translation>
 <translation id="255671100581129685">Google सहायक सार्वजनिक सत्रमा उपलब्ध छैन।</translation>
 <translation id="256712445991462162">डक गरिएको म्याग्निफायर</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5876666360658629066">अभिभावकको कोड प्रविष्टि गर्नुहोस्</translation>
-<translation id="5887866489674258948">अँध्यारो मोड</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">निष्क्रिय डेस्क।</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">सुरु गर्नुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
-<translation id="6990778048354947307">डार्क थीम</translation>
 <translation id="7007983414944123363">तपाईंको PIN वा पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> मा फर्केर आउनुहोस्।</translation>
 <translation id="7025533177575372252">तपाईंको <ph name="DEVICE_NAME" /> लाई आफ्नो फोनसँग जोड्नुहोस्</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
 <translation id="7647488630410863958">आफ्ना सूचनाहरू हेर्न यन्त्रलाई अनलक गर्नुहोस्</translation>
 <translation id="7649070708921625228">मद्दत</translation>
-<translation id="7653418004652142983">अन</translation>
 <translation id="7654687942625752712">बोलीसम्बन्धी प्रतिक्रियाहरू असक्षम पार्न दुवै भोल्युम कुञ्जीहरूलाई पाँच सेकेन्डसम्म थिचिराख्नुहोस्।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google सहायक प्राथमिक प्रोफाइलहरूका लागि मात्र उपलब्ध छ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> र <ph name="SECOND_PARENT_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
 <translation id="7955885781510802139">उच्च कन्ट्रास्ट मोड</translation>
-<translation id="7977639574084142279">अफ</translation>
 <translation id="7977927628060636163">मोबाइल नेटवर्कहरू खोज्दै...</translation>
 <translation id="7980780401175799550">Chrome OS नेभिगेसन गर्ने नयाँ तरिकाहरू प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="7982789257301363584">सञ्जाल</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">अँध्यारो मोड अफ छ।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> प्रयोग गरिँदै</translation>
 <translation id="899350903320462459">सूचनासम्बन्धी कारबाही गर्न यन्त्रलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>

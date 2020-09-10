@@ -67,7 +67,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
-<translation id="1665244008632896072">Activar/desactivar modo escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Temporizador de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1747827819627189109">Teclado en pantalla activado</translation>
 <translation id="1761222317188459878">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
-<translation id="1776485282219497802">O modo escuro está activado.</translation>
 <translation id="1782199038061388045">tradución</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1812997170047690955">Que se mostra na miña pantalla?</translation>
@@ -152,7 +150,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2484513351006226581">Para cambiar o deseño de teclado, preme <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">Teclas presas</translation>
 <translation id="2509468283778169019">Bloqueo de maiúsculas activado</translation>
-<translation id="2517829236324128850">Mostrar configuración do modo escuro</translation>
 <translation id="2542089167727451762">Toca a imaxe do teu perfil</translation>
 <translation id="255671100581129685">O Asistente de Google non está dispoñible cando se utiliza unha sesión pública.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
@@ -441,7 +438,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5876666360658629066">Escribe o código parental</translation>
-<translation id="5887866489674258948">Modo escuro</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901316534475909376">Maiúsculas+Esc</translation>
 <translation id="5909862606227538307">Escritorio inactivo.</translation>
@@ -542,7 +538,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6972754398087986839">Introdución</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
-<translation id="6990778048354947307">Tema escuro</translation>
 <translation id="7007983414944123363">Non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
 <translation id="7015766095477679451">Volve á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Conecta o <ph name="DEVICE_NAME" /> co teu teléfono</translation>
@@ -599,7 +594,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7647488630410863958">Desbloquea o dispositivo para ver as notificacións</translation>
 <translation id="7649070708921625228">Axuda</translation>
-<translation id="7653418004652142983">Activado</translation>
 <translation id="7654687942625752712">Mantén premidas as dúas teclas de volume durante cinco segundos para desactivar os comentarios de voz.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7933084174919150729">O Asistente de Google só está dispoñible para o perfil principal.</translation>
 <translation id="79341161159229895">A conta está xestionada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
-<translation id="7977639574084142279">Desactivado</translation>
 <translation id="7977927628060636163">Buscando redes móbiles...</translation>
 <translation id="7980780401175799550">Proba novas formas de usar Chrome OS</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -733,7 +726,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8936501819958976551">desactivou</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porto dereito posterior)</translation>
 <translation id="8940956008527784070">Batería baixa (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">O modo escuro está desactivado.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloquea o dispositivo como <ph name="LOGIN_ID" /> para levar a cabo a acción de notificación</translation>

@@ -67,7 +67,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
-<translation id="1665244008632896072">Commuta el mode fosc. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Temporitzador de: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1747827819627189109">Teclat en pantalla activat</translation>
 <translation id="1761222317188459878">Activa o desactiva la connexió a la xarxa. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
-<translation id="1776485282219497802">El mode fosc està activat.</translation>
 <translation id="1782199038061388045">traducció</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1812997170047690955">Què hi ha a la pantalla?</translation>
@@ -152,7 +150,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2484513351006226581">Prem <ph name="KEYBOARD_SHORTCUT" /> per canviar la disposició del teclat.</translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
-<translation id="2517829236324128850">Mostra la configuració del mode fosc</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
@@ -440,7 +437,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5876666360658629066">Introdueix el codi parental</translation>
-<translation id="5887866489674258948">Mode fosc</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5901316534475909376">Maj + Esc</translation>
 <translation id="5909862606227538307">Escriptori inactiu.</translation>
@@ -541,7 +537,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
-<translation id="6990778048354947307">Tema fosc</translation>
 <translation id="7007983414944123363">El PIN o la contrasenya no s'han pogut verificar. Torna-ho a provar.</translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connecta <ph name="DEVICE_NAME" /> al telèfon</translation>
@@ -598,7 +593,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7647488630410863958">Desbloqueja el dispositiu per veure les notificacions</translation>
 <translation id="7649070708921625228">Ajuda</translation>
-<translation id="7653418004652142983">Activat</translation>
 <translation id="7654687942625752712">Mantén premudes les dues tecles de volum durant cinc segons per desactivar els avisos de veu.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7933084174919150729">L'Assistent de Google només està disponible per al perfil principal.</translation>
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Mode d'alt contrast</translation>
-<translation id="7977639574084142279">Desactivat</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
 <translation id="7980780401175799550">Prova maneres noves de navegar per Chrome OS</translation>
 <translation id="7982789257301363584">Xarxa</translation>
@@ -732,7 +725,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">El mode fosc està desactivat.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>

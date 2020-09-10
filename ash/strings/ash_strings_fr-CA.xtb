@@ -67,7 +67,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
-<translation id="1665244008632896072">Basculer le mode sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas de couleurs extraites d'un fond d'écran, il les remplace par un ensemble de couleurs claires ou sombres aux teintes neutres.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1698080062160024910">Minuterie de <ph name="TOTAL_TIME" /> : <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
 <translation id="1761222317188459878">Activer/désactiver la connexion réseau. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Faire défiler vers la droite</translation>
-<translation id="1776485282219497802">Le mode sombre est activé.</translation>
 <translation id="1782199038061388045">traduction</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1812997170047690955">Qu'y a-t-il sur mon écran?</translation>
@@ -152,7 +150,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2484513351006226581">Appuyez sur <ph name="KEYBOARD_SHORTCUT" /> pour changer la disposition du clavier.</translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
-<translation id="2517829236324128850">Afficher les paramètres du mode sombre</translation>
 <translation id="2542089167727451762">Touchez l'image de votre profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe en mode ancré</translation>
@@ -440,7 +437,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5876666360658629066">Entrez le code d'accès parental</translation>
-<translation id="5887866489674258948">Mode sombre</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5901316534475909376">Maj+Échap</translation>
 <translation id="5909862606227538307">Bureau inactif.</translation>
@@ -541,7 +537,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6972754398087986839">Démarrer</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
-<translation id="6990778048354947307">Thème sombre</translation>
 <translation id="7007983414944123363">Votre NIP ou votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
 <translation id="7015766095477679451">Revenez à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connectez votre <ph name="DEVICE_NAME" /> à votre téléphone</translation>
@@ -598,7 +593,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propriétaire)</translation>
 <translation id="7647488630410863958">Déverrouillez l'appareil pour voir vos notifications</translation>
 <translation id="7649070708921625228">Aide</translation>
-<translation id="7653418004652142983">Activé</translation>
 <translation id="7654687942625752712">Maintenez les deux touches de volume enfoncées cinq secondes pour désactiver la rétroaction vocale.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7705524343798198388">RPV</translation>
@@ -625,7 +619,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7933084174919150729">L'Assistant Google n'est offert que pour le profil principal.</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Mode de contraste élevé</translation>
-<translation id="7977639574084142279">Désactivé</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles en cours...</translation>
 <translation id="7980780401175799550">Naviguer différemment avec Chrome OS</translation>
 <translation id="7982789257301363584">Réseau</translation>
@@ -732,7 +725,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8936501819958976551">désactivée</translation>
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Le mode sombre est désactivé.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Mode de saisie utilisé : <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Déverrouillez l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de la notification</translation>

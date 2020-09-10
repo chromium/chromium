@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
-<translation id="1665244008632896072">Перемкнути темний режим. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">У цьому режимі не використовуються кольори фонового малюнка, а підбираються нейтральні світлі або темні відтінки.</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Таймер на <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
 <translation id="1761222317188459878">Увімкнути/вимкнути з’єднання з мережею. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Прокрутити праворуч</translation>
-<translation id="1776485282219497802">Темний режим увімкнено.</translation>
 <translation id="1782199038061388045">переклад</translation>
 <translation id="181103072419391116">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="1812997170047690955">Що на моєму екрані?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">Натисніть комбінацію клавіш <ph name="KEYBOARD_SHORTCUT" />, щоб змінити розкладку клавіатури.</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
-<translation id="2517829236324128850">Показати налаштування темного режиму</translation>
 <translation id="2542089167727451762">Натисніть зображення профілю</translation>
 <translation id="255671100581129685">Google Асистент недоступний у сеансі для всіх.</translation>
 <translation id="256712445991462162">закріплену лупу</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5876666360658629066">Введіть батьківський код</translation>
-<translation id="5887866489674258948">Темний режим</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Неактивний робочий стіл.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">Почати</translation>
 <translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
-<translation id="6990778048354947307">Темна тема</translation>
 <translation id="7007983414944123363">Не вдалося підтвердити PIN-код або пароль. Повторіть спробу.</translation>
 <translation id="7015766095477679451">Поверніться о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Під’єднайте <ph name="DEVICE_NAME" /> до телефона</translation>
@@ -598,11 +593,10 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7647488630410863958">Розблокуйте пристрій, щоб переглянути сповіщення</translation>
 <translation id="7649070708921625228">Довідка</translation>
-<translation id="7653418004652142983">Увімкнено</translation>
 <translation id="7654687942625752712">Утримуйте обидві клавіші гучності впродовж п’яти секунд, щоб вимкнути голосові підказки.</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7705822912736783206">Автентифікуйте відбитком пальця</translation>
+<translation id="7705822912736783206">Автентифікація відбитком пальця</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}many{# сповіщень}other{# сповіщення}}</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Асистент доступний лише в основному профілі.</translation>
 <translation id="79341161159229895">Обліковим записом керують <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Режим високого контрасту</translation>
-<translation id="7977639574084142279">Вимкнено</translation>
 <translation id="7977927628060636163">Пошук мобільних мереж…</translation>
 <translation id="7980780401175799550">Спробуйте нові способи навігації в ОС Chrome</translation>
 <translation id="7982789257301363584">Мережа</translation>
@@ -719,7 +712,7 @@
 <translation id="8843682306134542540">Заблокувати/розблокувати обертання. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search (Пошук)+Esc</translation>
 <translation id="8853703225951107899">PIN-код або пароль усе ще не вдається підтвердити. Примітка: якщо ви нещодавно змінювали пароль, введіть старий. Новий пароль буде застосовано, щойно ви вийдете з облікового запису.</translation>
-<translation id="885387440427703469">Можливість робити знімки екрана вимкнено</translation>
+<translation id="885387440427703469">Функцію знімків екрана вимкнено</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>
 <translation id="8877788021141246043">Налаштуй нагадування</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Темний режим вимкнено.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Використовується: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>

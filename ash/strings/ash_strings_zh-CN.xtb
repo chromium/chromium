@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
-<translation id="1665244008632896072">开启/关闭深色模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">中性颜色模式不会使用从壁纸中提取的颜色，而是会将其替换为一组中性的浅色调或深色调。</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
 <translation id="1761222317188459878">切换网络连接设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">向右滚动</translation>
-<translation id="1776485282219497802">深色模式已开启。</translation>
 <translation id="1782199038061388045">翻译</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1812997170047690955">我屏幕上有什么内容？</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2501920221385095727">粘滞键</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
-<translation id="2517829236324128850">显示深色模式设置</translation>
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5876666360658629066">输入家长访问码</translation>
-<translation id="5887866489674258948">深色模式</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">闲置的桌面。</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">开始使用</translation>
 <translation id="6981982820502123353">无障碍</translation>
 <translation id="698231206551913481">移除该用户后，与其关联的所有文件和本地数据都会被永久删除。</translation>
-<translation id="6990778048354947307">黑暗主题</translation>
 <translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7647488630410863958">解锁设备即可查看您的通知</translation>
 <translation id="7649070708921625228">帮助</translation>
-<translation id="7653418004652142983">开启</translation>
 <translation id="7654687942625752712">同时按住两个音量键 5 秒钟，即可停用语音反馈。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google 助理仅适用于主要个人资料。</translation>
 <translation id="79341161159229895">该帐号由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="7955885781510802139">高对比度模式</translation>
-<translation id="7977639574084142279">关闭</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7980780401175799550">尝试使用新方式在 Chrome 操作系统中导航</translation>
 <translation id="7982789257301363584">网络</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">深色模式已关闭。</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>

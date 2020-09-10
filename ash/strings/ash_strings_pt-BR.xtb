@@ -67,7 +67,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
 <translation id="1654477262762802994">Iniciar uma consulta por voz</translation>
-<translation id="1665244008632896072">Alternar modo escuro. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">O modo de cores neutras substitui as cores extraídas do plano de fundo por um conjunto de tons neutros claros ou escuros.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1698080062160024910">Timer de <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1747827819627189109">Teclado na tela ativado</translation>
 <translation id="1761222317188459878">Alternar conexão de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Rolar para a direita</translation>
-<translation id="1776485282219497802">O modo escuro está ativado.</translation>
 <translation id="1782199038061388045">tradução</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> de intensidade de sinal , gerenciada pelo seu administrador</translation>
 <translation id="1812997170047690955">O que está na minha tela?</translation>
@@ -152,7 +150,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2484513351006226581">Pressione <ph name="KEYBOARD_SHORTCUT" /> para alterar o layout do teclado.</translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
-<translation id="2517829236324128850">Mostrar configurações do modo escuro</translation>
 <translation id="2542089167727451762">Toque na imagem do seu perfil</translation>
 <translation id="255671100581129685">O Google Assistente não está disponível para uma sessão pública.</translation>
 <translation id="256712445991462162">a lupa em área fixa</translation>
@@ -440,7 +437,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5876666360658629066">Digite o código de pai/mãe</translation>
-<translation id="5887866489674258948">Modo escuro</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Espaço de trabalho inativo.</translation>
@@ -542,7 +538,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="6972754398087986839">Primeiros passos</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os arquivos e dados locais associados a este usuário serão excluídos permanentemente quando o usuário for removido.</translation>
-<translation id="6990778048354947307">Tema escuro</translation>
 <translation id="7007983414944123363">Não foi possível verificar seu PIN ou sua senha. Tente novamente.</translation>
 <translation id="7015766095477679451">Volte às <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
@@ -599,7 +594,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
 <translation id="7647488630410863958">Desbloquear dispositivo para ver as notificações</translation>
 <translation id="7649070708921625228">Ajuda</translation>
-<translation id="7653418004652142983">Ativado</translation>
 <translation id="7654687942625752712">Pressione as duas teclas de volumes e as mantenha pressionadas por cinco segundos para desativar o feedback falado.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7933084174919150729">O Google Assistente só está disponível para o perfil principal.</translation>
 <translation id="79341161159229895">Conta gerenciada por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
-<translation id="7977639574084142279">Desativado</translation>
 <translation id="7977927628060636163">Pesquisando redes móveis…</translation>
 <translation id="7980780401175799550">Teste novas maneiras de navegar pelo Chrome OS</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -733,7 +726,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="8936501819958976551">desativado</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="8940956008527784070">Nível de bateria baixo (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">O modo escuro está desativado.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo com a conta <ph name="LOGIN_ID" /> para executar a ação de notificação</translation>

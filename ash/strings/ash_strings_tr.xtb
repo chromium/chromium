@@ -67,7 +67,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
-<translation id="1665244008632896072">Koyu Modu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Nötr renk modu, duvar kağıdından çıkarılan renkleri kullanmaz, bunları nötr tonlu açık veya koyu renklerle değiştirir.</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1747827819627189109">Dokunmatik klavye etkin</translation>
 <translation id="1761222317188459878">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>
-<translation id="1776485282219497802">Koyu Mod açık.</translation>
 <translation id="1782199038061388045">çeviri</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1812997170047690955">Ekranımda ne var?</translation>
@@ -152,7 +150,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2484513351006226581">Klavye düzenini değiştirmek için <ph name="KEYBOARD_SHORTCUT" /> tuşlarına basın.</translation>
 <translation id="2501920221385095727">Yapışkan tuşlar</translation>
 <translation id="2509468283778169019">CAPS LOCK açık</translation>
-<translation id="2517829236324128850">Koyu mod ayarlarını göster</translation>
 <translation id="2542089167727451762">Profil resminize dokunun</translation>
 <translation id="255671100581129685">Google Asistan, herkese açık oturumda kullanılamaz.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
@@ -440,7 +437,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
 <translation id="5860033963881614850">Kapalı</translation>
 <translation id="5876666360658629066">Ebeveyn kodunu girin</translation>
-<translation id="5887866489674258948">Koyu Mod</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5901316534475909376">Üst Karakter+Esc</translation>
 <translation id="5909862606227538307">Masa etkin değil.</translation>
@@ -542,7 +538,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6972754398087986839">Başlarken</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
-<translation id="6990778048354947307">Koyu Renkli Tema</translation>
 <translation id="7007983414944123363">PIN'iniz veya şifreniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="7015766095477679451">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazınızı telefonunuza bağlayın</translation>
@@ -599,7 +594,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (cihaz sahibi)</translation>
 <translation id="7647488630410863958">Bildirimlerinizi görüntülemek için cihazınızın kilidini açın</translation>
 <translation id="7649070708921625228">Yardım</translation>
-<translation id="7653418004652142983">Açık</translation>
 <translation id="7654687942625752712">Sesli geri bildirimi beş saniyeliğine devre dışı bırakmak için her iki ses ayarı tuşunu basılı tutun.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7933084174919150729">Google Asistan yalnızca birincil profilde kullanılabilir.</translation>
 <translation id="79341161159229895">Hesap <ph name="FIRST_PARENT_EMAIL" /> ve <ph name="SECOND_PARENT_EMAIL" /> tarafından yönetiliyor</translation>
 <translation id="7955885781510802139">Yüksek kontrast modu</translation>
-<translation id="7977639574084142279">Kapalı</translation>
 <translation id="7977927628060636163">Mobil ağlar aranıyor...</translation>
 <translation id="7980780401175799550">Chrome OS'ta gezinmenin yeni yollarını deneyin</translation>
 <translation id="7982789257301363584">Ağ</translation>
@@ -733,7 +726,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8936501819958976551">devre dışı</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
 <translation id="8940956008527784070">Pil gücü az (%<ph name="PERCENTAGE" />)</translation>
-<translation id="8958665219764428373">Koyu Mod kapalı.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>

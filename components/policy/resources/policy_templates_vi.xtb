@@ -4696,9 +4696,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
        Xin lưu ý rằng chính sách này đã được bật trên Android do lỗi, nhưng hệ điều hành Android chưa hỗ trợ đầy đủ chức năng này.</translation>
 <translation id="7614663184588396421">Danh sách các lược đồ giao thức bị vô hiệu hóa</translation>
-<translation id="7617319494457709698">Chính sách này nêu rõ các tiện ích được phép sử dụng chức năng <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> <ph name="CHALLENGE_USER_KEY_FUNCTION" /> cho chứng thực từ xa. Các tiện ích phải được thêm vào danh sách này để sử dụng API.
-
-          Nếu tiện ích không có trong danh sách hoặc danh sách không được đặt thì lệnh gọi đến API sẽ không thực hiện được với mã lỗi.</translation>
 <translation id="7620869951155758729">Chính sách này chỉ định cấu hình dùng để tạo và xác minh Mã truy cập dành cho cha mẹ.
 
       |current_config| luôn dùng để tạo mã truy cập và chỉ nên dùng để xác thực mã truy cập khi không thể xác thực mã này bằng |future_config|.

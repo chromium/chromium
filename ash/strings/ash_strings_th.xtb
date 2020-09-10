@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
-<translation id="1665244008632896072">สลับโหมดมืด <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">โหมดสีปานกลางไม่ได้ใช้สีที่ดึงมาจากวอลเปเปอร์ แต่จะใช้ชุดโทนสีที่สว่างหรือเข้มปานกลางแทนสีเหล่านั้น</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1761222317188459878">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
-<translation id="1776485282219497802">โหมดมืดเปิดอยู่</translation>
 <translation id="1782199038061388045">การแปล</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1812997170047690955">รายการที่อยู่ในหน้าจอของฉัน</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
-<translation id="2517829236324128850">แสดงการตั้งค่าโหมดมืด</translation>
 <translation id="2542089167727451762">แตะรูปโปรไฟล์</translation>
 <translation id="255671100581129685">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธารณะ</translation>
 <translation id="256712445991462162">แว่นขยายหน้าจอบางส่วน</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5876666360658629066">กรอกรหัสผู้ปกครอง</translation>
-<translation id="5887866489674258948">โหมดมืด</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">โต๊ะที่ไม่ได้ใช้งาน</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
-<translation id="6990778048354947307">ธีมสีเข้ม</translation>
 <translation id="7007983414944123363">ยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ ลองใหม่</translation>
 <translation id="7015766095477679451">กลับมาเมื่อถึงเวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="7025533177575372252">เชื่อมต่อ <ph name="DEVICE_NAME" /> กับโทรศัพท์</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (เจ้าของ)</translation>
 <translation id="7647488630410863958">ปลดล็อกอุปกรณ์เพื่อดูการแจ้งเตือน</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
-<translation id="7653418004652142983">เปิด</translation>
 <translation id="7654687942625752712">กดแป้นปรับระดับเสียงค้างไว้ 5 วินาทีเพื่อปิดใช้การอธิบายและอ่านออกเสียง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google Assistant ใช้งานได้กับโปรไฟล์หลักเท่านั้น</translation>
 <translation id="79341161159229895">บัญชีที่จัดการโดย <ph name="FIRST_PARENT_EMAIL" /> และ <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">โหมดคอนทราสต์สูง</translation>
-<translation id="7977639574084142279">ปิด</translation>
 <translation id="7977927628060636163">กำลังค้นหาเครือข่ายมือถือ...</translation>
 <translation id="7980780401175799550">ลองใช้วิธีใหม่ในการไปยังส่วนต่างๆ ของ Chrome OS</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">ปิดใช้งานอยู่</translation>
 <translation id="8938800817013097409">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="8940956008527784070">แบตเตอรี่ต่ำ (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">โหมดมืดปิดอยู่</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>

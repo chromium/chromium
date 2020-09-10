@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Tactil</translation>
 <translation id="8173092779156526980">Glisează cu patru degete la stânga</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{caracter de subliniere}few{# caractere de subliniere}other{# de caractere de subliniere}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rând</translation>
 <translation id="8186185314313222077">activează/dezactivează ecranul complet</translation>
 <translation id="8199231515320852133">Anunță anteturile celulei curente</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Nu există un buton radio anterior</translation>
 <translation id="8970172509886453271">Nu există o secțiune anterioară</translation>
+<translation id="89720367119469899">Tasta Esc</translation>
 <translation id="8978496506222343566">balon explicativ</translation>
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="9040132695316389094">Titlu 1</translation>

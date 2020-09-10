@@ -67,7 +67,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
-<translation id="1665244008632896072">Prepnúť tmavý režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Režim neutrálnych farieb nepoužíva farby získané z tapety. Nahradí ich skupinou svetlých a tmavých neutrálnych odtieňov.</translation>
 <translation id="1677472565718498478">Zostávajúci čas: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1747827819627189109">Klávesnica na obrazovke je povolená</translation>
 <translation id="1761222317188459878">Prepnúť sieťové pripojenie. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Posunúť doprava</translation>
-<translation id="1776485282219497802">Tmavý režim je zapnutý.</translation>
 <translation id="1782199038061388045">preklad</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1812997170047690955">Čo je na obrazovke?</translation>
@@ -152,7 +150,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2484513351006226581">Stlačením klávesov <ph name="KEYBOARD_SHORTCUT" /> zmeníte rozloženie klávesnice.</translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
 <translation id="2509468283778169019">Kláves CAPS LOCK je zapnutý</translation>
-<translation id="2517829236324128850">Zobraziť nastavenia tmavého režimu</translation>
 <translation id="2542089167727451762">Klepnite na svoj profilový obrázok</translation>
 <translation id="255671100581129685">Asistent Google nie je k dispozícii vo verejnej relácii.</translation>
 <translation id="256712445991462162">ukotvená lupa</translation>
@@ -440,7 +437,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5837036133683224804">Zastaviť prenos obsahu <ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5876666360658629066">Zadajte kód rodiča</translation>
-<translation id="5887866489674258948">Tmavý režim</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Plocha je neaktívna.</translation>
@@ -541,7 +537,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6972754398087986839">Začať</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>
 <translation id="698231206551913481">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odstránení natrvalo vymazané.</translation>
-<translation id="6990778048354947307">Tmavý motív</translation>
 <translation id="7007983414944123363">Váš kód PIN alebo heslo sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="7015766095477679451">Vráťte sa späť o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Pripojte zariadenie <ph name="DEVICE_NAME" /> k svojmu telefónu</translation>
@@ -598,7 +593,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7647488630410863958">Ak si chcete zobraziť upozornenia, odomknite zariadenie</translation>
 <translation id="7649070708921625228">Pomocník</translation>
-<translation id="7653418004652142983">Zapnuté</translation>
 <translation id="7654687942625752712">Ak chcete deaktivovať hovorenú spätnú väzbu, pridržte päť sekúnd obidva klávesy hlasitosti.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7933084174919150729">Asistent Google je k dispozícii iba pre primárny profil.</translation>
 <translation id="79341161159229895">Správcovia účtu: <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Režim s vysokým kontrastom</translation>
-<translation id="7977639574084142279">Vypnuté</translation>
 <translation id="7977927628060636163">Hľadajú sa mobilné siete...</translation>
 <translation id="7980780401175799550">Vyskúšajte nové spôsoby navigácie v systéme Chrome OS</translation>
 <translation id="7982789257301363584">Sieť</translation>
@@ -732,7 +725,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8936501819958976551">deaktivované</translation>
 <translation id="8938800817013097409">Zariadenie USB-C (pravý port vzadu)</translation>
 <translation id="8940956008527784070">Kapacita batérie je nízka (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Tmavý režim je vypnutý.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Práve sa používa <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ak chcete vykonať akciu s upozornením, odomknite zariadenie ako <ph name="LOGIN_ID" /></translation>

@@ -67,7 +67,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
-<translation id="1665244008632896072">Preklop temnega načina. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Nevtralni barvni način ne uporablja barv, pridobljenih iz zaslonskega ozadja, temveč jih nadomesti s kompletom nevtralnih svetlih ali temnih odtenkov.</translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Časovnik (<ph name="TOTAL_TIME" />) · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1747827819627189109">Zaslonska tipkovnica omogočena</translation>
 <translation id="1761222317188459878">Preklop omrežne povezave. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Pomik desno</translation>
-<translation id="1776485282219497802">Temni način je vklopljen.</translation>
 <translation id="1782199038061388045">prevod</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1812997170047690955">Kaj je na zaslonu?</translation>
@@ -152,7 +150,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" />, če želite preklopiti postavitev tipkovnice</translation>
 <translation id="2501920221385095727">Zaklepanje tipk</translation>
 <translation id="2509468283778169019">Tipka CAPS LOCK je vklopljena</translation>
-<translation id="2517829236324128850">Prikaz nastavitev temnega načina</translation>
 <translation id="2542089167727451762">Dotaknite se slike profila</translation>
 <translation id="255671100581129685">Pomočnik Google ni na voljo v javni seji.</translation>
 <translation id="256712445991462162">zasidrana lupa</translation>
@@ -440,7 +437,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5837036133683224804">Ustavi zavihek <ph name="ROUTE_TITLE" /> v sprejemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5876666360658629066">Vnos kode starša</translation>
-<translation id="5887866489674258948">Temni način</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5909862606227538307">Neaktivna pisalna miza.</translation>
@@ -541,7 +537,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6972754398087986839">Začnite</translation>
 <translation id="6981982820502123353">Dostopnost</translation>
 <translation id="698231206551913481">Vse datoteke in lokalni podatki, povezani s tem uporabnikom, bodo trajno izbrisani, ko odstranite uporabnika.</translation>
-<translation id="6990778048354947307">Temna tema</translation>
 <translation id="7007983414944123363">Vaše kode PIN ali gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="7015766095477679451">Vrnite se ob <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Povežite napravo <ph name="DEVICE_NAME" /> s telefonom</translation>
@@ -598,7 +593,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (lastnik)</translation>
 <translation id="7647488630410863958">Če si želite ogledati obvestila, odklenite napravo</translation>
 <translation id="7649070708921625228">Pomoč</translation>
-<translation id="7653418004652142983">Vklop</translation>
 <translation id="7654687942625752712">Če želite onemogočiti glasovni odziv, pridržite obe tipki za glasnost za pet sekund.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="7933084174919150729">Pomočnik Google je na voljo samo za primarni profil.</translation>
 <translation id="79341161159229895">Račun upravljata <ph name="FIRST_PARENT_EMAIL" /> in <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Visokokontrastni način</translation>
-<translation id="7977639574084142279">Izklop</translation>
 <translation id="7977927628060636163">Iskanje mobilnih omrežij ...</translation>
 <translation id="7980780401175799550">Preizkusite nove načine krmarjenja po Chromu OS</translation>
 <translation id="7982789257301363584">Omrežje</translation>
@@ -732,7 +725,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Temni način je izklopljen.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Uporaba tega: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Odklenite napravo kot <ph name="LOGIN_ID" />, da izvedete dejanje v obvestilu</translation>

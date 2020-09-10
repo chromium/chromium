@@ -903,6 +903,7 @@
 <translation id="8138880386467279117">터치</translation>
 <translation id="8173092779156526980">손가락 네 개를 사용하여 왼쪽으로 스와이프</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{밑줄}other{밑줄 기호 #개}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">행</translation>
 <translation id="8186185314313222077">전체화면 전환</translation>
 <translation id="8199231515320852133">현재 셀의 헤더 알림</translation>
@@ -988,6 +989,7 @@
 <translation id="8946628535652548639"><ph name="TABLECELLROWINDEX" />행 <ph name="TABLECELLCOLUMNINDEX" />열</translation>
 <translation id="8952400011684167587">이전 라디오 버튼이 없습니다</translation>
 <translation id="8970172509886453271">이전 섹션이 없습니다</translation>
+<translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="9040132695316389094">제목 1</translation>

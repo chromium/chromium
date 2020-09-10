@@ -4619,9 +4619,6 @@
 
        请注意，先前我们误在 Android 设备上启用了此政策，但我们从未在 Android 设备上为这项功能提供完整支持。</translation>
 <translation id="7614663184588396421">已停用协议架构的列表</translation>
-<translation id="7617319494457709698">此政策指定了允许使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数 <ph name="CHALLENGE_USER_KEY_FUNCTION" /> 进行远程认证的扩展程序。只有添加到此列表中的扩展程序才能使用该 API。
-
-          如果扩展程序不在此列表中，或者未设置此列表，则会导致无法调用此 API，并返回错误代码。</translation>
 <translation id="7620869951155758729">此政策可指定用于生成和验证家长访问码的配置。
 
       |current_config| 始终用于生成访问码，并且只有当无法使用 |future_config| 验证访问码时，才能使用此配置进行验证。

@@ -67,7 +67,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1589090746204042747">Fikia shughuli zako zote katika kipindi hiki</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1654477262762802994">Anza kutamka hoja ya utafutaji</translation>
-<translation id="1665244008632896072">Washa au zima Hali Nyeusi. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Hali ya rangi ya kawaida haitumii rangi zilizotolewa kwenye mandhari, inazibadilisha na kuweka seti ya rangi angavu au nyeusi zenye uzito wa wastani.</translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Kipima muda cha <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1747827819627189109">Kibodi ya skrini imewashwa</translation>
 <translation id="1761222317188459878">Washa au uzime muunganisho wa mtandao. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Sogeza kulia</translation>
-<translation id="1776485282219497802">Hali Nyeusi imewashwa.</translation>
 <translation id="1782199038061388045">tafsiri</translation>
 <translation id="181103072419391116">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="1812997170047690955">Kuna nini kwenye skrini yangu?</translation>
@@ -152,7 +150,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2484513351006226581">Gusa <ph name="KEYBOARD_SHORTCUT" /> ili ubadilishe mpangilio wa kibodi.</translation>
 <translation id="2501920221385095727">Vitufe vya kusalia kwa muda</translation>
 <translation id="2509468283778169019">Caps Lock imewashwa.</translation>
-<translation id="2517829236324128850">Onyesha mipangilio ya hali nyeusi</translation>
 <translation id="2542089167727451762">Gusa picha yako ya wasifu</translation>
 <translation id="255671100581129685">Programu ya Mratibu wa Google haipatikani katika kipindi cha umma.</translation>
 <translation id="256712445991462162">kikuzaji kilichoambatishwa</translation>
@@ -440,7 +437,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
 <translation id="5876666360658629066">Weka msimbo wa mzazi</translation>
-<translation id="5887866489674258948">Hali Nyeusi</translation>
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Eneokazi halitumiki.</translation>
@@ -541,7 +537,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6972754398087986839">Anza</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="698231206551913481">Faili na data zote zilizo kwenye kifaa zinazohusishwa na mtumiaji zitafutwa kabisa pindi tu mtumiaji huyu atakapoondolewa.</translation>
-<translation id="6990778048354947307">Mandhari Kolevu</translation>
 <translation id="7007983414944123363">Imeshindwa kuthibitisha PIN au nenosiri lako. Jaribu tena.</translation>
 <translation id="7015766095477679451">Rejea saa <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Unganisha <ph name="DEVICE_NAME" /> na simu yako</translation>
@@ -599,7 +594,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (mmiliki)</translation>
 <translation id="7647488630410863958">Fungua kifaa ili uone arifa zako</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
-<translation id="7653418004652142983">Imewashwa</translation>
 <translation id="7654687942625752712">Bonyeza na ushikilie vitufe vyote viwili vya sauti kwa sekunde tano ili uzime maelezo yanayotamkwa.</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,7 +620,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7933084174919150729">Programu ya Mratibu wa Google inapatikana kwenye wasifu wa msingi pekee.</translation>
 <translation id="79341161159229895">Akaunti inasimamiwa na <ph name="FIRST_PARENT_EMAIL" /> na <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Hali ya utofautishaji wa juu</translation>
-<translation id="7977639574084142279">Imezimwa</translation>
 <translation id="7977927628060636163">Inatafuta mitandao ya simu...</translation>
 <translation id="7980780401175799550">Jaribu njia mpya za kutumia Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="7982789257301363584">Mtandao</translation>
@@ -733,7 +726,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">Hali Nyeusi imezimwa.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Unatumia <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Fungua kifaa kwa kuingia katika akaunti ukitumia <ph name="LOGIN_ID" /> ili utekeleze kitendo cha arifa</translation>

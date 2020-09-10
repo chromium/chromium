@@ -4653,9 +4653,6 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
        Dit beleid werd eerder ten onrechte ingeschakeld op Android, maar deze functionaliteit is nooit volledig ondersteund geweest op Android.</translation>
 <translation id="7614663184588396421">Lijst met uitgeschakelde protocolschema's</translation>
-<translation id="7617319494457709698">Dit beleid geeft aan welke extensies de <ph name="ENTERPRISE_PLATFORM_KEYS_API" />-functie <ph name="CHALLENGE_USER_KEY_FUNCTION" /> mogen gebruiken voor externe bevestiging. Je moet extensies aan deze lijst toevoegen om de API te kunnen gebruiken.
-
-          Als een extensie niet in de lijst voorkomt of als de lijst niet is ingesteld, mislukt het aanroepen van de API en wordt er een foutcode weergegeven.</translation>
 <translation id="7620869951155758729">Dit beleid specificeert de configuratie die wordt gebruikt om de toegangscode voor ouders te genereren en te verifiëren.
 
       |current_config| wordt altijd gebruikt om de toegangscode te genereren en moet alleen worden gebruikt om de toegangscode te valideren wanneer deze niet kan worden gevalideerd met |future_config|.

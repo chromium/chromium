@@ -506,7 +506,7 @@
 <translation id="158849752021629804">गृह नेटवर्क आवश्यक छ</translation>
 <translation id="1588870296199743671">यस मार्फत लिङ्क खोल्नुहोस्...</translation>
 <translation id="1589055389569595240">हिज्जे र व्याकरण देखाउनुहोस्</translation>
-<translation id="1591679663873027990">Parallels Desktop लाई USB यन्त्रहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। USB यन्त्र झिकिसकेपछि Parallels Desktop ले यो यन्त्र याद राख्ने छैन।</translation>
+<translation id="1591679663873027990">Parallels Desktop लाई USB यन्त्रहरू प्रयोग गर्ने अनुमति दिनुहोस्। USB झिकिसकेपछि Parallels Desktop ले उक्तUSB याद राख्ने छैन।</translation>
 <translation id="1593594475886691512">फर्म्याट गर्दै...</translation>
 <translation id="159359590073980872">छवि क्यास</translation>
 <translation id="1593926297800505364">भुक्तानी विधि सुरक्षित गर्नुहोस्</translation>
@@ -4473,7 +4473,7 @@
 <translation id="6415900369006735853">आफ्नो फोनमार्फत इन्टरनेटमा जोडिनुहोस्</translation>
 <translation id="6416743254476733475">आफ्नो कम्प्युटरमा अनुमति दिनुहोस् वा रोक लगाउनुहोस्।</translation>
 <translation id="6417265370957905582">Google सहायक</translation>
-<translation id="6417468503703810114">पूर्वनिर्धारित तरिका</translation>
+<translation id="6417468503703810114">डिफल्ट व्यवहार</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> को अघिल्लो स्थापित संस्करणमा फिर्ता जाँदै</translation>
 <translation id="6418481728190846787">सबै अनुप्रयोगहरूको लागि दूर पहुँच स्थायी रूपमा हटाउनुहोस्</translation>
 <translation id="6418511932144861495">महत्वपूर्ण अद्यावधिक स्थापना गर्नुहोस्</translation>

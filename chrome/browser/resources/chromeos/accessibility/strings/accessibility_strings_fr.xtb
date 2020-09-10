@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Tactile</translation>
 <translation id="8173092779156526980">Balayer l'écran vers la gauche avec quatre doigts</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{trait de soulignement}one{# trait de soulignement}other{# traits de soulignement}}</translation>
+<translation id="8179976553408161302">Entrée</translation>
 <translation id="8184828902145951186">ligne</translation>
 <translation id="8186185314313222077">activer/désactiver le mode plein écran</translation>
 <translation id="8199231515320852133">Énoncer les en-têtes de la cellule actuelle</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">l<ph name="TABLECELLROWINDEX" />c<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Aucune case d'option précédente</translation>
 <translation id="8970172509886453271">Aucune section précédente</translation>
+<translation id="89720367119469899">Échap</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Retirer</translation>
 <translation id="9040132695316389094">Titre 1</translation>

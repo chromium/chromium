@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">Berøring</translation>
 <translation id="8173092779156526980">Stryg til venstre med fire fingre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understregning}one{# understregninger}other{# understregninger}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rk</translation>
 <translation id="8186185314313222077">slå fuld skærm til eller fra</translation>
 <translation id="8199231515320852133">Offentliggør overskrifterne for den aktuelle celle</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">r<ph name="TABLECELLROWINDEX" />k<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">Der er ingen forrige alternativknapper</translation>
 <translation id="8970172509886453271">Der er ingen forrige afsnit</translation>
+<translation id="89720367119469899">Escape</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>

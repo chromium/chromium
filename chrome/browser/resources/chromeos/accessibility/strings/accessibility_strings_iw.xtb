@@ -904,6 +904,7 @@
 <translation id="8138880386467279117">מגע</translation>
 <translation id="8173092779156526980">החלקה שמאלה עם ארבע אצבעות</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{קו תחתון}two{# סימני קו תחתון}many{# סימני קו תחתון}other{# סימני קו תחתון}}</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">שורה</translation>
 <translation id="8186185314313222077">החלפה של מצב מסך מלא</translation>
 <translation id="8199231515320852133">הכרזה על הכותרות של התא הנוכחי</translation>
@@ -989,6 +990,7 @@
 <translation id="8946628535652548639">ש<ph name="TABLECELLROWINDEX" />ע<ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="8952400011684167587">אין לחצן בחירה קודם</translation>
 <translation id="8970172509886453271">אין קטע קודם</translation>
+<translation id="89720367119469899">Esc</translation>
 <translation id="8978496506222343566">tltip</translation>
 <translation id="8986362086234534611">שכח</translation>
 <translation id="9040132695316389094">כותרת 1</translation>

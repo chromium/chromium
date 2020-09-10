@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
 <translation id="1632985212731562677">ছুইচৰ দ্বাৰা এক্সেছ ছেটিংসমূহ ইয়াত অক্ষম কৰিব পৰা যায় &gt; সাধ্য সুবিধা।</translation>
 <translation id="1654477262762802994">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান আৰম্ভ কৰক</translation>
-<translation id="1665244008632896072">গাঢ় ম’ড ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">নিৰপেক্ষ ৰঙৰ ম'ডটোৱে ৱালপেপাৰে আহৰণ কৰা ৰংবোৰ ব্যৱহাৰ নকৰে, তাৰ স্থানত নিৰপেক্ষভাৱে মিলাই সৃষ্টি কৰা পাতল আৰু গাঢ় বৰণৰ এটা ছেট ব্যৱহাৰ কৰে।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">অন-স্ক্ৰীণ কীব‘র্ড সক্ষম কৰা হ‘ল</translation>
 <translation id="1761222317188459878">নেটৱৰ্ক সংযোগ ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
-<translation id="1776485282219497802">গাঢ় ম’ড অন আছে।</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1812997170047690955">মোৰ স্ক্ৰীণত কি আছে?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">কীব'র্ডৰ লেইআউট সলনি কৰিবলৈ <ph name="KEYBOARD_SHORTCUT" /> টিপক।</translation>
 <translation id="2501920221385095727">ষ্টিকি কী</translation>
 <translation id="2509468283778169019">CAPS LOCK হৈ আছে</translation>
-<translation id="2517829236324128850">গাঢ় ম’ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="2542089167727451762">আপোনাৰ প্ৰ’ফাইলৰ প্ৰতিচ্ছবিত টিপক</translation>
 <translation id="255671100581129685">ৰাজহুৱা ছেশ্বনত Google Assistant নাই।</translation>
 <translation id="256712445991462162">ড'ক কৰা বিৱৰ্ধকটো</translation>
@@ -439,7 +436,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ত <ph name="ROUTE_TITLE" /> বন্ধ কৰক</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5876666360658629066">অভিভাৱকীয় ক’ডটো দিয়ক</translation>
-<translation id="5887866489674258948">গাঢ় ম’ড</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">নিষ্ক্ৰিয় ডেস্ক।</translation>
@@ -540,7 +536,6 @@
 <translation id="6972754398087986839">আৰম্ভ কৰক</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="698231206551913481">ব্যৱহাৰকাৰীজনক আঁতৰোৱাৰ পাছত তেওঁৰ সৈতে জড়িত সকলো ফাইল বা স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ব।</translation>
-<translation id="6990778048354947307">গাঢ় থীম</translation>
 <translation id="7007983414944123363">আপোনাৰ পিন অথবা পাছৱৰ্ডটো সত্যাপন কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />ত পুনৰ ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7025533177575372252">আপোনাৰ <ph name="DEVICE_NAME" /> নিজৰ ফ’নৰ সৈতে সংযোগ কৰক</translation>
@@ -595,7 +590,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (গৰাকী)</translation>
 <translation id="7647488630410863958">আপোনাৰ জাননীবোৰ চাবলৈ ডিভাইচ আনলক কৰক</translation>
 <translation id="7649070708921625228">সহায়</translation>
-<translation id="7653418004652142983">অন</translation>
 <translation id="7654687942625752712">কথিত প্ৰতিক্ৰিয়া অক্ষম কৰিবলৈ দুয়োটা ভলিউম বুটাম টিপি পাঁচ ছেকেণ্ডৰ বাবে ধৰি ৰাখক।</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -621,7 +615,6 @@
 <translation id="7933084174919150729">Google Assistant কেৱল প্ৰাথমিক প্ৰ’ফাইলৰ বাবে উপলব্ধ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> আৰু <ph name="SECOND_PARENT_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
 <translation id="7955885781510802139">ৰঙৰ উচ্চ প্ৰভেদযুক্ত ম’ড</translation>
-<translation id="7977639574084142279">অফ</translation>
 <translation id="7977927628060636163">ম'বাইল নেটৱৰ্ক বিচাৰি থকা হৈছে...</translation>
 <translation id="7980780401175799550">Chrome OS নেভিগে’ট কৰাৰ নতুন উপায়সমূহ ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
@@ -728,7 +721,6 @@
 <translation id="8936501819958976551">অক্ষম কৰা হৈছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইচ (পিছফালৰ সোঁফালৰ প’র্ট)</translation>
 <translation id="8940956008527784070">বেটাৰিৰ চ্চার্জ কম আছে (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">গাঢ় ম’ড অফ আছে।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যৱহাৰ কৰি</translation>
 <translation id="899350903320462459">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ <ph name="LOGIN_ID" /> হিচাপে ডিভাইচটো আনলক কৰক</translation>

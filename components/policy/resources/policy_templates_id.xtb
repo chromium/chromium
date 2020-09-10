@@ -4678,9 +4678,6 @@ Nilai kebijakan harus ditentukan dalam persen di rentang 0-100.</translation>
 
        Perlu diperhatikan bahwa sebelumnya kebijakan ini keliru diaktifkan di Android, tetapi fungsi ini belum pernah sepenuhnya didukung di Android.</translation>
 <translation id="7614663184588396421">Daftar skema protokol yang dinonaktifkan</translation>
-<translation id="7617319494457709698">Kebijakan ini menentukan ekstensi yang diizinkan untuk menggunakan fungsi <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> <ph name="CHALLENGE_USER_KEY_FUNCTION" /> untuk pengesahan jarak jauh. Ekstensi harus ditambahkan ke daftar ini untuk menggunakan API.
-
-          Jika ekstensi tidak ada dalam daftar, atau daftar tidak disetel, panggilan ke API akan gagal yang disertai kode error.</translation>
 <translation id="7620869951155758729">Kebijakan ini menetapkan konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.
 
       |current_config| selalu digunakan untuk membuat kode akses dan sebaiknya digunakan untuk memvalidasi kode akses hanya jika kode tidak dapat divalidasi dengan |future_config|.

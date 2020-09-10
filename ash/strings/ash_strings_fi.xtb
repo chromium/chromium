@@ -67,7 +67,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
 <translation id="1632985212731562677">Kytkimen käytön voi laittaa pois päältä kohdassa Asetukset &gt; Esteettömyys.</translation>
 <translation id="1654477262762802994">Aloita puhekysely</translation>
-<translation id="1665244008632896072">Tumma teema päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neutraali väritila ei käytä taustakuvasta poimittuja värejä vaan korvaa ne vaaleilla tai tummilla neutraaleilla sävyillä.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> jäljellä</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ajastin · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1747827819627189109">Ruutunäppäimistö otettiin käyttöön</translation>
 <translation id="1761222317188459878">Laita verkkoyhteys päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
-<translation id="1776485282219497802">Tumma tila on päällä.</translation>
 <translation id="1782199038061388045">käännös</translation>
 <translation id="181103072419391116">Signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="1812997170047690955">Mitä näytölläni näkyy?</translation>
@@ -152,7 +150,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2484513351006226581">Paina <ph name="KEYBOARD_SHORTCUT" /> vaihtaaksesi näppäimistöasettelua.</translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
 <translation id="2509468283778169019">CAPS LOCK on päällä</translation>
-<translation id="2517829236324128850">Näytä tumman tilan asetukset</translation>
 <translation id="2542089167727451762">Napauta profiilikuvaasi</translation>
 <translation id="255671100581129685">Google Assistantia ei voi käyttää julkisella käyttökerralla.</translation>
 <translation id="256712445991462162">kiinnitetty näytön suurentaja</translation>
@@ -440,7 +437,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5837036133683224804">Lopeta <ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5876666360658629066">Lisää vanhemman koodi</translation>
-<translation id="5887866489674258948">Tumma tila</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Työpöytä ei aktiivinen</translation>
@@ -543,7 +539,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6981982820502123353">Esteettömyys</translation>
 <translation id="698231206551913481">Kun käyttäjä poistetaan, kaikki kyseiseen käyttäjään yhdistetyt tiedostot ja paikalliset tiedot poistetaan pysyvästi.</translation>
-<translation id="6990778048354947307">Tumma teema</translation>
 <translation id="7007983414944123363">PIN-koodiasi tai salasanaasi ei voitu vahvistaa. Yritä uudelleen.</translation>
 <translation id="7015766095477679451">Palaa kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Yhdistä <ph name="DEVICE_NAME" /> puhelimeesi</translation>
@@ -600,7 +595,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omistaja)</translation>
 <translation id="7647488630410863958">Katso ilmoitukset avaamalla laitteesi lukitus.</translation>
 <translation id="7649070708921625228">Ohje</translation>
-<translation id="7653418004652142983">Päällä</translation>
 <translation id="7654687942625752712">Poista äänipalaute käytöstä painamalla molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
 <translation id="7658239707568436148">Peruuta</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -627,7 +621,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7933084174919150729">Google Assistant on käytettävissä vain ensisijaisella profiililla.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="7955885781510802139">Suurikontrastinen tila</translation>
-<translation id="7977639574084142279">Pois päältä</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7980780401175799550">Kokeile Chrome-käyttöjärjestelmän uusia navigointitapoja</translation>
 <translation id="7982789257301363584">Verkko</translation>
@@ -734,7 +727,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Tumma tila on pois päältä.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> käytössä</translation>
 <translation id="899350903320462459">Avaa laitteen lukitus tunnuksella <ph name="LOGIN_ID" />, niin voit käyttää ilmoitustoimintoa</translation>

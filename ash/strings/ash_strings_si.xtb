@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">මෙම සැසියෙහි ඔබේ සියලු ක්‍රියාකාරකම්වලට ප්‍රවේශය</translation>
 <translation id="1632985212731562677">ප්‍රවේශය මාරු කිරීම සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ අබල කළ හැක.</translation>
 <translation id="1654477262762802994">හඬ විමසුමක් අරඹන්න</translation>
-<translation id="1665244008632896072">අඳුරු ප්‍රකාරය ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">උදාසීන වර්ණ ප්‍රකාරය වෝල්පේපරය නිස්සාරණය කළ වර්ණ, උදාසීන තානය සහිත ආලෝක හෝ අඳුරු වර්ණ කට්ටලයක් මගින් ප්‍රතිස්ථාපනය කරමින්, භාවිත නොකරයි.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ඉතිරිය</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> කාල ගණකය · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">තිරය මත යතුරු පුවරුව සබල කර ඇත</translation>
 <translation id="1761222317188459878">ජාල සබඳතාව ටොගල කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">දකුණට අනුචලන කරන්න</translation>
-<translation id="1776485282219497802">අඳුරු ප්‍රකාරය ක්‍රියාත්මකයි.</translation>
 <translation id="1782199038061388045">පරිවර්තනය</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="1812997170047690955">මගේ තිරය මත ඇත්තේ මොනවා ද?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">යතුරු පුවරු පිරිසැලසුම මාරු කිරීමට <ph name="KEYBOARD_SHORTCUT" /> ඔබන්න.</translation>
 <translation id="2501920221385095727">ඇලෙන යතුරු</translation>
 <translation id="2509468283778169019">කැප්ස් ලොක් සක්‍රීයයි</translation>
-<translation id="2517829236324128850">අඳුරු ප්‍රකාර සැකසීම් පෙන්වන්න</translation>
 <translation id="2542089167727451762">ඔබේ පැතිකඩ රූපයට තට්ටු කරන්න</translation>
 <translation id="255671100581129685">ප්‍රසිද්ධ සැසියකදී Google සහකරු නොලැබේ.</translation>
 <translation id="256712445991462162">ඩොක් කළ විශාලකය</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> මත <ph name="ROUTE_TITLE" /> නවත්වන්න</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
 <translation id="5876666360658629066">මාපිය කේතය ඇතුළත් කරන්න</translation>
-<translation id="5887866489674258948">අඳුරු ප්‍රකාරය</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">අක්‍රිය මේසය.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">අරඹන්න</translation>
 <translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
 <translation id="698231206551913481">මෙම පරිශීලකයා ඉවත් කළ විට මෙම පරිශීලක හා සම්බන්ධිත සියලු ගොනු සහ ස්ථානීය දත්ත ස්ථිරවම මකනු ඇත.</translation>
-<translation id="6990778048354947307">අඳුරු තේමාව</translation>
 <translation id="7007983414944123363">ඔබගේ PIN හෝ මුරපදය සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> හිදී ආපසු එන්න.</translation>
 <translation id="7025533177575372252">ඔබේ <ph name="DEVICE_NAME" /> ඔබේ දුරකථනය සමඟ සබඳින්න</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (හිමිකරු)</translation>
 <translation id="7647488630410863958">ඔබගේ දැනුම්දීම් බැලීම සඳහා උපාංගය අගුළු හරින්න</translation>
 <translation id="7649070708921625228">උදවු</translation>
-<translation id="7653418004652142983">ක්‍රියාත්මකයි</translation>
 <translation id="7654687942625752712">කථන ප්‍රතිපෝෂණය අබල කිරීම සඳහා ශබ්ද යතුරු දෙකම තත්පර 5 කට ඔබා සිටින්න.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google සහායක මූලික පැතිකඩ සඳහා පමණක් ලබා ගත හැකිය.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> සහ <ph name="SECOND_PARENT_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
 <translation id="7955885781510802139">අධි අසමානතා ප්‍රකාරය</translation>
-<translation id="7977639574084142279">ක්‍රියාවිරහිතයි</translation>
 <translation id="7977927628060636163">ජංගම ජාල සඳහා සොයමින්...</translation>
 <translation id="7980780401175799550">Chrome OS මත සංචලන කිරීමට නව මාර්ග උත්සාහ කරන්න</translation>
 <translation id="7982789257301363584">ජාලය</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">ක්‍රියා විරහිතයි</translation>
 <translation id="8938800817013097409">USB-C උපාංගය (පසුපස දකුණු තොට)</translation>
 <translation id="8940956008527784070">බැටරි බලය අඩුය (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">අඳුරු ප්‍රකාරය ක්‍රියාවිරහිතයි.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> භාවිත කිරීම</translation>
 <translation id="899350903320462459">ක්‍රියාකාරකම් දැනුම්දීම ඉටු කිරීමට, <ph name="LOGIN_ID" /> ලෙස උපාංගය අගුළු අරින්න</translation>

@@ -510,7 +510,7 @@
 <translation id="158849752021629804">需要家用網路</translation>
 <translation id="1588870296199743671">使用其他程式開啟連結...</translation>
 <translation id="1589055389569595240">顯示拼字與文法</translation>
-<translation id="1591679663873027990">請授權 Parallels Desktop 存取 USB 裝置。Parallels Desktop 不會記住已移除的 USB 裝置。</translation>
+<translation id="1591679663873027990">授權 Parallels Desktop 存取 USB 裝置。Parallels Desktop 不會記住已移除的 USB 裝置。</translation>
 <translation id="1593594475886691512">正在格式化...</translation>
 <translation id="159359590073980872">圖片快取</translation>
 <translation id="1593926297800505364">儲存付款方式</translation>
@@ -1865,7 +1865,7 @@
 <translation id="321834671654278338">Linux 解除安裝程式</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" /> 連接器處理程序當掉了，你要重新啟動嗎？</translation>
 <translation id="3222066309010235055">預先轉譯：<ph name="PRERENDER_CONTENTS_NAME" /></translation>
-<translation id="3222779980972075989">連結到「<ph name="USB_VM_NAME" />」</translation>
+<translation id="3222779980972075989">連接到「<ph name="USB_VM_NAME" />」</translation>
 <translation id="3223531857777746191">重設按鈕</translation>
 <translation id="3225084153129302039">預設的紫色顯示圖片</translation>
 <translation id="3225319735946384299">程式碼簽署</translation>
@@ -3127,7 +3127,7 @@
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
-<translation id="4752124003533492687">開啟「設定」以連結「<ph name="USB_DEVICE_NAME" />」</translation>
+<translation id="4752124003533492687">開啟「設定」頁面即可連接「<ph name="USB_DEVICE_NAME" />」</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -5187,7 +5187,7 @@
 <translation id="7303900363563182677">這個網站無法讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="7305123176580523628">已連接 USB 印表機</translation>
 <translation id="730515362922783851">與區域網路或網際網路中的任何裝置交換資料</translation>
-<translation id="7306521477691455105">開啟「設定」以將「<ph name="USB_DEVICE_NAME" />」連結至「<ph name="USB_VM_NAME" />」</translation>
+<translation id="7306521477691455105">開啟「設定」頁面即可將「<ph name="USB_DEVICE_NAME" />」連接到「<ph name="USB_VM_NAME" />」</translation>
 <translation id="7307129035224081534">已暫停</translation>
 <translation id="7308002049209013926">使用啟動器快速存取新的應用程式和活動。如要使用鍵盤開啟這個畫面，請按下 Alt + Shift + L 鍵。</translation>
 <translation id="7309257895202129721">顯示控制介面(&amp;C)</translation>
@@ -5552,7 +5552,7 @@
 <translation id="7766082757934713382">透過暫停應用程式和系統的自動更新來降低網路數據用量</translation>
 <translation id="7766807826975222231">觀看導覽</translation>
 <translation id="7766838926148951335">接受權限</translation>
-<translation id="7768507955883790804">網站會在你造訪時自動遵守這項設定</translation>
+<translation id="7768507955883790804">網站會在你造訪時自動套用這項設定</translation>
 <translation id="7768770796815395237">變更</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769672763586021400">型號 ID</translation>

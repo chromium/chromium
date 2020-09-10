@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
-<translation id="1665244008632896072">'ডার্ক মোড' টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">'নিউট্রাল কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে না। এর পরিবর্তে নিউট্রাল টোনযুক্ত কিছু হালকা অথবা গাঢ় হিউ ব্যবহার করা হয়।</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-এর টাইমার · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">অন-স্ক্রিন কীবোর্ড সক্ষম করা রয়েছে</translation>
 <translation id="1761222317188459878">নেটওয়ার্ক কানেকশন টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
-<translation id="1776485282219497802">'ডার্ক মোড' চালু আছে।</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="1812997170047690955">আমার স্ক্রিনে কী রয়েছে?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">কীবোর্ড লে-আউট পরিবর্তন করতে <ph name="KEYBOARD_SHORTCUT" /> টিপুন।</translation>
 <translation id="2501920221385095727">স্টিকি কীজ</translation>
 <translation id="2509468283778169019">CAPS LOCK চালু</translation>
-<translation id="2517829236324128850">'ডার্ক মোড' সেটিংস দেখুন</translation>
 <translation id="2542089167727451762">আপনার প্রোফাইল ছবিতে ট্যাপ করুন</translation>
 <translation id="255671100581129685">সর্বজনীন সেশনে Google অ্যাসিস্ট্যান্ট উপলভ্য নয়।</translation>
 <translation id="256712445991462162">ডক করা ম্যাগনিফায়ার</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /> বন্ধ করুন</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5876666360658629066">অভিভাবকীয় কোডটি লিখুন</translation>
-<translation id="5887866489674258948">ডার্ক মোড</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">ডেস্কটি অ্যাক্টিভ নেই</translation>
@@ -542,7 +538,6 @@
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="698231206551913481">একবার এই ব্যবহারকারীকে সরানো হলে এর সঙ্গে সংশ্লিষ্ট সমস্ত ফাইল এবং স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে।</translation>
-<translation id="6990778048354947307">ডার্ক থিম</translation>
 <translation id="7007983414944123363">আপনার পিন বা পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" />-কে আপনার ফোনের সাথে কানেক্ট করুন</translation>
@@ -599,7 +594,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (মালিক)</translation>
 <translation id="7647488630410863958">আপনার বিজ্ঞপ্তিগুলি দেখতে ডিভাইস আনলক করুন</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
-<translation id="7653418004652142983">চালু আছে</translation>
 <translation id="7654687942625752712">পড়ে শোনানো বিকল্প চালু করতে পাঁচ সেকেন্ডের জন্য ভলিউম কীগুলি প্রেস করে ধরে রাখুন।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -626,13 +620,12 @@
 <translation id="7933084174919150729">Google অ্যাসিস্ট্যান্ট শুধুমাত্র প্রাথমিক প্রোফাইলেই ব্যবহার করা যায়।</translation>
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="7955885781510802139">হাই-কনট্রাস্ট মোড</translation>
-<translation id="7977639574084142279">বন্ধ আছে</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7980780401175799550">Chrome OS নেভিগেট করার নতুন পদ্ধতিগুলি ব্যবহার করে দেখুন</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7984197416080286869">অনেকবার আঙ্গুলের ছাপ দিয়ে আনলক করার চেষ্টা করা হয়েছে</translation>
 <translation id="7994370417837006925">একাধিক সাইন-ইন</translation>
-<translation id="7995804128062002838">স্ক্রিন ক্যাপচার নেওয়া যায়নি</translation>
+<translation id="7995804128062002838">স্ক্রিন ক্যাপচার করা যায়নি</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8004512796067398576">বৃদ্ধি</translation>
 <translation id="8029629653277878342">আরও নিরাপত্তার জন্য পিন বা পাসওয়ার্ড দিতে হবে</translation>
@@ -720,7 +713,7 @@
 <translation id="8843682306134542540">রোটেশন লক টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">আপনার পিন বা পাসওয়ার্ড এখনও যাচাই করা যায়নি। মনে রাখবেন: আপনি সম্প্রতি পাসওয়ার্ড পরিবর্তন করে থাকলে, পুরনো পাসওয়ার্ড ব্যবহার করুন। আপনি সাইন-আউট করলে নতুন পাসওয়ার্ড প্রয়োগ করা হবে।</translation>
-<translation id="885387440427703469">স্ক্রিন ক্যাপচার নেওয়ার সুবিধা বন্ধ করা হয়েছে</translation>
+<translation id="885387440427703469">স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করা হয়েছে</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
@@ -733,7 +726,6 @@
 <translation id="8936501819958976551">বন্ধ আছে</translation>
 <translation id="8938800817013097409">USB-C ডিভাইস (পিছনের ডান পোর্ট)</translation>
 <translation id="8940956008527784070">(<ph name="PERCENTAGE" />%) কম ব্যাটারি</translation>
-<translation id="8958665219764428373">'ডার্ক মোড' বন্ধ আছে।</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যবহার করা হচ্ছে</translation>
 <translation id="899350903320462459">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য <ph name="LOGIN_ID" /> হিসেবে ডিভাইস আনলক করুন</translation>

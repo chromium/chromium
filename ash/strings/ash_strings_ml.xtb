@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'ആക്‌സസ് മാറുക' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
-<translation id="1665244008632896072">ഡാർക്ക് മോഡ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ന്യൂട്രൽ വർണ്ണ മോഡ് വാൾപേപ്പർ എക്‌സ്‌ട്രാക്റ്റ് ചെയ്‌ത വർണ്ണങ്ങൾ ഉപയോഗിക്കുന്നില്ല, അവയ്ക്ക് പകരം ന്യൂട്രലായി ടോൺ ചെയ്‌‌ത ഇളം നിറത്തിന്റെയോ ഇരുണ്ട നിറത്തിന്റെയോ ഒരു സെറ്റ് ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ടൈമർ · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ഓൺ‌ സ്‌ക്രീൻ കീ‌ബോർഡ് പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="1761222317188459878">നെറ്റ്‌വർക്ക് കണക്ഷൻ മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
-<translation id="1776485282219497802">ഡാർക്ക് മോഡ് ഓണാണ്.</translation>
 <translation id="1782199038061388045">വിവർത്തനം</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1812997170047690955">എന്റെ സ്‌ക്രീനിൽ എന്താണുള്ളത്?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
-<translation id="2517829236324128850">ഡാർക്ക് മോഡ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="2542089167727451762">നിങ്ങളുടെ പ്രൊഫൈൽ ചിത്രത്തിൽ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="255671100581129685">പൊതു സെഷനില്‍ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="256712445991462162">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5876666360658629066">രക്ഷാകർതൃ കോഡ് നൽകുക</translation>
-<translation id="5887866489674258948">ഡാർക്ക് മോഡ്</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">നിഷ്ക്രിയ ഡെസ്‌ക്.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">ആരംഭിക്കാം</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
-<translation id="6990778048354947307">ഇരുണ്ട തീം</translation>
 <translation id="7007983414944123363">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="7025533177575372252">നിങ്ങളുടെ ഫോണുമായി <ph name="DEVICE_NAME" /> കണക്‌റ്റ് ചെയ്യുക</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ഉടമ)</translation>
 <translation id="7647488630410863958">നിങ്ങളുടെ അറിയിപ്പുകൾ കാണാൻ ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="7649070708921625228">സഹായം</translation>
-<translation id="7653418004652142983">ഓണാണ്</translation>
 <translation id="7654687942625752712">സംഭാഷണ ഫീഡ്‌ബാക്ക് പ്രവർത്തനരഹിതമാക്കാൻ രണ്ട് വോളിയം കീകളും രണ്ട് സെക്കൻഡ് നേരത്തേക്ക് അമർത്തിപ്പിടിക്കുക.</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">പ്രാഥമിക പ്രൊഫൈലിന് മാത്രമേ Google അസിസ്റ്റന്‍റ് ലഭ്യമാകൂ.</translation>
 <translation id="79341161159229895">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="FIRST_PARENT_EMAIL" />, <ph name="SECOND_PARENT_EMAIL" /> എന്നിവരാണ്</translation>
 <translation id="7955885781510802139">ഉയർന്ന ദൃശ്യതീവ്രതാ മോഡ്</translation>
-<translation id="7977639574084142279">ഓഫാണ്</translation>
 <translation id="7977927628060636163">മൊബൈൽ നെറ്റ്‌വർക്കുകൾ തിരയുന്നു...</translation>
 <translation id="7980780401175799550">Chrome OS നാവിഗേറ്റ് ചെയ്യാനുള്ള പുതിയ മാർഗ്ഗങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="7982789257301363584">നെറ്റ്‌വർക്ക്</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">നിർജീവമാക്കി</translation>
 <translation id="8938800817013097409">USB-C ഉപകരണം (പുറകിൽ വലതുവശത്തെ പോർട്ട്)</translation>
 <translation id="8940956008527784070">ബാറ്ററി കുറവാണ് (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">ഡാർക്ക് മോഡ് ഓഫാണ്.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="899350903320462459">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കാൻ, <ph name="LOGIN_ID" /> ആയി ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>

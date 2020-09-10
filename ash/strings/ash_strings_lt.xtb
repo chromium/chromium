@@ -67,7 +67,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
-<translation id="1665244008632896072">Perjungti tamsų režimą. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">Neutralių spalvų režimu nenaudojamos išskirtos ekrano fono spalvos, pakeičiant jas neutralių šviesių ir tamsių atspalvių rinkiniu.</translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> laikmatis · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1747827819627189109">Ekrano klaviatūra įgalinta</translation>
 <translation id="1761222317188459878">Perjungti tinklo ryšį. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
-<translation id="1776485282219497802">Tamsus režimas įjungtas.</translation>
 <translation id="1782199038061388045">vertimas</translation>
 <translation id="181103072419391116">Signalo stiprumas <ph name="SIGNAL_STRENGTH" />, tvarko administratorius</translation>
 <translation id="1812997170047690955">Kas mano ekrane?</translation>
@@ -152,7 +150,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2484513351006226581">Paspauskite <ph name="KEYBOARD_SHORTCUT" />, kad perjungtumėte klaviatūros išdėstymą.</translation>
 <translation id="2501920221385095727">Fiksuotos pozicijos klavišai</translation>
 <translation id="2509468283778169019">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS įjungtas</translation>
-<translation id="2517829236324128850">Rodyti tamsaus režimo nustatymus</translation>
 <translation id="2542089167727451762">Palieskite profilio vaizdą</translation>
 <translation id="255671100581129685">„Google“ padėjėjas nepasiekiamas viešoje sesijoje.</translation>
 <translation id="256712445991462162">prie doko prijungtas didintuvas</translation>
@@ -440,7 +437,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5876666360658629066">Įveskite tėvų kodą</translation>
-<translation id="5887866489674258948">Tamsus režimas</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5901316534475909376">„Shift“ + „Esc“</translation>
 <translation id="5909862606227538307">Neaktyvus darbalaukis.</translation>
@@ -541,7 +537,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6972754398087986839">Darbo pradžia</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="698231206551913481">Visi failai ir su šiuo naudotoju susiję duomenys bus ištrinti visam laikui, kai šis naudotojas bus pašalintas.</translation>
-<translation id="6990778048354947307">Tamsi tema</translation>
 <translation id="7007983414944123363">Nepavyko patvirtinti PIN kodo arba slaptažodžio. Bandykite dar kartą.</translation>
 <translation id="7015766095477679451">Grįžkite <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Susiekite „<ph name="DEVICE_NAME" />“ įrenginį su telefonu</translation>
@@ -598,7 +593,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (savininkas)</translation>
 <translation id="7647488630410863958">Atrakinkite įrenginį, kad galėtumėte peržiūrėti pranešimus</translation>
 <translation id="7649070708921625228">Pagalba</translation>
-<translation id="7653418004652142983">Įjungta</translation>
 <translation id="7654687942625752712">Paspauskite ir penkias sekundes palaikykite garsumo klavišus, kad išjungtumėte ekrano skaitymo balsu funkciją.</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7933084174919150729">„Google“ padėjėjas pasiekiamas tik pagrindiniame profilyje.</translation>
 <translation id="79341161159229895">Paskyrą tvarko: <ph name="FIRST_PARENT_EMAIL" /> ir <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">Didelio kontrasto režimas</translation>
-<translation id="7977639574084142279">Išjungta</translation>
 <translation id="7977927628060636163">Ieškoma mobiliojo ryšio tinklų...</translation>
 <translation id="7980780401175799550">Nauji „Chrome“ OS naršymo būdai</translation>
 <translation id="7982789257301363584">Tinklas</translation>
@@ -732,7 +725,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8936501819958976551">išaktyvinta</translation>
 <translation id="8938800817013097409">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="8940956008527784070">Akumuliatorius senka (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8958665219764428373">Tamsus režimas išjungtas.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Naudojama <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Atrakinkite įrenginį su <ph name="LOGIN_ID" />, kad galėtumėte įvykdyti pranešimo veiksmą</translation>

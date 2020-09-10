@@ -67,7 +67,6 @@
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
-<translation id="1665244008632896072">მუქი რეჟიმის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1667964833127753507">ფერთა ნეიტრალური რეჟიმი არ იყენებს ფონიდან ამოღებულ ფერებს — ისინი ნეიტრალური ღია ან მუქი ტონებით ნაცვლდება.</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
@@ -79,7 +78,6 @@
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
 <translation id="1761222317188459878">ქსელის კავშირის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">გადაადგილება მარჯვნივ</translation>
-<translation id="1776485282219497802">მუქი რეჟიმი ჩართულია.</translation>
 <translation id="1782199038061388045">თარგმანი</translation>
 <translation id="181103072419391116">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="1812997170047690955">რა არის ჩემს ეკრანზე?</translation>
@@ -152,7 +150,6 @@
 <translation id="2484513351006226581">კლავიატურის განლაგების გადასართველად გამოიყენეთ კლავიშთა კომბინაცია: <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2501920221385095727">კლავიშების ფიქსაცია</translation>
 <translation id="2509468283778169019">CAPS LOCK ჩართულია</translation>
-<translation id="2517829236324128850">მუქი რეჟიმის პარამეტრების ჩვენება</translation>
 <translation id="2542089167727451762">შეეხეთ თქვენს პროფილის სურათს</translation>
 <translation id="255671100581129685">Google ასისტენტი მიუწვდომელია საჯარო სესიაში.</translation>
 <translation id="256712445991462162">ჩამაგრებული ლუპა</translation>
@@ -440,7 +437,6 @@
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" />-ის შეწყვეტა „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5876666360658629066">შეიყვანეთ მშობლის კოდი</translation>
-<translation id="5887866489674258948">მუქი რეჟიმი</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">არააქტიური სამუშაო მაგიდა.</translation>
@@ -541,7 +537,6 @@
 <translation id="6972754398087986839">დაწყება</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="698231206551913481">ამ მომხმარებლის ამოშლის შემდეგ, მასთან დაკავშირებული ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშლება.</translation>
-<translation id="6990778048354947307">მუქი თემა</translation>
 <translation id="7007983414944123363">თქვენი PIN-კოდის ან პაროლის დადასტურება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="7015766095477679451">დაბრუნდით <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="7025533177575372252">დაუკავშირეთ <ph name="DEVICE_NAME" /> თქვენს ტელეფონს</translation>
@@ -598,7 +593,6 @@
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (მფლობელი)</translation>
 <translation id="7647488630410863958">შეტყობინებების სანახავად, განბლოკეთ მოწყობილობა</translation>
 <translation id="7649070708921625228">დახმარება</translation>
-<translation id="7653418004652142983">ჩართული</translation>
 <translation id="7654687942625752712">გახმოვანებული უკუკავშირის გასათიშად დააჭირეთ ხმის ორივე ღილაკს ხუთი წამის განმავლობაში.</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -625,7 +619,6 @@
 <translation id="7933084174919150729">Google ასისტენტი ხელმისაწვდომია მხოლოდ ძირითადი პროფილისთვის.</translation>
 <translation id="79341161159229895">ანგარიშს მართავენ <ph name="FIRST_PARENT_EMAIL" /> და <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="7955885781510802139">მაღალკონტრასტული რეჟიმი</translation>
-<translation id="7977639574084142279">გამორთული</translation>
 <translation id="7977927628060636163">მიმდინარეობს მობილური ქსელების ძიება…</translation>
 <translation id="7980780401175799550">ცადეთ Chrome OS-ში ნავიგაციის ახალი ხერხები</translation>
 <translation id="7982789257301363584">ქსელი</translation>
@@ -732,7 +725,6 @@
 <translation id="8936501819958976551">დეაქტივირებულია</translation>
 <translation id="8938800817013097409">USB-C მოწყობილობა (უკან მდებარე მარჯვენა პორტი)</translation>
 <translation id="8940956008527784070">კვების ბატარეა იცლება (<ph name="PERCENTAGE" />%)</translation>
-<translation id="8958665219764428373">მუქი რეჟიმი გამორთულია.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">გამოიყენება <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა <ph name="LOGIN_ID" />-ის სახელით</translation>
