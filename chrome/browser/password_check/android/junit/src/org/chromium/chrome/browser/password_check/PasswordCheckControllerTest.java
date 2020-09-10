@@ -129,6 +129,7 @@ public class PasswordCheckControllerTest {
                 mChangePasswordDelegate, mReauthenticationHelper, mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
+        PasswordCheckMediator.setStatusUpdateDelayMillis(0);
     }
 
     @Test
