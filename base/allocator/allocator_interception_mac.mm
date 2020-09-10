@@ -310,6 +310,10 @@ bool UncheckedCallocMac(size_t num_items, size_t size, void** result) {
   return *result != NULL;
 }
 
+void InitializeDefaultDispatchToMacAllocator() {
+  StoreFunctionsForAllZones();
+}
+
 void StoreFunctionsForDefaultZone() {
   ChromeMallocZone* default_zone = reinterpret_cast<ChromeMallocZone*>(
       malloc_default_zone());

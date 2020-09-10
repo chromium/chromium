@@ -329,7 +329,6 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // On Windows we use plain link-time overriding of the CRT symbols.
 #include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
 #elif defined(OS_APPLE)
-#include "base/allocator/allocator_shim_default_dispatch_to_mac_zoned_malloc.h"
 #include "base/allocator/allocator_shim_override_mac_symbols.h"
 #else
 #include "base/allocator/allocator_shim_override_libc_symbols.h"

@@ -88,10 +88,6 @@ void FreeDefiniteSizeImpl(const AllocatorDispatch* self,
 
 }  // namespace
 
-void InitializeDefaultDispatchToMacAllocator() {
-  StoreFunctionsForAllZones();
-}
-
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &MallocImpl,           /* alloc_function */
     &CallocImpl,           /* alloc_zero_initialized_function */

@@ -8,11 +8,6 @@
 namespace base {
 namespace allocator {
 
-// This initializes AllocatorDispatch::default_dispatch by saving pointers to
-// the functions in the current default malloc zone. This must be called before
-// the default malloc zone is changed to have its intended effect.
-void InitializeDefaultDispatchToMacAllocator();
-
 }  // namespace allocator
 }  // namespace base
 
