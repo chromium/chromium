@@ -691,6 +691,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 }
 
+- (id<UIBlockerTarget>)currentUIBlocker {
+  return self.uiBlockerTarget;
+}
+
 #pragma mark - Scene notifications
 
 // Handler for UISceneDidActivateNotification.

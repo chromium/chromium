@@ -64,11 +64,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // by the app delegate.
 @property(nonatomic, strong) SceneState* mainSceneState;
 
-// When a modal UI (that requires user to interact with it before any further
-// interaction with the app is allowed) is shown, this tracks the scene where it
-// is shown. When there is no blocking UI shown in any scene, this is nil.
-@property(nonatomic, weak, readonly) SceneState* sceneShowingBlockingUI;
-
 // Indicates that this app launch is one after a crash.
 @property(nonatomic, assign) BOOL postCrashLaunch;
 
