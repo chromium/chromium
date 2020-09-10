@@ -335,6 +335,7 @@ Polymer({
   onFrameLoad_() {
     this.acceptButtonDisabled = false;
     this.eulaLoadingScreenShown = false;
+    this.focus();
     this.$.eulaDialog.scrollToBottom();
   },
 
