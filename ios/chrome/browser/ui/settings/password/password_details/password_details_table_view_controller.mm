@@ -11,11 +11,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_menu_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -240,6 +242,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   switch (itemType) {
     case ItemTypeWebsite:
     case ItemTypeUsername:
+      [self ensureContextMenuShownForItemType:itemType
+                                    tableView:tableView
+                                  atIndexPath:indexPath];
+      break;
     case ItemTypeChangePasswordRecommendation:
       break;
     case ItemTypePassword: {
@@ -249,18 +255,22 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
         TableViewTextEditCell* textFieldCell =
             base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
         [textFieldCell.textField becomeFirstResponder];
+      } else {
+        [self ensureContextMenuShownForItemType:itemType
+                                      tableView:tableView
+                                    atIndexPath:indexPath];
       }
       break;
     }
     case ItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
-        DCHECK(self.commandsDispatcher);
+        DCHECK(self.commandsHandler);
         DCHECK(self.password.changePasswordURL.is_valid());
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:self.password.changePasswordURL];
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                                 PasswordCheckInteraction::kChangePassword);
-        [self.commandsDispatcher closeSettingsUIAndOpenURL:command];
+        [self.commandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
   }
@@ -276,6 +286,27 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return NO;
 }
 
+// If the context menu is not shown for a given item type, constructs that
+// menu and shows it. This method should only be called for item types
+// representing the cells with the site, username and password.
+- (void)ensureContextMenuShownForItemType:(NSInteger)itemType
+                                tableView:(UITableView*)tableView
+                              atIndexPath:(NSIndexPath*)indexPath {
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  if (![menu isMenuVisible]) {
+    menu.menuItems = [self getMenuItemsFor:itemType];
+
+    if (@available(iOS 13, *)) {
+      [menu showMenuFromView:tableView
+                        rect:[tableView rectForRowAtIndexPath:indexPath]];
+    } else {
+      [menu setTargetRect:[tableView rectForRowAtIndexPath:indexPath]
+                   inView:tableView];
+      [menu setMenuVisible:YES animated:YES];
+    }
+  }
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -284,8 +315,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                      cellForRowAtIndexPath:indexPath];
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  cell.tag = itemType;
+
   switch (itemType) {
     case ItemTypePassword: {
       TableViewTextEditCell* textFieldCell =
@@ -379,8 +411,16 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
             return;
           [strongSelf logPasswordSettingsReauthResult:result];
 
-          if (result == ReauthenticationResult::kFailure)
+          if (result == ReauthenticationResult::kFailure) {
+            if (reason == ReauthenticationReasonCopy) {
+              [strongSelf
+                   showToast:
+                       l10n_util::GetNSString(
+                           IDS_IOS_SETTINGS_PASSWORD_WAS_NOT_COPIED_MESSAGE)
+                  forSuccess:NO];
+            }
             return;
+          }
 
           [strongSelf showPasswordFor:reason];
         };
@@ -407,9 +447,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                               PasswordCheckInteraction::kShowPassword);
       break;
-    case ReauthenticationReasonCopy:
-      // TODO:(crbug.com/1075494) - Implement copy password functionality.
+    case ReauthenticationReasonCopy: {
+      UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
+      generalPasteboard.string = self.password.password;
+      [self showToast:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE)
+           forSuccess:YES];
       break;
+    }
     case ReauthenticationReasonEdit:
       // Called super because we want to update only |tableView.editing|.
       [super editButtonPressed];
@@ -432,6 +477,18 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       return l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_EDIT);
   }
+}
+
+// Shows a snack bar with |message| and provides haptic feedback. The haptic
+// feedback is either for success or for error, depending on |success|.
+- (void)showToast:(NSString*)message forSuccess:(BOOL)success {
+  TriggerHapticFeedbackForNotification(success
+                                           ? UINotificationFeedbackTypeSuccess
+                                           : UINotificationFeedbackTypeError);
+  [self.commandsHandler showSnackbarWithMessage:message
+                                     buttonText:nil
+                                  messageAction:nil
+                               completionAction:nil];
 }
 
 - (void)passwordEditingConfirmed {
@@ -471,6 +528,58 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   } else {
     [self attemptToShowPasswordFor:ReauthenticationReasonShow];
   }
+}
+
+// Returns an array of UIMenuItems to display in a context menu on the site
+// cell.
+- (NSArray*)getMenuItemsFor:(NSInteger)itemType {
+  PasswordDetailsMenuItem* copyOption = [[PasswordDetailsMenuItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_COPY_MENU_ITEM)
+             action:@selector(copyPasswordDetails:)];
+  copyOption.itemType = itemType;
+  return @[ copyOption ];
+}
+
+// Copies the password information to system pasteboard and shows a toast of
+// success/failure.
+- (void)copyPasswordDetails:(id)sender {
+  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
+  UIMenuController* menu = base::mac::ObjCCastStrict<UIMenuController>(sender);
+  PasswordDetailsMenuItem* menuItem =
+      base::mac::ObjCCastStrict<PasswordDetailsMenuItem>(
+          menu.menuItems.firstObject);
+
+  NSString* message = nil;
+
+  switch (menuItem.itemType) {
+    case ItemTypeWebsite:
+      generalPasteboard.string = self.password.website;
+      message =
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE);
+      break;
+    case ItemTypeUsername:
+      generalPasteboard.string = self.password.username;
+      message =
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE);
+      break;
+    case ItemTypePassword:
+      [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
+      return;
+  }
+  [self showToast:message forSuccess:YES];
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  if (action == @selector(copyPasswordDetails:)) {
+    return YES;
+  }
+  return NO;
 }
 
 #pragma mark - Metrics

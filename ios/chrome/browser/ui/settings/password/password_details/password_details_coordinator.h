@@ -35,9 +35,6 @@ struct PasswordForm;
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;
 
-// Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands> dispatcher;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_H_

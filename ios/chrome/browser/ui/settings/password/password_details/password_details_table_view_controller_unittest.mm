@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/password_form.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
@@ -38,6 +39,10 @@ constexpr char kAndroid[] = "android://hash@com.example.my.app";
 constexpr char kUsername[] = "test@egmail.com";
 constexpr char kPassword[] = "test";
 }
+
+@interface PasswordDetailsTableViewController (Test)
+- (void)copyPasswordDetails:(id)sender;
+@end
 
 // Test class that conforms to PasswordDetailsHanler in order to test the
 // presenter methods are called correctly.
@@ -86,6 +91,30 @@ constexpr char kPassword[] = "test";
 
 @end
 
+@interface FakeSnackbarImplementation : NSObject <SnackbarCommands>
+
+@property(nonatomic, assign) NSString* snackbarMessage;
+
+@end
+
+@implementation FakeSnackbarImplementation
+
+- (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
+}
+
+- (void)showSnackbarMessage:(MDCSnackbarMessage*)message
+               bottomOffset:(CGFloat)offset {
+}
+
+- (void)showSnackbarWithMessage:(NSString*)messageText
+                     buttonText:(NSString*)buttonText
+                  messageAction:(void (^)(void))messageAction
+               completionAction:(void (^)(BOOL))completionAction {
+  self.snackbarMessage = messageText;
+}
+
+@end
+
 // Unit tests for PasswordIssuesTableViewController.
 class PasswordDetailsTableViewControllerTest
     : public ChromeTableViewControllerTest {
@@ -95,6 +124,7 @@ class PasswordDetailsTableViewControllerTest
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
     reauthentication_module_ = [[MockReauthenticationModule alloc] init];
     reauthentication_module_.expectedResult = ReauthenticationResult::kSuccess;
+    snack_bar_ = [[FakeSnackbarImplementation alloc] init];
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -104,6 +134,7 @@ class PasswordDetailsTableViewControllerTest
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
+    controller.commandsHandler = snack_bar_;
     return controller;
   }
 
@@ -174,8 +205,12 @@ class PasswordDetailsTableViewControllerTest
   FakePasswordDetailsHandler* handler() { return handler_; }
   FakePasswordDetailsDelegate* delegate() { return delegate_; }
   MockReauthenticationModule* reauth() { return reauthentication_module_; }
+  FakeSnackbarImplementation* snack_bar() {
+    return (FakeSnackbarImplementation*)snack_bar_;
+  }
 
  private:
+  id snack_bar_;
   FakePasswordDetailsHandler* handler_;
   FakePasswordDetailsDelegate* delegate_;
   MockReauthenticationModule* reauthentication_module_;
@@ -395,4 +430,90 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
           controller());
   [passwordDetails editButtonPressed];
   EXPECT_TRUE(passwordDetails.tableView.editing);
+}
+
+// Tests copy website works as intended.
+TEST_F(PasswordDetailsTableViewControllerTest, CopySite) {
+  SetPassword();
+
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  [passwordDetails tableView:passwordDetails.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  EXPECT_EQ(1u, menu.menuItems.count);
+  [passwordDetails copyPasswordDetails:menu];
+
+  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
+  EXPECT_NSEQ(@"http://www.example.com/", generalPasteboard.string);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_WAS_COPIED_MESSAGE),
+              snack_bar().snackbarMessage);
+}
+
+// Tests copy username works as intended.
+TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
+  SetPassword();
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  [passwordDetails tableView:passwordDetails.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  EXPECT_EQ(1u, menu.menuItems.count);
+  [passwordDetails copyPasswordDetails:menu];
+
+  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
+  EXPECT_NSEQ(@"test@egmail.com", generalPasteboard.string);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE),
+      snack_bar().snackbarMessage);
+}
+
+// Tests copy password works as intended when reauth was successful.
+TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
+  SetPassword();
+
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  [passwordDetails tableView:passwordDetails.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  EXPECT_EQ(1u, menu.menuItems.count);
+  [passwordDetails copyPasswordDetails:menu];
+
+  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
+  EXPECT_NSEQ(@"test", generalPasteboard.string);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_COPY),
+      reauth().localizedReasonForAuthentication);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE),
+      snack_bar().snackbarMessage);
+}
+
+// Tests copy password works as intended.
+TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordFail) {
+  SetPassword();
+
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+
+  reauth().expectedResult = ReauthenticationResult::kFailure;
+  [passwordDetails tableView:passwordDetails.tableView
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+
+  UIMenuController* menu = [UIMenuController sharedMenuController];
+  EXPECT_EQ(1u, menu.menuItems.count);
+  [passwordDetails copyPasswordDetails:menu];
+
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_WAS_NOT_COPIED_MESSAGE),
+      snack_bar().snackbarMessage);
 }

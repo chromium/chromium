@@ -114,7 +114,6 @@
                               password:form
                           reauthModule:self.reauthModule
                   passwordCheckManager:_manager];
-  self.passwordDetails.dispatcher = self.dispatcher;
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }

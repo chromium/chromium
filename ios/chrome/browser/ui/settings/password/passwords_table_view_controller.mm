@@ -1312,7 +1312,6 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
                                 password:form
                             reauthModule:_reauthenticationModule
                     passwordCheckManager:_passwordCheck.get()];
-    self.passwordDetailsCoordinator.dispatcher = self.dispatcher;
     self.passwordDetailsCoordinator.delegate = self;
     [self.passwordDetailsCoordinator start];
   } else {

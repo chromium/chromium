@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
@@ -52,6 +53,9 @@
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
+// Dispatcher.
+@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
+
 @end
 
 @implementation PasswordDetailsCoordinator
@@ -75,6 +79,8 @@
     _password = password;
     _manager = manager;
     _reauthenticationModule = reauthModule;
+    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
+        browser->GetCommandDispatcher());
   }
   return self;
 }
@@ -92,7 +98,7 @@
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
-  self.viewController.commandsDispatcher = self.dispatcher;
+  self.viewController.commandsHandler = self.dispatcher;
   self.viewController.reauthModule = self.reauthenticationModule;
 
   [self.baseNavigationController pushViewController:self.viewController
