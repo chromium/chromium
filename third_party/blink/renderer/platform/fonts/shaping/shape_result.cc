@@ -756,6 +756,8 @@ unsigned ShapeResult::CountGraphemesInCluster(base::span<const UChar> str,
   uint16_t length = end_index - start_index;
   TextBreakIterator* cursor_pos_iterator =
       CursorMovementIterator(str.subspan(start_index, length));
+  if (!cursor_pos_iterator)
+    return 0;
 
   int cursor_pos = cursor_pos_iterator->current();
   int num_graphemes = -1;
