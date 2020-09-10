@@ -202,13 +202,6 @@ class MODULES_EXPORT DOMWebSocket
     kMaxValue = kBlob,
   };
 
-  enum class WebSocketReceiveType {
-    kString,
-    kArrayBuffer,
-    kBlob,
-    kMaxValue = kBlob,
-  };
-
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
 
   // This function is virtual for unittests.
@@ -244,8 +237,6 @@ class MODULES_EXPORT DOMWebSocket
 
   void ReleaseChannel();
   void RecordSendTypeHistogram(WebSocketSendType);
-  void RecordSendMessageSizeHistogram(WebSocketSendType, size_t);
-  void RecordReceiveMessageSizeHistogram(WebSocketReceiveType, size_t);
 
   Member<WebSocketChannel> channel_;
 

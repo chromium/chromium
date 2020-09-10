@@ -194382,6 +194382,9 @@ regressions. -->
 
 <histogram name="WebCore.WebSocket.MessageSize.Receive" units="bytes"
     expires_after="2020-09-06">
+  <obsolete>
+    Removed as of 2020-09
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -194392,6 +194395,9 @@ regressions. -->
 
 <histogram name="WebCore.WebSocket.MessageSize.Send" units="bytes"
     expires_after="2021-02-28">
+  <obsolete>
+    Removed as of 2020-09
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>ricea@chromium.org</owner>
   <summary>
@@ -219965,12 +219971,18 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="WebSocketMessageSizeReceive" separator=".">
+  <obsolete>
+    Removed as of 2020-09
+  </obsolete>
   <suffix name="ArrayBuffer" label=""/>
   <suffix name="Blob" label=""/>
   <affected-histogram name="WebCore.WebSocket.MessageSize.Receive"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebSocketMessageSizeSend" separator=".">
+  <obsolete>
+    Removed as of 2020-09
+  </obsolete>
   <suffix name="ArrayBuffer" label=""/>
   <suffix name="ArrayBufferView" label=""/>
   <suffix name="Blob" label=""/>
