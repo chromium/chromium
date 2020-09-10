@@ -143939,13 +143939,13 @@
       {}
      ]
     ],
-    "forced-colors-mode-40.html": [
-     "7b02b41bdcb7b10753b3728a11dacac8d984c8dd",
+    "forced-colors-mode-39.html": [
+     "7b69fc979c2627472288081e522d774b98b27071",
      [
       null,
       [
        [
-        "/forced-colors-mode/forced-colors-mode-40-ref.html",
+        "/forced-colors-mode/forced-colors-mode-39-ref.html",
         "=="
        ]
       ],
@@ -205383,7 +205383,7 @@
      "e72a73fcef72f1d7943fab1871b8715c4809f2da",
      []
     ],
-    "forced-colors-mode-40-ref.html": [
+    "forced-colors-mode-39-ref.html": [
      "df6de6eda257ecb027b8d861cfe3cb2a5ab3ccce",
      []
     ],
@@ -219003,10 +219003,6 @@
      "f27e1a262717ea1ed666f59035a88a1d481a7460",
      []
     ],
-    "mock.js": [
-     "d88d1ad1c55afaee243e1e9146827b073c380613",
-     []
-    ],
     "resources": {
      "idle-detection-allowed-by-feature-policy-worker.js": [
       "e643414f750897516db0576cd02262c3d571d4c1",
@@ -219014,6 +219010,10 @@
      ],
      "idle-detection-disabled-by-feature-policy-worker.js": [
       "138b29173f73eaed62dc57f4c912d15c174f9a5f",
+      []
+     ],
+     "idle-detection-helper.js": [
+      "5d085461835c44090c7fbe45aab874fc9e9e7899",
       []
      ],
      "idlharness-worker.js": [
@@ -220845,7 +220845,7 @@
     ]
    },
    "lint.ignore": [
-    "4f201914aea3d24473c8816572ab31270f5db63f",
+    "a3b91f1a9925956b78238e5c81904cbbfeeff8ef",
     []
    ],
    "loading": {
@@ -226630,6 +226630,10 @@
       "6c61a34a4ec2e75096db0eb9f7748b142f0db7bb",
       []
      ],
+     "mock-idle-detection.js": [
+      "d88d1ad1c55afaee243e1e9146827b073c380613",
+      []
+     ],
      "mock-imagecapture.js": [
       "ce2b968391343339a9958100f564fa73d5c01509",
       []
@@ -226655,7 +226659,7 @@
       []
      ],
      "nfc-mock.js": [
-      "1a7e15819e67ce0bc9d1db841cb4f091364e8138",
+      "4c5f68be9d5ccd269782ca24d1b1f7bfccf4200c",
       []
      ],
      "web-bluetooth-test.js": [
@@ -231866,7 +231870,7 @@
        []
       ],
       "safari-technology-preview.rb": [
-       "77fc13e5d5186d23438ef1ea20eac9bedb3e2e3a",
+       "0268ac4b4485d9f688636954fb5b3cc2ade01f3a",
        []
       ],
       "system_info.yml": [
@@ -231969,7 +231973,7 @@
       ],
       "tasks": {
        "test.yml": [
-        "4c6cc324bff265656558efaadfa16844c9bcdc8c",
+        "c3fccff065555c25961efa6599c32b3a6d495e93",
         []
        ]
       },
@@ -238099,7 +238103,7 @@
         []
        ],
        "firefox.py": [
-        "91384cb0addaeac640e94c8d55faa2ce394af783",
+        "5dc893864e25f9dfc2d932303f5a7c2e6e80aa43",
         []
        ],
        "firefox_android.py": [
@@ -238177,7 +238181,7 @@
         []
        ],
        "executormarionette.py": [
-        "f2a1b598f47b1e2510ebb78f8b5e231a77ef2ba5",
+        "dfd543c5cbcd266d10bf6f820a9ac87ea2dd1069",
         []
        ],
        "executoropera.py": [
@@ -238504,7 +238508,7 @@
        []
       ],
       "handlers.py": [
-       "2cc25e2c21cea4ed6826a94320d452c0d386fe2b",
+       "6677ab394b7a31d4fe0253e8fbfbb54995a7e006",
        []
       ],
       "logger.py": [
@@ -240199,7 +240203,7 @@
     ],
     "resources": {
      "nfc-helpers.js": [
-      "aa698e155966bf4cba1225fe68357fedb29a7a5d",
+      "13cbe49370e9a7245755c9c69be63117f4440d33",
       []
      ],
      "support-iframe.html": [
@@ -356569,7 +356573,7 @@
      ]
     ],
     "interceptor.https.html": [
-     "31acf2829f2f778686dcd83dc07f5be1713af91d",
+     "e597bd3e94e85d0b67b9aceaa60c56f2159e9045",
      [
       null,
       {
@@ -382589,7 +382593,7 @@
      ]
     ],
     "scroll-animation-effect-phases.tentative.html": [
-     "b8e678e9218395f43f2690a67fb1d887ce73dacc",
+     "1d5109af0f514219ed0d1134271aff1ac54ddcc1",
      [
       null,
       {
@@ -403444,7 +403448,7 @@
      ]
     ],
     "NDEFWriter_write.https.html": [
-     "e2bbd57bbe97d380f33e76508081d0d18891980c",
+     "57fd300a34f9b8fddf0489dec6048b4a55273f54",
      [
       null,
       {}

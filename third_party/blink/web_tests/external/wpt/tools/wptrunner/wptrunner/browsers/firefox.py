@@ -143,6 +143,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
         executor_kwargs["capabilities"] = capabilities
     executor_kwargs["debug"] = run_info_data["debug"]
     executor_kwargs["ccov"] = run_info_data.get("ccov", False)
+    executor_kwargs["browser_version"] = run_info_data["browser_version"]
     return executor_kwargs
 
 
