@@ -248,6 +248,12 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
     lite_video_decider_->SetUserBlocklistForTesting(std::move(user_blocklist_));
   }
 
+  void SeedPermanentHostBlocklist(
+      const base::flat_set<std::string>& permanent_host_blocklist) {
+    lite_video_decider_->SetPermanentHostBlocklistForTesting(
+        permanent_host_blocklist);
+  }
+
   lite_video::LiteVideoDecider* lite_video_decider() {
     return lite_video_decider_.get();
   }
@@ -734,4 +740,95 @@ TEST_F(LiteVideoDeciderTest,
       "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 2);
   histogram_tester.ExpectUniqueSample(
       "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 1, 1);
+}
+
+TEST_F(LiteVideoDeciderTest, OptimizationGuide_HostOnPermanentBlocklist) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+  SeedPermanentHostBlocklist({"mainframe.com"});
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+  SeedLiteVideoHintCache(mainframe_url, base::nullopt, /*use_opt_guide=*/true);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+  ASSERT_FALSE(hint());
+  EXPECT_EQ(blocklist_reason(),
+            lite_video::LiteVideoBlocklistReason::kHostPermanentlyBlocklisted);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kFalse);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kHostPermanentlyBlocklisted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 1);
+}
+
+TEST_F(LiteVideoDeciderTest, OptimizationGuide_PermanentBlocklist_HostAllowed) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+  SeedPermanentHostBlocklist({"otherhost.com"});
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+  SeedLiteVideoHintCache(mainframe_url, base::nullopt, /*use_opt_guide=*/true);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+  ASSERT_TRUE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kTrue);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 1);
+}
+
+TEST_F(LiteVideoDeciderTest, HostOnPermanentBlocklist) {
+  base::HistogramTester histogram_tester;
+  SeedPermanentHostBlocklist({"mainframe.com"});
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+  SeedLiteVideoHintCache(mainframe_url, base::nullopt, /*use_opt_guide=*/true);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+  ASSERT_FALSE(hint());
+  EXPECT_EQ(blocklist_reason(),
+            lite_video::LiteVideoBlocklistReason::kHostPermanentlyBlocklisted);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kFalse);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kHostPermanentlyBlocklisted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 1);
 }

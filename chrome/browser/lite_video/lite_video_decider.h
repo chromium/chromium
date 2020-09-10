@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
@@ -94,6 +95,12 @@ class LiteVideoDecider
     opt_guide_decider_ = opt_guide_decider;
   }
 
+  // Set the permanently blocked hosts used by |this| for testing only.
+  void SetPermanentHostBlocklistForTesting(
+      const base::flat_set<std::string>& permanent_host_blocklist) {
+    permanent_host_blocklist_ = permanent_host_blocklist;
+  }
+
  private:
   // The result of the query to the optimization guide based on the
   // |mainframe_url|.
@@ -108,6 +115,10 @@ class LiteVideoDecider
   // reason.
   void UpdateBlocklists(content::NavigationHandle* navigation_handle,
                         LiteVideoBlocklistReason blocklist_reason);
+
+  // Checks the owned permanent blocklist to determine if |host|
+  // has been blocked from having LiteVideos shown indefinitely.
+  bool IsHostPermanentlyBlockedlisted(const std::string& host) const;
 
   // The hint cache that holds LiteVideoHints that specify the parameters
   // for throttling media requests for that navigation.
@@ -135,6 +146,10 @@ class LiteVideoDecider
   // host. If the hint is empty, then the optimization guide returned kFalse.
   base::HashingMRUCache<std::string, base::Optional<LiteVideoHint>>
       cached_opt_guide_hints_;
+
+  // The set of hosts that are permanently blocked from having LiteVideos
+  // applied on them.
+  base::flat_set<std::string> permanent_host_blocklist_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
