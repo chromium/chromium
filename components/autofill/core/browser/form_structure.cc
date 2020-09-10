@@ -1115,6 +1115,30 @@ void FormStructure::RetrieveFromCache(
         cached_field = it->second;
     }
 
+    // If the unique renderer id (or the name) is not stable due to some Java
+    // Script magic in the website, use the field signature as a fallback
+    // solution to find the field in the cached form.
+    // TODO(crbug.com/1125624): Remove feature check once trial ended.
+    if (!cached_field &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillRetrieveFromCacheWithFieldSignatureAsFallback)) {
+      // Iterates over the fields to find the field with the same form
+      // signature.
+      for (size_t i = 0; i < cached_form.field_count(); ++i) {
+        auto* const cfield = cached_form.field(i);
+        if (field->GetFieldSignature() == cfield->GetFieldSignature()) {
+          // If there are multiple matches, do not retrieve the field and stop
+          // the process.
+          if (cached_field) {
+            cached_field = nullptr;
+            break;
+          } else {
+            cached_field = cfield;
+          }
+        }
+      }
+    }
+
     if (cached_field) {
       if (!only_server_and_autofill_state) {
         // Transfer attributes of the cached AutofillField to the newly created

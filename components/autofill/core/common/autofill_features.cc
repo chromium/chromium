@@ -159,6 +159,13 @@ const base::Feature kAutofillRetrieveFromCacheWithRendererIds{
     "AutofillRetrieveFromCacheWithRendererIds",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will try to retrieve cached fields by signatures as a
+// fallback that is useful if unique renderer ids are unstable.
+// TODO(crbug.com/1125624): Remove experiment once trial ended.
+const base::Feature kAutofillRetrieveFromCacheWithFieldSignatureAsFallback{
+    "AutofillRetrieveFromCacheWithFieldSignatureAsFallback",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
 const base::Feature kAutofillKeyboardAccessory{

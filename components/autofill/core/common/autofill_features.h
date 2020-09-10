@@ -45,6 +45,8 @@ extern const base::Feature kAutofillFixFillableFieldTypes;
 extern const base::Feature kAutofillImportPrefilledCountryAndStateValues;
 extern const base::Feature kAutofillKeepInitialFormValuesInCache;
 extern const base::Feature kAutofillRetrieveFromCacheWithRendererIds;
+extern const base::Feature
+    kAutofillRetrieveFromCacheWithFieldSignatureAsFallback;
 extern const base::Feature kAutofillKeyboardAccessory;
 extern const base::Feature kAutofillLabelAffixRemoval;
 extern const base::Feature kAutofillPruneSuggestions;
