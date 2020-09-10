@@ -538,6 +538,39 @@ public class TabSelectionEditorTest {
         assertEquals("Group 2 selected tabs", actionButton.getContentDescription());
     }
 
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testTabSelectionEditorContentDescription() {
+        // clang-format on
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        assertEquals("Multi-select mode", mTabSelectionEditorLayout.getContentDescription());
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+    public void testToolbarNavigationButtonContentDescription() {
+        // clang-format on
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
+        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+
+        assertEquals("Hide multi-select mode",
+                mTabSelectionEditorLayout.getToolbar().getNavigationContentDescription());
+    }
+
     private List<Tab> getTabsInCurrentTabModel() {
         List<Tab> tabs = new ArrayList<>();
 

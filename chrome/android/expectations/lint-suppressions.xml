@@ -276,13 +276,11 @@ Still reading?
     <!-- crbug.com/1114311 remove this line and the following two lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.languages_set_application_language_prompt` appears to be unused"/>
     <ignore regexp="The resource `R.string.languages_set_as_application_language` appears to be unused"/>
-    <!-- crbug.com/1111942 remove this line and following 10 lines after the bug is resolved -->
+    <!-- crbug.com/1111942 remove this line and following 7 lines after the bug is resolved -->
     <ignore regexp="The resource `R.string.accessibility_tab_switcher` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
-    <ignore regexp="The resource `R.string.accessibility_tab_selection_editor_back_button` appears to be unused"/>
-    <ignore regexp="The resource `R.string.accessibility_tab_selection_editor` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.accessibility_dialog_back_button` appears to be unused"/>
     <ignore regexp="The resource `R.plurals.accessibility_dialog_back_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_grid_dialog_toolbar_edit_group_name` appears to be unused"/>

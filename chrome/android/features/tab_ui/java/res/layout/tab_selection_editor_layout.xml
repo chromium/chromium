@@ -8,4 +8,5 @@
     android:id="@+id/selectable_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg_color"/>
+    android:background="@color/default_bg_color"
+    android:contentDescription="@string/accessibility_tab_selection_editor"/>
