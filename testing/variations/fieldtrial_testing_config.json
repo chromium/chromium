@@ -5430,21 +5430,6 @@
             ]
         }
     ],
-    "ReaderModeUI": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AdaBoost"
-                },
-                {
-                    "name": "Disabled"
-                }
-            ]
-        }
-    ],
     "RenderDocument": [
         {
             "platforms": [
@@ -5578,28 +5563,6 @@
             ]
         }
     ],
-    "ReportingAPIAndNetworkErrorLogging": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ReportingAndNELEnabled",
-                    "enable_features": [
-                        "NetworkErrorLogging",
-                        "Reporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "ResourceLoadingHints": [
         {
             "platforms": [
@@ -5665,21 +5628,6 @@
             ]
         }
     ],
-    "SSLCommonNameMismatchHandling": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "SafeBrowsingAdPopupTrigger": [
         {
             "platforms": [
@@ -5721,61 +5669,6 @@
                     "enable_features": [
                         "SafeBrowsingAdRedirectTrigger"
                     ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingAdSamplerTrigger": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AdSampler_NormalRate",
-                    "params": {
-                        "safe_browsing_ad_sampler_frequency_denominator": "1000",
-                        "trigger_type_and_quota_csv": "2,10"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingAdSamplerTrigger",
-                        "SafeBrowsingTriggerThrottlerDailyQuota"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "SafeBrowsingAdSamplerTrigger",
-                        "SafeBrowsingTriggerThrottlerDailyQuota"
-                    ]
-                },
-                {
-                    "name": "Default"
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enabled": "true",
-                        "types_to_check": "0,1,3,6,7,8,9,10,11,13,14,15"
-                    }
-                },
-                {
-                    "name": "Control"
                 }
             ]
         }
@@ -5934,61 +5827,6 @@
                     "enable_features": [
                         "SafeBrowsingRealTimeUrlLookupEnabledWithToken"
                     ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingSuspiciousSiteTrigger": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "suspicious_site_trigger_quota": "10"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingSuspiciousSiteTriggerQuota"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "SafeBrowsingSuspiciousSiteTriggerQuota"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingThreatDomDetailsTagAttributes": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AdIdentifiers",
-                    "params": {
-                        "tag_attribute_csv": "div,data-google-query-id,div,id,iframe,id"
-                    },
-                    "enable_features": [
-                        "ThreatDomDetailsTagAttributes"
-                    ]
-                },
-                {
-                    "name": "Default"
                 }
             ]
         }
