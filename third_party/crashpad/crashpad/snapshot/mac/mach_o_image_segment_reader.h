@@ -46,6 +46,9 @@ namespace crashpad {
 //! information stored in `MH_OBJECT` images, although `cl_kernels` images claim
 //! to be `MH_BUNDLE`.
 //!
+//! These `cl_kernels` modules have only been observed on x86, not on arm64.
+//! This function always returns `false` on arm64.
+//!
 //! This function is exposed for testing purposes only.
 //!
 //! \param[in] mach_o_file_type The Mach-O type of the module being examined.

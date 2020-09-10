@@ -25,6 +25,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "test/mac/mach_multiprocess.h"
@@ -145,8 +146,7 @@ class TestExceptionPorts : public MachMultiprocess,
         who_crashes_(who_crashes),
         handled_(false) {
     if (who_crashes_ != kNobodyCrashes) {
-      // This is how the __builtin_trap() in Child::Crash() appears.
-      SetExpectedChildTermination(kTerminationSignal, SIGILL);
+      SetExpectedChildTerminationBuiltinTrap();
     }
   }
 
@@ -205,8 +205,14 @@ class TestExceptionPorts : public MachMultiprocess,
       int signal;
       ExcCrashRecoverOriginalException(code[0], nullptr, &signal);
 
-      // The child crashed with __builtin_trap(), which shows up as SIGILL.
-      EXPECT_EQ(signal, SIGILL);
+#if defined(ARCH_CPU_X86_FAMILY)
+      constexpr int kBuiltinTrapSignal = SIGILL;
+#elif defined(ARCH_CPU_ARM64)
+      constexpr int kBuiltinTrapSignal = SIGTRAP;
+#else
+#error Port
+#endif
+      EXPECT_EQ(signal, kBuiltinTrapSignal);
     }
 
     EXPECT_EQ(AuditPIDFromMachMessageTrailer(trailer), 0);

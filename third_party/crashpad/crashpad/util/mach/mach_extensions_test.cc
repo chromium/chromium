@@ -85,14 +85,14 @@ TEST(MachExtensions, ExcMaskAll) {
   EXPECT_TRUE(exc_mask_all & EXC_MASK_RESOURCE);
   EXPECT_TRUE(exc_mask_all & EXC_MASK_GUARD);
 #else  // OS_IOS
-  const int mac_os_x_minor_version = MacOSXMinorVersion();
-  if (mac_os_x_minor_version >= 8) {
+  const int macos_version_number = MacOSVersionNumber();
+  if (macos_version_number >= 10'08'00) {
     EXPECT_TRUE(exc_mask_all & EXC_MASK_RESOURCE);
   } else {
     EXPECT_FALSE(exc_mask_all & EXC_MASK_RESOURCE);
   }
 
-  if (mac_os_x_minor_version >= 9) {
+  if (macos_version_number >= 10'09'00) {
     EXPECT_TRUE(exc_mask_all & EXC_MASK_GUARD);
   } else {
     EXPECT_FALSE(exc_mask_all & EXC_MASK_GUARD);
@@ -118,20 +118,20 @@ TEST(MachExtensions, ExcMaskValid) {
   EXPECT_TRUE(exc_mask_valid & EXC_MASK_GUARD);
   EXPECT_TRUE(exc_mask_valid & EXC_MASK_CORPSE_NOTIFY);
 #else  // OS_IOS
-  const int mac_os_x_minor_version = MacOSXMinorVersion();
-  if (mac_os_x_minor_version >= 8) {
+  const int macos_version_number = MacOSVersionNumber();
+  if (macos_version_number >= 10'08'00) {
     EXPECT_TRUE(exc_mask_valid & EXC_MASK_RESOURCE);
   } else {
     EXPECT_FALSE(exc_mask_valid & EXC_MASK_RESOURCE);
   }
 
-  if (mac_os_x_minor_version >= 9) {
+  if (macos_version_number >= 10'09'00) {
     EXPECT_TRUE(exc_mask_valid & EXC_MASK_GUARD);
   } else {
     EXPECT_FALSE(exc_mask_valid & EXC_MASK_GUARD);
   }
 
-  if (mac_os_x_minor_version >= 11) {
+  if (macos_version_number >= 10'11'00) {
     EXPECT_TRUE(exc_mask_valid & EXC_MASK_CORPSE_NOTIFY);
   } else {
     EXPECT_FALSE(exc_mask_valid & EXC_MASK_CORPSE_NOTIFY);

@@ -14,7 +14,7 @@
 
 #include "snapshot/mac/process_reader_mac.h"
 
-#include <AvailabilityMacros.h>
+#include <Availability.h>
 #include <mach-o/loader.h>
 #include <mach/mach_vm.h>
 
@@ -95,9 +95,12 @@ ProcessReaderMac::ProcessReaderMac()
       process_memory_(),
       task_(TASK_NULL),
       initialized_(),
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT)
       is_64_bit_(false),
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
       initialized_threads_(false),
-      initialized_modules_(false) {}
+      initialized_modules_(false) {
+}
 
 ProcessReaderMac::~ProcessReaderMac() {
   for (const Thread& thread : threads_) {
@@ -117,7 +120,12 @@ bool ProcessReaderMac::Initialize(task_t task) {
     return false;
   }
 
+#if defined(CRASHPAD_MAC_32_BIT_SUPPORT)
   is_64_bit_ = process_info_.Is64Bit();
+#else  // CRASHPAD_MAC_32_BIT_SUPPORT
+  DCHECK(process_info_.Is64Bit());
+#endif  // CRASHPAD_MAC_32_BIT_SUPPORT
+
   task_ = task;
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -213,7 +221,7 @@ mach_vm_address_t ProcessReaderMac::DyldAllImageInfo(
 // This may look for the module that matches the executable path in the same
 // data set that vmmap uses.
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_7
   // The task_dyld_info_data_t struct grew in 10.7, adding the format field.
   // Don’t check this field if it’s not present, which can happen when either
   // the SDK used at compile time or the kernel at run time are too old and

@@ -131,7 +131,7 @@ class FileWriter : public FileWriterInterface {
             FileWriteMode write_mode,
             FilePermissions permissions);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   //! \brief Wraps LoggingOpenMemoryFileForWrite().
   //!
   //! \return `true` if the operation succeeded, `false` if it failed, with an

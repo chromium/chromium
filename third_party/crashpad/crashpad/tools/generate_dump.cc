@@ -47,7 +47,7 @@
 #include "snapshot/win/process_snapshot_win.h"
 #include "util/win/scoped_process_suspend.h"
 #include "util/win/xp_compat.h"
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "snapshot/linux/process_snapshot_linux.h"
 #endif  // OS_APPLE
 
@@ -196,7 +196,7 @@ int GenerateDumpMain(int argc, char* argv[]) {
                                      0)) {
       return EXIT_FAILURE;
     }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     // TODO(jperaza): https://crashpad.chromium.org/bug/30.
     ProcessSnapshotLinux process_snapshot;
     if (!process_snapshot.Initialize(nullptr)) {

@@ -15,11 +15,10 @@
 #include "util/mach/exception_types.h"
 
 #include <Availability.h>
-#include <AvailabilityMacros.h>
 #include <dlfcn.h>
 #include <errno.h>
-#include <libproc.h>
 #include <kern/exc_resource.h>
+#include <libproc.h>
 #include <strings.h>
 
 #include "base/check_op.h"
@@ -29,7 +28,7 @@
 #include "util/mach/mach_extensions.h"
 #include "util/numeric/in_range_cast.h"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_9
 
 extern "C" {
 
@@ -83,13 +82,13 @@ namespace {
 // present on OS X 10.9 and later. If it’s not available, sets errno to ENOSYS
 // and returns -1.
 int ProcGetWakemonParams(pid_t pid, int* rate_hz, int* flags) {
-#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_9
   // proc_get_wakemon_params() isn’t in the SDK. Look it up dynamically.
   static ProcGetWakemonParamsType proc_get_wakemon_params =
       GetProcGetWakemonParams();
 #endif
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_9
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9
   // proc_get_wakemon_params() is definitely available if the deployment target
   // is 10.9 or newer.
   if (!proc_get_wakemon_params) {
@@ -260,7 +259,8 @@ bool IsExceptionNonfatalResource(exception_type_t exception,
     // creation but can be made fatal by calling proc_rlimit_control() with
     // RLIMIT_CPU_USAGE_MONITOR as the second argument and CPUMON_MAKE_FATAL set
     // in the flags.
-    if (MacOSXMinorVersion() >= 10) {
+    if (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10 ||
+        MacOSVersionNumber() >= 10'10'00) {
       // In OS X 10.10, the exception code indicates whether the exception is
       // fatal. See 10.10 xnu-2782.1.97/osfmk/kern/thread.c
       // THIS_THREAD_IS_CONSUMING_TOO_MUCH_CPU__SENDING_EXC_RESOURCE().

@@ -411,7 +411,7 @@ bool CrashpadClient::StartHandler(
       std::move(client_sock), handler_pid, &unhandled_signals_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // static
 bool CrashpadClient::GetHandlerSocket(int* sock, pid_t* pid) {
   auto signal_handler = RequestCrashDumpHandler::Get();
@@ -515,7 +515,7 @@ bool CrashpadClient::InitializeSignalStackForThread() {
   }
   return true;
 }
-#endif  // OS_ANDROID || OS_LINUX
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
 #if defined(OS_ANDROID)
 

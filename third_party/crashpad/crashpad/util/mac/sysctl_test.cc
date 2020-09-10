@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "util/linux/exception_handler_protocol.h"
+#include "util/mac/sysctl.h"
+
+#include "gtest/gtest.h"
 
 namespace crashpad {
+namespace test {
+namespace {
 
-ExceptionHandlerProtocol::ClientInformation::ClientInformation()
-    : exception_information_address(0),
-      sanitization_information_address(0)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-      , crash_loop_before_time(0)
-#endif  // OS_LINUX || OS_CHROMEOS
-{}
+TEST(Sysctl, ReadStringSysctlByName) {
+  // kern.ostype is always provided by the kernel, and it’s a constant across
+  // all versions, so it makes for a good test.
+  EXPECT_EQ(ReadStringSysctlByName("kern.ostype", true), "Darwin");
 
-ExceptionHandlerProtocol::ClientToServerMessage::ClientToServerMessage()
-    : version(kVersion),
-      type(kTypeCrashDumpRequest),
-      requesting_thread_stack_address(0),
-      client_info() {}
+  // Names expected to not exist.
+  EXPECT_TRUE(ReadStringSysctlByName("kern.scheisskopf", true).empty());
+  EXPECT_TRUE(ReadStringSysctlByName("kern.sanders", false).empty());
+}
 
+}  // namespace
+}  // namespace test
 }  // namespace crashpad

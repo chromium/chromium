@@ -102,6 +102,8 @@
         'mac/mac_util.h',
         'mac/service_management.cc',
         'mac/service_management.h',
+        'mac/sysctl.cc',
+        'mac/sysctl.h',
         'mac/xattr.cc',
         'mac/xattr.h',
         'mach/child_port.defs',

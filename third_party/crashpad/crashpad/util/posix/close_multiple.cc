@@ -74,7 +74,7 @@ void CloseNowOrOnExec(int fd, bool ebadf_ok) {
 bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
 #if defined(OS_APPLE)
   static constexpr char kFDDir[] = "/dev/fd";
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   static constexpr char kFDDir[] = "/proc/self/fd";
 #endif
 
@@ -135,7 +135,8 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   max_fd = std::max(max_fd, getdtablesize());
 #endif
 
-#if !(defined(OS_LINUX) || defined(OS_ANDROID)) || defined(OPEN_MAX)
+#if !(defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)) || \
+    defined(OPEN_MAX)
   // Linux does not provide OPEN_MAX. See
   // https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/commit/include/linux/limits.h?id=77293034696e3e0b6c8b8fc1f96be091104b3d2b.
   max_fd = std::max(max_fd, OPEN_MAX);
@@ -162,7 +163,7 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   } else {
     PLOG(WARNING) << "sysctl";
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // See linux-4.4.27/fs/file.c sysctl_nr_open, referenced by kernel/sys.c
   // do_prlimit() and kernel/sysctl.c fs_table. Inability to open this file is
   // not considered an error, because /proc may not be available or usable.

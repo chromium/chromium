@@ -57,10 +57,17 @@ template("compat_target") {
     # static_library.
     group(target_name) {
       forward_variables_from(invoker, "*")
+      not_needed([ "configs" ])
     }
   } else {
     static_library(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", [ "configs" ])
+      if (!(defined(configs))) {
+        configs = []
+      }
+      if (defined(invoker.configs)) {
+        configs += invoker.configs
+      }
     }
   }
 }
@@ -70,7 +77,8 @@ compat_target("compat") {
 
   if (crashpad_is_mac || crashpad_is_ios) {
     sources += [
-      "mac/AvailabilityMacros.h",
+      "mac/Availability.h",
+      "mac/AvailabilityVersions.h",
       "mac/kern/exc_resource.h",
       "mac/mach-o/loader.h",
       "mac/mach/i386/thread_state.h",
@@ -170,5 +178,9 @@ compat_target("compat") {
 
   if (!crashpad_is_linux && !crashpad_is_android && !crashpad_is_fuchsia) {
     deps += [ "../third_party/glibc" ]
+  }
+
+  if (crashpad_is_in_fuchsia) {
+    configs = [ "//build/config:Wno-conversion" ]
   }
 }

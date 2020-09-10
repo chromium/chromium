@@ -398,7 +398,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
                                    FileWriteMode mode,
                                    FilePermissions permissions);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 //! \brief Opens an in-memory file for input and output.
 //!
 //! This function first attempts to open the file with `memfd_create()`. If
@@ -420,7 +420,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
 //! \sa LoggingOpenFileForWrite
 //! \sa LoggingOpenFileForReadAndWrite
 FileHandle LoggingOpenMemoryFileForReadAndWrite(const base::FilePath& name);
-#endif  // OS_LINUX
+#endif  // OS_LINUX || OS_CHROMEOS
 
 //! \brief Wraps OpenFileForReadAndWrite(), logging an error if the operation
 //!     fails.

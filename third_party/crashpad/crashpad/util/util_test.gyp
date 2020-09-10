@@ -53,6 +53,7 @@
         'mac/launchd_test.mm',
         'mac/mac_util_test.mm',
         'mac/service_management_test.mm',
+        'mac/sysctl_test.cc',
         'mac/xattr_test.cc',
         'mach/child_port_handshake_test.cc',
         'mach/child_port_server_test.cc',

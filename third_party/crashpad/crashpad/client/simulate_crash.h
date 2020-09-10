@@ -21,7 +21,7 @@
 #include "client/simulate_crash_mac.h"
 #elif defined(OS_WIN)
 #include "client/simulate_crash_win.h"
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "client/simulate_crash_linux.h"
 #endif
 

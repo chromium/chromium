@@ -16,7 +16,7 @@
 
 #if defined(OS_FUCHSIA)
 #include <lib/zx/process.h>
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include <unistd.h>
 #endif
 
@@ -26,7 +26,7 @@ namespace test {
 ProcessType GetSelfProcess() {
 #if defined(OS_FUCHSIA)
   return zx::process::self();
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   return getpid();
 #elif defined(OS_WIN)
   return GetCurrentProcess();
