@@ -102,9 +102,6 @@ const std::vector<InternalApp>& GetInternalAppListImpl(bool get_all,
          /*searchable_string_resource_id=*/IDS_INTERNAL_APP_DISCOVER});
   }
 
-  // TODO(calamity/nigeltao): when removing the
-  // web_app::SystemWebAppManager::IsEnabled condition, we can probably also
-  // remove the apps::BuiltInChromeOsApps::SetHideSettingsAppForTesting hack.
   if (!web_app::SystemWebAppManager::IsEnabled()) {
     internal_app_list->push_back(
         {ash::kInternalAppIdSettings, IDS_INTERNAL_APP_SETTINGS,

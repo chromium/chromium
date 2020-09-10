@@ -27,8 +27,6 @@ class BuiltInChromeOsApps : public apps::PublisherBase {
                       Profile* profile);
   ~BuiltInChromeOsApps() override;
 
-  static bool SetHideSettingsAppForTesting(bool hide);
-
  private:
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -49,67 +47,6 @@ class BuiltInChromeOsApps : public apps::PublisherBase {
                     GetMenuModelCallback callback) override;
 
   Profile* const profile_;
-
-  // Hack to hide the settings app from the app list search box. This is only
-  // intended to be used in tests.
-  //
-  // BuiltInChromeOsApps assumes that the list of internal apps doesn't change
-  // over the lifetime of the Profile. For example,
-  // chrome/browser/ui/app_list/internal_app/internal_app_metadata.{cc,h}
-  // doesn't expose any observer mechanism to be notified if it did change.
-  //
-  // Separately, WebAppUiServiceMigrationBrowserTest's
-  // SettingsSystemWebAppMigration test exercises the case where the
-  // *implementation* of the built-in Settings app changes, from an older
-  // technology to being a Web App. Even though there are two implementations,
-  // any given Profile will typically use only one, depending on whether
-  // features::kSystemWebApps is enabled, typically via the command line.
-  // Again, the App Service's BuiltInChromeOsApps handles this, in practice, as
-  // whether or not it's enabled ought to stay unchanged throughout a session.
-  //
-  // Specifically, though, that test (1) starts with features::kSystemWebApps
-  // disabled (during SetUp) but then (2) enables it (during the test
-  // function). This isn't in order to explicitly exercise a run-time flag
-  // change, but it was simply an expedient way to test data migration:
-  // situation (1) creates some persistent data (in the test's temporary
-  // storage) in the old implementation's format, and flipping to situation (2)
-  // checks that the new implementation correctly migrates that data.
-  //
-  // An unfortunate side effect of that flip is that the list of internal apps
-  // changed. The SettingsSystemWebAppMigration test involves an
-  // AppListModelUpdater, which calls into its AppSearchProvider's and thus the
-  // App Service (when the App Service is enabled), which then panics because a
-  // built-in app it previously knew about and exposed via app list search, in
-  // situation (1), has mysteriously vanished, in situation (2).
-  //
-  // A 'proper' fix could be to add an observer mechanism to the list of
-  // internal apps, and break the previously held simplifying assumption that
-  // BuiltInChromeOsApps can be relatively stateless as that list does not
-  // change. There's also some subtlety because App Service methods are
-  // generally asynchronous (because they're potentially Mojo IPC), so some
-  // care still needs to be taken where some parts of the system might have
-  // seen any given app update but others might not yet have.
-  //
-  // Doing a 'proper' fix is probably more trouble than it's worth. Given that
-  // this "change the implementation of the built-in Settings app" will only
-  // temporarily have two separate implementations, say for a couple of months,
-  // and a runtime flag flip isn't supported in production, and is only
-  // exercised in a single test, the simpler (temporary) fix is to opt in to
-  // hiding the internal Settings app from search.
-  //
-  // Note that we only hide it from search. We don't remove the app entirely
-  // from the list of apps that the BuiltInChromeOsApps publishes, since the
-  // migration test (and its AppListModelUpdater) still needs to be able to
-  // refer to the (artificial) situation where both apps co-exist.
-  //
-  // TODO(calamity/nigeltao): remove this hack once the System Web App has
-  // completely replaced the Settings Internal App, hopefully some time in
-  // 2019Q3.
-  //
-  // See also the "web_app::SystemWebAppManager::IsEnabled()" if-check in
-  // internal_app_metadata.cc. Once that condition is removed, we can probably
-  // remove this hack too.
-  static bool hide_settings_app_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(BuiltInChromeOsApps);
 };
