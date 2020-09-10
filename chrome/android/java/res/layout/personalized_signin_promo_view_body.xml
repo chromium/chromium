@@ -16,7 +16,7 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:text="@string/signin_promo_status_message"
+        android:text="@string/sync_error_card_title"
         android:visibility="gone"/>
 
     <TextView

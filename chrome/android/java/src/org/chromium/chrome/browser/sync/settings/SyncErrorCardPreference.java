@@ -127,7 +127,6 @@ public class SyncErrorCardPreference extends Preference
 
         errorCardView.getDismissButton().setVisibility(View.GONE);
         errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
-        errorCardView.getStatusMessage().setText(R.string.sync_error_card_title);
         errorCardView.getDescription().setText(
                 SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
 
