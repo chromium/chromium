@@ -194,11 +194,7 @@ class LinkedHashSet {
   void erase(const_iterator);
   void RemoveFirst();
   void pop_back();
-
-  void clear() {
-    value_to_index_.clear();
-    list_.clear();
-  }
+  void clear();
 
   template <typename VisitorDispatcher, typename A = Allocator>
   std::enable_if_t<A::kIsGarbageCollected> Trace(
@@ -211,6 +207,14 @@ class LinkedHashSet {
   enum class MoveType {
     kMoveIfValueExists,
     kDontMove,
+  };
+
+  class GCForbiddenScope {
+    STACK_ALLOCATED();
+
+   public:
+    GCForbiddenScope() { Allocator::EnterGCForbiddenScope(); }
+    ~GCForbiddenScope() { Allocator::LeaveGCForbiddenScope(); }
   };
 
   template <typename IncomingValueType>
@@ -324,6 +328,10 @@ inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(
 
 template <typename T, typename TraitsArg, typename Allocator>
 inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(const_iterator it) {
+  // Forbid GC while modifying LinkedHashSet to avoid conflict between
+  // |value_to_index_| and |list_|.
+  auto scope = GCForbiddenScope();
+
   if (it == end())
     return;
   value_to_index_.erase(*it);
@@ -343,12 +351,26 @@ inline void LinkedHashSet<T, TraitsArg, Allocator>::pop_back() {
 }
 
 template <typename T, typename TraitsArg, typename Allocator>
+inline void LinkedHashSet<T, TraitsArg, Allocator>::clear() {
+  // Forbid GC while modifying LinkedHashSet to avoid conflict between
+  // |value_to_index_| and |list_|.
+  auto scope = GCForbiddenScope();
+
+  value_to_index_.clear();
+  list_.clear();
+}
+
+template <typename T, typename TraitsArg, typename Allocator>
 template <typename IncomingValueType>
 typename LinkedHashSet<T, TraitsArg, Allocator>::AddResult
 LinkedHashSet<T, TraitsArg, Allocator>::InsertOrMoveBefore(
     const_iterator position,
     IncomingValueType&& value,
     MoveType type) {
+  // Forbid GC while modifying LinkedHashSet to avoid conflict between
+  // |value_to_index_| and |list_|.
+  auto scope = GCForbiddenScope();
+
   typename Map::AddResult result = value_to_index_.insert(value, kNotFound);
 
   if (result.is_new_entry) {
