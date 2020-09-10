@@ -85,7 +85,7 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     service_ = std::make_unique<PaintPreviewTabService>(
-        temp_dir_.GetPath(), kFeatureName, nullptr, false, false);
+        temp_dir_.GetPath(), kFeatureName, nullptr, false);
     task_environment()->RunUntilIdle();
     EXPECT_TRUE(service_->CacheInitialized());
   }
@@ -119,7 +119,7 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
     }
 
     return std::make_unique<PaintPreviewTabService>(GetPath(), kFeatureName,
-                                                    nullptr, false, false);
+                                                    nullptr, false);
   }
 
  private:

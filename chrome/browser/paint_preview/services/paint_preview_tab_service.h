@@ -41,8 +41,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   PaintPreviewTabService(const base::FilePath& profile_dir,
                          base::StringPiece ascii_feature_name,
                          std::unique_ptr<PaintPreviewPolicy> policy,
-                         bool is_off_the_record,
-                         bool prewarm_compositor = true);
+                         bool is_off_the_record);
   ~PaintPreviewTabService() override;
 
   enum Status {
@@ -79,9 +78,6 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // occurred.
   void AuditArtifacts(const std::vector<int>& active_tab_ids);
 
-  // Stops the pre-warmed compositor service.
-  bool StopWarmCompositor();
-
   // Override for GetCapturedPaintPreviewProto. Defaults expiry horizon to 72
   // hrs if not specified.
   void GetCapturedPaintPreviewProto(
@@ -104,7 +100,6 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
       const base::android::JavaParamRef<jintArray>& j_tab_ids);
   jboolean IsCacheInitializedAndroid(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetPathAndroid(JNIEnv* env);
-  jboolean StopWarmCompositorAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 #endif  // defined(OS_ANDROID)

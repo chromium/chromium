@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
-import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceNativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -49,9 +48,6 @@ public class PaintPreviewHelper {
             sHasAttemptedToShowOnRestore = false;
         }
         sActivityCreationTimeMs = activity.getOnCreateTimestampMs();
-
-        activity.getLifecycleDispatcher().register(
-                new PaintPreviewTabServiceNativeInitObserver(activity.getLifecycleDispatcher()));
 
         // TODO(crbug/1074428): verify this doesn't cause a memory leak if the user exits Chrome
         // prior to onTabStateInitialized being called.

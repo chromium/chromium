@@ -13,7 +13,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "components/paint_preview/browser/file_manager.h"
-#include "components/paint_preview/browser/warm_compositor.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_ANDROID)
@@ -56,16 +55,12 @@ PaintPreviewTabService::PaintPreviewTabService(
     const base::FilePath& profile_dir,
     base::StringPiece ascii_feature_name,
     std::unique_ptr<PaintPreviewPolicy> policy,
-    bool is_off_the_record,
-    bool prewarm_compositor)
+    bool is_off_the_record)
     : PaintPreviewBaseService(profile_dir,
                               ascii_feature_name,
                               std::move(policy),
                               is_off_the_record),
       cache_ready_(false) {
-  if (prewarm_compositor)
-    WarmCompositor::GetInstance()->WarmupCompositor();
-
   GetTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&FileManager::ListUsedKeys, GetFileManager()),
       base::BindOnce(&PaintPreviewTabService::InitializeCache,
@@ -160,11 +155,6 @@ void PaintPreviewTabService::AuditArtifacts(
                      weak_ptr_factory_.GetWeakPtr(), active_tab_ids));
 }
 
-bool PaintPreviewTabService::StopWarmCompositor() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return WarmCompositor::GetInstance()->StopCompositor();
-}
-
 void PaintPreviewTabService::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
     base::Optional<base::TimeDelta> expiry_horizon,
@@ -218,10 +208,6 @@ base::android::ScopedJavaLocalRef<jstring>
 PaintPreviewTabService::GetPathAndroid(JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(
       env, GetFileManager()->GetPath().AsUTF8Unsafe());
-}
-
-jboolean PaintPreviewTabService::StopWarmCompositorAndroid(JNIEnv* env) {
-  return static_cast<jboolean>(StopWarmCompositor());
 }
 #endif  // defined(OS_ANDROID)
 

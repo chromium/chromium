@@ -35,9 +35,6 @@ class PaintPreviewCompositorService {
   // check if killing this service is safe (i.e. won't drop messages).
   virtual bool HasActiveClients() const = 0;
 
-  // Sets the disconnect handler for this service.
-  virtual void SetDisconnectHandler(base::OnceClosure disconnect_handler) = 0;
-
   PaintPreviewCompositorService(const PaintPreviewCompositorService&) = delete;
   PaintPreviewCompositorService& operator=(
       const PaintPreviewCompositorService&) = delete;

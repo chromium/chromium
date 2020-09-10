@@ -116,17 +116,6 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     }
 
     /**
-     * Stops the pre-warmed compositor service if it isn't needed.
-     * @return Whether a pre-warmed compositor service was actually stopped.
-     */
-    public boolean stopWarmCompositor() {
-        if (mNativePaintPreviewTabService == 0) return false;
-
-        return PaintPreviewTabServiceJni.get().stopWarmCompositorAndroid(
-                mNativePaintPreviewTabService);
-    }
-
-    /**
      * Should be called when all tabs are restored. Registers a {@link TabModelSelectorTabObserver}
      * for the regular to capture and delete paint previews as needed. Audits restored tabs to
      * remove any failed deletions.
@@ -236,6 +225,5 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         void auditArtifactsAndroid(long nativePaintPreviewTabService, int[] activeTabIds);
         boolean isCacheInitializedAndroid(long nativePaintPreviewTabService);
         String getPathAndroid(long nativePaintPreviewTabService);
-        boolean stopWarmCompositorAndroid(long nativePaintPreviewTabService);
     }
 }
