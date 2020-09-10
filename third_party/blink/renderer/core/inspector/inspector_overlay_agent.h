@@ -301,7 +301,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   InspectorAgentState::String inspect_mode_;
   InspectorAgentState::Bytes inspect_mode_protocol_config_;
   base::Time last_paint_time_;
-  bool backend_node_id_changed_;
+  bool force_overlay_paint_;
 
   DISALLOW_COPY_AND_ASSIGN(InspectorOverlayAgent);
 };
