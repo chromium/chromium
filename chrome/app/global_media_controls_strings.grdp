@@ -10,4 +10,7 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT" desc="Tooltip for the dismiss button within the Global Media Controls dialog. The tooltip appears on mouseover of the icon.">
    Dismiss
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL" desc="Label for a button that opens a menu for picking an audio device to play from.">
+   Devices
+  </message>
 </grit-part>

@@ -1166,13 +1166,6 @@ Chromium is unable to recover your settings.
           Ask when I open Chromium
         </message>
       </if>
-
-      <!-- Global Media Controls -->
-      <if expr="not is_android">
-        <message name="IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_BUTTON_LABEL" desc="Label for a button that opens a menu for picking an audio device to play from.">
-          Devices
-        </message>
-      </if>
     </messages>
   </release>
 </grit>
