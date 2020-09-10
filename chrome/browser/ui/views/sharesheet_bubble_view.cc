@@ -41,7 +41,10 @@ namespace {
 constexpr int kButtonWidth = 92;
 // kButtonHeight = 88px height + 2*8px for padding on top and bottom.
 constexpr int kButtonHeight = 104;
+// kButtonTextMaxWidth is button max width without padding.
+constexpr int kButtonTextMaxWidth = 76;
 constexpr int kButtonLineHeight = 20;
+constexpr int kButtonMaxLines = 2;
 constexpr int kButtonPadding = 8;
 
 constexpr int kBubbleTopPaddingFromWindow = 36;
@@ -113,6 +116,7 @@ class ShareSheetTargetButton : public views::Button {
       // If there is no secondary label, let the initial label stretch across
       // multiple lines.
       label->SetMultiLine(true);
+      label->SetMaxLines(kButtonMaxLines);
     }
 
     AddChildView(std::move(label_view));
@@ -125,6 +129,7 @@ class ShareSheetTargetButton : public views::Button {
 
   void SetLabelProperties(views::Label* label) {
     label->SetLineHeight(kButtonLineHeight);
+    label->SetMaximumWidth(kButtonTextMaxWidth);
     label->SetBackgroundColor(SK_ColorTRANSPARENT);
     label->SetHandlesTooltips(true);
     label->SetTooltipText(label->GetText());
