@@ -92,12 +92,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
-    protected void addGlobalSceneOverlay(SceneOverlay helper) {
-        super.addGlobalSceneOverlay(helper);
-        mSimpleAnimationLayout.addSceneOverlay(helper);
-    }
-
-    @Override
     protected void emptyCachesExcept(int tabId) {
         super.emptyCachesExcept(tabId);
         if (mTitleCache != null) mTitleCache.clearExcept(tabId);
@@ -138,7 +132,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
     @Override
     protected void tabCreating(int sourceId, String url, boolean isIncognito) {
-        if (!getActiveLayout().isHiding() && getActiveLayout().handlesTabCreating()) {
+        if (!getActiveLayout().isHiding() && overlaysHandleTabCreating()
+                && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
             // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
             // smoothly.
@@ -155,6 +150,25 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             }
             getActiveLayout().onTabCreating(sourceId);
         }
+    }
+
+    /** @return Whether the {@link SceneOverlay}s handle tab creation. */
+    private boolean overlaysHandleTabCreating() {
+        Layout layout = getActiveLayout();
+        if (layout == null || layout.getLayoutTabsToRender() == null
+                || layout.getLayoutTabsToRender().length != 1) {
+            return false;
+        }
+        for (int i = 0; i < mSceneOverlays.size(); i++) {
+            if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
+            if (mSceneOverlays.get(i).handlesTabCreating()) {
+                // Prevent animation from happening if the overlay handles creation.
+                startHiding(layout.getLayoutTabsToRender()[0].getId(), false);
+                doneHiding();
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

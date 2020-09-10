@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandl
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EmptyEdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
-import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -142,8 +141,10 @@ public class LayoutManagerChrome
      */
     @Override
     public void getVirtualViews(List<VirtualView> views) {
-        if (getActiveLayout() != null) {
-            getActiveLayout().getVirtualViews(views);
+        // TODO(dtrainor): Investigate order.
+        for (int i = 0; i < mSceneOverlays.size(); i++) {
+            if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
+            mSceneOverlays.get(i).getVirtualViews(views);
         }
     }
 
@@ -225,14 +226,6 @@ public class LayoutManagerChrome
         if (mToolbarSwipeLayout != null) {
             mToolbarSwipeLayout.destroy();
         }
-    }
-
-    @Override
-    protected void addGlobalSceneOverlay(SceneOverlay helper) {
-        super.addGlobalSceneOverlay(helper);
-        mOverviewListLayout.addSceneOverlay(helper);
-        mToolbarSwipeLayout.addSceneOverlay(helper);
-        if (mOverviewLayout != null) mOverviewLayout.addSceneOverlay(helper);
     }
 
     /**

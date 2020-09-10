@@ -49,7 +49,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     protected void addAllSceneOverlays() {
         // Add the tab strip overlay before any others.
-        addGlobalSceneOverlay(mTabStripLayoutHelperManager);
+        mSceneOverlays.add(mTabStripLayoutHelperManager);
         super.addAllSceneOverlays();
     }
 
