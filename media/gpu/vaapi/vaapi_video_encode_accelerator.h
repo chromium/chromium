@@ -158,6 +158,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
     return !supported_profiles_for_testing_.empty();
   }
 
+  static CodecPicture* GetPictureFromJobForTesting(VaapiEncodeJob* job);
+
   // The unchanged values are filled upon the construction. The varied values
   // (e.g. ScalingSettings) are filled properly during encoding.
   VideoEncoderInfo encoder_info_;
@@ -172,6 +174,9 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // The expected coded size of incoming video frames when |native_input_mode_|
   // is false.
   gfx::Size expected_input_coded_size_;
+
+  // The codec of the stream to be produced. Set during initialization.
+  VideoCodec output_codec_;
 
   // The visible rect to be encoded.
   gfx::Rect visible_rect_;

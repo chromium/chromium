@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "media/gpu/vp9_picture.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,9 +43,13 @@ MATCHER_P2(MatchesAcceleratedVideoEncoderConfig,
          arg.bitrate_control == bitrate_control;
 }
 
-MATCHER_P2(MatchesBitstreamBufferMetadata, payload_size_bytes, key_frame, "") {
+MATCHER_P3(MatchesBitstreamBufferMetadata,
+           payload_size_bytes,
+           key_frame,
+           has_vp9_metadata,
+           "") {
   return arg.payload_size_bytes == payload_size_bytes &&
-         arg.key_frame == key_frame;
+         arg.key_frame == key_frame && arg.vp9.has_value() == has_vp9_metadata;
 }
 
 class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
@@ -93,6 +98,7 @@ class MockAcceleratedVideoEncoder : public AcceleratedVideoEncoder {
   MOCK_CONST_METHOD0(GetCodedSize, gfx::Size());
   MOCK_CONST_METHOD0(GetBitstreamBufferSize, size_t());
   MOCK_CONST_METHOD0(GetMaxNumOfRefFrames, size_t());
+  MOCK_METHOD2(GetMetadata, BitstreamBufferMetadata(EncodeJob*, size_t));
   MOCK_METHOD1(PrepareEncodeJob, bool(EncodeJob*));
   MOCK_METHOD1(BitrateControlUpdate, void(uint64_t));
   bool UpdateRates(const VideoBitrateAllocation&, uint32_t) override {
@@ -186,7 +192,7 @@ class VaapiVideoEncodeAcceleratorTest
     run_loop.Run();
   }
 
-  void EncodeSequenceForVP9() {
+  void EncodeSequenceForVP9(bool use_temporal_layer_encoding) {
     base::RunLoop run_loop;
     base::Closure quit_closure = run_loop.QuitClosure();
     ::testing::InSequence s;
@@ -203,7 +209,16 @@ class VaapiVideoEncodeAcceleratorTest
     EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
         .WillOnce(WithArgs<0>(
             [encoder = encoder_.get(), kCodedBufferId,
+             use_temporal_layer_encoding,
              kInputSurfaceId](AcceleratedVideoEncoder::EncodeJob* job) {
+              if (use_temporal_layer_encoding) {
+                // Set Vp9Metadata on temporal layer encoding.
+                CodecPicture* picture =
+                    VaapiVideoEncodeAccelerator::GetPictureFromJobForTesting(
+                        job->AsVaapiEncodeJob());
+                reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =
+                    Vp9Metadata();
+              }
               job->AddPostExecuteCallback(base::BindOnce(
                   &VaapiVideoEncodeAccelerator::NotifyEncodedChunkSize,
                   base::Unretained(
@@ -235,11 +250,24 @@ class VaapiVideoEncodeAcceleratorTest
         }));
     EXPECT_CALL(*mock_vaapi_wrapper_, DestroyVABuffer(kCodedBufferId))
         .WillOnce(Return());
-
+    EXPECT_CALL(*mock_encoder_, GetMetadata(_, kEncodedChunkSize))
+        .WillOnce(WithArgs<0, 1>(
+            [](AcceleratedVideoEncoder::EncodeJob* job, size_t payload_size) {
+              // Same implementation in VP9Encoder.
+              BitstreamBufferMetadata metadata(
+                  payload_size, job->IsKeyframeRequested(), job->timestamp());
+              CodecPicture* picture =
+                  VaapiVideoEncodeAccelerator::GetPictureFromJobForTesting(
+                      job->AsVaapiEncodeJob());
+              metadata.vp9 =
+                  reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding;
+              return metadata;
+            }));
     constexpr int32_t kBitstreamId = 12;
     EXPECT_CALL(client_, BitstreamBufferReady(kBitstreamId,
                                               MatchesBitstreamBufferMetadata(
-                                                  kEncodedChunkSize, false)))
+                                                  kEncodedChunkSize, false,
+                                                  use_temporal_layer_encoding)))
         .WillOnce(RunClosure(quit_closure));
 
     auto region = base::UnsafeSharedMemoryRegion::Create(output_buffer_size_);
@@ -314,7 +342,7 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithSingleSpatialLayer) {
   SetDefaultMocksBehavior(config);
 
   InitializeSequenceForVP9(config);
-  EncodeSequenceForVP9();
+  EncodeSequenceForVP9(spatial_layer.num_of_temporal_layers > 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
