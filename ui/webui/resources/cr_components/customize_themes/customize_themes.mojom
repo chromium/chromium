@@ -69,6 +69,8 @@ interface CustomizeThemesHandler {
   ApplyChromeTheme(int32 id);
   // Applies the default theme.
   ApplyDefaultTheme();
+  // Called to initialize the selected theme.
+  InitializeTheme();
   // Returns the pre-defined Chrome themes.
   GetChromeThemes() => (array<ChromeTheme> chromeThemes);
   // Confirms changes made to the theme.

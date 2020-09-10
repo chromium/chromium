@@ -11,8 +11,6 @@
       use_base_dir="false" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_ACCOUNT_CIRCLE_SVG"
       file="icons/account_circle.svg" type="BINDATA" />
-  <include name="IDR_NEW_TAB_PAGE_BRUSH_ICON_SVG"
-      file="icons/brush.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_CHECK_CIRCLE_SVG"
       file="icons/check_circle.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_CHEVRON_SVG"
@@ -29,8 +27,6 @@
       file="icons/colored_header.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_COLORS_ICON_SVG"
       file="icons/colors.svg" type="BINDATA" />
-  <include name="IDR_NEW_TAB_PAGE_COLORIZE_ICON_SVG"
-      file="icons/colorize.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_SHORTCUT_CIRCLES_SVG"
       file="icons/shortcut_circles.svg" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_GOOGLE_MIC_SVG"

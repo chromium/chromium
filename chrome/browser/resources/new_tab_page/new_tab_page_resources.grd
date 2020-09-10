@@ -36,12 +36,6 @@
       <include name="IDR_NEW_TAB_PAGE_CUSTOMIZE_SHORTCUTS_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/customize_shortcuts.js"
           use_base_dir="false" type="BINDATA" compress="false" />
-      <include name="IDR_NEW_TAB_PAGE_CUSTOMIZE_THEMES_JS"
-          file="${root_gen_dir}/chrome/browser/resources/new_tab_page/customize_themes.js"
-          use_base_dir="false" type="BINDATA" compress="false" />
-      <include name="IDR_NEW_TAB_PAGE_THEME_ICON_JS"
-          file="${root_gen_dir}/chrome/browser/resources/new_tab_page/theme_icon.js"
-          use_base_dir="false" type="BINDATA" compress="false" />
       <include name="IDR_NEW_TAB_IFRAME_JS"
           file="${root_gen_dir}/chrome/browser/resources/new_tab_page/iframe.js"
           use_base_dir="false" type="BINDATA" compress="false" />

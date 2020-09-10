@@ -47,6 +47,11 @@ void ProfileCreationCustomizeThemesHandler::ApplyChromeTheme(int32_t id) {
   remote_client_->SetTheme(std::move(theme));
 }
 
+void ProfileCreationCustomizeThemesHandler::InitializeTheme() {
+  // Do nothing.
+  // The profile picker initializes the theme from JavaScript.
+}
+
 void ProfileCreationCustomizeThemesHandler::GetChromeThemes(
     GetChromeThemesCallback callback) {
   std::vector<customize_themes::mojom::ChromeThemePtr> themes;

@@ -26,7 +26,6 @@ js_type_check("closure_compile") {
     ":realbox_dropdown",
     ":realbox_icon",
     ":realbox_match",
-    ":theme_icon",
     ":utils",
     ":voice_search_overlay",
     "modules:module_descriptor",
@@ -108,9 +107,9 @@ js_library("customize_dialog") {
   deps = [
     ":customize_backgrounds",
     ":customize_shortcuts",
-    ":customize_themes",
     ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/customize_themes",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
@@ -119,15 +118,6 @@ js_library("customize_dialog") {
 js_library("customize_backgrounds") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("customize_themes") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_grid",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
   ]
 }
 
@@ -143,12 +133,6 @@ js_library("customize_shortcuts") {
     ":mini_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
-}
-
-js_library("theme_icon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -254,7 +238,6 @@ html_to_js("web_components_local") {
     "customize_backgrounds.js",
     "customize_dialog.js",
     "customize_shortcuts.js",
-    "customize_themes.js",
     "doodle_share_dialog.js",
     "fakebox.js",
     "logo.js",
@@ -266,7 +249,6 @@ html_to_js("web_components_local") {
     "realbox_icon.js",
     "realbox_match.js",
     "realbox.js",
-    "theme_icon.js",
     "iframe.js",
     "voice_search_overlay.js",
   ]

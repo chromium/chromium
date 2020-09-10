@@ -23,9 +23,6 @@ suite('NewTabPageCustomizeDialogTest', () => {
     testProxy.handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));
-    testProxy.handler.setResultFor('getChromeThemes', Promise.resolve({
-      chromeThemes: [],
-    }));
     testProxy.handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));

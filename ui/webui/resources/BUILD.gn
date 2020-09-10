@@ -30,6 +30,7 @@ preprocess_grit("preprocess_src") {
       "cr_components/certificate_manager/certificates_browser_proxy.js",
       "cr_components/certificate_manager/certificate_manager_types.js",
       "cr_components/certificate_manager/certificate_provisioning_browser_proxy.js",
+      "cr_components/customize_themes/browser_proxy.js",
     ]
   }
 }
@@ -71,6 +72,9 @@ preprocess_grit("preprocess_generated") {
       "cr_components/certificate_manager/certificates_error_dialog.js",
       "cr_components/certificate_manager/certificate_shared_css.js",
       "cr_components/certificate_manager/certificate_subentry.js",
+      "cr_components/customize_themes/customize_themes.js",
+      "cr_components/customize_themes/customize_themes.mojom-lite.js",
+      "cr_components/customize_themes/theme_icon.js",
       "cr_components/managed_footnote/managed_footnote.m.js",
       "cr_components/omnibox/cr_autocomplete_match_list.js",
       "cr_elements/shared_vars_css.m.js",

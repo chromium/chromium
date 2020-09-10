@@ -1,0 +1,6 @@
+This directory contains the native Chrome handler implementation of the
+cr-customize-themes webUI component. The component allows the user to choose a
+color that Chrome will use to generate a new theme.
+
+The handler implements the CustomizeThemesHandler Mojo interface defined in
+//ui/webui/resources/cr_components/customize_themes/customize_themes.mojom

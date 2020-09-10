@@ -588,6 +588,7 @@ static_library("ui") {
     "//ui/surface",
     "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources/cr_components/customize_themes:mojom",
     "//v8:v8_version",
   ]
   allow_circular_includes_from +=
@@ -1297,6 +1298,8 @@ static_library("ui") {
       "webui/bookmarks/bookmarks_ui.h",
       "webui/chrome_web_contents_handler.cc",
       "webui/chrome_web_contents_handler.h",
+      "webui/customize_themes/chrome_customize_themes_handler.cc",
+      "webui/customize_themes/chrome_customize_themes_handler.h",
       "webui/devtools_ui.cc",
       "webui/devtools_ui.h",
       "webui/devtools_ui_data_source.cc",
@@ -2817,10 +2820,7 @@ static_library("ui") {
       "webui/welcome/welcome_ui.h",
     ]
 
-    deps += [
-      "//components/country_codes",
-      "//ui/webui/resources/cr_components/customize_themes:mojom",
-    ]
+    deps += [ "//components/country_codes" ]
 
     if (enable_dice_support) {
       sources += [

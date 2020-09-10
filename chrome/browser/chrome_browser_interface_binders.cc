@@ -71,6 +71,7 @@
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 
 #if BUILDFLAG(ENABLE_FEED_IN_CHROME)
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
@@ -544,11 +545,19 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);
 
-    RegisterWebUIControllerInterfaceBinder<
+  RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       promo_browser_command::mojom::CommandHandler, NewTabPageUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      customize_themes::mojom::CustomizeThemesHandlerFactory, NewTabPageUI
+#if !defined(OS_CHROMEOS)
+      ,
+      ProfilePickerUI
+#endif  // !defined(OS_CHROMEOS)
+      >(map);
 
   RegisterWebUIControllerInterfaceBinder<media_feeds::mojom::MediaFeedsStore,
                                          MediaFeedsUI>(map);
@@ -563,7 +572,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::web_app_internals::WebAppInternalsPageHandler, InternalsUI>(map);
-#endif
+#endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS)
   RegisterWebUIControllerInterfaceBinder<
@@ -698,14 +707,6 @@ void PopulateChromeWebUIFrameBinders(
         map);
   }
 #endif  // defined(OS_CHROMEOS)
-
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    RegisterWebUIControllerInterfaceBinder<
-        customize_themes::mojom::CustomizeThemesHandlerFactory,
-        ProfilePickerUI>(map);
-  }
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 }
 
 }  // namespace internal

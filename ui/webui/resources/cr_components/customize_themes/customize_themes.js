@@ -65,6 +65,7 @@ export class CustomizeThemesElement extends mixinBehaviors
   /** @override */
   connectedCallback() {
     super.connectedCallback();
+    this.handler_.initializeTheme();
     this.handler_.getChromeThemes().then(({chromeThemes}) => {
       this.chromeThemes_ = chromeThemes;
     });

@@ -60,30 +60,6 @@ TEST_F('NewTabPageCustomizeDialogTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var NewTabPageCustomizeThemesTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/customize_themes_test.js';
-  }
-};
-
-TEST_F('NewTabPageCustomizeThemesTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var NewTabPageThemeIconTest = class extends NewTabPageBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/theme_icon_test.js';
-  }
-};
-
-TEST_F('NewTabPageThemeIconTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var NewTabPageUtilsTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

@@ -42,9 +42,6 @@ suite('NewTabPageAppTest', () => {
     testProxy.handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));
-    testProxy.handler.setResultFor('getChromeThemes', Promise.resolve({
-      chromeThemes: [],
-    }));
     testProxy.handler.setResultFor('getDoodle', Promise.resolve({
       doodle: null,
     }));
@@ -244,7 +241,7 @@ suite('NewTabPageAppTest', () => {
     test(`setting non-default theme ${allows} doodle`, async function() {
       // Arrange.
       const theme = createTheme();
-      theme.type = newTabPage.mojom.ThemeType.kChrome;
+      theme.isDefault = false;
 
       // Act.
       testProxy.callbackRouterRemote.setTheme(theme);
