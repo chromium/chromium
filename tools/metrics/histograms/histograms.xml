@@ -127607,7 +127607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOnStartup"
-    enum="PasswordAccountStoreClearedOnStartup" expires_after="M87">
+    enum="PasswordAccountStoreClearedOnStartup" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127617,7 +127617,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.ClearedOptInForAllAccounts"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127652,7 +127652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127663,7 +127663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127730,7 +127730,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountStore.AccountsPerSiteHiRes"
-    units="units" expires_after="M87">
+    units="units" expires_after="M90">
   <owner>jdoerrie@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -127745,7 +127745,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PasswordManager.AccountStore.BlacklistedSitesHiRes" units="sites"
-    expires_after="M87">
+    expires_after="M90">
   <owner>jdoerrie@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -127758,7 +127758,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStore.EmptyUsernames.CountInDatabase"
-    units="units" expires_after="M87">
+    units="units" expires_after="M90">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -127770,7 +127770,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStore.InaccessiblePasswords"
-    units="saved passwords" expires_after="M87">
+    units="saved passwords" expires_after="M90">
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -127781,7 +127781,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.AccountStore.TimesPasswordUsed"
-    units="PasswordUses" expires_after="M87">
+    units="PasswordUses" expires_after="M90">
   <owner>battre@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -127797,7 +127797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PasswordManager.AccountStore.TotalAccountsHiRes.ByType" units="units"
-    expires_after="M87">
+    expires_after="M90">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -127812,7 +127812,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="PasswordManager.AccountStore.TotalAccountsHiRes.WithScheme"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -127827,7 +127827,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore.Additional"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127838,7 +127838,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore.Conflicting"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127850,7 +127850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore.Identical"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -127861,7 +127861,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore.Missing"
-    units="accounts" expires_after="M87">
+    units="accounts" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -128521,7 +128521,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.DefaultPasswordStoreSet"
-    enum="PasswordManager.Store" expires_after="M87">
+    enum="PasswordManager.Store" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -129488,7 +129488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MoveUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="M87">
+    enum="PasswordManagerUIDismissalReason" expires_after="M90">
 <!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
 
   <owner>mamir@chromium.org</owner>
@@ -130397,7 +130397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.StoresUsedForFillingInLast28Days"
-    enum="PasswordManagerFillingSource" expires_after="M87">
+    enum="PasswordManagerFillingSource" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -130409,7 +130409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.StoresUsedForFillingInLast7Days"
-    enum="PasswordManagerFillingSource" expires_after="M87">
+    enum="PasswordManagerFillingSource" expires_after="M90">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
