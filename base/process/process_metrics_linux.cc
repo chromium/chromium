@@ -654,9 +654,17 @@ bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
   //
   // Iterate through the whole file because the position of the
   // fields are dependent on the kernel version and configuration.
+
+  // Returns true if all of these 3 fields are present.
   bool has_pswpin = false;
   bool has_pswpout = false;
   bool has_pgmajfault = false;
+
+  // The oom_kill field is optional. The vmstat oom_kill field is available on
+  // upstream kernel 4.13. It's backported to Chrome OS kernel 3.10.
+  bool has_oom_kill = false;
+  vmstat->oom_kill = 0;
+
   for (const StringPiece& line : SplitStringPiece(
            vmstat_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
     std::vector<StringPiece> tokens = SplitStringPiece(
@@ -680,12 +688,14 @@ bool ParseProcVmstat(StringPiece vmstat_data, VmStatInfo* vmstat) {
       vmstat->pgmajfault = val;
       DCHECK(!has_pgmajfault);
       has_pgmajfault = true;
+    } else if (tokens[0] == "oom_kill") {
+      vmstat->oom_kill = val;
+      DCHECK(!has_oom_kill);
+      has_oom_kill = true;
     }
-    if (has_pswpin && has_pswpout && has_pgmajfault)
-      return true;
   }
 
-  return false;
+  return has_pswpin && has_pswpout && has_pgmajfault;
 }
 
 bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {

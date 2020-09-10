@@ -446,6 +446,7 @@ struct BASE_EXPORT VmStatInfo {
   unsigned long pswpin = 0;
   unsigned long pswpout = 0;
   unsigned long pgmajfault = 0;
+  unsigned long oom_kill = 0;
 };
 
 // Retrieves data from /proc/vmstat about system-wide vm operations.
