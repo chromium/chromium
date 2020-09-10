@@ -120,10 +120,8 @@ class PrerenderContents : public content::NotificationObserver,
 
   static Factory* CreateFactory();
 
-  // Start rendering the contents in the prerendered state. If
-  // |is_control_group| is true, this will go through some of the mechanics of
-  // starting a prerender, without actually creating the RenderView. |bounds|
-  // indicates the rectangle that the prerendered page should be in.
+  // Starts rendering the contents in the prerendered state.
+  // |bounds| indicates the rectangle that the prerendered page should be in.
   // |session_storage_namespace| indicates the namespace that the prerendered
   // page should be part of.
   virtual void StartPrerendering(
