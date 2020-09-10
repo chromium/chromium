@@ -24,10 +24,8 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
-import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
-import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.SelectionResult;
 import org.chromium.chrome.browser.payments.ui.PaymentUIsManager;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
 import org.chromium.chrome.browser.payments.ui.ShoppingCart;
@@ -1020,74 +1018,8 @@ public class PaymentRequestImpl
     @PaymentRequestUI.SelectionResult
     public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
             EditableOption option, Callback<PaymentInformation> callback) {
-        if (mComponentPaymentRequestImpl == null) return SelectionResult.NONE;
-        if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
-            // Log the change of shipping address.
-            mJourneyLogger.incrementSelectionChanges(Section.SHIPPING_ADDRESS);
-            AutofillAddress address = (AutofillAddress) option;
-            if (address.isComplete()) {
-                mPaymentUIsManager.getShippingAddressesSection().setSelectedItem(option);
-                startShippingAddressChangeNormalization(address);
-            } else {
-                // Log the edit of a shipping address.
-                mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
-                mPaymentUIsManager.editAddress(address);
-            }
-            mPaymentUIsManager.setPaymentInformationCallback(callback);
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.SHIPPING_OPTIONS) {
-            // This may update the line items.
-            mPaymentUIsManager.getUiShippingOptions().setSelectedItem(option);
-            mComponentPaymentRequestImpl.onShippingOptionChange(option.getIdentifier());
-            mPaymentUIsManager.setPaymentInformationCallback(callback);
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
-            // Log the change of contact info.
-            mJourneyLogger.incrementSelectionChanges(Section.CONTACT_INFO);
-            AutofillContact contact = (AutofillContact) option;
-            if (contact.isComplete()) {
-                mPaymentUIsManager.getContactSection().setSelectedItem(option);
-                if (!mWasRetryCalled) return PaymentRequestUI.SelectionResult.NONE;
-                dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
-            } else {
-                mJourneyLogger.incrementSelectionEdits(Section.CONTACT_INFO);
-                mPaymentUIsManager.editContactOnPaymentRequestUI(contact);
-                if (!mWasRetryCalled) return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
-            }
-            mPaymentUIsManager.setPaymentInformationCallback(callback);
-            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
-        } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
-            if (shouldShowShippingSection()
-                    && mPaymentUIsManager.getShippingAddressesSection() == null) {
-                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-                assert activity != null;
-                mPaymentUIsManager.createShippingSectionForPaymentRequestUI(activity);
-            }
-            if (shouldShowContactSection() && mPaymentUIsManager.getContactSection() == null) {
-                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-                assert activity != null;
-                mPaymentUIsManager.setContactSection(new ContactDetailsSection(activity,
-                        mPaymentUIsManager.getAutofillProfiles(),
-                        mPaymentUIsManager.getContactEditor(), mJourneyLogger));
-            }
-            mPaymentUIsManager.onSelectedPaymentMethodUpdated();
-            PaymentApp paymentApp = (PaymentApp) option;
-            if (paymentApp instanceof AutofillPaymentInstrument) {
-                AutofillPaymentInstrument card = (AutofillPaymentInstrument) paymentApp;
-
-                if (!card.isComplete()) {
-                    mPaymentUIsManager.editCard(card);
-                    return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
-                }
-            }
-            // Log the change of payment method.
-            mJourneyLogger.incrementSelectionChanges(Section.PAYMENT_METHOD);
-
-            mPaymentUIsManager.updateOrderSummary(paymentApp);
-            mPaymentUIsManager.getPaymentMethodsSection().setSelectedItem(option);
-        }
-
-        return PaymentRequestUI.SelectionResult.NONE;
+        return mPaymentUIsManager.onSectionOptionSelected(
+                optionType, option, callback, mWasRetryCalled);
     }
 
     @Override
@@ -2005,6 +1937,13 @@ public class PaymentRequestImpl
     public void onPaymentRequestUIFaviconNotAvailable() {
         if (mComponentPaymentRequestImpl == null) return;
         mComponentPaymentRequestImpl.warnNoFavicon();
+    }
+
+    // Implement PaymentUIsObserver:
+    @Override
+    public void onShippingOptionChange(String optionId) {
+        if (mComponentPaymentRequestImpl == null) return;
+        mComponentPaymentRequestImpl.onShippingOptionChange(optionId);
     }
 
     // Implement PaymentUIsObserver.onLeavingCurrentTab:

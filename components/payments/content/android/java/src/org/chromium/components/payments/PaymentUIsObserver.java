@@ -16,4 +16,10 @@ public interface PaymentUIsObserver {
      *         developers.
      */
     void onLeavingCurrentTab(String reason);
+
+    /**
+     * Called when the user's selected shipping option has changed.
+     * @param optionId The option id of the selected shipping option.
+     */
+    void onShippingOptionChange(String optionId);
 }

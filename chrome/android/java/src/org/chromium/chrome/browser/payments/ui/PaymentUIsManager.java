@@ -1495,4 +1495,82 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             mOverviewModeBehavior = null;
         }
     }
+
+    /**
+     * The implementation of {@link PaymentRequestUI.Client#onSectionOptionSelected}.
+     * @param optionType Data being updated.
+     * @param option Value of the data being updated.
+     * @param callback The callback after an asynchronous check has completed.
+     * @param wasRetryCalled Whether {@link PaymentRequestImpl#retry} has been called.
+     * @return The result of the selection.
+     */
+    @PaymentRequestUI.SelectionResult
+    public int onSectionOptionSelected(@PaymentRequestUI.DataType int optionType,
+            EditableOption option, Callback<PaymentInformation> callback, boolean wasRetryCalled) {
+        if (optionType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
+            // Log the change of shipping address.
+            mJourneyLogger.incrementSelectionChanges(Section.SHIPPING_ADDRESS);
+            AutofillAddress address = (AutofillAddress) option;
+            if (address.isComplete()) {
+                mShippingAddressesSection.setSelectedItem(option);
+                mDelegate.startShippingAddressChangeNormalization(address);
+            } else {
+                // Log the edit of a shipping address.
+                mJourneyLogger.incrementSelectionEdits(Section.SHIPPING_ADDRESS);
+                editAddress(address);
+            }
+            mPaymentInformationCallback = callback;
+            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUI.DataType.SHIPPING_OPTIONS) {
+            // This may update the line items.
+            mUiShippingOptions.setSelectedItem(option);
+            mObserver.onShippingOptionChange(option.getIdentifier());
+            mPaymentInformationCallback = callback;
+            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
+            // Log the change of contact info.
+            mJourneyLogger.incrementSelectionChanges(Section.CONTACT_INFO);
+            AutofillContact contact = (AutofillContact) option;
+            if (contact.isComplete()) {
+                mContactSection.setSelectedItem(option);
+                if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.NONE;
+                mDelegate.dispatchPayerDetailChangeEventIfNeeded(contact.toPayerDetail());
+            } else {
+                mJourneyLogger.incrementSelectionEdits(Section.CONTACT_INFO);
+                editContactOnPaymentRequestUI(contact);
+                if (!wasRetryCalled) return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+            }
+            mPaymentInformationCallback = callback;
+            return PaymentRequestUI.SelectionResult.ASYNCHRONOUS_VALIDATION;
+        } else if (optionType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
+            if (shouldShowShippingSection() && mShippingAddressesSection == null) {
+                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
+                assert activity != null;
+                createShippingSectionForPaymentRequestUI(activity);
+            }
+            if (shouldShowContactSection() && mContactSection == null) {
+                ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
+                assert activity != null;
+                mContactSection = new ContactDetailsSection(
+                        activity, mAutofillProfiles, mContactEditor, mJourneyLogger);
+            }
+            onSelectedPaymentMethodUpdated();
+            PaymentApp paymentApp = (PaymentApp) option;
+            if (paymentApp instanceof AutofillPaymentInstrument) {
+                AutofillPaymentInstrument card = (AutofillPaymentInstrument) paymentApp;
+
+                if (!card.isComplete()) {
+                    editCard(card);
+                    return PaymentRequestUI.SelectionResult.EDITOR_LAUNCH;
+                }
+            }
+            // Log the change of payment method.
+            mJourneyLogger.incrementSelectionChanges(Section.PAYMENT_METHOD);
+
+            updateOrderSummary(paymentApp);
+            mPaymentMethodsSection.setSelectedItem(option);
+        }
+
+        return PaymentRequestUI.SelectionResult.NONE;
+    }
 }
