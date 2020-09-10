@@ -36,6 +36,8 @@
 
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -327,6 +329,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
 
 std::vector<FontEnumerationEntry> FontCache::EnumeratePlatformAvailableFonts() {
   @autoreleasepool {
+    base::ElapsedTimer timer;
     std::vector<FontEnumerationEntry> output;
 
     CFTypeRef values[1] = {kCFBooleanTrue};
@@ -351,6 +354,9 @@ std::vector<FontEnumerationEntry> FontCache::EnumeratePlatformAvailableFonts() {
       output.push_back(FontEnumerationEntry{String(postscript_name),
                                             String(full_name), String(family)});
     }
+
+    UMA_HISTOGRAM_MEDIUM_TIMES("Fonts.AccessAPI.EnumerationTime",
+                               timer.Elapsed());
     return output;
   }
 }
