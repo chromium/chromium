@@ -56,11 +56,9 @@ void ThrowInvalidArgumentsException(
     AutomationInternalCustomBindings* automation_bindings) {
   v8::Isolate* isolate = automation_bindings->GetIsolate();
   automation_bindings->GetIsolate()->ThrowException(
-      v8::String::NewFromUtf8(
+      v8::String::NewFromUtf8Literal(
           isolate,
-          "Invalid arguments to AutomationInternalCustomBindings function",
-          v8::NewStringType::kNormal)
-          .ToLocalChecked());
+          "Invalid arguments to AutomationInternalCustomBindings function"));
 
   LOG(FATAL) << "Invalid arguments to AutomationInternalCustomBindings function"
              << automation_bindings->context()->GetStackTraceAsString();
@@ -613,20 +611,18 @@ void AutomationInternalCustomBindings::AddRoutes() {
                                       AutomationAXTreeWrapper* tree_wrapper) {
     result.Set(v8::Integer::New(isolate, tree_wrapper->tree()->root()->id()));
   });
-  RouteTreeIDFunction("GetDocURL", [](v8::Isolate* isolate,
-                                      v8::ReturnValue<v8::Value> result,
-                                      AutomationAXTreeWrapper* tree_wrapper) {
-    result.Set(v8::String::NewFromUtf8(isolate,
-                                       tree_wrapper->tree()->data().url.c_str(),
-                                       v8::NewStringType::kNormal)
-                   .ToLocalChecked());
-  });
+  RouteTreeIDFunction(
+      "GetDocURL", [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+                      AutomationAXTreeWrapper* tree_wrapper) {
+        result.Set(v8::String::NewFromUtf8(
+                       isolate, tree_wrapper->tree()->data().url.c_str())
+                       .ToLocalChecked());
+      });
   RouteTreeIDFunction(
       "GetDocTitle", [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
                         AutomationAXTreeWrapper* tree_wrapper) {
         result.Set(v8::String::NewFromUtf8(
-                       isolate, tree_wrapper->tree()->data().title.c_str(),
-                       v8::NewStringType::kNormal)
+                       isolate, tree_wrapper->tree()->data().title.c_str())
                        .ToLocalChecked());
       });
   RouteTreeIDFunction(
@@ -808,8 +804,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetRole", [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
                     AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         const std::string& role_name = ui::ToString(node->data().role);
-        result.Set(v8::String::NewFromUtf8(isolate, role_name.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, role_name.c_str())
                        .ToLocalChecked());
       });
   RouteNodeIDFunction(
@@ -1016,9 +1011,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
           attr_value = node->data().GetStringAttribute(attribute).c_str();
         }
 
-        result.Set(v8::String::NewFromUtf8(isolate, attr_value,
-                                           v8::NewStringType::kNormal)
-                       .ToLocalChecked());
+        result.Set(
+            v8::String::NewFromUtf8(isolate, attr_value).ToLocalChecked());
       });
   RouteNodeIDPlusAttributeFunction(
       "GetBoolAttribute",
@@ -1144,8 +1138,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
                                            &attribute_value))
           return;
 
-        result.Set(v8::String::NewFromUtf8(isolate, attribute_value.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, attribute_value.c_str())
                        .ToLocalChecked());
       });
   RouteNodeIDFunction(
@@ -1155,8 +1148,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
         ax::mojom::NameFrom name_from = static_cast<ax::mojom::NameFrom>(
             node->data().GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
         const std::string& name_from_str = ui::ToString(name_from);
-        result.Set(v8::String::NewFromUtf8(isolate, name_from_str.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, name_from_str.c_str())
                        .ToLocalChecked());
       });
   RouteNodeIDFunction("GetName", [this](v8::Isolate* isolate,
@@ -1174,9 +1166,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
                    .c_str();
       }
     }
-    result.Set(
-        v8::String::NewFromUtf8(isolate, name, v8::NewStringType::kNormal)
-            .ToLocalChecked());
+    result.Set(v8::String::NewFromUtf8(isolate, name).ToLocalChecked());
   });
   RouteNodeIDFunction(
       "GetDescriptionFrom",
@@ -1187,10 +1177,9 @@ void AutomationInternalCustomBindings::AddRoutes() {
                 node->data().GetIntAttribute(
                     ax::mojom::IntAttribute::kDescriptionFrom));
         std::string description_from_str = ui::ToString(description_from);
-        result.Set(v8::String::NewFromUtf8(isolate,
-                                           description_from_str.c_str(),
-                                           v8::NewStringType::kNormal)
-                       .ToLocalChecked());
+        result.Set(
+            v8::String::NewFromUtf8(isolate, description_from_str.c_str())
+                .ToLocalChecked());
       });
   RouteNodeIDFunction(
       "GetImageAnnotation",
@@ -1219,8 +1208,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
         }
         if (status_string.empty())
           return;
-        result.Set(v8::String::NewFromUtf8(isolate, status_string.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, status_string.c_str())
                        .ToLocalChecked());
       });
   RouteNodeIDFunction("GetSubscript", [](v8::Isolate* isolate,
@@ -1274,8 +1262,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         const std::string& detectedLanguage = node->GetLanguage();
-        result.Set(v8::String::NewFromUtf8(isolate, detectedLanguage.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, detectedLanguage.c_str())
                        .ToLocalChecked());
       });
 
@@ -1404,8 +1391,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
         for (size_t i = 0; i < standard_actions.size(); i++) {
           const v8::Maybe<bool>& did_set_value = actions_result->Set(
               isolate->GetCurrentContext(), i,
-              v8::String::NewFromUtf8(isolate, standard_actions[i].c_str(),
-                                      v8::NewStringType::kNormal)
+              v8::String::NewFromUtf8(isolate, standard_actions[i].c_str())
                   .ToLocalChecked());
 
           bool did_set_value_result = false;
@@ -1423,8 +1409,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
                 ax::mojom::IntAttribute::kCheckedState));
         if (checked_state != ax::mojom::CheckedState::kNone) {
           const std::string& checked_str = ui::ToString(checked_state);
-          result.Set(v8::String::NewFromUtf8(isolate, checked_str.c_str(),
-                                             v8::NewStringType::kNormal)
+          result.Set(v8::String::NewFromUtf8(isolate, checked_str.c_str())
                          .ToLocalChecked());
         }
       });
@@ -1436,8 +1421,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
             node->data().GetRestriction();
         if (restriction != ax::mojom::Restriction::kNone) {
           const std::string& restriction_str = ui::ToString(restriction);
-          result.Set(v8::String::NewFromUtf8(isolate, restriction_str.c_str(),
-                                             v8::NewStringType::kNormal)
+          result.Set(v8::String::NewFromUtf8(isolate, restriction_str.c_str())
                          .ToLocalChecked());
         }
       });
@@ -1451,10 +1435,9 @@ void AutomationInternalCustomBindings::AddRoutes() {
                     ax::mojom::IntAttribute::kDefaultActionVerb));
         const std::string& default_action_verb_str =
             ui::ToString(default_action_verb);
-        result.Set(v8::String::NewFromUtf8(isolate,
-                                           default_action_verb_str.c_str(),
-                                           v8::NewStringType::kNormal)
-                       .ToLocalChecked());
+        result.Set(
+            v8::String::NewFromUtf8(isolate, default_action_verb_str.c_str())
+                .ToLocalChecked());
       });
   RouteNodeIDFunction(
       "GetHasPopup",
@@ -1462,8 +1445,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
          AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
         ax::mojom::HasPopup has_popup = node->data().GetHasPopup();
         const std::string& has_popup_str = ui::ToString(has_popup);
-        result.Set(v8::String::NewFromUtf8(isolate, has_popup_str.c_str(),
-                                           v8::NewStringType::kNormal)
+        result.Set(v8::String::NewFromUtf8(isolate, has_popup_str.c_str())
                        .ToLocalChecked());
       });
   RouteNodeIDPlusStringBoolFunction(
@@ -1596,10 +1578,9 @@ void AutomationInternalCustomBindings::AddRoutes() {
           const std::string& sort_direction_str = ui::ToString(
               static_cast<ax::mojom::SortDirection>(node->GetIntAttribute(
                   ax::mojom::IntAttribute::kSortDirection)));
-          result.Set(v8::String::NewFromUtf8(isolate,
-                                             sort_direction_str.c_str(),
-                                             v8::NewStringType::kNormal)
-                         .ToLocalChecked());
+          result.Set(
+              v8::String::NewFromUtf8(isolate, sort_direction_str.c_str())
+                  .ToLocalChecked());
         }
       });
   RouteNodeIDPlusEventFunction(

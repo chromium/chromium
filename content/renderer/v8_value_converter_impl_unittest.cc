@@ -231,9 +231,8 @@ class V8ValueConverterImplTest : public testing::Test {
   template <typename T>
   v8::Local<T> CompileRun(v8::Local<v8::Context> context, const char* source) {
     return v8::Script::Compile(
-               context, v8::String::NewFromUtf8(isolate_, source,
-                                                v8::NewStringType::kNormal)
-                            .ToLocalChecked())
+               context,
+               v8::String::NewFromUtf8(isolate_, source).ToLocalChecked())
         .ToLocalChecked()
         ->Run(context)
         .ToLocalChecked()
@@ -496,11 +495,8 @@ TEST_F(V8ValueConverterImplTest, WeirdTypes) {
   v8::Context::Scope context_scope(context);
 
   v8::Local<v8::RegExp> regex(
-      v8::RegExp::New(
-          context,
-          v8::String::NewFromUtf8(isolate_, ".", v8::NewStringType::kNormal)
-              .ToLocalChecked(),
-          v8::RegExp::kNone)
+      v8::RegExp::New(context, v8::String::NewFromUtf8Literal(isolate_, "."),
+                      v8::RegExp::kNone)
           .ToLocalChecked());
 
   V8ValueConverterImpl converter;
@@ -719,8 +715,7 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
             v8::String::NewFromUtf8(isolate_, "foo",
                                     v8::NewStringType::kInternalized)
                 .ToLocalChecked(),
-            v8::String::NewFromUtf8(isolate_, "bar", v8::NewStringType::kNormal)
-                .ToLocalChecked())
+            v8::String::NewFromUtf8Literal(isolate_, "bar"))
       .Check();
   object
       ->Set(context,
@@ -738,11 +733,7 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
 
   v8::Local<v8::Array> array = v8::Array::New(isolate_).As<v8::Array>();
   ASSERT_FALSE(array.IsEmpty());
-  array
-      ->Set(context, 0,
-            v8::String::NewFromUtf8(isolate_, "1", v8::NewStringType::kNormal)
-                .ToLocalChecked())
-      .Check();
+  array->Set(context, 0, v8::String::NewFromUtf8Literal(isolate_, "1")).Check();
   array->Set(context, 1, array).Check();
 
   std::unique_ptr<base::ListValue> list_result(

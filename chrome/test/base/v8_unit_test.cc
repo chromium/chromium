@@ -160,9 +160,7 @@ bool V8UnitTest::RunJavascriptTestF(const std::string& test_fixture,
       .Check();
   v8::Local<v8::Value> args[] = {
       v8::Boolean::New(isolate, false),
-      v8::String::NewFromUtf8(isolate, "RUN_TEST_F", v8::NewStringType::kNormal)
-          .ToLocalChecked(),
-      params};
+      v8::String::NewFromUtf8Literal(isolate, "RUN_TEST_F"), params};
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> result =

@@ -42,8 +42,7 @@ class TestModule : public base::ModuleCache::Module {
 };
 
 v8::Local<v8::String> ToV8String(const char* str) {
-  return v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), str,
-                                 v8::NewStringType::kNormal)
+  return v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), str)
       .ToLocalChecked();
 }
 

@@ -15,10 +15,9 @@ namespace {
 void GetBlobUuid(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(1, args.Length());
   blink::WebBlob blob = blink::WebBlob::FromV8Value(args[0]);
-  args.GetReturnValue().Set(v8::String::NewFromUtf8(args.GetIsolate(),
-                                                    blob.Uuid().Utf8().data(),
-                                                    v8::NewStringType::kNormal)
-                                .ToLocalChecked());
+  args.GetReturnValue().Set(
+      v8::String::NewFromUtf8(args.GetIsolate(), blob.Uuid().Utf8().data())
+          .ToLocalChecked());
 }
 
 }  // namespace

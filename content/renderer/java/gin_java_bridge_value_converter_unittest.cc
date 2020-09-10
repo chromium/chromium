@@ -122,13 +122,12 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
     const char* typed_array_type = array_types[i + 1];
     v8::Local<v8::Script> script(
         v8::Script::Compile(
-            context, v8::String::NewFromUtf8(
-                         isolate_,
-                         base::StringPrintf(source_template, array_types[i],
-                                            typed_array_type)
-                             .c_str(),
-                         v8::NewStringType::kNormal)
-                         .ToLocalChecked())
+            context,
+            v8::String::NewFromUtf8(
+                isolate_, base::StringPrintf(source_template, array_types[i],
+                                             typed_array_type)
+                              .c_str())
+                .ToLocalChecked())
             .ToLocalChecked());
     v8::Local<v8::Value> v8_typed_array = script->Run(context).ToLocalChecked();
     std::unique_ptr<base::Value> list_value(

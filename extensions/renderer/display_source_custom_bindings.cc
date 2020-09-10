@@ -57,9 +57,7 @@ v8::Local<v8::Value> GetChildValue(v8::Local<v8::Object> value,
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::String> key;
   v8::Local<v8::Value> child_value;
-  if (v8::String::NewFromUtf8(isolate, key_name.c_str(),
-                              v8::NewStringType::kNormal)
-          .ToLocal(&key) &&
+  if (v8::String::NewFromUtf8(isolate, key_name.c_str()).ToLocal(&key) &&
       value->HasOwnProperty(context, key).FromMaybe(false) &&
       value->Get(context, key).ToLocal(&child_value)) {
     return child_value;
@@ -89,8 +87,7 @@ void DisplaySourceCustomBindings::StartSession(
   const int sink_id = sink_id_val.As<v8::Int32>()->Value();
   if (GetDisplaySession(sink_id)) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kSessionAlreadyStarted,
-                                v8::NewStringType::kNormal)
+        v8::String::NewFromUtf8(isolate, kSessionAlreadyStarted)
             .ToLocalChecked()));
     return;
   }
@@ -103,9 +100,7 @@ void DisplaySourceCustomBindings::StartSession(
   if ((video_stream_val->IsNull() || video_stream_val->IsUndefined()) &&
       (audio_stream_val->IsNull() || audio_stream_val->IsUndefined())) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kInvalidStreamArgs,
-                                v8::NewStringType::kNormal)
-            .ToLocalChecked()));
+        v8::String::NewFromUtf8(isolate, kInvalidStreamArgs).ToLocalChecked()));
     return;
   }
 
@@ -117,8 +112,7 @@ void DisplaySourceCustomBindings::StartSession(
                       .Component();
     if (video_track.IsNull()) {
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidStreamArgs,
-                                  v8::NewStringType::kNormal)
+          v8::String::NewFromUtf8(isolate, kInvalidStreamArgs)
               .ToLocalChecked()));
       return;
     }
@@ -129,8 +123,7 @@ void DisplaySourceCustomBindings::StartSession(
                       .Component();
     if (audio_track.IsNull()) {
       isolate->ThrowException(v8::Exception::Error(
-          v8::String::NewFromUtf8(isolate, kInvalidStreamArgs,
-                                  v8::NewStringType::kNormal)
+          v8::String::NewFromUtf8(isolate, kInvalidStreamArgs)
               .ToLocalChecked()));
       return;
     }
@@ -161,9 +154,7 @@ void DisplaySourceCustomBindings::StartSession(
       DisplaySourceSessionFactory::CreateSession(session_params);
   if (!session) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kErrorNotSupported,
-                                v8::NewStringType::kNormal)
-            .ToLocalChecked()));
+        v8::String::NewFromUtf8(isolate, kErrorNotSupported).ToLocalChecked()));
     return;
   }
 
@@ -194,10 +185,8 @@ void DisplaySourceCustomBindings::TerminateSession(
   int sink_id = args[0].As<v8::Int32>()->Value();
   DisplaySourceSession* session = GetDisplaySession(sink_id);
   if (!session) {
-    isolate->ThrowException(
-        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kSessionNotFound,
-                                                     v8::NewStringType::kNormal)
-                                 .ToLocalChecked()));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, kSessionNotFound).ToLocalChecked()));
     return;
   }
 
@@ -206,17 +195,14 @@ void DisplaySourceCustomBindings::TerminateSession(
   if (state == DisplaySourceSession::Establishing) {
     // 'session started' callback has not yet been invoked.
     // This session is not existing for the user.
-    isolate->ThrowException(
-        v8::Exception::Error(v8::String::NewFromUtf8(isolate, kSessionNotFound,
-                                                     v8::NewStringType::kNormal)
-                                 .ToLocalChecked()));
+    isolate->ThrowException(v8::Exception::Error(
+        v8::String::NewFromUtf8(isolate, kSessionNotFound).ToLocalChecked()));
     return;
   }
 
   if (state == DisplaySourceSession::Terminating) {
     isolate->ThrowException(v8::Exception::Error(
-        v8::String::NewFromUtf8(isolate, kSessionAlreadyTerminating,
-                                v8::NewStringType::kNormal)
+        v8::String::NewFromUtf8(isolate, kSessionAlreadyTerminating)
             .ToLocalChecked()));
     return;
   }
@@ -245,8 +231,7 @@ void DisplaySourceCustomBindings::OnCallCompleted(
   if (success)
     callback_args[1] = v8::Null(isolate);
   else
-    callback_args[1] = v8::String::NewFromUtf8(isolate, error_message.c_str(),
-                                               v8::NewStringType::kNormal)
+    callback_args[1] = v8::String::NewFromUtf8(isolate, error_message.c_str())
                            .ToLocalChecked();
 
   module_system->CallModuleMethodSafe("displaySource", "callCompletionCallback",

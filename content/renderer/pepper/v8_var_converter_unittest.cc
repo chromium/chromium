@@ -428,10 +428,8 @@ TEST_F(V8VarConverterTest, StrangeDictionaryKeyTest) {
         "})();";
 
     v8::Local<v8::Script> script(
-        v8::Script::Compile(context,
-                            v8::String::NewFromUtf8(isolate_, source,
-                                                    v8::NewStringType::kNormal)
-                                .ToLocalChecked())
+        v8::Script::Compile(
+            context, v8::String::NewFromUtf8(isolate_, source).ToLocalChecked())
             .ToLocalChecked());
     v8::Local<v8::Object> object =
         script->Run(context).ToLocalChecked().As<v8::Object>();
