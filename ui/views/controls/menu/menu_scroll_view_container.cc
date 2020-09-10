@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -252,7 +253,16 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
 void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Get the name from the submenu view.
   content_view_->GetAccessibleNodeData(node_data);
+
+  // On macOS, NSMenus are not supposed to have anything wrapped around them. To
+  // allow VoiceOver to recognize this as a menu and to read aloud the total
+  // number of items inside it, we ignore the MenuScrollViewContainer (which
+  // holds the menu itself: the SubmenuView).
+#if defined(OS_MAC)
+  node_data->role = ax::mojom::Role::kIgnored;
+#else
   node_data->role = ax::mojom::Role::kMenuBar;
+#endif
 }
 
 void MenuScrollViewContainer::OnBoundsChanged(
