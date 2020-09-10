@@ -4,6 +4,7 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/ui.gni")
+import("//build/toolchain/gcc_toolchain.gni")
 import("//third_party/blink/public/public_features.gni")
 
 if (is_android) {
@@ -82,6 +83,9 @@ if (blink_symbol_level == 2) {
 } else if (blink_symbol_level == 1) {
   blink_symbols_config = [ "//build/config/compiler:minimal_symbols" ]
 } else if (blink_symbol_level == 0) {
+  assert(
+      !enable_resource_allowlist_generation,
+      "enable_resource_allowlist_generation=true requires blink_symbol_level >= 1")
   blink_symbols_config = [ "//build/config/compiler:no_symbols" ]
 } else {
   blink_symbols_config = [ "//build/config/compiler:default_symbols" ]

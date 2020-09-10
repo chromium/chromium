@@ -20,9 +20,8 @@ if (is_nacl) {
 
 declare_args() {
   # Enables whitelist generation for IDR_ grit defines seen by the compiler.
-  # Currently works only on some platforms and enabled by default for release
-  # builds.
-  # Requires debug info, so disabled for symbol_level=0 & strip_debug_info=true.
+  # Currently works only on some platforms and enabled by default for official
+  # builds. Requires debug info.
   enable_resource_allowlist_generation =
       is_official_build &&
       # Don't enable for Android-on-Chrome OS so that they can build with
@@ -34,6 +33,21 @@ declare_args() {
 # hit the assert in grit_rule.gni, explicitly disable for host toolchains.
 if ((is_linux || is_chromeos) && target_os == "android") {
   enable_resource_allowlist_generation = false
+}
+
+# Ensure enable_resource_allowlist_generation is enabled only when it will work.
+if (enable_resource_allowlist_generation) {
+  assert(symbol_level >= 1,
+         "enable_resource_allowlist_generation=true requires symbol_level >= 1")
+  assert(
+      !strip_debug_info,
+      "enable_resource_allowlist_generation=true requires strip_debug_info=false")
+  assert(
+      !is_component_build,
+      "enable_resource_allowlist_generation=true requires is_component_build=false")
+  assert(
+      target_os == "android" || target_os == "win",
+      "enable_resource_allowlist_generation=true does not work for target_os=$target_os")
 }
 
 # This template defines a toolchain for something that works like gcc
