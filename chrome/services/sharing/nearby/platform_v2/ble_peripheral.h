@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_V2_BLE_PERIPHERAL_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_V2_BLE_PERIPHERAL_H_
 
+#include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/ble.h"
 
 namespace location {
@@ -14,7 +15,7 @@ namespace chrome {
 // Concrete BlePeripheral implementation.
 class BlePeripheral : public api::BlePeripheral {
  public:
-  explicit BlePeripheral(api::BluetoothDevice& bluetooth_device);
+  explicit BlePeripheral(bluetooth::mojom::DeviceInfoPtr device_info);
   ~BlePeripheral() override;
 
   BlePeripheral(const BlePeripheral&) = delete;
@@ -23,6 +24,11 @@ class BlePeripheral : public api::BlePeripheral {
   // api::BlePeripheral:
   std::string GetName() const override;
   ByteArray GetAdvertisementBytes(const std::string& service_id) const override;
+
+  void UpdateDeviceInfo(bluetooth::mojom::DeviceInfoPtr device_info);
+
+ private:
+  bluetooth::mojom::DeviceInfoPtr device_info_;
 };
 
 }  // namespace chrome

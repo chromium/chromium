@@ -60,6 +60,13 @@ struct DeviceInfo {
   string address;
   bool is_gatt_connected;
   RSSIWrapper? rssi;
+
+  // Important note: the "service data" associated with each UUID is an
+  // arbitrary binary blob of data provided by a likely untrustworthy device.
+  // Clients are responsible for safely parsing this information; please see
+  // "The Rule of 2" (//docs/security/rule-of-2.md). C++ clients must parse this
+  // blob in a sandbox process.
+  map<UUID, array<uint8>> service_data_map;
 };
 
 struct ServiceInfo {

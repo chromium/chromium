@@ -139,8 +139,17 @@ ImplementationPlatform::CreateBluetoothClassicMedium(
 
 std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
     api::BluetoothAdapter& adapter) {
-  // TODO (hansberry): Inject bluetooth::mojom::Adapter into BleMedium.
-  return std::make_unique<chrome::BleMedium>();
+  // Ignore the provided |adapter| argument. It provides no interface useful
+  // to implement chrome::BleMedium.
+
+  auto& connections = connections::NearbyConnections::GetInstance();
+  bluetooth::mojom::Adapter* bluetooth_adapter =
+      connections.GetBluetoothAdapter();
+
+  if (!bluetooth_adapter)
+    return nullptr;
+
+  return std::make_unique<chrome::BleMedium>(bluetooth_adapter);
 }
 
 std::unique_ptr<ble_v2::BleMedium> ImplementationPlatform::CreateBleV2Medium(

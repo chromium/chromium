@@ -8,19 +8,31 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-BlePeripheral::BlePeripheral(api::BluetoothDevice& bluetooth_device) {}
+BlePeripheral::BlePeripheral(bluetooth::mojom::DeviceInfoPtr device_info)
+    : device_info_(std::move(device_info)) {}
 
 BlePeripheral::~BlePeripheral() = default;
 
 std::string BlePeripheral::GetName() const {
-  // TODO(hansberry): Implement.
-  return std::string();
+  return device_info_->name_for_display;
 }
 
 ByteArray BlePeripheral::GetAdvertisementBytes(
     const std::string& service_id) const {
-  // TODO(hansberry): Implement.
-  return ByteArray();
+  const auto& service_data_map = device_info_->service_data_map;
+
+  auto it = service_data_map.find(device::BluetoothUUID(service_id));
+  if (it == service_data_map.end())
+    return ByteArray();
+
+  std::string service_data(it->second.begin(), it->second.end());
+  return ByteArray(service_data);
+}
+
+void BlePeripheral::UpdateDeviceInfo(
+    bluetooth::mojom::DeviceInfoPtr device_info) {
+  DCHECK_EQ(device_info_->address, device_info->address);
+  device_info_ = std::move(device_info);
 }
 
 }  // namespace chrome

@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "chrome/services/sharing/nearby/platform_v2/ble_peripheral.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/nearby/src/cpp/platform_v2/api/ble.h"
 
 namespace location {
@@ -15,9 +18,12 @@ namespace nearby {
 namespace chrome {
 
 // Concrete BleMedium implementation.
-class BleMedium : public api::BleMedium {
+// api::BleMedium is a synchronous interface, so this implementation consumes
+// the synchronous signatures of bluetooth::mojom::Adapter methods.
+class BleMedium : public api::BleMedium,
+                  public bluetooth::mojom::AdapterObserver {
  public:
-  BleMedium();
+  explicit BleMedium(bluetooth::mojom::Adapter* adapter);
   ~BleMedium() override;
 
   BleMedium(const BleMedium&) = delete;
@@ -38,6 +44,44 @@ class BleMedium : public api::BleMedium {
   std::unique_ptr<api::BleSocket> Connect(
       api::BlePeripheral& ble_peripheral,
       const std::string& service_id) override;
+
+ private:
+  // bluetooth::mojom::AdapterObserver:
+  void PresentChanged(bool present) override;
+  void PoweredChanged(bool powered) override;
+  void DiscoverableChanged(bool discoverable) override;
+  void DiscoveringChanged(bool discovering) override;
+  void DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) override;
+  void DeviceChanged(bluetooth::mojom::DeviceInfoPtr device) override;
+  void DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) override;
+
+  // Query if any service IDs are being scanned for.
+  bool IsScanning();
+
+  // End discovery for all requested services.
+  void StopScanning();
+
+  // Returns nullptr if no BlePeripheral at |address| exists.
+  chrome::BlePeripheral* GetDiscoveredBlePeripheral(const std::string& address);
+
+  // This reference is owned by the top-level Nearby Connections interface and
+  // will always outlive this object.
+  bluetooth::mojom::Adapter* adapter_ = nullptr;
+
+  // |adapter_observer_| is only set and bound during active discovery so that
+  // events we don't care about outside of discovery don't pile up.
+  mojo::Receiver<bluetooth::mojom::AdapterObserver> adapter_observer_{this};
+
+  // Keyed by requested service UUID. Discovery is active as long as this map is
+  // non-empty.
+  std::map<device::BluetoothUUID, DiscoveredPeripheralCallback>
+      discovered_peripheral_callbacks_map_;
+
+  // Only set while discovery is active.
+  mojo::Remote<bluetooth::mojom::DiscoverySession> discovery_session_;
+
+  // Keyed by address of advertising remote device.
+  std::map<std::string, chrome::BlePeripheral> discovered_ble_peripherals_map_;
 };
 
 }  // namespace chrome

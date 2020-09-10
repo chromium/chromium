@@ -262,6 +262,7 @@ BluetoothInternalsTest.prototype = {
       nameForDisplay: 'AAA',
       rssi: {value: -40},
       isGattConnected: false,
+      serviceDataMap: {},
       services: [],
     };
   },
@@ -277,6 +278,7 @@ BluetoothInternalsTest.prototype = {
       nameForDisplay: 'BBB',
       rssi: null,
       isGattConnected: false,
+      serviceDataMap: {},
       services: [],
     };
   },
@@ -291,6 +293,7 @@ BluetoothInternalsTest.prototype = {
       address: 'CC:CC:84:96:92:84',
       name: 'CCC',
       nameForDisplay: 'CCC',
+      serviceDataMap: {},
       isGattConnected: false,
     };
   },
