@@ -367,9 +367,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSettingsLinkTest, ClickSettingsLink) {
       static_cast<views::StyledLabel*>(dialog_view()->GetViewByID(
           static_cast<int>(DialogViewID::DATA_SOURCE_LABEL)));
   EXPECT_TRUE(styled_label);
-  // The Link is the only child of the StyledLabel.
   content::WebContentsAddedObserver web_contents_added_observer;
-  styled_label->LinkClicked(nullptr, ui::EF_NONE);
+  styled_label->ClickLinkForTesting();
   content::WebContents* new_tab_contents =
       web_contents_added_observer.GetWebContents();
 

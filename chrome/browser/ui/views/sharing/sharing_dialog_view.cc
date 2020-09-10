@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 
+#include "base/bind.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -178,11 +179,8 @@ void SharingDialogView::AddedToWidget() {
   }
 }
 
-void SharingDialogView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                               const gfx::Range& range,
-                                               int event_flags) {
-  std::move(data_.help_callback).Run(GetDialogType());
-  CloseBubble();
+SharingDialogType SharingDialogView::GetDialogType() const {
+  return data_.type;
 }
 
 void SharingDialogView::ButtonPressed(views::Button* sender,
@@ -226,10 +224,6 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
   }
 #endif
   return static_cast<SharingDialogView*>(dialog);
-}
-
-SharingDialogType SharingDialogView::GetDialogType() const {
-  return data_.type;
 }
 
 void SharingDialogView::Init() {
@@ -352,12 +346,18 @@ std::unique_ptr<views::StyledLabel> SharingDialogView::CreateHelpText() {
   const base::string16 link =
       l10n_util::GetStringUTF16(data_.help_link_text_id);
   size_t offset;
-  auto label = std::make_unique<views::StyledLabel>(this);
+  auto label = std::make_unique<views::StyledLabel>();
   label->SetText(ShouldShowOrigin(data_, web_contents())
                      ? PrepareHelpTextWithOrigin(data_, link, &offset)
                      : PrepareHelpTextWithoutOrigin(data_, link, &offset));
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &SharingDialogView::HelpLinkClicked, base::Unretained(this)));
   label->AddStyleRange(gfx::Range(offset, offset + link.length()), link_style);
   return label;
+}
+
+void SharingDialogView::HelpLinkClicked(int event_flags) {
+  std::move(data_.help_callback).Run(GetDialogType());
+  CloseBubble();
 }

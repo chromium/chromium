@@ -27,6 +27,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/native_widget_types.h"
@@ -145,7 +146,7 @@ void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(
       l10n_util::GetStringFUTF16(
           IDS_ENTERPRISE_SIGNIN_ALERT,
           domain, &offset);
-  auto prompt_label = std::make_unique<views::StyledLabel>(this);
+  auto prompt_label = std::make_unique<views::StyledLabel>();
   prompt_label->SetText(prompt_text);
   prompt_label->SetDisplayedOnBackgroundColor(kPromptBarBackgroundColor);
 
@@ -171,11 +172,13 @@ void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(
           IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITH_PROFILE_CREATION :
           IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITHOUT_PROFILE_CREATION,
           username, learn_more_text, &offsets);
-  auto explanation_label = std::make_unique<views::StyledLabel>(this);
+  auto explanation_label = std::make_unique<views::StyledLabel>();
   explanation_label->SetText(signin_explanation_text);
   explanation_label->AddStyleRange(
       gfx::Range(offsets[1], offsets[1] + learn_more_text.size()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink());
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &ProfileSigninConfirmationDialogViews::LearnMoreClicked,
+          base::Unretained(this))));
 
   // Layout the components.
   const gfx::Insets content_insets =
@@ -243,18 +246,6 @@ void ProfileSigninConfirmationDialogViews::ViewHierarchyChanged(
                          kPreferredWidth, explanation_label_height);
 }
 
-void ProfileSigninConfirmationDialogViews::StyledLabelLinkClicked(
-    views::StyledLabel* label,
-    const gfx::Range& range,
-    int event_flags) {
-  NavigateParams params(
-      browser_, GURL("https://support.google.com/chromebook/answer/1331549"),
-      ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
-}
-
 void ProfileSigninConfirmationDialogViews::ButtonPressed(
     views::Button* sender,
     const ui::Event& event) {
@@ -264,4 +255,14 @@ void ProfileSigninConfirmationDialogViews::ButtonPressed(
     delegate_ = nullptr;
   }
   GetWidget()->Close();
+}
+
+void ProfileSigninConfirmationDialogViews::LearnMoreClicked(int event_flags) {
+  NavigateParams params(
+      browser_, GURL("https://support.google.com/chromebook/answer/1331549"),
+      ui::PAGE_TRANSITION_LINK);
+  params.disposition = ui::DispositionFromEventFlags(
+      event_flags, WindowOpenDisposition::NEW_POPUP);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  Navigate(&params);
 }

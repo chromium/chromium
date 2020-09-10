@@ -41,11 +41,13 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
     table_observer_ = std::make_unique<MockTableViewObserver>();
     auto controller = std::make_unique<FakeBluetoothChooserController>();
     controller_ = controller.get();
-    content_view_ = std::make_unique<DeviceChooserContentView>(
-        table_observer_.get(), std::move(controller));
+    widget_ = CreateTestWidget();
+    content_view_ =
+        widget_->SetContentsView(std::make_unique<DeviceChooserContentView>(
+            table_observer_.get(), std::move(controller)));
 
     // Also creates |bluetooth_status_container_|.
-    extra_views_container_ = content_view().CreateExtraView();
+    extra_views_container_ = content_view_->CreateExtraView();
 
     ASSERT_NE(nullptr, table_view());
     ASSERT_NE(nullptr, no_options_view());
@@ -58,23 +60,31 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
         FakeBluetoothChooserController::BluetoothStatus::IDLE);
   }
 
+  void TearDown() override {
+    // All windows need to be closed before tear down.
+    widget_.reset();
+
+    ChromeViewsTestBase::TearDown();
+  }
+
   FakeBluetoothChooserController* controller() { return controller_; }
   MockTableViewObserver& table_observer() { return *table_observer_; }
-  DeviceChooserContentView& content_view() { return *content_view_; }
+  DeviceChooserContentView* content_view() { return content_view_; }
+  views::Widget* widget() { return widget_.get(); }
 
   views::TableView* table_view() {
-    return content_view().table_view_for_testing();
+    return content_view_->table_view_for_testing();
   }
-  views::View* table_parent() { return content_view().table_parent_; }
+  views::View* table_parent() { return content_view_->table_parent_; }
   ui::TableModel* table_model() { return table_view()->model(); }
-  views::View* no_options_view() { return content_view().no_options_view_; }
-  views::View* adapter_off_view() { return content_view().adapter_off_view_; }
+  views::View* no_options_view() { return content_view_->no_options_view_; }
+  views::View* adapter_off_view() { return content_view_->adapter_off_view_; }
   views::LabelButton* re_scan_button() {
-    return content_view().ReScanButtonForTesting();
+    return content_view_->ReScanButtonForTesting();
   }
-  views::Throbber* throbber() { return content_view().ThrobberForTesting(); }
+  views::Throbber* throbber() { return content_view_->ThrobberForTesting(); }
   views::Label* scanning_label() {
-    return content_view().ScanningLabelForTesting();
+    return content_view_->ScanningLabelForTesting();
   }
 
   void AddUnpairedDevice() {
@@ -126,7 +136,8 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<MockTableViewObserver> table_observer_;
   FakeBluetoothChooserController* controller_ = nullptr;
-  std::unique_ptr<DeviceChooserContentView> content_view_;
+  DeviceChooserContentView* content_view_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceChooserContentViewTest);
 };
@@ -255,9 +266,10 @@ TEST_F(DeviceChooserContentViewTest, ScanForDevices) {
 }
 
 TEST_F(DeviceChooserContentViewTest, ClickAdapterOffHelpLink) {
+  widget()->LayoutRootViewIfNecessary();
   EXPECT_CALL(*controller(), OpenAdapterOffHelpUrl()).Times(1);
   static_cast<views::StyledLabel*>(adapter_off_view()->children().front())
-      ->LinkClicked(nullptr, 0);
+      ->ClickLinkForTesting();
 }
 
 TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {
@@ -266,7 +278,7 @@ TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  content_view().ButtonPressed(re_scan_button(), event);
+  content_view()->ButtonPressed(re_scan_button(), event);
 }
 
 TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
@@ -279,7 +291,7 @@ TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  content_view().ButtonPressed(help_button, event);
+  content_view()->ButtonPressed(help_button, event);
 }
 
 TEST_F(DeviceChooserContentViewTest, SetTableViewAlwaysDisabled) {

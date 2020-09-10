@@ -7,7 +7,6 @@
 
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -21,8 +20,7 @@ class StyledLabel;
 namespace ash {
 
 // View representing privacy info in Launcher.
-class PrivacyInfoView : public SearchResultBaseView,
-                        public views::StyledLabelListener {
+class PrivacyInfoView : public SearchResultBaseView {
  public:
   ~PrivacyInfoView() override;
 
@@ -39,11 +37,6 @@ class PrivacyInfoView : public SearchResultBaseView,
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // SearchResultBaseView:
   void SelectInitialResultAction(bool reverse_tab_order) override;

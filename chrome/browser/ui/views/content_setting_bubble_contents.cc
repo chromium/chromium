@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/util/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -200,9 +201,6 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   // Calling this will delete related children.
   void RemoveRowAtIndex(int index);
 
-  // Returns row index of |link| among list items.
-  int GetRowIndexOf(const views::Link* link) const;
-
  private:
   using Row = std::pair<views::ImageView*, views::View*>;
   using NewRow = std::pair<std::unique_ptr<views::ImageView>,
@@ -252,7 +250,14 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     link->SetElideBehavior(gfx::ELIDE_MIDDLE);
     link->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     link->set_callback(base::BindRepeating(
-        &ContentSettingBubbleContents::LinkClicked, base::Unretained(parent_)));
+        [](const std::vector<Row>* items, const views::Link* link,
+           ContentSettingBubbleContents* parent, int event_flags) {
+          const auto it = util::ranges::find(*items, link, &Row::second);
+          DCHECK(it != items->cend());
+          parent->LinkClicked(std::distance(items->cbegin(), it), event_flags);
+        },
+        base::Unretained(&list_item_views_), base::Unretained(link.get()),
+        base::Unretained(parent_)));
     item_contents = std::move(link);
   } else {
     item_contents = std::make_unique<views::View>();
@@ -290,16 +295,6 @@ void ContentSettingBubbleContents::ListItemContainer::RemoveRowAtIndex(
   ResetLayout();
   for (auto& row : list_item_views_)
     AddRowToLayout(row);
-}
-
-int ContentSettingBubbleContents::ListItemContainer::GetRowIndexOf(
-    const views::Link* link) const {
-  auto has_link = [link](const Row& row) { return row.second == link; };
-  auto iter =
-      std::find_if(list_item_views_.begin(), list_item_views_.end(), has_link);
-  return (iter == list_item_views_.end())
-             ? -1
-             : std::distance(list_item_views_.begin(), iter);
 }
 
 void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
@@ -624,10 +619,8 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   return container;
 }
 
-void ContentSettingBubbleContents::LinkClicked(views::Link* source,
-                                               int event_flags) {
+void ContentSettingBubbleContents::LinkClicked(int row, int event_flags) {
   DCHECK(content_setting_bubble_model_);
-  int row = list_item_container_->GetRowIndexOf(source);
   DCHECK_NE(row, -1);
   content_setting_bubble_model_->OnListItemClicked(row, event_flags);
 }

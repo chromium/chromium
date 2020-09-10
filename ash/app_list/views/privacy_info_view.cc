@@ -215,13 +215,6 @@ void PrivacyInfoView::ButtonPressed(views::Button* sender,
     CloseButtonPressed();
 }
 
-void PrivacyInfoView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                             const gfx::Range& range,
-                                             int event_flags) {
-  if (label == text_view_)
-    LinkClicked();
-}
-
 void PrivacyInfoView::InitLayout() {
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -262,7 +255,7 @@ void PrivacyInfoView::InitText() {
   size_t offset;
   const base::string16 text =
       l10n_util::GetStringFUTF16(info_string_id_, link, &offset);
-  text_view_ = AddChildView(std::make_unique<views::StyledLabel>(this));
+  text_view_ = AddChildView(std::make_unique<views::StyledLabel>());
   text_view_->SetText(text);
 
   views::StyledLabel::RangeStyleInfo style;

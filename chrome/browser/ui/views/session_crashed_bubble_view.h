@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 namespace views {
 class Checkbox;
@@ -23,8 +22,7 @@ class Browser;
 // previous session. If metrics reporting is not enabled a checkbox is presented
 // allowing the user to turn it on.
 class SessionCrashedBubbleView : public SessionCrashedBubble,
-                                 public views::BubbleDialogDelegateView,
-                                 public views::StyledLabelListener {
+                                 public views::BubbleDialogDelegateView {
  public:
   // A helper class that listens to browser removal event.
   class BrowserRemovalObserver;
@@ -54,14 +52,12 @@ class SessionCrashedBubbleView : public SessionCrashedBubble,
   // views::BubbleDialogDelegateView methods.
   void Init() override;
 
-  // views::StyledLabelListener methods.
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
-
   // Creates a view allowing the user to opt-in to reporting information to UMA.
   // Returns nullptr if offer is unavailable.
   std::unique_ptr<views::View> CreateUmaOptInView();
+
+  // Called when the user clicks the "statistics" link to get more information.
+  void ExplainStatisticsLinkClicked(int event_flags);
 
   // Restore previous session after user selects so.
   void RestorePreviousSession();

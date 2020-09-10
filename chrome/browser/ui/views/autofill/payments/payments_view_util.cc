@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 
+#include "base/bind.h"
 #include "base/util/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -131,37 +132,24 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield() {
 }
 
 LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
-                                   LinkClickedCallback callback)
-    : legal_message_lines_(legal_message_lines),
-      callback_(std::move(callback)) {
+                                   LinkClickedCallback callback) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const LegalMessageLine& line : legal_message_lines) {
     views::StyledLabel* label =
-        AddChildView(std::make_unique<views::StyledLabel>(this));
+        AddChildView(std::make_unique<views::StyledLabel>());
     label->SetText(line.text());
     label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
     for (const LegalMessageLine::Link& link : line.links()) {
       label->AddStyleRange(link.range,
-                           views::StyledLabel::RangeStyleInfo::CreateForLink());
+                           views::StyledLabel::RangeStyleInfo::CreateForLink(
+                               base::BindRepeating(callback, link.url)));
     }
   }
 }
 
 LegalMessageView::~LegalMessageView() = default;
-
-void LegalMessageView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                              const gfx::Range& range,
-                                              int event_flags) {
-  const int label_index = GetIndexOf(label);
-  DCHECK_LT(size_t{label_index}, legal_message_lines_.size());
-  const auto& links = legal_message_lines_[label_index].links();
-  const auto it =
-      util::ranges::find(links, range, &LegalMessageLine::Link::range);
-  DCHECK(it != links.end());
-  callback_.Run(it->url);
-}
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
     views::Widget::ClosedReason reason) {

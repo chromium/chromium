@@ -84,13 +84,8 @@ void Link::OnMouseReleased(const ui::MouseEvent& event) {
   OnMouseCaptureLost();
   if (GetEnabled() &&
       (event.IsLeftMouseButton() || event.IsMiddleMouseButton()) &&
-      HitTestPoint(event.location())) {
-    // Focus the link on click.
-    RequestFocus();
-
-    if (!callback_.is_null())
-      callback_.Run(this, event.flags());
-  }
+      HitTestPoint(event.location()))
+    OnClick(event.flags());
 }
 
 void Link::OnMouseCaptureLost() {
@@ -106,13 +101,7 @@ bool Link::OnKeyPressed(const ui::KeyEvent& event) {
     return false;
 
   SetPressed(false);
-
-  // Focus the link on key pressed.
-  RequestFocus();
-
-  if (!callback_.is_null())
-    callback_.Run(this, event.flags());
-
+  OnClick(event.flags());
   return true;
 }
 
@@ -123,9 +112,7 @@ void Link::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
     SetPressed(true);
   } else if (event->type() == ui::ET_GESTURE_TAP) {
-    RequestFocus();
-    if (!callback_.is_null())
-      callback_.Run(this, event->flags());
+    OnClick(event->flags());
   } else {
     SetPressed(false);
     return;
@@ -193,6 +180,12 @@ void Link::SetPressed(bool pressed) {
     RecalculateFont();
     SchedulePaint();
   }
+}
+
+void Link::OnClick(int event_flags) {
+  RequestFocus();
+  if (!callback_.is_null())
+    callback_.Run(event_flags);
 }
 
 void Link::RecalculateFont() {

@@ -10,7 +10,6 @@
 #include "components/security_state/core/security_state.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 namespace content {
 class WebContents;
@@ -29,8 +28,7 @@ class Widget;
 // without all of the details. Safety tip info is still displayed in the usual
 // PageInfoBubbleView, just less prominently.
 class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
-                                    public views::ButtonListener,
-                                    public views::StyledLabelListener {
+                                    public views::ButtonListener {
  public:
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
@@ -53,11 +51,6 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase,
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* button, const ui::Event& event) override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
  private:
   friend class SafetyTipPageInfoBubbleViewBrowserTest;

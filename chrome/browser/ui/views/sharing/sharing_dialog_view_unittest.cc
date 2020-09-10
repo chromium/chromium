@@ -181,7 +181,7 @@ TEST_F(SharingDialogViewTest, HelpTextClickedEmpty) {
   auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/0);
   auto dialog = CreateDialogView(std::move(dialog_data));
 
-  dialog->StyledLabelLinkClicked(nullptr, gfx::Range(), ui::EF_NONE);
+  dialog->HelpLinkClicked(ui::EF_NONE);
 }
 
 TEST_F(SharingDialogViewTest, HelpTextClickedOnlyApps) {
@@ -191,7 +191,7 @@ TEST_F(SharingDialogViewTest, HelpTextClickedOnlyApps) {
   auto dialog_data = CreateDialogData(/*devices=*/0, /*apps=*/1);
   auto dialog = CreateDialogView(std::move(dialog_data));
 
-  dialog->StyledLabelLinkClicked(nullptr, gfx::Range(), ui::EF_NONE);
+  dialog->HelpLinkClicked(ui::EF_NONE);
 }
 
 TEST_F(SharingDialogViewTest, ThemeChangedEmptyList) {

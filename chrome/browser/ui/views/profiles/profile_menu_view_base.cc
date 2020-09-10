@@ -41,7 +41,6 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -952,19 +951,9 @@ bool ProfileMenuViewBase::HandleContextMenu(
 
 void ProfileMenuViewBase::ButtonPressed(views::Button* button,
                                         const ui::Event& event) {
-  OnClick(button);
-}
-
-void ProfileMenuViewBase::StyledLabelLinkClicked(views::StyledLabel* link,
-                                                 const gfx::Range& range,
-                                                 int event_flags) {
-  OnClick(link);
-}
-
-void ProfileMenuViewBase::OnClick(views::View* clickable_view) {
-  DCHECK(!click_actions_[clickable_view].is_null());
+  DCHECK(!click_actions_[button].is_null());
   signin_ui_util::RecordProfileMenuClick(browser()->profile());
-  click_actions_[clickable_view].Run();
+  click_actions_[button].Run();
 }
 
 void ProfileMenuViewBase::RegisterClickAction(views::View* clickable_view,

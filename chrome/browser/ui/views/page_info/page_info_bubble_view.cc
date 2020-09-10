@@ -132,15 +132,10 @@ std::unique_ptr<views::View> CreateSiteSettingsLink(
 // BubbleHeaderView is the UI element (view) that represents the header of a
 // PageInfoBubbleView. The header shows the status of the site's identity check
 // and the name of the site's identity.
-class BubbleHeaderView : public views::View, public views::StyledLabelListener {
+class BubbleHeaderView : public views::View {
  public:
   BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin);
   ~BubbleHeaderView() override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // Sets the security summary for the current page.
   void SetSummary(const base::string16& summary_text);
@@ -216,9 +211,7 @@ BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
 
   layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
 
-  auto security_details_label = std::make_unique<views::StyledLabel>(this);
-  security_details_label->SetID(
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_SECURITY_DETAILS);
+  auto security_details_label = std::make_unique<views::StyledLabel>();
   security_details_label_ =
       layout->AddView(std::move(security_details_label), 1.0, 1.0,
                       views::GridLayout::FILL, views::GridLayout::LEADING);
@@ -240,20 +233,6 @@ BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
 
 BubbleHeaderView::~BubbleHeaderView() = default;
 
-void BubbleHeaderView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                              const gfx::Range& range,
-                                              int event_flags) {
-  if (label->GetID() ==
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_SECURITY_DETAILS) {
-    bubble_->SecurityDetailsClicked(event_flags);
-  } else {
-    DCHECK_EQ(
-        PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_RESET_CERTIFICATE_DECISIONS,
-        label->GetID());
-    bubble_->ResetDecisionsClicked();
-  }
-}
-
 void BubbleHeaderView::SetDetails(const base::string16& details_text) {
   std::vector<base::string16> subst;
   subst.push_back(details_text);
@@ -267,7 +246,9 @@ void BubbleHeaderView::SetDetails(const base::string16& details_text) {
   gfx::Range details_range(offsets[1], text.length());
 
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&PageInfoBubbleView::SecurityDetailsClicked,
+                              base::Unretained(bubble_)));
   link_style.disable_line_wrapping = false;
 
   security_details_label_->AddStyleRange(details_range, link_style);
@@ -291,14 +272,14 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
       base::ASCIIToUTF16("$1 $2"), subst, &offsets);
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
-          std::make_unique<views::StyledLabel>(this));
+          std::make_unique<views::StyledLabel>());
   reset_cert_decisions_label->SetText(text);
-  reset_cert_decisions_label->SetID(
-      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_RESET_CERTIFICATE_DECISIONS);
   gfx::Range link_range(offsets[1], text.length());
 
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&PageInfoBubbleView::ResetDecisionsClicked,
+                              base::Unretained(bubble_)));
   link_style.disable_line_wrapping = false;
 
   reset_cert_decisions_label->AddStyleRange(link_range, link_style);

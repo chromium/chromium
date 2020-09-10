@@ -405,8 +405,9 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   EXPECT_EQ(kBodyLineHeight, styled_label.height());
 
   // Adding a link should not change the size.
-  styled_label.AddStyleRange(
-      gfx::Range(0, 2), views::StyledLabel::RangeStyleInfo::CreateForLink());
+  styled_label.AddStyleRange(gfx::Range(0, 2),
+                             views::StyledLabel::RangeStyleInfo::CreateForLink(
+                                 base::RepeatingClosure()));
   styled_label.SizeToFit(kStyledLabelWidth);
   EXPECT_EQ(kBodyLineHeight, styled_label.height());
 }

@@ -258,7 +258,7 @@ CreditCardEditorViewController::CreateHeaderView() {
             .release());
 
     // "Edit" link.
-    auto edit_link = std::make_unique<views::StyledLabel>(this);
+    auto edit_link = std::make_unique<views::StyledLabel>();
     base::string16 link_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WALLET_MANAGEMENT_LINK_TEXT);
     edit_link->SetText(link_text);
@@ -266,7 +266,14 @@ CreditCardEditorViewController::CreateHeaderView() {
         static_cast<int>(DialogViewID::GOOGLE_PAYMENTS_EDIT_LINK_LABEL));
     edit_link->AddStyleRange(
         gfx::Range(0, link_text.size()),
-        views::StyledLabel::RangeStyleInfo::CreateForLink());
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            [](PaymentRequestDialogView* dialog) {
+              chrome::ScopedTabbedBrowserDisplayer displayer(
+                  dialog->GetProfile());
+              ShowSingletonTab(displayer.browser(),
+                               autofill::payments::GetManageAddressesUrl());
+            },
+            base::Unretained(dialog()))));
     edit_link->SizeToFit(0);
     data_source->AddChildView(edit_link.release());
 
@@ -539,17 +546,6 @@ CreditCardEditorViewController::GetComboboxModelForType(
       break;
   }
   return std::unique_ptr<ui::ComboboxModel>();
-}
-
-void CreditCardEditorViewController::StyledLabelLinkClicked(
-    views::StyledLabel* label,
-    const gfx::Range& range,
-    int event_flags) {
-  // The only thing that can trigger this is the user clicking on the "edit"
-  // link for a server card.
-  chrome::ScopedTabbedBrowserDisplayer displayer(dialog()->GetProfile());
-  ShowSingletonTab(displayer.browser(),
-                   autofill::payments::GetManageAddressesUrl());
 }
 
 void CreditCardEditorViewController::SelectBasicCardNetworkIcon(

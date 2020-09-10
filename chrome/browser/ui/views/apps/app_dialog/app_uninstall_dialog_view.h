@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 class Profile;
 
@@ -29,8 +28,7 @@ class ImageSkia;
 // apps::UninstallDialog::UiBase to notify AppService, which transfers control
 // to the publisher to uninstall the app.
 class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
-                               public AppDialogView,
-                               public views::StyledLabelListener {
+                               public AppDialogView {
  public:
   AppUninstallDialogView(Profile* profile,
                          apps::mojom::AppType app_type,
@@ -59,11 +57,6 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
   void InitializeViewForArcApp(Profile* profile, const std::string& app_id);
   void InitializeViewWithMessage(const base::string16& message);
 #endif
-
-  // views::StyledLabelListener methods.
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   void OnDialogCancelled();
   void OnDialogAccepted();

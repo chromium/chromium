@@ -35,7 +35,7 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   void Init() override;
   bool Accept() override;
 
-  void LinkClicked(views::Link* source, int event_flags);
+  void LinkClicked(int event_flags);
 
   // Used for loading pages.
   content::PageNavigator* navigator_;
@@ -87,8 +87,7 @@ bool NetworkProfileBubbleView::Accept() {
   return true;
 }
 
-void NetworkProfileBubbleView::LinkClicked(views::Link* source,
-                                           int event_flags) {
+void NetworkProfileBubbleView::LinkClicked(int event_flags) {
   NetworkProfileBubble::RecordUmaEvent(
       NetworkProfileBubble::METRIC_LEARN_MORE_CLICKED);
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(

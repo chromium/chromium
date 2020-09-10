@@ -7,12 +7,10 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/post_save_compromised_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 // Bubble notifying the user about remaining compromised credentials in the
 // store.
-class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase,
-                                      public views::StyledLabelListener {
+class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase {
  public:
   explicit PostSaveCompromisedBubbleView(content::WebContents* web_contents,
                                          views::View* anchor_view);
@@ -25,11 +23,6 @@ class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase,
   gfx::Size CalculatePreferredSize() const override;
   bool ShouldShowCloseButton() const override;
   void OnThemeChanged() override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   PostSaveCompromisedBubbleController controller_;
 };

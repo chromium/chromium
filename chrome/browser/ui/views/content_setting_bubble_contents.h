@@ -24,7 +24,6 @@ class Combobox;
 class ImageButton;
 class RadioButton;
 class LabelButton;
-class Link;
 }  // namespace views
 
 // ContentSettingBubbleContents is used when the user turns on different kinds
@@ -77,7 +76,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   // "learn more" button and a "manage" button.
   std::unique_ptr<View> CreateHelpAndManageView();
 
-  void LinkClicked(views::Link* source, int event_flags);
+  void LinkClicked(int row, int event_flags);
   void CustomLinkClicked();
 
   void OnPerformAction(views::Combobox* combobox);

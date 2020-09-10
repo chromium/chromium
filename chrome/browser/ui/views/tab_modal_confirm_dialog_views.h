@@ -18,7 +18,6 @@ class WebContents;
 }
 
 namespace views {
-class Link;
 class MessageBoxView;
 class Widget;
 }
@@ -51,7 +50,7 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
   void CancelTabModalDialog() override;
   void CloseDialog() override;
 
-  void LinkClicked(views::Link* source, int event_flags);
+  void LinkClicked(int event_flags);
 
   views::View* GetInitiallyFocusedView() override;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/media_router/cloud_services_dialog_view.h"
 
+#include "base/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/media_router/cloud_services_dialog.h"
@@ -111,11 +112,17 @@ void CloudServicesDialogView::Init() {
   gfx::Range learn_more_range(offsets[1], text.length());
 
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          [](Browser* browser) {
+            chrome::AddSelectedTabWithURL(
+                browser, GURL(chrome::kCastCloudServicesHelpURL),
+                ui::PAGE_TRANSITION_LINK);
+          },
+          base::Unretained(browser_)));
   link_style.disable_line_wrapping = false;
 
   views::StyledLabel* body_text =
-      AddChildView(std::make_unique<views::StyledLabel>(this));
+      AddChildView(std::make_unique<views::StyledLabel>());
   body_text->SetText(text);
   body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_text->AddStyleRange(learn_more_range, link_style);
@@ -124,13 +131,6 @@ void CloudServicesDialogView::Init() {
 void CloudServicesDialogView::WindowClosing() {
   if (instance_ == this)
     instance_ = nullptr;
-}
-
-void CloudServicesDialogView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                     const gfx::Range& range,
-                                                     int event_flags) {
-  const GURL url = GURL(chrome::kCastCloudServicesHelpURL);
-  chrome::AddSelectedTabWithURL(browser_, url, ui::PAGE_TRANSITION_LINK);
 }
 
 // static

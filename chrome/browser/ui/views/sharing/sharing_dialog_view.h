@@ -12,7 +12,6 @@
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/styled_label_listener.h"
 
 namespace views {
 class StyledLabel;
@@ -24,7 +23,6 @@ enum class SharingDialogType;
 
 class SharingDialogView : public SharingDialog,
                           public views::ButtonListener,
-                          public views::StyledLabelListener,
                           public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -45,11 +43,6 @@ class SharingDialogView : public SharingDialog,
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
 
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
-
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
@@ -63,6 +56,8 @@ class SharingDialogView : public SharingDialog,
   FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, PopulateDialogView);
   FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, DevicePressed);
   FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, AppPressed);
+  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, HelpTextClickedEmpty);
+  FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, HelpTextClickedOnlyApps);
   FRIEND_TEST_ALL_PREFIXES(SharingDialogViewTest, ThemeChangedEmptyList);
 
   FRIEND_TEST_ALL_PREFIXES(ClickToCallBrowserTest, LeftClick_ChooseDevice);
@@ -78,6 +73,9 @@ class SharingDialogView : public SharingDialog,
   void InitErrorView();
 
   std::unique_ptr<views::StyledLabel> CreateHelpText();
+
+  // Called when the "help" link is clicked.
+  void HelpLinkClicked(int event_flags);
 
   SharingDialogData data_;
 

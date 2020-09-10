@@ -272,10 +272,13 @@ std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
       &offset);
 
   auto* uma_label =
-      uma_view->AddChildView(std::make_unique<views::StyledLabel>(this));
+      uma_view->AddChildView(std::make_unique<views::StyledLabel>());
   uma_label->SetText(uma_text);
-  uma_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
-                           views::StyledLabel::RangeStyleInfo::CreateForLink());
+  uma_label->AddStyleRange(
+      gfx::Range(offset, offset + link_text.length()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &SessionCrashedBubbleView::ExplainStatisticsLinkClicked,
+          base::Unretained(this))));
   views::StyledLabel::RangeStyleInfo uma_style;
   uma_style.text_style = views::style::STYLE_SECONDARY;
   gfx::Range before_link_range(0, offset);
@@ -290,9 +293,7 @@ std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
   return uma_view;
 }
 
-void SessionCrashedBubbleView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                      const gfx::Range& range,
-                                                      int event_flags) {
+void SessionCrashedBubbleView::ExplainStatisticsLinkClicked(int event_flags) {
   browser_->OpenURL(content::OpenURLParams(
       GURL("https://support.google.com/chrome/answer/96817"),
       content::Referrer(),

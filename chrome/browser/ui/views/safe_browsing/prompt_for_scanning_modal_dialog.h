@@ -11,7 +11,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -23,8 +22,7 @@ namespace safe_browsing {
 // A tab modal dialog that provides more information to the user about the
 // prompt for deep scanning.
 class PromptForScanningModalDialog : public views::DialogDelegateView,
-                                     public views::ButtonListener,
-                                     public views::StyledLabelListener {
+                                     public views::ButtonListener {
  public:
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents,
@@ -53,15 +51,7 @@ class PromptForScanningModalDialog : public views::DialogDelegateView,
   // views::ButtonListener implementation:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // views::StyledLabelListener implementation:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
-
  private:
-  // The WebContents this dialog is attached to. This is unowned.
-  content::WebContents* web_contents_;
-
   // The name of the file that this prompt was created for.
   base::string16 filename_;
 

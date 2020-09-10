@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
+#include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -157,11 +158,13 @@ DeviceChooserContentView::DeviceChooserContentView(
   size_t offset = 0;
   base::string16 text = l10n_util::GetStringFUTF16(
       IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF, link_text, &offset);
-  auto adapter_off_help = std::make_unique<views::StyledLabel>(this);
+  auto adapter_off_help = std::make_unique<views::StyledLabel>();
   adapter_off_help->SetText(text);
   adapter_off_help->AddStyleRange(
-      gfx::Range(0, link_text.size()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink());
+      gfx::Range(offset, offset + link_text.size()),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&ChooserController::OpenAdapterOffHelpUrl,
+                              base::Unretained(chooser_controller_.get()))));
   adapter_off_view_ = add_centering_view(std::move(adapter_off_help));
 
   UpdateTableView();
@@ -269,12 +272,6 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
 
   if (GetWidget() && GetWidget()->GetRootView())
     GetWidget()->GetRootView()->Layout();
-}
-
-void DeviceChooserContentView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                      const gfx::Range& range,
-                                                      int event_flags) {
-  chooser_controller_->OpenAdapterOffHelpUrl();
 }
 
 void DeviceChooserContentView::ButtonPressed(views::Button* sender,

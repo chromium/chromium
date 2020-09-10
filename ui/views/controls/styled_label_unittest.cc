@@ -247,14 +247,18 @@ TEST_F(StyledLabelTest, CreateLinks) {
   EXPECT_TRUE(styled()->GetInsets().IsEmpty());
 
   // Now let's add some links.
-  styled()->AddStyleRange(gfx::Range(0, 1),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
-  styled()->AddStyleRange(gfx::Range(1, 2),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
-  styled()->AddStyleRange(gfx::Range(10, 11),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
-  styled()->AddStyleRange(gfx::Range(12, 13),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
+  styled()->AddStyleRange(
+      gfx::Range(0, 1),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+  styled()->AddStyleRange(
+      gfx::Range(1, 2),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+  styled()->AddStyleRange(
+      gfx::Range(10, 11),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+  styled()->AddStyleRange(
+      gfx::Range(12, 13),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
 
   // Insets shouldn't change when links are added, since the links indicate
   // focus by adding an underline instead.
@@ -272,7 +276,7 @@ TEST_F(StyledLabelTest, DontBreakLinks) {
   InitStyledLabel(text + link_text);
   styled()->AddStyleRange(
       gfx::Range(text.size(), text.size() + link_text.size()),
-      StyledLabel::RangeStyleInfo::CreateForLink());
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
 
   Label label(ASCIIToUTF16(text + link_text.substr(0, link_text.size() / 2)));
   gfx::Size label_preferred_size = label.GetPreferredSize();
@@ -403,7 +407,7 @@ TEST_F(StyledLabelInWidgetTest, Color) {
   styled()->AddStyleRange(gfx::Range(0u, text_blue.size()), style_info_blue);
 
   StyledLabel::RangeStyleInfo style_info_link =
-      StyledLabel::RangeStyleInfo::CreateForLink();
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure());
   styled()->AddStyleRange(
       gfx::Range(text_blue.size(), text_blue.size() + text_link.size()),
       style_info_link);
@@ -457,8 +461,9 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
   styled()->AddStyleRange(
       gfx::Range(tooltip_start, tooltip_start + tooltip_text.size()),
       tooltip_style);
-  styled()->AddStyleRange(gfx::Range(link_start, link_start + link_text.size()),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
+  styled()->AddStyleRange(
+      gfx::Range(link_start, link_start + link_text.size()),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
 
   // Break line inside the range with the tooltip.
   Label label(
@@ -536,12 +541,15 @@ TEST_F(StyledLabelTest, LineHeightWithLink) {
   InitStyledLabel(text);
   styled()->SetLineHeight(18);
 
-  styled()->AddStyleRange(gfx::Range(0, 3),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
-  styled()->AddStyleRange(gfx::Range(4, 7),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
-  styled()->AddStyleRange(gfx::Range(8, 13),
-                          StyledLabel::RangeStyleInfo::CreateForLink());
+  styled()->AddStyleRange(
+      gfx::Range(0, 3),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+  styled()->AddStyleRange(
+      gfx::Range(4, 7),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
+  styled()->AddStyleRange(
+      gfx::Range(8, 13),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
   EXPECT_EQ(18 * 3, styled()->GetHeightForWidth(100));
 }
 
@@ -742,7 +750,7 @@ TEST_F(StyledLabelTest, ViewsCenteredWithLinkAndCustomView) {
   InitStyledLabel(text + link_text + custom_view_text);
   styled()->AddStyleRange(
       gfx::Range(text.size(), text.size() + link_text.size()),
-      StyledLabel::RangeStyleInfo::CreateForLink());
+      StyledLabel::RangeStyleInfo::CreateForLink(base::RepeatingClosure()));
 
   int custom_view_height = 25;
   std::unique_ptr<View> custom_view =

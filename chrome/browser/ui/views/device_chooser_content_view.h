@@ -13,7 +13,6 @@
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/view.h"
 
 class BluetoothStatusContainer;
@@ -30,7 +29,6 @@ class Throbber;
 class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
                                  public ChooserController::View,
-                                 public views::StyledLabelListener,
                                  public views::ButtonListener {
  public:
   DeviceChooserContentView(
@@ -54,11 +52,6 @@ class DeviceChooserContentView : public views::View,
   void OnOptionUpdated(size_t index) override;
   void OnAdapterEnabledChanged(bool enabled) override;
   void OnRefreshStateChanged(bool refreshing) override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

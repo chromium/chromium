@@ -182,9 +182,9 @@ class PaymentRequestSheetController : public views::ButtonListener {
   void AddSecondaryButton(views::View* container);
 
   // All these are not owned. Will outlive this.
-  PaymentRequestSpec* spec_ = nullptr;
-  PaymentRequestState* state_ = nullptr;
-  PaymentRequestDialogView* dialog_ = nullptr;
+  PaymentRequestSpec* const spec_ = nullptr;
+  PaymentRequestState* const state_ = nullptr;
+  PaymentRequestDialogView* const dialog_ = nullptr;
 
   // This view is owned by its encompassing ScrollView.
   views::View* pane_ = nullptr;

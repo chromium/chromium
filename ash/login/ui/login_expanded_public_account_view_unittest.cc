@@ -13,6 +13,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind_helpers.h"
+#include "base/util/ranges/algorithm.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -158,13 +159,14 @@ TEST_P(LoginExpandedPublicAccountViewTest, ToggleAdvancedView) {
 // Verifies warning dialog shows up correctly.
 TEST_P(LoginExpandedPublicAccountViewTest, ShowWarningDialog) {
   LoginExpandedPublicAccountView::TestApi test_api(public_account_);
-  views::StyledLabel::TestApi styled_label_test(test_api.learn_more_label());
   EXPECT_EQ(test_api.warning_dialog(), nullptr);
-  ASSERT_EQ(styled_label_test.link_targets().size(), 1U);
 
   // Tap on the learn more link.
-  views::Link* link = styled_label_test.link_targets().begin()->first;
-  TapOnView(link);
+  const auto& children = test_api.learn_more_label()->children();
+  const auto it = util::ranges::find(children, views::Link::kViewClassName,
+                                     &views::View::GetClassName);
+  DCHECK(it != children.cend());
+  TapOnView(*it);
   ASSERT_NE(test_api.warning_dialog(), nullptr);
   EXPECT_TRUE(test_api.warning_dialog()->GetVisible());
 

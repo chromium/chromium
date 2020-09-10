@@ -32,7 +32,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -293,12 +292,9 @@ class MonitoringWarningView : public NonAccessibleView {
 };
 
 // Implements the right part of the expanded public session view.
-class RightPaneView : public NonAccessibleView,
-                      public views::ButtonListener,
-                      public views::StyledLabelListener {
+class RightPaneView : public NonAccessibleView, public views::ButtonListener {
  public:
-  explicit RightPaneView(const base::RepeatingClosure& on_learn_more_tapped)
-      : on_learn_more_tapped_(on_learn_more_tapped) {
+  explicit RightPaneView(const base::RepeatingClosure& on_learn_more_tapped) {
     SetPreferredSize(
         gfx::Size(kExpandedViewWidthDp / 2, kExpandedViewHeightDp));
     SetBorder(views::CreateEmptyBorder(gfx::Insets(kHorizontalMarginPaneDp)));
@@ -322,7 +318,7 @@ class RightPaneView : public NonAccessibleView,
     const base::string16 text = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_SIGNOUT_REMINDER, link, &offset);
     learn_more_label_ =
-        labels_view_->AddChildView(std::make_unique<views::StyledLabel>(this));
+        labels_view_->AddChildView(std::make_unique<views::StyledLabel>());
     learn_more_label_->SetText(text);
 
     views::StyledLabel::RangeStyleInfo style;
@@ -332,7 +328,7 @@ class RightPaneView : public NonAccessibleView,
     learn_more_label_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =
-        views::StyledLabel::RangeStyleInfo::CreateForLink();
+        views::StyledLabel::RangeStyleInfo::CreateForLink(on_learn_more_tapped);
     link_style.override_color = kPublicSessionBlueColor;
     learn_more_label_->AddStyleRange(gfx::Range(offset, offset + link.length()),
                                      link_style);
@@ -480,14 +476,6 @@ class RightPaneView : public NonAccessibleView,
           keyboard_menu_view_->RequestFocus();
       }
     }
-  }
-
-  // "Learn more" is clicked to show additional information of what the device
-  // admin may monitor.
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override {
-    on_learn_more_tapped_.Run();
   }
 
   void UpdateForUser(const LoginUserInfo& user) {
@@ -654,8 +642,6 @@ class RightPaneView : public NonAccessibleView,
   // applicable for the current locale.
   bool show_advanced_changed_by_user_ = false;
   bool language_changed_by_user_ = false;
-
-  base::RepeatingClosure on_learn_more_tapped_;
 
   base::WeakPtrFactory<RightPaneView> weak_factory_{this};
 

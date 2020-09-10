@@ -13,13 +13,11 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace views {
-class StyledLabel;
 class Textfield;
 }  // namespace views
 
@@ -43,22 +41,13 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield();
 
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.
-class LegalMessageView : public views::View, public views::StyledLabelListener {
+class LegalMessageView : public views::View {
  public:
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
   explicit LegalMessageView(const LegalMessageLines& legal_message_lines,
                             LinkClickedCallback callback);
   ~LegalMessageView() override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
-
- private:
-  const LegalMessageLines legal_message_lines_;
-  const LinkClickedCallback callback_;
 };
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(

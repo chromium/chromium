@@ -52,10 +52,9 @@ TEST_F(LinkTest, Metadata) {
 
 TEST_F(LinkTest, TestLinkClick) {
   bool link_clicked = false;
-  link()->set_callback(
-      base::BindRepeating([](bool* link_clicked, Link* link,
-                             int event_flags) { *link_clicked = true; },
-                          &link_clicked));
+  link()->set_callback(base::BindRepeating(
+      [](bool* link_clicked, int event_flags) { *link_clicked = true; },
+      &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();
   ui::MouseEvent release(ui::ET_MOUSE_RELEASED, point, point,
@@ -67,10 +66,9 @@ TEST_F(LinkTest, TestLinkClick) {
 
 TEST_F(LinkTest, TestLinkTap) {
   bool link_clicked = false;
-  link()->set_callback(
-      base::BindRepeating([](bool* link_clicked, Link* link,
-                             int event_flags) { *link_clicked = true; },
-                          &link_clicked));
+  link()->set_callback(base::BindRepeating(
+      [](bool* link_clicked, int event_flags) { *link_clicked = true; },
+      &link_clicked));
   link()->SizeToPreferredSize();
   gfx::Point point = link()->bounds().CenterPoint();
   ui::GestureEvent tap_event(point.x(), point.y(), 0, ui::EventTimeForNow(),

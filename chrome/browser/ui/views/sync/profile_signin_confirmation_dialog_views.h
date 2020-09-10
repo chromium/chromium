@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -20,7 +19,6 @@ class Profile;
 // A tab-modal dialog to allow a user signing in with a managed account
 // to create a new Chrome profile.
 class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
-                                             public views::StyledLabelListener,
                                              public views::ButtonListener {
  public:
   // Create and show the dialog, which owns itself.
@@ -49,13 +47,11 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
-
   // views::ButtonListener:
   void ButtonPressed(views::Button*, const ui::Event& event) override;
+
+  // Called when the "learn more" link is clicked.
+  void LearnMoreClicked(int event_flags);
 
   // Weak ptr to parent view.
   Browser* const browser_;

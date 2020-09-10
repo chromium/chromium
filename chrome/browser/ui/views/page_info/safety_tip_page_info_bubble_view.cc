@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 
+#include "base/bind.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/reputation/reputation_service.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
@@ -172,10 +173,12 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   // More info button.
   auto info_text =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK);
-  auto info_link = std::make_unique<views::StyledLabel>(this);
+  auto info_link = std::make_unique<views::StyledLabel>();
   info_link->SetText(info_text);
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&SafetyTipPageInfoBubbleView::OpenHelpCenter,
+                              base::Unretained(this)));
   gfx::Range details_range(0, info_text.length());
   info_link->AddStyleRange(details_range, link_style);
   info_link->SizeToFit(0);
@@ -254,13 +257,6 @@ void SafetyTipPageInfoBubbleView::ButtonPressed(views::Button* button,
       safety_tip_status_ == security_state::SafetyTipStatus::kLookalike
           ? suggested_url_
           : GURL());
-}
-
-void SafetyTipPageInfoBubbleView::StyledLabelLinkClicked(
-    views::StyledLabel* label,
-    const gfx::Range& range,
-    int event_flags) {
-  OpenHelpCenter();
 }
 
 void SafetyTipPageInfoBubbleView::OpenHelpCenter() {

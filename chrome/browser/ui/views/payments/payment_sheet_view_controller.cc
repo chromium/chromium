@@ -571,16 +571,6 @@ void PaymentSheetViewController::ButtonPressed(views::Button* sender,
   }
 }
 
-void PaymentSheetViewController::StyledLabelLinkClicked(
-    views::StyledLabel* label,
-    const gfx::Range& range,
-    int event_flags) {
-  if (dialog()->IsInteractive()) {
-    chrome::ShowSettingsSubPageForProfile(dialog()->GetProfile(),
-                                          chrome::kPaymentsSubPage);
-  }
-}
-
 void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {
   primary_button()->SetEnabled(enabled);
   static_cast<views::MdTextButton*>(primary_button())
@@ -993,14 +983,22 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
   data_source.erase(link_end, end_tag.size());
   data_source.erase(link_begin, begin_tag.size());
 
-  auto data_source_label = std::make_unique<views::StyledLabel>(this);
+  auto data_source_label = std::make_unique<views::StyledLabel>();
   data_source_label->SetText(data_source);
+
   data_source_label->SetBorder(views::CreateEmptyBorder(22, 0, 0, 0));
   data_source_label->SetID(static_cast<int>(DialogViewID::DATA_SOURCE_LABEL));
   data_source_label->SetDefaultTextStyle(views::style::STYLE_DISABLED);
 
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          [](PaymentRequestDialogView* dialog) {
+            if (dialog->IsInteractive()) {
+              chrome::ShowSettingsSubPageForProfile(dialog->GetProfile(),
+                                                    chrome::kPaymentsSubPage);
+            }
+          },
+          base::Unretained(dialog())));
 
   // TODO(pbos): Investigate whether this override is necessary.
   link_style.override_color = gfx::kGoogleBlue700;

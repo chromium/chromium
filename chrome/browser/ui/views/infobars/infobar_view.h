@@ -109,7 +109,7 @@ class InfoBarView : public infobars::InfoBar,
   void SetLabelDetails(views::Label* label) const;
 
   // Callback used by the link created by CreateLink().
-  void LinkClicked(views::Link* source, int event_flags);
+  void LinkClicked(int event_flags);
 
   // The optional icon at the left edge of the InfoBar.
   views::ImageView* icon_ = nullptr;

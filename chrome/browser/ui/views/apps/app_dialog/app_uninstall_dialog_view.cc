@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
+#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/strings/string16.h"
@@ -211,7 +212,7 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_launch_url) {
       l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_LEARN_MORE);
   replacements.push_back(learn_more_text);
 
-  auto checkbox_label = std::make_unique<views::StyledLabel>(this);
+  auto checkbox_label = std::make_unique<views::StyledLabel>();
   std::vector<size_t> offsets;
   checkbox_label->SetText(l10n_util::GetStringFUTF16(
       is_google ? IDS_APP_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX_FOR_GOOGLE
@@ -222,7 +223,15 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_launch_url) {
 
   checkbox_label->AddStyleRange(
       gfx::Range(offset, offset + learn_more_text.length()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink());
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          [](Profile* profile) {
+            NavigateParams params(
+                profile,
+                GURL("https://support.google.com/chromebook/?p=uninstallpwa"),
+                ui::PAGE_TRANSITION_LINK);
+            Navigate(&params);
+          },
+          profile_)));
   views::StyledLabel::RangeStyleInfo checkbox_style;
   checkbox_style.text_style = views::style::STYLE_PRIMARY;
   gfx::Range before_link_range(0, offset);
@@ -310,15 +319,6 @@ void AppUninstallDialogView::InitializeViewWithMessage(
   label->SetAllowCharacterBreak(true);
 }
 #endif
-
-void AppUninstallDialogView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                    const gfx::Range& range,
-                                                    int event_flags) {
-  NavigateParams params(
-      profile_, GURL("https://support.google.com/chromebook/?p=uninstallpwa"),
-      ui::PAGE_TRANSITION_LINK);
-  Navigate(&params);
-}
 
 void AppUninstallDialogView::OnDialogCancelled() {
   uninstall_dialog()->OnDialogClosed(false /* uninstall */,

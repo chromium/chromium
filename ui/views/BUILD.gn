@@ -167,7 +167,6 @@ component("views") {
     "controls/separator.h",
     "controls/slider.h",
     "controls/styled_label.h",
-    "controls/styled_label_listener.h",
     "controls/tabbed_pane/tabbed_pane.h",
     "controls/tabbed_pane/tabbed_pane_listener.h",
     "controls/table/table_grouper.h",
@@ -481,6 +480,7 @@ component("views") {
   deps = [
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//base/util/ranges",
     "//cc/paint",
     "//mojo/public/cpp/bindings",
     "//skia",
