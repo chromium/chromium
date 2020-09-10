@@ -16,7 +16,6 @@
 // velocity are enough to trigger such transition.
 // TODO(crbug.com/1123729): Change base view size when the user rotates the
 // screen.
-// TODO(crbug.com/1124380): Add unit tests for this class.
 @interface ViewRevealingVerticalPanHandler : NSObject
 
 // |peekedHeight| is the height of the view when peeked (partially revealed).

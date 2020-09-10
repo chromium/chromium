@@ -13,3 +13,16 @@ source_set("gestures") {
   deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "view_revealing_vertical_pan_handler_unittest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/gestures",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
