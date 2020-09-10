@@ -406,7 +406,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
 // history entry.
-- (void)testContextMenuOpenInNewWindow {
+// TODO(crbug.com/1126893): reenable this test once EG multiwindow support is
+// available.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   if (!IsMultipleScenesSupported())
     return;
 

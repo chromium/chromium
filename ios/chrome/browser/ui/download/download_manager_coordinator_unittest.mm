@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/external_app_util.h"
+#import "ios/chrome/browser/installation_notifier.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
@@ -102,6 +103,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
 
     [document_interaction_controller_class_ stopMocking];
     [application_ stopMocking];
+    [[InstallationNotifier sharedInstance] stopPolling];
   }
 
   web::WebTaskEnvironment task_environment_;

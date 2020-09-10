@@ -152,6 +152,13 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
   [self pollForTheInstallationOfApps];
 }
 
+- (void)stopPolling {
+  // Increment the queued block ID, making it higher than the block ID of any
+  // currently queued block, which will prevent them from running (and from
+  // queueing any new blocks).
+  ++_lastCreatedBlockId;
+}
+
 - (void)dispatchInstallationNotifierBlock {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   int blockId = ++_lastCreatedBlockId;
