@@ -259,7 +259,9 @@ class PpdProviderImpl : public PpdProvider {
       return;
     }
 
-    // TODO(crbug.com/888189): implement this.
+    // Delegates directly to the PpdMetadataManager.
+    metadata_manager_->SplitMakeAndModel(effective_make_and_model, kMaxDataAge,
+                                         std::move(cb));
   }
 
   // This method depends on forward indices, which are not
@@ -683,7 +685,7 @@ std::string PpdProvider::PpdReferenceToCacheKey(
 // static
 scoped_refptr<PpdProvider> PpdProvider::Create(
     const std::string& browser_locale,
-    network::mojom::URLLoaderFactory* loader_factory,
+    LoaderFactoryGetter loader_factory_getter,
     scoped_refptr<PpdCache> ppd_cache,
     const base::Version& current_version,
     const PpdProvider::Options& options) {

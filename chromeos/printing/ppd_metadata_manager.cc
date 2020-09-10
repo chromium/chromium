@@ -1058,14 +1058,13 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
     const auto& parsed_reverse_index =
         cached_reverse_indices_.at(metadata_name);
 
-    // This is likely a bug: we'd expect that this reverse index
-    // contains the decomposition for |effective_make_and_model|.
+    // We expect this reverse index shard to contain the decomposition
+    // for |effective_make_and_model|.
     if (!parsed_reverse_index.value.contains(effective_make_and_model)) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(cb),
-                         PpdProvider::CallbackResultCode::INTERNAL_ERROR, "",
-                         ""));
+                         PpdProvider::CallbackResultCode::NOT_FOUND, "", ""));
       return;
     }
 

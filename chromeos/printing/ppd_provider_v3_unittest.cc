@@ -380,6 +380,12 @@ class PpdProviderTest : public ::testing::Test {
              })"},
             {"metadata_v3/reverse_index-en-19.json",
              R"({
+                "reverseIndex": {
+                  "unused effective make and model": {
+                    "manufacturer": "unused manufacturer",
+                    "model": "unused model"
+                  }
+                }
              })"},
             {"ppds_for_metadata_v3/printer_a.ppd", kCupsFilterPpdContents},
             {"ppds_for_metadata_v3/printer_b.ppd", kCupsFilter2PpdContents},
@@ -991,12 +997,12 @@ TEST_F(PpdProviderTest, ResolvePpdLicense) {
   EXPECT_EQ("", captured_resolve_ppd_license_[1].license);
 }
 
-// Verifies that we can extract the Manufacturer and Model selectison for a
+// Verifies that we can extract the Manufacturer and Model selection for a
 // given effective make and model.
 TEST_F(PpdProviderTest, ReverseLookup) {
   auto provider =
       CreateProvider({"en", PpdCacheRunLocation::kInBackgroundThreads,
-                      PropagateLocaleToMetadataManager::kDoNotPropagate});
+                      PropagateLocaleToMetadataManager::kDoPropagate});
   StartFakePpdServer();
   std::string ref = "printer_a_ref";
   provider->ReverseLookup(ref,
