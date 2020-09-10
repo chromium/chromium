@@ -142,8 +142,6 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
     // Chrome OS: On Chrome OS, this cleanup is delayed until user login.
     component_updater::DeleteLegacySTHSet(path);
 #endif
-
-    RegisterOriginTrialsComponent(cus, path);
   }
   RegisterSSLErrorAssistantComponent(cus);
   RegisterFileTypePoliciesComponent(cus);
@@ -154,6 +152,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   component_updater::RegisterCRLSetComponent(cus);
 #endif  // !defined(OS_CHROMEOS)
 
+  RegisterOriginTrialsComponent(cus);
   RegisterMediaEngagementPreloadComponent(cus, base::OnceClosure());
 
 #if defined(OS_WIN)

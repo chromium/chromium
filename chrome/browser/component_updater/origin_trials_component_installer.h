@@ -49,8 +49,7 @@ class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
 // Call once during startup to make the component update service aware of
 // the origin trials update component.
-void RegisterOriginTrialsComponent(ComponentUpdateService* cus,
-                                   const base::FilePath& user_data_dir);
+void RegisterOriginTrialsComponent(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
