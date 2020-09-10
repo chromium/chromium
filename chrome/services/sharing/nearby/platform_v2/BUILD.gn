@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "condition_variable_unittest.cc",
     "count_down_latch_unittest.cc",
     "crypto_unittest.cc",
+    "input_file_unittest.cc",
     "multi_thread_executor_unittest.cc",
     "mutex_unittest.cc",
     "recursive_mutex_unittest.cc",

@@ -21,7 +21,7 @@ std::string InputFile::GetFilePath() const {
 
 std::int64_t InputFile::GetTotalSize() const {
   if (!file_.IsValid())
-    return 0;
+    return -1;
 
   return file_.GetLength();
 }
