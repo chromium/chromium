@@ -1709,7 +1709,6 @@
     "DelayAsyncScriptExecution": [
         {
             "platforms": [
-                "android",
                 "android_webview",
                 "chromeos",
                 "linux",
@@ -1721,6 +1720,24 @@
                     "name": "Enabled",
                     "params": {
                         "delay_type": "first_paint_or_finished_parsing"
+                    },
+                    "enable_features": [
+                        "DelayAsyncScriptExecution"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DelayAsyncScriptExecutionM86Android": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "CacaoOracle01",
+                    "params": {
+                        "delay_type": "use_optimization_guide"
                     },
                     "enable_features": [
                         "DelayAsyncScriptExecution"
