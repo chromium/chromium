@@ -5926,53 +5926,22 @@
             ]
         }
     ],
-    "SameSiteByDefaultCookies_AndroidAw": [
+    "SameSiteCookieMessages": [
         {
             "platforms": [
                 "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "LaxByDefaultAndNoneRequiresSecure",
-                    "enable_features": [
-                        "CookiesWithoutSameSiteMustBeSecure",
-                        "SameSiteByDefaultCookies"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SameSiteByDefaultCookies_Linux": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "LaxByDefaultAndNoneRequiresSecure",
-                    "enable_features": [
-                        "CookiesWithoutSameSiteMustBeSecure",
-                        "SameSiteByDefaultCookies"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SameSiteByDefaultCookies_WinMacCros": [
-        {
-            "platforms": [
+                "android_webview",
                 "chromeos",
+                "ios",
+                "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "LaxByDefaultAndNoneRequiresSecure",
+                    "name": "EnabledLaunch",
                     "enable_features": [
-                        "CookiesWithoutSameSiteMustBeSecure",
-                        "SameSiteByDefaultCookies"
+                        "CookieDeprecationMessages"
                     ]
                 }
             ]
