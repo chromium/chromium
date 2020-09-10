@@ -101,4 +101,9 @@ Polymer({
         !(!!this.pref.userSelectableValues &&
           this.pref.userSelectableValues.includes(this.name));
   },
+
+  /** @private */
+  onExpandClicked_() {
+    this.fire('expand-clicked');
+  },
 });

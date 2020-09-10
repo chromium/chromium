@@ -20,11 +20,11 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.m.js';
 
@@ -47,6 +47,7 @@ Polymer({
 
   behaviors: [
     PrefsBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -154,6 +155,18 @@ Polymer({
   },
 
   /**
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @protected
+   */
+  currentRouteChanged(route) {
+    if (route === routes.SECURITY) {
+      this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
+          SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
+    }
+  },
+
+  /**
    * Updates the buttons' expanded status by propagating previous click
    * events
    * @private
@@ -171,6 +184,11 @@ Polymer({
   onSafeBrowsingRadioChange_: function() {
     const selected =
         Number.parseInt(this.$.safeBrowsingRadioGroup.selected, 10);
+    const prefValue = this.getPref('generated.safe_browsing').value;
+    if (prefValue !== selected) {
+      this.recordInteractionHistogramOnRadioChange_(
+          /** @type {!SafeBrowsingSetting} */ (selected));
+    }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;
     } else {
@@ -223,9 +241,13 @@ Polymer({
    * @private
    */
   onDisableSafebrowsingDialogClose_() {
+    const confirmed =
+        /** @type {!SettingsDisableSafebrowsingDialogElement} */ (
+            this.$$('settings-disable-safebrowsing-dialog'))
+            .wasConfirmed();
+    this.recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed);
     // Check if the dialog was confirmed before closing it.
-    if (/** @type {!SettingsDisableSafebrowsingDialogElement} */
-        (this.$$('settings-disable-safebrowsing-dialog')).wasConfirmed()) {
+    if (confirmed) {
       this.$.safeBrowsingRadioGroup.sendPrefChange();
       this.updateCollapsedButtons_();
     } else {
@@ -237,5 +259,61 @@ Polymer({
     // Set focus back to the no protection button regardless of user interaction
     // with the dialog, as it was the entry point to the dialog.
     focusWithoutInk(assert(this.$.safeBrowsingDisabled));
+  },
+
+  /** @private */
+  onEnhancedProtectionExpandButtonClicked_() {
+    this.recordInteractionHistogramOnExpandButtonClicked_(
+        SafeBrowsingSetting.ENHANCED);
+  },
+
+  /** @private */
+  onStandardProtectionExpandButtonClicked_() {
+    this.recordInteractionHistogramOnExpandButtonClicked_(
+        SafeBrowsingSetting.STANDARD);
+  },
+
+  /**
+   * @param {!SafeBrowsingSetting} safeBrowsingSetting
+   * @private
+   */
+  recordInteractionHistogramOnRadioChange_(safeBrowsingSetting) {
+    let action;
+    if (safeBrowsingSetting === SafeBrowsingSetting.ENHANCED) {
+      action =
+          SafeBrowsingInteractions.SAFE_BROWSING_ENHANCED_PROTECTION_CLICKED;
+    } else if (safeBrowsingSetting === SafeBrowsingSetting.STANDARD) {
+      action =
+          SafeBrowsingInteractions.SAFE_BROWSING_STANDARD_PROTECTION_CLICKED;
+    } else {
+      action =
+          SafeBrowsingInteractions.SAFE_BROWSING_DISABLE_SAFE_BROWSING_CLICKED;
+    }
+    this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(action);
+  },
+
+  /**
+   * @param {!SafeBrowsingSetting} safeBrowsingSetting
+   * @private
+   */
+  recordInteractionHistogramOnExpandButtonClicked_(safeBrowsingSetting) {
+    this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
+        safeBrowsingSetting === SafeBrowsingSetting.ENHANCED ?
+            SafeBrowsingInteractions
+                .SAFE_BROWSING_ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED :
+            SafeBrowsingInteractions
+                .SAFE_BROWSING_STANDARD_PROTECTION_EXPAND_ARROW_CLICKED);
+  },
+
+  /**
+   * @param {!boolean} confirmed
+   * @private
+   */
+  recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed) {
+    this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
+        confirmed ? SafeBrowsingInteractions
+                        .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED :
+                    SafeBrowsingInteractions
+                        .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_DENIED);
   },
 });

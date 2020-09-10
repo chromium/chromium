@@ -7,8 +7,7 @@ import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions,PrivacyPageBrowserProxyImpl, Router, routes, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks, isChildVisible} from '../test_util.m.js';
 
@@ -76,6 +75,7 @@ suite('CrSettingsSecurityPageTest', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   if (isMac || isWindows) {
@@ -386,6 +386,103 @@ suite('CrSettingsSecurityPageTest', function() {
 
     assertTrue(
         page.prefs.profile.password_manager_leak_detection.value === previous);
+  });
+
+  test('safeBrowsingUserActionRecorded', async function() {
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('#safeBrowsingStandard').click();
+    assertEquals(
+        SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
+    // Not logged because it is already in standard mode.
+    assertEquals(
+        0,
+        testMetricsBrowserProxy.getCallCount(
+            'recordSafeBrowsingInteractionHistogram'));
+
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('#safeBrowsingEnhanced').click();
+    flush();
+    const enhancedClickedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions.SAFE_BROWSING_ENHANCED_PROTECTION_CLICKED,
+        enhancedClickedResult);
+
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('#safeBrowsingEnhanced').$$('cr-expand-button').click();
+    flush();
+    const enhancedExpandedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions
+            .SAFE_BROWSING_ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED,
+        enhancedExpandedResult);
+
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('#safeBrowsingStandard').$$('cr-expand-button').click();
+    flush();
+    const standardExpandedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions
+            .SAFE_BROWSING_STANDARD_PROTECTION_EXPAND_ARROW_CLICKED,
+        standardExpandedResult);
+
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('#safeBrowsingDisabled').click();
+    flush();
+    const disableClickedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions.SAFE_BROWSING_DISABLE_SAFE_BROWSING_CLICKED,
+        disableClickedResult);
+
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('settings-disable-safebrowsing-dialog')
+        .$$('.cancel-button')
+        .click();
+    flush();
+    const disableDeniedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions
+            .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_DENIED,
+        disableDeniedResult);
+
+    await flushTasks();
+
+    page.$$('#safeBrowsingDisabled').click();
+    flush();
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    page.$$('settings-disable-safebrowsing-dialog')
+        .$$('.action-button')
+        .click();
+    flush();
+    const disableConfirmedResult = await testMetricsBrowserProxy.whenCalled(
+        'recordSafeBrowsingInteractionHistogram');
+    assertEquals(
+        SafeBrowsingInteractions
+            .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED,
+        disableConfirmedResult);
+  });
+
+  test('securityPageShowedRecorded', async function() {
+    testMetricsBrowserProxy.resetResolver(
+        'recordSafeBrowsingInteractionHistogram');
+    Router.getInstance().navigateTo(
+        routes.SECURITY, /* dynamicParams= */ null,
+        /* removeSearch= */ true);
+    assertEquals(
+        SafeBrowsingInteractions.SAFE_BROWSING_SHOWED,
+        await testMetricsBrowserProxy.whenCalled(
+            'recordSafeBrowsingInteractionHistogram'));
   });
 });
 

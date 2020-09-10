@@ -13,6 +13,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy {
       'recordAction',
       'recordSafetyCheckInteractionHistogram',
       'recordSettingsPageHistogram',
+      'recordSafeBrowsingInteractionHistogram',
     ]);
   }
 
@@ -29,5 +30,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy {
   /** @override */
   recordSettingsPageHistogram(interaction) {
     this.methodCalled('recordSettingsPageHistogram', interaction);
+  }
+
+  /** @override */
+  recordSafeBrowsingInteractionHistogram(interaction) {
+    this.methodCalled('recordSafeBrowsingInteractionHistogram', interaction);
   }
 }

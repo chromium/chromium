@@ -71,6 +71,7 @@
             label="$i18n{safeBrowsingEnhanced}"
             sub-label="$i18n{safeBrowsingEnhancedDesc}"
             hidden="[[!safeBrowsingEnhancedEnabled_]]"
+            on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
             no-automatic-collapse>
           <div slot="collapse">
             <div class="bullet-line">
@@ -111,6 +112,7 @@
             label="$i18n{safeBrowsingStandard}"
             sub-label="$i18n{safeBrowsingStandardDesc}"
             info-opened="{{infoOpened_}}"
+            on-expand-clicked="onStandardProtectionExpandButtonClicked_"
             no-automatic-collapse>
           <div slot="collapse">
             <div class="bullet-line">
