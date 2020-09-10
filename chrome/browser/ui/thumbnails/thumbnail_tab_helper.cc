@@ -284,6 +284,7 @@ void ThumbnailTabHelper::StartVideoCapture() {
     return;
 
   start_video_capture_time_ = base::TimeTicks::Now();
+  got_first_frame_ = false;
 
   // Figure out how large we want the capture target to be.
   last_frame_capture_info_ =
@@ -304,10 +305,17 @@ void ThumbnailTabHelper::StartVideoCapture() {
 }
 
 void ThumbnailTabHelper::StopVideoCapture() {
-  if (video_capturer_) {
-    video_capturer_->Stop();
-    video_capturer_.reset();
+  if (!video_capturer_) {
+    DCHECK_EQ(start_video_capture_time_, base::TimeTicks());
+    return;
   }
+
+  video_capturer_->Stop();
+  video_capturer_.reset();
+
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Tab.Preview.VideoCaptureDuration",
+      base::TimeTicks::Now() - start_video_capture_time_);
 
   start_video_capture_time_ = base::TimeTicks();
 }
@@ -344,10 +352,10 @@ void ThumbnailTabHelper::OnFrameCaptured(
     return;
   }
 
-  if (start_video_capture_time_ != base::TimeTicks()) {
+  if (!got_first_frame_) {
     UMA_HISTOGRAM_TIMES("Tab.Preview.TimeToFirstUsableFrameAfterStartCapture",
                         time_of_call - start_video_capture_time_);
-    start_video_capture_time_ = base::TimeTicks();
+    got_first_frame_ = true;
   }
 
   // The SkBitmap's pixels will be marked as immutable, but the installPixels()

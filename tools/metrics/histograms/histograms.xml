@@ -180499,6 +180499,17 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
+    expires_after="M89">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Measures the total time spent in video capture mode when generating a
+    preview for a background tab. This is emitted at the end of each capture
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
     expires_after="2020-01-15">
   <owner>gambard@chromium.org</owner>

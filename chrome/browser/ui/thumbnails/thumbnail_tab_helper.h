@@ -99,6 +99,9 @@ class ThumbnailTabHelper
   // Times for computing metrics.
   base::TimeTicks start_video_capture_time_;
 
+  // Whether the first frame has been received after StartVideoCapture().
+  bool got_first_frame_ = false;
+
   // The thumbnail maintained by this instance.
   scoped_refptr<ThumbnailImage> thumbnail_;
 
