@@ -19,8 +19,8 @@ import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 visibility = [
-  "//third_party/blink/renderer/*",
   "//third_party/blink/public/*",
+  "//third_party/blink/renderer/*",
 ]
 
 rel_blink_core_gen_dir = rebase_path(blink_core_output_dir, root_build_dir)
@@ -65,6 +65,10 @@ core_config_add += [
   "//build/config/compiler:noshadowing",
 ]
 
+source_set("core_common") {
+  sources = [ "core_export.h" ]
+}
+
 source_set("prerequisites") {
   public_deps = [
     "//services/network/public/cpp:cpp",
@@ -73,6 +77,7 @@ source_set("prerequisites") {
     "//skia",
     "//third_party/angle:translator",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
+    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
     "//third_party/blink/renderer/bindings/core/v8:generated",
     "//third_party/blink/renderer/core/animation:buildflags",
     "//third_party/blink/renderer/core/inspector:generated",
@@ -100,7 +105,6 @@ source_set("prerequisites") {
   ]
   deps = [
     "//third_party/blink/public:scaled_resources",
-    "//third_party/blink/renderer/bindings/core/v8:bindings_core_v8_generated",
 
     # FIXME: don't depend on bindings_modules http://crbug.com/358074
     "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_v8_generated",
@@ -126,7 +130,6 @@ component("core") {
   # If you create a new subdirectory, make a new BUILD file for that directory
   # and reference it in the deps below rather than adding the sources here.
   sources = [
-    "core_export.h",
     "core_initializer.cc",
     "core_initializer.h",
   ]
@@ -1136,8 +1139,6 @@ source_set("unit_tests") {
     "frame/frame_overlay_test.cc",
     "frame/frame_serializer_test.cc",
     "frame/frame_test.cc",
-    "frame/frame_test_helpers.cc",
-    "frame/frame_test_helpers.h",
     "frame/history_test.cc",
     "frame/local_dom_window_test.cc",
     "frame/local_frame_back_forward_cache_test.cc",
@@ -1390,7 +1391,6 @@ source_set("unit_tests") {
     "scheduler_integration_tests/virtual_time_test.cc",
     "script/document_modulator_impl_test.cc",
     "script/dynamic_module_resolver_test.cc",
-    "script/mock_script_element_base.h",
     "script/module_map_test.cc",
     "script/module_record_resolver_impl_test.cc",
     "script/module_script_test.cc",
@@ -1416,20 +1416,6 @@ source_set("unit_tests") {
     "svg/svg_text_content_element_test.cc",
     "svg/svg_use_element_test.cc",
     "svg/unsafe_svg_attribute_sanitization_test.cc",
-    "testing/fake_web_plugin.cc",
-    "testing/fake_web_plugin.h",
-    "testing/sim/sim_canvas.cc",
-    "testing/sim/sim_canvas.h",
-    "testing/sim/sim_compositor.cc",
-    "testing/sim/sim_compositor.h",
-    "testing/sim/sim_network.cc",
-    "testing/sim/sim_network.h",
-    "testing/sim/sim_page.cc",
-    "testing/sim/sim_page.h",
-    "testing/sim/sim_request.cc",
-    "testing/sim/sim_request.h",
-    "testing/sim/sim_test.cc",
-    "testing/sim/sim_test.h",
     "timing/memory_info_test.cc",
     "timing/performance_mark_test.cc",
     "timing/performance_navigation_timing_test.cc",
@@ -1447,7 +1433,6 @@ source_set("unit_tests") {
     "workers/main_thread_worklet_test.cc",
     "workers/threaded_worklet_test.cc",
     "workers/worker_thread_test.cc",
-    "workers/worker_thread_test_helper.h",
     "workers/worklet_global_scope_test_helper.h",
     "workers/worklet_module_responses_map_test.cc",
     "xml/parser/shared_buffer_reader_test.cc",
@@ -1536,14 +1521,32 @@ source_set("perf_tests") {
 source_set("unit_test_support") {
   testonly = true
   sources = [
+    "frame/frame_test_helpers.cc",
+    "frame/frame_test_helpers.h",
+    "script/mock_script_element_base.h",
     "testing/core_unit_test_helper.cc",
     "testing/core_unit_test_helper.h",
+    "testing/fake_web_plugin.cc",
+    "testing/fake_web_plugin.h",
     "testing/module_test_base.cc",
     "testing/module_test_base.h",
     "testing/page_test_base.cc",
     "testing/page_test_base.h",
     "testing/scoped_fake_plugin_registry.cc",
     "testing/scoped_fake_plugin_registry.h",
+    "testing/sim/sim_canvas.cc",
+    "testing/sim/sim_canvas.h",
+    "testing/sim/sim_compositor.cc",
+    "testing/sim/sim_compositor.h",
+    "testing/sim/sim_network.cc",
+    "testing/sim/sim_network.h",
+    "testing/sim/sim_page.cc",
+    "testing/sim/sim_page.h",
+    "testing/sim/sim_request.cc",
+    "testing/sim/sim_request.h",
+    "testing/sim/sim_test.cc",
+    "testing/sim/sim_test.h",
+    "workers/worker_thread_test_helper.h",
   ]
 
   configs += [

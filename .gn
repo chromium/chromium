@@ -231,7 +231,6 @@ no_check_targets = [
   "//third_party/blink/renderer/core/loader:*",  # 421 errors
   "//third_party/blink/renderer/core/mathml:*",  # 11 errors
   "//third_party/blink/renderer/core/messaging:*",  # 30 errors
-  "//third_party/blink/renderer/core/mojo:*",  # 44 errors
   "//third_party/blink/renderer/core/offscreencanvas:*",  # 22 errors
   "//third_party/blink/renderer/core/origin_trials:*",  # 12 errors
   "//third_party/blink/renderer/core/page:*",  # 500 errors

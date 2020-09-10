@@ -22,7 +22,13 @@ blink_core_sources("mojo") {
   deps = [
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
+    "//third_party/blink/renderer/core/dom:dom",
+    "//third_party/blink/renderer/core/execution_context:execution_context",
+    "//third_party/blink/renderer/core/frame:frame",
+    "//third_party/blink/renderer/core/typed_arrays:typed_arrays",
+    "//third_party/blink/renderer/core/workers:workers",
   ]
+  public_deps = [ "//third_party/blink/renderer/core:core_generated" ]
 }
 
 source_set("unit_tests") {
@@ -41,8 +47,10 @@ source_set("unit_tests") {
     ":test_bindings_blink",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/core:core",
     "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/platform:test_support",
   ]
 
   data_deps = [
