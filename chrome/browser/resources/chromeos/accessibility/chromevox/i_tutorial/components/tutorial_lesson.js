@@ -33,12 +33,6 @@ export const TutorialLesson = Polymer({
 
     events: {type: Array},
 
-    hints: {type: Array},
-
-    hintCounter: {type: Number, value: 0},
-
-    hintIntervalId: {type: Number},
-
     goalStateReached: {type: Boolean, value: false},
 
     actions: {type: Array},
@@ -136,14 +130,12 @@ export const TutorialLesson = Polymer({
   startPractice() {
     this.notifyStartPractice();
     this.$.practice.showModal();
-    this.startHints();
     this.$.practiceTitle.focus();
   },
 
   /** @private */
   endPractice() {
     this.notifyEndPractice();
-    this.stopHints();
     this.$.startPractice.focus();
   },
 
@@ -209,35 +201,11 @@ export const TutorialLesson = Polymer({
     this.goalStateReached = true;
     if (previousState === false) {
       // Only perform when crossing the threshold from not reached to reached.
-      this.stopHints();
       this.requestSpeech(
           'You have passed this tutorial lesson. Find and press the exit ' +
           'practice area button to continue');
     }
   },
-
-  // Methods for managing hints.
-
-  /** @private */
-  startHints() {
-    this.hintCounter = 0;
-    this.hintIntervalId = setInterval(() => {
-      if (this.hintCounter >= this.hints.length) {
-        this.stopHints();
-        return;
-      }
-      this.requestSpeech(this.hints[this.hintCounter]);
-      this.hintCounter += 1;
-    }, 20 * 1000);
-  },
-
-  /** @private */
-  stopHints() {
-    if (this.hintIntervalId) {
-      clearInterval(this.hintIntervalId);
-    }
-  },
-
 
   // Miscellaneous methods.
 

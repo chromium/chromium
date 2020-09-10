@@ -36,6 +36,21 @@ const Screen = {
   LESSON: 'lesson',
 };
 
+/**
+ * The types of nudges given by the tutorial.
+ * General nudges: announce the current item three times, then give two general
+ * hints about how to navigate with ChromeVox, then a final nudge about how to
+ * exit the tutorial.
+ * Practice area nudges: specified by the |hints| array in lessonData. These
+ * are nudges for the practice area and are only given when the practice area
+ * is active.
+ * @enum {string}
+ */
+const NudgeType = {
+  GENERAL: 'general',
+  PRACTICE_AREA: 'practice_area'
+};
+
 Polymer({
   is: 'i-tutorial',
 
@@ -452,22 +467,18 @@ Polymer({
   ready() {
     document.addEventListener('keydown', this.onKeyDown.bind(this));
     this.hideAllScreens();
-    this.initializeNudges();
     this.$.lessonTemplate.addEventListener('dom-change', (evt) => {
       // Executes once all lessons have been added to the dom.
       this.show();
     });
     this.$.tutorial.addEventListener('focus', this.onFocus.bind(this), true);
     this.addEventListener('startpractice', (evt) => {
-      // Stop nudges when the practice area opens. This is because the practice
-      // area can provide hints and we don't want nudges to conflict with them.
-      this.stopNudges();
       this.isPracticeAreaActive = true;
+      this.startNudges(NudgeType.PRACTICE_AREA);
     });
     this.addEventListener('endpractice', (evt) => {
-      // When the practice area closes, it's safe to resume nudges.
-      this.startNudges();
       this.isPracticeAreaActive = false;
+      this.startNudges(NudgeType.GENERAL);
     });
   },
 
@@ -481,7 +492,7 @@ Polymer({
     } else {
       this.showMainMenu();
     }
-    this.startNudges();
+    this.startNudges(NudgeType.GENERAL);
   },
 
   /**
@@ -753,11 +764,62 @@ Polymer({
     }
   },
 
-  /** @private */
-  startNudges() {
+  // Nudges.
+
+  /**
+   * @param {NudgeType} type
+   * @private
+   */
+  startNudges(type) {
     this.stopNudges();
+    this.initializeNudges(type);
+    this.setNudgeInterval();
+  },
+
+  /** @private */
+  setNudgeInterval() {
     this.nudgeIntervalId =
         setInterval(this.giveNudge.bind(this), this.NUDGE_INTERVAL_TIME_MS);
+  },
+
+  /**
+   * @param {NudgeType} type
+   * @private
+   */
+  initializeNudges(type) {
+    const maybeGiveNudge = (msg) => {
+      if (this.interactiveMode) {
+        // Do not announce message since ChromeVox blocks actions in interactive
+        // mode.
+        return;
+      }
+
+      this.requestSpeech(msg);
+    };
+
+    this.nudgeArray = [];
+    if (type === NudgeType.PRACTICE_AREA) {
+      // Convert hint strings into functions that will request speech for those
+      // strings.
+      const hints = this.lessonData[this.activeLessonNum].hints;
+      for (const hint of hints) {
+        this.nudgeArray.push(this.requestSpeech.bind(this, hint));
+      }
+    } else if (type === NudgeType.GENERAL) {
+      this.nudgeArray = [
+        this.requestFullyDescribe.bind(this),
+        this.requestFullyDescribe.bind(this),
+        this.requestFullyDescribe.bind(this),
+        maybeGiveNudge.bind(
+            this, 'Hint: Hold Search and press the arrow keys to navigate.'),
+        maybeGiveNudge.bind(
+            this, 'Hint: Press Search + Space to activate the current item.'),
+        this.requestSpeech.bind(
+            this, 'Hint: Press Escape if you would like to exit this tutorial.')
+      ];
+    } else {
+      throw new Error('Invalid NudgeType: ' + type);
+    }
   },
 
   /** @private */
@@ -766,6 +828,12 @@ Polymer({
     if (this.nudgeIntervalId) {
       clearInterval(this.nudgeIntervalId);
     }
+  },
+
+  /** @private */
+  restartNudges() {
+    this.stopNudges();
+    this.setNudgeInterval();
   },
 
   /** @private */
@@ -794,42 +862,17 @@ Polymer({
         new CustomEvent('requestfullydescribe', {composed: true}));
   },
 
-  /** @private */
-  initializeNudges() {
-    const maybeGiveNudge = (msg) => {
-      if (this.interactiveMode) {
-        // Do not announce message since ChromeVox blocks actions in interactive
-        // mode.
-        return;
-      }
-
-      this.requestSpeech(msg);
-    };
-
-    this.nudgeArray = [
-      this.requestFullyDescribe.bind(this),
-      this.requestFullyDescribe.bind(this),
-      this.requestFullyDescribe.bind(this),
-      maybeGiveNudge.bind(
-          this, 'Hint: Hold Search and press the arrow keys to navigate.'),
-      maybeGiveNudge.bind(
-          this, 'Hint: Press Search + Space to activate the current item.'),
-      this.requestSpeech.bind(
-          this, 'Hint: Press Escape if you would like to exit this tutorial.')
-    ];
-  },
-
   /**
    * @param {Event} evt
    * @private
    */
   onFocus(evt) {
-    // Restart nudges whenever focus changes, as long as the practice area is
-    // inactive.
+    // Restart nudges whenever focus changes. Skip this for the practice area
+    // so nudges are given in regular intervals.
     if (this.isPracticeAreaActive) {
       return;
     }
 
-    this.startNudges();
+    this.restartNudges();
   }
 });
