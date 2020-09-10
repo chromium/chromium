@@ -26,6 +26,7 @@ class DownloadTimePickerDialog extends TimePickerDialog {
     private int mHourOfDay;
     private int mMinute;
     private final Controller mController;
+    private boolean mButtonClicked;
 
     DownloadTimePickerDialog(
             Context context, @NonNull Controller controller, int hourOfDay, int minute) {
@@ -34,6 +35,10 @@ class DownloadTimePickerDialog extends TimePickerDialog {
         mHourOfDay = hourOfDay;
         mMinute = minute;
         mController = controller;
+        setOnDismissListener((dialogInterface) -> {
+            if (mButtonClicked) return;
+            mController.onDownloadTimePickerCanceled();
+        });
     }
 
     // TimePickerDialog overrides.
@@ -47,6 +52,7 @@ class DownloadTimePickerDialog extends TimePickerDialog {
         assert button != null;
         button.setText(R.string.download_date_time_picker_next_text);
         button.setOnClickListener((view) -> {
+            mButtonClicked = true;
             mController.onDownloadTimePicked(mHourOfDay, mMinute);
             dismiss();
         });
@@ -54,6 +60,7 @@ class DownloadTimePickerDialog extends TimePickerDialog {
         button = getButton(DialogInterface.BUTTON_NEGATIVE);
         button.setText(R.string.cancel);
         button.setOnClickListener((view) -> {
+            mButtonClicked = true;
             mController.onDownloadTimePickerCanceled();
             dismiss();
         });
