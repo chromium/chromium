@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -80,8 +79,7 @@ public abstract class SignInPromo extends OptionalLeaf {
         mAccountsReady = AccountManagerFacadeProvider.getInstance().isCachePopulated();
         updateVisibility();
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(
-                context, isUserSignedInButNotSyncing() ? R.drawable.ic_sync_badge_off_20dp : 0);
+        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
         mSigninPromoController =
                 new SigninPromoController(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS);
 
@@ -247,16 +245,12 @@ public abstract class SignInPromo extends OptionalLeaf {
         @Override
         public void onSignedIn() {
             mCanSignIn = false;
-            if (isUserSignedInButNotSyncing()) {
-                mProfileDataCache.updateBadgeConfig(R.drawable.ic_sync_badge_off_20dp);
-            }
             updateVisibility();
         }
 
         @Override
         public void onSignedOut() {
             mCanSignIn = mSigninManager.isSignInAllowed();
-            mProfileDataCache.updateBadgeConfig(0);
             updateVisibility();
         }
 

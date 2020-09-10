@@ -294,6 +294,15 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     /**
+     * Returns a profile data cache object without a badge.The badge is put with respect to
+     * R.dimen.user_picture_size. So this method only works with the user avatar of this size.
+     * @param context Context of the application to extract resources from
+     */
+    public static ProfileDataCache createProfileDataCache(Context context) {
+        return createProfileDataCache(context, 0);
+    }
+
+    /**
      * Returns a profile data cache object with the badgeResId provided. The badge is put with
      * respect to R.dimen.user_picture_size. So this method only works with the user avatar of this
      * size.

@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
@@ -109,7 +108,7 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
                 : new RecentlyClosedBridge(profile);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(mProfile);
 
-        mProfileDataCache = ProfileDataCache.createProfileDataCache(context, 0);
+        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
         mSigninPromoController = new SigninPromoController(SigninAccessPoint.RECENT_TABS);
 
         mRecentlyClosedTabManager.setTabsUpdatedRunnable(() -> {
@@ -392,13 +391,11 @@ public class RecentTabsManager implements AndroidSyncSettingsObserver, SignInSta
      * @param view The view to be configured.
      */
     void setupPersonalizedSigninPromo(PersonalizedSigninPromoView view) {
-        mProfileDataCache.updateBadgeConfig(0);
         SigninPromoUtil.setupSigninPromoViewFromCache(
                 mSigninPromoController, mProfileDataCache, view, null);
     }
 
     void setupPersonalizedSyncPromo(PersonalizedSigninPromoView view) {
-        mProfileDataCache.updateBadgeConfig(R.drawable.ic_sync_badge_off_20dp);
         SigninPromoUtil.setupSyncPromoViewFromCache(
                 mSigninPromoController, mProfileDataCache, view, null);
     }

@@ -131,7 +131,6 @@ public class SigninPromoUtil {
             ProfileDataCache profileDataCache, PersonalizedSigninPromoView view,
             SigninPromoController.OnDismissListener listener) {
         setupSigninPromoViewFromCache(signinPromoController, profileDataCache, view, listener);
-        view.getStatusMessage().setVisibility(View.VISIBLE);
         view.getPrimaryButton().setText(R.string.sync_promo_turn_on_sync);
         view.getSecondaryButton().setVisibility(View.GONE);
     }

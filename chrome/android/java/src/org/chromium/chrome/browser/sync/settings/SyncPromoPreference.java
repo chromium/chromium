@@ -61,8 +61,7 @@ public class SyncPromoPreference extends Preference
     public SyncPromoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mProfileDataCache =
-                ProfileDataCache.createProfileDataCache(context, R.drawable.ic_sync_badge_off_20dp);
+        mProfileDataCache = ProfileDataCache.createProfileDataCache(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         // State will be updated in registerForUpdates.
