@@ -203,7 +203,8 @@ void PartitionAllocGlobalUninitForTesting() {
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
+void PartitionRoot<thread_safe>::Init(bool enforce_alignment,
+                                      bool enable_thread_cache) {
   ScopedGuard guard{lock_};
   if (initialized)
     return;
@@ -217,6 +218,10 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
   // If alignment needs to be enforced, disallow adding cookies and/or tags at
   // the beginning of the slot.
   allow_extras = !enforce_alignment;
+  with_thread_cache = enable_thread_cache;
+
+  if (with_thread_cache)
+    internal::ThreadCache::ClaimThreadCacheAndCheck();
 
   // We mark the sentinel bucket/page as free to make sure it is skipped by our
   // logic to find a new active page.
@@ -281,6 +286,9 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
 
   initialized = true;
 }
+
+template <bool thread_safe>
+PartitionRoot<thread_safe>::~PartitionRoot() = default;
 
 template <bool thread_safe>
 bool PartitionRoot<thread_safe>::ReallocDirectMappedInPlace(
@@ -621,6 +629,10 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
         PartitionPurgeBucket(bucket);
     }
   }
+
+  // Purges only this thread's cache.
+  if (with_thread_cache && internal::g_thread_cache)
+    internal::g_thread_cache->Purge();
 }
 
 template <bool thread_safe>
@@ -808,7 +820,8 @@ void PartitionAllocator<thread_safe>::init(
     PartitionAllocatorAlignment alignment) {
   partition_root_.Init(
       alignment ==
-      PartitionAllocatorAlignment::kAlignedAlloc /* enforce_alignment */);
+          PartitionAllocatorAlignment::kAlignedAlloc /* enforce_alignment */,
+      false);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }
