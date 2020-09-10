@@ -257,6 +257,7 @@ _CONFIG = [
             'cc::PaintShader',
             'cc::PaintWorkletInput',
             'cc::NodeId',
+            'cc::NodeInfo',
 
             # Chromium geometry types.
             'gfx::Point',

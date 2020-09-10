@@ -74,7 +74,7 @@ void ContentCaptureTask::Shutdown() {
   local_frame_root_ = nullptr;
 }
 
-bool ContentCaptureTask::CaptureContent(Vector<cc::NodeId>& data) {
+bool ContentCaptureTask::CaptureContent(Vector<cc::NodeInfo>& data) {
   if (captured_content_for_testing_) {
     data = captured_content_for_testing_.value();
     return true;
@@ -84,7 +84,7 @@ bool ContentCaptureTask::CaptureContent(Vector<cc::NodeId>& data) {
   if (const auto* root_frame_view = local_frame_root_->View()) {
     if (const auto* cc_layer = root_frame_view->RootCcLayer()) {
       if (auto* layer_tree_host = cc_layer->layer_tree_host()) {
-        std::vector<cc::NodeId> content;
+        std::vector<cc::NodeInfo> content;
         if (layer_tree_host->CaptureContent(&content)) {
           for (auto c : content)
             data.push_back(std::move(c));
@@ -99,7 +99,7 @@ bool ContentCaptureTask::CaptureContent(Vector<cc::NodeId>& data) {
 
 bool ContentCaptureTask::CaptureContent() {
   DCHECK(task_session_);
-  Vector<cc::NodeId> buffer;
+  Vector<cc::NodeInfo> buffer;
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentStarted();
   bool result = CaptureContent(buffer);
@@ -124,14 +124,14 @@ void ContentCaptureTask::SendContent(
   // Only send changed content after the new content was sent.
   bool sending_changed_content = !doc_session.HasUnsentCapturedContent();
   while (content_batch.size() < kBatchSize) {
-    Node* node;
+    ContentHolder* holder;
     if (sending_changed_content)
-      node = doc_session.GetNextChangedNode();
+      holder = doc_session.GetNextChangedNode();
     else
-      node = doc_session.GetNextUnsentNode();
-    if (!node)
+      holder = doc_session.GetNextUnsentNode();
+    if (!holder)
       break;
-    content_batch.emplace_back(WebContentHolder(*node));
+    content_batch.emplace_back(WebContentHolder(*holder));
   }
   if (!content_batch.empty()) {
     if (sending_changed_content) {

@@ -242,7 +242,7 @@ bool Layer::IsPropertyChangeAllowed() const {
 }
 
 void Layer::CaptureContent(const gfx::Rect& rect,
-                           std::vector<NodeId>* content) {}
+                           std::vector<NodeInfo>* content) {}
 
 sk_sp<SkPicture> Layer::GetPicture() const {
   return nullptr;

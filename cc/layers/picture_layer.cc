@@ -230,7 +230,7 @@ void PictureLayer::RunMicroBenchmark(MicroBenchmark* benchmark) {
 }
 
 void PictureLayer::CaptureContent(const gfx::Rect& rect,
-                                  std::vector<NodeId>* content) {
+                                  std::vector<NodeInfo>* content) {
   if (!DrawsContent())
     return;
 
@@ -253,6 +253,22 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
     return;
 
   display_item_list->CaptureContent(transformed, content);
+  if (auto* outer_viewport_layer = layer_tree_host()->LayerByElementId(
+          layer_tree_host()->OuterViewportScrollElementId())) {
+    if (transform_tree_index() == outer_viewport_layer->transform_tree_index())
+      return;
+    gfx::Transform inverse_outer_screen_space_transform;
+    if (!outer_viewport_layer->ScreenSpaceTransform().GetInverse(
+            &inverse_outer_screen_space_transform)) {
+      return;
+    }
+    gfx::Transform combined_transform{ScreenSpaceTransform(),
+                                      inverse_outer_screen_space_transform};
+    for (auto& i : *content) {
+      i.visual_rect = MathUtil::ProjectEnclosingClippedRect(combined_transform,
+                                                            i.visual_rect);
+    }
+  }
 }
 
 void PictureLayer::DropRecordingSourceContentIfInvalid() {

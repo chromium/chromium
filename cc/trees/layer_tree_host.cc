@@ -774,15 +774,17 @@ std::string LayerTreeHost::LayersAsString() const {
   return layers;
 }
 
-bool LayerTreeHost::CaptureContent(std::vector<NodeId>* content) {
+bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) {
   if (viewport_visible_rect_.IsEmpty())
     return false;
 
   gfx::Rect rect = gfx::Rect(viewport_visible_rect_.width(),
                              viewport_visible_rect_.height());
-  for (auto* layer : *this)
+  for (auto* layer : *this) {
+    // Normally, the node won't be drawn in multiple layers, even it is, such as
+    // text strokes, the visual rect don't have too much different.
     layer->CaptureContent(rect, content);
-
+  }
   return true;
 }
 

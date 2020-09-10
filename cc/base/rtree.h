@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -70,7 +71,9 @@ class RTree {
 
   // Given a query rect, returns elements that intersect the rect. Elements are
   // returned in the order they appeared in the initial container.
-  void Search(const gfx::Rect& query, std::vector<T>* results) const;
+  void Search(const gfx::Rect& query,
+              std::vector<T>* results,
+              std::vector<gfx::Rect>* rects = nullptr) const;
 
   // Given a query rect, returns non-owning pointers to elements that intersect
   // the rect. Elements are returned in the order they appeared in the initial
@@ -123,7 +126,8 @@ class RTree {
 
   void SearchRecursive(Node<T>* root,
                        const gfx::Rect& query,
-                       std::vector<T>* results) const;
+                       std::vector<T>* results,
+                       std::vector<gfx::Rect>* rects = nullptr) const;
   void SearchRefsRecursive(Node<T>* root,
                            const gfx::Rect& query,
                            std::vector<const T*>* results) const;
@@ -132,7 +136,8 @@ class RTree {
   // and SearchRefsRecursive for when !has_valid_bounds().
   void SearchRecursiveFallback(Node<T>* root,
                                const gfx::Rect& query,
-                               std::vector<T>* results) const;
+                               std::vector<T>* results,
+                               std::vector<gfx::Rect>* rects = nullptr) const;
   void SearchRefsRecursiveFallback(Node<T>* root,
                                    const gfx::Rect& query,
                                    std::vector<const T*>* results) const;
@@ -307,14 +312,16 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
 }
 
 template <typename T>
-void RTree<T>::Search(const gfx::Rect& query, std::vector<T>* results) const {
+void RTree<T>::Search(const gfx::Rect& query,
+                      std::vector<T>* results,
+                      std::vector<gfx::Rect>* rects) const {
   results->clear();
   if (num_data_elements_ == 0)
     return;
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree, query, results);
+    SearchRecursiveFallback(root_.subtree, query, results, rects);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree, query, results);
+    SearchRecursive(root_.subtree, query, results, rects);
   }
 }
 
@@ -334,13 +341,17 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
 template <typename T>
 void RTree<T>::SearchRecursive(Node<T>* node,
                                const gfx::Rect& query,
-                               std::vector<T>* results) const {
+                               std::vector<T>* results,
+                               std::vector<gfx::Rect>* rects) const {
   for (uint16_t i = 0; i < node->num_children; ++i) {
     if (query.Intersects(node->children[i].bounds)) {
-      if (node->level == 0)
+      if (node->level == 0) {
         results->push_back(node->children[i].payload);
-      else
-        SearchRecursive(node->children[i].subtree, query, results);
+        if (rects)
+          rects->push_back(node->children[i].bounds);
+      } else {
+        SearchRecursive(node->children[i].subtree, query, results, rects);
+      }
     }
   }
 }
@@ -364,13 +375,17 @@ void RTree<T>::SearchRefsRecursive(Node<T>* node,
 template <typename T>
 void RTree<T>::SearchRecursiveFallback(Node<T>* node,
                                        const gfx::Rect& query,
-                                       std::vector<T>* results) const {
+                                       std::vector<T>* results,
+                                       std::vector<gfx::Rect>* rects) const {
   for (uint16_t i = 0; i < node->num_children; ++i) {
     if (node->level == 0) {
-      if (query.Intersects(node->children[i].bounds))
+      if (query.Intersects(node->children[i].bounds)) {
         results->push_back(node->children[i].payload);
+        if (rects)
+          rects->push_back(node->children[i].bounds);
+      }
     } else {
-      SearchRecursive(node->children[i].subtree, query, results);
+      SearchRecursive(node->children[i].subtree, query, results, rects);
     }
   }
 }

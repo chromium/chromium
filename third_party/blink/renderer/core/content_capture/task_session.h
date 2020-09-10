@@ -11,10 +11,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/node_id.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -52,9 +54,9 @@ class TaskSession final : public GarbageCollected<TaskSession> {
                     SentNodes& sent_nodes,
                     SentNodeCountCallback& call_back);
     ~DocumentSession();
-    void AddCapturedNode(Node& node);
+    void AddCapturedNode(Node& node, const gfx::Rect& rect);
     void AddDetachedNode(int64_t id);
-    void AddChangedNode(Node& node);
+    void AddChangedNode(Node& node, const gfx::Rect& rect);
     bool HasUnsentData() const {
       return HasUnsentCapturedContent() || HasUnsentChangedContent() ||
              HasUnsentDetachedNodes();
@@ -70,9 +72,9 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     void SetFirstDataHasSent() { first_data_has_sent_ = true; }
 
     // Removes the unsent node from |captured_content_|, and returns it.
-    Node* GetNextUnsentNode();
+    ContentHolder* GetNextUnsentNode();
 
-    Node* GetNextChangedNode();
+    ContentHolder* GetNextChangedNode();
 
     // Resets the |captured_content_| and the |detached_nodes_|, shall only be
     // used if those data doesn't need to be sent, e.g. there is no
@@ -83,14 +85,14 @@ class TaskSession final : public GarbageCollected<TaskSession> {
 
    private:
     // The captured content that belongs to this document.
-    HeapHashSet<WeakMember<Node>> captured_content_;
+    HeapHashMap<WeakMember<Node>, gfx::Rect> captured_content_;
     // The list of content id of node that has been detached from the
     // LayoutTree.
     WebVector<int64_t> detached_nodes_;
     WeakMember<const Document> document_;
     Member<SentNodes> sent_nodes_;
     // The list of changed nodes that needs to be sent.
-    HeapHashSet<WeakMember<Node>> changed_content_;
+    HeapHashMap<WeakMember<Node>, gfx::Rect> changed_content_;
 
     bool first_data_has_sent_ = false;
     // This is for the metrics to record the total node that has been sent.
@@ -107,7 +109,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
 
   // This can only be invoked when all data has been sent (i.e. HasUnsentData()
   // returns False).
-  void SetCapturedContent(const Vector<cc::NodeId>& captured_content);
+  void SetCapturedContent(const Vector<cc::NodeInfo>& captured_content);
 
   void OnNodeDetached(const Node& node);
 
@@ -126,7 +128,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
 
  private:
   void GroupCapturedContentByDocument(
-      const Vector<cc::NodeId>& captured_content);
+      const Vector<cc::NodeInfo>& captured_content);
   DocumentSession& EnsureDocumentSession(const Document& doc);
   DocumentSession* GetDocumentSession(const Document& document) const;
 

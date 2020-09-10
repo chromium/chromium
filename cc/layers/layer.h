@@ -570,9 +570,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void ShowScrollbars() { needs_show_scrollbars_ = true; }
 
   // Captures text content within the given |rect| and returns the associated
-  // NodeId in |content|.
+  // NodeInfo in |content|.
   virtual void CaptureContent(const gfx::Rect& rect,
-                              std::vector<NodeId>* content);
+                              std::vector<NodeInfo>* content);
 
   // For tracing. Gets a recorded rasterization of this layer's contents that
   // can be displayed inside representations of this layer. May return null, in

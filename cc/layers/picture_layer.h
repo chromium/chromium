@@ -47,7 +47,7 @@ class CC_EXPORT PictureLayer : public Layer {
   bool Update() override;
   void RunMicroBenchmark(MicroBenchmark* benchmark) override;
   void CaptureContent(const gfx::Rect& rect,
-                      std::vector<NodeId>* content) override;
+                      std::vector<NodeInfo>* content) override;
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 

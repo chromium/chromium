@@ -22,40 +22,46 @@ TaskSession::DocumentSession::~DocumentSession() {
     callback_.value().Run(total_sent_nodes_);
 }
 
-void TaskSession::DocumentSession::AddCapturedNode(Node& node) {
-  captured_content_.insert(WeakMember<Node>(&node));
+void TaskSession::DocumentSession::AddCapturedNode(Node& node,
+                                                   const gfx::Rect& rect) {
+  // Replace the previous rect if any.
+  captured_content_.Set(WeakMember<Node>(&node), rect);
 }
 
 void TaskSession::DocumentSession::AddDetachedNode(int64_t id) {
   detached_nodes_.emplace_back(id);
 }
 
-void TaskSession::DocumentSession::AddChangedNode(Node& node) {
-  changed_content_.insert(WeakMember<Node>(&node));
+void TaskSession::DocumentSession::AddChangedNode(Node& node,
+                                                  const gfx::Rect& rect) {
+  // Replace the previous rect if any.
+  changed_content_.Set(WeakMember<Node>(&node), rect);
 }
 
 WebVector<int64_t> TaskSession::DocumentSession::MoveDetachedNodes() {
   return std::move(detached_nodes_);
 }
 
-Node* TaskSession::DocumentSession::GetNextUnsentNode() {
+ContentHolder* TaskSession::DocumentSession::GetNextUnsentNode() {
   while (!captured_content_.IsEmpty()) {
-    Node* node = captured_content_.TakeAny().Get();
+    auto node = captured_content_.begin()->key;
+    const gfx::Rect rect = captured_content_.Take(node);
     if (node && node->GetLayoutObject() && !sent_nodes_->HasSent(*node)) {
       sent_nodes_->OnSent(*node);
       total_sent_nodes_++;
-      return node;
+      return MakeGarbageCollected<ContentHolder>(node, rect);
     }
   }
   return nullptr;
 }
 
-Node* TaskSession::DocumentSession::GetNextChangedNode() {
+ContentHolder* TaskSession::DocumentSession::GetNextChangedNode() {
   while (!changed_content_.IsEmpty()) {
-    Node* node = changed_content_.TakeAny().Get();
-    if (node && node->GetLayoutObject()) {
+    auto node = changed_content_.begin()->key;
+    const gfx::Rect rect = changed_content_.Take(node);
+    if (node.Get() && node->GetLayoutObject()) {
       total_sent_nodes_++;
-      return node;
+      return MakeGarbageCollected<ContentHolder>(node, rect);
     }
   }
   return nullptr;
@@ -87,7 +93,7 @@ TaskSession::DocumentSession* TaskSession::GetNextUnsentDocumentSession() {
 }
 
 void TaskSession::SetCapturedContent(
-    const Vector<cc::NodeId>& captured_content) {
+    const Vector<cc::NodeInfo>& captured_content) {
   DCHECK(!HasUnsentData());
   DCHECK(!captured_content.IsEmpty());
   GroupCapturedContentByDocument(captured_content);
@@ -95,20 +101,26 @@ void TaskSession::SetCapturedContent(
 }
 
 void TaskSession::GroupCapturedContentByDocument(
-    const Vector<cc::NodeId>& captured_content) {
-  for (const cc::NodeId& node_id : captured_content) {
-    if (Node* node = DOMNodeIds::NodeForId(node_id)) {
+    const Vector<cc::NodeInfo>& captured_content) {
+  // In rare cases, the same node could have multiple entries in the
+  // |captured_content|, but the visual_rect are almost same, we just let the
+  // later replace the previous.
+  for (const auto& i : captured_content) {
+    if (Node* node = DOMNodeIds::NodeForId(i.node_id)) {
       if (changed_nodes_.Take(node)) {
         // The changed node might not be sent.
         if (sent_nodes_->HasSent(*node)) {
-          EnsureDocumentSession(node->GetDocument()).AddChangedNode(*node);
+          EnsureDocumentSession(node->GetDocument())
+              .AddChangedNode(*node, i.visual_rect);
         } else {
-          EnsureDocumentSession(node->GetDocument()).AddCapturedNode(*node);
+          EnsureDocumentSession(node->GetDocument())
+              .AddCapturedNode(*node, i.visual_rect);
         }
         continue;
       }
       if (!sent_nodes_->HasSent(*node)) {
-        EnsureDocumentSession(node->GetDocument()).AddCapturedNode(*node);
+        EnsureDocumentSession(node->GetDocument())
+            .AddCapturedNode(*node, i.visual_rect);
       }
     }
   }

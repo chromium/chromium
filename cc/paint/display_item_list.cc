@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <string>
 
 #include "base/trace_event/trace_event.h"
@@ -17,6 +18,7 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -32,28 +34,37 @@ bool GetCanvasClipBounds(SkCanvas* canvas, gfx::Rect* clip_bounds) {
 }
 
 template <typename Function>
-void IterateTextContent(const PaintOpBuffer* buffer, const Function& yield) {
-  for (auto* op : PaintOpBuffer::Iterator(buffer)) {
+void IterateTextContent(const PaintOpBuffer& buffer,
+                        const Function& yield,
+                        const gfx::Rect& rect) {
+  if (!buffer.has_draw_text_ops())
+    return;
+  for (auto* op : PaintOpBuffer::Iterator(&buffer)) {
     if (op->GetType() == PaintOpType::DrawTextBlob) {
-      yield(static_cast<DrawTextBlobOp*>(op));
+      yield(static_cast<DrawTextBlobOp*>(op), rect);
     } else if (op->GetType() == PaintOpType::DrawRecord) {
-      IterateTextContent(static_cast<DrawRecordOp*>(op)->record.get(), yield);
+      IterateTextContent(*static_cast<DrawRecordOp*>(op)->record.get(), yield,
+                         rect);
     }
   }
 }
 
 template <typename Function>
-void IterateTextContentByOffsets(const PaintOpBuffer* buffer,
+void IterateTextContentByOffsets(const PaintOpBuffer& buffer,
                                  const std::vector<size_t>& offsets,
+                                 const std::vector<gfx::Rect>& rects,
                                  const Function& yield) {
-  if (!buffer)
-    return;
-  for (auto* op : PaintOpBuffer::OffsetIterator(buffer, &offsets)) {
+  DCHECK(buffer.has_draw_text_ops());
+  DCHECK_EQ(rects.size(), offsets.size());
+  size_t index = 0;
+  for (auto* op : PaintOpBuffer::OffsetIterator(&buffer, &offsets)) {
     if (op->GetType() == PaintOpType::DrawTextBlob) {
-      yield(static_cast<DrawTextBlobOp*>(op));
+      yield(static_cast<DrawTextBlobOp*>(op), rects[index]);
     } else if (op->GetType() == PaintOpType::DrawRecord) {
-      IterateTextContent(static_cast<DrawRecordOp*>(op)->record.get(), yield);
+      IterateTextContent(*static_cast<DrawRecordOp*>(op)->record.get(), yield,
+                         rects[index]);
     }
+    ++index;
   }
 }
 
@@ -90,20 +101,35 @@ void DisplayItemList::Raster(SkCanvas* canvas,
 }
 
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,
-                                     std::vector<NodeId>* content) const {
+                                     std::vector<NodeInfo>* content) const {
+  if (!paint_op_buffer_.has_draw_text_ops())
+    return;
   std::vector<size_t> offsets;
-  rtree_.Search(rect, &offsets);
+  std::vector<gfx::Rect> rects;
+  rtree_.Search(rect, &offsets, &rects);
   IterateTextContentByOffsets(
-      &paint_op_buffer_, offsets,
-      [content](const DrawTextBlobOp* op) { content->push_back(op->node_id); });
+      paint_op_buffer_, offsets, rects,
+      [content](const DrawTextBlobOp* op, const gfx::Rect& rect) {
+        // Only union the rect if the current is the same as the last one.
+        if (!content->empty() && content->back().node_id == op->node_id)
+          content->back().visual_rect.Union(rect);
+        else
+          content->emplace_back(op->node_id, rect);
+      });
 }
 
 double DisplayItemList::AreaOfDrawText(const gfx::Rect& rect) const {
-  std::vector<size_t> offsets;
-  rtree_.Search(rect, &offsets);
   double area = 0;
+  if (!paint_op_buffer_.has_draw_text_ops())
+    return area;
+  std::vector<size_t> offsets;
+  std::vector<gfx::Rect> rects;
+  rtree_.Search(rect, &offsets, &rects);
   IterateTextContentByOffsets(
-      &paint_op_buffer_, offsets, [&area](const DrawTextBlobOp* op) {
+      paint_op_buffer_, offsets, rects,
+      [&area](const DrawTextBlobOp* op, const gfx::Rect& rect) {
+        // TODO(wangxianzhu) : crbug.com/1126582 use the visual_rect from
+        // callback.
         // This is not fully accurate, e.g. when there is transform operations,
         // but is good for statistics purpose.
         SkRect bounds = op->blob->bounds();

@@ -88,7 +88,7 @@ class CORE_EXPORT ContentCaptureTask
   }
 
   void SetCapturedContentForTesting(
-      const Vector<cc::NodeId>& captured_content) {
+      const Vector<cc::NodeInfo>& captured_content) {
     captured_content_for_testing_ = captured_content;
   }
 
@@ -133,7 +133,7 @@ class CORE_EXPORT ContentCaptureTask
   base::TimeDelta GetAndAdjustDelay(ScheduleReason reason);
 
   void ScheduleInternal(ScheduleReason reason);
-  bool CaptureContent(Vector<cc::NodeId>& data);
+  bool CaptureContent(Vector<cc::NodeInfo>& data);
 
   // Indicates if there is content change since last run.
   bool has_content_change_ = false;
@@ -147,7 +147,7 @@ class CORE_EXPORT ContentCaptureTask
 
   scoped_refptr<ContentCaptureTaskHistogramReporter> histogram_reporter_;
   base::Optional<TaskState> task_stop_for_testing_;
-  base::Optional<Vector<cc::NodeId>> captured_content_for_testing_;
+  base::Optional<Vector<cc::NodeInfo>> captured_content_for_testing_;
 };
 
 }  // namespace blink

@@ -706,8 +706,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::string LayersAsString() const;
 
   // Captures the on-screen text content, if success, fills the associated
-  // NodeId in |content| and return true, otherwise return false.
-  bool CaptureContent(std::vector<NodeId>* content);
+  // NodeInfo in |content| and return true, otherwise return false.
+  bool CaptureContent(std::vector<NodeInfo>* content);
 
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics() {
     return std::move(begin_main_frame_metrics_);

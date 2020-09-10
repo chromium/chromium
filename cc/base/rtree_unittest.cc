@@ -5,6 +5,7 @@
 #include "cc/base/rtree.h"
 
 #include <stddef.h>
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +25,18 @@ void SearchAndVerifyRefs(const RTree<T>& rtree,
   ASSERT_EQ(ref_results.size(), results->size());
   for (size_t i = 0; i < results->size(); ++i) {
     EXPECT_EQ(*ref_results[i], (*results)[i]);
+  }
+}
+
+template <typename T>
+void SearchAndVerifyBounds(const RTree<T>& rtree,
+                           const gfx::Rect& query,
+                           std::vector<T>* results,
+                           std::vector<gfx::Rect>* rects) {
+  rtree.Search(query, results, rects);
+  ASSERT_EQ(results->size(), rects->size());
+  for (auto& rect : *rects) {
+    EXPECT_TRUE(rect.Intersects(query));
   }
 }
 }  // namespace
@@ -219,6 +232,14 @@ TEST(RTreeTest, Payload) {
   SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, 1, 1), &results);
   ASSERT_EQ(1u, results.size());
   EXPECT_FLOAT_EQ(10.f, results[0]);
+
+  // Search with bounds
+  std::vector<gfx::Rect> rects;
+  SearchAndVerifyBounds(rtree, gfx::Rect(0, 0, 1, 1), &results, &rects);
+  ASSERT_EQ(1u, results.size());
+  ASSERT_EQ(results.size(), rects.size());
+  EXPECT_FLOAT_EQ(10.f, results[0]);
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), rects[0]);
 
   SearchAndVerifyRefs(rtree, gfx::Rect(5, 5, 10, 10), &results);
   ASSERT_EQ(4u, results.size());

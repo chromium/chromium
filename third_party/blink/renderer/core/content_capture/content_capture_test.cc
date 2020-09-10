@@ -26,6 +26,12 @@
 
 namespace blink {
 
+namespace {
+gfx::Rect GetRect(LayoutObject* layout_object) {
+  return gfx::Rect(EnclosingIntRect(layout_object->VisualRectInDocument()));
+}
+}  // namespace
+
 class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
  public:
   ~WebContentCaptureClientTestHelper() override = default;
@@ -212,7 +218,8 @@ class ContentCaptureTest : public PageTestBase,
     UpdateAllLifecyclePhasesForTest();
     GetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
     created_node_id_ = DOMNodeIds::IdForNode(node);
-    Vector<DOMNodeId> captured_content{created_node_id_};
+    Vector<cc::NodeInfo> captured_content{
+        cc::NodeInfo(created_node_id_, GetRect(node->GetLayoutObject()))};
     content_capture_manager_->GetContentCaptureTask()
         ->SetCapturedContentForTesting(captured_content);
   }
@@ -269,7 +276,7 @@ class ContentCaptureTest : public PageTestBase,
     return node_ids_.size() - GetExpectedFirstResultSize();
   }
 
-  const Vector<DOMNodeId>& NodeIds() const { return node_ids_; }
+  const Vector<cc::NodeInfo>& NodeIds() const { return node_ids_; }
   const Vector<Persistent<Node>> Nodes() const { return nodes_; }
 
  private:
@@ -288,12 +295,13 @@ class ContentCaptureTest : public PageTestBase,
       CHECK(layout_object->IsText());
       nodes_.push_back(node);
       GetContentCaptureManager()->ScheduleTaskIfNeeded(*node);
-      node_ids_.push_back(DOMNodeIds::IdForNode(node));
+      node_ids_.push_back(
+          cc::NodeInfo(DOMNodeIds::IdForNode(node), GetRect(layout_object)));
     }
   }
 
   Vector<Persistent<Node>> nodes_;
-  Vector<DOMNodeId> node_ids_;
+  Vector<cc::NodeInfo> node_ids_;
   std::unique_ptr<WebContentCaptureClientTestHelper> content_capture_client_;
   Persistent<ContentCaptureManagerTestHelper> content_capture_manager_;
   Persistent<ContentCaptureLocalFrameClientHelper> local_frame_client_;
@@ -636,7 +644,7 @@ class ContentCaptureSimTest : public SimTest {
     } else if (type == ContentType::kChildFrame) {
       SetCapturedContent(child_frame_content_);
     } else if (type == ContentType::kAll) {
-      Vector<DOMNodeId> holders(main_frame_content_);
+      Vector<cc::NodeInfo> holders(main_frame_content_);
       holders.AppendRange(child_frame_content_.begin(),
                           child_frame_content_.end());
       SetCapturedContent(holders);
@@ -765,18 +773,20 @@ class ContentCaptureSimTest : public SimTest {
     EXPECT_EQ(2u, child_frame_content_.size());
   }
 
-  void InitNodeHolders(Vector<DOMNodeId>& buffer,
+  void InitNodeHolders(Vector<cc::NodeInfo>& buffer,
                        const Vector<std::string>& ids,
                        const Document& document) {
     for (auto id : ids) {
-      LayoutText* layout_text = ToLayoutText(
-          document.getElementById(id.c_str())->firstChild()->GetLayoutObject());
+      auto* layout_object =
+          document.getElementById(id.c_str())->firstChild()->GetLayoutObject();
+      LayoutText* layout_text = ToLayoutText(layout_object);
       EXPECT_TRUE(layout_text->HasNodeId());
-      buffer.push_back(layout_text->EnsureNodeId());
+      buffer.push_back(
+          cc::NodeInfo(layout_text->EnsureNodeId(), GetRect(layout_object)));
     }
   }
 
-  void AddNodeToDocument(Document& doc, Vector<DOMNodeId>& buffer) {
+  void AddNodeToDocument(Document& doc, Vector<cc::NodeInfo>& buffer) {
     Node* node = doc.createTextNode("New Text");
     auto* element = MakeGarbageCollected<Element>(html_names::kPTag, &doc);
     element->appendChild(node);
@@ -785,7 +795,8 @@ class ContentCaptureSimTest : public SimTest {
     Compositor().BeginFrame();
     LayoutText* layout_text = ToLayoutText(node->GetLayoutObject());
     EXPECT_TRUE(layout_text->HasNodeId());
-    buffer.push_front(layout_text->EnsureNodeId());
+    buffer.push_back(cc::NodeInfo(layout_text->EnsureNodeId(),
+                                  GetRect(node->GetLayoutObject())));
   }
 
   void InsertNodeContent(Document& doc,
@@ -807,7 +818,7 @@ class ContentCaptureSimTest : public SimTest {
     Compositor().BeginFrame();
   }
 
-  void SetCapturedContent(const Vector<DOMNodeId>& captured_content) {
+  void SetCapturedContent(const Vector<cc::NodeInfo>& captured_content) {
     GetDocument()
         .GetFrame()
         ->LocalFrameRoot()
@@ -818,8 +829,8 @@ class ContentCaptureSimTest : public SimTest {
 
   Vector<std::string> main_frame_expected_text_;
   Vector<std::string> child_frame_expected_text_;
-  Vector<DOMNodeId> main_frame_content_;
-  Vector<DOMNodeId> child_frame_content_;
+  Vector<cc::NodeInfo> main_frame_content_;
+  Vector<cc::NodeInfo> child_frame_content_;
   WebContentCaptureClientTestHelper client_;
   WebContentCaptureClientTestHelper child_client_;
   Persistent<Document> child_document_;

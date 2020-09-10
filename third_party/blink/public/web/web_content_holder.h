@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class Node;
+class ContentHolder;
 
 // The class to represent the captured content.
 class BLINK_EXPORT WebContentHolder {
@@ -27,11 +27,11 @@ class BLINK_EXPORT WebContentHolder {
   uint64_t GetId() const;
 
 #if INSIDE_BLINK
-  WebContentHolder(Node& node);
+  explicit WebContentHolder(ContentHolder& node_info);
 #endif
 
  private:
-  WebPrivatePtr<Node> private_;
+  WebPrivatePtr<ContentHolder> private_;
 };
 
 }  // namespace blink
