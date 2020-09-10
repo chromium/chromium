@@ -43,6 +43,8 @@ namespace arc {
 namespace {
 
 constexpr const char kArcCreateDataJobName[] = "arc_2dcreate_2ddata";
+constexpr const char kArcHostClockServiceJobName[] =
+    "arc_2dhost_2dclock_2dservice";
 constexpr const char kArcKeymasterJobName[] = "arc_2dkeymasterd";
 constexpr const char kArcSensorServiceJobName[] = "arc_2dsensor_2dservice";
 constexpr const char kArcVmMountMyFilesJobName[] = "arcvm_2dmount_2dmyfiles";
@@ -529,6 +531,28 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmServerProxyJobFail) {
   // TODO(wvk): Once mini VM is supported, call StopArcInstance() here,
   // then verify arc_instance_stopped_called() never becomes true. Same
   // for other StartMiniArc_...Fail tests.
+}
+
+// Tests that StartMiniArc() fails if Upstart fails to start
+// arc-host-clock-service.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcHostClockServiceJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStartJobFailure(kArcHostClockServiceJobName);
+
+  StartMiniArcWithParams(false, {});
+  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
+  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+}
+
+// Tests that StartMiniArc() succeeds if Upstart fails to stop
+// arc-host-clock-service.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcHostClockServiceJobFail) {
+  // Inject failure to FakeUpstartClient.
+  InjectUpstartStopJobFailure(kArcHostClockServiceJobName);
+
+  StartMiniArc();
+  // Confirm that no VM is started. ARCVM doesn't support mini ARC yet.
+  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
 }
 
 // Tests that StartMiniArc() fails if Upstart fails to start arc-keymasterd.

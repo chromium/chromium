@@ -59,6 +59,8 @@ namespace {
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
 constexpr const char kArcCreateDataJobName[] = "arc_2dcreate_2ddata";
+constexpr const char kArcHostClockServiceJobName[] =
+    "arc_2dhost_2dclock_2dservice";
 constexpr const char kArcKeymasterJobName[] = "arc_2dkeymasterd";
 constexpr const char kArcSensorServiceJobName[] = "arc_2dsensor_2dservice";
 constexpr const char kArcVmMountMyFilesJobName[] = "arcvm_2dmount_2dmyfiles";
@@ -604,6 +606,9 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_STOP_AND_START, {}},
         JobDesc{
             kArcSensorServiceJobName, UpstartOperation::JOB_STOP_AND_START, {}},
+        JobDesc{kArcHostClockServiceJobName,
+                UpstartOperation::JOB_STOP_AND_START,
+                {}},
         JobDesc{kArcVmBootNotificationServerJobName,
                 UpstartOperation::JOB_STOP_AND_START,
                 {}},
