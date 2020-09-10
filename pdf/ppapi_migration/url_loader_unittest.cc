@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
@@ -70,7 +69,7 @@ class BlinkUrlLoaderTest : public testing::Test {
     ON_CALL(mock_client_, CreateAssociatedURLLoader(_))
         .WillByDefault(
             Invoke(this, &BlinkUrlLoaderTest::FakeCreateAssociatedURLLoader));
-    loader_ = base::MakeRefCounted<BlinkUrlLoader>(mock_client_.GetWeakPtr());
+    loader_ = std::make_unique<BlinkUrlLoader>(mock_client_.GetWeakPtr());
   }
 
   std::unique_ptr<blink::WebAssociatedURLLoader> FakeCreateAssociatedURLLoader(
@@ -82,7 +81,7 @@ class BlinkUrlLoaderTest : public testing::Test {
 
   NiceMock<MockBlinkUrlLoaderClient> mock_client_;
   base::MockCallback<ResultCallback> mock_callback_;
-  scoped_refptr<BlinkUrlLoader> loader_;
+  std::unique_ptr<BlinkUrlLoader> loader_;
 
   std::unique_ptr<MockWebAssociatedURLLoader> mock_url_loader_ =
       std::make_unique<MockWebAssociatedURLLoader>();

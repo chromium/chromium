@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -116,7 +116,7 @@ void PreviewModeClient::SubmitForm(const std::string& url,
   NOTREACHED();
 }
 
-scoped_refptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
+std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
   NOTREACHED();
   return nullptr;
 }

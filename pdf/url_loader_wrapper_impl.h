@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -23,7 +22,7 @@ class UrlLoader;
 
 class URLLoaderWrapperImpl : public URLLoaderWrapper {
  public:
-  explicit URLLoaderWrapperImpl(scoped_refptr<UrlLoader> url_loader);
+  explicit URLLoaderWrapperImpl(std::unique_ptr<UrlLoader> url_loader);
   URLLoaderWrapperImpl(const URLLoaderWrapperImpl&) = delete;
   URLLoaderWrapperImpl& operator=(const URLLoaderWrapperImpl&) = delete;
   ~URLLoaderWrapperImpl() override;
@@ -59,7 +58,7 @@ class URLLoaderWrapperImpl : public URLLoaderWrapper {
 
   void ReadResponseBodyImpl(ResultCallback callback);
 
-  scoped_refptr<UrlLoader> url_loader_;
+  std::unique_ptr<UrlLoader> url_loader_;
   std::string response_headers_;
 
   int content_length_ = -1;

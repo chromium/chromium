@@ -4,7 +4,8 @@
 
 #include "pdf/test/test_client.h"
 
-#include "base/memory/scoped_refptr.h"
+#include <memory>
+
 #include "pdf/document_layout.h"
 #include "pdf/ppapi_migration/url_loader.h"
 
@@ -35,7 +36,7 @@ std::string TestClient::GetURL() {
   return std::string();
 }
 
-scoped_refptr<UrlLoader> TestClient::CreateUrlLoader() {
+std::unique_ptr<UrlLoader> TestClient::CreateUrlLoader() {
   return nullptr;
 }
 

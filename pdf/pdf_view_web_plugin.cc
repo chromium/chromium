@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "cc/paint/paint_canvas.h"
@@ -207,7 +206,7 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                   const void* data,
                                   int length) {}
 
-scoped_refptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
+std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
   return nullptr;
 }
 

@@ -62,7 +62,7 @@ class PreviewModeClient : public PDFEngine::Client {
   void SubmitForm(const std::string& url,
                   const void* data,
                   int length) override;
-  scoped_refptr<UrlLoader> CreateUrlLoader() override;
+  std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   std::vector<SearchStringResult> SearchString(const base::char16* string,
                                                const base::char16* term,
                                                bool case_sensitive) override;

@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -1078,9 +1077,10 @@ void OutOfProcessInstance::OnPaint(const std::vector<gfx::Rect>& paint_rects,
   }
 }
 
-void OutOfProcessInstance::DidOpen(int32_t result) {
+void OutOfProcessInstance::DidOpen(std::unique_ptr<UrlLoader> loader,
+                                   int32_t result) {
   if (result == PP_OK) {
-    if (!engine()->HandleDocumentLoad(embed_loader_)) {
+    if (!engine()->HandleDocumentLoad(std::move(loader))) {
       document_load_state_ = LOAD_STATE_LOADING;
       DocumentLoadFailed();
     }
@@ -1089,13 +1089,14 @@ void OutOfProcessInstance::DidOpen(int32_t result) {
   }
 }
 
-void OutOfProcessInstance::DidOpenPreview(int32_t result) {
+void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
+                                          int32_t result) {
   if (result == PP_OK) {
     preview_client_ = std::make_unique<PreviewModeClient>(this);
     preview_engine_ =
         std::make_unique<PDFiumEngine>(preview_client_.get(),
                                        /*enable_javascript=*/false);
-    preview_engine_->HandleDocumentLoad(embed_preview_loader_);
+    preview_engine_->HandleDocumentLoad(std::move(loader));
   } else {
     NOTREACHED();
   }
@@ -1472,13 +1473,11 @@ void OutOfProcessInstance::SubmitForm(const std::string& url,
 }
 
 void OutOfProcessInstance::FormDidOpen(int32_t result) {
-  // TODO: inform the user of success/failure.
-  if (result != PP_OK) {
-    LOG(ERROR) << "FormDidOpen failed: " << result;
-  }
+  // TODO(crbug.com/719344): Process response.
+  LOG_IF(ERROR, result != PP_OK) << "FormDidOpen failed: " << result;
 }
 
-scoped_refptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
+std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
   if (full_) {
     if (!did_call_start_loading_) {
       did_call_start_loading_ = true;
@@ -2092,18 +2091,17 @@ void OutOfProcessInstance::LoadUrl(const std::string& url,
   request.method = "GET";
   request.ignore_redirects = true;
 
-  scoped_refptr<UrlLoader>& loader =
-      is_print_preview ? embed_preview_loader_ : embed_loader_;
-  loader = CreateUrlLoaderInternal();
-  loader->Open(
+  std::unique_ptr<UrlLoader> loader = CreateUrlLoaderInternal();
+  UrlLoader* raw_loader = loader.get();
+  raw_loader->Open(
       request,
       base::BindOnce(is_print_preview ? &OutOfProcessInstance::DidOpenPreview
                                       : &OutOfProcessInstance::DidOpen,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(loader)));
 }
 
-scoped_refptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
-  auto loader = base::MakeRefCounted<PepperUrlLoader>(this);
+std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
+  auto loader = std::make_unique<PepperUrlLoader>(this);
   loader->GrantUniversalAccess();
   return loader;
 }

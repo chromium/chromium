@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -72,10 +71,11 @@ struct UrlResponse final {
 };
 
 // Abstraction for a Blink or Pepper URL loader.
-class UrlLoader : public base::RefCounted<UrlLoader> {
+class UrlLoader {
  public:
   UrlLoader(const UrlLoader&) = delete;
   UrlLoader& operator=(const UrlLoader&) = delete;
+  virtual ~UrlLoader();
 
   // Tries to grant the loader the capability to make unrestricted cross-origin
   // requests ("universal access," in `blink::SecurityOrigin` terms). Must be
@@ -97,13 +97,10 @@ class UrlLoader : public base::RefCounted<UrlLoader> {
 
  protected:
   UrlLoader();
-  virtual ~UrlLoader();
 
   UrlResponse& mutable_response() { return response_; }
 
  private:
-  friend class base::RefCounted<UrlLoader>;
-
   UrlResponse response_;
 };
 
@@ -130,6 +127,7 @@ class BlinkUrlLoader final : public UrlLoader,
   explicit BlinkUrlLoader(base::WeakPtr<Client> client);
   BlinkUrlLoader(const BlinkUrlLoader&) = delete;
   BlinkUrlLoader& operator=(const BlinkUrlLoader&) = delete;
+  ~BlinkUrlLoader() override;
 
   // UrlLoader:
   void GrantUniversalAccess() override;
@@ -154,9 +152,6 @@ class BlinkUrlLoader final : public UrlLoader,
   void DidFail(const blink::WebURLError& error) override;
 
  private:
-  // Private because the class is RefCounted.
-  ~BlinkUrlLoader() override;
-
   base::WeakPtr<Client> client_;
   bool grant_universal_access_ = false;
 
@@ -169,6 +164,7 @@ class PepperUrlLoader final : public UrlLoader {
   explicit PepperUrlLoader(pp::InstanceHandle plugin_instance);
   PepperUrlLoader(const PepperUrlLoader&) = delete;
   PepperUrlLoader& operator=(const PepperUrlLoader&) = delete;
+  ~PepperUrlLoader() override;
 
   // UrlLoader:
   void GrantUniversalAccess() override;
@@ -180,9 +176,6 @@ class PepperUrlLoader final : public UrlLoader {
   void Close() override;
 
  private:
-  // Private because the class is RefCounted.
-  ~PepperUrlLoader() override;
-
   void DidOpen(ResultCallback callback, int32_t result);
 
   pp::InstanceHandle plugin_instance_;

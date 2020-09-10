@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -100,7 +101,8 @@ bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
 
 }  // namespace
 
-URLLoaderWrapperImpl::URLLoaderWrapperImpl(scoped_refptr<UrlLoader> url_loader)
+URLLoaderWrapperImpl::URLLoaderWrapperImpl(
+    std::unique_ptr<UrlLoader> url_loader)
     : url_loader_(std::move(url_loader)) {
   SetHeadersFromLoader();
 }

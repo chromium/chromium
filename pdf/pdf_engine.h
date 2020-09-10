@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -221,7 +221,7 @@ class PDFEngine {
                             int length) {}
 
     // Creates and returns new URL loader for partial document requests.
-    virtual scoped_refptr<UrlLoader> CreateUrlLoader() = 0;
+    virtual std::unique_ptr<UrlLoader> CreateUrlLoader() = 0;
 
     // Searches the given string for "term" and returns the results.  Unicode-
     // aware.
@@ -337,7 +337,7 @@ class PDFEngine {
                      std::vector<gfx::Rect>& ready,
                      std::vector<gfx::Rect>& pending) = 0;
   virtual void PostPaint() = 0;
-  virtual bool HandleDocumentLoad(scoped_refptr<UrlLoader> loader) = 0;
+  virtual bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) = 0;
   virtual bool HandleEvent(const InputEvent& event) = 0;
   virtual uint32_t QuerySupportedPrintOutputFormats() = 0;
   virtual void PrintBegin() = 0;
