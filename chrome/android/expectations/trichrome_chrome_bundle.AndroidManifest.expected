@@ -170,6 +170,7 @@
     <activity  # DIFF-ANCHOR: a208e726
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:excludeFromRecents="true"
+        android:exported="true"
         android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddActivity"
         android:theme="@android:style/Theme.NoDisplay"
         android:windowSoftInputMode="stateHidden">
@@ -560,6 +561,7 @@
     </activity>  # DIFF-ANCHOR: 5e467d8a
     <activity  # DIFF-ANCHOR: aea75380
         android:excludeFromRecents="true"
+        android:exported="true"
         android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
         android:taskAffinity=""
         android:theme="@android:style/Theme.NoDisplay">
@@ -797,6 +799,7 @@
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
     </provider>  # DIFF-ANCHOR: 6e306896
     <receiver  # DIFF-ANCHOR: 7d221226
+        android:exported="true"
         android:label="@string/bookmark_widget_title"
         android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider">
       <intent-filter>  # DIFF-ANCHOR: 1ebe78e9
@@ -888,6 +891,7 @@
         android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver">
     </receiver>  # DIFF-ANCHOR: 40a69297
     <receiver  # DIFF-ANCHOR: 3664f7eb
+        android:exported="true"
         android:label="@string/search_widget_title"
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider">
       <intent-filter>  # DIFF-ANCHOR: 4ed161a4
@@ -904,11 +908,13 @@
       </intent-filter>  # DIFF-ANCHOR: fc048873
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info"/>
     </receiver>  # DIFF-ANCHOR: 3664f7eb
-    <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver">  # DIFF-ANCHOR: 4de2a279
+    <receiver  # DIFF-ANCHOR: cdc9c912
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver">
       <intent-filter>  # DIFF-ANCHOR: 6a188b57
         <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED"/>
       </intent-filter>  # DIFF-ANCHOR: 6a188b57
-    </receiver>  # DIFF-ANCHOR: 4de2a279
+    </receiver>  # DIFF-ANCHOR: cdc9c912
     <receiver  # DIFF-ANCHOR: 93e73992
         android:exported="true"
         android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver">

@@ -604,7 +604,8 @@ by a child template that "extends" this file.
             android:theme="@android:style/Theme.NoDisplay"
             android:excludeFromRecents="true"
             android:windowSoftInputMode="stateHidden"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="true">
             <intent-filter>
                 <action android:name="{{ manifest_package }}.ADDBOOKMARK" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -655,7 +656,8 @@ by a child template that "extends" this file.
         <activity android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
             android:theme="@android:style/Theme.NoDisplay"
             android:taskAffinity=""
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -913,7 +915,8 @@ by a child template that "extends" this file.
         </service>
 
         <!-- Broadcast receiver that will be notified of account changes -->
-        <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver">
+        <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED" />
             </intent-filter>
@@ -931,7 +934,8 @@ by a child template that "extends" this file.
 
         <!-- Bookmarks widget -->
         <receiver android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
-            android:label="@string/bookmark_widget_title">
+            android:label="@string/bookmark_widget_title"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name=".BOOKMARK_APPWIDGET_UPDATE" />
@@ -949,7 +953,8 @@ by a child template that "extends" this file.
         <!-- Search widget -->
         <receiver
                 android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
-                android:label="@string/search_widget_title">
+                android:label="@string/search_widget_title"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
