@@ -86,7 +86,9 @@
     "balls_javascript_canvas": {
       "ci_095": 1.324,
       "avg": 39.475,
-      "cpu_wall_time_ratio": 0.556
+      "cpu_wall_time_ratio": 0.556,
+      "experimental": true,
+      "_comment": "crbug.com/1122037"
     },
     "transform_transitions_js_block": {
       "ci_095": 0.366,
@@ -101,7 +103,9 @@
     "fill_shapes": {
       "ci_095": 0.949,
       "avg": 32.306,
-      "cpu_wall_time_ratio": 0.539
+      "cpu_wall_time_ratio": 0.539,
+      "experimental": true,
+      "_comment": "crbug.com/1122037"
     },
     "css_value_type_shadow": {
       "ci_095": 18.3,
