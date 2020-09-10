@@ -19,13 +19,17 @@ void NearbyShareLocalDeviceDataManager::RemoveObserver(Observer* observer) {
 }
 
 void NearbyShareLocalDeviceDataManager::Start() {
-  DCHECK(!is_running_);
+  if (is_running_)
+    return;
+
   is_running_ = true;
   OnStart();
 }
 
 void NearbyShareLocalDeviceDataManager::Stop() {
-  DCHECK(is_running_);
+  if (!is_running_)
+    return;
+
   is_running_ = false;
   OnStop();
 }

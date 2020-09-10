@@ -237,6 +237,12 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
       notification_display_service, this, prefs, profile_);
+
+  if (settings_.GetEnabled()) {
+    local_device_data_manager_->Start();
+    contact_manager_->Start();
+    certificate_manager_->Start();
+  }
 }
 
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
@@ -286,6 +292,12 @@ void NearbySharingServiceImpl::Shutdown() {
   is_connecting_ = false;
 
   settings_receiver_.reset();
+
+  if (settings_.GetEnabled()) {
+    local_device_data_manager_->Stop();
+    contact_manager_->Stop();
+    certificate_manager_->Stop();
+  }
 
   // |profile_| has now been shut down so we shouldn't use it anymore.
   profile_ = nullptr;
@@ -789,11 +801,17 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (enabled) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
+    local_device_data_manager_->Start();
+    contact_manager_->Start();
+    certificate_manager_->Start();
   } else {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
     StopScanning();
     nearby_connections_manager_->Shutdown();
+    local_device_data_manager_->Stop();
+    contact_manager_->Stop();
+    certificate_manager_->Stop();
   }
   InvalidateSurfaceState();
 }

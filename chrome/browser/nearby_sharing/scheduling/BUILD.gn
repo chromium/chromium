@@ -21,6 +21,7 @@ source_set("scheduling") {
   deps = [
     "//base",
     "//base/util/values:values_util",
+    "//chrome/browser/nearby_sharing/logging",
     "//components/prefs",
     "//content/public/browser",
     "//services/network/public/cpp",

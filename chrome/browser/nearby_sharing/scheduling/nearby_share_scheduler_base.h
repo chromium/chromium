@@ -101,6 +101,8 @@ class NearbyShareSchedulerBase
   // connectivity is restored.
   void OnTimerFired();
 
+  void PrintSchedulerState() const;
+
   bool retry_failures_;
   bool require_connectivity_;
   std::string pref_name_;

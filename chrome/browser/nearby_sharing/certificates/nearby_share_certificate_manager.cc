@@ -17,13 +17,17 @@ void NearbyShareCertificateManager::RemoveObserver(Observer* observer) {
 }
 
 void NearbyShareCertificateManager::Start() {
-  DCHECK(!is_running_);
+  if (is_running_)
+    return;
+
   is_running_ = true;
   OnStart();
 }
 
 void NearbyShareCertificateManager::Stop() {
-  DCHECK(is_running_);
+  if (!is_running_)
+    return;
+
   is_running_ = false;
   OnStop();
 }

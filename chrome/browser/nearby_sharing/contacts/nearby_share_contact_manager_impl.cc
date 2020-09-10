@@ -13,6 +13,7 @@
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
@@ -151,6 +152,8 @@ std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadRequested() {
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share contacts download requested.";
+
   DCHECK(!contact_downloader_);
   contact_downloader_ = NearbyShareContactDownloaderImpl::Factory::Create(
       only_download_if_changed_, local_device_data_manager_->GetId(),
@@ -167,6 +170,13 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
     base::Optional<std::vector<nearbyshare::proto::ContactRecord>> contacts) {
   contact_downloader_.reset();
 
+  NS_LOG(VERBOSE) << __func__ << ": Nearby Share contacts download succeeded."
+                  << "\n  Did contacts change since last upload? "
+                  << (did_contacts_change_since_last_upload ? "Yes." : "No.")
+                  << "\n  Were contacts returned? "
+                  << (contacts.has_value() ? "Yes." : "No.")
+                  << "\n  Number of contacts returned: "
+                  << (contacts.has_value() ? contacts->size() : 0u);
   if (contacts) {
     // A complete list of contacts was returned. Do not download list again
     // until contacts change or until explicitly requested.
@@ -217,9 +227,13 @@ void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
 void NearbyShareContactManagerImpl::OnContactsUploadRequested() {
   DCHECK_EQ(UploadState::kIdle, upload_state_);
 
+  NS_LOG(VERBOSE) << __func__
+                  << ": Nearby Share contact upload requested. Waiting to "
+                  << "download full contact list.";
+
   // Because the user's contact list is not persisted locally, we have to
-  // retrieve the full contact list ContactRecord protos from the server before
-  // uploading the list of Contact protos to the server.
+  // retrieve the full contact list ContactRecord protos from the server
+  // before uploading the list of Contact protos to the server.
   upload_state_ = UploadState::kWaitingForDownload;
   DownloadContacts(/*only_download_if_changed=*/false);
 }
@@ -227,6 +241,8 @@ void NearbyShareContactManagerImpl::OnContactsUploadRequested() {
 void NearbyShareContactManagerImpl::StartContactsUpload(
     bool did_contacts_change_since_last_upload,
     const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+  NS_LOG(VERBOSE) << __func__
+                  << ": Starting contacts upload to Nearby Share server.";
   upload_state_ = UploadState::kInProgress;
   local_device_data_manager_->UploadContacts(
       ContactRecordsToContacts(GetAllowedContacts(), contacts),
@@ -238,6 +254,10 @@ void NearbyShareContactManagerImpl::StartContactsUpload(
 void NearbyShareContactManagerImpl::OnContactsUploadFinished(
     bool did_contacts_change_since_last_upload,
     bool success) {
+  NS_LOG(VERBOSE) << __func__ << ": Upload of contacts to Nearby Share server "
+                  << (success ? "succeeded." : "failed.")
+                  << " Did contacts change since last upload? "
+                  << (did_contacts_change_since_last_upload ? "Yes." : "No.");
   if (success) {
     NotifyContactsUploaded(did_contacts_change_since_last_upload);
   }

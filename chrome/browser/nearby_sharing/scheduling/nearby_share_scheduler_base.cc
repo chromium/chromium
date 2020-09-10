@@ -5,12 +5,15 @@
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_base.h"
 
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
+#include "base/i18n/time_formatting.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/util/values/values_util.h"
+#include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/network_service_instance.h"
@@ -67,6 +70,9 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
   base::Time now = clock_->Now();
   SetLastAttemptTime(now);
 
+  NS_LOG(VERBOSE) << "Nearby Share scheduler \"" << pref_name_
+                  << "\" latest attempt " << (success ? "succeeded" : "failed");
+
   if (success) {
     SetLastSuccessTime(now);
     SetNumConsecutiveFailures(0);
@@ -76,6 +82,7 @@ void NearbyShareSchedulerBase::HandleResult(bool success) {
 
   SetIsWaitingForResult(false);
   Reschedule();
+  PrintSchedulerState();
 }
 
 void NearbyShareSchedulerBase::Reschedule() {
@@ -139,6 +146,8 @@ size_t NearbyShareSchedulerBase::GetNumConsecutiveFailures() const {
 
 void NearbyShareSchedulerBase::OnStart() {
   Reschedule();
+  NS_LOG(VERBOSE) << "Starting Nearby Share scheduler \"" << pref_name_ << "\"";
+  PrintSchedulerState();
 }
 
 void NearbyShareSchedulerBase::OnStop() {
@@ -240,4 +249,47 @@ void NearbyShareSchedulerBase::OnTimerFired() {
   SetIsWaitingForResult(true);
   SetHasPendingImmediateRequest(false);
   NotifyOfRequest();
+}
+
+void NearbyShareSchedulerBase::PrintSchedulerState() const {
+  base::Optional<base::Time> last_attempt_time = GetLastAttemptTime();
+  base::Optional<base::Time> last_success_time = GetLastSuccessTime();
+  base::Optional<base::TimeDelta> time_until_next_request =
+      GetTimeUntilNextRequest();
+
+  std::stringstream ss;
+  ss << "State of Nearby Share scheduler \"" << pref_name_ << "\":"
+     << "\n  Last attempt time: ";
+  if (last_attempt_time) {
+    ss << base::TimeFormatShortDateAndTimeWithTimeZone(*last_attempt_time);
+  } else {
+    ss << "Never";
+  }
+
+  ss << "\n  Last success time: ";
+  if (last_success_time) {
+    ss << base::TimeFormatShortDateAndTimeWithTimeZone(*last_success_time);
+  } else {
+    ss << "Never";
+  }
+
+  ss << "\n  Time until next request: ";
+  if (time_until_next_request) {
+    base::string16 next_request_delay;
+    bool success = base::TimeDurationFormatWithSeconds(
+        *time_until_next_request,
+        base::DurationFormatWidth::DURATION_WIDTH_NARROW, &next_request_delay);
+    if (success) {
+      ss << next_request_delay;
+    }
+  } else {
+    ss << "Never";
+  }
+
+  ss << "\n  Is waiting for result? " << (IsWaitingForResult() ? "Yes" : "No");
+  ss << "\n  Pending immediate request? "
+     << (HasPendingImmediateRequest() ? "Yes" : "No");
+  ss << "\n  Num consecutive failures: " << GetNumConsecutiveFailures();
+
+  NS_LOG(VERBOSE) << ss.str();
 }

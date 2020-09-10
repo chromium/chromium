@@ -17,13 +17,17 @@ void NearbyShareContactManager::RemoveObserver(Observer* observer) {
 }
 
 void NearbyShareContactManager::Start() {
-  DCHECK(!is_running_);
+  if (is_running_)
+    return;
+
   is_running_ = true;
   OnStart();
 }
 
 void NearbyShareContactManager::Stop() {
-  DCHECK(is_running_);
+  if (!is_running_)
+    return;
+
   is_running_ = false;
   OnStop();
 }
