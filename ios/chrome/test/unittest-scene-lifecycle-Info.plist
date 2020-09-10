@@ -129,7 +129,7 @@
 			<string>{768, 1024}</string>
 		</dict>
 	</array>
-	<key>UISupportedInterfaceOrientation</key>
+	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
