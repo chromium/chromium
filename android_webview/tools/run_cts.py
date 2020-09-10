@@ -310,8 +310,8 @@ def ForwardArgsToTestRunner(known_args):
   if known_args.devices:
     # test_runner.py parses --device as nargs instead of append args
     forwarded_args.extend(['--device'] + known_args.devices)
-  if known_args.blacklist_file:
-    forwarded_args.extend(['--blacklist-file', known_args.blacklist_file])
+  if known_args.denylist_file:
+    forwarded_args.extend(['--denylist-file', known_args.denylist_file])
 
   if known_args.verbose:
     forwarded_args.extend(['-' + 'v' * known_args.verbose])
@@ -332,7 +332,7 @@ def GetDevice(args):
       emulator_instance.Start(writable_system=True)
       device_utils.DeviceUtils(emulator_instance.serial).WaitUntilFullyBooted()
 
-    devices = script_common.GetDevices(args.devices, args.blacklist_file)
+    devices = script_common.GetDevices(args.devices, args.denylist_file)
     device = devices[0]
     if len(devices) > 1:
       logging.warning('Detection of arch and cts-release will use 1st of %d '

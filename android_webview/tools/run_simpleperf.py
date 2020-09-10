@@ -321,7 +321,7 @@ def main(raw_args):
   logging_common.InitializeLogging(args)
   devil_chromium.Initialize(adb_path=args.adb_path)
 
-  devices = script_common.GetDevices(args.devices, args.blacklist_file)
+  devices = script_common.GetDevices(args.devices, args.denylist_file)
   device = devices[0]
 
   if len(devices) > 1:
