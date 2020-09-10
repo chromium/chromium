@@ -75,15 +75,13 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  auto close_desk_button = std::make_unique<CloseDeskButton>(this);
-  close_desk_button->SetVisible(false);
-
   // TODO(afakhry): Tooltips.
 
   desk_preview_ = AddChildView(std::make_unique<DeskPreviewView>(this));
   desk_name_view_ = AddChildView(std::move(desk_name_view));
-  close_desk_button_ = AddChildView(std::move(close_desk_button));
+  close_desk_button_ = AddChildView(std::make_unique<CloseDeskButton>(this));
 
+  UpdateCloseButtonVisibility();
   UpdateBorderColor();
 }
 
@@ -104,13 +102,16 @@ bool DeskMiniView::IsDeskNameBeingModified() const {
   return desk_name_view_->HasFocus();
 }
 
-void DeskMiniView::OnHoverStateMayHaveChanged() {
+void DeskMiniView::UpdateCloseButtonVisibility() {
   // Don't show the close button when hovered while the dragged window is on
   // the DesksBarView.
+  // For switch access, setting the close button to visible allows users to
+  // navigate to it.
   close_desk_button_->SetVisible(
       DesksController::Get()->CanRemoveDesks() &&
       !owner_bar_->dragged_item_over_bar() &&
-      (IsMouseHovered() || force_show_close_button_));
+      (IsMouseHovered() || force_show_close_button_ ||
+       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()));
 }
 
 void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
@@ -124,7 +125,7 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
       (!is_long_gesture && close_desk_button_->GetVisible() &&
        close_desk_button_->DoesIntersectScreenRect(screen_rect));
   if (old_force_show_close_button != force_show_close_button_)
-    OnHoverStateMayHaveChanged();
+    UpdateCloseButtonVisibility();
 }
 
 void DeskMiniView::UpdateBorderColor() {

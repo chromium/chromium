@@ -221,7 +221,7 @@ float DesksBarView::GetOnHoverWindowSizeScaleFactor() const {
 
 void DesksBarView::OnHoverStateMayHaveChanged() {
   for (auto* mini_view : mini_views_)
-    mini_view->OnHoverStateMayHaveChanged();
+    mini_view->UpdateCloseButtonVisibility();
 }
 
 void DesksBarView::OnGestureTap(const gfx::Rect& screen_rect,
@@ -340,15 +340,18 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   const int begin_x = GetFirstMiniViewXOffset();
   // Remove the mini view from the list now. And remove it from its parent
   // after the animation is done.
-  DeskMiniView* mini_view = *iter;
+  DeskMiniView* removed_mini_view = *iter;
   auto partition_iter = mini_views_.erase(iter);
 
   UpdateMinimumWidthToFitContents();
   overview_grid_->OnDesksChanged();
   new_desk_button_->UpdateButtonState();
 
+  for (auto* mini_view : mini_views_)
+    mini_view->UpdateCloseButtonVisibility();
+
   PerformRemoveDeskMiniViewAnimation(
-      mini_view,
+      removed_mini_view,
       std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
       std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
       begin_x - GetFirstMiniViewXOffset());
