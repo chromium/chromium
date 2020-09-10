@@ -219,8 +219,9 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
 Status NavigationTracker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
                                   const base::DictionaryValue& params) {
-  if (method == "Page.loadEventFired" ||
-      (is_eager_ && method == "Page.domContentEventFired")) {
+  if (client->IsMainPage() &&
+      (method == "Page.loadEventFired" ||
+       (is_eager_ && method == "Page.domContentEventFired"))) {
     frame_to_state_map_[top_frame_id_] = kNotLoading;
     return UpdateCurrentLoadingState();
   } else if (method == "Page.frameAttached") {

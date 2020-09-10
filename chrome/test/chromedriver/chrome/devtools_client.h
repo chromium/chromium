@@ -87,6 +87,10 @@ class DevToolsClient {
 
   // Set the owning WebViewImpl, if any.
   virtual void SetOwner(WebViewImpl* owner) = 0;
+
+  virtual DevToolsClient* GetRootClient() = 0;
+
+  virtual bool IsMainPage();
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVTOOLS_CLIENT_H_

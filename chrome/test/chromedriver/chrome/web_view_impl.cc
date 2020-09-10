@@ -205,7 +205,7 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
   // sends/receives over the socket, and all child sessions are considered
   // its children (one level deep at most).
   DevToolsClientImpl* root_client =
-      static_cast<DevToolsClientImpl*>(client_.get())->GetRootClient();
+      static_cast<DevToolsClientImpl*>(client_.get()->GetRootClient());
   std::unique_ptr<DevToolsClient> child_client(
       std::make_unique<DevToolsClientImpl>(root_client, session_id));
   WebViewImpl* child = new WebViewImpl(

@@ -95,3 +95,7 @@ Status StubDevToolsClient::HandleReceivedEvents() {
 void StubDevToolsClient::SetDetached() {}
 
 void StubDevToolsClient::SetOwner(WebViewImpl* owner) {}
+
+DevToolsClient* StubDevToolsClient::GetRootClient() {
+  return this;
+}

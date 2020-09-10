@@ -339,7 +339,7 @@ DevToolsClientImpl::ResponseInfo::ResponseInfo(const std::string& method)
 
 DevToolsClientImpl::ResponseInfo::~ResponseInfo() {}
 
-DevToolsClientImpl* DevToolsClientImpl::GetRootClient() {
+DevToolsClient* DevToolsClientImpl::GetRootClient() {
   return parent_ ? parent_ : this;
 }
 
@@ -370,7 +370,8 @@ Status DevToolsClientImpl::SendCommandInternal(
     VLOG(1) << "DevTools WebSocket Command: " << method << " (id=" << command_id
             << ") " << id_ << " " << FormatValueForDisplay(params);
   }
-  SyncWebSocket* socket = GetRootClient()->socket_.get();
+  SyncWebSocket* socket =
+      static_cast<DevToolsClientImpl*>(GetRootClient())->socket_.get();
   if (!socket->Send(message)) {
     return Status(kDisconnected, "unable to send message to renderer");
   }

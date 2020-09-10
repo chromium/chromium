@@ -81,6 +81,7 @@ source_set("automation_client_lib") {
     "chrome/device_manager.h",
     "chrome/device_metrics.cc",
     "chrome/device_metrics.h",
+    "chrome/devtools_client.cc",
     "chrome/devtools_client.h",
     "chrome/devtools_client_impl.cc",
     "chrome/devtools_client_impl.h",
