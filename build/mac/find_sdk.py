@@ -65,7 +65,7 @@ def main():
     print(out, file=sys.stderr)
     print(err, file=sys.stderr)
     raise Exception('Error %d running xcode-select' % job.returncode)
-  dev_dir = out.rstrip()
+  dev_dir = out.decode('UTF-8').rstrip()
   sdk_dir = os.path.join(
       dev_dir, 'Platforms/MacOSX.platform/Developer/SDKs')
 

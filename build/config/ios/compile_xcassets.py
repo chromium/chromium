@@ -32,16 +32,18 @@ NOTICE_SECTION = 'com.apple.actool.compilation-results'
 # Regular expressions matching spurious messages from actool that should be
 # ignored (as they are bogus). Generally a bug should be filed with Apple
 # when adding a pattern here.
-SPURIOUS_PATTERNS = map(re.compile, [
-    # crbug.com/770634, likely a bug in Xcode 9.1 beta, remove once build
-    # requires a version of Xcode with a fix.
-    r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: \(null\)',
+SPURIOUS_PATTERNS = [
+    re.compile(v) for v in [
+        # crbug.com/770634, likely a bug in Xcode 9.1 beta, remove once build
+        # requires a version of Xcode with a fix.
+        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: \(null\)',
 
-    # crbug.com/770634, likely a bug in Xcode 9.2 beta, remove once build
-    # requires a version of Xcode with a fix.
-    r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app icons'
-    ' only apply to iPad apps targeting releases of iOS prior to 10.0.',
-])
+        # crbug.com/770634, likely a bug in Xcode 9.2 beta, remove once build
+        # requires a version of Xcode with a fix.
+        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app icons'
+        ' only apply to iPad apps targeting releases of iOS prior to 10.0.',
+    ]
+]
 
 # Map special type of asset catalog to the corresponding command-line
 # parameter that need to be passed to actool.
@@ -193,7 +195,7 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
     stdout, _ = process.communicate()
 
     # Filter the output to remove all garbarge and to fix the paths.
-    stdout = FilterCompilerOutput(stdout, relative_paths)
+    stdout = FilterCompilerOutput(stdout.decode('UTF-8'), relative_paths)
 
     if process.returncode or stdout:
       sys.stderr.write(stdout)

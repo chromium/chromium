@@ -13,6 +13,11 @@ import re
 import subprocess
 import sys
 
+if sys.version_info.major < 3:
+  basestring_compat = basestring
+else:
+  basestring_compat = str
+
 # src directory
 ROOT_SRC_DIR = os.path.dirname(
     os.path.dirname(
@@ -61,7 +66,8 @@ def FillXcodeVersion(settings, developer_dir):
     settings['xcode_build'] = version_plist['ProductBuildVersion']
     return
 
-  lines = subprocess.check_output(['xcodebuild', '-version']).splitlines()
+  lines = subprocess.check_output(['xcodebuild',
+                                   '-version']).decode('UTF-8').splitlines()
   settings['xcode_version'] = FormatVersion(lines[0].split()[-1])
   settings['xcode_version_int'] = int(settings['xcode_version'], 10)
   settings['xcode_build'] = lines[-1].split()[-1]
@@ -69,8 +75,8 @@ def FillXcodeVersion(settings, developer_dir):
 
 def FillMachineOSBuild(settings):
   """Fills OS build number into |settings|."""
-  machine_os_build = subprocess.check_output(['sw_vers', '-buildVersion'],
-                                             universal_newlines=True).strip()
+  machine_os_build = subprocess.check_output(['sw_vers', '-buildVersion'
+                                              ]).decode('UTF-8').strip()
   settings['machine_os_build'] = machine_os_build
 
   # The reported build number is made up from the kernel major version number,
@@ -91,14 +97,17 @@ def FillMachineOSBuild(settings):
 
 def FillSDKPathAndVersion(settings, platform, xcode_version):
   """Fills the SDK path and version for |platform| into |settings|."""
-  settings['sdk_path'] = subprocess.check_output([
-      'xcrun', '-sdk', platform, '--show-sdk-path']).strip()
-  settings['sdk_version'] = subprocess.check_output([
-      'xcrun', '-sdk', platform, '--show-sdk-version']).strip()
-  settings['sdk_platform_path'] = subprocess.check_output([
-      'xcrun', '-sdk', platform, '--show-sdk-platform-path']).strip()
+  settings['sdk_path'] = subprocess.check_output(
+      ['xcrun', '-sdk', platform, '--show-sdk-path']).decode('UTF-8').strip()
+  settings['sdk_version'] = subprocess.check_output(
+      ['xcrun', '-sdk', platform,
+       '--show-sdk-version']).decode('UTF-8').strip()
+  settings['sdk_platform_path'] = subprocess.check_output(
+      ['xcrun', '-sdk', platform,
+       '--show-sdk-platform-path']).decode('UTF-8').strip()
   settings['sdk_build'] = subprocess.check_output(
-      ['xcrun', '-sdk', platform, '--show-sdk-build-version']).strip()
+      ['xcrun', '-sdk', platform,
+       '--show-sdk-build-version']).decode('UTF-8').strip()
 
 
 def CreateXcodeSymlinkAt(src, dst):
@@ -157,6 +166,6 @@ if __name__ == '__main__':
     value = settings[key]
     if args.create_symlink_at and '_path' in key:
       value = CreateXcodeSymlinkAt(value, args.create_symlink_at)
-    if isinstance(value, str):
+    if isinstance(value, basestring_compat):
       value = '"%s"' % value
     print('%s=%s' % (key, value))

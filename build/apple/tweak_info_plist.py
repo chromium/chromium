@@ -43,22 +43,8 @@ def _GetOutput(args):
   """Runs a subprocess and waits for termination. Returns (stdout, returncode)
   of the process. stderr is attached to the parent."""
   proc = subprocess.Popen(args, stdout=subprocess.PIPE)
-  (stdout, stderr) = proc.communicate()
-  return (stdout, proc.returncode)
-
-
-def _GetOutputNoError(args):
-  """Similar to _GetOutput() but ignores stderr. If there's an error launching
-  the child (like file not found), the exception will be caught and (None, 1)
-  will be returned to mimic quiet failure."""
-  try:
-    proc = subprocess.Popen(args,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-  except OSError:
-    return (None, 1)
-  (stdout, stderr) = proc.communicate()
-  return (stdout, proc.returncode)
+  stdout, _ = proc.communicate()
+  return stdout.decode('UTF-8'), proc.returncode
 
 
 def _RemoveKeys(plist, *keys):
@@ -194,9 +180,9 @@ def _TagSuffixes():
   components_len = len(components)
   combinations = 1 << components_len
   tag_suffixes = []
-  for combination in xrange(0, combinations):
+  for combination in range(0, combinations):
     tag_suffix = ''
-    for component_index in xrange(0, components_len):
+    for component_index in range(0, components_len):
       if combination & (1 << component_index):
         tag_suffix += '-' + components[component_index]
     tag_suffixes.append(tag_suffix)

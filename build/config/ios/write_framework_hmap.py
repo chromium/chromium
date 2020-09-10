@@ -50,7 +50,7 @@ def WriteHmap(output_name, filelist):
   count = len(filelist)
   capacity = NextGreaterPowerOf2(count)
   strings_offset = 24 + (12 * capacity)
-  max_value_length = len(max(filelist.items(), key=lambda (k,v):len(v))[1])
+  max_value_length = len(max(filelist.values(), key=lambda v: len(v)))
 
   out = open(output_name, 'wb')
   out.write(struct.pack('<LHHLLLL', magic, version, _reserved, strings_offset,
@@ -86,14 +86,17 @@ def WriteHmap(output_name, filelist):
   for bucket in buckets:
     if bucket is not None:
       (file, path) = bucket
-      out.write(struct.pack('<%ds' % len(file), file))
-      out.write(struct.pack('<s', '\0'))
       base = os.path.dirname(path) + os.sep
-      out.write(struct.pack('<%ds' % len(base), base))
-      out.write(struct.pack('<s', '\0'))
       path = os.path.basename(path)
+      file = file.encode('UTF-8')
+      base = base.encode('UTF-8')
+      path = path.encode('UTF-8')
+      out.write(struct.pack('<%ds' % len(file), file))
+      out.write(struct.pack('<s', b'\0'))
+      out.write(struct.pack('<%ds' % len(base), base))
+      out.write(struct.pack('<s', b'\0'))
       out.write(struct.pack('<%ds' % len(path), path))
-      out.write(struct.pack('<s', '\0'))
+      out.write(struct.pack('<s', b'\0'))
 
 
 if __name__ == '__main__':

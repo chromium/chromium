@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import codecs
 import datetime
@@ -15,6 +17,11 @@ import subprocess
 import sys
 import tempfile
 
+if sys.version_info.major < 3:
+  basestring_compat = basestring
+else:
+  basestring_compat = str
+
 
 def GetProvisioningProfilesDir():
   """Returns the location of the installed mobile provisioning profiles.
@@ -27,6 +34,21 @@ def GetProvisioningProfilesDir():
       os.environ['HOME'], 'Library', 'MobileDevice', 'Provisioning Profiles')
 
 
+def ReadPlistFromString(plist_bytes):
+  """Parse property list from given |plist_bytes|.
+
+    Args:
+      plist_bytes: contents of property list to load. Must be bytes in python 3.
+
+    Returns:
+      The contents of property list as a python object.
+    """
+  if sys.version_info.major == 2:
+    return plistlib.readPlistFromString(plist_bytes)
+  else:
+    return plistlib.loads(plist_bytes)
+
+
 def LoadPlistFile(plist_path):
   """Loads property list file at |plist_path|.
 
@@ -36,8 +58,9 @@ def LoadPlistFile(plist_path):
   Returns:
     The content of the property list file as a python object.
   """
-  return plistlib.readPlistFromString(subprocess.check_output([
-      'xcrun', 'plutil', '-convert', 'xml1', '-o', '-', plist_path]))
+  return ReadPlistFromString(
+      subprocess.check_output(
+          ['xcrun', 'plutil', '-convert', 'xml1', '-o', '-', plist_path]))
 
 
 class Bundle(object):
@@ -74,7 +97,7 @@ class Bundle(object):
       error message. The dictionary will be empty if there are no errors.
     """
     errors = {}
-    for key, expected_value in expected_mappings.iteritems():
+    for key, expected_value in expected_mappings.items():
       if key in self._data:
         value = self._data[key]
         if value != expected_value:
@@ -88,9 +111,11 @@ class ProvisioningProfile(object):
   def __init__(self, provisioning_profile_path):
     """Initializes the ProvisioningProfile with data from profile file."""
     self._path = provisioning_profile_path
-    self._data = plistlib.readPlistFromString(subprocess.check_output([
-        'xcrun', 'security', 'cms', '-D', '-u', 'certUsageAnyCA',
-        '-i', provisioning_profile_path]))
+    self._data = ReadPlistFromString(
+        subprocess.check_output([
+            'xcrun', 'security', 'cms', '-D', '-u', 'certUsageAnyCA', '-i',
+            provisioning_profile_path
+        ]))
 
   @property
   def path(self):
@@ -155,13 +180,13 @@ class Entitlements(object):
     self._data = self._ExpandVariables(self._data, substitutions)
 
   def _ExpandVariables(self, data, substitutions):
-    if isinstance(data, str):
-      for key, substitution in substitutions.iteritems():
+    if isinstance(data, basestring_compat):
+      for key, substitution in substitutions.items():
         data = data.replace('$(%s)' % (key,), substitution)
       return data
 
     if isinstance(data, dict):
-      for key, value in data.iteritems():
+      for key, value in data.items():
         data[key] = self._ExpandVariables(value, substitutions)
       return data
 
@@ -172,7 +197,7 @@ class Entitlements(object):
     return data
 
   def LoadDefaults(self, defaults):
-    for key, value in defaults.iteritems():
+    for key, value in defaults.items():
       if key not in self._data:
         self._data[key] = value
 

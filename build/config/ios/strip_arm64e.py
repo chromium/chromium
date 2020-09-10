@@ -18,9 +18,9 @@ def check_output(command):
   if process.returncode:
     sys.stderr.write('error: command failed with retcode %d: %s\n\n' %
                      (process.returncode, ' '.join(map(repr, command))))
-    sys.stderr.write(errs)
+    sys.stderr.write(errs.decode('UTF-8', errors='ignore'))
     sys.exit(process.returncode)
-  return outs
+  return outs.decode('UTF-8')
 
 
 def check_call(command):
