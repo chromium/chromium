@@ -31,6 +31,7 @@
         border-radius: 4px;
         display: block;
         margin: 0 12px;
+        position: relative;
       }
 
       #imageContainer.personal-album {
@@ -51,6 +52,7 @@
         border-radius: 4px;
         display: block;
         height: 160px;
+        position: absolute;
         transform: scale(1.0);
         transition: transform 240ms;
       }
@@ -63,47 +65,20 @@
         width: 256px;
       }
 
-      .selected-circle {
-        background-color: rgba(var(--google-blue-700-rgb), 1.0);
-        border-radius: 50%;
-        box-shadow: 0 3px 6px 1px rgba(0, 0, 0, .16),
-            0 1px 2px 1px rgba(0, 0, 0, .23);
-        display: none;
-        height: 22px;
+      .check {
+        display: block;
         position: absolute;
-        width: 22px;
         z-index: 1;
       }
 
-      .selected-circle.personal-album {
-        left: 144px;
-        top: 12px;
-      }
-
-      .selected-circle.art-album {
-        left: 240px;
-        top: 8px;
-      }
-
-      .check {
-        border-bottom: 2px solid #fff;
-        border-inline-end: 2px solid #fff;
-        display: none;
-        height: 10px;
-        position: absolute;
-        transform: rotate(45deg);
-        width: 5px;
-        z-index: 2;
-      }
-
       .check.personal-album {
-        left: 152px;
-        top: 16px;
+        left: 134px;
+        top: 6px;
       }
 
       .check.art-album {
-        left: 248px;
-        top: 12px;
+        left: 230px;
+        top: 0;
       }
 
       :host([checked]) #image {
@@ -120,16 +95,6 @@
       :host([checked]) #image.art-album {
         transform: scale(0.875);
       }
-
-      :host([checked]) .selected-circle {
-        display: block;
-        transition: transform 240ms;
-      }
-
-      :host([checked]) .check {
-        display: block;
-        transition: transform 240ms;
-      }
     </style>
     <div id="albumContainer"
         class$="layout vertical left flex [[computeClass_(topicSource)]]">
@@ -138,8 +103,10 @@
         <img id="image" class$="[[computeClass_(topicSource)]]" actionable
             src="[[album.url]]" on-click="onImageClick_">
         </img>
-        <div class$="check [[computeClass_(topicSource)]]"></div>
-        <div class$="selected-circle [[computeClass_(topicSource)]]"></div>
+        <iron-icon icon="os-settings:ic-checked-filled"
+            class$="check [[computeClass_(topicSource)]]"
+            hidden="[[!album.checked]]">
+        </iron-icon>
       </div>
 
       <div id="albumInfo" class$="[[computeClass_(topicSource)]]"
