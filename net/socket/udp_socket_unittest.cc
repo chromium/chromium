@@ -635,6 +635,8 @@ TEST_F(UDPSocketTest, JoinMulticastGroup) {
 
   IPAddress group_ip;
   EXPECT_TRUE(group_ip.AssignFromIPLiteral(kGroup));
+// TODO(https://github.com/google/gvisor/issues/3839): don't guard on
+// OS_FUCHSIA.
 #if defined(OS_WIN) || defined(OS_FUCHSIA)
   IPEndPoint bind_address(IPAddress::AllZeros(group_ip.size()), 0 /* port */);
 #else
@@ -666,6 +668,8 @@ TEST_F(UDPSocketTest, MAYBE_SharedMulticastAddress) {
 
   IPAddress group_ip;
   ASSERT_TRUE(group_ip.AssignFromIPLiteral(kGroup));
+// TODO(https://github.com/google/gvisor/issues/3839): don't guard on
+// OS_FUCHSIA.
 #if defined(OS_WIN) || defined(OS_FUCHSIA)
   IPEndPoint receive_address(IPAddress::AllZeros(group_ip.size()),
                              0 /* port */);
