@@ -150,7 +150,7 @@
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin {
   NSString* message;
 
-  if (origin)
+  if (origin.length > 0)
     message =
         l10n_util::GetNSStringF(IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION,
                                 base::SysNSStringToUTF16(origin));
@@ -167,13 +167,9 @@
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_DELETION)
                 action:^{
-                  [weakSelf.delegate
-                      passwordDetailsCoordinator:weakSelf
-                                  deletePassword:weakSelf.mediator.password];
-                  base::UmaHistogramEnumeration(
-                      "PasswordManager.BulkCheck.UserAction",
-                      password_manager::metrics_util::PasswordCheckInteraction::
-                          kRemovePassword);
+                  [weakSelf
+                      passwordDeletionConfirmedForCompromised:origin.length >
+                                                              0];
                 }
                  style:UIAlertActionStyleDestructive];
 
@@ -211,6 +207,20 @@
                  style:UIAlertActionStyleCancel];
 
   [self.actionSheetCoordinator start];
+}
+
+#pragma mark - Private
+
+// Notifies delegate about password deletion and records metric if needed.
+- (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised {
+  [self.delegate passwordDetailsCoordinator:self
+                             deletePassword:self.mediator.password];
+  if (compromised) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.BulkCheck.UserAction",
+        password_manager::metrics_util::PasswordCheckInteraction::
+            kRemovePassword);
+  }
 }
 
 @end

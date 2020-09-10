@@ -444,8 +444,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           [[UIImage imageNamed:@"infobar_hide_password_icon"]
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
-      UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                              PasswordCheckInteraction::kShowPassword);
+      if (self.password.compromised) {
+        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                                PasswordCheckInteraction::kShowPassword);
+      }
       break;
     case ReauthenticationReasonCopy: {
       UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
@@ -496,8 +498,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [self.delegate passwordDetailsViewController:self
                         didEditPasswordDetails:self.password];
   [super editButtonPressed];
-  UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
-                          PasswordCheckInteraction::kEditPassword);
+  if (self.password.compromised) {
+    UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                            PasswordCheckInteraction::kEditPassword);
+  }
   [self reloadData];
 }
 
