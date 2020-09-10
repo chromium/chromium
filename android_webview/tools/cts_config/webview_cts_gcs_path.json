@@ -71,10 +71,6 @@
           {
             "match": "android.webkit.cts.WebViewTest#testLoadDataWithBaseUrl",
             "_bug_id": "crbug.com/900915"
-          },
-          {
-            "match": "android.webkit.cts.WebSettingsTest#testAccessCacheMode",
-            "_bug_id": "crbug.com/1102041"
           }
         ]
       },
@@ -160,10 +156,6 @@
           {
             "match": "android.webkit.cts.WebViewTest#testLoadDataWithBaseUrl",
             "_bug_id": "crbug.com/900915"
-          },
-          {
-            "match": "android.webkit.cts.WebSettingsTest#testAccessCacheMode",
-            "_bug_id": "crbug.com/1102041"
           }
         ]
       },
