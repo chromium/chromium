@@ -8,7 +8,7 @@ using fuchsia.ui.gfx;
 using fuchsia.web;
 
 /// Describes the configuration under which a Cast application should run.
-table ApplicationConfig {
+resource table ApplicationConfig {
   /// Cast application Id.
   1: string id;
 
