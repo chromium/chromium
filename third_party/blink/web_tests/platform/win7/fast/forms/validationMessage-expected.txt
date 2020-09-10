@@ -1,0 +1,66 @@
+CONSOLE WARNING: line 119: The specified value "1999-01-02" cannot be parsed, or is out of range.
+CONSOLE WARNING: line 127: The specified value "2000-01-01T00:00" cannot be parsed, or is out of range.
+CONSOLE WARNING: line 135: The specified value "1999-01" cannot be parsed, or is out of range.
+CONSOLE WARNING: line 143: The specified value "1999-W01" cannot be parsed, or is out of range.
+CONSOLE WARNING: line 151: The specified value "06:00" cannot be parsed, or is out of range.
+Test for validationMessage DOM property.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+input patternMismatch: Please match the requested format.
+input valueMissing: Please fill out this field.
+textarea valueMissing: Please fill out this field.
+select valueMissing: Please select an item in the list.
+input typeMismatch for incorrectValue: Please include an '@' in the email address. 'incorrectValue' is missing an '@'.
+input typeMismatch for @xn--fsq.com: Please enter a part followed by '@'. '@‰æã.com' is incomplete.
+input typeMismatch for user@: Please enter a part following '@'. 'user@' is incomplete.
+input typeMismatch for user@example*.com: A part following '@' should not contain the symbol '*'.
+input typeMismatch for userüôá@example.com: A part followed by '@' should not contain the symbol 'üôá'.
+input typeMismatch for userÌ†Ä@example.com: A part followed by '@' should not contain the symbol 'Ì†Ä'.
+input typeMismatch for user@.example.com: '.' is used at a wrong position in '.example.com'.
+input typeMismatch for user@example.com.: '.' is used at a wrong position in 'example.com.'.
+input typeMismatch for user@xn--z8ja1psq..com: '.' is used at a wrong position in '„Åê„Éº„Åê„Çã..com'.
+input typeMismatch for foo@example.com,,bar@example.com: Please enter a non-empty email address.
+input typeMismatch for ,foo@example.com: Please enter a non-empty email address.
+input typeMismatch for foo@example.com,: Please enter a non-empty email address.
+input typeMismatch for foo@example.com,bar@..example.com: '.' is used at a wrong position in '..example.com'.
+input badInput: Please enter a number.
+badInput and valueMissing:
+PASS numberInput.validationMessage is nonRequiredBadInputMessage
+stepMismatch:
+input stepMismatch: Please enter a valid value. The two nearest valid values are 0.1 and 0.2.
+input stepMismatch: Please enter a valid value. The two nearest valid values are 0.1 and 0.2.
+input stepMismatch: Please enter a valid value. The nearest valid value is 10.
+rangeOverflow and rangeUnderflow:
+input rangeOverflow and rangeUnderflow: Value must be 1.
+input rangeOverflow and rangeUnderflow: Value must be 1.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000 12:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 01/02/2000 12:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be January, 2000.
+input rangeOverflow and rangeUnderflow: Value must be January, 2000.
+input rangeOverflow and rangeUnderflow: Value must be Week 01, 2000.
+input rangeOverflow and rangeUnderflow: Value must be Week 01, 2000.
+input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
+input rangeOverflow and rangeUnderflow: Value must be 7:00 AM.
+tooLong:
+input tooLong: Please shorten this text to 3 characters or less (you are currently using 5 characters).
+input tooLong: Please shorten this text to 2 characters or less (you are currently using 3 characters).
+input tooLong: Please shorten this text to Ÿ¢ characters or less (you are currently using Ÿ£ characters).
+textarea tooLong: Please shorten this text to 3 characters or less (you are currently using 4 characters).
+tooShort:
+input tooShort: Please lengthen this text to 3 characters or more (you are currently using 1 character).
+input tooShort: Please lengthen this text to 4 characters or more (you are currently using 3 characters).
+input tooShort: Please lengthen this text to Ÿ§ characters or more (you are currently using Ÿ£ characters).
+textarea tooShort: Please lengthen this text to 4 characters or more (you are currently using 2 characters).
+PASS but.validationMessage is ''
+PASS anoninput.validationMessage is ''
+PASS happyFieldset.validationMessage is ''
+PASS happySelect.validationMessage is ''
+PASS happyOutput.validationMessage is ''
+PASS happyObject.validationMessage is ''
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
