@@ -43,6 +43,9 @@ crbug.com/611906 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLo
 crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Skip ]
 crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
 crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
 
 # Flaking on Nexus 9
 crbug.com/609629 [ android nvidia ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
