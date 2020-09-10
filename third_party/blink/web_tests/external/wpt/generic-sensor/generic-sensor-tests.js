@@ -371,47 +371,40 @@ function runGenericSensorTests(sensorName,
 
   sensor_test(async (t, sensorProvider) => {
     assert_implements(sensorName in self, `${sensorName} is not supported.`);
-    const fastSensor = new sensorType({frequency: 60});
+
+    const fastSensor = new sensorType({ frequency: 60 });
+    t.add_cleanup(() => { fastSensor.stop(); });
+    let eventWatcher = new EventWatcher(t, fastSensor, "activate");
     fastSensor.start();
+
+    // Wait for |fastSensor| to be activated so that the call to
+    // getSamplingFrequency() below works.
+    await eventWatcher.wait_for("activate");
 
     const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
     await mockSensor.setSensorReading(readings);
 
-    return new Promise((resolve, reject) => {
-      let fastSensorNotifiedCounter = 0;
-      let slowSensorNotifiedCounter = 0;
+    // We need |fastSensorFrequency| because 60Hz might be higher than a sensor
+    // type's maximum allowed frequency.
+    const fastSensorFrequency = mockSensor.getSamplingFrequency();
+    const slowSensorFrequency = fastSensorFrequency * 0.25;
 
-      fastSensor.onreading = () => {
-        if (fastSensorNotifiedCounter === 0) {
-          // For Magnetometer and ALS, the maximum frequency is less than 60Hz
-          // we make "slow" sensor 4 times slower than the actual applied
-          // frequency, so that the "fast" sensor will immediately overtake it
-          // despite the notification adjustments.
-          const slowFrequency = mockSensor.getSamplingFrequency() * 0.25;
-          const slowSensor = new sensorType({frequency: slowFrequency});
-          slowSensor.onreading = () => {
-            // Skip the initial notification that always comes immediately.
-            if (slowSensorNotifiedCounter === 2) {
-              fastSensor.stop();
-              slowSensor.stop();
+    const slowSensor = new sensorType({ frequency: slowSensorFrequency });
+    t.add_cleanup(() => { slowSensor.stop(); });
+    eventWatcher = new EventWatcher(t, slowSensor, "activate");
+    slowSensor.start();
 
-              try {
-                assert_greater_than(fastSensorNotifiedCounter, 3,
-                    "Fast sensor overtakes the slow one");
-                resolve();
-              } catch (e) {
-                reject(e);
-              }
-            }
-            slowSensorNotifiedCounter++;
-          }
-          slowSensor.onerror = reject;
-          slowSensor.start();
-        }
-        fastSensorNotifiedCounter++;
-      }
-      fastSensor.onerror = reject;
-    });
+    // Wait for |slowSensor| to be activated before we check if the mock
+    // platform sensor's sampling frequency has changed.
+    await eventWatcher.wait_for("activate");
+    assert_equals(mockSensor.getSamplingFrequency(), fastSensorFrequency);
+
+    // Now stop |fastSensor| and verify that the sampling frequency has dropped
+    // to the one |slowSensor| had requested.
+    fastSensor.stop();
+    return t.step_wait(() => {
+      return mockSensor.getSamplingFrequency() === slowSensorFrequency;
+    }, "Sampling frequency has dropped to slowSensor's requested frequency");
   }, `${sensorName}: frequency hint works.`);
 
 //  Re-enable after https://github.com/w3c/sensors/issues/361 is fixed.

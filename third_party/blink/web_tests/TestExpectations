@@ -5799,12 +5799,6 @@ crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-align-002.html 
 crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-001.html [ Failure ]
 crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-002.html [ Failure ]
 
-# Sheriff 2019-09-12
-crbug.com/731018 [ Mac ] external/wpt/accelerometer/Accelerometer.https.html [ Pass Failure ]
-crbug.com/731018 [ Mac ] external/wpt/gyroscope/Gyroscope.https.html [ Pass Failure ]
-crbug.com/731018 [ Mac ] external/wpt/orientation-sensor/AbsoluteOrientationSensor.https.html [ Pass Failure ]
-crbug.com/731018 [ Mac ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Pass Failure ]
-
 # Sheriff 2019-09-20
 crbug.com/1005128 crypto/subtle/abandon-crypto-operation2.html [ Pass Crash ]
 
