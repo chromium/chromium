@@ -556,6 +556,7 @@ void CreditCard::operator=(const CreditCard& credit_card) {
   temp_card_last_name_ = credit_card.temp_card_last_name_;
   nickname_ = credit_card.nickname_;
   card_issuer_ = credit_card.card_issuer_;
+  instrument_id_ = credit_card.instrument_id_;
 
   set_guid(credit_card.guid());
   set_origin(credit_card.origin());
@@ -1055,7 +1056,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " " << credit_card.record_type() << " "
             << credit_card.use_count() << " " << credit_card.use_date() << " "
             << credit_card.billing_address_id() << " " << credit_card.nickname()
-            << " " << credit_card.card_issuer();
+            << " " << credit_card.card_issuer() << " "
+            << credit_card.instrument_id();
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

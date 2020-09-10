@@ -147,6 +147,9 @@ class CreditCard : public AutofillDataModel {
 
   const base::string16& nickname() const { return nickname_; }
 
+  int instrument_id() const { return instrument_id_; }
+  void set_instrument_id(int instrument_id) { instrument_id_ = instrument_id; }
+
   // Set the nickname with the processed input (replace all tabs and newlines
   // with whitespaces, and trim leading/trailing whitespaces).
   void SetNickname(const base::string16& nickname);
@@ -380,6 +383,11 @@ class CreditCard : public AutofillDataModel {
   // The issuer for the card. This is populated from the sync response. It has a
   // default value of CreditCard::ISSUER_UNKNOWN.
   Issuer card_issuer_;
+
+  // For masked server cards, this is the ID assigned by the server to uniquely
+  // identify this card. |server_id_| is the legacy version of this.
+  // TODO(crbug.com/1121806): remove server_id_ after full deprecation
+  int instrument_id_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().
