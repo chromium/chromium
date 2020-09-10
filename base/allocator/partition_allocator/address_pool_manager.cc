@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"
+#include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 
@@ -53,14 +54,16 @@ bool WARN_UNUSED_RESULT CommitPages(void* address, size_t size) {
   return true;
 }
 
+base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
+    LAZY_INSTANCE_INITIALIZER;
+
 }  // namespace
 
 constexpr size_t AddressPoolManager::Pool::kMaxBits;
 
 // static
 AddressPoolManager* AddressPoolManager::GetInstance() {
-  static NoDestructor<AddressPoolManager> instance;
-  return instance.get();
+  return g_address_pool_manager.Pointer();
 }
 
 pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {

@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/random.h"
 
+#include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
@@ -12,9 +13,10 @@ namespace base {
 
 namespace {
 
+LazyInstance<Lock>::Leaky g_lock = LAZY_INSTANCE_INITIALIZER;
+
 Lock& GetLock() {
-  static NoDestructor<Lock> lock;
-  return *lock;
+  return g_lock.Get();
 }
 
 }  // namespace

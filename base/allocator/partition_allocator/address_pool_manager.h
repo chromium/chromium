@@ -10,7 +10,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/atomicops.h"
-#include "base/no_destructor.h"
+#include "base/lazy_instance.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -81,7 +81,7 @@ class BASE_EXPORT AddressPoolManager {
   static constexpr size_t kNumPools = 2;
   Pool pools_[kNumPools];
 
-  friend class NoDestructor<AddressPoolManager>;
+  friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
   DISALLOW_COPY_AND_ASSIGN(AddressPoolManager);
 };
 

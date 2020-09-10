@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
@@ -36,10 +37,11 @@ namespace base {
 
 namespace {
 
+LazyInstance<Lock>::Leaky g_reserve_lock = LAZY_INSTANCE_INITIALIZER;
+
 // We may reserve/release address space on different threads.
 Lock& GetReserveLock() {
-  static NoDestructor<Lock> lock;
-  return *lock;
+  return g_reserve_lock.Get();
 }
 
 std::atomic<size_t> g_total_mapped_address_space;
