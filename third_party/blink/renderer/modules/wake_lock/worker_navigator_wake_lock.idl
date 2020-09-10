@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This was originally in
 // https://w3c.github.io/wake-lock/#extensions-to-the-workernavigator-interface
+// until System Wake Lock API was split from the Screen Wake Lock API.
 
 [
   ImplementedAs=WorkerNavigatorWakeLock,

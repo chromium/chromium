@@ -23,7 +23,7 @@ WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
 WakeLockSentinel::~WakeLockSentinel() = default;
 
 ScriptPromise WakeLockSentinel::release(ScriptState* script_state) {
-  // https://w3c.github.io/wake-lock/#the-release-method
+  // https://w3c.github.io/screen-wake-lock/#the-release-method
   // 1. Let promise be a new promise.
   // 2. Run the following steps in parallel:
   // 2.1. Run release wake lock with lock set to this object and type set to the
@@ -39,7 +39,7 @@ bool WakeLockSentinel::released() const {
 }
 
 String WakeLockSentinel::type() const {
-  // https://w3c.github.io/wake-lock/#dom-wakelocksentinel-type
+  // https://w3c.github.io/screen-wake-lock/#dom-wakelocksentinel-type
   // The type attribute corresponds to the WakeLockSentinel's wake lock type.
   switch (type_) {
     case WakeLockType::kScreen:
@@ -78,7 +78,7 @@ void WakeLockSentinel::ContextDestroyed() {
 }
 
 void WakeLockSentinel::DoRelease() {
-  // https://w3c.github.io/wake-lock/#release-wake-lock-algorithm
+  // https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
   // 1. Let document be the responsible document of the current settings object.
   // 2. Let record be the platform wake lock's state record associated with
   // document and type.
@@ -102,7 +102,7 @@ void WakeLockSentinel::DoRelease() {
 }
 
 void WakeLockSentinel::DispatchReleaseEvent() {
-  // https://w3c.github.io/wake-lock/#release-wake-lock-algorithm
+  // https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
   // 6.1. Set lock.released to true.
   DCHECK(!released_);
   released_ = true;

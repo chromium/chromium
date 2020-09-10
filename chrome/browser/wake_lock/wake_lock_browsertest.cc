@@ -84,7 +84,7 @@ void WakeLockBrowserTest::NavigateToAndRespondWithScript(
   loop.Run();
 }
 
-// https://w3c.github.io/wake-lock/#request-static-method
+// https://w3c.github.io/screen-wake-lock/#the-request-method
 // Screen locks are never allowed from workers.
 IN_PROC_BROWSER_TEST_F(WakeLockBrowserTest, RequestScreenLockFromWorker) {
   permissions::PermissionRequestObserver observer(

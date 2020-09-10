@@ -22,7 +22,7 @@ namespace blink {
 // WakeLockType enum as a C++ enum, and for converting between WakeLockType and
 // device.mojom.WakeLockType.
 
-// https://w3c.github.io/wake-lock/#the-wakelocktype-enum
+// https://w3c.github.io/screen-wake-lock/#the-wakelocktype-enum
 enum class WakeLockType : int8_t { kScreen, kSystem, kMaxValue = kSystem };
 
 // Useful for creating arrays with size N, where N is the number of different

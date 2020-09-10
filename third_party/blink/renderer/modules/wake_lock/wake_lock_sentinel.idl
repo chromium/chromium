@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/wake-lock/#the-wakelocksentinel-interface
+// https://w3c.github.io/screen-wake-lock/#the-wakelocksentinel-interface
 
 [
   ActiveScriptWrappable,

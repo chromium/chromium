@@ -77,7 +77,7 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 }
 
-// https://w3c.github.io/wake-lock/#handling-document-loss-of-full-activity
+// https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-full-activity
 TEST(WakeLockTest, LossOfDocumentActivity) {
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
@@ -121,7 +121,7 @@ TEST(WakeLockTest, LossOfDocumentActivity) {
   EXPECT_FALSE(system_lock.is_acquired());
 }
 
-// https://w3c.github.io/wake-lock/#handling-document-loss-of-visibility
+// https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHidden) {
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
@@ -172,7 +172,7 @@ TEST(WakeLockTest, PageVisibilityHidden) {
   EXPECT_TRUE(screen_lock.is_acquired());
 }
 
-// https://w3c.github.io/wake-lock/#handling-document-loss-of-visibility
+// https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
 TEST(WakeLockTest, PageVisibilityHiddenBeforeLockAcquisition) {
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);

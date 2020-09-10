@@ -37,9 +37,9 @@ The rest of the implementation is found in the following directories:
 * `chrome/browser/wake_lock` contains the Chrome-specific side of permission management for Wake Locks. When the Blink implementation needs to either query or request permission for wake locks, the request bubbles up to this directory, where the decision is made based on the wake lock type (for testing purposes, `content_shell` always grants screen wake locks and denies system wake locks in [`shell_permission_manager.cc`](/content/shell/browser/web_test/web_test_message_filter.cc)).
 
 [Mojo interfaces]: ../../../../../services/device/public/mojom/
-[Wake Lock management]: https://w3c.github.io/wake-lock/#managing-wake-locks
-[Wake Lock specification]: https://w3c.github.io/wake-lock/
-[state records]: https://w3c.github.io/wake-lock/#dfn-state-record
+[Wake Lock management]: https://w3c.github.io/screen-wake-lock/#managing-wake-locks
+[Wake Lock specification]: https://w3c.github.io/screen-wake-lock/
+[state records]: https://w3c.github.io/screen-wake-lock/#dfn-state-record
 
 ### Testing
 
@@ -65,7 +65,7 @@ This section describes how the classes described above interact when the followi
 const lock = await navigator.wakeLock.request("screen");
 ```
 
-1. `WakeLock::request()` performs all the validation steps described in [the spec](https://w3c.github.io/wake-lock/#the-request-method). If all checks have passed, it creates a `ScriptPromiseResolver` and calls `WakeLock::DoRequest()`.
+1. `WakeLock::request()` performs all the validation steps described in [the spec](https://w3c.github.io/screen-wake-lock/#the-request-method). If all checks have passed, it creates a `ScriptPromiseResolver` and calls `WakeLock::DoRequest()`.
 1. `WakeLock::DoRequest()` simply forwards its arguments to `WakeLock::ObtainPermission()`. It exists as a separate method just to make writing unit tests easier, as we'd otherwise be unable to use our own `ScriptPromiseResolver`s in tests.
 1. `WakeLock::ObtainPermission()` connects to the [permission service](../../../public/mojom/permissions/permission.mojom) and asynchronously requests permission for a screen wake lock.
 1. In the browser process, the permission request bubbles up through `//content` and reaches `//chrome`'s [`WakeLockPermissionContext`](/chrome/browser/wake_lock/wake_lock_permission_context.cc), where `WakeLockPermissionContext::GetPermissionStatusInternal()` always grants `CONTENT_SETTINGS_TYPE_WAKE_LOCK_SCREEN` permission requests.
@@ -74,7 +74,7 @@ const lock = await navigator.wakeLock.request("screen");
 1. `WakeLockManager::AcquireWakeLock()` creates a new `WakeLockSentinel` instance, passing `this` as the `WakeLockSentinel`'s `WakeLockManager`. This new `WakeLockSentinel` is added to its set of [active locks].
 1. The `ScriptPromiseResolver` created by `WakeLock::request()` is resolved with the new `WakeLockSentinel` object.
 
-[active locks]: https://w3c.github.io/wake-lock/#dfn-activelocks
+[active locks]: https://w3c.github.io/screen-wake-lock/#dfn-activelocks
 
 ### Wake Lock cancellation
 
@@ -94,7 +94,7 @@ This section describes what happens when `lock.release()` is called.
 1. `WakeLockManager::UnregisterSentinel()` implements the spec's [release wake lock algorithm]. If the given `WakeLockSentinel` is in `WakeLockManager`'s `wake_lock_sentinels_`, it will be removed and, if the list is empty, `WakeLockManager` will communicate with its `device::mojom::blink::WakeLock` instance and call its `CancelWakeLock()` method.
 1. Back in `WakeLockSentinel::DoRelease()`, it then clears its `manager_` member, and dispatches a `release` event with itself as a target.
 
-[release wake lock algorithm]: https://w3c.github.io/wake-lock/#release-wake-lock-algorithm
+[release wake lock algorithm]: https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
 
 ## Other Wake Lock usage in Chromium
 
@@ -131,7 +131,7 @@ Example usage outside Blink includes:
 
 ## Permission Model
 
-The Wake Lock API spec checks for user activation in the context of [wake lock permission requests](https://w3c.github.io/wake-lock/#dfn-obtain-permission), as a result of a call to `WakeLock.request()`. If a user agent is configured to prompt a user when a wake lock is requested, user activation is required, otherwise the request will be denied.
+The Wake Lock API spec checks for user activation in the context of [wake lock permission requests](https://w3c.github.io/screen-wake-lock/#dfn-obtain-permission), as a result of a call to `WakeLock.request()`. If a user agent is configured to prompt a user when a wake lock is requested, user activation is required, otherwise the request will be denied.
 
 In the Chromium implementation, there currently is no "prompt" state, and no permission UI or settings: wake lock requests are either always granted or always denied:
 
