@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
                        TabAndMouseFocusNavigation) {
 #if defined(USE_OZONE)
   // TODO(https://crbug.com/1109696): enable for ozone.
-  if (!features::IsUsingOzonePlatform())
+  if (features::IsUsingOzonePlatform())
     return;
 #endif
   GURL main_url(embedded_test_server()->GetURL(
