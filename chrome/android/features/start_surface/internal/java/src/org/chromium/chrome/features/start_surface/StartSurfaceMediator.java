@@ -531,10 +531,10 @@ class StartSurfaceMediator
             mIsIncognito = mTabModelSelector.isIncognitoSelected();
             mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
 
-            // if OvervieModeState is NOT_SHOWN, default to SHOWING_HOMEPAGE. This should only
+            // if OvervieModeState is NOT_SHOWN, default to SHOWING_TABSWITCHER. This should only
             // happen when entering Start through SwipeDown gesture on URL bar.
             if (mOverviewModeState == OverviewModeState.NOT_SHOWN) {
-                mOverviewModeState = OverviewModeState.SHOWING_HOMEPAGE;
+                mOverviewModeState = OverviewModeState.SHOWING_TABSWITCHER;
             }
 
             // set OverviewModeState
@@ -744,9 +744,11 @@ class StartSurfaceMediator
             if (mSecondaryTasksSurfacePropertyModel == null) {
                 mSecondaryTasksSurfaceController = mSecondaryTasksSurfaceInitializer.initialize();
             }
-            mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE,
-                    mIsIncognito && mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE);
-            mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
+            if (mSecondaryTasksSurfacePropertyModel != null) {
+                mSecondaryTasksSurfacePropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE,
+                        mIsIncognito && mOverviewModeState == OverviewModeState.SHOWN_HOMEPAGE);
+                mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
+            }
             if (mSecondaryTasksSurfaceController != null) {
                 mSecondaryTasksSurfaceController.showOverview(false);
             }

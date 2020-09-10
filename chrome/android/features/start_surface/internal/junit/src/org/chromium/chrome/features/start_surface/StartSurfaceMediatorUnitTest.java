@@ -323,6 +323,11 @@ public class StartSurfaceMediatorUnitTest {
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
 
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
+        // Sets the current OvervieModeState to SHOWING_START before calling the
+        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
+        // OvervieModeState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
+        // {@link StartSurfaceMediator#showOverview()}.
+        mediator.setOverviewState(OverviewModeState.SHOWING_START);
 
         mediator.showOverview(false);
         verify(mMainTabGridController).showOverview(eq(false));
@@ -368,6 +373,11 @@ public class StartSurfaceMediatorUnitTest {
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
 
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
+        // Sets the current OvervieModeState to SHOWING_START before calling the
+        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
+        // OvervieModeState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
+        // {@link StartSurfaceMediator#showOverview()}.
+        mediator.setOverviewState(OverviewModeState.SHOWING_START);
 
         mediator.showOverview(false);
         verify(mMainTabGridController).showOverview(eq(false));
@@ -414,6 +424,11 @@ public class StartSurfaceMediatorUnitTest {
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
 
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
+        // Sets the current OvervieModeState to SHOWING_START before calling the
+        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
+        // OvervieModeState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
+        // {@link StartSurfaceMediator#showOverview()}.
+        mediator.setOverviewState(OverviewModeState.SHOWING_START);
 
         mediator.showOverview(false);
         verify(mMainTabGridController).showOverview(eq(false));
@@ -1364,7 +1379,7 @@ public class StartSurfaceMediatorUnitTest {
 
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
         mediator.showOverview(false);
-        assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_HOMEPAGE));
+        assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_TABSWITCHER));
     }
 
     @Test
@@ -1500,6 +1515,11 @@ public class StartSurfaceMediatorUnitTest {
                 .when(mBrowserControlsStateProvider)
                 .addObserver(mBrowserControlsStateProviderCaptor.capture());
         StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
+        // Sets the current OvervieModeState to SHOWING_START before calling the
+        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
+        // OvervieModeState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
+        // {@link StartSurfaceMediator#showOverview()}.
+        mediator.setOverviewState(OverviewModeState.SHOWING_START);
         mediator.showOverview(false);
 
         verify(mBrowserControlsStateProvider).addObserver(ArgumentMatchers.any());
@@ -1527,6 +1547,11 @@ public class StartSurfaceMediatorUnitTest {
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
 
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.NOT_SHOWN));
+        // Sets the current OvervieModeState to SHOWING_START before calling the
+        // {@link StartSurfaceMediator#showOverview()}. This is because if the current
+        // OvervieModeState is NOT_SHOWN, the state will be set default to SHOWING_TABSWITCHER in
+        // {@link StartSurfaceMediator#showOverview()}.
+        mediator.setOverviewState(OverviewModeState.SHOWING_START);
         mediator.showOverview(false);
         assertThat(mediator.getOverviewState(), equalTo(OverviewModeState.SHOWN_HOMEPAGE));
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
