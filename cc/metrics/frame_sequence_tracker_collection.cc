@@ -67,7 +67,6 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
     metrics->SetScrollingThread(scrolling_thread);
   }
 
-  if (type != FrameSequenceTrackerType::kUniversal) {
     if (metrics->GetEffectiveThread() == ThreadType::kCompositor) {
       if (compositor_frame_reporting_controller_ &&
           compositor_thread_driving_smoothness_ == 0) {
@@ -84,7 +83,6 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
       }
       ++main_thread_driving_smoothness_;
     }
-  }
   return frame_trackers_[key].get();
 }
 
@@ -133,7 +131,6 @@ void FrameSequenceTrackerCollection::StopSequence(
         tracker->type());
   }
 
-  if (type != FrameSequenceTrackerType::kUniversal) {
     if (tracker->metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
       DCHECK_GT(compositor_thread_driving_smoothness_, 0u);
       --compositor_thread_driving_smoothness_;
@@ -151,7 +148,6 @@ void FrameSequenceTrackerCollection::StopSequence(
             ThreadType::kMain, false);
       }
     }
-  }
 
   frame_trackers_.erase(key);
   tracker->ScheduleTerminate();
@@ -298,35 +294,6 @@ void FrameSequenceTrackerCollection::NotifyFramePresented(
   DestroyTrackers();
 }
 
-bool FrameSequenceTrackerCollection::HasThroughputData() const {
-  return throughput_ukm_reporter_ &&
-         throughput_ukm_reporter_->HasThroughputData();
-}
-
-int FrameSequenceTrackerCollection::TakeLastAggregatedPercent() {
-  DCHECK(throughput_ukm_reporter_);
-  return throughput_ukm_reporter_->TakeLastAggregatedPercent();
-}
-
-int FrameSequenceTrackerCollection::TakeLastImplPercent() {
-  DCHECK(throughput_ukm_reporter_);
-  return throughput_ukm_reporter_->TakeLastImplPercent();
-}
-
-base::Optional<int> FrameSequenceTrackerCollection::TakeLastMainPercent() {
-  DCHECK(throughput_ukm_reporter_);
-  return throughput_ukm_reporter_->TakeLastMainPercent();
-}
-
-void FrameSequenceTrackerCollection::ComputeUniversalThroughputForTesting() {
-  DCHECK(throughput_ukm_reporter_);
-  const auto type = FrameSequenceTrackerType::kUniversal;
-  auto key = std::make_pair(type, ThreadType::kUnknown);
-  DCHECK(frame_trackers_.contains(key));
-  throughput_ukm_reporter_->ComputeUniversalThroughput(
-      frame_trackers_[key]->metrics());
-}
-
 void FrameSequenceTrackerCollection::DestroyTrackers() {
   for (auto& tracker : removal_trackers_) {
     if (tracker->termination_status() ==
@@ -351,15 +318,10 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
         accumulated_metrics_.erase(key);
       }
 
-      if (metrics->HasEnoughDataForReporting()) {
-        // Do this before ReportMetrics() which clears the throughput data.
-        if (metrics->type() == FrameSequenceTrackerType::kUniversal)
-          throughput_ukm_reporter_->ComputeUniversalThroughput(metrics.get());
+      if (metrics->HasEnoughDataForReporting())
         metrics->ReportMetrics();
-      }
-      if (metrics->HasDataLeftForReporting()) {
+      if (metrics->HasDataLeftForReporting())
         accumulated_metrics_[key] = std::move(metrics);
-      }
     }
   }
 

@@ -149,9 +149,6 @@ class UkmPageLoadMetricsObserver
 
   void RecordInputTimingMetrics();
 
-  // Report throughput to Ukm.
-  void ReportThroughputUkm();
-
   // Captures the site engagement score for the committed URL and
   // returns the score rounded to the nearest 10.
   base::Optional<int64_t> GetRoundedSiteEngagementScore() const;

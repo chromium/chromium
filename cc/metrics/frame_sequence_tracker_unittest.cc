@@ -347,35 +347,13 @@ TEST_F(FrameSequenceTrackerTest, SourceIdChangeDuringSequence) {
                                 viz::BeginFrameAck(args_2, true), args_1);
 }
 
-TEST_F(FrameSequenceTrackerTest, UniversalTrackerCreation) {
-  // The universal tracker should be explicitly created by the object that
-  // manages the |collection_|
-  EXPECT_FALSE(TrackerExists(FrameSequenceTrackerType::kUniversal));
-}
-
-TEST_F(FrameSequenceTrackerTest, UniversalTrackerRestartableAfterClearAll) {
-  collection_.StartSequence(FrameSequenceTrackerType::kUniversal);
-  EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kUniversal));
-
-  collection_.ClearAll();
-  EXPECT_FALSE(TrackerExists(FrameSequenceTrackerType::kUniversal));
-
-  collection_.StartSequence(FrameSequenceTrackerType::kUniversal);
-  EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kUniversal));
-}
-
 TEST_F(FrameSequenceTrackerTest, TestNotifyFramePresented) {
   collection_.StartSequence(FrameSequenceTrackerType::kCompositorAnimation);
   collection_.StartSequence(FrameSequenceTrackerType::kMainThreadAnimation);
-  // The kTouchScroll tracker is created in the test constructor, and the
-  // kUniversal tracker is created in the FrameSequenceTrackerCollection
-  // constructor.
   EXPECT_EQ(NumberOfTrackers(), 3u);
-  collection_.StartSequence(FrameSequenceTrackerType::kUniversal);
-  EXPECT_EQ(NumberOfTrackers(), 4u);
 
   collection_.StopSequence(FrameSequenceTrackerType::kCompositorAnimation);
-  EXPECT_EQ(NumberOfTrackers(), 3u);
+  EXPECT_EQ(NumberOfTrackers(), 2u);
   EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kMainThreadAnimation));
   EXPECT_TRUE(TrackerExists(FrameSequenceTrackerType::kTouchScroll));
   // StopSequence should have destroyed all trackers because there is no frame
@@ -1902,29 +1880,6 @@ TEST_F(FrameSequenceTrackerTest, TrackerTypeEncoding) {
   ActiveFrameSequenceTrackers active_encoded =
       collection_.FrameSequenceTrackerActiveTypes();
   EXPECT_EQ(active_encoded, 16);  // 1 << 4
-}
-
-TEST_F(FrameSequenceTrackerTest, UniversalTrackerSubmitThroughput) {
-  auto recorder = std::make_unique<ukm::TestUkmRecorder>();
-  auto ukm_manager = std::make_unique<UkmManager>(std::move(recorder));
-
-  collection_.ClearAll();
-  collection_.SetUkmManager(ukm_manager.get());
-  auto* tracker =
-      collection_.StartSequence(FrameSequenceTrackerType::kUniversal);
-  ImplThroughput(tracker).frames_expected = 200u;
-  ImplThroughput(tracker).frames_produced = 190u;
-  MainThroughput(tracker).frames_expected = 100u;
-  MainThroughput(tracker).frames_produced = 50u;
-  AggregatedThroughput(tracker).frames_expected = 200u;
-  AggregatedThroughput(tracker).frames_produced = 150u;
-
-  collection_.ComputeUniversalThroughputForTesting();
-  DCHECK(collection_.HasThroughputData());
-  EXPECT_EQ(collection_.TakeLastAggregatedPercent(), 25);
-  EXPECT_EQ(collection_.TakeLastImplPercent(), 5);
-  EXPECT_EQ(collection_.TakeLastMainPercent().value(), 50);
-  EXPECT_FALSE(collection_.HasThroughputData());
 }
 
 // Test that when an impl frame caused no damage is due to waiting on main, the

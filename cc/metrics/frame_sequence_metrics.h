@@ -24,7 +24,6 @@ enum class FrameSequenceTrackerType {
   kPinchZoom = 2,
   kRAF = 3,
   kTouchScroll = 4,
-  kUniversal = 5,
   kVideo = 6,
   kWheelScroll = 7,
   kScrollbarScroll = 8,

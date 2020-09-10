@@ -27,28 +27,6 @@ TEST(FrameSequenceMetricsTest, AggregatedThroughputClearedAfterReport) {
   EXPECT_EQ(first.aggregated_throughput().frames_produced, 0u);
 }
 
-// Test that ThroughputUkmReporter::ReportThroughputUkm isn't called for the
-// kUniversal tracker.
-TEST(FrameSequenceMetricsTest, UniversalNotReportUkmAtRenderer) {
-  auto recorder = std::make_unique<ukm::TestUkmRecorder>();
-  auto ukm_manager = std::make_unique<UkmManager>(std::move(recorder));
-  ThroughputUkmReporter reporter(ukm_manager.get());
-  auto metric = std::make_unique<FrameSequenceMetrics>(
-      FrameSequenceTrackerType::kUniversal, &reporter);
-
-  metric->impl_throughput().frames_expected = 200u;
-  metric->impl_throughput().frames_produced = 190u;
-  metric->aggregated_throughput().frames_expected = 170u;
-  metric->aggregated_throughput().frames_produced = 150u;
-  metric->ReportMetrics();
-
-  // The corresponding |samples_to_next_event_| element is 0 if the
-  // ReportThroughputUkm isn't called.
-  EXPECT_EQ(reporter.GetSamplesToNextEventForTesting(
-                static_cast<int>(FrameSequenceTrackerType::kUniversal)),
-            1u);
-}
-
 TEST(FrameSequenceMetricsTest, MergeMetrics) {
   // Create a metric with only a small number of frames. It shouldn't report any
   // metrics.
@@ -139,20 +117,6 @@ TEST(FrameSequenceMetricsTest, AllMetricsReported) {
       "Graphics.Smoothness.PercentDroppedFrames.MainThread.TouchScroll", 1u);
   // All the metrics have now been reported. No data should be left over.
   EXPECT_FALSE(first.HasDataLeftForReporting());
-
-  FrameSequenceMetrics third(FrameSequenceTrackerType::kUniversal, nullptr);
-  third.impl_throughput().frames_expected = 120;
-  third.impl_throughput().frames_produced = 80;
-  third.main_throughput().frames_expected = 120;
-  third.main_throughput().frames_produced = 80;
-  EXPECT_TRUE(third.HasEnoughDataForReporting());
-  third.ReportMetrics();
-
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.CompositorThread.Universal",
-      1u);
-  histograms.ExpectTotalCount(
-      "Graphics.Smoothness.PercentDroppedFrames.MainThread.Universal", 1u);
 }
 
 TEST(FrameSequenceMetricsTest, IrrelevantMetricsNotReported) {

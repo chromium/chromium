@@ -214,18 +214,11 @@ constexpr base::TimeDelta kEventLatencyHistogramMax =
     base::TimeDelta::FromSeconds(5);
 constexpr int kEventLatencyHistogramBucketCount = 100;
 
-bool ShouldReportLatencyMetricsForSequenceType(
-    FrameSequenceTrackerType sequence_type) {
-  return sequence_type != FrameSequenceTrackerType::kUniversal;
-}
-
 std::string GetCompositorLatencyHistogramName(
     const int report_type_index,
     FrameSequenceTrackerType frame_sequence_tracker_type,
     const int stage_type_index) {
   DCHECK_LE(frame_sequence_tracker_type, FrameSequenceTrackerType::kMaxType);
-  DCHECK(
-      ShouldReportLatencyMetricsForSequenceType(frame_sequence_tracker_type));
   const char* tracker_type_name =
       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
           frame_sequence_tracker_type);
@@ -538,7 +531,6 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
     for (size_t fst_type = 0; fst_type < active_trackers_.size(); ++fst_type) {
       const auto tracker_type = static_cast<FrameSequenceTrackerType>(fst_type);
       if (!active_trackers_.test(fst_type) ||
-          tracker_type == FrameSequenceTrackerType::kUniversal ||
           tracker_type == FrameSequenceTrackerType::kCustom ||
           tracker_type == FrameSequenceTrackerType::kMaxType) {
         continue;
@@ -576,7 +568,6 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
           UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.ScrollbarScroll",
                                     report_type);
           break;
-        case FrameSequenceTrackerType::kUniversal:
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();
@@ -596,8 +587,6 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
 void CompositorFrameReporter::ReportStageHistogramWithBreakdown(
     const CompositorFrameReporter::StageData& stage,
     FrameSequenceTrackerType frame_sequence_tracker_type) const {
-  if (!ShouldReportLatencyMetricsForSequenceType(frame_sequence_tracker_type))
-    return;
   base::TimeDelta stage_delta = stage.end_time - stage.start_time;
   ReportCompositorLatencyHistogram(frame_sequence_tracker_type,
                                    static_cast<int>(stage.stage_type),

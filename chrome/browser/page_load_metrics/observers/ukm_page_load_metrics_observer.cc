@@ -99,21 +99,6 @@ std::unique_ptr<base::trace_event::TracedValue> CumulativeShiftScoreTraceData(
   return data;
 }
 
-int8_t ComputeMedianForThroughput(const base::flat_map<int8_t, int>& data) {
-  int total_samples = 0;
-  for (const auto& e : data)
-    total_samples += e.second;
-  int half_samples = total_samples / 2;
-  int current_samples = 0;
-  for (const auto& e : data) {
-    current_samples += e.second;
-    if (current_samples > half_samples)
-      return e.first;
-  }
-  NOTREACHED();
-  return 0;
-}
-
 bool ValidatePercent(int8_t percent) {
   if (percent >= 0 && percent <= 100)
     return true;
@@ -612,9 +597,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     ReportMainResourceTimingMetrics(timing, &builder);
 
   builder.Record(ukm::UkmRecorder::Get());
-
-  if (throughput_source_id_ != ukm::kInvalidSourceId)
-    ReportThroughputUkm();
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
@@ -1036,29 +1018,6 @@ void UkmPageLoadMetricsObserver::OnThroughputUpdate(
   ++impl_throughput_data_[impl_throughput_percent];
   if (main_throughput_percent)
     ++main_throughput_data_[main_throughput_percent->percent];
-}
-
-void UkmPageLoadMetricsObserver::ReportThroughputUkm() {
-  DCHECK_NE(throughput_source_id_, ukm::kInvalidSourceId);
-
-  ukm::builders::Graphics_Smoothness_PercentDroppedFrames builder(
-      throughput_source_id_);
-  if (aggregated_throughput_data_.size() > 0) {
-    builder.SetSlowerThread_Universal(
-        ComputeMedianForThroughput(aggregated_throughput_data_));
-    aggregated_throughput_data_.clear();
-  }
-  if (impl_throughput_data_.size() > 0) {
-    builder.SetCompositorThread_Universal(
-        ComputeMedianForThroughput(impl_throughput_data_));
-    impl_throughput_data_.clear();
-  }
-  if (main_throughput_data_.size() > 0) {
-    builder.SetMainThread_Universal(
-        ComputeMedianForThroughput(main_throughput_data_));
-    main_throughput_data_.clear();
-  }
-  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(

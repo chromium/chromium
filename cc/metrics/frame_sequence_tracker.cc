@@ -52,8 +52,6 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "RAF";
     case FrameSequenceTrackerType::kTouchScroll:
       return "TouchScroll";
-    case FrameSequenceTrackerType::kUniversal:
-      return "Universal";
     case FrameSequenceTrackerType::kVideo:
       return "Video";
     case FrameSequenceTrackerType::kWheelScroll:

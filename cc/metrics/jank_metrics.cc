@@ -99,8 +99,7 @@ void JankMetrics::AddPresentedFrame(
 }
 
 void JankMetrics::ReportJankMetrics(int frames_expected) {
-  if (tracker_type_ == FrameSequenceTrackerType::kUniversal ||
-      tracker_type_ == FrameSequenceTrackerType::kCustom)
+  if (tracker_type_ == FrameSequenceTrackerType::kCustom)
     return;
 
   int jank_percent = static_cast<int>(100 * jank_count_ / frames_expected);

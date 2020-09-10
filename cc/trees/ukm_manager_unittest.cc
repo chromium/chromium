@@ -77,7 +77,6 @@ const char kPinchZoom[] = "PinchZoom";
 const char kRAF[] = "RAF";
 const char kScrollbarScroll[] = "ScrollbarScroll";
 const char kTouchScroll[] = "TouchScroll";
-const char kUniversal[] = "Universal";
 const char kVideo[] = "Video";
 const char kWheelScroll[] = "WheelScroll";
 
@@ -268,8 +267,6 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
       static_cast<size_t>(FrameSequenceTrackerType::kTouchScroll));
   active_trackers.set(
       static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
-  active_trackers.set(
-      static_cast<size_t>(FrameSequenceTrackerType::kUniversal));
 
   manager_->RecordCompositorLatencyUKM(report_type(), stage_history,
                                        active_trackers, viz_breakdown);
@@ -344,7 +341,6 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kMainThreadAnimation));
   EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kPinchZoom));
   EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kRAF));
-  EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kUniversal));
   EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kVideo));
   EXPECT_FALSE(test_ukm_recorder_->EntryHasMetric(entry, kWheelScroll));
 }

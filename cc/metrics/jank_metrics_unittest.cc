@@ -228,28 +228,6 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
   histogram_tester.ExpectTotalCount(invalid_metric, 0u);
 }
 
-// Test if jank reporting is correctly disabled for Universal trackers.
-TEST_F(JankMetricsTest, UniversalNotReported) {
-  base::HistogramTester histogram_tester;
-  FrameSequenceTrackerType tracker_type = FrameSequenceTrackerType::kUniversal;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
-  JankMetrics jank_reporter{tracker_type, thread_type};
-
-  // There should be 4 janks, but the jank reporter does not track or report
-  // them.
-  auto feedbacks = CreateFeedbackSequence({16, +33, +48, 16, +33, +48}, 16.67);
-
-  AddPresentedFramesToJankReporter(&jank_reporter, feedbacks);
-  jank_reporter.ReportJankMetrics(100u);
-
-  // Expect no jank reports even though the sequence contains jank
-  histogram_tester.ExpectTotalCount("Graphics.Smoothness.Jank.Main.Universal",
-                                    0u);
-  histogram_tester.ExpectTotalCount(
-      "Graphics.Smoothness.Jank.Compositor.Universal", 0u);
-}
-
 // Test if jank reporting is correctly disabled for Custom trackers.
 TEST_F(JankMetricsTest, CustomNotReported) {
   base::HistogramTester histogram_tester;

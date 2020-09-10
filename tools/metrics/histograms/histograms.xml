@@ -217836,6 +217836,9 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessSequenceTypes.Universal" separator=".">
+  <obsolete>
+    Removed in 9/2020, due to over penalize smoothness.
+  </obsolete>
   <suffix name="Universal" label="All frame production"/>
   <affected-histogram name="Graphics.Smoothness.Checkerboarding"/>
   <affected-histogram name="Graphics.Smoothness.FrameSequenceLength"/>

@@ -114,7 +114,6 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_MAIN_THREAD_TRACKER(RAF);
         CASE_FOR_MAIN_THREAD_TRACKER(ScrollbarScroll);
         CASE_FOR_MAIN_THREAD_TRACKER(TouchScroll);
-        CASE_FOR_MAIN_THREAD_TRACKER(Universal);
         CASE_FOR_MAIN_THREAD_TRACKER(Video);
         CASE_FOR_MAIN_THREAD_TRACKER(WheelScroll);
 #undef CASE_FOR_MAIN_THREAD_TRACKER
@@ -138,7 +137,6 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(RAF);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(ScrollbarScroll);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(TouchScroll);
-        CASE_FOR_COMPOSITOR_THREAD_TRACKER(Universal);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(Video);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(WheelScroll);
 #undef CASE_FOR_COMPOSITOR_THREAD_TRACKER
@@ -161,7 +159,6 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_SLOWER_THREAD_TRACKER(RAF);
         CASE_FOR_SLOWER_THREAD_TRACKER(ScrollbarScroll);
         CASE_FOR_SLOWER_THREAD_TRACKER(TouchScroll);
-        CASE_FOR_SLOWER_THREAD_TRACKER(Universal);
         CASE_FOR_SLOWER_THREAD_TRACKER(Video);
         CASE_FOR_SLOWER_THREAD_TRACKER(WheelScroll);
 #undef CASE_FOR_SLOWER_THREAD_TRACKER
@@ -272,8 +269,6 @@ void UkmManager::RecordCompositorLatencyUKM(
       continue;
     const auto frame_sequence_tracker_type =
         static_cast<FrameSequenceTrackerType>(type);
-    if (frame_sequence_tracker_type == FrameSequenceTrackerType::kUniversal)
-      continue;
     switch (frame_sequence_tracker_type) {
 #define CASE_FOR_TRACKER(name)            \
   case FrameSequenceTrackerType::k##name: \

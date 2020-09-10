@@ -2315,19 +2315,6 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
       std::move(compositor_frame),
       /*hit_test_data_changed=*/false, debug_state_.show_hit_test_borders);
 
-  // This is expected to be true roughly every 5 seconds.
-  if (frame_trackers_.HasThroughputData()) {
-    ukm::SourceId source_id = ukm_manager_->source_id();
-    // source_id can be invalid in tests.
-    if (source_id != ukm::kInvalidSourceId) {
-      int aggregated_percent = frame_trackers_.TakeLastAggregatedPercent();
-      int impl_percent = frame_trackers_.TakeLastImplPercent();
-      base::Optional<int> main_percent = frame_trackers_.TakeLastMainPercent();
-      client_->SubmitThroughputData(source_id, aggregated_percent, impl_percent,
-                                    main_percent);
-    }
-  }
-
 #if DCHECK_IS_ON()
   if (!doing_sync_draw_) {
     // The throughput computation (in |FrameSequenceTracker|) depends on the
@@ -3602,7 +3589,6 @@ bool LayerTreeHostImpl::InitializeFrameSink(
   has_valid_layer_tree_frame_sink_ = true;
 
   auto* context_provider = layer_tree_frame_sink_->context_provider();
-  frame_trackers_.StartSequence(FrameSequenceTrackerType::kUniversal);
 
   if (context_provider) {
     max_texture_size_ =

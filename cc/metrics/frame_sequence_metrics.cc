@@ -105,7 +105,6 @@ FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type,
   // SetScrollingThread().
   if ((thread_type == ThreadType::kCompositor ||
        thread_type == ThreadType::kMain) &&
-      type != FrameSequenceTrackerType::kUniversal &&
       type != FrameSequenceTrackerType::kCustom)
     jank_reporter_ = std::make_unique<JankMetrics>(type, thread_type);
 }
@@ -113,17 +112,8 @@ FrameSequenceMetrics::FrameSequenceMetrics(FrameSequenceTrackerType type,
 FrameSequenceMetrics::~FrameSequenceMetrics() = default;
 
 void FrameSequenceMetrics::ReportLeftoverData() {
-  if (HasDataLeftForReporting()) {
-    // Do this before ReportMetrics() which clears the throughput data.
-    // TODO(xidachen): Find a way to make ThroughputUkmReporter to directly talk
-    // to LayerTreeHostClient, and submit throughput data. Instead of storing
-    // the values in ThroughputUkmReporter.
-    if (type_ == FrameSequenceTrackerType::kUniversal &&
-        HasEnoughDataForReporting()) {
-      throughput_ukm_reporter_->ComputeUniversalThroughput(this);
-    }
+  if (HasDataLeftForReporting())
     ReportMetrics();
-  }
 }
 
 void FrameSequenceMetrics::SetScrollingThread(ThreadType scrolling_thread) {
@@ -160,9 +150,6 @@ FrameSequenceMetrics::ThreadType FrameSequenceMetrics::GetEffectiveThread()
     case FrameSequenceTrackerType::kScrollbarScroll:
     case FrameSequenceTrackerType::kWheelScroll:
       return scrolling_thread_;
-
-    case FrameSequenceTrackerType::kUniversal:
-      return ThreadType::kSlower;
 
     case FrameSequenceTrackerType::kCustom:
       return ThreadType::kMain;
@@ -246,16 +233,14 @@ void FrameSequenceMetrics::ReportMetrics() {
       main_throughput_);
 
   // Report for the 'slower thread' for the metrics where it makes sense.
-  bool should_report_slower_thread =
-      IsInteractionType(type_) || type_ == FrameSequenceTrackerType::kUniversal;
+  bool should_report_slower_thread = IsInteractionType(type_);
   base::Optional<int> aggregated_throughput_percent;
   if (should_report_slower_thread) {
     aggregated_throughput_percent = ThroughputData::ReportHistogram(
         this, ThreadType::kSlower,
         GetIndexForMetric(FrameSequenceMetrics::ThreadType::kSlower, type_),
         aggregated_throughput_);
-    if (aggregated_throughput_percent.has_value() && throughput_ukm_reporter_ &&
-        type_ != FrameSequenceTrackerType::kUniversal) {
+    if (aggregated_throughput_percent.has_value() && throughput_ukm_reporter_) {
       throughput_ukm_reporter_->ReportThroughputUkm(
           aggregated_throughput_percent, impl_throughput_percent,
           main_throughput_percent, type_);
@@ -426,7 +411,6 @@ base::Optional<int> FrameSequenceMetrics::ThroughputData::ReportHistogram(
   }
 
   if (!is_animation && !IsInteractionType(sequence_type) &&
-      sequence_type != FrameSequenceTrackerType::kUniversal &&
       sequence_type != FrameSequenceTrackerType::kVideo) {
     return base::nullopt;
   }

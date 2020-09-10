@@ -4726,6 +4726,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="CompositorThread.Universal">
+    <obsolete>
+      Removed in 9/2020, due to over penalize smoothness.
+    </obsolete>
     <summary>
       The throughput of the compositor thread for all frame production.
     </summary>
@@ -4773,6 +4776,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="MainThread.Universal">
+    <obsolete>
+      Removed in 9/2020, due to over penalize smoothness.
+    </obsolete>
     <summary>
       The throughput of the main thread for all frame production.
     </summary>
@@ -4873,6 +4879,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.Universal">
+    <obsolete>
+      Removed in 9/2020, due to over penalize smoothness.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread for all frame
       production.
