@@ -27,7 +27,7 @@ const base::Feature kAmbientModeFeature{"ChromeOSAmbientMode",
 
 // Controls whether to enable Ambient mode album selection with photo previews.
 const base::Feature kAmbientModePhotoPreviewFeature{
-    "ChromeOSAmbientModePhotoPreview", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ChromeOSAmbientModePhotoPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to allow Dev channel to use Prod server feature.
 const base::Feature kAmbientModeDevUseProdFeature{
