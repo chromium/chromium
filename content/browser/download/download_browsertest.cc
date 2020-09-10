@@ -4311,23 +4311,14 @@ IN_PROC_BROWSER_TEST_F(ParallelDownloadTest,
                                   parameters);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_ANDROID)
-// Flaky https://crbug.com/1105429, https://crbug.com/1106059.
-// Windows probably use a large receiving buffer size and cause the first slice
-// to start at a offset > 0.
-#define MAYBE_MiddleSliceDelayedError DISABLED_MiddleSliceDelayedError
-#else
-#define MAYBE_MiddleSliceDelayedError MiddleSliceDelayedError
-#endif
 // Verify that if the second request fails after the beginning request takes
 // over and completes its slice, download should complete.
-IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MAYBE_MiddleSliceDelayedError) {
+IN_PROC_BROWSER_TEST_F(ParallelDownloadTest, MiddleSliceDelayedError) {
   scoped_refptr<TestFileErrorInjector> injector(
       TestFileErrorInjector::Create(DownloadManagerForShell(shell())));
 
   TestFileErrorInjector::FileErrorInfo err = {
-      TestFileErrorInjector::FILE_OPERATION_WRITE, 0,
+      TestFileErrorInjector::FILE_OPERATION_WRITE, 1,
       download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE};
   err.data_write_offset = 1699050;
   injector->InjectError(err);

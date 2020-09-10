@@ -186,7 +186,9 @@ DownloadFileWithError::ValidateAndWriteDataToFile(int64_t offset,
       download::DownloadFileImpl::ValidateAndWriteDataToFile(
           offset, data, bytes_to_validate, bytes_to_write);
   if (error_info_.data_write_offset == -1 ||
-      offset == error_info_.data_write_offset) {
+      ((offset <= error_info_.data_write_offset) &&
+       (offset + bytes_to_write >=
+        static_cast<size_t>(error_info_.data_write_offset)))) {
     return ShouldReturnError(TestFileErrorInjector::FILE_OPERATION_WRITE,
                              origin_error);
   }
