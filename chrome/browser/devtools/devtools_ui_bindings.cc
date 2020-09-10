@@ -171,7 +171,7 @@ Browser* FindBrowser(content::WebContents* web_contents) {
     if (tab_index != TabStripModel::kNoTab)
       return browser;
   }
-  return NULL;
+  return nullptr;
 }
 
 // DevToolsUIDefaultDelegate --------------------------------------------------
@@ -658,14 +658,14 @@ void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
 DevToolsUIBindings* DevToolsUIBindings::ForWebContents(
      content::WebContents* web_contents) {
   if (!g_devtools_ui_bindings_instances.IsCreated())
-    return NULL;
+    return nullptr;
   DevToolsUIBindingsList* instances =
       g_devtools_ui_bindings_instances.Pointer();
-  for (auto it(instances->begin()); it != instances->end(); ++it) {
-    if ((*it)->web_contents() == web_contents)
-      return *it;
+  for (DevToolsUIBindings* binding : *instances) {
+    if (binding->web_contents() == web_contents)
+      return binding;
   }
-  return NULL;
+  return nullptr;
 }
 
 DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
