@@ -377,6 +377,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public boolean requestShowContent(BottomSheetContent content, boolean animate) {
+        if (content == null) {
+            throw new RuntimeException("Attempting to show null content in the sheet!");
+        }
+
         if (mBottomSheet == null) mSheetInitializer.run();
 
         // If already showing the requested content, do nothing.
@@ -456,6 +460,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      * @param animate Whether the sheet should animate opened.
      */
     private void showNextContent(boolean animate) {
+        if (mBottomSheet.getSheetState() != SheetState.HIDDEN) {
+            throw new RuntimeException("Showing next content before sheet is hidden!");
+        }
+
         if (mContentQueue.isEmpty()) {
             mBottomSheet.showContent(null);
             return;
