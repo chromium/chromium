@@ -40,10 +40,13 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
 }
