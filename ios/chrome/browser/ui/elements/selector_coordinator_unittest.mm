@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/elements/selector_picker_view_controller.h"
 #import "ios/chrome/browser/ui/elements/selector_view_controller_delegate.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -31,8 +32,8 @@ using SelectorCoordinatorTest = PlatformTest;
 // that invoking stop dismisses the view and invokes the delegate.
 TEST_F(SelectorCoordinatorTest, StartAndStop) {
   base::test::TaskEnvironment task_environment_;
-
-  UIWindow* keyWindow = [[UIApplication sharedApplication] keyWindow];
+  ScopedKeyWindow scopedKeyWindow;
+  UIWindow* keyWindow = scopedKeyWindow.Get();
   UIViewController* rootViewController = keyWindow.rootViewController;
   std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
   SelectorCoordinator* coordinator =
@@ -45,9 +46,10 @@ TEST_F(SelectorCoordinatorTest, StartAndStop) {
                 rootViewController.presentedViewController);
 
     [coordinator stop];
-    base::test::ios::WaitUntilCondition(^{
+    bool success = base::test::ios::WaitUntilConditionOrTimeout(1.0, ^{
       return !rootViewController.presentedViewController;
     });
+    EXPECT_TRUE(success);
   };
   // Ensure any other presented controllers are dismissed before starting the
   // coordinator.
@@ -59,7 +61,8 @@ TEST_F(SelectorCoordinatorTest, StartAndStop) {
 TEST_F(SelectorCoordinatorTest, Delegate) {
   base::test::TaskEnvironment task_environment_;
 
-  UIWindow* keyWindow = [[UIApplication sharedApplication] keyWindow];
+  ScopedKeyWindow scopedKeyWindow;
+  UIWindow* keyWindow = scopedKeyWindow.Get();
   UIViewController* rootViewController = keyWindow.rootViewController;
   std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
   SelectorCoordinator* coordinator =
@@ -76,9 +79,10 @@ TEST_F(SelectorCoordinatorTest, Delegate) {
                   didCompleteWithSelection:testOption];
     [coordinator selectorViewController:coordinator.selectorPickerViewController
                         didSelectOption:testOption];
-    base::test::ios::WaitUntilCondition(^{
+    bool success = base::test::ios::WaitUntilConditionOrTimeout(1.0, ^{
       return !rootViewController.presentedViewController;
     });
+    EXPECT_TRUE(success);
   };
   // Ensure any other presented controllers are dismissed before starting the
   // coordinator.
