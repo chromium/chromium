@@ -71,15 +71,31 @@ static bool ShouldCreateContext(WebGraphicsContext3DProvider* context_provider,
 CanvasRenderingContext* WebGL2RenderingContext::Factory::Create(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs) {
+  // Create a copy of attrs so flags can be modified if needed before passing
+  // into the WebGL2RenderingContext constructor.
+  CanvasContextCreationAttributesCore attribs = attrs;
+
+  // The xr_compatible attribute needs to be handled before creating the context
+  // because the GPU process may potentially be restarted in order to be XR
+  // compatible. This scenario occurs if the GPU process is not using the GPU
+  // that the VR headset is plugged into. If the GPU process is restarted, the
+  // WebGraphicsContext3DProvider must be created using the new one.
+  if (attribs.xr_compatible &&
+      !WebGLRenderingContextBase::MakeXrCompatibleSync(host)) {
+    // If xr compatibility is requested and we can't be xr compatible, return a
+    // context with the flag set to false.
+    attribs.xr_compatible = false;
+  }
+
   bool using_gpu_compositing;
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider(
       CreateWebGraphicsContext3DProvider(
-          host, attrs, Platform::kWebGL2ContextType, &using_gpu_compositing));
+          host, attribs, Platform::kWebGL2ContextType, &using_gpu_compositing));
   if (!ShouldCreateContext(context_provider.get(), host))
     return nullptr;
   WebGL2RenderingContext* rendering_context =
       MakeGarbageCollected<WebGL2RenderingContext>(
-          host, std::move(context_provider), using_gpu_compositing, attrs);
+          host, std::move(context_provider), using_gpu_compositing, attribs);
 
   if (!rendering_context->GetDrawingBuffer()) {
     host->HostDispatchEvent(
