@@ -14,7 +14,7 @@
 
 - (UIView*)screenshotForAnimation {
   UIView* tabStripSnapshot =
-      [self.tabStripView snapshotViewAfterScreenUpdates:NO];
+      [self.tabStripView snapshotViewAfterScreenUpdates:YES];
   tabStripSnapshot.frame = self.frame;
   return tabStripSnapshot;
 }

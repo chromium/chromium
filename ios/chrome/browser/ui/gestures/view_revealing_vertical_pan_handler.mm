@@ -24,25 +24,42 @@ const CGFloat kAnimationDuration = 0.25f;
 
 @interface ViewRevealingVerticalPanHandler ()
 
+// Represents one of the three possible "states" of view reveal, which are:
+// No view revealed (Hidden), view partially revealed (Peeked), and view
+// completely revealed (Revealed).
+@property(nonatomic, assign) ViewRevealState currentState;
+// The state that the currentState will be set to if the transition animation
+// completes with its REVERSED property set to NO.
+@property(nonatomic, assign) ViewRevealState nextState;
 // The property animator for revealing the view.
 @property(nonatomic, strong) UIViewPropertyAnimator* animator;
-// Whether the view is currently revealed or not.
-@property(nonatomic, assign, getter=isViewRevealed, setter=setIsViewRevealed:)
-    BOOL viewRevealed;
-// The progress of the animator before being interrupted.
+// Total distance between the Peeked state and Revealed state. Equal to
+// |revealedHeight| - |peekedHeight|.
+@property(nonatomic, assign, readonly) CGFloat remainingHeight;
+// Height of the base view.
+@property(nonatomic, assign, readonly) CGFloat baseViewHeight;
+// Height of the cover view (the view in front of the view that will be
+// revealed) that will still be visible after the remaining reveal transition.
+@property(nonatomic, assign, readonly) CGFloat revealedCoverHeight;
+// The progress of the animator.
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
-// Set of UI elements which are animated during thumb strip transitions.
-@property(nonatomic, strong) NSMutableSet<id<ViewRevealingAnimatee>>* animatees;
-
+// Set of UI elements which are animated during view reveal transitions.
+@property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
 @end
 
 @implementation ViewRevealingVerticalPanHandler
 
-- (instancetype)initWithHeight:(CGFloat)height {
+- (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
+                 revealedCoverHeight:(CGFloat)revealedCoverHeight
+                      baseViewHeight:(CGFloat)baseViewHeight {
   if (self = [super init]) {
-    _viewRevealed = NO;
-    _viewHeight = height;
-    _animatees = [[NSMutableSet alloc] init];
+    _peekedHeight = peekedHeight;
+    _revealedCoverHeight = revealedCoverHeight;
+    _baseViewHeight = baseViewHeight;
+    _revealedHeight = baseViewHeight - revealedCoverHeight;
+    _remainingHeight = _revealedHeight - peekedHeight;
+    _currentState = ViewRevealState::Hidden;
+    _animatees = [NSHashTable weakObjectsHashTable];
   }
   return self;
 }
@@ -66,71 +83,148 @@ const CGFloat kAnimationDuration = 0.25f;
 
 #pragma mark - Private Methods: Animating
 
-// Called right before an animation block to warn all animatees.
-- (void)willAnimateViewReveal:(BOOL)viewRevealed {
+// Called right before an animation block to warn all animatees of a transition
+// from the current view reveal state.
+- (void)willAnimateViewReveal {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee willAnimateViewReveal:viewRevealed];
+    [animatee willAnimateViewReveal:self.currentState];
   }
 }
 
-// Called inside an animation block to animate all animatees.
-- (void)animateViewReveal:(BOOL)viewRevealed {
+// Called inside an animation block to animate all animatees to the next view
+// reveal state.
+- (void)animateToNextViewRevealState {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee animateViewReveal:viewRevealed];
+    [animatee animateViewReveal:self.nextState];
   }
 }
 
-// Called after an animation block.
-- (void)didAnimateViewReveal:(BOOL)viewRevealed {
+// Called inside the completion block of the current animation. Takes as
+// argument the state to which the animatees did animate to.
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
   for (id<ViewRevealingAnimatee> animatee in self.animatees) {
-    [animatee didAnimateViewReveal:viewRevealed];
+    [animatee didAnimateViewReveal:viewRevealState];
   }
 }
 
-#pragma mark - Private Methods: Pan handling
-
-// Returns whether the gesture's translation and velocity were enough to trigger
-// revealing the view.
-- (BOOL)attainedRevealThresholdWithTranslation:(CGFloat)translation
-                                      Velocity:(CGFloat)velocity {
-  return self.progressWhenInterrupted +
-             (translation + velocity * kVelocityWeight) / self.viewHeight >
-         kRevealThreshold;
+// Creates the animation for the transition to the next view reveal state, if
+// different from the current state.
+- (void)createAnimatorIfNeeded {
+  if (self.currentState == self.nextState) {
+    return;
+  }
+  [self willAnimateViewReveal];
+  [self.animator stopAnimation:YES];
+  self.animator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kAnimationDuration
+          dampingRatio:1
+            animations:^() {
+              [self animateToNextViewRevealState];
+            }];
+  __weak ViewRevealingVerticalPanHandler* weakSelf = self;
+  [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+    if (!weakSelf.animator.reversed) {
+      weakSelf.currentState = weakSelf.nextState;
+    }
+    [weakSelf didAnimateViewReveal:weakSelf.currentState];
+  }];
+  [self.animator pauseAnimation];
 }
 
-// Returns whether the gesture's translation and velocity were enough to trigger
-// hiding the view.
-- (BOOL)attainedHideThresholdWithTranslation:(CGFloat)translation
-                                    Velocity:(CGFloat)velocity {
-  return self.progressWhenInterrupted +
-             (translation + velocity * kVelocityWeight) / (-self.viewHeight) >
-         kRevealThreshold;
-}
-
-// Initiate a transition if it isn't already running
+// Initiates a transition if there isn't already one running
 - (void)animateTransitionIfNeeded {
   if (self.animator.isRunning) {
     self.animator.reversed = NO;
     return;
   }
 
-  [self willAnimateViewReveal:self.viewRevealed];
-  // Create the transition to reveal the view.
-  auto animationBlock = ^() {
-    [self animateViewReveal:self.isViewRevealed];
-  };
-  auto completionBlock = ^(UIViewAnimatingPosition finalPosition) {
-    if (!self.animator.reversed) {
-      self.isViewRevealed = !self.isViewRevealed;
-    }
-    [self didAnimateViewReveal:self.isViewRevealed];
-  };
+  self.nextState = ViewRevealState::Peeked;
+  // If the current state is Peeked, the animator is not created just yet
+  // because the gesture might go in one of two directions. It will only be
+  // created after the gesture changes and its translation direction is
+  // determined.
+  [self createAnimatorIfNeeded];
+}
 
-  self.animator =
-      [[UIViewPropertyAnimator alloc] initWithDuration:kAnimationDuration
-                                          dampingRatio:1
-                                            animations:animationBlock];
-  [self.animator addCompletion:completionBlock];
+#pragma mark - Private Methods: Pan handling
+
+// Returns whether the gesture's translation and velocity were enough to trigger
+// the revealing of a view with the specified height (partial reveal height or
+// remaining reveal height).
+- (BOOL)shouldRevealWithTranslation:(CGFloat)translation
+                           velocity:(CGFloat)velocity
+                             height:(CGFloat)height {
+  CGFloat progress = self.progressWhenInterrupted +
+                     (translation + velocity * kVelocityWeight) / height;
+  return progress > kRevealThreshold;
+}
+
+// Returns whether the gesture's translation and velocity were enough to trigger
+// the hiding of a view with the specified height (partial reveal height or
+// remaining reveal height).
+- (BOOL)shouldHideWithTranslation:(CGFloat)translation
+                         velocity:(CGFloat)velocity
+                           height:(CGFloat)height {
+  return [self shouldRevealWithTranslation:translation
+                                  velocity:velocity
+                                    height:-height];
+}
+
+// Returns what the next state should be, given the translation, velocity of
+// the gesture, and the current state.
+- (ViewRevealState)nextStateWithTranslation:(CGFloat)translation
+                                   Velocity:(CGFloat)velocity {
+  switch (self.currentState) {
+    case ViewRevealState::Hidden:
+      return [self shouldRevealWithTranslation:translation
+                                      velocity:velocity
+                                        height:self.peekedHeight]
+                 ? ViewRevealState::Peeked
+                 : ViewRevealState::Hidden;
+    case ViewRevealState::Revealed:
+      return [self shouldHideWithTranslation:translation
+                                    velocity:velocity
+                                      height:self.remainingHeight]
+                 ? ViewRevealState::Peeked
+                 : ViewRevealState::Revealed;
+    case ViewRevealState::Peeked:
+      if ([self shouldHideWithTranslation:translation
+                                 velocity:velocity
+                                   height:self.peekedHeight]) {
+        return ViewRevealState::Hidden;
+      }
+      if ([self shouldRevealWithTranslation:translation
+                                   velocity:velocity
+                                     height:self.remainingHeight]) {
+        return ViewRevealState::Revealed;
+      }
+      return self.currentState;
+  }
+}
+
+// Updates the progress of the animator, depending on the current and next
+// states.
+- (void)updateAnimatorProgress:(CGFloat)translation {
+  CGFloat progress;
+  switch (self.currentState) {
+    case ViewRevealState::Peeked: {
+      CGFloat height =
+          (self.nextState == ViewRevealState::Hidden ? -self.peekedHeight
+                                                     : self.remainingHeight);
+      progress = translation / height;
+      break;
+    }
+    case ViewRevealState::Hidden:
+      progress = translation / self.peekedHeight;
+      break;
+    case ViewRevealState::Revealed:
+      progress = translation / (-self.remainingHeight);
+      break;
+  }
+
+  progress += self.progressWhenInterrupted;
+  progress = base::ClampToRange<CGFloat>(progress, 0, 1);
+  self.animator.fractionComplete = progress;
 }
 
 // Handles the start of the pan gesture.
@@ -142,26 +236,31 @@ const CGFloat kAnimationDuration = 0.25f;
 
 // Handles the movement after the start of the gesture.
 - (void)panGestureChangedWithTranslation:(CGFloat)translation {
-  CGFloat progress =
-      (self.isViewRevealed ? -1 : 1) * translation / self.viewHeight +
-      self.progressWhenInterrupted;
-  progress = base::ClampToRange<CGFloat>(progress, 0.0, 1.0);
-  self.animator.fractionComplete = progress;
+  if (self.currentState == ViewRevealState::Peeked) {
+    // If the gesture translation passes through the midpoint (the point where
+    // the state is Peeked), the current animation should be stopped and a new
+    // one created.
+    if (translation > 0) {
+      if (self.nextState != ViewRevealState::Revealed) {
+        self.nextState = ViewRevealState::Revealed;
+        [self createAnimatorIfNeeded];
+      }
+    } else {
+      if (self.nextState != ViewRevealState::Hidden) {
+        self.nextState = ViewRevealState::Hidden;
+        [self createAnimatorIfNeeded];
+      }
+    }
+  }
+  [self updateAnimatorProgress:translation];
 }
 
 // Handles the end of the gesture.
 - (void)panGestureEndedWithTranslation:(CGFloat)translation
                               velocity:(CGFloat)velocity {
-  self.animator.reversed = YES;
-
-  if ((!self.isViewRevealed &&
-       [self attainedRevealThresholdWithTranslation:translation
-                                           Velocity:velocity]) ||
-      (self.isViewRevealed &&
-       [self attainedHideThresholdWithTranslation:translation
-                                         Velocity:velocity])) {
-    self.animator.reversed = NO;
-  }
+  self.animator.reversed =
+      (self.currentState == [self nextStateWithTranslation:translation
+                                                  Velocity:velocity]);
 
   [self.animator continueAnimationWithTimingParameters:nil durationFactor:1];
 }

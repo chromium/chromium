@@ -2733,30 +2733,49 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - ViewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(BOOL)viewRevealed {
+- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
   // Hide the tab strip and take a snapshot of it. If a snapshot of a hidden
   // view is taken, the snapshot will be a blank view. However, if the view's
   // parent is hidden but the view itself is not, the snapshot will not be a
   // blank view.
   self.tabStripSnapshot = [self.tabStripView screenshotForAnimation];
   self.tabStripSnapshot.transform =
-      !viewRevealed ? CGAffineTransformIdentity
-                    : CGAffineTransformMakeTranslation(
-                          0, self.tabStripView.frame.size.height);
+      currentViewRevealState == ViewRevealState::Hidden
+          ? CGAffineTransformIdentity
+          : CGAffineTransformMakeTranslation(
+                0, self.tabStripView.frame.size.height);
   self.tabStripView.hidden = YES;
   [self.contentArea addSubview:self.tabStripSnapshot];
 }
 
-- (void)animateViewReveal:(BOOL)viewRevealed {
-  // Move a snapshot of the tab strip instead of moving the actual tab strip.
-  self.tabStripSnapshot.transform =
-      viewRevealed ? CGAffineTransformIdentity
-                   : CGAffineTransformMakeTranslation(
-                         0, self.tabStripView.frame.size.height);
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  switch (nextViewRevealState) {
+    case ViewRevealState::Hidden:
+      self.view.superview.transform = CGAffineTransformIdentity;
+      self.view.transform = CGAffineTransformIdentity;
+      self.tabStripSnapshot.transform = CGAffineTransformIdentity;
+      break;
+    case ViewRevealState::Peeked:
+      self.view.superview.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.peekedHeight);
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, -self.tabStripView.frame.size.height - self.headerOffset);
+      self.tabStripSnapshot.transform = CGAffineTransformMakeTranslation(
+          0, self.tabStripView.frame.size.height);
+      break;
+    case ViewRevealState::Revealed:
+      self.view.superview.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.revealedHeight);
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, -self.tabStripView.frame.size.height - self.headerOffset);
+      self.tabStripSnapshot.transform = CGAffineTransformMakeTranslation(
+          0, self.tabStripView.frame.size.height);
+      break;
+  }
 }
 
-- (void)didAnimateViewReveal:(BOOL)viewRevealed {
-  self.tabStripView.hidden = viewRevealed;
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  self.tabStripView.hidden = (viewRevealState != ViewRevealState::Hidden);
   [self.tabStripSnapshot removeFromSuperview];
 }
 

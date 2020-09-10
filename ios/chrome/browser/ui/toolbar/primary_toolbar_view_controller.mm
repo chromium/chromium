@@ -74,14 +74,15 @@
 
 #pragma mark - viewRevealingAnimatee
 
-- (void)willAnimateViewReveal:(BOOL)viewRevealed {
+- (void)willAnimateViewReveal:(ViewRevealState)currentViewRevealState {
 }
 
-- (void)animateViewReveal:(BOOL)viewRevealed {
-  self.view.topCornersRounded = !viewRevealed;
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  self.view.topCornersRounded =
+      (nextViewRevealState != ViewRevealState::Hidden);
 }
 
-- (void)didAnimateViewReveal:(BOOL)viewRevealed {
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
 }
 
 #pragma mark - AdaptiveToolbarViewController

@@ -14,6 +14,11 @@ namespace {
 // Height of the view that is revealed. The thumb strip has a height equal to a
 // small grid cell + edge insets (top and bottm) from thumb strip layout.
 const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
+// The height of the BVC that remains visible after transitioning from thumb
+// strip to tab grid.
+// TODO(crbug.com/1123048): Change this hardcoded number into a value calculated
+// by the runtime toolbar height and any other inputs.
+const CGFloat kBVCHeightTabGrid = 108.0f;
 }  // namespace
 
 @implementation ThumbStripCoordinator
@@ -21,8 +26,11 @@ const CGFloat kThumbStripHeight = 168.0f + 22.0f + 22.0f;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  CGFloat baseViewHeight = self.baseViewController.view.frame.size.height;
   self.panHandler = [[ViewRevealingVerticalPanHandler alloc]
-      initWithHeight:kThumbStripHeight];
+      initWithPeekedHeight:kThumbStripHeight
+       revealedCoverHeight:kBVCHeightTabGrid
+            baseViewHeight:baseViewHeight];
 }
 
 - (void)stop {
