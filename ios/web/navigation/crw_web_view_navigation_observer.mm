@@ -319,11 +319,6 @@ using web::wk_navigation_util::IsPlaceholderUrl;
     [self.delegate navigationObserver:self
         URLDidChangeWithoutDocumentChange:URL];
   } else if ([self isKVOChangePotentialSameDocumentNavigationToURL:URL]) {
-    if (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
-      // TODO(crbug.com/991608): When the error page is presented for the first
-      // time, it is performing a same document navigation. This method should
-      // probably return here to avoid performing the following checks.
-    }
     WKNavigation* navigation =
         [self.navigationHandler.navigationStates lastAddedNavigation];
     [self.webView

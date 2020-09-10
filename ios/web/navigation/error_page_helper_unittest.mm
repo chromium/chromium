@@ -38,10 +38,11 @@ TEST_F(ErrorPageHelperTest, ExtractOriginalURLFromErrorPageURL) {
                  code:NSURLErrorBadURL
              userInfo:@{NSURLErrorFailingURLStringErrorKey : url_string}];
   ErrorPageHelper* helper = [[ErrorPageHelper alloc] initWithError:error];
-  GURL result_original_url = [ErrorPageHelper
-      failedNavigationURLFromErrorPageFileURL:net::GURLWithNSURL(
-                                                  helper.errorPageFileURL)];
+  GURL url_from_helper = net::GURLWithNSURL(helper.errorPageFileURL);
+  GURL result_original_url =
+      [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:url_from_helper];
   EXPECT_EQ(GURL(base::SysNSStringToUTF8(url_string)), result_original_url);
+  EXPECT_TRUE([ErrorPageHelper isErrorPageFileURL:url_from_helper]);
 }
 
 // Tests that the error page is correctly identified as error page.
@@ -79,12 +80,12 @@ TEST_F(ErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLCorrect) {
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 
-  std::string url_string = "file://" + path +
-                           "?file=http://not-that-url.com&url=" + expected_url +
-                           "&garbage=http://still-not-that-one.com";
-  GURL result_url = [ErrorPageHelper
-      failedNavigationURLFromErrorPageFileURL:GURL(url_string)];
+  GURL url = GURL("file://" + path + "?file=http://not-that-url.com&url=" +
+                  expected_url + "&garbage=http://still-not-that-one.com");
+  GURL result_url =
+      [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:url];
   EXPECT_EQ(GURL(expected_url), result_url);
+  EXPECT_TRUE([ErrorPageHelper isErrorPageFileURL:url]);
 }
 
 // Tests that the extract failed navigation URL is empty if the |url| query
@@ -95,21 +96,23 @@ TEST_F(ErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLNoQuery) {
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 
-  std::string url_string = "file://" + path + "?file=" + expected_url +
-                           "&garbage=http://still-not-that-one.com";
-  GURL result_url = [ErrorPageHelper
-      failedNavigationURLFromErrorPageFileURL:GURL(url_string)];
+  GURL url = GURL("file://" + path + "?file=" + expected_url +
+                  "&garbage=http://still-not-that-one.com");
+  GURL result_url =
+      [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:url];
   EXPECT_TRUE(result_url.is_empty());
+  EXPECT_FALSE([ErrorPageHelper isErrorPageFileURL:url]);
 }
 
 // Tests that the extracted failed navigation URL is empty if the path of the
 // current page isn't correct.
 TEST_F(ErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLWrongPath) {
-  std::string url_string =
-      "file://not-the-correct-path.com?url=http://potential-url.com";
-  GURL result_url = [ErrorPageHelper
-      failedNavigationURLFromErrorPageFileURL:GURL(url_string)];
+  GURL url =
+      GURL("file://not-the-correct-path.com?url=http://potential-url.com");
+  GURL result_url =
+      [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:url];
   EXPECT_TRUE(result_url.is_empty());
+  EXPECT_FALSE([ErrorPageHelper isErrorPageFileURL:url]);
 }
 
 // Tests that the extracted failed navigation URL is empty if the scheme of the
@@ -120,8 +123,9 @@ TEST_F(ErrorPageHelperTest,
       pathForResource:@"error_page_loaded"
                ofType:@"html"]);
 
-  std::string url_string = "http://" + path + "?url=http://potential-url.com";
-  GURL result_url = [ErrorPageHelper
-      failedNavigationURLFromErrorPageFileURL:GURL(url_string)];
+  GURL url = GURL("http://" + path + "?url=http://potential-url.com");
+  GURL result_url =
+      [ErrorPageHelper failedNavigationURLFromErrorPageFileURL:url];
   EXPECT_TRUE(result_url.is_empty());
+  EXPECT_FALSE([ErrorPageHelper isErrorPageFileURL:url]);
 }

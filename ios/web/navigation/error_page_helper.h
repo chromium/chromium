@@ -25,6 +25,9 @@ class GURL;
 // Returns the failed URL if |URL| is an error page URL, otherwise empty URL.
 + (GURL)failedNavigationURLFromErrorPageFileURL:(const GURL&)URL;
 
+// Returns whether |URL| is an error page URL.
++ (BOOL)isErrorPageFileURL:(const GURL&)URL;
+
 // Returns a JavaScript script that can be injected to replace the content of
 // the page with |HTML|. It can also contains a script to automatically reload
 // the page when it is shown if |addAutomaticReload| is true.

@@ -301,8 +301,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
        IsPlaceholderUrl(requestURL)) ||
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       ![ErrorPageHelper failedNavigationURLFromErrorPageFileURL:requestURL]
-            .is_empty())) {
+       [ErrorPageHelper isErrorPageFileURL:requestURL])) {
     if (action.sourceFrame.mainFrame) {
       // Disallow renderer initiated navigations to placeholder URLs.
       decisionHandler(WKNavigationActionPolicyCancel);
@@ -548,8 +547,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
        IsPlaceholderUrl(responseURL)) ||
       (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-       ![ErrorPageHelper failedNavigationURLFromErrorPageFileURL:responseURL]
-            .is_empty())) {
+       [ErrorPageHelper isErrorPageFileURL:responseURL])) {
     handler(WKNavigationResponsePolicyAllow);
     return;
   }
@@ -622,8 +620,10 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if (context) {
     // This is already seen and registered navigation.
 
-    if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
-        context->IsLoadingErrorPage()) {
+    if ((!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+         context->IsLoadingErrorPage()) ||
+        (base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
+         [ErrorPageHelper isErrorPageFileURL:context->GetUrl()])) {
       // This is loadHTMLString: navigation to display error page in web view.
       self.navigationState = web::WKNavigationState::REQUESTED;
       return;
@@ -666,9 +666,7 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
           // Item may not exist if navigation was stopped (see
           // crbug.com/969915).
           item->SetURL(webViewURL);
-          if ([ErrorPageHelper
-                  failedNavigationURLFromErrorPageFileURL:webViewURL]
-                  .is_valid()) {
+          if ([ErrorPageHelper isErrorPageFileURL:webViewURL]) {
             item->SetVirtualURL([ErrorPageHelper
                 failedNavigationURLFromErrorPageFileURL:webViewURL]);
           }
@@ -2020,6 +2018,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   context->SetItem(std::move(item));
   context->SetError(error);
 
+  self.webStateImpl->OnNavigationStarted(context.get());
+
   [self.navigationStates setContext:std::move(context)
                       forNavigation:errorNavigation];
 }
@@ -2329,6 +2329,24 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
             context->SetHasCommitted(true);
             self.webStateImpl->OnNavigationFinished(context);
           }
+        } else {
+          // TODO(crbug.com/973765): This is a workaround because |item| might
+          // get released after
+          // |self.navigationManagerImpl->
+          // CommitPendingItem(context->ReleaseItem()|.
+          // Remove this once navigation refactor is done.
+          web::NavigationContextImpl* context =
+              [self.navigationStates contextForNavigation:navigation];
+          self.navigationManagerImpl->CommitPendingItem(context->ReleaseItem());
+          [self.delegate navigationHandler:self
+                            setDocumentURL:itemURL
+                                   context:context];
+
+          // Rewrite the context URL to actual URL and trigger the deferred
+          // |OnNavigationFinished| callback.
+          context->SetUrl(failingURL);
+          context->SetHasCommitted(true);
+          self.webStateImpl->OnNavigationFinished(context);
         }
 
         // For SSL cert error pages, SSLStatus needs to be set manually because

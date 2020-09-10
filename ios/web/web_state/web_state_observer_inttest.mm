@@ -2076,19 +2076,11 @@ TEST_F(WebStateObserverTest, DisallowRequestAndShowError) {
           WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(error)));
 
   EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
   EXPECT_CALL(observer_, TitleWasSet(web_state()));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
-  // TODO(crbug.com/1071117): DidStartNavigation is over-triggered when
-  // |web::features::kUseJSForErrorPage| is enabled.
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _));
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
-  EXPECT_CALL(observer_,
-              PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
 
   GURL url = test_server_->GetURL("/echo");
   test::LoadUrl(web_state(), url);

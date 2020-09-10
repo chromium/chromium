@@ -125,6 +125,10 @@ NSString* InjectedErrorPageFilePath() {
   return GURL();
 }
 
++ (BOOL)isErrorPageFileURL:(const GURL&)URL {
+  return [self failedNavigationURLFromErrorPageFileURL:URL].is_valid();
+}
+
 - (NSString*)scriptForInjectingHTML:(NSString*)HTML
                  addAutomaticReload:(BOOL)addAutomaticReload {
   NSString* HTMLToInject = HTML;
