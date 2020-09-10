@@ -10,7 +10,10 @@
 
 namespace content {
 
-AboutURLLoaderFactory::AboutURLLoaderFactory() = default;
+AboutURLLoaderFactory::AboutURLLoaderFactory(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)) {}
+
 AboutURLLoaderFactory::~AboutURLLoaderFactory() = default;
 
 void AboutURLLoaderFactory::CreateLoaderAndStart(
@@ -41,9 +44,16 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 }
 
-void AboutURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  receivers_.Add(this, std::move(loader));
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+AboutURLLoaderFactory::Create() {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+  // The AboutURLLoaderFactory will delete itself when there are no more
+  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  new AboutURLLoaderFactory(pending_remote.InitWithNewPipeAndPassReceiver());
+
+  return pending_remote;
 }
 
 }  // namespace content

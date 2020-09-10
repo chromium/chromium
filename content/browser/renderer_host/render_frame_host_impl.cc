@@ -6095,6 +6095,7 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 
     non_network_uniquely_owned_factories_.clear();
+    ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
 
     // Set up the default factory.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -6127,8 +6128,8 @@ void RenderFrameHostImpl::CommitNavigation(
         // WebUIURLLoaderFactory will kill the renderer if it sees a request
         // with a non-chrome scheme. Register a URLLoaderFactory for the about
         // scheme so about:blank doesn't kill the renderer.
-        non_network_uniquely_owned_factories_[url::kAboutScheme] =
-            std::make_unique<AboutURLLoaderFactory>();
+        non_network_factories[url::kAboutScheme] =
+            AboutURLLoaderFactory::Create();
       } else {
         // This is a webui scheme that doesn't have webui bindings. Give it
         // access to the network loader as it might require it.
@@ -6204,7 +6205,6 @@ void RenderFrameHostImpl::CommitNavigation(
     //
     // TODO(crbug.com/888079): In the future, use
     // GetOriginForURLLoaderFactory/GetOriginToCommit.
-    ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
     if ((common_params->url.SchemeIsFile() ||
          (common_params->url.IsAboutBlank() &&
           common_params->initiator_origin &&

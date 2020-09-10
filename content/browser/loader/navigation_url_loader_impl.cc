@@ -1209,8 +1209,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
             storage_partition_->GetFileSystemContext(), storage_domain));
   }
 
-  non_network_uniquely_owned_factories_.emplace(
-      url::kAboutScheme, std::make_unique<AboutURLLoaderFactory>());
+  non_network_url_loader_factories_.emplace(url::kAboutScheme,
+                                            AboutURLLoaderFactory::Create());
 
   non_network_uniquely_owned_factories_.emplace(
       url::kDataScheme, std::make_unique<DataURLLoaderFactory>());
