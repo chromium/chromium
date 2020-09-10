@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   PageAdDensityIgnoreDisplayNoneFrame
 #endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       PageAdDensityIgnoreDisplayNoneFrame) {
+                       MAYBE_PageAdDensityIgnoreDisplayNoneFrame) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto waiter = CreatePageLoadMetricsTestWaiter();
