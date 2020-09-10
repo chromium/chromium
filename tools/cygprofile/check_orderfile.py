@@ -46,7 +46,7 @@ def _VerifySymbolOrder(orderfile_symbols, symbol_infos, threshold):
   logging.warning('Missing symbols in verification: %d', missing_count)
   if misorder_count:
     logging.warning('%d misordered symbols:\n %s', misorder_count,
-                    '\n '.join(str(x) for x in misordered_syms[:10]))
+                    '\n '.join(str(x) for x in misordered_syms[:threshold]))
     if misorder_count > threshold:
       logging.error('%d misordered symbols over threshold %d, failing',
                     misorder_count, threshold)
@@ -60,8 +60,11 @@ def main():
   parser.add_option('--target-arch', action='store', dest='arch', default='arm',
                     choices=['arm', 'arm64', 'x86', 'x86_64', 'x64', 'mips'],
                     help='The target architecture for the binary.')
-  parser.add_option('--threshold', action='store', dest='threshold',
-                    default=20, type=int,
+  parser.add_option('--threshold',
+                    action='store',
+                    dest='threshold',
+                    default=80,
+                    type=int,
                     help='The maximum allowed number of out-of-order symbols.')
   options, argv = parser.parse_args(sys.argv)
   if len(argv) != 3:
