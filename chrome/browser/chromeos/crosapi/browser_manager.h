@@ -24,7 +24,6 @@ namespace crosapi {
 
 class AshChromeServiceImpl;
 class BrowserLoader;
-class TestMojoConnectionManager;
 
 // Manages the lifetime of lacros-chrome, and its loading status. This class is
 // a part of ash-chrome.
@@ -150,11 +149,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Implementation of AshChromeService Mojo APIs.
   // Instantiated on receiving the PendingReceiver from lacros-chrome.
   std::unique_ptr<AshChromeServiceImpl> ash_chrome_service_;
-
-  // Helps set up and manage the mojo connections between lacros-chrome and
-  // ash-chrome in testing environment. Only applicable when
-  // '--lacros-mojo-socket-for-testing' is present in the command line.
-  std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

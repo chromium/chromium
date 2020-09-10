@@ -30,7 +30,6 @@
 #include "chrome/browser/chromeos/crosapi/ash_chrome_service_impl.h"
 #include "chrome/browser/chromeos/crosapi/browser_loader.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -40,6 +39,7 @@
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 
 // TODO(crbug.com/1101667): Currently, this source has log spamming
 // by LOG(WARNING) for non critical errors to make it easy
@@ -146,15 +146,6 @@ BrowserManager::BrowserManager(
   // devices restart Chrome during login to apply flags. We don't want to run
   // the flag-off cleanup logic until we know we have the final flag state.
   session_manager::SessionManager::Get()->AddObserver(this);
-
-  std::string socket_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          chromeos::switches::kLacrosMojoSocketForTesting);
-  if (!socket_path.empty()) {
-    test_mojo_connection_manager_ =
-        std::make_unique<crosapi::TestMojoConnectionManager>(
-            base::FilePath(socket_path));
-  }
 }
 
 BrowserManager::~BrowserManager() {
@@ -291,11 +282,19 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   mojo::PlatformChannel channel;
   channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
-  // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
-  lacros_chrome_service_ = browser_util::SendMojoInvitationToLacrosChrome(
-      channel.TakeLocalEndpoint(),
-      base::BindOnce(&BrowserManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()),
+  // Queue messages to establish the mojo connection,
+  // so that the passed IPC is available already when lacros-chrome accepts
+  // the invitation.
+  // TODO(crbug.com/1115092): Pass the initialization parameter over
+  // mojo connection.
+  mojo::OutgoingInvitation invitation;
+  lacros_chrome_service_.Bind(
+      mojo::PendingRemote<crosapi::mojom::LacrosChromeService>(
+          invitation.AttachMessagePipe(0), /*version=*/0));
+  lacros_chrome_service_.set_disconnect_handler(base::BindOnce(
+      &BrowserManager::OnMojoDisconnected, weak_factory_.GetWeakPtr()));
+  lacros_chrome_service_->Init(crosapi::mojom::LacrosInitParams::New());
+  lacros_chrome_service_->RequestAshChromeServiceReceiver(
       base::BindOnce(&BrowserManager::OnAshChromeServiceReceiverReceived,
                      weak_factory_.GetWeakPtr()));
 
@@ -311,7 +310,12 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   }
   state_ = State::STARTING;
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
+
+  // Invite the lacros-chrome to the mojo universe.
   channel.RemoteProcessLaunchAttempted();
+  mojo::OutgoingInvitation::Send(std::move(invitation),
+                                 lacros_process_.Handle(),
+                                 channel.TakeLocalEndpoint());
 }
 
 void BrowserManager::OnAshChromeServiceReceiverReceived(

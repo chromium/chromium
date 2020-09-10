@@ -5,20 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_BROWSER_UTIL_H_
 
-#include "base/callback_forward.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-
 class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
 }  // namespace base
-
-namespace mojo {
-class PlatformChannelEndpoint;
-}  // namespace mojo
 
 namespace version_info {
 enum class Channel;
@@ -43,19 +34,6 @@ bool IsLacrosAllowed();
 
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosAllowed(version_info::Channel channel);
-
-// Invite the lacros-chrome to the mojo universe.
-// Queue messages to establish the mojo connection, so that the passed IPC is
-// available already when lacros-chrome accepts the invitation.
-// TODO(crbug.com/1115092): Pass the initialization parameter over mojo
-// connection.
-mojo::Remote<crosapi::mojom::LacrosChromeService>
-SendMojoInvitationToLacrosChrome(
-    mojo::PlatformChannelEndpoint local_endpoint,
-    base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<
-        void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
-        ash_chrome_service_callback);
 
 }  // namespace browser_util
 }  // namespace crosapi

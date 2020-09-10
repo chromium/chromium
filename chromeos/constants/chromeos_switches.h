@@ -173,8 +173,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kKernelnextRestrictVMs[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kLacrosChromeAdditionalArgs[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLacrosChromePath[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kLacrosMojoSocketForTesting[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLoginManager[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kLoginUser[];
