@@ -39,10 +39,9 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
       l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
       apps::mojom::InstallSource::kUser);
 
-  // TODO (b/163431457): use borealis icon.
   app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,
-      IDR_LOGO_CROSTINI_DEFAULT_192, apps::IconEffects::kNone);
+      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
 
   SetAppAllowed(app.get(), allowed);
   return app;
