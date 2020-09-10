@@ -257,13 +257,12 @@ void PluginVmInstallerView::OnDownloadProgressUpdated(uint64_t bytes_downloaded,
 void PluginVmInstallerView::OnVmExists() {
   DCHECK_EQ(installing_state_, InstallingState::kCheckingForExistingVm);
 
-  // TODO(b/154140429): Consider automatically dismissing the dialog.
-
-  // This case should only occur if the user manually installed a VM via vmc,
-  // which is rare enough so we just re-use the regular success strings.
   state_ = State::kImported;
   installing_state_ = InstallingState::kInactive;
   OnStateUpdated();
+  // Launch app now if the VM has previously been imported via
+  // 'vmc import -p PvmDefault image.zip'.
+  AcceptDialog();
 }
 
 void PluginVmInstallerView::OnCreated() {

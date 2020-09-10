@@ -24,6 +24,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/dbus/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/download_metadata.h"
@@ -64,6 +65,9 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
         chromeos::DBusThreadManager::Get()->GetConciergeClient());
     fake_concierge_client_->set_disk_image_progress_signal_connected(true);
+    fake_vm_plugin_dispatcher_client_ =
+        static_cast<chromeos::FakeVmPluginDispatcherClient*>(
+            chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
 
     network_connection_tracker_ =
         network::TestNetworkConnectionTracker::CreateInstance();
@@ -142,6 +146,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   PluginVmInstallerView* view_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
+  chromeos::FakeVmPluginDispatcherClient* fake_vm_plugin_dispatcher_client_;
 
  private:
   void EnterpriseEnrollDevice() {
@@ -290,4 +295,24 @@ IN_PROC_BROWSER_TEST_F(
               static_cast<std::underlying_type_t<
                   plugin_vm::PluginVmInstaller::FailureReason>>(
                   plugin_vm::PluginVmInstaller::FailureReason::NOT_ALLOWED))));
+}
+
+IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
+                       SetupShouldLaunchIfImageAlreadyImported) {
+  AllowPluginVm();
+
+  // Setup dispatcher client for VM already imported.
+  vm_tools::plugin_dispatcher::ListVmResponse list_vms_response;
+  list_vms_response.add_vm_info()->set_state(
+      vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
+  fake_vm_plugin_dispatcher_client_->set_list_vms_response(list_vms_response);
+
+  ShowUi("default");
+  EXPECT_NE(nullptr, view_);
+
+  view_->AcceptDialog();
+  WaitForSetupToFinish();
+
+  // Installer should be closed.
+  EXPECT_EQ(nullptr, PluginVmInstallerView::GetActiveViewForTesting());
 }
