@@ -124,6 +124,8 @@ em::ExtensionInstallReportLogEvent_FailureReason ConvertFailureReasonToProto(
       return em::ExtensionInstallReportLogEvent::CRX_FETCH_URL_EMPTY;
     case extensions::InstallStageTracker::FailureReason::CRX_FETCH_URL_INVALID:
       return em::ExtensionInstallReportLogEvent::CRX_FETCH_URL_INVALID;
+    case extensions::InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS:
+      return em::ExtensionInstallReportLogEvent::OVERRIDDEN_BY_SETTINGS;
     default:
       NOTREACHED();
   }

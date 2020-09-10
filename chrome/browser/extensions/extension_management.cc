@@ -502,6 +502,8 @@ void ExtensionManagement::Refresh() {
             continue;
           }
           internal::IndividualSettings* by_id = AccessById(extension_id);
+          const bool included_in_forcelist =
+              by_id->installation_mode == InstallationMode::INSTALLATION_FORCED;
           if (!by_id->Parse(subdict,
                             internal::IndividualSettings::SCOPE_INDIVIDUAL)) {
             settings_by_id_.erase(extension_id);
@@ -510,6 +512,16 @@ void ExtensionManagement::Refresh() {
                                   MALFORMED_EXTENSION_SETTINGS);
             SYSLOG(WARNING) << "Malformed Extension Management settings for "
                             << extension_id << ".";
+          }
+          // If applying the ExtensionSettings policy changes installation mode
+          // from force-installed to anything else, the extension might not get
+          // installed and will get stuck in CREATED stage.
+          if (included_in_forcelist &&
+              by_id->installation_mode !=
+                  InstallationMode::INSTALLATION_FORCED) {
+            install_stage_tracker->ReportFailure(
+                extension_id,
+                InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS);
           }
         }
       }

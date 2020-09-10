@@ -193,6 +193,18 @@ class ForceInstalledMetricsTest : public testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetupExtensionManagementPref() {
+    std::unique_ptr<base::DictionaryValue> extension_entry =
+        DictionaryBuilder()
+            .Set("installation_mode", "allowed")
+            .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl)
+            .Build();
+    prefs_->SetManagedPref(pref_names::kExtensionManagement,
+                           DictionaryBuilder()
+                               .Set(kExtensionId1, std::move(extension_entry))
+                               .Build());
+  }
+
   void SetupEmptyForceList() {
     std::unique_ptr<base::Value> dict = DictionaryBuilder().Build();
     prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
@@ -297,6 +309,23 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstalled) {
   tracker_->OnExtensionReady(profile_, ext2.get());
   EXPECT_EQ(1u, loaded_call_count_);
   EXPECT_EQ(1u, ready_call_count_);
+}
+
+// Verifies that failure is reported for the extensions which are listed in
+// forced list, and their installation mode are overridden by ExtensionSettings
+// policy to something else.
+TEST_F(ForceInstalledMetricsTest, ExtensionSettingsOverrideForcedList) {
+  SetupForceList();
+  SetupExtensionManagementPref();
+  auto ext2 = ExtensionBuilder(kExtensionName2).SetID(kExtensionId2).Build();
+  tracker_->OnExtensionLoaded(profile_, ext2.get());
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  EXPECT_EQ(1u, loaded_call_count_);
+  histogram_tester_.ExpectBucketCount(
+      kFailureReasonsCWS,
+      InstallStageTracker::FailureReason::OVERRIDDEN_BY_SETTINGS, 1);
 }
 
 TEST_F(ForceInstalledMetricsTest, ObserversOnlyCalledOnce) {

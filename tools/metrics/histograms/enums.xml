@@ -24623,6 +24623,7 @@ Called by update_extension_histograms.py.-->
   <int value="24" label="IN_PROGRESS"/>
   <int value="25" label="CRX_FETCH_URL_EMPTY"/>
   <int value="26" label="CRX_FETCH_URL_INVALID"/>
+  <int value="27" label="OVERRIDEN_BY_SETTINGS"/>
 </enum>
 
 <enum name="ExtensionInstallationStage">

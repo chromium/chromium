@@ -184,9 +184,13 @@ class InstallStageTracker : public KeyedService {
     // The download of the crx failed.
     CRX_FETCH_URL_INVALID = 26,
 
+    // Applying the ExtensionSettings policy changed installation mode from
+    // force-installed to anything else.
+    OVERRIDDEN_BY_SETTINGS = 27,
+
     // Magic constant used by the histogram macros.
     // Always update it to the max value.
-    kMaxValue = CRX_FETCH_URL_INVALID,
+    kMaxValue = OVERRIDDEN_BY_SETTINGS,
   };
 
   // Status for the app returned by server while fetching manifest when status
