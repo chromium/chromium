@@ -30,11 +30,5 @@ IN_PROC_BROWSER_TEST_P(PrintManagementAppIntegrationTest,
       web_app::SystemAppType::PRINT_MANAGEMENT, url, "Print Jobs"));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PrintManagementAppIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    PrintManagementAppIntegrationTest);

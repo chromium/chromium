@@ -31,11 +31,5 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
       web_app::SystemAppType::DIAGNOSTICS, url, "Diagnostics"));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DiagnosticsAppIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    DiagnosticsAppIntegrationTest);

@@ -398,14 +398,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
 #endif
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HelpAppIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    HelpAppIntegrationTest);
 
 class HelpAppGuestSessionIntegrationTest : public HelpAppIntegrationTest {
  protected:
@@ -465,11 +459,5 @@ IN_PROC_BROWSER_TEST_P(HelpAppGuestSessionIntegrationTest,
       WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HelpAppGuestSessionIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    HelpAppGuestSessionIntegrationTest);

@@ -102,18 +102,16 @@ class SystemWebAppManagerBrowserTestBase : public InProcessBrowserTest {
 
 enum class InstallationType { kManifestInstall, kWebAppInfoInstall };
 
-using ProviderTypeAndInstallationType =
-    std::tuple<web_app::ProviderType, InstallationType>;
+using SystemWebAppManagerTestParams =
+    std::tuple<ProviderType, InstallationType>;
 
 class SystemWebAppManagerBrowserTest
     : public SystemWebAppManagerBrowserTestBase,
-      public ::testing::WithParamInterface<ProviderTypeAndInstallationType> {
+      public ::testing::WithParamInterface<SystemWebAppManagerTestParams> {
  public:
   explicit SystemWebAppManagerBrowserTest(bool install_mock = true);
   ~SystemWebAppManagerBrowserTest() override = default;
-  web_app::ProviderType provider_type() const {
-    return std::get<0>(GetParam());
-  }
+  ProviderType provider_type() const { return std::get<0>(GetParam()); }
   bool install_from_web_app_info() const {
     return std::get<1>(GetParam()) == InstallationType::kWebAppInfoInstall;
   }
@@ -124,9 +122,41 @@ class SystemWebAppManagerBrowserTest
 
 using SystemWebAppManagerWebAppInfoBrowserTest = SystemWebAppManagerBrowserTest;
 
-std::string ProviderAndInstallationTypeToString(
-    const ::testing::TestParamInfo<ProviderTypeAndInstallationType>&
-        provider_type);
+std::string SystemWebAppManagerTestParamsToString(
+    const ::testing::TestParamInfo<SystemWebAppManagerTestParams>& param_info);
+
 }  // namespace web_app
+
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(SUITE, PARAMS) \
+  INSTANTIATE_TEST_SUITE_P(All, SUITE, PARAMS,                         \
+                           web_app::SystemWebAppManagerTestParamsToString)
+
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_INSTALL_TYPES_P( \
+    SUITE)                                                                 \
+  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                         \
+      SUITE,                                                               \
+      ::testing::Combine(                                                  \
+          ::testing::Values(web_app::ProviderType::kBookmarkApps,          \
+                            web_app::ProviderType::kWebApps),              \
+          ::testing::Values(web_app::InstallationType::kManifestInstall,   \
+                            web_app::InstallationType::kWebAppInfoInstall)))
+
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P( \
+    SUITE)                                                                \
+  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                        \
+      SUITE,                                                              \
+      ::testing::Combine(                                                 \
+          ::testing::Values(web_app::ProviderType::kBookmarkApps,         \
+                            web_app::ProviderType::kWebApps),             \
+          ::testing::Values(web_app::InstallationType::kManifestInstall)))
+
+#define INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P( \
+    SUITE)                                                                    \
+  INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_P(                            \
+      SUITE,                                                                  \
+      ::testing::Combine(                                                     \
+          ::testing::Values(web_app::ProviderType::kBookmarkApps,             \
+                            web_app::ProviderType::kWebApps),                 \
+          ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)))
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APP_MANAGER_BROWSERTEST_H_

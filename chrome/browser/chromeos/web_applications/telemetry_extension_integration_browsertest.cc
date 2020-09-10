@@ -91,16 +91,10 @@ class TelemetryExtensionWithDirIntegrationTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        // TODO: Change this ::testing::Value(false) to
-        // ::testing::Bool() when a WebApplicationProvider is ready
-        ::testing::Values(false)),
-    web_app::ProviderAndInstallationTypeToString);
+// TODO: Change MANIFEST_INSTALL to ALL_INSTALL_TYPES when a
+// WebApplicationProvider is ready.
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    TelemetryExtensionIntegrationTest);
 
 // Tests that TelemetryExtensionUntrustedSource can successfully load a resource
 // from disk.
@@ -138,14 +132,7 @@ IN_PROC_BROWSER_TEST_P(
       content::NavigateToURL(web_contents, non_existent_resource_gurl));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionWithDirIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        // TODO: Change this ::testing::Values(kManifestInstall) to
-        // ::testing::Values(kManifestInstall, kWebAppInfoInstall) when a
-        // WebApplicationProvider is ready
-        ::testing::Values(web_app::InstallationType::kManifestInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+// TODO: Change MANIFEST_INSTALL to ALL_INSTALL_TYPES when a
+// WebApplicationProvider is ready.
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
+    TelemetryExtensionWithDirIntegrationTest);

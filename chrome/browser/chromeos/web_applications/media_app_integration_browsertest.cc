@@ -453,20 +453,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, RenameFile) {
   EXPECT_EQ(expected_contents, renamed_contents);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaAppIntegrationTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+    MediaAppIntegrationTest);
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    MediaAppIntegrationWithFilesAppTest,
-    ::testing::Combine(
-        ::testing::Values(web_app::ProviderType::kBookmarkApps,
-                          web_app::ProviderType::kWebApps),
-        ::testing::Values(web_app::InstallationType::kWebAppInfoInstall)),
-    web_app::ProviderAndInstallationTypeToString);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
+    MediaAppIntegrationWithFilesAppTest);
