@@ -131,7 +131,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeShareScreenshot,
     &kChromeSharingHub,
     &kChromeSharingHubV15,
-    &kChromeSmartSelection,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
     &kContentIndexingDownloadHome,
@@ -380,9 +379,6 @@ const base::Feature kChromeSharingHub{"ChromeSharingHub",
 
 const base::Feature kChromeSharingHubV15{"ChromeSharingHubV15",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kChromeSmartSelection{"ChromeSmartSelection",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

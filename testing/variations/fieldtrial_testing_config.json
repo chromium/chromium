@@ -1216,21 +1216,6 @@
             ]
         }
     ],
-    "ChromeSmartSelection": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Launch",
-                    "enable_features": [
-                        "ChromeSmartSelection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeStart": [
         {
             "platforms": [
@@ -1486,21 +1471,6 @@
             ]
         }
     ],
-    "CopylessPaste": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CopylessPaste"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSMinFilelistKB": [
         {
             "platforms": [
@@ -1654,18 +1624,6 @@
                     "enable_features": [
                         "DataReductionProxyLowMemoryDevicePromo"
                     ]
-                }
-            ]
-        }
-    ],
-    "DefaultBrowserInfobar": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SettingsTextNotNow"
                 }
             ]
         }
