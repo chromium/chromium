@@ -195,6 +195,7 @@ void DevToolsWindowCreationObserver::Wait() {
     return;
   runner_ = new content::MessageLoopRunner();
   runner_->Run();
+  runner_ = nullptr;
 }
 
 void DevToolsWindowCreationObserver::WaitForLoad() {
@@ -206,10 +207,8 @@ void DevToolsWindowCreationObserver::WaitForLoad() {
 void DevToolsWindowCreationObserver::DevToolsWindowCreated(
     DevToolsWindow* devtools_window) {
   devtools_windows_.push_back(devtools_window);
-  if (runner_.get()) {
+  if (runner_.get())
     runner_->QuitClosure().Run();
-    runner_ = nullptr;
-  }
 }
 
 DevToolsWindow* DevToolsWindowCreationObserver::devtools_window() {

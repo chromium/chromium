@@ -10,11 +10,15 @@
 #include "base/path_service.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/lazy_background_page_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,6 +47,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -137,6 +142,19 @@ class LazyBackgroundPageApiTest : public ExtensionApiTest {
   bool IsBackgroundPageAlive(const std::string& extension_id) {
     ProcessManager* pm = ProcessManager::Get(browser()->profile());
     return pm->GetBackgroundHostForExtension(extension_id);
+  }
+
+  void OpenDevToolsWindowForAnInactiveEventPage(
+      scoped_refptr<const Extension> extension) {
+    auto dev_tools_function =
+        base::MakeRefCounted<api::DeveloperPrivateOpenDevToolsFunction>();
+    extension_function_test_utils::RunFunction(dev_tools_function.get(),
+                                               base::StringPrintf(
+                                                   R"([{"renderViewId": -1,
+                                                        "renderProcessId": -1,
+                                                        "extensionId": "%s"}])",
+                                                   extension->id().c_str()),
+                                               browser(), api_test_utils::NONE);
   }
 
  private:
@@ -273,6 +291,39 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForDialog) {
   // The background page closes now that the dialog is gone.
   background_observer.WaitUntilClosed();
   EXPECT_FALSE(IsBackgroundPageAlive(extension->id()));
+}
+
+// Tests that DevToolsWindowCreationObserver observes creation of the lazy
+// background page.
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
+                       DevToolsWindowCreationObserver) {
+  scoped_refptr<const Extension> extension =
+      LoadExtensionAndWait("browser_action_create_tab");
+  // Lazy Background Page doesn't exist yet.
+  EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
+
+  DevToolsWindowCreationObserver devtools_observer;
+  // base::Unretained is safe because of
+  // DevToolsWindowCreationObserver::WaitForLoad()
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LazyBackgroundPageApiTest::OpenDevToolsWindowForAnInactiveEventPage,
+          base::Unretained(this), extension));
+  devtools_observer.WaitForLoad();
+
+  // Verify that dev tools opened.
+  content::DevToolsAgentHost::List targets =
+      content::DevToolsAgentHost::GetOrCreateAll();
+  scoped_refptr<content::DevToolsAgentHost> service_worker_host;
+  for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
+    if (host->GetURL() == BackgroundInfo::GetBackgroundURL(extension.get())) {
+      EXPECT_FALSE(service_worker_host);
+      service_worker_host = host;
+    }
+  }
+  ASSERT_TRUE(service_worker_host);
+  EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
 // Tests that the lazy background page stays alive until all visible views are
