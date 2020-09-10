@@ -3259,6 +3259,7 @@ test("unit_tests") {
     "../browser/component_updater/autofill_states_component_installer_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
+    "../browser/component_updater/first_party_sets_component_installer_unittest.cc",
     "../browser/component_updater/floc_blocklist_component_installer_unittest.cc",
     "../browser/component_updater/games_component_installer_unittest.cc",
     "../browser/component_updater/optimization_hints_component_installer_unittest.cc",

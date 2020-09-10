@@ -13,6 +13,7 @@
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
+#include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/floc_blocklist_component_installer.h"
 #include "chrome/browser/component_updater/games_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
@@ -126,6 +127,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
       cus, g_browser_process->GetApplicationLocale());
   RegisterOptimizationHintsComponent(cus, is_off_the_record_profile);
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
+  RegisterFirstPartySetsComponent(cus);
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {

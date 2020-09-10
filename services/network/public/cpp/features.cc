@@ -251,5 +251,9 @@ const base::Feature kSCTAuditing{"SCTAuditing",
 constexpr base::FeatureParam<double> kSCTAuditingSamplingRate{
     &kSCTAuditing, "sampling_rate", 0.0};
 
+// Enables usage of First Party Sets to determine cookie availability.
+constexpr base::Feature kFirstPartySets{"FirstPartySets",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
