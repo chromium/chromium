@@ -146,7 +146,7 @@ public class IdentityManager {
     }
 
     /**
-     * Looks up and returns information for account with given |email_address|. If the account
+     * Looks up and returns information for account with given |email|. If the account
      * cannot be found, return a null value.
      */
     public @Nullable CoreAccountInfo

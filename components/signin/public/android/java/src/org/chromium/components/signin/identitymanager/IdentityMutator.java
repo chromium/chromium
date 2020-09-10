@@ -37,7 +37,7 @@ public class IdentityMutator {
     }
 
     /**
-     * Marks the account with |account_id| as the primary account, and returns whether the operation
+     * Marks the account with |accountId| as the primary account, and returns whether the operation
      * succeeded or not. To succeed, this requires that:
      *   - the account is known by the IdentityManager.
      *   - setting the primary account is allowed,
