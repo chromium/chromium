@@ -122,7 +122,7 @@ class WindowCycleItemView : public WindowMiniView {
  public:
   explicit WindowCycleItemView(aura::Window* window) : WindowMiniView(window) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    set_notify_enter_exit_on_child(true);
+    SetNotifyEnterExitOnChild(true);
   }
   WindowCycleItemView(const WindowCycleItemView&) = delete;
   WindowCycleItemView& operator=(const WindowCycleItemView&) = delete;

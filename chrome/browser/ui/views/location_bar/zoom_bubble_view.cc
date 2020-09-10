@@ -294,7 +294,7 @@ ZoomBubbleView::ZoomBubbleView(
           chrome::FindBrowserWithWebContents(web_contents)->session_id()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   if (immersive_mode_controller_)
     immersive_mode_controller_->AddObserver(this);
   UseCompactMargins();

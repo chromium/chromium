@@ -64,7 +64,7 @@ CredentialsItemView::CredentialsItemView(
     int upper_text_style,
     int lower_text_style)
     : Button(button_listener), form_(form) {
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));

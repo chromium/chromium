@@ -159,7 +159,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
       show_when_collapsed_(true),
       widget_observer_(new TrayWidgetObserver(this)) {
   DCHECK(shelf_);
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   set_ink_drop_base_color(ShelfConfig::Get()->GetInkDropBaseColor());
   set_ink_drop_visible_opacity(ShelfConfig::Get()->GetInkDropVisibleOpacity());
 

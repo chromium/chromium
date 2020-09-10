@@ -54,7 +54,7 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
       model_(ToolbarActionsModel::Get(browser->profile())) {
   // Set so the extension button receives enter/exit on children to retain hover
   // status when hovering child views.
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
       nullptr, controller_.get());

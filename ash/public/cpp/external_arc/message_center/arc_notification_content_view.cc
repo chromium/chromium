@@ -254,7 +254,7 @@ ArcNotificationContentView::ArcNotificationContentView(
   DCHECK_EQ(360, message_center::kNotificationWidth);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   item_->IncrementWindowRefCount();
   item_->AddObserver(this);

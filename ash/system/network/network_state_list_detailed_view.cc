@@ -115,7 +115,7 @@ class NetworkStateListDetailedView::InfoBubble
     SetArrow(views::BubbleBorder::NONE);
     set_shadow(views::BubbleBorder::NO_ASSETS);
     set_anchor_view_insets(gfx::Insets(0, 0, kBubbleMargin, 0));
-    set_notify_enter_exit_on_child(true);
+    SetNotifyEnterExitOnChild(true);
     SetLayoutManager(std::make_unique<views::FillLayout>());
     AddChildView(content);
   }

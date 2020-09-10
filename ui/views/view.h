@@ -1069,12 +1069,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   virtual bool OnMouseWheel(const ui::MouseWheelEvent& event);
 
   // See field for description.
-  void set_notify_enter_exit_on_child(bool notify) {
-    notify_enter_exit_on_child_ = notify;
-  }
-  bool notify_enter_exit_on_child() const {
-    return notify_enter_exit_on_child_;
-  }
+  void SetNotifyEnterExitOnChild(bool notify);
+  bool GetNotifyEnterExitOnChild() const;
 
   // Convenience method to retrieve the InputMethod associated with the
   // Widget that contains this view.

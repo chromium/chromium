@@ -695,7 +695,7 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
   subchild->SetBounds(0, 0, 100, 100);
 
   // Make mouse enter and exit events get propagated from |subchild| to |child|.
-  child->set_notify_enter_exit_on_child(true);
+  child->SetNotifyEnterExitOnChild(true);
 
   internal::RootView* root_view =
       static_cast<internal::RootView*>(widget->GetRootView());

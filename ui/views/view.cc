@@ -1316,6 +1316,14 @@ void View::OnTouchEvent(ui::TouchEvent* event) {
 
 void View::OnGestureEvent(ui::GestureEvent* event) {}
 
+void View::SetNotifyEnterExitOnChild(bool notify) {
+  notify_enter_exit_on_child_ = notify;
+}
+
+bool View::GetNotifyEnterExitOnChild() const {
+  return notify_enter_exit_on_child_;
+}
+
 const ui::InputMethod* View::GetInputMethod() const {
   Widget* widget = const_cast<Widget*>(GetWidget());
   return widget ? const_cast<const ui::InputMethod*>(widget->GetInputMethod())
@@ -3013,6 +3021,7 @@ ADD_PROPERTY_METADATA(int, ID)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
+ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
 ADD_PROPERTY_METADATA(bool, Visible)
 END_METADATA
 

@@ -236,7 +236,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   bubble_border_->set_avoid_shadow_overlap(true);
   set_parent_window(params_.parent_window);
   SetCanActivate(false);
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(gfx::Insets());
 

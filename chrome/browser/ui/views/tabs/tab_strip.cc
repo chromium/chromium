@@ -2449,7 +2449,7 @@ void TabStrip::HandleDragExited() {
 void TabStrip::Init() {
   SetID(VIEW_ID_TAB_STRIP);
   // So we get enter/exit on children to switch stacked layout on and off.
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   tab_controls_container_ =
       AddChildView(std::make_unique<TabControlsContainer>());

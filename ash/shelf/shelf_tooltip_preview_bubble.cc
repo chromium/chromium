@@ -49,7 +49,7 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
   set_margins(gfx::Insets());
   // We hide this tooltip on mouse exit, so we want to get enter/exit events
   // at this level, even for subviews.
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,

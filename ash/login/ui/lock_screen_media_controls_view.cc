@@ -227,7 +227,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   // Media controls have not been dismissed initially.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(false);
 
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   contents_view_ = AddChildView(std::make_unique<views::View>());
   contents_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(

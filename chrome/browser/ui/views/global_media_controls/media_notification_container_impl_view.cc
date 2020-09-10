@@ -80,7 +80,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB));

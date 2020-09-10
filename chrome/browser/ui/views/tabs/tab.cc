@@ -193,7 +193,7 @@ Tab::Tab(TabController* controller)
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   SetID(VIEW_ID_TAB);
 

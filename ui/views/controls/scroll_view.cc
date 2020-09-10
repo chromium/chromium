@@ -167,7 +167,7 @@ ScrollView::ScrollView()
       corner_view_(std::make_unique<ScrollCornerView>()),
       scroll_with_layers_enabled_(base::FeatureList::IsEnabled(
           ::features::kUiCompositorScrollWithLayers)) {
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   // Since |contents_viewport_| is accessed during the AddChildView call, make
   // sure the field is initialized.

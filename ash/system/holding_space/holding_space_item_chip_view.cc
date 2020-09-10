@@ -60,7 +60,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   set_ink_drop_visible_opacity(ShelfConfig::Get()->GetInkDropVisibleOpacity());
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   // Ink drop layers should be clipped to match the corner radius of this view.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),

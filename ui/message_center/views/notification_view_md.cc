@@ -629,7 +629,7 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   CreateOrUpdateViews(notification);
   UpdateControlButtonsVisibilityWithNotification(notification);
 
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   click_activator_ = std::make_unique<ClickActivator>(this);
   // Reasons to use pretarget handler instead of OnMousePressed:

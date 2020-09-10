@@ -127,7 +127,7 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
 }
 
 OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
   layer()->SetFillsBoundsOpaquely(false);

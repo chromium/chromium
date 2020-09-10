@@ -81,7 +81,7 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
   badge_icon_->set_can_process_events_within_subtree(false);
 
   set_context_menu_controller(this);
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 }
 
 SearchResultView::~SearchResultView() = default;

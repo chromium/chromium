@@ -1698,7 +1698,7 @@ TEST_F(ViewTest, CanProcessEventsWithinSubtree) {
   TestView* v = new TestView;
   v->SetBounds(0, 0, 100, 100);
   root_view->AddChildView(v);
-  v->set_notify_enter_exit_on_child(true);
+  v->SetNotifyEnterExitOnChild(true);
 
   TestView* v_child = new TestView;
   v_child->SetBounds(0, 0, 20, 30);
@@ -1857,7 +1857,7 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
   TestView* v1 = new TestView;
   v1->SetBounds(0, 0, 100, 100);
   root_view->AddChildView(v1);
-  v1->set_notify_enter_exit_on_child(true);
+  v1->SetNotifyEnterExitOnChild(true);
 
   TestView* v11 = new TestView;
   v11->SetBounds(0, 0, 20, 30);

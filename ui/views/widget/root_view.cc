@@ -506,7 +506,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
   if (v && v != this) {
     if (v != mouse_move_handler_) {
       if (mouse_move_handler_ != nullptr &&
-          (!mouse_move_handler_->notify_enter_exit_on_child() ||
+          (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
            !mouse_move_handler_->Contains(v))) {
         MouseEnterExitEvent exit(event, ui::ET_MOUSE_EXITED);
         exit.ConvertLocationToTarget(static_cast<View*>(this),
@@ -531,7 +531,7 @@ void RootView::OnMouseMoved(const ui::MouseEvent& event) {
       }
       View* old_handler = mouse_move_handler_;
       mouse_move_handler_ = v;
-      if (!mouse_move_handler_->notify_enter_exit_on_child() ||
+      if (!mouse_move_handler_->GetNotifyEnterExitOnChild() ||
           !mouse_move_handler_->Contains(old_handler)) {
         MouseEnterExitEvent entered(event, ui::ET_MOUSE_ENTERED);
         entered.ConvertLocationToTarget(static_cast<View*>(this),
@@ -728,7 +728,7 @@ ui::EventDispatchDetails RootView::NotifyEnterExitOfDescendant(
     View* view,
     View* sibling) {
   for (View* p = view->parent(); p; p = p->parent()) {
-    if (!p->notify_enter_exit_on_child())
+    if (!p->GetNotifyEnterExitOnChild())
       continue;
     if (sibling && p->Contains(sibling))
       break;
