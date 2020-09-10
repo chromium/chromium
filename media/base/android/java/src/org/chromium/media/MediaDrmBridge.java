@@ -442,13 +442,13 @@ public class MediaDrmBridge {
         Log.i(TAG, "Create MediaDrmBridge with level %s and origin %s", securityLevel,
                 securityOrigin);
 
-        UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
-        if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
-            return null;
-        }
-
         MediaDrmBridge mediaDrmBridge = null;
         try {
+            UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
+            if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
+                return null;
+            }
+
             mediaDrmBridge = new MediaDrmBridge(cryptoScheme, requiresMediaCrypto,
                     nativeMediaDrmBridge, nativeMediaDrmStorageBridge);
         } catch (android.media.UnsupportedSchemeException e) {
