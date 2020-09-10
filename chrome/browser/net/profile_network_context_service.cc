@@ -643,11 +643,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         base::TimeDelta::FromMilliseconds(100);
   }
 
-  network_context_params->cors_mode =
-      profile_->ShouldEnableOutOfBlinkCors()
-          ? network::mojom::NetworkContextParams::CorsMode::kEnable
-          : network::mojom::NetworkContextParams::CorsMode::kDisable;
-
   // Always enable the HTTP cache.
   network_context_params->http_cache_enabled = true;
 
