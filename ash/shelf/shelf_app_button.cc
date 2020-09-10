@@ -54,10 +54,6 @@ constexpr int kNotificationIndicatorPadding = 1;
 
 constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
 
-// Slightly different colors and alpha in the new UI.
-constexpr SkColor kIndicatorColorActive = kDefaultIndicatorColor;
-constexpr SkColor kIndicatorColorRunning = SkColorSetA(SK_ColorWHITE, 0x7F);
-
 // The time threshold before an item can be dragged.
 constexpr int kDragTimeThresholdMs = 300;
 
@@ -249,7 +245,13 @@ class ShelfAppButton::AppStatusIndicatorView
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
     // Active and running indicators look a little different in the new UI.
-    flags.setColor(active_ ? kIndicatorColorActive : kIndicatorColorRunning);
+    AshColorProvider* ash_color_provider = AshColorProvider::Get();
+    auto content_layer_type =
+        active_ ? AshColorProvider::ContentLayerType::kAppStateIndicatorColor
+                : AshColorProvider::ContentLayerType::
+                      kAppStateIndicatorColorInactive;
+    flags.setColor(
+        ash_color_provider->GetContentLayerColor(content_layer_type));
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
     flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);
