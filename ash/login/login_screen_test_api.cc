@@ -212,6 +212,15 @@ bool LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown() {
 }
 
 // static
+bool LoginScreenTestApi::IsUserAddingScreenBubbleShown() {
+  LockScreen::TestApi lock_screen_test(LockScreen::Get());
+  LockContentsView::TestApi lock_contents_test(
+      lock_screen_test.contents_view());
+  views::View* bubble = lock_contents_test.user_adding_screen_bubble();
+  return bubble && bubble->GetVisible();
+}
+
+// static
 bool LoginScreenTestApi::IsWarningBubbleShown() {
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
   LockContentsView::TestApi lock_contents_test(
