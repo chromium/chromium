@@ -12,7 +12,11 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/lite_video/lite_video_decider.h"
 #include "chrome/browser/lite_video/lite_video_features.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/blocklist/opt_out_blocklist/sql/opt_out_store_sql.h"
+#include "components/optimization_guide/optimization_guide_decider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,7 +25,8 @@ constexpr base::FilePath::CharType kLiteVideoOptOutDBFilename[] =
     FILE_PATH_LITERAL("lite_video_opt_out.db");
 
 LiteVideoKeyedService::LiteVideoKeyedService(
-    content::BrowserContext* browser_context) {}
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {}
 
 LiteVideoKeyedService::~LiteVideoKeyedService() = default;
 
@@ -39,12 +44,19 @@ void LiteVideoKeyedService::Initialize(const base::FilePath& profile_path) {
       base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
       background_task_runner, profile_path.Append(kLiteVideoOptOutDBFilename));
 
+  optimization_guide::OptimizationGuideDecider* opt_guide_decider = nullptr;
+  if (lite_video::features::LiteVideoUseOptimizationGuide()) {
+    opt_guide_decider = OptimizationGuideKeyedServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(browser_context_));
+  }
+
   decider_ = std::make_unique<lite_video::LiteVideoDecider>(
-      std::move(opt_out_store), base::DefaultClock::GetInstance());
+      std::move(opt_out_store), base::DefaultClock::GetInstance(),
+      opt_guide_decider);
 }
 
 void LiteVideoKeyedService::ClearData(const base::Time& delete_begin,
                                       const base::Time& delete_end) {
   if (decider_)
-    decider_->ClearBlocklist(delete_begin, delete_end);
+    decider_->ClearData(delete_begin, delete_end);
 }

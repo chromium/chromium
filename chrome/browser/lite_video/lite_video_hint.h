@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 
 namespace lite_video {
 
@@ -17,6 +18,9 @@ class LiteVideoHint {
                 base::TimeDelta target_downlink_rtt_latency,
                 int kilobytes_to_buffer_before_throttle,
                 base::TimeDelta max_throttling_delay);
+  // This uses default values for any empty fields in |lite_video_hint|.
+  explicit LiteVideoHint(
+      const optimization_guide::proto::LiteVideoHint& lite_video_hint);
   ~LiteVideoHint() = default;
 
   int target_downlink_bandwidth_kbps() const {

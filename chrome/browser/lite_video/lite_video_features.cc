@@ -26,6 +26,11 @@ bool IsCoinflipExperimentEnabled() {
                                                  "is_coinflip_exp", false);
 }
 
+bool LiteVideoUseOptimizationGuide() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      ::features::kLiteVideo, "use_optimization_guide", false);
+}
+
 base::Optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial() {
   if (!IsLiteVideoEnabled())
     return base::nullopt;
@@ -85,6 +90,13 @@ net::EffectiveConnectionType MinLiteVideoECT() {
              base::GetFieldTrialParamValueByFeature(::features::kLiteVideo,
                                                     "min_lite_video_ect"))
       .value_or(net::EFFECTIVE_CONNECTION_TYPE_4G);
+}
+
+int MaxOptimizationGuideHintCacheSize() {
+  return LiteVideoUseOptimizationGuide()
+             ? GetFieldTrialParamByFeatureAsInt(
+                   ::features::kLiteVideo, "max_opt_guide_hint_cache_size", 10)
+             : 1;
 }
 
 }  // namespace features

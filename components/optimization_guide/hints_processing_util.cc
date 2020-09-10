@@ -47,6 +47,8 @@ std::string GetStringNameForOptimizationType(
       return "FastHostHints";
     case proto::OptimizationType::DELAY_ASYNC_SCRIPT_EXECUTION:
       return "DelayAsyncScriptExecution";
+    case proto::OptimizationType::LITE_VIDEO:
+      return "LiteVideo";
   }
   NOTREACHED();
   return std::string();

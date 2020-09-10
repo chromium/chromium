@@ -23,6 +23,9 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
+#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/proto/lite_video_metadata.pb.h"
+#include "components/optimization_guide/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -79,13 +82,79 @@ class TestLiteVideoHintCache : public lite_video::LiteVideoHintCache {
   std::map<GURL, lite_video::LiteVideoHint> hint_cache_;
 };
 
+class TestOptimizationGuideDecider
+    : public optimization_guide::TestOptimizationGuideDecider {
+ public:
+  TestOptimizationGuideDecider() = default;
+  ~TestOptimizationGuideDecider() override = default;
+
+  void RegisterOptimizationTypes(
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types) override {
+    registered_optimization_types_ =
+        base::flat_set<optimization_guide::proto::OptimizationType>(
+            optimization_types.begin(), optimization_types.end());
+  }
+
+  // Returns the optimization types registered with the Optimization Guide
+  // Decider.
+  base::flat_set<optimization_guide::proto::OptimizationType>
+  registered_optimization_types() {
+    return registered_optimization_types_;
+  }
+
+  void CanApplyOptimizationAsync(
+      content::NavigationHandle* navigation_handle,
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override {
+    GURL url = navigation_handle->GetURL();
+
+    auto response_iter =
+        responses_.find(std::make_tuple(url, optimization_type));
+    if (response_iter == responses_.end()) {
+      std::move(callback).Run(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          optimization_guide::OptimizationMetadata());
+      return;
+    }
+
+    auto response = response_iter->second;
+    std::move(callback).Run(std::get<0>(response), std::get<1>(response));
+  }
+
+  void SetResponses(
+      std::map<std::tuple<GURL, optimization_guide::proto::OptimizationType>,
+               std::tuple<optimization_guide::OptimizationGuideDecision,
+                          optimization_guide::OptimizationMetadata>>
+          responses) {
+    responses_ = responses;
+  }
+
+ private:
+  // The optimization types that were registered with the Optimization Guide
+  // Decider.
+  base::flat_set<optimization_guide::proto::OptimizationType>
+      registered_optimization_types_;
+
+  std::map<std::tuple<GURL, optimization_guide::proto::OptimizationType>,
+           std::tuple<optimization_guide::OptimizationGuideDecision,
+                      optimization_guide::OptimizationMetadata>>
+      responses_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestOptimizationGuideDecider);
+};
+
 class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     scoped_feature_list_.InitAndEnableFeature({::features::kLiteVideo});
-    lite_video_decider_ =
-        std::make_unique<lite_video::LiteVideoDecider>(nullptr, &test_clock_);
+
+    optimization_guide_decider_ =
+        std::make_unique<TestOptimizationGuideDecider>();
+
+    lite_video_decider_ = std::make_unique<lite_video::LiteVideoDecider>(
+        nullptr, &test_clock_, nullptr);
 
     lite_video_decider_->OnEffectiveConnectionTypeChanged(
         net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
@@ -94,6 +163,13 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         "enable-spdy-proxy-auth");
+  }
+
+  void UseOptimizationGuideDecider() {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::LITE_VIDEO});
+    lite_video_decider_->SetOptimizationGuideDeciderForTesting(
+        optimization_guide_decider_.get());
   }
 
   void DisableLiteVideo() {
@@ -115,11 +191,52 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
                        base::Unretained(this)));
   }
 
+  void SetDurationFromTimeDelta(optimization_guide::proto::Duration* duration,
+                                const base::TimeDelta& delta) {
+    if (!duration)
+      return;
+    duration->set_seconds(delta.InSeconds());
+    duration->set_nanos(delta.InNanoseconds() %
+                        base::TimeDelta::FromSeconds(1).InNanoseconds());
+  }
+
   void SeedLiteVideoHintCache(const GURL& gurl,
-                              lite_video::LiteVideoHint hint) {
+                              base::Optional<lite_video::LiteVideoHint> hint,
+                              bool use_opt_guide) {
+    if (use_opt_guide) {
+      optimization_guide::OptimizationMetadata default_metadata;
+      optimization_guide::proto::LiteVideoMetadata lite_video_metadata;
+      if (hint) {
+        optimization_guide::proto::LiteVideoHint* hint_proto =
+            lite_video_metadata.mutable_lite_video_hint();
+        hint_proto->set_target_downlink_bandwidth_kbps(
+            hint->target_downlink_bandwidth_kbps());
+        hint_proto->set_kilobytes_to_buffer_before_throttle(
+            hint->kilobytes_to_buffer_before_throttle());
+        SetDurationFromTimeDelta(
+            hint_proto->mutable_target_downlink_rtt_latency(),
+            hint->target_downlink_rtt_latency());
+        SetDurationFromTimeDelta(hint_proto->mutable_max_throttling_delay(),
+                                 hint->max_throttling_delay());
+        default_metadata.SetAnyMetadataForTesting(lite_video_metadata);
+      }
+
+      std::map<std::tuple<GURL, optimization_guide::proto::OptimizationType>,
+               std::tuple<optimization_guide::OptimizationGuideDecision,
+                          optimization_guide::OptimizationMetadata>>
+          responses = {
+              {std::make_tuple(gurl, optimization_guide::proto::LITE_VIDEO),
+               std::make_tuple(
+                   optimization_guide::OptimizationGuideDecision::kTrue,
+                   default_metadata)},
+          };
+
+      optimization_guide_decider_->SetResponses(responses);
+      return;
+    }
     std::unique_ptr<TestLiteVideoHintCache> hint_cache =
         std::make_unique<TestLiteVideoHintCache>();
-    hint_cache->AddHintForTesting(gurl, hint);
+    hint_cache->AddHintForTesting(gurl, *hint);
     lite_video_decider_->SetHintCacheForTesting(std::move(hint_cache));
   }
 
@@ -135,13 +252,20 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
     return lite_video_decider_.get();
   }
 
-  void OnHintAvailable(base::Optional<lite_video::LiteVideoHint> hint,
-                       lite_video::LiteVideoBlocklistReason blocklist_reason) {
+  void OnHintAvailable(
+      base::Optional<lite_video::LiteVideoHint> hint,
+      lite_video::LiteVideoBlocklistReason blocklist_reason,
+      optimization_guide::OptimizationGuideDecision opt_guide_decision) {
+    opt_guide_decision_ = opt_guide_decision;
     hint_ = hint;
     blocklist_reason_ = blocklist_reason;
   }
 
   base::Optional<lite_video::LiteVideoHint> hint() { return hint_; }
+
+  optimization_guide::OptimizationGuideDecision opt_guide_decision() {
+    return opt_guide_decision_;
+  }
 
   lite_video::LiteVideoBlocklistReason blocklist_reason() {
     return blocklist_reason_;
@@ -160,6 +284,8 @@ class LiteVideoDeciderTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<lite_video::LiteVideoDecider> lite_video_decider_;
   lite_video::LiteVideoBlocklistReason blocklist_reason_;
   base::Optional<lite_video::LiteVideoHint> hint_;
+  std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
+  optimization_guide::OptimizationGuideDecision opt_guide_decision_;
 };
 
 TEST_F(LiteVideoDeciderTest, CanApplyOnNonHTTPOrHTTPSURL) {
@@ -239,7 +365,7 @@ TEST_F(LiteVideoDeciderTest, CanApplyLiteVideo) {
       /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
       /*kilobytes_to_buffer_before_throttle=*/500,
       /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
-  SeedLiteVideoHintCache(url, seeded_hint);
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
 
   lite_video_decider()->CanApplyLiteVideo(
       &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
@@ -276,7 +402,7 @@ TEST_F(LiteVideoDeciderTest, LiteVideoDisabled) {
       /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
       /*kilobytes_to_buffer_before_throttle=*/500,
       /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
-  SeedLiteVideoHintCache(url, seeded_hint);
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
 
   lite_video_decider()->CanApplyLiteVideo(
       &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
@@ -304,7 +430,7 @@ TEST_F(LiteVideoDeciderTest, LiteVideoCanApplyOnSubframeNavigation) {
       /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
       /*kilobytes_to_buffer_before_throttle=*/500,
       /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
-  SeedLiteVideoHintCache(url, seeded_hint);
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
 
   CanApplyOnSubframeNavigation(GURL("https://mainframe.com"), url);
   ASSERT_TRUE(hint());
@@ -339,7 +465,7 @@ TEST_F(LiteVideoDeciderTest, CanApplyOnReload) {
       /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
       /*kilobytes_to_buffer_before_throttle=*/500,
       /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
-  SeedLiteVideoHintCache(url, seeded_hint);
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
 
   lite_video_decider()->CanApplyLiteVideo(
       &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
@@ -370,7 +496,7 @@ TEST_F(LiteVideoDeciderTest, CanApplyOnBackForwardNavigation) {
       /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
       /*kilobytes_to_buffer_before_throttle=*/500,
       /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
-  SeedLiteVideoHintCache(url, seeded_hint);
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/false);
 
   lite_video_decider()->CanApplyLiteVideo(
       &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
@@ -405,4 +531,207 @@ TEST_F(LiteVideoDeciderTest, SetDefaultDownlinkBandwidthOverride) {
 
   ASSERT_TRUE(hint());
   EXPECT_EQ(200, hint()->target_downlink_bandwidth_kbps());
+}
+
+TEST_F(LiteVideoDeciderTest, OptimizationGuide_CanApplyLiteVideo) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL url("https://LiteVideo.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+  lite_video::LiteVideoHint seeded_hint(
+      /*target_downlink_bandwidth_kbps=*/123,
+      /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
+      /*kilobytes_to_buffer_before_throttle=*/500,
+      /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
+  SeedLiteVideoHintCache(url, seeded_hint, /*use_opt_guide=*/true);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+
+  ASSERT_TRUE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(seeded_hint.target_downlink_bandwidth_kbps(),
+            hint()->target_downlink_bandwidth_kbps());
+  EXPECT_EQ(seeded_hint.target_downlink_rtt_latency(),
+            hint()->target_downlink_rtt_latency());
+  EXPECT_EQ(seeded_hint.kilobytes_to_buffer_before_throttle(),
+            hint()->kilobytes_to_buffer_before_throttle());
+  EXPECT_EQ(seeded_hint.max_throttling_delay(), hint()->max_throttling_delay());
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 1, 1);
+}
+
+TEST_F(LiteVideoDeciderTest, OptimizationGuide_NoMetadata_CanApplyLiteVideo) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL url("https://LiteVideo.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+  SeedLiteVideoHintCache(url, /*hint=*/base::nullopt, /*use_opt_guide=*/true);
+
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+
+  ASSERT_TRUE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(lite_video::switches::GetDefaultDownlinkBandwidthKbps(),
+            hint()->target_downlink_bandwidth_kbps());
+  EXPECT_EQ(lite_video::features::LiteVideoTargetDownlinkRTTLatency(),
+            hint()->target_downlink_rtt_latency());
+  EXPECT_EQ(lite_video::features::LiteVideoKilobytesToBufferBeforeThrottle(),
+            hint()->kilobytes_to_buffer_before_throttle());
+  EXPECT_EQ(lite_video::features::LiteVideoMaxThrottlingDelay(),
+            hint()->max_throttling_delay());
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 1, 1);
+}
+
+TEST_F(LiteVideoDeciderTest, OptimizationGuide_CanApplyOnSubframeNavigation) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL url("https://LiteVideo.com");
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+  lite_video::LiteVideoHint seeded_hint(
+      /*target_downlink_bandwidth_kbps=*/123,
+      /*target_downlink_rtt_latency=*/base::TimeDelta::FromMilliseconds(2500),
+      /*kilobytes_to_buffer_before_throttle=*/500,
+      /*max_throttling_delay=*/base::TimeDelta::FromMilliseconds(5000));
+  SeedLiteVideoHintCache(mainframe_url, seeded_hint, /*use_opt_guide=*/true);
+
+  // Force a check on the mainframe, otherwise no hint will be set for the
+  // subframe.
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+
+  CanApplyOnSubframeNavigation(mainframe_url, url);
+  RunUntilIdle();
+
+  ASSERT_TRUE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kTrue);
+  EXPECT_EQ(seeded_hint.target_downlink_bandwidth_kbps(),
+            hint()->target_downlink_bandwidth_kbps());
+  EXPECT_EQ(seeded_hint.target_downlink_rtt_latency(),
+            hint()->target_downlink_rtt_latency());
+  EXPECT_EQ(seeded_hint.kilobytes_to_buffer_before_throttle(),
+            hint()->kilobytes_to_buffer_before_throttle());
+  EXPECT_EQ(seeded_hint.max_throttling_delay(), hint()->max_throttling_delay());
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", true, 2);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 1, 1);
+}
+
+TEST_F(LiteVideoDeciderTest,
+       OptimizationGuide_CanApplyOnSubframeNavigation_Unknown) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL url("https://LiteVideo.com");
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+  SeedLiteVideoHintCache(mainframe_url, base::nullopt, /*use_opt_guide=*/true);
+
+  CanApplyOnSubframeNavigation(mainframe_url, url);
+  RunUntilIdle();
+
+  EXPECT_FALSE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kUnknown);
+
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame", 0);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 0);
+}
+
+TEST_F(LiteVideoDeciderTest,
+       OptimizationGuide_CanApplyOnSubframeNavigation_MainframeFalse) {
+  base::HistogramTester histogram_tester;
+  UseOptimizationGuideDecider();
+
+  SetBlocklistReason(lite_video::LiteVideoBlocklistReason::kAllowed);
+  GURL subframe_url("https://LiteVideo.com");
+  GURL mainframe_url("https://mainframe.com");
+  content::MockNavigationHandle navigation_handle(web_contents());
+  navigation_handle.set_url(mainframe_url);
+  navigation_handle.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+
+  SeedLiteVideoHintCache(subframe_url, base::nullopt, /*use_opt_guide=*/true);
+
+  // Force a check on the mainframe, otherwise no hint will be set for the
+  // subframe.
+  lite_video_decider()->CanApplyLiteVideo(
+      &navigation_handle, base::BindOnce(&LiteVideoDeciderTest::OnHintAvailable,
+                                         base::Unretained(this)));
+  RunUntilIdle();
+  ASSERT_FALSE(hint());
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kFalse);
+
+  CanApplyOnSubframeNavigation(mainframe_url, subframe_url);
+  RunUntilIdle();
+
+  ASSERT_FALSE(hint());
+  EXPECT_EQ(blocklist_reason(), lite_video::LiteVideoBlocklistReason::kAllowed);
+  EXPECT_EQ(opt_guide_decision(),
+            optimization_guide::OptimizationGuideDecision::kFalse);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.HintCache.HasHint", false, 2);
+  histogram_tester.ExpectUniqueSample(
+      "LiteVideo.LiteVideoDecider.OptGuideHintCacheSize", 1, 1);
 }

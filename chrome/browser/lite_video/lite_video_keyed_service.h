@@ -44,6 +44,9 @@ class LiteVideoKeyedService : public KeyedService {
   // The decider owned by this keyed service capable of determining whether
   // to apply the LiteVideo optimization to a navigation.
   std::unique_ptr<lite_video::LiteVideoDecider> decider_;
+
+  // Guaranteed to outlive |this|.
+  content::BrowserContext* browser_context_;
 };
 
 #endif  // CHROME_BROWSER_LITE_VIDEO_LITE_VIDEO_KEYED_SERVICE_H_

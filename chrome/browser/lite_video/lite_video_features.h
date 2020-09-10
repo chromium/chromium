@@ -25,6 +25,9 @@ bool IsLiteVideoEnabled();
 // should be heldback on a per navigation basis.
 bool IsCoinflipExperimentEnabled();
 
+// Whether LiteVideo should rely on the optimization guide for hints.
+bool LiteVideoUseOptimizationGuide();
+
 // Return the origins that are whitelisted for using the LiteVideo optimization
 // and the parameters needed to throttle media requests for that origin.
 base::Optional<base::Value> GetLiteVideoOriginHintsFromFieldTrial();
@@ -57,6 +60,10 @@ int LiteVideoBlocklistVersion();
 // The minimum effective connection type that LiteVideos should be attempted
 // on.
 net::EffectiveConnectionType MinLiteVideoECT();
+
+// The maximum number of hints the LiteVideoDecider should cache locally
+// for reuse by subframes.
+int MaxOptimizationGuideHintCacheSize();
 
 }  // namespace features
 }  // namespace lite_video

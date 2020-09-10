@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/mru_cache.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "chrome/browser/lite_video/lite_video_hint_cache.h"
@@ -20,11 +21,18 @@ namespace blocklist {
 class OptOutStore;
 }  // namespace blocklist
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+enum class OptimizationGuideDecision;
+class OptimizationMetadata;
+}  // namespace optimization_guide
+
 namespace lite_video {
 
-using LiteVideoHintCallback =
-    base::OnceCallback<void(base::Optional<LiteVideoHint> hint,
-                            LiteVideoBlocklistReason blocklist_reason)>;
+using LiteVideoHintCallback = base::OnceCallback<void(
+    base::Optional<LiteVideoHint> hint,
+    LiteVideoBlocklistReason blocklist_reason,
+    optimization_guide::OptimizationGuideDecision opt_guide_decision)>;
 
 // The LiteVideoDecider makes the decision on whether LiteVideos should be
 // applied to a navigation and provides the parameters to use when
@@ -34,8 +42,10 @@ class LiteVideoDecider
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public network::NetworkQualityTracker::EffectiveConnectionTypeObserver {
  public:
-  LiteVideoDecider(std::unique_ptr<blocklist::OptOutStore> opt_out_store,
-                   base::Clock* clock);
+  LiteVideoDecider(
+      std::unique_ptr<blocklist::OptOutStore> opt_out_store,
+      base::Clock* clock,
+      optimization_guide::OptimizationGuideDecider* opt_guide_decider);
   ~LiteVideoDecider() override;
 
   // Determine if the navigation can have the LiteVideo optimization applied. It
@@ -68,10 +78,9 @@ class LiteVideoDecider
   void OnEffectiveConnectionTypeChanged(
       net::EffectiveConnectionType type) override;
 
-  // Purge all the user browsing data within |user_blocklist_| between
-  // the provided time ranges.
-  void ClearBlocklist(const base::Time& delete_begin,
-                      const base::Time& delete_end);
+  // Purge all the user browsing data within |user_blocklist_|  between
+  // the provided time ranges and all data within |cached_opt_guide_hints_|.
+  void ClearData(const base::Time& delete_begin, const base::Time& delete_end);
 
   // Update |user_blocklist_| that a rebuffer event consided an opt-out on the
   // mainframe and subframe URLs occurred.
@@ -79,7 +88,27 @@ class LiteVideoDecider
                         base::Optional<GURL> subframe_url,
                         bool opt_out);
 
+  // Set the optimization guide decider used by |this| for testing only.
+  void SetOptimizationGuideDeciderForTesting(
+      optimization_guide::OptimizationGuideDecider* opt_guide_decider) {
+    opt_guide_decider_ = opt_guide_decider;
+  }
+
  private:
+  // The result of the query to the optimization guide based on the
+  // |mainframe_url|.
+  void OnOptimizationGuideHintAvailable(
+      const GURL& mainframe_url,
+      LiteVideoBlocklistReason blocklist_reason,
+      LiteVideoHintCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  // Update the blocklists based on the navigation and the provided blocklist
+  // reason.
+  void UpdateBlocklists(content::NavigationHandle* navigation_handle,
+                        LiteVideoBlocklistReason blocklist_reason);
+
   // The hint cache that holds LiteVideoHints that specify the parameters
   // for throttling media requests for that navigation.
   std::unique_ptr<LiteVideoHintCache> hint_cache_;
@@ -99,7 +128,18 @@ class LiteVideoDecider
   net::EffectiveConnectionType current_effective_connection_type_ =
       net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
+  // The optimization guide decider to consult for remote predictions.
+  optimization_guide::OptimizationGuideDecider* opt_guide_decider_ = nullptr;
+
+  // The store of hints provided by the optimization guide keyed by mainframe
+  // host. If the hint is empty, then the optimization guide returned kFalse.
+  base::HashingMRUCache<std::string, base::Optional<LiteVideoHint>>
+      cached_opt_guide_hints_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to get a weak pointer to |this|.
+  base::WeakPtrFactory<LiteVideoDecider> weak_ptr_factory_{this};
 };
 
 }  // namespace lite_video

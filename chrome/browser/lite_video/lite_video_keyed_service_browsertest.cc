@@ -16,12 +16,18 @@
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/lite_video/lite_video_switches.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/optimization_guide_features.h"
+#include "components/optimization_guide/proto/hints.pb.h"
+#include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -106,17 +112,26 @@ IN_PROC_BROWSER_TEST_F(LiteVideoDataSaverDisabledBrowserTest,
 }
 
 class LiteVideoKeyedServiceBrowserTest
-    : public LiteVideoKeyedServiceDisabledBrowserTest {
+    : public LiteVideoKeyedServiceDisabledBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  LiteVideoKeyedServiceBrowserTest() = default;
+  LiteVideoKeyedServiceBrowserTest() : use_opt_guide_(GetParam()) {}
   ~LiteVideoKeyedServiceBrowserTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {::features::kLiteVideo},
-        {{"lite_video_origin_hints", "{\"litevideo.com\": 123}"},
-         {"user_blocklist_opt_out_history_threshold", "1"}});
-
+    if (use_opt_guide_) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{::features::kLiteVideo,
+            {{"use_optimization_guide", "true"},
+             {"user_blocklist_opt_out_history_threshold", "1"}}},
+           {optimization_guide::features::kOptimizationHints, {}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          {::features::kLiteVideo},
+          {{"lite_video_origin_hints", "{\"litevideo.com\": 123}"},
+           {"user_blocklist_opt_out_history_threshold", "1"}});
+    }
     SetUpHTTPSServer();
     InProcessBrowserTest::SetUp();
   }
@@ -126,6 +141,8 @@ class LiteVideoKeyedServiceBrowserTest
         network::mojom::ConnectionType::CONNECTION_4G);
     SetEffectiveConnectionType(
         net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+    if (use_opt_guide_)
+      SeedOptGuideLiteVideoHints(GURL("https://litevideo.com"));
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -142,6 +159,19 @@ class LiteVideoKeyedServiceBrowserTest
 
     https_url_ = https_server_->GetURL("/iframe_blank.html");
     ASSERT_TRUE(https_url().SchemeIs(url::kHttpsScheme));
+  }
+
+  // Sets up public image URL hint data.
+  void SeedOptGuideLiteVideoHints(const GURL& url) {
+    ASSERT_TRUE(use_opt_guide_);
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide::OptimizationMetadata optimization_metadata;
+    optimization_guide::proto::LiteVideoMetadata metadata;
+    optimization_metadata.SetAnyMetadataForTesting(metadata);
+    optimization_guide_decider->AddHintForTesting(
+        url, optimization_guide::proto::LITE_VIDEO, optimization_metadata);
   }
 
   // Sets the effective connection type that the Network Quality Tracker will
@@ -168,20 +198,28 @@ class LiteVideoKeyedServiceBrowserTest
 
   GURL https_url() { return https_url_; }
 
+  bool IsUsingOptGuide() { return use_opt_guide_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   GURL https_url_;
   base::HistogramTester histogram_tester_;
+  const bool use_opt_guide_ = false;
 };
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+INSTANTIATE_TEST_SUITE_P(UsingOptGuide,
+                         LiteVideoKeyedServiceBrowserTest,
+                         ::testing::Bool(),
+                         ::testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoEnabledWithKeyedService) {
   EXPECT_TRUE(
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoCanApplyLiteVideo_UnsupportedScheme) {
   WaitForBlocklistToBeLoaded();
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -209,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
 #define MAYBE_LiteVideoCanApplyLiteVideo_NoHintForHost \
   LiteVideoCanApplyLiteVideo_NoHintForHost
 #endif
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        MAYBE_LiteVideoCanApplyLiteVideo_NoHintForHost) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetEffectiveConnectionType(
@@ -252,11 +290,12 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoCanApplyLiteVideo_HasHint) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetEffectiveConnectionType(
       net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+
   WaitForBlocklistToBeLoaded();
   EXPECT_TRUE(
       LiteVideoKeyedServiceFactory::GetForProfile(browser()->profile()));
@@ -298,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoCanApplyLiteVideo_Reload) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WaitForBlocklistToBeLoaded();
@@ -375,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoCanApplyLiteVideo_ForwardBack) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WaitForBlocklistToBeLoaded();
@@ -452,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        MultipleNavigationsNotBlocklisted) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WaitForBlocklistToBeLoaded();
@@ -523,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
 #define DISABLE_ON_WIN(x) x
 #endif
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LiteVideoKeyedServiceBrowserTest,
     DISABLE_ON_WIN(UserBlocklistClearedOnBrowserHistoryClear)) {
   WaitForBlocklistToBeLoaded();
@@ -569,6 +608,11 @@ IN_PROC_BROWSER_TEST_F(
   // Wipe the browser history, clearing the user blocklist.
   // This should allow LiteVideos on the next navigation.
   browser()->profile()->Wipe();
+  if (IsUsingOptGuide()) {
+    // Browser clear wipes the Optimization Guide hint store so
+    // we need to re-seed the hints.
+    SeedOptGuideLiteVideoHints(url);
+  }
 
   EXPECT_GT(
       RetryForHistogramUntilCountReached(
@@ -594,18 +638,25 @@ IN_PROC_BROWSER_TEST_F(
 class LiteVideoNetworkConnectionBrowserTest
     : public LiteVideoKeyedServiceBrowserTest {
  public:
-  LiteVideoNetworkConnectionBrowserTest() = default;
+  LiteVideoNetworkConnectionBrowserTest() : use_opt_guide_(GetParam()) {}
   ~LiteVideoNetworkConnectionBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
+    // This removes the network override switch.
     cmd->AppendSwitch("enable-spdy-proxy-auth");
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const bool use_opt_guide_ = false;
 };
 
-IN_PROC_BROWSER_TEST_F(LiteVideoNetworkConnectionBrowserTest,
+INSTANTIATE_TEST_SUITE_P(UsingOptGuide,
+                         LiteVideoNetworkConnectionBrowserTest,
+                         ::testing::Bool(),
+                         ::testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(LiteVideoNetworkConnectionBrowserTest,
                        LiteVideoCanApplyLiteVideo_NetworkNotCellular) {
   WaitForBlocklistToBeLoaded();
   EXPECT_TRUE(
@@ -631,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(LiteVideoNetworkConnectionBrowserTest,
       "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     LiteVideoNetworkConnectionBrowserTest,
     LiteVideoCanApplyLiteVideo_NetworkConnectionBelowMinECT) {
   WaitForBlocklistToBeLoaded();
@@ -659,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(
       "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
                        LiteVideoCanApplyLiteVideo_NavigationWithSubframe) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetEffectiveConnectionType(
@@ -706,21 +757,35 @@ IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceBrowserTest,
 class LiteVideoKeyedServiceCoinflipBrowserTest
     : public LiteVideoKeyedServiceBrowserTest {
  public:
-  LiteVideoKeyedServiceCoinflipBrowserTest() = default;
+  LiteVideoKeyedServiceCoinflipBrowserTest() : use_opt_guide_(GetParam()) {}
   ~LiteVideoKeyedServiceCoinflipBrowserTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {::features::kLiteVideo}, {{"is_coinflip_exp", "true"}});
+    if (use_opt_guide_) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{::features::kLiteVideo,
+            {{"use_optimization_guide", "true"}, {"is_coinflip_exp", "true"}}},
+           {optimization_guide::features::kOptimizationHints, {}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          {::features::kLiteVideo}, {{"is_coinflip_exp", "true"}});
+    }
     SetUpHTTPSServer();
     InProcessBrowserTest::SetUp();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const bool use_opt_guide_ = false;
 };
 
-IN_PROC_BROWSER_TEST_F(LiteVideoKeyedServiceCoinflipBrowserTest,
+INSTANTIATE_TEST_SUITE_P(UsingOptGuide,
+                         LiteVideoKeyedServiceCoinflipBrowserTest,
+                         ::testing::Bool(),
+                         ::testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceCoinflipBrowserTest,
                        LiteVideoCanApplyLiteVideo_CoinflipHoldback) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       lite_video::switches::kLiteVideoForceOverrideDecision);
