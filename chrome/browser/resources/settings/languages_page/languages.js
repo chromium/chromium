@@ -106,6 +106,7 @@ Polymer({
       },
     },
 
+    // <if expr="chromeos">
     /**
      * Hash map of supported input methods by ID for fast lookup.
      * @private {!Map<string, chrome.languageSettingsPrivate.InputMethod>}
@@ -129,6 +130,7 @@ Polymer({
         return new Map();
       },
     },
+    // </if>
 
     /** @private Prospective UI language when the page was loaded. */
     originalProspectiveUILanguage_: String,
@@ -450,10 +452,6 @@ Polymer({
       this.supportedLanguageMap_.set(language.code, language);
     }
 
-    if (supportedInputMethods) {
-      this.createInputMethodModel_(supportedInputMethods);
-    }
-
     let prospectiveUILanguage;
     if (cr.isChromeOS || cr.isWindows) {
       prospectiveUILanguage =
@@ -484,6 +482,9 @@ Polymer({
     }
 
     if (cr.isChromeOS) {
+      if (supportedInputMethods) {
+        this.createInputMethodModel_(supportedInputMethods);
+      }
       model.inputMethods = /** @type {!InputMethodsModel} */ ({
         supported: supportedInputMethods,
         enabled: this.getEnabledInputMethods_(),
@@ -493,39 +494,6 @@ Polymer({
 
     // Initialize the Polymer languages model.
     this._setLanguages(model);
-  },
-
-  /**
-   * Constructs the input method part of the languages model.
-   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   *     supportedInputMethods Input methods.
-   * @private
-   */
-  createInputMethodModel_(supportedInputMethods) {
-    assert(cr.isChromeOS);
-    // Populate the hash map of supported input methods.
-    this.supportedInputMethodMap_.clear();
-    this.languageInputMethods_.clear();
-    for (let j = 0; j < supportedInputMethods.length; j++) {
-      const inputMethod = supportedInputMethods[j];
-      inputMethod.enabled = !!inputMethod.enabled;
-      inputMethod.isProhibitedByPolicy = !!inputMethod.isProhibitedByPolicy;
-      // Add the input method to the map of IDs.
-      this.supportedInputMethodMap_.set(inputMethod.id, inputMethod);
-      // Add the input method to the list of input methods for each language
-      // it supports.
-      for (let k = 0; k < inputMethod.languageCodes.length; k++) {
-        const languageCode = inputMethod.languageCodes[k];
-        if (!this.supportedLanguageMap_.has(languageCode)) {
-          continue;
-        }
-        if (!this.languageInputMethods_.has(languageCode)) {
-          this.languageInputMethods_.set(languageCode, [inputMethod]);
-        } else {
-          this.languageInputMethods_.get(languageCode).push(inputMethod);
-        }
-      }
-    }
   },
 
   /**
@@ -646,60 +614,6 @@ Polymer({
     });
   },
   // </if>
-
-  /**
-   * Returns a list of enabled input methods.
-   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
-   * @private
-   */
-  getEnabledInputMethods_() {
-    assert(cr.isChromeOS);
-    assert(CrSettingsPrefs.isInitialized);
-
-    let enabledInputMethodIds =
-        this.getPref('settings.language.preload_engines').value.split(',');
-    enabledInputMethodIds = enabledInputMethodIds.concat(
-        this.getPref('settings.language.enabled_extension_imes')
-            .value.split(','));
-
-    // Return only supported input methods.
-    return enabledInputMethodIds
-        .map(id => this.supportedInputMethodMap_.get(id))
-        .filter(function(inputMethod) {
-          return !!inputMethod;
-        });
-  },
-
-  /** @private */
-  updateSupportedInputMethods_() {
-    assert(cr.isChromeOS);
-    const promise = new Promise(resolve => {
-      this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
-        resolve(
-            lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes));
-      });
-    });
-    promise.then(result => {
-      const supportedInputMethods = result;
-      this.createInputMethodModel_(supportedInputMethods);
-      this.set('languages.inputMethods.supported', supportedInputMethods);
-      this.updateEnabledInputMethods_();
-    });
-  },
-
-  /** @private */
-  updateEnabledInputMethods_() {
-    assert(cr.isChromeOS);
-    const enabledInputMethods = this.getEnabledInputMethods_();
-    const enabledInputMethodSet = this.makeSetFromArray_(enabledInputMethods);
-
-    for (let i = 0; i < this.languages.inputMethods.supported.length; i++) {
-      this.set(
-          'languages.inputMethods.supported.' + i + '.enabled',
-          enabledInputMethodSet.has(this.languages.inputMethods.supported[i]));
-    }
-    this.set('languages.inputMethods.enabled', enabledInputMethods);
-  },
 
   /**
    * Updates the |removable| property of the enabled language states based
@@ -1036,7 +950,93 @@ Polymer({
     this.languageSettingsPrivate_.retryDownloadDictionary(languageCode);
   },
 
+  // TODO(crbug/1126259): Once migration is over, use separate languages.js for
+  // browser and chromeos
+
   // <if expr="chromeos">
+  /**
+   * Constructs the input method part of the languages model.
+   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   *     supportedInputMethods Input methods.
+   * @private
+   */
+  createInputMethodModel_(supportedInputMethods) {
+    // Populate the hash map of supported input methods.
+    this.supportedInputMethodMap_.clear();
+    this.languageInputMethods_.clear();
+    for (let j = 0; j < supportedInputMethods.length; j++) {
+      const inputMethod = supportedInputMethods[j];
+      inputMethod.enabled = !!inputMethod.enabled;
+      inputMethod.isProhibitedByPolicy = !!inputMethod.isProhibitedByPolicy;
+      // Add the input method to the map of IDs.
+      this.supportedInputMethodMap_.set(inputMethod.id, inputMethod);
+      // Add the input method to the list of input methods for each language
+      // it supports.
+      for (let k = 0; k < inputMethod.languageCodes.length; k++) {
+        const languageCode = inputMethod.languageCodes[k];
+        if (!this.supportedLanguageMap_.has(languageCode)) {
+          continue;
+        }
+        if (!this.languageInputMethods_.has(languageCode)) {
+          this.languageInputMethods_.set(languageCode, [inputMethod]);
+        } else {
+          this.languageInputMethods_.get(languageCode).push(inputMethod);
+        }
+      }
+    }
+  },
+
+  /**
+   * Returns a list of enabled input methods.
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   * @private
+   */
+  getEnabledInputMethods_() {
+    assert(CrSettingsPrefs.isInitialized);
+
+    let enabledInputMethodIds =
+        this.getPref('settings.language.preload_engines').value.split(',');
+    enabledInputMethodIds = enabledInputMethodIds.concat(
+        this.getPref('settings.language.enabled_extension_imes')
+            .value.split(','));
+
+    // Return only supported input methods.
+    return enabledInputMethodIds
+        .map(id => this.supportedInputMethodMap_.get(id))
+        .filter(function(inputMethod) {
+          return !!inputMethod;
+        });
+  },
+
+  /** @private */
+  updateSupportedInputMethods_() {
+    const promise = new Promise(resolve => {
+      this.languageSettingsPrivate_.getInputMethodLists(function(lists) {
+        resolve(
+            lists.componentExtensionImes.concat(lists.thirdPartyExtensionImes));
+      });
+    });
+    promise.then(result => {
+      const supportedInputMethods = result;
+      this.createInputMethodModel_(supportedInputMethods);
+      this.set('languages.inputMethods.supported', supportedInputMethods);
+      this.updateEnabledInputMethods_();
+    });
+  },
+
+  /** @private */
+  updateEnabledInputMethods_() {
+    const enabledInputMethods = this.getEnabledInputMethods_();
+    const enabledInputMethodSet = this.makeSetFromArray_(enabledInputMethods);
+
+    for (let i = 0; i < this.languages.inputMethods.supported.length; i++) {
+      this.set(
+          'languages.inputMethods.supported.' + i + '.enabled',
+          enabledInputMethodSet.has(this.languages.inputMethods.supported[i]));
+    }
+    this.set('languages.inputMethods.enabled', enabledInputMethods);
+  },
+
   /** @param {string} id */
   addInputMethod(id) {
     if (!this.supportedInputMethodMap_.has(id)) {
