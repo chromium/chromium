@@ -208,12 +208,10 @@ template("chrome_extra_paks") {
 
       if (!is_official_build) {
         sources += [
-          "$root_gen_dir/chromeos/chromeos_file_manager_resources.pak",
           "$root_gen_dir/chromeos/chromeos_sample_system_web_app_resources.pak",
           "$root_gen_dir/chromeos/chromeos_telemetry_extension_resources.pak",
         ]
         deps += [
-          "//chromeos/resources:file_manager_resources",
           "//chromeos/resources:sample_system_web_app_resources",
           "//chromeos/resources:telemetry_extension_resources",
         ]

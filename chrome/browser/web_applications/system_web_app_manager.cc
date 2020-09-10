@@ -58,7 +58,6 @@
 #include "extensions/common/constants.h"
 
 #if !defined(OFFICIAL_BUILD)
-#include "chrome/browser/chromeos/web_applications/file_manager_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/sample_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/telemetry_extension_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
@@ -194,12 +193,6 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   }
 
   infos.emplace(
-      SystemAppType::FILE_MANAGER,
-      SystemAppInfo("File Manager", GURL("chrome://file-manager"),
-                    base::BindRepeating(&CreateWebAppInfoForFileManager)));
-  infos.at(SystemAppType::FILE_MANAGER).capture_navigations = true;
-
-  infos.emplace(
       SystemAppType::SAMPLE,
       SystemAppInfo(
           "Sample", GURL("chrome://sample-system-web-app/pwa.html"),
@@ -331,8 +324,6 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
     case SystemAppType::TELEMETRY:
       return base::FeatureList::IsEnabled(
           chromeos::features::kTelemetryExtension);
-    case SystemAppType::FILE_MANAGER:
-      return base::FeatureList::IsEnabled(chromeos::features::kFilesSWA);
     case SystemAppType::SAMPLE:
       NOTREACHED();
       return false;

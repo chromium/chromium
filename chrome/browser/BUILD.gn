@@ -6015,6 +6015,7 @@ grit("resources") {
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_js",
+      "//chrome/browser/ui/webui/chromeos/file_manager:mojo_bindings_js",
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings_js",
       "//chrome/browser/ui/webui/settings/chromeos:mojom_js",
     ]

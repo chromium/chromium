@@ -2837,16 +2837,12 @@ source_set("chromeos") {
 
   if (!is_official_build) {
     deps += [
-      "//chromeos/components/file_manager:file_manager_ui",
       "//chromeos/components/sample_system_web_app_ui",
       "//chromeos/components/telemetry_extension_ui",
-      "//chromeos/resources:file_manager_resources_grit",
       "//chromeos/resources:sample_system_web_app_resources_grit",
       "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
-      "web_applications/file_manager_web_app_info.cc",
-      "web_applications/file_manager_web_app_info.h",
       "web_applications/sample_system_web_app_info.cc",
       "web_applications/sample_system_web_app_info.h",
       "web_applications/telemetry_extension_web_app_info.cc",
