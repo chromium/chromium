@@ -12,6 +12,11 @@
 
 namespace blink {
 
+// min/max-content take the CSS aspect-ratio property into account.
+// In some cases that's undesirable; this enum lets you choose not
+// to do that using |kIntrinsic|.
+enum class MinMaxSizesType { kContent, kIntrinsic };
+
 // A struct that holds a pair of two sizes, a "min" size and a "max" size.
 // Useful for holding a {min,max}-content size pair or a
 // {min,max}-{width,height}.

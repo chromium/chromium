@@ -1713,10 +1713,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual MinMaxSizes ComputeIntrinsicLogicalWidths() const = 0;
 
   // Returns the (maybe cached) intrinsic logical widths for this layout box.
-  MinMaxSizes IntrinsicLogicalWidths() const {
-    const_cast<LayoutBox*>(this)->UpdateCachedIntrinsicLogicalWidthsIfNeeded();
-    return intrinsic_logical_widths_;
-  }
+  MinMaxSizes IntrinsicLogicalWidths(
+      MinMaxSizesType type = MinMaxSizesType::kContent) const;
 
   // If |IntrinsicLogicalWidthsDirty()| is true, recalculates the intrinsic
   // logical widths.

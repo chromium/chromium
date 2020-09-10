@@ -806,8 +806,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       (input.percentage_resolution_block_size ==
            box_->IntrinsicLogicalWidthsPercentageResolutionBlockSize() ||
        !box_->IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize())) {
-    MinMaxSizes sizes = box_->IsTable() ? box_->PreferredLogicalWidths()
-                                        : box_->IntrinsicLogicalWidths();
+    MinMaxSizes sizes = box_->IsTable()
+                            ? box_->PreferredLogicalWidths()
+                            : box_->IntrinsicLogicalWidths(input.type);
     bool depends_on_percentage_block_size =
         box_->IntrinsicLogicalWidthsDependsOnPercentageBlockSize();
     return {sizes, depends_on_percentage_block_size};
@@ -835,8 +836,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // depend on the *input* %-block-size.
   if (can_use_cached_intrinsic_inline_sizes &&
       !cache_depends_on_percentage_block_size) {
-    MinMaxSizes sizes = box_->IsTable() ? box_->PreferredLogicalWidths()
-                                        : box_->IntrinsicLogicalWidths();
+    MinMaxSizes sizes = box_->IsTable()
+                            ? box_->PreferredLogicalWidths()
+                            : box_->IntrinsicLogicalWidths(input.type);
     return {sizes, cache_depends_on_percentage_block_size};
   }
 
@@ -919,8 +921,9 @@ MinMaxSizes NGBlockNode::ComputeMinMaxSizesFromLegacy(
   // meaning for tables.
   //
   // Due to this the min/max content contribution is their min/max content size.
-  MinMaxSizes sizes = box_->IsTable() ? box_->PreferredLogicalWidths()
-                                      : box_->IntrinsicLogicalWidths();
+  MinMaxSizes sizes = box_->IsTable()
+                          ? box_->PreferredLogicalWidths()
+                          : box_->IntrinsicLogicalWidths(input.type);
 
   if (needs_size_reset)
     box_->ClearOverrideContainingBlockContentSize();

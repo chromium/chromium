@@ -119,7 +119,6 @@ crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/poly
 
 ### external/wpt/css/css-sizing/
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-001.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-002.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-003.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-004.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-005.tentative.html [ Failure ]
@@ -143,11 +142,6 @@ crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-02
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-028.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-008.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-009.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-001.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-002.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-004.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-006.tentative.html [ Failure ]
-crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-008.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/percentage-resolution-001.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/percentage-resolution-002.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/percentage-resolution-004.tentative.html [ Failure ]

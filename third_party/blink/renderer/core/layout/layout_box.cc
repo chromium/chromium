@@ -1668,6 +1668,18 @@ MinMaxSizes LayoutBox::PreferredLogicalWidths() const {
   return MinMaxSizes();
 }
 
+MinMaxSizes LayoutBox::IntrinsicLogicalWidths(MinMaxSizesType type) const {
+  if (type == MinMaxSizesType::kContent && StyleRef().AspectRatio()) {
+    MinMaxSizes sizes;
+    if (ComputeLogicalWidthFromAspectRatio(&sizes.min_size)) {
+      sizes.max_size = sizes.min_size;
+      return sizes;
+    }
+  }
+  const_cast<LayoutBox*>(this)->UpdateCachedIntrinsicLogicalWidthsIfNeeded();
+  return intrinsic_logical_widths_;
+}
+
 void LayoutBox::UpdateCachedIntrinsicLogicalWidthsIfNeeded() {
   if (!IntrinsicLogicalWidthsDirty())
     return;
@@ -3538,7 +3550,7 @@ LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
 bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
     LayoutUnit* out_logical_width) const {
   LayoutUnit logical_height_for_ar = kIndefiniteSize;
-  if (StyleRef().AspectRatio() && StyleRef().LogicalWidth().IsAuto() &&
+  if (StyleRef().AspectRatio() &&
       (StyleRef().LogicalHeight().IsFixed() ||
        StyleRef().LogicalHeight().IsPercentOrCalc())) {
     logical_height_for_ar = ComputeLogicalHeightUsing(
@@ -3618,7 +3630,8 @@ void LayoutBox::ComputeLogicalWidth(
       ContainerWidthInInlineDirection();
   LayoutBlock* cb = ContainingBlock();
 
-  if (ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
+  if (StyleRef().LogicalWidth().IsAuto() &&
+      ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
     /* we're good */
   } else if (treat_as_replaced) {
     computed_values.extent_ =
@@ -3722,7 +3735,10 @@ LayoutUnit LayoutBox::ComputeIntrinsicLogicalWidthUsing(
                     FillAvailableMeasure(available_logical_width));
   }
 
-  MinMaxSizes sizes = IntrinsicLogicalWidths();
+  MinMaxSizesType type = MinMaxSizesType::kContent;
+  if (logical_width_length.IsMinIntrinsic())
+    type = MinMaxSizesType::kIntrinsic;
+  MinMaxSizes sizes = IntrinsicLogicalWidths(type);
 
   if (logical_width_length.IsMinContent() ||
       logical_width_length.IsMinIntrinsic())
