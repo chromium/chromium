@@ -112,6 +112,9 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   void ScheduleDecodeWork();
 
+  // Process all the event in the event queue
+  void ProcessEventQueue();
+
   // Video profile we are decoding.
   VideoCodecProfile profile_;
 

@@ -569,6 +569,8 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
             << ", Number of queued output buffers: "
             << output_queue_->QueuedBuffersCount();
 
+  backend_->OnServiceDeviceTask(event);
+
   // Dequeue V4L2 output buffer first to reduce output latency.
   bool success;
   while (output_queue_->QueuedBuffersCount() > 0) {
@@ -597,8 +599,6 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
     if (!dequeued_buffer)
       break;
   }
-
-  backend_->OnServiceDeviceTask(event);
 }
 
 void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,

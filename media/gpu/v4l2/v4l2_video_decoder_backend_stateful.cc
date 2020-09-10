@@ -230,18 +230,21 @@ void V4L2StatefulVideoDecoderBackend::ScheduleDecodeWork() {
                                 weak_this_));
 }
 
+void V4L2StatefulVideoDecoderBackend::ProcessEventQueue() {
+  while (base::Optional<struct v4l2_event> ev = device_->DequeueEvent()) {
+    if (ev->type == V4L2_EVENT_SOURCE_CHANGE &&
+        (ev->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION)) {
+      ChangeResolution();
+    }
+  }
+}
+
 void V4L2StatefulVideoDecoderBackend::OnServiceDeviceTask(bool event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  if (event) {
-    while (base::Optional<struct v4l2_event> ev = device_->DequeueEvent()) {
-      if (ev->type == V4L2_EVENT_SOURCE_CHANGE &&
-          (ev->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION)) {
-        ChangeResolution();
-      }
-    }
-  }
+  if (event)
+    ProcessEventQueue();
 
   // We can enqueue dequeued output buffers immediately.
   EnqueueOutputBuffers();
@@ -384,11 +387,16 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
   // The order here is important! A flush event may come after a resolution
   // change event (but not the opposite), so we must make sure both events
   // are processed in the correct order.
-  if (buffer->IsLast() && resolution_change_cb_) {
-    std::move(resolution_change_cb_).Run();
-  } else if (buffer->IsLast() && flush_cb_) {
-    // We were waiting for a flush to complete, and received the last buffer.
-    CompleteFlush();
+  if (buffer->IsLast()){
+    if (!resolution_change_cb_ && !flush_cb_)
+      ProcessEventQueue();
+
+    if (resolution_change_cb_) {
+      std::move(resolution_change_cb_).Run();
+    } else if (flush_cb_) {
+      // We were waiting for a flush to complete, and received the last buffer.
+      CompleteFlush();
+    }
   }
 
   EnqueueOutputBuffers();
