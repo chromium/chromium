@@ -97,8 +97,7 @@ LIGHTWEIGHT_TESTERS = [
     'android-go-perf', 'android-pixel2-perf', 'android-pixel2_webview-perf',
     'linux-perf', 'mac-10_12_laptop_low_end-perf',
     'mac-10_13_laptop_high_end-perf', 'win-10-perf',
-    'win-10_laptop_low_end-perf', 'android-pixel2-perf-fyi', 'linux-perf-fyi',
-    'win-10_laptop_low_end-perf_HP-Candidate'
+    'win-10_laptop_low_end-perf'
 ]
 
 FYI_BUILDERS = {
@@ -221,18 +220,6 @@ FYI_BUILDERS = {
             'os': 'ChromeOS',
             'device_type': 'kevin',
         },
-    },
-    'linux-processor-perf-fyi': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'android-pixel2-processor-perf-fyi': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'win-10_laptop_low_end-perf_HP-Candidate-processor': {
-        'platform': 'linux',
-        'perf_processor': True,
     },
 }
 
