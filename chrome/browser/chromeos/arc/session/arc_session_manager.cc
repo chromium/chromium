@@ -303,10 +303,8 @@ int GetSignInErrorCode(arc::mojom::ArcSignInErrorPtr signin_error) {
 }
 
 ArcSupportHost::Error GetCloudProvisionFlowError(
-    base::Optional<mojom::CloudProvisionFlowError> cloud_provision_flow_error) {
-  DCHECK(cloud_provision_flow_error);
-
-  switch (cloud_provision_flow_error.value()) {
+    mojom::CloudProvisionFlowError cloud_provision_flow_error) {
+  switch (cloud_provision_flow_error) {
     case mojom::CloudProvisionFlowError::ERROR_ENROLLMENT_TOKEN_INVALID:
       return ArcSupportHost::Error::
           SIGN_IN_CLOUD_PROVISION_FLOW_ENROLLMENT_TOKEN_INVALID;
@@ -591,8 +589,6 @@ void ArcSessionManager::OnProvisioningFinished(
   if (scoped_opt_in_tracker_ && !provisioning_successful)
     scoped_opt_in_tracker_->TrackError();
 
-  base::Optional<mojom::CloudProvisionFlowError> cloud_provision_flow_error;
-
   if (result == ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR) {
     // TODO(poromov): Consider ARC PublicSession offline mode.
     // Currently ARC session will be exited below, while the main user session
@@ -616,15 +612,12 @@ void ArcSessionManager::OnProvisioningFinished(
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
                              provisioning_successful, profile_);
     UpdateProvisioningResultUMA(result, profile_);
-    if (signin_error && signin_error->is_cloud_provision_flow_error()) {
-      cloud_provision_flow_error =
-          signin_error->get_cloud_provision_flow_error();
+    if (signin_error && signin_error->is_cloud_provision_flow_error())
+      UpdateCloudProvisionFlowErrorUMA(
+          signin_error->get_cloud_provision_flow_error(), profile_);
 
-      UpdateCloudProvisionFlowErrorUMA(cloud_provision_flow_error.value(),
-                                       profile_);
-    }
     if (!provisioning_successful)
-      UpdateOptInCancelUMA(OptInCancelReason::CLOUD_PROVISION_FLOW_FAIL);
+      UpdateOptInCancelUMA(OptInCancelReason::PROVISIONING_FAILED);
   }
 
   if (provisioning_successful) {
@@ -682,7 +675,9 @@ void ArcSessionManager::OnProvisioningFinished(
       error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
       break;
     case ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR:
-      error = GetCloudProvisionFlowError(cloud_provision_flow_error);
+      DCHECK(signin_error && signin_error->is_cloud_provision_flow_error());
+      error = GetCloudProvisionFlowError(
+          signin_error->get_cloud_provision_flow_error());
       break;
     case ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR:
       error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;

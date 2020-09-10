@@ -57,8 +57,8 @@ enum class OptInCancelReason {
   DEPRECATED_BAD_AUTHENTICATION = 4,
   DEPRECATED_GMS_CORE_NOT_AVAILABLE = 5,
 
-  // Cloud provision flow failed.
-  CLOUD_PROVISION_FLOW_FAIL = 6,
+  // Provision failed.
+  PROVISIONING_FAILED = 6,
 
   // Android management is required for user.
   ANDROID_MANAGEMENT_REQUIRED = 7,

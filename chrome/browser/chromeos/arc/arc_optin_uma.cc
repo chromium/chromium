@@ -83,7 +83,7 @@ void UpdateProvisioningResultUMA(ProvisioningResult result,
 
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
                                       const Profile* profile) {
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       GetHistogramNameByUserType("Arc.Provisioning.CloudFlowError", profile),
       error);
 }

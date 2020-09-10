@@ -3225,7 +3225,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="DEPRECATED: GMS Services are not available"/>
   <int value="4" label="DEPRECATED: Bad authentication returned by server"/>
   <int value="5" label="DEPRECATED: GMS Core is not available"/>
-  <int value="6" label="Cloud provision flow failed"/>
+  <int value="6" label="Provisioning failed"/>
   <int value="7" label="Android Management required"/>
   <int value="8" label="Busy"/>
 </enum>
