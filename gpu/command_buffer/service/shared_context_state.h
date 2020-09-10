@@ -273,6 +273,8 @@ class GPU_GLES2_EXPORT SharedContextState
 
   ~SharedContextState() override;
 
+  base::Optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
+
   // gpu::GLContextVirtualDelegate implementation.
   bool initialized() const override;
   const gles2::ContextState* GetContextState() override;
