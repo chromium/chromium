@@ -1055,7 +1055,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/mult
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-width-small-001.xht [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-multicol-002.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-multicol-003.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-multicol.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/abspos-after-break-after.html [ Failure ]
 crbug.com/1066616 virtual/layout_ng_block_frag/fast/multicol/abspos-in-overflow-hidden-in-2nd-column.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/abspos-new-width-rebalance.html [ Crash Failure ]
