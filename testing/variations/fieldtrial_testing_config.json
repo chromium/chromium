@@ -5430,6 +5430,21 @@
             ]
         }
     ],
+    "ReleaseNotesNotification": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReleaseNotesNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "RenderDocument": [
         {
             "platforms": [
