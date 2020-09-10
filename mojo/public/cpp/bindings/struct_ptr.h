@@ -35,6 +35,10 @@ class StructPtr {
  public:
   using Struct = S;
 
+  // Exposing StructPtr<S>::element_type allows gmock's Pointee matcher to
+  // dereference StructPtr's.
+  using element_type = S;
+
   StructPtr() = default;
   StructPtr(std::nullptr_t) {}
 
@@ -121,6 +125,10 @@ template <typename S>
 class InlinedStructPtr {
  public:
   using Struct = S;
+
+  // Exposing InlinedStructPtr<S>::element_type allows gmock's Pointee matcher
+  // to dereference InlinedStructPtr's.
+  using element_type = S;
 
   InlinedStructPtr() = default;
   InlinedStructPtr(std::nullptr_t) {}

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/interfaces/bindings/tests/test_export2.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -540,6 +541,25 @@ TEST_F(StructTest, EnumNestedStructTest) {
       std::move(enum_nested_struct));
   EXPECT_TRUE(output.Equals(expected_output));
   EXPECT_EQ(EnumNestedStruct::StructEnum::SECOND, output->local_enum_state_);
+}
+
+TEST_F(StructTest, Matcher) {
+  // Pointee will dereference StructPtr<S> or InlinedStructPtr<S> to get S.
+  // This test ensures that the matcher compiles and works.
+  using ::testing::Pointee;
+
+  using ::testing::AllOf;
+  using ::testing::Field;
+
+  mojo::InlinedStructPtr<Rect> rect = MakeRect();
+  EXPECT_THAT(
+      rect, Pointee(AllOf(Field(&Rect::x, 1), Field(&Rect::y, 2),
+                          Field(&Rect::width, 10), Field(&Rect::height, 20))));
+
+  mojo::StructPtr<MultiVersionStruct> multi = MakeMultiVersionStruct();
+  EXPECT_THAT(multi, Pointee(AllOf(Field(&MultiVersionStruct::f_int32, 123),
+                                   Field(&MultiVersionStruct::f_rect,
+                                         Pointee(Field(&Rect::x, 5))))));
 }
 
 }  // namespace test
