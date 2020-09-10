@@ -4,7 +4,6 @@ include_rules = [
     "+base/strings/char_traits.h",
     "+mojo/public/cpp/bindings",
     "+mojo/public/cpp/system",
-    "+net/base/net_errors.h",
     "+services/device/public/mojom",
     "+services/network/public/cpp/shared_url_loader_factory.h",
     "+services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h",

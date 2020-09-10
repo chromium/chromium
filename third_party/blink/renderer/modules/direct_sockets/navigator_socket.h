@@ -9,13 +9,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
-#include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
-#include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -62,6 +59,8 @@ class MODULES_EXPORT NavigatorSocket final
   void Trace(Visitor*) const override;
 
  private:
+  class PendingRequest;
+
   // Binds service_remote_ if not already bound.
   void EnsureServiceConnected(LocalDOMWindow&);
 
@@ -79,25 +78,12 @@ class MODULES_EXPORT NavigatorSocket final
   // Updates exception state whenever returning false.
   bool OpenSocketPermitted(ScriptState*, const SocketOptions*, ExceptionState&);
 
-  void OnTcpOpen(TCPSocket* socket,
-                 int32_t result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr,
-                 mojo::ScopedDataPipeConsumerHandle receive_stream,
-                 mojo::ScopedDataPipeProducerHandle send_stream);
-
-  void OnUdpOpen(UDPSocket* socket,
-                 int32_t result,
-                 const base::Optional<net::IPEndPoint>& local_addr,
-                 const base::Optional<net::IPEndPoint>& peer_addr);
-
   void OnConnectionError();
 
   HeapMojoRemote<blink::mojom::blink::DirectSocketsService> service_remote_{
       nullptr};
 
-  HeapHashSet<Member<TCPSocket>> pending_tcp_;
-  HeapHashSet<Member<UDPSocket>> pending_udp_;
+  HeapHashSet<Member<PendingRequest>> pending_requests_;
 };
 
 }  // namespace blink

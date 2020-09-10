@@ -9,9 +9,11 @@
   ImplementedAs=NavigatorSocket,
   RuntimeEnabled=DirectSockets
 ] partial interface Navigator {
+  // TODO(crbug.com/905818): Return Promise<TCPSocket>
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<TCPSocket> openTCPSocket(optional SocketOptions options = {});
+  Promise<void> openTCPSocket(optional SocketOptions options = {});
 
+  // TODO(crbug.com/1119620): Return Promise<UDPSocket>
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<UDPSocket> openUDPSocket(optional SocketOptions options = {});
+  Promise<void> openUDPSocket(optional SocketOptions options = {});
 };
