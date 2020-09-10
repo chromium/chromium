@@ -1,5 +1,2 @@
-rouslan@chromium.org
-
+file://components/spellcheck/OWNERS
 per-file spellcheck_language_policy_handler*=macourteau@chromium.org
-
-# COMPONENT: UI>Browser>Spellcheck
