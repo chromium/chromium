@@ -186,8 +186,8 @@ somebody familiar with the user action notices and triages such bugs!
 
 actions.xml allows you to annotate an action as `not_user_triggered="true"`.
 Use it when appropriate.  For example, showing a notification is not user
-triggered.  However, please remember: before adding something marked as
-`not_user_triggered="true"`, consider when you need to analyze sequences of
+triggered.  However, please remember: Before adding something marked as
+`not_user_triggered="true"`, consider whether you need to analyze sequences of
 actions.  If not, please use a histogram to count these events instead.
 
 ## Cleaning Up User Action Entries
