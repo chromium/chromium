@@ -189,8 +189,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
   void Focus() override;
-  void SetMouseOverURL(const WebURL& url) override;
-  void SetKeyboardFocusURL(const WebURL& url) override;
   void SetDeviceScaleFactor(float) override;
   void SetZoomFactorForDeviceScaleFactor(float) override;
   float ZoomFactorForDeviceScaleFactor() override {
@@ -453,6 +451,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void SetMainFrameWidgetBase(WebViewFrameWidget* widget);
   WebFrameWidgetBase* MainFrameWidgetBase();
+
+  // Called when hovering over an anchor with the given URL.
+  void SetMouseOverURL(const KURL&);
+
+  // Called when keyboard focus switches to an anchor with the given URL.
+  void SetKeyboardFocusURL(const KURL&);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);

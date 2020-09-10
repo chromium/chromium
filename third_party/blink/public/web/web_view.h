@@ -282,12 +282,6 @@ class WebView {
   // Asks the browser process to activate this web view.
   virtual void Focus() = 0;
 
-  // Called when hovering over an anchor with the given URL.
-  virtual void SetMouseOverURL(const WebURL&) {}
-
-  // Called when keyboard focus switches to an anchor with the given URL.
-  virtual void SetKeyboardFocusURL(const WebURL&) {}
-
   // Sets the ratio as computed by computePageScaleConstraints.
   // TODO(oshima): Remove this once the device scale factor implementation is
   // fully migrated to use zooming mechanism.

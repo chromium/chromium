@@ -106,6 +106,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -224,7 +225,7 @@ void ChromeClientImpl::TakeFocus(mojom::blink::FocusType type) {
 }
 
 void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
-  WebURL focus_url;
+  KURL focus_url;
   if (new_focus_element && new_focus_element->IsLiveLink() &&
       new_focus_element->ShouldHaveFocusAppearance())
     focus_url = new_focus_element->HrefURL();
@@ -544,7 +545,7 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
   if (!web_view_->Client())
     return;
 
-  WebURL url;
+  KURL url;
 
   // Ignore URL if hitTest include scrollbar since we might have both a
   // scrollbar and an element in the case of overlay scrollbars.

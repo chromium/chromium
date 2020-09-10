@@ -1521,6 +1521,16 @@ void WebViewImpl::SetMainFrameWidgetBase(WebViewFrameWidget* widget) {
   web_widget_ = widget;
 }
 
+void WebViewImpl::SetMouseOverURL(const KURL& url) {
+  mouse_over_url_ = url;
+  UpdateTargetURL(mouse_over_url_, focus_url_);
+}
+
+void WebViewImpl::SetKeyboardFocusURL(const KURL& url) {
+  focus_url_ = url;
+  UpdateTargetURL(focus_url_, mouse_over_url_);
+}
+
 WebFrameWidgetBase* WebViewImpl::MainFrameWidgetBase() {
   return web_widget_;
 }
@@ -2937,16 +2947,6 @@ void WebViewImpl::Focus() {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->FocusPage();
   }
-}
-
-void WebViewImpl::SetMouseOverURL(const WebURL& url) {
-  mouse_over_url_ = KURL(url);
-  UpdateTargetURL(mouse_over_url_, focus_url_);
-}
-
-void WebViewImpl::SetKeyboardFocusURL(const WebURL& url) {
-  focus_url_ = KURL(url);
-  UpdateTargetURL(focus_url_, mouse_over_url_);
 }
 
 void WebViewImpl::UpdateTargetURL(const WebURL& url,
