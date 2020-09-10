@@ -2288,21 +2288,6 @@
             ]
         }
     ],
-    "EnableMediaRouter": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "EnableNewBadgeOnMenuItems": [
         {
             "platforms": [
@@ -2398,27 +2383,6 @@
             ]
         }
     ],
-    "ExpectCTReporting": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ExpectCTReportingEnabled",
-                    "enable_features": [
-                        "ExpectCTReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExploreSitesDense": [
         {
             "platforms": [
@@ -2435,18 +2399,6 @@
                     "enable_features": [
                         "ExploreSites"
                     ]
-                }
-            ]
-        }
-    ],
-    "ExtensionContentVerification": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnforceStrict"
                 }
             ]
         }
@@ -2481,24 +2433,6 @@
             ]
         }
     ],
-    "ExtensionsToolbarMenu": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtensionsToolbarMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedActionsUpload": [
         {
             "platforms": [
@@ -2516,26 +2450,6 @@
                     "enable_features": [
                         "IPH_FeedHeaderMenu",
                         "ReportFeedUserActions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FilterAdsOnAbusiveSites": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FilterAdsOnAbusiveSites"
                     ]
                 }
             ]
@@ -2597,27 +2511,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FlocIdComputedEventLogging"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FontSrcLocalMatching": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FontSrcLocalMatching"
                     ]
                 }
             ]
@@ -2857,23 +2750,6 @@
                         "ContextMenuSearchAndShopWithGoogleLens",
                         "ContextMenuSearchWithGoogleLens",
                         "ContextMenuShopWithGoogleLens"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GpuUseDisplayThreadPriority": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BlinkCompositorUseDisplayThreadPriority",
-                        "GpuProcessHighPriorityWin",
-                        "GpuUseDisplayThreadPriority"
                     ]
                 }
             ]
