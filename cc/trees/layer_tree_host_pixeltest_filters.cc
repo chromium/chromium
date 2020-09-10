@@ -12,7 +12,6 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
-#include "components/viz/test/buildflags.h"
 
 #if !defined(OS_ANDROID)
 
@@ -73,38 +72,16 @@ class LayerTreeHostFiltersPixelTest
   }
 };
 
-viz::RendererType const kRendererTypes[] = {
-    viz::RendererType::kGL,       viz::RendererType::kSkiaGL,
-    viz::RendererType::kSoftware,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    viz::RendererType::kSkiaDawn,
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 using LayerTreeHostFiltersPixelTestGPU = LayerTreeHostFiltersPixelTest;
 
-viz::RendererType const kRendererTypesGpu[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    viz::RendererType::kSkiaDawn,
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTestGPU,
-                         ::testing::ValuesIn(kRendererTypesGpu),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
@@ -384,18 +361,10 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
 };
 
 // TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
-// kRendererTypesGpu.
-viz::RendererType const kRendererTypesGpuNonDawn[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-};
-
+// viz::GetGpuRendererTypes().
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
-                         ::testing::ValuesIn(kRendererTypesGpuNonDawn),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypesNoDawn()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
@@ -499,7 +468,7 @@ class LayerTreeHostFiltersScaledPixelTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersScaledPixelTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostFiltersScaledPixelTest, StandardDpi) {
@@ -1183,7 +1152,7 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterOffsetTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(BackdropFilterOffsetTest, StandardDpi) {
@@ -1243,7 +1212,7 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterInvertTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(BackdropFilterInvertTest, StandardDpi) {

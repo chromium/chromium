@@ -15,7 +15,6 @@
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "components/viz/test/buildflags.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
@@ -74,20 +73,9 @@ class PaintedScrollbar : public FakeScrollbar {
   SkColor color_ = SK_ColorGREEN;
 };
 
-viz::RendererType const kRendererTypes[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    viz::RendererType::kSkiaDawn,
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostScrollbarsPixelTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostScrollbarsPixelTest, NoScale) {
@@ -259,7 +247,7 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostOverlayScrollbarsPixelTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 // Simulate increasing the thickness of a painted overlay scrollbar. Ensure that

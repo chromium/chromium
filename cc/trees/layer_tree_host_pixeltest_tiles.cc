@@ -150,10 +150,12 @@ class LayerTreeHostTilesTestPartialInvalidation
 
 std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSoftware, TestRasterType::kBitmap},
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     {viz::RendererType::kGL, TestRasterType::kOneCopy},
     {viz::RendererType::kGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kOop},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
@@ -189,8 +191,10 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidation, FullRaster) {
 }
 
 std::vector<RasterTestConfig> const kTestCasesMultiThread = {
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     {viz::RendererType::kGL, TestRasterType::kOneCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     // TODO(sgilhuly): Switch this to one copy raster once is is supported for
     // Vulkan in these tests.
@@ -233,6 +237,10 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidationMultiThread, FullRaster) {
                base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png")));
 }
 
+// This test doesn't work on Vulkan because on our hardware we can't render to
+// RGBA4444 format using either SwiftShader or native Vulkan. See
+// crbug.com/987278 for details
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 class LayerTreeHostTilesTestPartialInvalidationLowBitDepth
     : public LayerTreeHostTilesTestPartialInvalidation {
  protected:
@@ -243,9 +251,6 @@ class LayerTreeHostTilesTestPartialInvalidationLowBitDepth
   }
 };
 
-// This test doesn't work on Vulkan because on our hardware we can't render to
-// RGBA4444 format using either SwiftShader or native Vulkan. See
-// crbug.com/987278 for details
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
@@ -266,6 +271,7 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth, FullRaster) {
       picture_layer_,
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped_dither.png")));
 }
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 
 }  // namespace
 }  // namespace cc

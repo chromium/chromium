@@ -31,12 +31,14 @@ namespace {
 // https://crbug.com/979703
 std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSoftware, TestRasterType::kBitmap},
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     {viz::RendererType::kGL, TestRasterType::kGpu},
     {viz::RendererType::kGL, TestRasterType::kOneCopy},
     {viz::RendererType::kGL, TestRasterType::kZeroCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kOop},
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
@@ -882,6 +884,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
 
 MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSoftware, TestRasterType::kBitmap}, 0},
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
@@ -892,6 +895,7 @@ MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
+#endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},

@@ -13,15 +13,6 @@
 
 namespace viz {
 
-// Returns a list containing all RendererTypes applicable to the platform.
-std::vector<RendererType> GetRendererTypes();
-std::vector<RendererType> GetRendererTypesNoDawn();
-
-// Returns a list containing all RendererTypes, except SoftwareRenderer,
-// applicable to the platform.
-std::vector<RendererType> GetGpuRendererTypes();
-std::vector<RendererType> GetGpuRendererTypesNoDawn();
-
 // Viz pixel test base class. When SetUp() is called the appropriate
 // DirectRenderer implementation is initialized based on RendererType
 // parameter passed to the constructor.

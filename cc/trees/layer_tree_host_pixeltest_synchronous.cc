@@ -9,7 +9,7 @@
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
-#include "components/viz/test/buildflags.h"
+#include "components/viz/test/test_types.h"
 
 #if !defined(OS_ANDROID)
 
@@ -51,20 +51,9 @@ class LayerTreeHostSynchronousPixelTest
   }
 };
 
-viz::RendererType const kRendererTypesGpu[] = {
-    viz::RendererType::kGL,
-    viz::RendererType::kSkiaGL,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    viz::RendererType::kSkiaDawn,
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostSynchronousPixelTest,
-                         ::testing::ValuesIn(kRendererTypesGpu),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerZeroCopy) {

@@ -7,7 +7,6 @@
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/layer_tree_pixel_test.h"
 #include "cc/test/pixel_comparator.h"
-#include "components/viz/test/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform_util.h"
 
@@ -25,20 +24,9 @@ class LayerTreeHostMirrorPixelTest
   viz::RendererType renderer_type() const { return GetParam(); }
 };
 
-const viz::RendererType kRendererTypes[] = {
-    viz::RendererType::kGL,       viz::RendererType::kSkiaGL,
-    viz::RendererType::kSoftware,
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    viz::RendererType::kSkiaVk,
-#endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    viz::RendererType::kSkiaDawn,
-#endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-};
-
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostMirrorPixelTest,
-                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::ValuesIn(viz::GetRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 // Verifies that a mirror layer with a scale mirrors another layer correctly.

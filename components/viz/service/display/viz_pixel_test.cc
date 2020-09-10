@@ -5,48 +5,9 @@
 #include "components/viz/service/display/viz_pixel_test.h"
 
 #include "build/build_config.h"
-#include "components/viz/test/buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 namespace viz {
-namespace {
-
-std::vector<RendererType> GetRendererTypes(bool include_software,
-                                           bool include_dawn) {
-  std::vector<RendererType> types;
-  if (include_software)
-    types.push_back(RendererType::kSoftware);
-#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
-  types.push_back(RendererType::kGL);
-  types.push_back(RendererType::kSkiaGL);
-#endif
-#if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-  types.push_back(RendererType::kSkiaVk);
-#endif
-#if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-  if (include_dawn)
-    types.push_back(RendererType::kSkiaDawn);
-#endif
-  return types;
-}
-
-}  // namespace
-
-std::vector<RendererType> GetRendererTypes() {
-  return GetRendererTypes(true, true);
-}
-
-std::vector<RendererType> GetRendererTypesNoDawn() {
-  return GetRendererTypes(true, false);
-}
-
-std::vector<RendererType> GetGpuRendererTypes() {
-  return GetRendererTypes(false, true);
-}
-
-std::vector<RendererType> GetGpuRendererTypesNoDawn() {
-  return GetRendererTypes(false, false);
-}
 
 // static
 cc::PixelTest::GraphicsBackend VizPixelTest::RenderTypeToBackend(

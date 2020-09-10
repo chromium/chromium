@@ -176,9 +176,7 @@ class LayerTreeHostCopyRequestTestMultipleRequests
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestMultipleRequests,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL,
-                                viz::RendererType::kSoftware}),
+    CombineWithCompositorModes(viz::GetRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestMultipleRequests, Test) {
@@ -213,8 +211,7 @@ class LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestMultipleRequestsOutOfOrder, Test) {
@@ -273,8 +270,7 @@ class LayerTreeHostCopyRequestCompletionCausesCommit
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestCompletionCausesCommit,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestCompletionCausesCommit, Test) {
@@ -381,8 +377,7 @@ class LayerTreeHostCopyRequestTestLayerDestroyed
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestLayerDestroyed,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestLayerDestroyed, Test) {
@@ -488,8 +483,7 @@ class LayerTreeHostCopyRequestTestInHiddenSubtree
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestInHiddenSubtree,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestInHiddenSubtree, Test) {
@@ -610,8 +604,7 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest, Test) {
@@ -667,8 +660,7 @@ class LayerTreeHostCopyRequestTestClippedOut
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestClippedOut,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestClippedOut, Test) {
@@ -728,8 +720,7 @@ class LayerTreeHostCopyRequestTestScaledLayer
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestScaledLayer,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestScaledLayer, Test) {
@@ -824,8 +815,7 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostTestAsyncTwoReadbacksWithoutDraw,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostTestAsyncTwoReadbacksWithoutDraw, Test) {
@@ -968,8 +958,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestDeleteSharedImage,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestDeleteSharedImage, Test) {
@@ -1112,8 +1101,7 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestCreatesSharedImage,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestCreatesSharedImage, Test) {
@@ -1201,8 +1189,7 @@ class LayerTreeHostCopyRequestTestDestroyBeforeCopy
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestDestroyBeforeCopy,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestDestroyBeforeCopy, Test) {
@@ -1285,8 +1272,7 @@ class LayerTreeHostCopyRequestTestShutdownBeforeCopy
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestShutdownBeforeCopy,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestShutdownBeforeCopy, Test) {
@@ -1418,8 +1404,7 @@ class LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest
 INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest,
-    CombineWithCompositorModes({viz::RendererType::kGL,
-                                viz::RendererType::kSkiaGL}),
+    CombineWithCompositorModes(viz::GetGpuRendererTypesNoDawn()),
     PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest, Test) {
