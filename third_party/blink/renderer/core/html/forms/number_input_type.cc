@@ -334,6 +334,11 @@ String NumberInputType::BadInputText() const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_BAD_INPUT_NUMBER);
 }
 
+String NumberInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL,
+                                 LocalizeValue(Serialize(value)));
+}
+
 String NumberInputType::RangeOverflowText(const Decimal& maximum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_OVERFLOW,
                                  LocalizeValue(Serialize(maximum)));

@@ -143,6 +143,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   void StepUp(double, ExceptionState&);
   void StepUpFromLayoutObject(int);
   virtual String BadInputText() const;
+  virtual String ValueNotEqualText(const Decimal& value) const;
   virtual String RangeOverflowText(const Decimal& maximum) const;
   virtual String RangeUnderflowText(const Decimal& minimum) const;
   virtual String ReversedRangeOutOfRangeText(const Decimal& minimum,

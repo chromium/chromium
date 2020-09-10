@@ -95,6 +95,7 @@ class BaseTemporalInputType : public InputType {
   bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
   bool ValueMissing(const String&) const override;
+  String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maximum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
   String RangeInvalidText(const Decimal& minimum,

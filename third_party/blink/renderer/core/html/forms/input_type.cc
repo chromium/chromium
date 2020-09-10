@@ -336,6 +336,11 @@ String InputType::BadInputText() const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_TYPE_MISMATCH);
 }
 
+String InputType::ValueNotEqualText(const Decimal& value) const {
+  NOTREACHED();
+  return String();
+}
+
 String InputType::RangeOverflowText(const Decimal&) const {
   NOTREACHED();
   return String();
@@ -424,6 +429,12 @@ std::pair<String, String> InputType::ValidationMessage(
     return std::make_pair(
         ReversedRangeOutOfRangeText(step_range.Minimum(), step_range.Maximum()),
         g_empty_string);
+  }
+
+  if (numeric_value != step_range.Minimum() &&
+      step_range.Minimum() == step_range.Maximum()) {
+    return std::make_pair(ValueNotEqualText(step_range.Minimum()),
+                          g_empty_string);
   }
 
   if (numeric_value < step_range.Minimum())

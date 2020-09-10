@@ -1011,6 +1011,12 @@ below:
       <message name="IDS_FORM_VALIDATION_TYPE_MISMATCH_MULTIPLE_EMAIL" desc="Heading or short sentence shown there is a field which accepts multiple e-mail addresses and a user specified a value which is not a comma-separated e-mail addresses.">
         Please enter a comma separated list of email addresses.
       </message>
+      <message name="IDS_FORM_VALIDATION_VALUE_NOT_EQUAL" desc="Heading or short sentence shown when a form control value in a webpage needs to be equal to a minimum and maximum value specified by the page author, but a user specified a too small or large value.">
+        Value must be <ph name="VALUE">$1<ex>1</ex></ph>.
+      </message>
+      <message name="IDS_FORM_VALIDATION_VALUE_NOT_EQUAL_DATETIME" desc="Heading or short sentence shown when a form control value in a webpage needs to be equal to a minimum and maximum date/time value specified by the page author, but a user specified an earlier or later date/time.">
+        Value must be <ph name="VALUE_DATE_OR_TIME">$1<ex>02/09/2020</ex></ph>.
+      </message>
       <message name="IDS_FORM_VALIDATION_RANGE_UNDERFLOW" desc="Heading or short sentence shown when a form control value in a webpage needs to be larger than or equal to a minimum value specified by the page author, but a user specified a too small value.">
         Value must be greater than or equal to <ph name="MINIMUM">$1<ex>0</ex></ph>.
       </message>

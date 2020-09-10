@@ -94,6 +94,11 @@ bool BaseTemporalInputType::TypeMismatch() const {
   return TypeMismatchFor(GetElement().value());
 }
 
+String BaseTemporalInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL_DATETIME,
+                                 LocalizeValue(Serialize(value)));
+}
+
 String BaseTemporalInputType::RangeOverflowText(const Decimal& maximum) const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_OVERFLOW_DATETIME,
                                  LocalizeValue(Serialize(maximum)));

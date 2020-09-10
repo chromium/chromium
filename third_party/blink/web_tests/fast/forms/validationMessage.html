@@ -99,6 +99,58 @@ numberInput.max = "10.02";
 numberInput.value = "10.01";
 debug("input stepMismatch: " + numberInput.validationMessage);
 
+debug("rangeOverflow and rangeUnderflow:");
+numberInput.min = "1"
+numberInput.max = "1";
+numberInput.value = "2";
+debug("input rangeOverflow and rangeUnderflow: " + numberInput.validationMessage);
+numberInput.value = "-2";
+debug("input rangeOverflow and rangeUnderflow: " + numberInput.validationMessage);
+
+var dateInput = document.createElement("input");
+dateInput.type = "date";
+form.appendChild(dateInput);
+dateInput.required = true;
+
+dateInput.min = "2000-01-02"
+dateInput.max = "2000-01-02";
+dateInput.value = "2000-01-03";
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+numberInput.value = "1999-01-02";
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+
+dateInput.type = "datetime-local"
+dateInput.min = "2000-01-02T00:00"
+dateInput.max = "2000-01-02T00:00"
+dateInput.value = "2000-01-02T10:00"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+numberInput.value = "2000-01-01T00:00"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+
+dateInput.type = "month"
+dateInput.min = "2000-01"
+dateInput.max = "2000-01"
+dateInput.value = "2000-02"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+numberInput.value = "1999-01"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+
+dateInput.type = "week"
+dateInput.min = "2000-W01"
+dateInput.max = "2000-W01"
+dateInput.value = "2000-W02"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+numberInput.value = "1999-W01"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+
+dateInput.type = "time"
+dateInput.min = "07:00"
+dateInput.max = "07:00"
+dateInput.value = "08:00"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+numberInput.value = "06:00"
+debug("input rangeOverflow and rangeUnderflow: " + dateInput.validationMessage);
+
 debug("tooLong:");
 var inputWithMax = document.createElement("input");
 inputWithMax.maxLength = 3;
