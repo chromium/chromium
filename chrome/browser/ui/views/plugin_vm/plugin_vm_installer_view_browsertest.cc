@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
@@ -94,6 +95,9 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     // Set correct PluginVmImage preference value.
     SetPluginVmImagePref(embedded_test_server()->GetURL(kZipFile).spec(),
                          kZipFileHash);
+    auto* installer = plugin_vm::PluginVmInstallerFactory::GetForProfile(
+        browser()->profile());
+    installer->SetFreeDiskSpaceForTesting(installer->RequiredFreeDiskSpace());
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
