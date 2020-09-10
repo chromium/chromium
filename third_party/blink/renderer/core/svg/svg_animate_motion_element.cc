@@ -153,7 +153,7 @@ static bool ParsePoint(const String& string, FloatPoint& point) {
   });
 }
 
-void SVGAnimateMotionElement::ResetAnimatedType() {
+void SVGAnimateMotionElement::ResetAnimatedType(bool needs_underlying_value) {
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
   DCHECK(TargetCanHaveMotionTransform(*target_element));

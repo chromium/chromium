@@ -71,7 +71,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEndEvent)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(repeat, kRepeatEvent)
 
-  virtual void ResetAnimatedType() = 0;
+  virtual void ResetAnimatedType(bool needs_underlying_value) = 0;
   virtual void ClearAnimatedType() = 0;
   virtual void ApplyResultsToTarget() = 0;
   // Returns true if this animation "sets" the value of the animation. Thus all

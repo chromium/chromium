@@ -432,7 +432,7 @@ bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   return true;
 }
 
-void SVGAnimateElement::ResetAnimatedType() {
+void SVGAnimateElement::ResetAnimatedType(bool needs_underlying_value) {
   DCHECK(targetElement());
   if (IsAnimatingSVGDom()) {
     // SVG DOM animVal animation code-path.
@@ -447,7 +447,9 @@ void SVGAnimateElement::ResetAnimatedType() {
 
   // CSS properties animation code-path.
   String base_value =
-      ComputeCSSPropertyValue(targetElement(), css_property_id_);
+      needs_underlying_value
+          ? ComputeCSSPropertyValue(targetElement(), css_property_id_)
+          : g_empty_string;
   animated_value_ = CreatePropertyForAnimation(base_value);
 }
 

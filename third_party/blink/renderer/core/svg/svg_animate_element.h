@@ -59,7 +59,7 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   bool HasValidAnimation() const override;
 
-  void ResetAnimatedType() final;
+  void ResetAnimatedType(bool needs_underlying_value) final;
   void ClearAnimatedType() final;
 
   bool CalculateToAtEndOfDurationValue(

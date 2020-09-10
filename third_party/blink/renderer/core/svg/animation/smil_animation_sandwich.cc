@@ -93,22 +93,25 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   if (!result_element)
     return false;
 
-  // Only reset the animated type to the base value once for
-  // the lowest priority animation that animates and
-  // contributes to a particular element/attribute pair.
-  result_element->ResetAnimatedType();
-
   // Animations have to be applied lowest to highest prio.
   //
   // Only calculate the relevant animations. If we actually set the
   // animation value, we don't need to calculate what is beneath it
   // in the sandwich.
+  bool needs_underlying_value = true;
   auto* sandwich_start = active_.end();
   while (sandwich_start != active_.begin()) {
     --sandwich_start;
-    if ((*sandwich_start)->OverwritesUnderlyingAnimationValue())
+    if ((*sandwich_start)->OverwritesUnderlyingAnimationValue()) {
+      needs_underlying_value = false;
       break;
+    }
   }
+
+  // Only reset the animated type to the base value once for
+  // the lowest priority animation that animates and
+  // contributes to a particular element/attribute pair.
+  result_element->ResetAnimatedType(needs_underlying_value);
 
   for (auto* sandwich_it = sandwich_start; sandwich_it != active_.end();
        sandwich_it++) {
