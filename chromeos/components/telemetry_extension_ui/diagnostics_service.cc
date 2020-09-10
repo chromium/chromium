@@ -148,4 +148,18 @@ void DiagnosticsService::RunCpuStressRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunFloatingPointAccuracyRoutine(
+    uint32_t length_seconds,
+    RunFloatingPointAccuracyRoutineCallback callback) {
+  GetService()->RunFloatingPointAccuracyRoutine(
+      length_seconds,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::
+                 RunFloatingPointAccuracyRoutineCallback callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

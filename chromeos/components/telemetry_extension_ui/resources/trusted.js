@@ -406,6 +406,20 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runCpuStressRoutine(
         request.duration);
   };
+
+  /**
+   * Runs floating point accuracy routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunFloatingPointAccuracyRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest} */
+        (message);
+    this.assertNumberIsPositive(request.duration);
+    return await getOrCreateDiagnosticsService()
+        .runFloatingPointAccuracyRoutine(request.duration);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -719,6 +733,13 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunCpuStressRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) =>
+            diagnosticsProxy.handleRunFloatingPointAccuracyRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

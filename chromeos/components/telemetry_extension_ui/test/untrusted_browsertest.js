@@ -226,6 +226,38 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunCpuStressRoutine', async () => {
   assertDeepEquals(response, {id: 123456789, status: 'ready'});
 });
 
+// Tests that runFloatingPointAccuracyRoutine throws the correct error when
+// invalid number is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput', async () => {
+      let caughtError1;
+      try {
+        await chromeos.diagnostics.runFloatingPointAccuracyRoutine(0);
+      } catch (error) {
+        caughtError1 = error;
+      }
+
+      assertEquals(caughtError1.name, 'RangeError');
+      assertEquals(caughtError1.message, `Parameter must be positive.`);
+
+      let caughtError2;
+      try {
+        await chromeos.diagnostics.runFloatingPointAccuracyRoutine(-2147483648);
+      } catch (error) {
+        caughtError2 = error;
+      }
+
+      assertEquals(caughtError2.name, 'RangeError');
+      assertEquals(caughtError2.message, `Parameter must be positive.`);
+    });
+
+// Tests that runFloatingPointAccuracyRoutine returns the correct Object.
+UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunFPAccuracyRoutine', async () => {
+  const response =
+      await chromeos.diagnostics.runFloatingPointAccuracyRoutine(5);
+  assertDeepEquals(response, {id: 123456789, status: 'ready'});
+});
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {

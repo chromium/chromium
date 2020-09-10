@@ -425,6 +425,22 @@ TEST_F(
 
 TEST_F(
     'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunFPAccuracyRoutineInvalidInput');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunFPAccuracyRoutine', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunFPAccuracyRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
     'UntrustedRequestTelemetryInfoUnknownCategory', async () => {
       await runTestInUntrusted('UntrustedRequestTelemetryInfoUnknownCategory');
       testDone();

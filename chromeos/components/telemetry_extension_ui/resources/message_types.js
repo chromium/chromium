@@ -29,6 +29,8 @@ dpsl_internal.Message = {
   DIAGNOSTICS_RUN_AC_POWER_ROUTINE: 'DiagnosticsService.RunAcPowerRoutine',
   DIAGNOSTICS_RUN_CPU_CACHE_ROUTINE: 'DiagnosticsService.RunCpuCacheRoutine',
   DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE: 'DiagnosticsService.RunCpuStressRoutine',
+  DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE:
+      'DiagnosticsService.RunFloatingPointAccuraryRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -110,6 +112,13 @@ dpsl_internal.DiagnosticsRunCpuCacheRoutineRequest;
  * @typedef {{ duration: !number }}
  */
 dpsl_internal.DiagnosticsRunCpuStressRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run floating point accuracy routine.
+ * @typedef {{ duration: !number }}
+ */
+dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

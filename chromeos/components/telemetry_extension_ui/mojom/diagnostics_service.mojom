@@ -134,6 +134,25 @@ interface DiagnosticsService {
   //                routine.
   RunCpuStressRoutine(uint32 length_seconds)
       => (RunRoutineResponse response);
+
+  // Requests that the FloatingPointAccuracy routine is created and started
+  // on the platform. This routine executes millions of floating-point
+  // operations by SSE instructions for a specified amount of time. The routine
+  // will pass if the result values of the operations and known accurate result
+  // are the same.
+  //
+  // The request:
+  // * |length_seconds| - length of time, in seconds, to run the floating-point
+  //                      routine for. Test will executes millions of
+  //                      floating-point operations in length seconds and get
+  //                      the result to compare with known accurate results.
+  //                      This parameter needs to be strictly greater than zero.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunFloatingPointAccuracyRoutine(uint32 length_seconds)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.

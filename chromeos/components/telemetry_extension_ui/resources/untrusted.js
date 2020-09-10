@@ -202,6 +202,26 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests floating point accuracy routine to be run for duration seconds.
+     * @param { !number } duration
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runFloatingPointAccuracyRoutine(duration) {
+      const message =
+          /** @type {!dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest} */
+          ({duration: duration});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**
