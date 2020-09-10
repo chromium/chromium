@@ -19,11 +19,59 @@
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kPlaceholderImageEdgePadding = 5;
+constexpr int kPlaceholderImageWidth = 234;
+constexpr int kPlaceholderImageHeight = 74;
+constexpr int kPlaceholderImageOutlineCornerRadius = 8;
+constexpr int kPlaceholderImageSVGSize = 32;
+
+// Used to draw the UnrenderedHTMLPlaceholderImage, which is shown while HTML is
+// rendering. Drawn in order to turn the square and single colored SVG into a
+// multicolored rectangle image.
+class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
+ public:
+  UnrenderedHTMLPlaceholderImage()
+      : gfx::CanvasImageSource(
+            gfx::Size(kPlaceholderImageWidth, kPlaceholderImageHeight)) {}
+  UnrenderedHTMLPlaceholderImage(const UnrenderedHTMLPlaceholderImage&) =
+      delete;
+  UnrenderedHTMLPlaceholderImage& operator=(
+      const UnrenderedHTMLPlaceholderImage&) = delete;
+  ~UnrenderedHTMLPlaceholderImage() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    flags.setColor(gfx::kGoogleGrey100);
+    canvas->DrawRoundRect(
+        {kPlaceholderImageEdgePadding, kPlaceholderImageEdgePadding,
+         kPlaceholderImageWidth - 2 * kPlaceholderImageEdgePadding,
+         kPlaceholderImageHeight - 2 * kPlaceholderImageEdgePadding},
+        kPlaceholderImageOutlineCornerRadius, flags);
+
+    flags = cc::PaintFlags();
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    const gfx::ImageSkia center_image =
+        gfx::CreateVectorIcon(kUnrenderedHtmlPlaceholderIcon,
+                              kPlaceholderImageSVGSize, gfx::kGoogleGrey600);
+    canvas->DrawImageInt(
+        center_image, (size().width() - center_image.size().width()) / 2,
+        (size().height() - center_image.size().height()) / 2, flags);
+  }
+};
 
 // Helpers ---------------------------------------------------------------------
 
@@ -65,7 +113,10 @@ base::string16 GetLabelForCustomData(const ui::ClipboardData& data) {
 
 ClipboardHistoryResourceManager::ClipboardHistoryResourceManager(
     const ClipboardHistory* clipboard_history)
-    : clipboard_history_(clipboard_history) {
+    : clipboard_history_(clipboard_history),
+      placeholder_image_model_(
+          ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::MakeImageSkia<
+                                        UnrenderedHTMLPlaceholderImage>())) {
   clipboard_history_->AddObserver(this);
 }
 
@@ -79,30 +130,11 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
     const ClipboardHistoryItem& item) const {
   // Use a cached image model when possible.
   auto cached_image_model = FindCachedImageModelForItem(item);
-  if (cached_image_model != cached_image_models_.end())
-    return cached_image_model->image_model;
-
-  // Alias `ClipboardHistoryUtil::ContainsFormat` to prevent wrapping below.
-  const auto& ContainsFormat = ClipboardHistoryUtil::ContainsFormat;
-
-  // TODO(newcomer): Show a smaller version of the bitmap.
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kBitmap))
-    return ui::ImageModel();
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kWeb))
-    return ui::ImageModel::FromVectorIcon(ash::kWebSmartPasteIcon);
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kBookmark))
-    return ui::ImageModel::FromVectorIcon(ash::kWebBookmarkIcon);
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kHtml))
-    return ui::ImageModel::FromVectorIcon(ash::kHtmlIcon);
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kRtf))
-    return ui::ImageModel::FromVectorIcon(ash::kRtfIcon);
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kText))
-    return ui::ImageModel::FromVectorIcon(ash::kTextIcon);
-  if (ContainsFormat(item.data(), ui::ClipboardInternalFormat::kCustom))
-    return ui::ImageModel();
-
-  NOTREACHED();
-  return ui::ImageModel();
+  if (cached_image_model == cached_image_models_.end() ||
+      cached_image_model->image_model.IsEmpty()) {
+    return placeholder_image_model_;
+  }
+  return cached_image_model->image_model;
 }
 
 base::string16 ClipboardHistoryResourceManager::GetLabel(

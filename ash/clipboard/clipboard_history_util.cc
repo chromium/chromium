@@ -18,9 +18,9 @@ namespace {
 constexpr char kFileSystemSourcesType[] = "fs/sources";
 
 // The array of formats in order of decreasing priority.
-constexpr std::array<ui::ClipboardInternalFormat, 7> kPrioritizedFormats = {
-    ui::ClipboardInternalFormat::kBitmap,   ui::ClipboardInternalFormat::kText,
-    ui::ClipboardInternalFormat::kHtml,     ui::ClipboardInternalFormat::kRtf,
+constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
+    ui::ClipboardInternalFormat::kBitmap,   ui::ClipboardInternalFormat::kHtml,
+    ui::ClipboardInternalFormat::kText,     ui::ClipboardInternalFormat::kRtf,
     ui::ClipboardInternalFormat::kBookmark, ui::ClipboardInternalFormat::kWeb,
     ui::ClipboardInternalFormat::kCustom};
 

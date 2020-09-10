@@ -195,7 +195,7 @@ void ClipboardHistoryController::ShowMenu() {
       menu_delegate_.get(),
       base::BindRepeating(&ClipboardHistoryController::OnMenuClosed,
                           base::Unretained(this)),
-      clipboard_history_.get());
+      clipboard_history_.get(), resource_manager_.get());
   context_menu_->Run(CalculateAnchorRect());
 
   DCHECK(IsMenuShowing());

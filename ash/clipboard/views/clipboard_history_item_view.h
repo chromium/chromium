@@ -14,14 +14,17 @@ class MenuItemView;
 
 namespace ash {
 class ClipboardHistoryItem;
+class ClipboardHistoryResourceManager;
 
 // The base class for menu items of the clipboard history menu.
 class ClipboardHistoryItemView : public views::View,
                                  public views::ButtonListener {
  public:
   static std::unique_ptr<ClipboardHistoryItemView>
-  CreateFromClipboardHistoryItem(const ClipboardHistoryItem& item,
-                                 views::MenuItemView* container);
+  CreateFromClipboardHistoryItem(
+      const ClipboardHistoryItem& item,
+      const ClipboardHistoryResourceManager& resource_manager,
+      views::MenuItemView* container);
 
   ClipboardHistoryItemView(const ClipboardHistoryItemView& rhs) = delete;
   ClipboardHistoryItemView& operator=(const ClipboardHistoryItemView& rhs) =

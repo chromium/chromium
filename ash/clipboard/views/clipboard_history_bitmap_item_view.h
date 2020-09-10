@@ -7,6 +7,10 @@
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
+
 namespace views {
 class ImageView;
 }  // namespace views
@@ -16,7 +20,7 @@ namespace ash {
 // The menu item showing the bitmap.
 class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
  public:
-  ClipboardHistoryBitmapItemView(const ClipboardHistoryItem& item,
+  ClipboardHistoryBitmapItemView(const gfx::ImageSkia& image_skia,
                                  views::MenuItemView* container);
   ClipboardHistoryBitmapItemView(const ClipboardHistoryBitmapItemView& rhs) =
       delete;

@@ -5,6 +5,8 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -60,11 +62,9 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 // ClipboardHistoryBitmapItemView
 
 ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
-    const ClipboardHistoryItem& item,
+    const gfx::ImageSkia& image_skia,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(container),
-      original_image_(
-          gfx::ImageSkia::CreateFrom1xBitmap(item.data().bitmap())) {}
+    : ClipboardHistoryItemView(container), original_image_(image_skia) {}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 

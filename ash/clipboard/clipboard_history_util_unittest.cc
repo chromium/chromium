@@ -19,11 +19,11 @@ namespace ClipboardHistoryUtil {
 namespace {
 
 constexpr std::array<ui::ClipboardInternalFormat, 7> kAllFormats = {
-    ui::ClipboardInternalFormat::kText,
+    ui::ClipboardInternalFormat::kBitmap,
     ui::ClipboardInternalFormat::kHtml,
+    ui::ClipboardInternalFormat::kText,
     ui::ClipboardInternalFormat::kRtf,
     ui::ClipboardInternalFormat::kBookmark,
-    ui::ClipboardInternalFormat::kBitmap,
     ui::ClipboardInternalFormat::kCustom,
     ui::ClipboardInternalFormat::kWeb};
 
@@ -48,8 +48,8 @@ TEST_F(ClipboardHistoryUtilTest, CalculateMainFormat) {
   // We will cycle through all formats in prioritized order.
   std::deque<ui::ClipboardInternalFormat> prioritized_formats = {
       ui::ClipboardInternalFormat::kBitmap,
-      ui::ClipboardInternalFormat::kText,
       ui::ClipboardInternalFormat::kHtml,
+      ui::ClipboardInternalFormat::kText,
       ui::ClipboardInternalFormat::kRtf,
       ui::ClipboardInternalFormat::kBookmark,
       ui::ClipboardInternalFormat::kWeb,

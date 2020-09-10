@@ -23,9 +23,9 @@
 namespace {
 
 // Size of the bitmap saved.
-constexpr gfx::Size kBitmapFinalSize(48, 48);
+constexpr gfx::Size kBitmapFinalSize(224, 64);
 // Size of the WebContents used to render HTML.
-constexpr gfx::Rect kWebContentsBounds(100, 100);
+constexpr gfx::Rect kWebContentsBounds(gfx::Point(), kBitmapFinalSize);
 
 }  // namespace
 

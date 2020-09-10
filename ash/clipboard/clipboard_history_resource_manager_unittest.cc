@@ -137,17 +137,17 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
 
   builder.ClearBitmap();
 
-  // In the absence of bitmap data, text data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            base::UTF8ToUTF16("Text"));
-
-  builder.ClearText();
-
-  // In the absence of text data, HTML data takes precedence.
+  // In the absence of bitmap data, HTML data takes precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
             base::UTF8ToUTF16("Markup"));
 
   builder.ClearMarkup();
+
+  // In the absence of markup data, text data takes precedence.
+  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
+            base::UTF8ToUTF16("Text"));
+
+  builder.ClearText();
 
   // In the absence of HTML data, RTF data takes precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),

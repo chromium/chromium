@@ -5,14 +5,18 @@
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
@@ -134,12 +138,17 @@ const char* ClipboardHistoryItemView::DeleteButton::GetClassName() const {
 std::unique_ptr<ClipboardHistoryItemView>
 ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const ClipboardHistoryItem& item,
+    const ClipboardHistoryResourceManager& resource_manager,
     views::MenuItemView* container) {
   switch (ClipboardHistoryUtil::CalculateMainFormat(item.data()).value()) {
     case ui::ClipboardInternalFormat::kBitmap:
-      return std::make_unique<ClipboardHistoryBitmapItemView>(item, container);
-    case ui::ClipboardInternalFormat::kText:
+      return std::make_unique<ClipboardHistoryBitmapItemView>(
+          gfx::ImageSkia::CreateFrom1xBitmap(item.data().bitmap()), container);
     case ui::ClipboardInternalFormat::kHtml:
+      return std::make_unique<ClipboardHistoryBitmapItemView>(
+          *(resource_manager.GetImageModel(item).GetImage().ToImageSkia()),
+          container);
+    case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:

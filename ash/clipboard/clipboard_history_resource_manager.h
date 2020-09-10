@@ -77,6 +77,9 @@ class ASH_EXPORT ClipboardHistoryResourceManager
 
   std::vector<CachedImageModel> cached_image_models_;
 
+  // Image used when the cached ImageModel has not yet been generated.
+  ui::ImageModel placeholder_image_model_;
+
   base::WeakPtrFactory<ClipboardHistoryResourceManager> weak_factory_{this};
 };
 

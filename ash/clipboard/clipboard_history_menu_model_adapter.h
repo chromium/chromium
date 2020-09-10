@@ -24,8 +24,9 @@ class MenuRunner;
 
 namespace ash {
 
-class ClipboardHistoryItem;
 class ClipboardHistory;
+class ClipboardHistoryItem;
+class ClipboardHistoryResourceManager;
 
 // Used to show the clipboard history menu, which holds the last few things
 // copied.
@@ -34,7 +35,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   static std::unique_ptr<ClipboardHistoryMenuModelAdapter> Create(
       ui::SimpleMenuModel::Delegate* delegate,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history);
+      const ClipboardHistory* clipboard_history,
+      const ClipboardHistoryResourceManager* resource_manager);
 
   ClipboardHistoryMenuModelAdapter(const ClipboardHistoryMenuModelAdapter&) =
       delete;
@@ -71,12 +73,14 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> model,
       base::RepeatingClosure menu_closed_callback,
-      const ClipboardHistory* clipboard_history);
+      const ClipboardHistory* clipboard_history,
+      const ClipboardHistoryResourceManager* resource_manager);
 
   // views::MenuModelAdapter:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
                                       ui::MenuModel* model,
                                       int index) override;
+  void OnMenuClosed(views::MenuItemView* menu) override;
 
   // The model which holds the contents of the menu.
   std::unique_ptr<ui::SimpleMenuModel> const model_;
@@ -94,6 +98,10 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   std::map<int, ClipboardHistoryItem> item_snapshots_;
 
   const ClipboardHistory* const clipboard_history_;
+
+  // Resource manager used to fetch image models. Owned by
+  // ClipboardHistoryController.
+  const ClipboardHistoryResourceManager* const resource_manager_;
 };
 
 }  // namespace ash

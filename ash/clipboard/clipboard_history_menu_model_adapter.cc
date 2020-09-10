@@ -22,10 +22,11 @@ std::unique_ptr<ClipboardHistoryMenuModelAdapter>
 ClipboardHistoryMenuModelAdapter::Create(
     ui::SimpleMenuModel::Delegate* delegate,
     base::RepeatingClosure menu_closed_callback,
-    const ClipboardHistory* clipboard_history) {
+    const ClipboardHistory* clipboard_history,
+    const ClipboardHistoryResourceManager* resource_manager) {
   return base::WrapUnique(new ClipboardHistoryMenuModelAdapter(
       std::make_unique<ui::SimpleMenuModel>(delegate),
-      std::move(menu_closed_callback), clipboard_history));
+      std::move(menu_closed_callback), clipboard_history, resource_manager));
 }
 
 ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
@@ -105,10 +106,12 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
 ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
     std::unique_ptr<ui::SimpleMenuModel> model,
     base::RepeatingClosure menu_closed_callback,
-    const ClipboardHistory* clipboard_history)
+    const ClipboardHistory* clipboard_history,
+    const ClipboardHistoryResourceManager* resource_manager)
     : views::MenuModelAdapter(model.get(), std::move(menu_closed_callback)),
       model_(std::move(model)),
-      clipboard_history_(clipboard_history) {}
+      clipboard_history_(clipboard_history),
+      resource_manager_(resource_manager) {}
 
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     views::MenuItemView* menu,
@@ -127,11 +130,16 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 
   std::unique_ptr<ClipboardHistoryItemView> item_view =
       ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
-          GetItemFromCommandId(command_id), container);
+          GetItemFromCommandId(command_id), *resource_manager_, container);
   item_view->Init();
   container->AddChildView(std::move(item_view));
 
   return container;
+}
+
+void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
+  ClipboardImageModelFactory::Get()->Deactivate();
+  views::MenuModelAdapter::OnMenuClosed(menu);
 }
 
 }  // namespace ash
