@@ -5,7 +5,6 @@
 // https://w3c.github.io/web-nfc/#the-ndefwriteoptions-dictionary
 
 dictionary NDEFWriteOptions {
-    boolean ignoreRead = true;
     boolean overwrite = true;
     AbortSignal? signal;
 };

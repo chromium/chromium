@@ -57,9 +57,8 @@ TypeConverter<NDEFWriteOptionsPtr, const blink::NDEFWriteOptions*>::Convert(
     const blink::NDEFWriteOptions* write_options) {
   // https://w3c.github.io/web-nfc/#the-ndefwriteoptions-dictionary
   // Default values for NDEFWriteOptions dictionary are:
-  // ignoreRead = true, overwrite = true
+  // overwrite = true
   NDEFWriteOptionsPtr write_options_ptr = NDEFWriteOptions::New();
-  write_options_ptr->ignore_read = write_options->ignoreRead();
   write_options_ptr->overwrite = write_options->overwrite();
 
   return write_options_ptr;

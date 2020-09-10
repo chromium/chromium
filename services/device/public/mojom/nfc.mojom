@@ -97,14 +97,9 @@ struct NDEFMessage {
 };
 
 struct NDEFWriteOptions {
-  // Only the case of |ignore_read| being |true| matters: while this push
-  // operation is pending, even a NFC tag comes in proximity range, do not read
-  // it for all active watchers.
-  bool ignore_read;
-
   // Only the case of |overwrite| being |false| matters: the push operation will
-  // read the NFC tag regardless of |ignore_read| to determine if it has NDEF
-  // records on it, and if yes, do not execute write.
+  // read the NFC tag to determine if it has NDEF records on it, and if yes, do
+  // not execute write.
   bool overwrite;
 };
 

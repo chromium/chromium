@@ -1736,7 +1736,6 @@ public class NFCTest {
      */
     private NdefWriteOptions createNdefWriteOptions() {
         NdefWriteOptions pushOptions = new NdefWriteOptions();
-        pushOptions.ignoreRead = false;
         pushOptions.overwrite = true;
         return pushOptions;
     }

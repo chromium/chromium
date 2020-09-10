@@ -149,10 +149,6 @@ function createUrlRecord(url, isAbsUrl) {
   return createRecord('url', url, test_record_id);
 }
 
-function createNDEFWriteOptions(ignoreRead) {
-  return {ignoreRead};
-}
-
 // Compares NDEFMessageSource that was provided to the API
 // (e.g. NDEFWriter.write), and NDEFMessage that was received by the
 // mock NFC service.

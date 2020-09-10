@@ -533,11 +533,6 @@ public class NfcImpl implements Nfc {
     private void processPendingWatchOperations() {
         if (mTagHandler == null || mClient == null || mWatchers.size() == 0) return;
 
-        // Skip reading if there is a pending push operation and ignoreRead flag is set.
-        if (mPendingPushOperation != null && mPendingPushOperation.ndefWriteOptions.ignoreRead) {
-            return;
-        }
-
         if (mTagHandler.isTagOutOfRange()) {
             mTagHandler = null;
             return;
