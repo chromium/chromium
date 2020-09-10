@@ -150,6 +150,8 @@ blink_platform_sources("loader") {
     "//third_party/blink/renderer/platform/scheduler:scheduler",
   ]
   public_deps = [ "//third_party/blink/renderer/platform/heap:heap" ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/platform/network:network" ]
 }
 
 source_set("unit_tests") {
