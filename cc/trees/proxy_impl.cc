@@ -39,7 +39,8 @@ namespace cc {
 namespace {
 
 // Measured in seconds.
-const double kSmoothnessTakesPriorityExpirationDelay = 0.25;
+constexpr auto kSmoothnessTakesPriorityExpirationDelay =
+    base::TimeDelta::FromMilliseconds(250);
 
 }  // namespace
 
@@ -68,16 +69,11 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
           task_runner_provider->ImplThreadTaskRunner(),
           base::BindRepeating(&ProxyImpl::RenewTreePriority,
                               base::Unretained(this)),
-          base::TimeDelta::FromSecondsD(
-              kSmoothnessTakesPriorityExpirationDelay)),
+          kSmoothnessTakesPriorityExpirationDelay),
       proxy_main_weak_ptr_(proxy_main_weak_ptr) {
   TRACE_EVENT0("cc", "ProxyImpl::ProxyImpl");
   DCHECK(IsImplThread());
   DCHECK(IsMainThreadBlocked());
-
-  // Double checking we set this correctly since double->int truncations are
-  // silent and have been done mistakenly: crbug.com/568120.
-  DCHECK(!smoothness_priority_expiration_notifier_.delay().is_zero());
 
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
   const LayerTreeSettings& settings = layer_tree_host->GetSettings();

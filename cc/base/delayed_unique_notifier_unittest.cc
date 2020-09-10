@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "cc/base/delayed_unique_notifier.h"
+
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/containers/circular_deque.h"
@@ -51,41 +54,6 @@ class DelayedUniqueNotifierTest : public testing::Test {
   int notification_count_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 };
-
-TEST_F(DelayedUniqueNotifierTest, ZeroDelay) {
-  base::TimeDelta delay;  // Zero delay.
-  TestNotifier notifier(task_runner_.get(),
-                        base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
-                                            base::Unretained(this)),
-                        delay);
-
-  EXPECT_EQ(0, NotificationCount());
-
-  // Basic schedule for |delay| from now.
-  base::TimeTicks schedule_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(10);
-
-  notifier.SetNow(schedule_time);
-  notifier.Schedule();
-
-  base::circular_deque<base::TestPendingTask> tasks = TakePendingTasks();
-  ASSERT_EQ(1u, tasks.size());
-  EXPECT_EQ(base::TimeTicks() + delay, tasks[0].GetTimeToRun());
-
-  std::move(tasks[0].task).Run();
-  EXPECT_EQ(1, NotificationCount());
-
-  // 5 schedules should result in only one run.
-  for (int i = 0; i < 5; ++i)
-    notifier.Schedule();
-
-  tasks = TakePendingTasks();
-  ASSERT_EQ(1u, tasks.size());
-  EXPECT_EQ(base::TimeTicks() + delay, tasks[0].GetTimeToRun());
-
-  std::move(tasks[0].task).Run();
-  EXPECT_EQ(2, NotificationCount());
-}
 
 TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
   base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
