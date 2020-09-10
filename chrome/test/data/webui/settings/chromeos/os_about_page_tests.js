@@ -300,8 +300,7 @@ cr.define('settings_about_page', function() {
       async function checkReleaseNotesOnline(isShowing) {
         await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
         const releaseNotesOnlineEl = page.$$('#releaseNotesOnline');
-        assertTrue(!!releaseNotesOnlineEl);
-        assertEquals(isShowing, !releaseNotesOnlineEl.hidden);
+        assertEquals(isShowing, !!releaseNotesOnlineEl);
       }
 
       /**
@@ -313,8 +312,7 @@ cr.define('settings_about_page', function() {
       async function checkReleaseNotesOffline(isShowing) {
         await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
         const releaseNotesOfflineEl = page.$$('#releaseNotesOffline');
-        assertTrue(!!releaseNotesOfflineEl);
-        assertEquals(isShowing, !releaseNotesOfflineEl.hidden);
+        assertEquals(isShowing, !!releaseNotesOfflineEl);
       }
 
       /**
@@ -324,9 +322,9 @@ cr.define('settings_about_page', function() {
       async function checkReleaseNotesDisabled() {
         await aboutBrowserProxy.whenCalled('getEnabledReleaseNotes');
         const releaseNotesOnlineEl = page.$$('#releaseNotesOnline');
-        assertTrue(!releaseNotesOnlineEl);
+        assertFalse(!!releaseNotesOnlineEl);
         const releaseNotesOfflineEl = page.$$('#releaseNotesOffline');
-        assertTrue(!releaseNotesOfflineEl);
+        assertFalse(!!releaseNotesOfflineEl);
       }
 
       aboutBrowserProxy.setReleaseNotes(false);

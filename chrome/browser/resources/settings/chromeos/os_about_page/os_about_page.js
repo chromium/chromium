@@ -317,6 +317,23 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  showReleaseNotesOnline_() {
+    return this.hasReleaseNotes_ && this.hasInternetConnection_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showReleaseNotesOffline_() {
+    return this.hasReleaseNotes_ && !this.hasInternetConnection_;
+  },
+
+
+  /**
    * @return {string}
    * @private
    */

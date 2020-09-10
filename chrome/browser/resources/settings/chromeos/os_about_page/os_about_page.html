@@ -154,13 +154,15 @@
               </a>
             </div>
           </cr-link-row>
-          <template is="dom-if" if="[[hasReleaseNotes_]]">
+          <template is="dom-if" if="[[showReleaseNotesOnline_(hasReleaseNotes_,
+              hasInternetConnection_)]]">
             <cr-link-row class="hr" id="releaseNotesOnline"
-                hidden="[[!hasInternetConnection_]]"
                 on-click="onReleaseNotesTap_"
                 label="$i18n{aboutShowReleaseNotes}" external></cr-link-row>
+          </template>
+          <template is="dom-if" if="[[showReleaseNotesOffline_(hasReleaseNotes_,
+              hasInternetConnection_)]]">
             <cr-link-row class="hr" id="releaseNotesOffline"
-                hidden="[[hasInternetConnection_]]"
                 on-click="onReleaseNotesTap_"
                 label="$i18n{aboutShowReleaseNotes}"
                 title="$i18n{aboutReleaseNotesOffline}" external></cr-link-row>
