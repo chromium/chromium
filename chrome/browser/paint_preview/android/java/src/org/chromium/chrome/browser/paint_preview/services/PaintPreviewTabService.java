@@ -142,7 +142,8 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
                 AUDIT_START_DELAY_MS);
     }
 
-    private void auditOnStart(TabModel regularTabModel) {
+    @VisibleForTesting
+    void auditOnStart(TabModel regularTabModel) {
         int tabCount = regularTabModel.getCount();
         int[] tabIds = new int[tabCount];
         for (int i = 0; i < tabCount; i++) {

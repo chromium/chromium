@@ -151,6 +151,44 @@ public class PaintPreviewTabServiceTest {
     }
 
     /**
+     * Tests that capturing and deleting via an audit works as expected.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PaintPreview"})
+    public void testCapturedAndDeleteViaAudit() throws Exception {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        final String url = testServer.getURL("/chrome/test/data/android/about.html");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+            // Use capture on switch mode.
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, true);
+            mTab.loadUrl(new LoadUrlParams(url));
+        });
+        // Give the tab time to complete layout before hiding.
+        TimeUnit.SECONDS.sleep(1);
+
+        // This will hide mTab so that a capture occurs.
+        mActivityTestRule.loadUrlInNewTab(url);
+
+        int tabId = mTab.getId();
+        CriteriaHelper.pollUiThread(() -> {
+            return mPaintPreviewTabService.hasCaptureForTab(tabId);
+        }, "Paint Preview didn't get captured.", TIMEOUT_MS, POLLING_INTERVAL_MS);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Use the incognito tab model as the normal tab model will still have the tab ids
+            // active.
+            mPaintPreviewTabService.auditOnStart(mTabModelSelector.getModel(/*incognito=*/true));
+        });
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mPaintPreviewTabService.hasCaptureForTab(tabId);
+        }, "Paint Preview didn't get deleted.", TIMEOUT_MS, POLLING_INTERVAL_MS);
+    }
+
+    /**
      * Verifies the early cache is created correctly.
      */
     @Test
