@@ -47,6 +47,9 @@ group("libcast_media") {
     deps = [ "//chromecast/media/cma/backend:libcast_media_1.0" ]
   }
 
+  # TODO(rwkeane): Condition on build flag.
+  deps += [ "//chromecast/media/cma/backend/proxy" ]
+
   if (cast_volume_control_in_avsettings) {
     deps += [ "//chromecast/media/avsettings:libcast_avsettings_1.0" ]
   }
