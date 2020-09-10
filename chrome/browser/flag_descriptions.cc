@@ -4073,6 +4073,11 @@ const char kFilesNGName[] = "Enable Files App. NG.";
 const char kFilesNGDescription[] =
     "Enable the next generation UI style of the file manager.";
 
+const char kFilesSinglePartitionFormatName[] =
+    "Enable Partitioning of Removable Disks.";
+const char kFilesSinglePartitionFormatDescription[] =
+    "Enable partitioning of removable disks into single partition.";
+
 const char kFilesSWAName[] = "Enable Files App SWA.";
 const char kFilesSWADescription[] =
     "Enable the SWA version of the file manager.";

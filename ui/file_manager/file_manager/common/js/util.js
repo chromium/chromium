@@ -1460,6 +1460,14 @@ util.isTransferDetailsEnabled = () => {
 };
 
 /**
+ * Returns true if FilesSinglePartitionFormat flag is enabled.
+ * @return {boolean}
+ */
+util.isSinglePartitionFormatEnabled = () => {
+  return loadTimeData.getBoolean('FILES_SINGLE_PARTITION_FORMAT_ENABLED');
+};
+
+/**
  * Returns true if Drive bidirectional native messaging is enabled.
  * @return {boolean}
  */

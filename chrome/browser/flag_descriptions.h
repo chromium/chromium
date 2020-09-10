@@ -2358,6 +2358,9 @@ extern const char kFilesAppCopyImageDescription[];
 extern const char kFilesNGName[];
 extern const char kFilesNGDescription[];
 
+extern const char kFilesSinglePartitionFormatName[];
+extern const char kFilesSinglePartitionFormatDescription[];
+
 extern const char kFilesSWAName[];
 extern const char kFilesSWADescription[];
 

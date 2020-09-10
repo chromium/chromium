@@ -92,6 +92,8 @@ extern const base::Feature kExoOrdinalMotion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kExoPointerLock;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesNG;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kFilesSinglePartitionFormat;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kFilesSWA;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFilesTransferDetails;

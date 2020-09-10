@@ -73,6 +73,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
           chromeos::features::kDriveFsBidirectionalNativeMessaging));
   dict->SetBoolean("HOLDING_SPACE_ENABLED",
                    ash::features::IsTemporaryHoldingSpaceEnabled());
+  dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
+                   base::FeatureList::IsEnabled(
+                       chromeos::features::kFilesSinglePartitionFormat));
 
   dict->SetString("UI_LOCALE", extension_l10n_util::CurrentLocaleOrDefault());
 

@@ -40774,6 +40774,7 @@ from previous Chrome versions.
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
   <int value="-1810294310" label="AndroidPaymentApps:enabled"/>
+  <int value="-1809969509" label="FilesSinglePartitionFormat:disabled"/>
   <int value="-1809891158" label="WebAuthenticationCable:enabled"/>
   <int value="-1809865209" label="KernelnextVMs:enabled"/>
   <int value="-1809835803" label="LayoutNG:disabled"/>
@@ -41438,6 +41439,7 @@ from previous Chrome versions.
   <int value="-1160026273" label="enable-web-notification-custom-layouts"/>
   <int value="-1159563774" label="enable-accessibility-script-injection"/>
   <int value="-1159369873" label="TabGroupsUiImprovementsAndroid:disabled"/>
+  <int value="-1159154050" label="FilesSinglePartitionFormat:enabled"/>
   <int value="-1158993534" label="PrintScaling:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
