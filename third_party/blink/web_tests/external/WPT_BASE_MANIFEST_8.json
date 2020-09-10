@@ -101046,6 +101046,45 @@
         {}
        ]
       ],
+      "trailing-ogham-001.html": [
+       "f687c7cdc377679a3eeb392254e6f68c883c504f",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ogham-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ogham-002.html": [
+       "7bf17750783d98e26b344b43caef21ce010ccd45",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ogham-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "trailing-ogham-003.html": [
+       "597feba3096d164b1bd415aa6c7879318baa4436",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/trailing-ogham-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "trailing-other-space-separators-001.html": [
        "ce5740bd0ed3dc12d0f584048bb150de48835263",
        [
@@ -188943,6 +188982,10 @@
         "9f579f29e0c897c744e1b06d5d2d60e85612f823",
         []
        ],
+       "trailing-ogham-001-ref.html": [
+        "1b6fddd30e2389f5cd3cba0f794d13c8a9ce98b5",
+        []
+       ],
        "trailing-other-space-separators-001-ref.html": [
         "e406b86a3a4b32e0b3367ea26c6e3f3ca8e44338",
         []
@@ -219997,7 +220040,7 @@
      []
     ],
     "encrypted-media.idl": [
-     "43db4e0a1c52c0ff9ac54e04cd91c5e2da7abeb8",
+     "0a43cb7481b0a790327542c6e0694496b86f527d",
      []
     ],
     "entries-api.idl": [

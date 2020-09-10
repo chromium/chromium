@@ -2537,6 +2537,18 @@ crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-text/tab-size/tab-size-integer-004.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/tab-size/tab-size-integer-004.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/css/css-text/tab-size/tab-size-integer-004.html [ Failure ]
