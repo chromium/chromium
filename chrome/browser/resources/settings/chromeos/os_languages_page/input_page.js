@@ -17,9 +17,7 @@ Polymer({
   ],
 
   properties: {
-    /**
-     * Preferences state.
-     */
+    /* Preferences state. */
     prefs: {
       type: Object,
       notify: true,
@@ -37,14 +35,11 @@ Polymer({
     /** @type {!LanguageHelper} */
     languageHelper: Object,
 
-    /**
-     * @private {!Array<!LanguageState|!ForcedLanguageState>}
-     */
+    /** @private {!Array<!LanguageState|!ForcedLanguageState>|undefined} */
     spellCheckLanguages_: {
       type: Array,
-      value() {
-        return [];
-      },
+      computed:
+          'getSpellCheckLanguages_(languages.enabled.*, languages.forcedSpellCheckLanguages.*)',
     },
 
     /** @private */
@@ -84,6 +79,10 @@ Polymer({
     this.languagesMetricsProxy_ =
         settings.LanguagesMetricsProxyImpl.getInstance();
   },
+
+  observers: [
+    'updateSpellcheckPref_(spellCheckLanguages_)',
+  ],
 
   /**
    * @param {!settings.Route} route
@@ -249,19 +248,100 @@ Polymer({
 
   /**
    * @return {string|undefined}
-   * @private
-   */
-  getSpellCheckSubLabel_() {
-    return this.spellCheckLanguages_.length ?
-        undefined :  // equivalent to not setting the sublabel in the HTML.
-        this.i18n('spellCheckDisabledReason');
-  },
-
-  /**
    * @param {!Event} e
    * @private
    */
   onSpellcheckToggleChange_(e) {
     this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
+  },
+
+  /**
+   * Returns the value to use as the |pref| attribute for the policy indicator
+   * of spellcheck languages, based on whether or not the language is enabled.
+   * @param {boolean} isEnabled Whether the language is enabled or not.
+   * @private
+   */
+  getIndicatorPrefForManagedSpellcheckLanguage_(isEnabled) {
+    return isEnabled ? this.getPref('spellcheck.forced_dictionaries') :
+                       this.getPref('spellcheck.blacklisted_dictionaries');
+  },
+
+  /**
+   * Returns an array of enabled languages that support spell check, plus
+   * spellcheck languages that are force-enabled by policy.
+   * @return {!Array<!LanguageState|!ForcedLanguageState>|undefined}
+   * @private
+   */
+  getSpellCheckLanguages_() {
+    if (this.languages === undefined) {
+      return undefined;
+    }
+    const combinedLanguages =
+        this.languages.enabled.concat(this.languages.forcedSpellCheckLanguages);
+    const supportedSpellcheckLanguagesSet = new Set();
+    const supportedSpellcheckLanguages = [];
+
+    combinedLanguages.forEach(languageState => {
+      if (!supportedSpellcheckLanguagesSet.has(languageState.language.code) &&
+          languageState.language.supportsSpellcheck) {
+        supportedSpellcheckLanguages.push(languageState);
+        supportedSpellcheckLanguagesSet.add(languageState.language.code);
+      }
+    });
+
+    return supportedSpellcheckLanguages;
+  },
+
+  /** @private */
+  updateSpellcheckPref_() {
+    if (this.spellCheckLanguages_ === undefined) {
+      return;
+    }
+
+    // TODO(crbug/1126239): Investigate feasibility of moving this pref update
+    // to spellcheck_service.
+    if (this.spellCheckLanguages_.length === 0) {
+      // If there are no supported spell check languages, automatically turn
+      // off spell check to indicate no spell check will happen.
+      this.setPrefValue('browser.enable_spellchecking', false);
+    }
+  },
+
+  /**
+   * Handler for enabling or disabling spell check for a specific language.
+   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @private
+   */
+  onSpellCheckLanguageChange_(e) {
+    const item = e.model.item;
+    if (!item.language.supportsSpellcheck) {
+      return;
+    }
+
+    this.languageHelper.toggleSpellCheck(
+        item.language.code, !item.spellCheckEnabled);
+  },
+
+  /**
+   * Handler for clicking on the name of the language. The action taken must
+   * match the control that is available.
+   * @param {!{target: Element, model: !{item: !LanguageState}}} e
+   * @private
+   */
+  onSpellCheckNameClick_(e) {
+    assert(!this.isSpellCheckNameClickDisabled_(e.model.item));
+    this.onSpellCheckLanguageChange_(e);
+  },
+
+  /**
+   * Name only supports clicking when language is not managed, supports
+   * spellcheck, and the dictionary has been downloaded with no errors.
+   * @param {!LanguageState|!ForcedLanguageState} item
+   * @return {boolean}
+   * @private
+   */
+  isSpellCheckNameClickDisabled_(item) {
+    return item.isManaged || item.downloadDictionaryFailureCount > 0 ||
+        !this.getPref('browser.enable_spellchecking').value;
   },
 });

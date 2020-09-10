@@ -19,6 +19,7 @@ cr.define('settings', function() {
         'recordAddLanguages',
         'recordManageInputMethods',
         'recordToggleShowInputOptionsOnShelf',
+        'recordToggleSpellCheck',
         'recordToggleTranslate',
         'recordAddInputMethod',
       ]);
@@ -42,6 +43,11 @@ cr.define('settings', function() {
     /** @override */
     recordToggleShowInputOptionsOnShelf(value) {
       this.methodCalled('recordToggleShowInputOptionsOnShelf', value);
+    }
+
+    /** @override */
+    recordToggleSpellCheck(value) {
+      this.methodCalled('recordToggleSpellCheck', value);
     }
 
     /** @override */

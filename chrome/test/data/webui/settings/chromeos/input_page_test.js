@@ -21,6 +21,10 @@ suite('input page', () => {
   let inputPage;
   /** @type {!settings.LanguagesMetricsProxy} */
   let metricsProxy;
+  /** @type {!settings.LanguagesBrowserProxy} */
+  let browserProxy;
+  /** @type {!LanguagesHelper} */
+  let languageHelper;
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
@@ -37,7 +41,7 @@ suite('input page', () => {
 
     return CrSettingsPrefs.initialized.then(() => {
       // Set up test browser proxy.
-      const browserProxy = new settings.TestLanguagesBrowserProxy();
+      browserProxy = new settings.TestLanguagesBrowserProxy();
       settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
 
       // Sets up test metrics proxy.
@@ -62,6 +66,7 @@ suite('input page', () => {
       test_util.fakeDataBind(settingsLanguages, inputPage, 'languages');
       inputPage.languageHelper = settingsLanguages.languageHelper;
       test_util.fakeDataBind(settingsLanguages, inputPage, 'language-helper');
+      languageHelper = inputPage.languageHelper;
       document.body.appendChild(inputPage);
     });
   });
@@ -194,6 +199,207 @@ suite('input page', () => {
       Polymer.dom.flush();
 
       await metricsProxy.whenCalled('recordAddInputMethod');
+    });
+  });
+
+  suite('spell check', () => {
+    let spellCheckToggle;
+    let spellCheckListContainer;
+    let spellCheckList;
+
+    setup(() => {
+      // spell check is initially on
+      spellCheckToggle = inputPage.$.enableSpellcheckingToggle;
+      assertTrue(!!spellCheckToggle);
+      assertTrue(spellCheckToggle.checked);
+
+      spellCheckListContainer = inputPage.$$('#spellCheckLanguagesList');
+      assertTrue(!!spellCheckListContainer);
+
+      // two languages are in the list, with en-US on and sw off.
+      spellCheckList = spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(2, spellCheckList.length);
+      assertTrue(
+          spellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(spellCheckList[0].querySelector('cr-toggle').checked);
+      assertTrue(spellCheckList[1].textContent.includes('Swahili'));
+      assertFalse(spellCheckList[1].querySelector('cr-toggle').checked);
+    });
+
+    test('toggles a spell check language add/remove it from dictionary', () => {
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+      // Get toggle for en-US.
+      const spellCheckLanguageToggle =
+          spellCheckList[0].querySelector('cr-toggle');
+
+      // toggle off
+      spellCheckLanguageToggle.click();
+
+      assertFalse(spellCheckLanguageToggle.checked);
+      assertDeepEquals([], languageHelper.prefs.spellcheck.dictionaries.value);
+
+      // toggle on
+      spellCheckLanguageToggle.click();
+
+      assertTrue(spellCheckLanguageToggle.checked);
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+    });
+
+    test(
+        'clicks a spell check language name add/remove it from dictionary',
+        () => {
+          assertDeepEquals(
+              ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+          // Get toggle for en-US.
+          const spellCheckLanguageToggle =
+              spellCheckList[0].querySelector('cr-toggle');
+
+          // toggle off by clicking name
+          spellCheckList[0].querySelector('.name-with-error').click();
+          Polymer.dom.flush();
+
+          assertFalse(spellCheckLanguageToggle.checked);
+          assertDeepEquals(
+              [], languageHelper.prefs.spellcheck.dictionaries.value);
+
+          // toggle on by clicking name
+          spellCheckList[0].querySelector('.name-with-error').click();
+          Polymer.dom.flush();
+
+          assertTrue(spellCheckLanguageToggle.checked);
+          assertDeepEquals(
+              ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+        });
+
+    test('shows force-on existing spell check language', () => {
+      // Force-enable an existing language via policy.
+      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['sw']);
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(2, newSpellCheckList.length);
+      const forceEnabledSwLanguageRow = newSpellCheckList[1];
+      assertTrue(!!forceEnabledSwLanguageRow);
+      assertTrue(!!forceEnabledSwLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      assertTrue(
+          forceEnabledSwLanguageRow.querySelector('.managed-toggle').checked);
+      assertTrue(
+          forceEnabledSwLanguageRow.querySelector('.managed-toggle').disabled);
+      assertEquals(
+          getComputedStyle(
+              forceEnabledSwLanguageRow.querySelector('.name-with-error'))
+              .pointerEvents,
+          'none');
+    });
+
+    test('shows force-on non-enabled spell check language', () => {
+      // Force-enable a new language via policy.
+      languageHelper.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(3, newSpellCheckList.length);
+      const forceEnabledNbLanguageRow = newSpellCheckList[2];
+      assertTrue(!!forceEnabledNbLanguageRow);
+      assertTrue(!!forceEnabledNbLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      assertTrue(
+          forceEnabledNbLanguageRow.querySelector('.managed-toggle').checked);
+      assertTrue(
+          forceEnabledNbLanguageRow.querySelector('.managed-toggle').disabled);
+      assertEquals(
+          getComputedStyle(
+              forceEnabledNbLanguageRow.querySelector('.name-with-error'))
+              .pointerEvents,
+          'none');
+    });
+
+    test(
+        'does not show force-off spell check when language is not enabled',
+        () => {
+          // Force-disable a language via policy.
+          languageHelper.setPrefValue(
+              'spellcheck.blacklisted_dictionaries', ['nb']);
+          Polymer.dom.flush();
+          const newSpellCheckList =
+              spellCheckListContainer.querySelectorAll('.list-item');
+          assertEquals(2, newSpellCheckList.length);
+        });
+
+    test('shows force-off spell check when language is enabled', () => {
+      // Force-disable a language via policy.
+      languageHelper.setPrefValue(
+          'spellcheck.blacklisted_dictionaries', ['nb']);
+      languageHelper.enableLanguage('nb');
+      Polymer.dom.flush();
+
+      const newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      assertEquals(3, newSpellCheckList.length);
+      const forceDisabledNbLanguageRow = newSpellCheckList[2];
+      assertTrue(!!forceDisabledNbLanguageRow.querySelector(
+          'cr-policy-pref-indicator'));
+      assertFalse(
+          forceDisabledNbLanguageRow.querySelector('.managed-toggle').checked);
+      assertTrue(
+          forceDisabledNbLanguageRow.querySelector('.managed-toggle').disabled);
+      assertEquals(
+          getComputedStyle(
+              forceDisabledNbLanguageRow.querySelector('.name-with-error'))
+              .pointerEvents,
+          'none');
+    });
+
+    test('toggle off disables toggle and click event', () => {
+      // Initially, both toggles are enabled
+      assertFalse(spellCheckList[0].querySelector('cr-toggle').disabled);
+      assertFalse(spellCheckList[1].querySelector('cr-toggle').disabled);
+      assertEquals(
+          getComputedStyle(spellCheckList[0].querySelector('.name-with-error'))
+              .pointerEvents,
+          'auto');
+      assertEquals(
+          getComputedStyle(spellCheckList[1].querySelector('.name-with-error'))
+              .pointerEvents,
+          'auto');
+
+      spellCheckToggle.click();
+
+      assertFalse(spellCheckToggle.checked);
+      assertTrue(spellCheckList[0].querySelector('cr-toggle').disabled);
+      assertTrue(spellCheckList[1].querySelector('cr-toggle').disabled);
+      assertEquals(
+          getComputedStyle(spellCheckList[0].querySelector('.name-with-error'))
+              .pointerEvents,
+          'none');
+      assertEquals(
+          getComputedStyle(spellCheckList[1].querySelector('.name-with-error'))
+              .pointerEvents,
+          'none');
+    });
+
+    test('does not add a language without spellcheck support', () => {
+      const spellCheckLanguagesCount = spellCheckList.length;
+      // Enabling a language without spellcheck support should not add it to
+      // the list
+      languageHelper.enableLanguage('tk');
+      Polymer.dom.flush();
+      assertEquals(spellCheckList.length, spellCheckLanguagesCount);
+    });
+
+    test('toggle is disabled when there is no supported languages', () => {
+      assertFalse(spellCheckToggle.disabled);
+
+      // Empty out supported languages
+      languageHelper.setPrefValue('settings.language.preferred_languages', '');
+
+      assertTrue(spellCheckToggle.disabled);
+      assertFalse(spellCheckToggle.checked);
     });
   });
 });

@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="add_input_methods_dialog.html">
 <link rel="import" href="input_method_util.html">
@@ -20,9 +21,13 @@
 
 <dom-module id="os-settings-input-page">
   <template>
-    <style include="settings-shared">
+    <style include="settings-shared iron-flex">
       h2 {
         padding-inline-start: var(--cr-section-padding);
+      }
+
+      cr-policy-pref-indicator {
+        margin-inline-end: var(--settings-controlled-by-spacing);
       }
 
       .bottom-margin {
@@ -31,6 +36,10 @@
 
       .icon-external {
         margin-inline-end: 0;
+      }
+
+      .name-with-error[disabled] {
+        pointer-events: none;
       }
 
       /* The default implementation of the actionable list item makes the
@@ -44,6 +53,15 @@
        */
       .selected[actionable] {
         cursor: auto;
+      }
+
+      .subsection {
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-indent-padding);
+      }
+
+      .subsection .list-frame {
+        padding-inline-end: 0;
       }
 
       .internal-wrapper,
@@ -122,12 +140,57 @@
       </div>
       <settings-toggle-button id="enableSpellcheckingToggle" class="hr"
           label="$i18n{spellCheckTitle}"
-          sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
           pref="{{prefs.browser.enable_spellchecking}}"
           disabled="[[!spellCheckLanguages_.length]]"
           on-settings-boolean-control-change="onSpellcheckToggleChange_"
           deep-link-focus-id$="[[Setting.kSpellCheck]]">
       </settings-toggle-button>
+      <div class="subsection">
+        <div id="spellCheckLanguagesList">
+          <div class="single-column">
+            <div aria-describedby="spellChecklanguagesListDescription">
+              $i18n{spellCheckLanguagesListTitle}
+            </div>
+            <div class="secondary" id="spellChecklanguagesListDescription"
+                aria-hidden="true">
+              $i18n{spellCheckLanguagesListDescription}
+            </div>
+          </div>
+          <div class="list-frame vertical-list" role="list">
+            <template is="dom-repeat" items="[[spellCheckLanguages_]]"
+                mutable-data>
+              <div class="list-item">
+                <div class="flex name-with-error" aria-hidden="true"
+                    on-click="onSpellCheckNameClick_" actionable
+                    disabled$="[[isSpellCheckNameClickDisabled_(item, item.*,
+                        prefs.browser.enable_spellchecking.*)]]">
+                  [[item.language.displayName]]
+                </div>
+                <template is="dom-if" if="[[!
+                    item.downloadDictionaryFailureCount]]">
+                  <template is="dom-if" if="[[!item.isManaged]]">
+                    <cr-toggle on-change="onSpellCheckLanguageChange_"
+                        disabled="[[!prefs.browser.enable_spellchecking.value]]"
+                        checked="[[item.spellCheckEnabled]]"
+                        aria-label="[[item.language.displayName]]">
+                    </cr-toggle>
+                  </template>
+                  <template is="dom-if" if="[[item.isManaged]]">
+                    <cr-policy-pref-indicator
+                        pref="[[getIndicatorPrefForManagedSpellcheckLanguage_(
+                            item.spellCheckEnabled)]]">
+                    </cr-policy-pref-indicator>
+                    <cr-toggle disabled="true" class="managed-toggle"
+                        checked="[[item.spellCheckEnabled]]"
+                        aria-label="[[item.language.displayName]]">
+                    </cr-toggle>
+                  </template>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
     </div>
 
     <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
