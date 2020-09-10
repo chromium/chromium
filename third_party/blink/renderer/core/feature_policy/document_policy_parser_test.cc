@@ -274,7 +274,26 @@ const ParseTestCase DocumentPolicyParserTest::kCases[] = {
          /* endpoint_map */ {}},
         /* messages */ {},
     },
-
+    {
+        "MissingEndpointGroupForDefaultFeature1",
+        "*",
+        /* parsed_policy */
+        {
+            /* feature_state */ {},
+            /* endpoint_map */ {},
+        },
+        /* messages */ {},
+    },
+    {
+        "MissingEndpointGroupForDefaultFeature2",
+        "*,f-bool=?0,f-double=1;report-to=default",
+        /* parsed_policy */
+        {/* feature_state */ {
+             {kBoolFeature, PolicyValue::CreateBool(false)},
+             {kDoubleFeature, PolicyValue::CreateDecDouble(1.0)}},
+         /* endpoint_map */ {{kDoubleFeature, "default"}}},
+        /* messages */ {},
+    },
     //
     // Parse invalid policies.
     //

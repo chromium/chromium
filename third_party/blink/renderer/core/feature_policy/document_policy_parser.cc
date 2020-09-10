@@ -224,7 +224,8 @@ DocumentPolicyParser::ParseInternal(
 
     if (parsed_feature.feature ==
         mojom::blink::DocumentPolicyFeature::kDefault) {
-      default_endpoint = *parsed_feature.endpoint_group;
+      if (parsed_feature.endpoint_group)
+        default_endpoint = *parsed_feature.endpoint_group;
       continue;
     }
 
