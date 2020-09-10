@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test context destruction.</title>
+        <script src="encrypted-media-utils.js"></script>
+        <script src="../../resources/testharness.js"></script>
+        <script src="../../resources/testharnessreport.js"></script>
+    </head>
+    <body>
+        <script>
+            function allociframe() {
+                iframe = document.createElement('iframe');
+                iframe.height = 50;
+                iframe.width = 50;
+                document.body.appendChild(iframe);
+                return iframe;
+            }
+
+            async_test(async function(test)
+            {
+                iframe = allociframe();
+                keySystemAccess = await iframe.contentWindow.navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfiguration());
+                keys = await keySystemAccess.createMediaKeys();
+                document.body.removeChild(iframe);
+                keys.getStatusForPolicy({minHdcpVersion : '1.0'}).then(function(result) {
+                    assert_unreached('getStatusforPolicy() should fail');
+                }, function(error) {
+                    test.done();
+                });
+           }, 'Test context destruction.');
+        </script>
+    </body>
+</html>

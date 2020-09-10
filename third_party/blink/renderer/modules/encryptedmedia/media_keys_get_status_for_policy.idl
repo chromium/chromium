@@ -8,5 +8,5 @@
     ImplementedAs=MediaKeysGetStatusForPolicy,
     SecureContext
 ] partial interface MediaKeys {
-    [Measure, CallWith=ScriptState] Promise<MediaKeyStatus> getStatusForPolicy(MediaKeysPolicy policy);
+    [Measure, CallWith=ScriptState, RaisesException] Promise<MediaKeyStatus> getStatusForPolicy(MediaKeysPolicy policy);
 };

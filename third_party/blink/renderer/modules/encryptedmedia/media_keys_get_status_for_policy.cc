@@ -14,10 +14,12 @@ namespace blink {
 ScriptPromise MediaKeysGetStatusForPolicy::getStatusForPolicy(
     ScriptState* script_state,
     MediaKeys& media_keys,
-    const MediaKeysPolicy* media_keys_policy) {
+    const MediaKeysPolicy* media_keys_policy,
+    ExceptionState& exception_state) {
   DVLOG(1) << __func__;
 
-  return media_keys.getStatusForPolicy(script_state, media_keys_policy);
+  return media_keys.getStatusForPolicy(script_state, media_keys_policy,
+                                       exception_state);
 }
 
 }  // namespace blink

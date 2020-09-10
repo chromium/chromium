@@ -70,9 +70,11 @@ class MediaKeys : public ScriptWrappable,
 
   ScriptPromise setServerCertificate(ScriptState*,
                                      const DOMArrayPiece& server_certificate,
-                                     ExceptionState& exception_state);
+                                     ExceptionState&);
 
-  ScriptPromise getStatusForPolicy(ScriptState*, const MediaKeysPolicy*);
+  ScriptPromise getStatusForPolicy(ScriptState*,
+                                   const MediaKeysPolicy*,
+                                   ExceptionState&);
 
   // Indicates that the provided HTMLMediaElement wants to use this object.
   // Returns true if no other HTMLMediaElement currently references this
