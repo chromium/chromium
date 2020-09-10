@@ -2151,11 +2151,12 @@ class ComputedStyle : public ComputedStyleBase,
     return IsHorizontalWritingMode() ? OverflowY() : OverflowX();
   }
 
-  // It's sufficient to just check one direction, since it's illegal to have
-  // visible on only one overflow value.
+  // Returns true if 'overflow' is 'visible' along both axes. When 'clip' is
+  // used the other axis may be 'visible'. In other words, if one axis is
+  // 'visible' the other axis is not necessarily 'visible.'
   bool IsOverflowVisible() const {
-    DCHECK(OverflowX() != EOverflow::kVisible || OverflowX() == OverflowY());
-    return OverflowX() == EOverflow::kVisible;
+    return OverflowX() == EOverflow::kVisible &&
+           OverflowY() == EOverflow::kVisible;
   }
 
   bool IsDisplayTableRowOrColumnType() const {

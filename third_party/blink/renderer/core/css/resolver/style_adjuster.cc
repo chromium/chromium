@@ -70,6 +70,10 @@ namespace blink {
 
 namespace {
 
+bool IsOverflowClipOrVisible(EOverflow overflow) {
+  return overflow == EOverflow::kClip || overflow == EOverflow::kVisible;
+}
+
 TouchAction AdjustTouchActionForElement(TouchAction touch_action,
                                         const ComputedStyle& style,
                                         Element* element) {
@@ -411,17 +415,25 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style) {
     // If we are left with conflicting overflow values for the x and y axes on a
     // table then resolve both to OverflowVisible. This is interoperable
     // behaviour but is not specced anywhere.
+    // TODO(https://crbug.com/966283): figure out how 'clip' should be handled.
     if (style.OverflowX() == EOverflow::kVisible)
       style.SetOverflowY(EOverflow::kVisible);
     else if (style.OverflowY() == EOverflow::kVisible)
       style.SetOverflowX(EOverflow::kVisible);
-  } else if (style.OverflowX() == EOverflow::kVisible &&
-             style.OverflowY() != EOverflow::kVisible) {
-    // If either overflow value is not visible, change to auto.
-    style.SetOverflowX(EOverflow::kAuto);
-  } else if (style.OverflowY() == EOverflow::kVisible &&
-             style.OverflowX() != EOverflow::kVisible) {
-    style.SetOverflowY(EOverflow::kAuto);
+  } else if (!IsOverflowClipOrVisible(style.OverflowY())) {
+    // Values of 'clip' and 'visible' can only be used with 'clip' and
+    // 'visible.' If they aren't, 'clip' and 'visible' is reset.
+    if (style.OverflowX() == EOverflow::kVisible)
+      style.SetOverflowX(EOverflow::kAuto);
+    else if (style.OverflowX() == EOverflow::kClip)
+      style.SetOverflowX(EOverflow::kHidden);
+  } else if (!IsOverflowClipOrVisible(style.OverflowX())) {
+    // Values of 'clip' and 'visible' can only be used with 'clip' and
+    // 'visible.' If they aren't, 'clip' and 'visible' is reset.
+    if (style.OverflowY() == EOverflow::kVisible)
+      style.SetOverflowY(EOverflow::kAuto);
+    else if (style.OverflowY() == EOverflow::kClip)
+      style.SetOverflowY(EOverflow::kHidden);
   }
 }
 

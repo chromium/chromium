@@ -106,4 +106,56 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
   EXPECT_EQ(TouchAction::kPanX,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
+
+TEST_F(StyleAdjusterTest, AdjustOverflow) {
+  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div id='clipauto' style='overflow-x: clip; overflow-y: auto;'>
+    <div id='autoclip' style='overflow-x: auto; overflow-y: clip;'>
+    <div id='clipclip' style='overflow-x: clip; overflow-y: clip;'>
+    <div id='visclip' style='overflow-x: visible; overflow-y: clip;'>
+    <div id='clipvis' style='overflow-x: clip; overflow-y: visible;'>
+    <div id='hiddenvis' style='overflow-x: hidden; overflow-y: visible;'>
+    <div id='vishidden' style='overflow-x: visible; overflow-y: hidden;'>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById("clipauto");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("autoclip");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("clipclip");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("visclip");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("clipvis");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("vishidden");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
+
+  target = GetDocument().getElementById("hiddenvis");
+  ASSERT_TRUE(target);
+  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
+  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
+}
+
 }  // namespace blink
