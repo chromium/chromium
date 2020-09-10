@@ -3,6 +3,5 @@
 -OutOfProcessPPAPITest.TrueTypeFont
 
 # Following tests are flaky.
--All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously*
 -All/WebContentsVideoCaptureDeviceBrowserTestP.CapturesContentChanges*
 -PDFExtensionTestWithTestGuestViewManager*
