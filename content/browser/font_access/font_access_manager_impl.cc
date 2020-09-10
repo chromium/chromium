@@ -43,6 +43,17 @@ void FontAccessManagerImpl::RequestPermission(
   const BindingContext& context = receivers_.current_context();
   RenderFrameHost* rfh = RenderFrameHost::FromID(context.frame_id);
 
+  auto status = PermissionControllerImpl::FromBrowserContext(
+                    rfh->GetProcess()->GetBrowserContext())
+                    ->GetPermissionStatusForFrame(PermissionType::FONT_ACCESS,
+                                                  rfh, context.origin.GetURL());
+
+  if (status != blink::mojom::PermissionStatus::ASK) {
+    // Permission has been requested before.
+    std::move(callback).Run(status);
+    return;
+  }
+
   if (!rfh->HasTransientUserActivation()) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
     return;

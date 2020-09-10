@@ -205,6 +205,34 @@ TEST_F(FontAccessManagerImplTest, UserActivationPermissionManagerTriggered) {
   loop.Run();
   EXPECT_TRUE(permission_requested) << "Permission has been requested";
 }
+
+TEST_F(FontAccessManagerImplTest, PreviouslyGrantedPermissionNoActivation) {
+  ASSERT_TRUE(manager_remote_.is_bound() && manager_remote_.is_connected());
+  AutoGrantPermission();
+
+  base::RunLoop loop;
+  manager_remote_->RequestPermission(
+      base::BindLambdaForTesting([&](blink::mojom::PermissionStatus status) {
+        EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status)
+            << "Permission status is granted";
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
+TEST_F(FontAccessManagerImplTest, PreviouslyDeniedPermissionNoActivation) {
+  ASSERT_TRUE(manager_remote_.is_bound() && manager_remote_.is_connected());
+  AutoDenyPermission();
+
+  base::RunLoop loop;
+  manager_remote_->RequestPermission(
+      base::BindLambdaForTesting([&](blink::mojom::PermissionStatus status) {
+        EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status)
+            << "Permission status is denied";
+        loop.Quit();
+      }));
+  loop.Run();
+}
 #endif
 
 #if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
