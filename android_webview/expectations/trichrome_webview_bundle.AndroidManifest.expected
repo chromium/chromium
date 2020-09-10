@@ -65,6 +65,7 @@
     <provider  # DIFF-ANCHOR: a5e78e63
         android:authorities="$PACKAGE.LicenseContentProvider"
         android:exported="true"
+        android:grantUriPermissions="true"
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:process=":webview_apk">
     </provider>  # DIFF-ANCHOR: a5e78e63

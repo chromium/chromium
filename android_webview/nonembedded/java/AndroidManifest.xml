@@ -75,6 +75,7 @@
             <provider android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
                       android:exported="true"
                       android:authorities="{{ manifest_package }}.LicenseContentProvider"
+                      android:grantUriPermissions="true"
                       android:process=":webview_apk" />  {# Explicit process required for monochrome compatibility. #}
             <!-- Disabled by default, enabled at runtime by Developer UI. -->
             <provider android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
