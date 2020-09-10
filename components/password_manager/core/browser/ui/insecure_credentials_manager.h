@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
@@ -37,11 +38,38 @@ enum class InsecureCredentialTypeFlags {
   kWeakCredential = 1 << 2,
 };
 
+constexpr InsecureCredentialTypeFlags operator&(
+    InsecureCredentialTypeFlags lhs,
+    InsecureCredentialTypeFlags rhs) {
+  return static_cast<InsecureCredentialTypeFlags>(static_cast<int>(lhs) &
+                                                  static_cast<int>(rhs));
+}
+
 constexpr InsecureCredentialTypeFlags operator|(
     InsecureCredentialTypeFlags lhs,
     InsecureCredentialTypeFlags rhs) {
   return static_cast<InsecureCredentialTypeFlags>(static_cast<int>(lhs) |
                                                   static_cast<int>(rhs));
+}
+
+constexpr InsecureCredentialTypeFlags& operator|=(
+    InsecureCredentialTypeFlags& lhs,
+    InsecureCredentialTypeFlags rhs) {
+  lhs = lhs | rhs;
+  return lhs;
+}
+
+// Checks that |flag| contains at least one of compromised types.
+constexpr bool IsCompromised(const InsecureCredentialTypeFlags& flag) {
+  return (flag & (InsecureCredentialTypeFlags::kCredentialLeaked |
+                  InsecureCredentialTypeFlags::kCredentialPhished)) !=
+         InsecureCredentialTypeFlags::kSecure;
+}
+
+// Checks that |flag| contains weak type.
+constexpr bool IsWeak(const InsecureCredentialTypeFlags& flag) {
+  return (flag & InsecureCredentialTypeFlags::kWeakCredential) !=
+         InsecureCredentialTypeFlags::kSecure;
 }
 
 // Simple struct that augments key values of InsecureCredentials and a password.
@@ -125,6 +153,10 @@ class InsecureCredentialsManager
 
   void Init();
 
+  // Computes weak credentials in a separate thread and then passes the result
+  // to OnWeakCheckDone.
+  void StartWeakCheck();
+
   // Marks all saved credentials which have same username & password as
   // compromised.
   void SaveCompromisedCredential(const LeakCheckCredential& credential);
@@ -141,6 +173,9 @@ class InsecureCredentialsManager
   // Returns a vector of currently compromised credentials.
   std::vector<CredentialWithPassword> GetCompromisedCredentials() const;
 
+  // Returns a vector of currently weak credentials.
+  std::vector<CredentialWithPassword> GetWeakCredentials() const;
+
   // Returns password forms which map to provided insecure credential.
   // In most of the cases vector will have 1 element only.
   SavedPasswordsPresenter::SavedPasswordsView GetSavedPasswordsFor(
@@ -154,6 +189,10 @@ class InsecureCredentialsManager
   using CredentialPasswordsMap =
       std::map<CredentialView, CredentialMetadata, PasswordCredentialLess>;
 
+  // Updates |weak_passwords| set and notifies observers that weak credentials
+  // were changed.
+  void OnWeakCheckDone(base::flat_set<base::string16> weak_passwords);
+
   // CompromisedCredentialsReader::Observer:
   void OnCompromisedCredentialsChanged(
       const std::vector<CompromisedCredentials>& compromised_credentials)
@@ -163,9 +202,11 @@ class InsecureCredentialsManager
   void OnSavedPasswordsChanged(
       SavedPasswordsPresenter::SavedPasswordsView passwords) override;
 
-  // Function to update |credentials_to_forms_| and notify observers.
-  void UpdateCachedDataAndNotifyObservers(
-      SavedPasswordsPresenter::SavedPasswordsView saved_passwords);
+  // Notifies observers when compromised credentials have changed.
+  void NotifyCompromisedCredentialsChanged();
+
+  // Notifies observers when weak credentials have changed.
+  void NotifyWeakCredentialsChanged();
 
   // Returns the `profile_store_` or `account_store_` if `form` is stored in the
   // profile store of the account store accordingly.
@@ -186,6 +227,9 @@ class InsecureCredentialsManager
   // Cache of the most recently obtained compromised credentials.
   std::vector<CompromisedCredentials> compromised_credentials_;
 
+  // Cache of the most recently obtained weak passwords.
+  base::flat_set<base::string16> weak_passwords_;
+
   // A map that matches CredentialView to corresponding PasswordForms, latest
   // create_type and combined insecure type.
   CredentialPasswordsMap credentials_to_forms_;
@@ -201,6 +245,8 @@ class InsecureCredentialsManager
       observed_saved_password_presenter_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
+
+  base::WeakPtrFactory<InsecureCredentialsManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
