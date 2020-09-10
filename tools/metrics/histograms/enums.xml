@@ -59570,7 +59570,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="47" label="INVALID_CONGESTION_FEEDBACK_DATA"/>
   <int value="48" label="MISSING_PAYLOAD"/>
   <int value="49" label="INVALID_PRIORITY"/>
-  <int value="50" label="INVALID_STREAM_FRAME"/>
+  <int value="50" label="EMPTY_STREAM_FRAME_NO_FIN"/>
   <int value="51" label="PACKET_READ_ERROR"/>
   <int value="52" label="INVALID_CHANNEL_ID_SIGNATURE"/>
   <int value="53" label="CRYPTO_SYMMETRIC_KEY_SETUP_FAILED"/>
@@ -59579,7 +59579,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="56" label="INVALID_HEADERS_STREAM_DATA"/>
   <int value="57" label="INVALID_WINDOW_UPDATE_DATA"/>
   <int value="58" label="INVALID_BLOCKED_DATA"/>
-  <int value="59" label="FLOW_CONTROL_ERROR"/>
+  <int value="59" label="FLOW_CONTROL_RECEIVED_TOO_MUCH_DATA"/>
   <int value="60" label="INVALID_STOP_WAITING_DATA"/>
   <int value="61" label="UNENCRYPTED_STREAM_DATA"/>
   <int value="62" label="CONNECTION_IP_POOLED"/>
@@ -59613,7 +59613,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="90" label="CRYPTO_CHLO_TOO_LARGE"/>
   <int value="91" label="MULTIPATH_PATH_DOES_NOT_EXIST"/>
   <int value="92" label="MULTIPATH_PATH_NOT_ACTIVE"/>
-  <int value="93" label="TOO_MANY_FRAME_GAPS"/>
+  <int value="93" label="TOO_MANY_STREAM_DATA_INTERVALS"/>
   <int value="94" label="UNSUPPORTED_PROOF_DEMAND"/>
   <int value="95" label="STREAM_SEQUENCER_INVALID_STATE"/>
   <int value="96" label="TOO_MANY_SESSIONS_ON_SERVER"/>
@@ -59621,60 +59621,77 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="98" label="STREAM_LENGTH_OVERFLOW"/>
   <int value="99" label="CONNECTION_MIGRATION_DISABLED_BY_CONFIG"/>
   <int value="100" label="CONNECTION_MIGRATION_INTERNAL_ERROR"/>
-  <int value="101" label="QUIC_INVALID_APPLICATION_CLOSE_DATA"/>
-  <int value="102" label="QUIC_INVALID_MAX_DATA_FRAME_DATA"/>
-  <int value="103" label="QUIC_INVALID_MAX_STREAM_DATA_FRAME_DATA"/>
-  <int value="104" label="QUIC_MAX_STREAM_ID_DATA"/>
-  <int value="105" label="QUIC_STREAM_ID_BLOCKED_DATA"/>
-  <int value="106" label="QUIC_INVALID_STREAM_BLOCKED_DATA"/>
-  <int value="107" label="QUIC_INVALID_NEW_CONNECTION_ID_DATA"/>
-  <int value="108" label="QUIC_INVALID_STOP_SENDING_FRAME_DATA"/>
-  <int value="109" label="QUIC_INVALID_PATH_CHALLENGE_DATA"/>
-  <int value="110" label="QUIC_INVALID_PATH_RESPONSE_DATA"/>
-  <int value="111" label="QUIC_CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED"/>
-  <int value="112" label="QUIC_INVALID_MESSAGE_DATA"/>
+  <int value="101" label="INVALID_APPLICATION_CLOSE_DATA"/>
+  <int value="102" label="INVALID_MAX_DATA_FRAME_DATA"/>
+  <int value="103" label="INVALID_MAX_STREAM_DATA_FRAME_DATA"/>
+  <int value="104" label="MAX_STREAMS_DATA"/>
+  <int value="105" label="STREAMS_BLOCKED_DATA"/>
+  <int value="106" label="INVALID_STREAM_BLOCKED_DATA"/>
+  <int value="107" label="INVALID_NEW_CONNECTION_ID_DATA"/>
+  <int value="108" label="INVALID_STOP_SENDING_FRAME_DATA"/>
+  <int value="109" label="INVALID_PATH_CHALLENGE_DATA"/>
+  <int value="110" label="INVALID_PATH_RESPONSE_DATA"/>
+  <int value="111" label="CONNECTION_MIGRATION_HANDSHAKE_UNCONFIRMED"/>
+  <int value="112" label="INVALID_MESSAGE_DATA"/>
   <int value="113" label="IETF_QUIC_PROTOCOL_VIOLATION"/>
-  <int value="114" label="QUIC_INVALID_NEW_TOKEN"/>
-  <int value="115" label="QUIC_DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM"/>
-  <int value="116"
-      label="QUIC_TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM"/>
-  <int value="117" label="QUIC_INVALID_RETIRE_CONNECTION_ID_DATA"/>
-  <int value="118" label="QUIC_STREAM_ID_BLOCKED_ERROR"/>
-  <int value="119" label="QUIC_MAX_STREAM_ID_ERROR"/>
-  <int value="120" label="QUIC_HTTP_DECODER_ERROR"/>
-  <int value="121" label="QUIC_STALE_CONNECTION_CANCELLED"/>
-  <int value="122" label="QUIC_IETF_GQUIC_ERROR_MISSING"/>
+  <int value="114" label="INVALID_NEW_TOKEN"/>
+  <int value="115" label="DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM"/>
+  <int value="116" label="TRY_TO_WRITE_DATA_ON_READ_UNIDIRECTIONAL_STREAM"/>
+  <int value="117" label="INVALID_RETIRE_CONNECTION_ID_DATA"/>
+  <int value="118" label="STREAMS_BLOCKED_ERROR"/>
+  <int value="119" label="MAX_STREAMS_ERROR"/>
+  <int value="120" label="HTTP_DECODER_ERROR"/>
+  <int value="121" label="STALE_CONNECTION_CANCELLED"/>
+  <int value="122" label="IETF_GQUIC_ERROR_MISSING"/>
   <int value="123"
-      label="QUIC_WINDOW_UPDATE_RECEIVED_ON_READ_UNIDIRECTIONAL_STREAM"/>
-  <int value="124" label="QUIC_TOO_MANY_BUFFERED_CONTROL_FRAMES"/>
-  <int value="125" label="QUIC_TRANSPORT_INVALID_CLIENT_INDICATION"/>
-  <int value="126" label="QUIC_QPACK_DECOMPRESSION_FAILED"/>
-  <int value="127" label="QUIC_QPACK_ENCODER_STREAM_ERROR"/>
-  <int value="128" label="QUIC_QPACK_DECODER_STREAM_ERROR"/>
-  <int value="129" label="QUIC_STREAM_DATA_BEYOND_CLOSE_OFFSET"/>
-  <int value="130" label="QUIC_STREAM_MULTIPLE_OFFSET"/>
-  <int value="131" label="QUIC_HTTP_FRAME_TOO_LARGE"/>
-  <int value="132" label="QUIC_HTTP_FRAME_ERROR"/>
-  <int value="133" label="QUIC_HTTP_FRAME_UNEXPECTED_ON_SPDY_STREAM"/>
-  <int value="134" label="QUIC_HTTP_FRAME_UNEXPECTED_ON_CONTROL_STREAM"/>
-  <int value="135" label="QUIC_HPACK_INDEX_VARINT_ERROR"/>
-  <int value="136" label="QUIC_HPACK_NAME_LENGTH_VARINT_ERROR"/>
-  <int value="137" label="QUIC_HPACK_VALUE_LENGTH_VARINT_ERROR"/>
-  <int value="138" label="QUIC_HPACK_NAME_TOO_LONG"/>
-  <int value="139" label="QUIC_HPACK_VALUE_TOO_LONG"/>
-  <int value="140" label="QUIC_HPACK_NAME_HUFFMAN_ERROR"/>
-  <int value="141" label="QUIC_HPACK_VALUE_HUFFMAN_ERROR"/>
-  <int value="142" label="QUIC_HPACK_MISSING_DYNAMIC_TABLE_SIZE_UPDATE"/>
-  <int value="143" label="QUIC_HPACK_INVALID_INDEX"/>
-  <int value="144" label="QUIC_HPACK_INVALID_NAME_INDEX"/>
-  <int value="145" label="QUIC_HPACK_DYNAMIC_TABLE_SIZE_UPDATE_NOT_ALLOWED"/>
+      label="WINDOW_UPDATE_RECEIVED_ON_READ_UNIDIRECTIONAL_STREAM"/>
+  <int value="124" label="TOO_MANY_BUFFERED_CONTROL_FRAMES"/>
+  <int value="125" label="TRANSPORT_INVALID_CLIENT_INDICATION"/>
+  <int value="126" label="QPACK_DECOMPRESSION_FAILED"/>
+  <int value="127" label="QPACK_ENCODER_STREAM_ERROR"/>
+  <int value="128" label="QPACK_DECODER_STREAM_ERROR"/>
+  <int value="129" label="STREAM_DATA_BEYOND_CLOSE_OFFSET"/>
+  <int value="130" label="STREAM_MULTIPLE_OFFSET"/>
+  <int value="131" label="HTTP_FRAME_TOO_LARGE"/>
+  <int value="132" label="HTTP_FRAME_ERROR"/>
+  <int value="133" label="HTTP_FRAME_UNEXPECTED_ON_SPDY_STREAM"/>
+  <int value="134" label="HTTP_FRAME_UNEXPECTED_ON_CONTROL_STREAM"/>
+  <int value="135" label="HPACK_INDEX_VARINT_ERROR"/>
+  <int value="136" label="HPACK_NAME_LENGTH_VARINT_ERROR"/>
+  <int value="137" label="HPACK_VALUE_LENGTH_VARINT_ERROR"/>
+  <int value="138" label="HPACK_NAME_TOO_LONG"/>
+  <int value="139" label="HPACK_VALUE_TOO_LONG"/>
+  <int value="140" label="HPACK_NAME_HUFFMAN_ERROR"/>
+  <int value="141" label="HPACK_VALUE_HUFFMAN_ERROR"/>
+  <int value="142" label="HPACK_MISSING_DYNAMIC_TABLE_SIZE_UPDATE"/>
+  <int value="143" label="HPACK_INVALID_INDEX"/>
+  <int value="144" label="HPACK_INVALID_NAME_INDEX"/>
+  <int value="145" label="HPACK_DYNAMIC_TABLE_SIZE_UPDATE_NOT_ALLOWED"/>
   <int value="146"
-      label="QUIC_HPACK_INITIAL_TABLE_SIZE_UPDATE_IS_ABOVE_LOW_WATER_MARK"/>
+      label="HPACK_INITIAL_TABLE_SIZE_UPDATE_IS_ABOVE_LOW_WATER_MARK"/>
   <int value="147"
-      label="QUIC_HPACK_TABLE_SIZE_UPDATE_IS_ABOVE_ACKNOWLEDGED_SETTING"/>
-  <int value="148" label="QUIC_HPACK_TRUNCATED_BLOCK"/>
-  <int value="149" label="QUIC_HPACK_FRAGMENT_TOO_LONG"/>
-  <int value="150" label="QUIC_HPACK_COMPRESSED_HEADER_SIZE_EXCEEDS_LIMIT"/>
+      label="HPACK_TABLE_SIZE_UPDATE_IS_ABOVE_ACKNOWLEDGED_SETTING"/>
+  <int value="148" label="HPACK_TRUNCATED_BLOCK"/>
+  <int value="149" label="HPACK_FRAGMENT_TOO_LONG"/>
+  <int value="150" label="HPACK_COMPRESSED_HEADER_SIZE_EXCEEDS_LIMIT"/>
+  <int value="151" label="HTTP_INVALID_FRAME_SEQUENCE_ON_SPDY_STREAM"/>
+  <int value="152" label="HTTP_INVALID_FRAME_SEQUENCE_ON_CONTROL_STREAM"/>
+  <int value="153" label="HTTP_DUPLICATE_UNIDIRECTIONAL_STREAM"/>
+  <int value="154" label="HTTP_SERVER_INITIATED_BIDIRECTIONAL_STREAM"/>
+  <int value="155" label="HTTP_STREAM_WRONG_DIRECTION"/>
+  <int value="156" label="HTTP_CLOSED_CRITICAL_STREAM"/>
+  <int value="157" label="HTTP_MISSING_SETTINGS_FRAME"/>
+  <int value="158" label="HTTP_DUPLICATE_SETTING_IDENTIFIER"/>
+  <int value="159" label="HTTP_INVALID_MAX_PUSH_ID"/>
+  <int value="160" label="HTTP_STREAM_LIMIT_TOO_LOW"/>
+  <int value="161" label="ZERO_RTT_UNRETRANSMITTABLE"/>
+  <int value="162" label="ZERO_RTT_REJECTION_LIMIT_REDUCED"/>
+  <int value="163" label="ZERO_RTT_RESUMPTION_LIMIT_REDUCED"/>
+  <int value="164" label="HTTP_ZERO_RTT_RESUMPTION_SETTINGS_MISMATCH"/>
+  <int value="165" label="HTTP_ZERO_RTT_REJECTION_SETTINGS_MISMATCH"/>
+  <int value="166" label="HTTP_GOAWAY_INVALID_STREAM_ID"/>
+  <int value="167" label="HTTP_GOAWAY_ID_LARGER_THAN_PREVIOUS"/>
+  <int value="168" label="SILENT_IDLE_TIMEOUT"/>
 </enum>
 
 <enum name="QuicHandshakeFailureReason">
