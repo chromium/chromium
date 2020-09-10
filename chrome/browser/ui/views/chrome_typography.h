@@ -55,6 +55,9 @@ enum ChromeTextContext {
 
   // Status labels in the download shelf.  Usually 10pt.
   CONTEXT_DOWNLOAD_SHELF_STATUS,
+
+  // Button label in the IPH bubble.
+  CONTEXT_IPH_BUBBLE_BUTTON
 };
 
 enum ChromeTextStyle {

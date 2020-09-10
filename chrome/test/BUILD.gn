@@ -5666,6 +5666,7 @@ test("unit_tests") {
       "../browser/ui/views/global_media_controls/media_notification_list_view_unittest.cc",
       "../browser/ui/views/global_media_controls/overlay_media_notification_view_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",
+      "../browser/ui/views/in_product_help/feature_promo_bubble_view_unittest.cc",
       "../browser/ui/views/in_product_help/feature_promo_controller_views_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/intent_picker_bubble_view_unittest.cc",

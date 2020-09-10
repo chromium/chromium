@@ -11,19 +11,27 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_timeout.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/variations/variations_associated_data.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -38,19 +46,73 @@ constexpr base::TimeDelta kDelayShort = base::TimeDelta::FromSeconds(3);
 // The insets from the bubble border to the text inside.
 constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 
+constexpr gfx::Insets kBubbleButtonPadding(10, 10);
+
 }  // namespace
 
+namespace views {
+
+class MdIPHBubbleButton : public MdTextButton {
+ public:
+  MdIPHBubbleButton(ButtonListener* listener,
+                    const base::string16& text,
+                    bool has_border)
+      : MdTextButton(listener,
+                     text,
+                     ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON),
+        has_border_(has_border) {
+    // Prominent style gives a button hover highlight.
+    SetProminent(true);
+    // Button color is the same as IPH bubble's color.
+    SetBgColorOverride(SK_ColorTRANSPARENT);
+  }
+
+  void UpdateBackgroundColor() override {
+    // Prominent MD button does not have a border.
+    // Override this method to draw a border.
+    // Adapted from MdTextButton::UpdateBackgroundColor()
+    ui::NativeTheme* theme = GetNativeTheme();
+
+    SkColor bg_color = SK_ColorTRANSPARENT;
+    if (GetState() == STATE_PRESSED)
+      theme->GetSystemButtonPressedColor(bg_color);
+
+    SkColor stroke_color =
+        has_border_
+            ? theme->GetSystemColor(ui::NativeTheme::kColorId_ButtonBorderColor)
+            : SK_ColorTRANSPARENT;
+
+    SetBackground(CreateBackgroundFromPainter(
+        Painter::CreateRoundRectWith1PxBorderPainter(bg_color, stroke_color,
+                                                     GetCornerRadius())));
+  }
+
+ private:
+  bool has_border_;
+  DISALLOW_COPY_AND_ASSIGN(MdIPHBubbleButton);
+};
+
+}  // namespace views
+
 FeaturePromoBubbleView::FeaturePromoBubbleView(
-    const FeaturePromoBubbleParams& params)
+    const FeaturePromoBubbleParams& params,
+    base::RepeatingClosure snooze_callback,
+    base::RepeatingClosure dismiss_callback)
     : BubbleDialogDelegateView(params.anchor_view, params.arrow),
+      snoozable_(params.allow_snooze),
       activation_action_(params.activation_action),
-      preferred_width_(params.preferred_width) {
+      preferred_width_(params.preferred_width),
+      snooze_callback_(snooze_callback),
+      dismiss_callback_(dismiss_callback) {
   DCHECK(params.anchor_view);
   UseCompactMargins();
 
-  feature_promo_bubble_timeout_ = std::make_unique<FeaturePromoBubbleTimeout>(
-      params.timeout_default ? *params.timeout_default : kDelayDefault,
-      params.timeout_short ? *params.timeout_short : kDelayShort);
+  // Bubble will not auto-dismiss for snoozble IPH.
+  if (!snoozable_) {
+    feature_promo_bubble_timeout_ = std::make_unique<FeaturePromoBubbleTimeout>(
+        params.timeout_default ? *params.timeout_default : kDelayDefault,
+        params.timeout_short ? *params.timeout_short : kDelayShort);
+  }
 
   const base::string16 body_text =
       l10n_util::GetStringUTF16(params.body_string_specifier);
@@ -75,15 +137,20 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
   // created yet.
   const ui::ThemeProvider* theme_provider =
       params.anchor_view->GetThemeProvider();
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   DCHECK(theme_provider);
+  DCHECK(layout_provider);
 
   const SkColor background_color = theme_provider->GetColor(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND);
   const SkColor text_color = theme_provider->GetColor(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
+  const int vertical_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
   auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kBubbleContentsInsets, 0);
+      views::BoxLayout::Orientation::kVertical, kBubbleContentsInsets,
+      vertical_spacing);
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
@@ -113,6 +180,34 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
 
+  if (snoozable_) {
+    auto* button_container = AddChildView(std::make_unique<views::View>());
+    auto* button_layout =
+        button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal));
+
+    button_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kEnd);
+
+    const base::string16 skip_text =
+        l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+
+    dismiss_button_ = button_container->AddChildView(
+        std::make_unique<views::MdIPHBubbleButton>(this, skip_text, false));
+    dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
+    dismiss_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(0, layout_provider->GetDistanceMetric(
+                           views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+
+    const base::string16 snooze_text =
+        l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+
+    snooze_button_ = button_container->AddChildView(
+        std::make_unique<views::MdIPHBubbleButton>(this, snooze_text, true));
+    snooze_button_->SetCustomPadding(kBubbleButtonPadding);
+  }
+
   if (params.activation_action ==
       FeaturePromoBubbleParams::ActivationAction::DO_NOT_ACTIVATE) {
     SetCanActivate(false);
@@ -131,15 +226,18 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH));
 
   widget->Show();
-  feature_promo_bubble_timeout_->OnBubbleShown(this);
+  if (feature_promo_bubble_timeout_)
+    feature_promo_bubble_timeout_->OnBubbleShown(this);
 }
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
 
 // static
 FeaturePromoBubbleView* FeaturePromoBubbleView::Create(
-    const FeaturePromoBubbleParams& params) {
-  return new FeaturePromoBubbleView(params);
+    const FeaturePromoBubbleParams& params,
+    base::RepeatingClosure snooze_callback,
+    base::RepeatingClosure dismiss_callback) {
+  return new FeaturePromoBubbleView(params, snooze_callback, dismiss_callback);
 }
 
 void FeaturePromoBubbleView::CloseBubble() {
@@ -153,11 +251,22 @@ bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
-  feature_promo_bubble_timeout_->OnMouseEntered();
+  if (feature_promo_bubble_timeout_)
+    feature_promo_bubble_timeout_->OnMouseEntered();
 }
 
 void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
-  feature_promo_bubble_timeout_->OnMouseExited();
+  if (feature_promo_bubble_timeout_)
+    feature_promo_bubble_timeout_->OnMouseExited();
+}
+
+void FeaturePromoBubbleView::ButtonPressed(views::Button* sender,
+                                           const ui::Event& event) {
+  CloseBubble();
+  if (sender == snooze_button_)
+    snooze_callback_.Run();
+  else  // sender == dismiss_button_
+    dismiss_callback_.Run();
 }
 
 gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
@@ -189,4 +298,12 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
   } else {
     return View::CalculatePreferredSize();
   }
+}
+
+views::Button* FeaturePromoBubbleView::GetDismissButtonForTesting() const {
+  return dismiss_button_;
+}
+
+views::Button* FeaturePromoBubbleView::GetSnoozeButtonForTesting() const {
+  return snooze_button_;
 }

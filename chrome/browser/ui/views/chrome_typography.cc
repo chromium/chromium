@@ -9,6 +9,7 @@
 #include "ui/base/default_style.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/font.h"
 #include "ui/gfx/platform_font.h"
 
 int GetFontSizeDeltaBoundedByAvailableHeight(int available_height,
@@ -99,5 +100,9 @@ void ApplyCommonFontStyles(int context,
       *size_delta = 15 - gfx::PlatformFont::kDefaultBaseFontSize;
       break;
 #endif
+    case CONTEXT_IPH_BUBBLE_BUTTON: {
+      *size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(12);
+      break;
+    }
   }
 }

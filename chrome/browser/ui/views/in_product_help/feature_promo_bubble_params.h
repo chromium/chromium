@@ -63,6 +63,9 @@ struct FeaturePromoBubbleParams {
   // Changes the bubble timeout. Intended for tests, avoid use.
   base::Optional<base::TimeDelta> timeout_default;
   base::Optional<base::TimeDelta> timeout_short;
+
+  // Determines if this IPH can be snoozed and reactivated later.
+  bool allow_snooze = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_FEATURE_PROMO_BUBBLE_PARAMS_H_

@@ -5889,6 +5889,12 @@ the Bookmarks menu.">
       <message name="IDS_TAB_GROUPS_NEW_GROUP_PROMO" desc="Text shown on promotional UI encouraging users to create a tab group in their tab strip">
         To group tabs together, right-click a tab
       </message>
+      <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button to dismiss a promotional UI">
+        Dismiss
+      </message>
+      <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
+        Remind me later
+      </message>
 
       <!-- Browser Hung Plugin Detector -->
       <if expr="is_win">
