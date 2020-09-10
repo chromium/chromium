@@ -773,6 +773,7 @@ if (!is_android) {
       "//mojo/public/cpp/system",
       "//net",
       "//net:test_support",
+      "//pdf:features",
       "//ppapi/buildflags",
       "//printing/buildflags",
       "//rlz/buildflags",

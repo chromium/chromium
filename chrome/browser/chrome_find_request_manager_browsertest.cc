@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -27,6 +28,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "pdf/document_loader_impl.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom.h"
 
 namespace content {
@@ -88,6 +90,20 @@ class ChromeFindRequestManagerTest : public InProcessBrowserTest {
   int last_request_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeFindRequestManagerTest);
+};
+
+class ChromeFindRequestManagerTestWithPdfPartialLoading
+    : public ChromeFindRequestManagerTest {
+ public:
+  ChromeFindRequestManagerTestWithPdfPartialLoading() {
+    feature_list_.InitWithFeatures(
+        {chrome_pdf::features::kPdfIncrementalLoading,
+         chrome_pdf::features::kPdfPartialLoading},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests searching in a full-page PDF.
@@ -157,7 +173,8 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTest, FindInChunkedPDF) {
+IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTestWithPdfPartialLoading,
+                       FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 
