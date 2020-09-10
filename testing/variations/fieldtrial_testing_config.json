@@ -661,21 +661,6 @@
             ]
         }
     ],
-    "BackgroundPurgeOnMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "BackgrounPurgeOnMac",
-                    "enable_features": [
-                        "PurgeRendererMemoryWhenBackgrounded"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackgroundSync": [
         {
             "platforms": [

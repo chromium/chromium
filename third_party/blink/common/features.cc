@@ -143,12 +143,11 @@ const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
 // Perform a memory purge after a renderer is backgrounded. Formerly labelled as
 // the "PurgeAndSuspend" experiment.
 //
-// TODO(adityakeerthi): Disabled by default on Mac and Android for historical
+// TODO(https://crbug.com/926186): Disabled by default on Android for historical
 // reasons. Consider enabling by default if experiment results are positive.
-// https://crbug.com/926186
 const base::Feature kPurgeRendererMemoryWhenBackgrounded {
   "PurgeRendererMemoryWhenBackgrounded",
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if defined(OS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
