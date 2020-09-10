@@ -71,9 +71,8 @@ class CrosHealthdMetricsProviderTest : public testing::Test {
   ~CrosHealthdMetricsProviderTest() override {
     chromeos::CrosHealthdClient::Shutdown();
 
-    // Wait for cros_healthd::ServiceConnection to observe the destruction of
-    // the client.
-    base::RunLoop().RunUntilIdle();
+    // Wait for ServiceConnection to observe the destruction of the client.
+    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   }
 
  protected:
