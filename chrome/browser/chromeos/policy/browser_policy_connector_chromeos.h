@@ -226,6 +226,10 @@ class BrowserPolicyConnectorChromeOS
 
   chromeos::AffiliationIDSet GetDeviceAffiliationIDs() const;
 
+  // BrowserPolicyConnector:
+  // Always returns true as command line flag can be set under dev mode only.
+  bool IsCommandLineSwitchSupported() const override;
+
  protected:
   // ChromeBrowserPolicyConnector:
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

@@ -58,8 +58,7 @@ void BrowserPolicyConnectorIOS::Init(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
-          BrowserPolicyConnector::GetDeviceManagementUrl(),
-          BrowserPolicyConnector::GetRealtimeReportingUrl()));
+          GetDeviceManagementUrl(), GetRealtimeReportingUrl()));
   std::unique_ptr<policy::DeviceManagementService> device_management_service(
       new policy::DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(
@@ -84,6 +83,10 @@ void BrowserPolicyConnectorIOS::Shutdown() {
   chrome_browser_cloud_management_controller_.reset();
 
   BrowserPolicyConnector::Shutdown();
+}
+
+bool BrowserPolicyConnectorIOS::IsCommandLineSwitchSupported() const {
+  return true;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

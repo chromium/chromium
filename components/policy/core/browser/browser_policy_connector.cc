@@ -135,6 +135,24 @@ bool BrowserPolicyConnector::ProviderHasPolicies(
   return false;
 }
 
+std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDeviceManagementUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kDeviceManagementUrl);
+  else
+    return kDefaultDeviceManagementServerUrl;
+}
+
+std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kRealtimeReportingUrl) &&
+      IsCommandLineSwitchSupported())
+    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
+  else
+    return kDefaultRealtimeReportingServerUrl;
+}
+
 // static
 bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
   TRACE_EVENT0("browser", "BrowserPolicyConnector::IsNonEnterpriseUser");
@@ -163,24 +181,6 @@ bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
 void BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
     const char* domain) {
   non_managed_domain_for_testing = domain;
-}
-
-// static
-std::string BrowserPolicyConnector::GetDeviceManagementUrl() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDeviceManagementUrl))
-    return command_line->GetSwitchValueASCII(switches::kDeviceManagementUrl);
-  else
-    return kDefaultDeviceManagementServerUrl;
-}
-
-// static
-std::string BrowserPolicyConnector::GetRealtimeReportingUrl() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kRealtimeReportingUrl))
-    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
-  else
-    return kDefaultRealtimeReportingServerUrl;
 }
 
 // static

@@ -462,6 +462,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
                                     test_server_.GetServiceURL().spec());
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
 
     histogram_tester_.ExpectTotalCount(kEnrollmentResultMetrics, 0);
   }
@@ -602,6 +603,7 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
                                     test_server_->GetServiceURL().spec());
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -762,6 +764,7 @@ class MachineLevelUserCloudPolicyRobotAuthTest
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
                                     test_server_->GetServiceURL().spec());
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)

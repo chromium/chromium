@@ -122,6 +122,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     std::string url = test_server_.GetServiceURL().spec();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl, url);
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
 
     extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
   }

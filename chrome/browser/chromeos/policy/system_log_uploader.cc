@@ -28,6 +28,7 @@
 #include "chrome/browser/chromeos/policy/upload_job_impl.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -267,7 +268,8 @@ base::TimeDelta GetUploadFrequency() {
 }
 
 std::string GetUploadUrl() {
-  return BrowserPolicyConnector::GetDeviceManagementUrl() +
+  return g_browser_process->browser_policy_connector()
+             ->GetDeviceManagementUrl() +
          kSystemLogUploadUrlTail;
 }
 

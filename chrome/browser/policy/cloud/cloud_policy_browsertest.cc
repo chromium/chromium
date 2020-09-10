@@ -197,6 +197,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
 
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl, url);
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
   }
 
   void CreatedBrowserMainParts(

@@ -32,6 +32,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -61,6 +62,9 @@
 #endif
 
 namespace policy {
+namespace {
+bool command_line_enabled_for_testing = false;
+}  // namespace
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
     : BrowserPolicyConnector(base::Bind(&BuildHandlerList)) {
@@ -81,9 +85,8 @@ void ChromeBrowserPolicyConnector::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   std::unique_ptr<DeviceManagementService::Configuration> configuration(
-      new DeviceManagementServiceConfiguration(
-          BrowserPolicyConnector::GetDeviceManagementUrl(),
-          BrowserPolicyConnector::GetRealtimeReportingUrl()));
+      new DeviceManagementServiceConfiguration(GetDeviceManagementUrl(),
+                                               GetRealtimeReportingUrl()));
   std::unique_ptr<DeviceManagementService> device_management_service(
       new DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(
@@ -124,6 +127,20 @@ ChromeBrowserPolicyConnector::GetPlatformProvider() {
   ConfigurationPolicyProvider* provider =
       BrowserPolicyConnectorBase::GetPolicyProviderForTesting();
   return provider ? provider : platform_provider_;
+}
+
+bool ChromeBrowserPolicyConnector::IsCommandLineSwitchSupported() const {
+  if (command_line_enabled_for_testing)
+    return true;
+
+  version_info::Channel channel = chrome::GetChannel();
+  return channel != version_info::Channel::STABLE &&
+         channel != version_info::Channel::BETA;
+}
+
+// static
+void ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting() {
+  command_line_enabled_for_testing = true;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

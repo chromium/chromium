@@ -477,6 +477,10 @@ void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerDisconnected() {
   RestartDeviceCloudPolicyInitializer();
 }
 
+bool BrowserPolicyConnectorChromeOS::IsCommandLineSwitchSupported() const {
+  return true;
+}
+
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
 BrowserPolicyConnectorChromeOS::CreatePolicyProviders() {
   auto providers = ChromeBrowserPolicyConnector::CreatePolicyProviders();

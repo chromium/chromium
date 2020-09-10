@@ -58,6 +58,11 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   bool HasMachineLevelPolicies() override;
   void Shutdown() override;
 
+  // BrowserPolicyConnector.
+  // Always returns true because there is no way for normal users to use command
+  // line switch anyway.
+  bool IsCommandLineSwitchSupported() const override;
+
  protected:
   // BrowserPolicyConnectorBase.
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

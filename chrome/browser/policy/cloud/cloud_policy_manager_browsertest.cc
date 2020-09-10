@@ -151,6 +151,7 @@ class CloudPolicyManagerTest : public InProcessBrowserTest {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(switches::kDeviceManagementUrl,
                                     "http://localhost");
+    ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
 
     // Set retry delay to prevent timeouts.
     policy::DeviceManagementService::SetRetryDelayForTesting(0);
