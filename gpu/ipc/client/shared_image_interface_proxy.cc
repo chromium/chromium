@@ -202,7 +202,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   }
 
   base::AutoLock lock(lock_);
-  AddMailbox(params.mailbox, usage);
+  AddMailbox(mailbox, usage);
   return mailbox;
 }
 
