@@ -19,7 +19,6 @@ class TestAmbientModeBrowserProxy extends TestBrowserProxy {
     super([
       'requestTopicSource',
       'requestAlbums',
-      'setSelectedTopicSource',
       'setSelectedAlbums',
     ]);
   }
@@ -34,12 +33,6 @@ class TestAmbientModeBrowserProxy extends TestBrowserProxy {
     this.methodCalled('requestAlbums', [topicSource]);
   }
 
-  /** @override */
-  setSelectedTopicSource(topicSource) {
-    this.methodCalled('setSelectedTopicSource', [topicSource]);
-  }
-
-  /** @override */
   setSelectedAlbums(settings) {
     this.methodCalled('setSelectedAlbums', [settings]);
   }
@@ -70,7 +63,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('hasAlbums', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
       {albumId: 'id1', checked: false, title: 'album1'}
     ];
@@ -92,7 +85,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('toggleAlbumSelectionByClick', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
       {albumId: 'id1', checked: false, title: 'album1'}
     ];
@@ -137,7 +130,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('setSelectedAlbums', async () => {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
       {albumId: 'id1', checked: false, title: 'album1'}
     ];
@@ -176,7 +169,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('notToggleAlbumSelection', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
     ];
     Polymer.dom.flush();
@@ -203,7 +196,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('toggleAlbumSelectionByKeypress', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0'},
     ];
     Polymer.dom.flush();
@@ -237,10 +230,10 @@ suite('AmbientModeHandler', function() {
   });
 
   test('updateAlbumURL', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0', url: ''},
     ];
-    ambientModePhotosPage.topicSource_ = AmbientModeTopicSource.ART_GALLERY;
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
     Polymer.dom.flush();
 
     const albumList = ambientModePhotosPage.$$('album-list');
@@ -262,10 +255,10 @@ suite('AmbientModeHandler', function() {
   });
 
   test('notUpdateAlbumURL', function() {
-    ambientModePhotosPage.albums_ = [
+    ambientModePhotosPage.albums = [
       {albumId: 'id0', checked: true, title: 'album0', url: ''},
     ];
-    ambientModePhotosPage.topicSource_ = AmbientModeTopicSource.ART_GALLERY;
+    ambientModePhotosPage.topicSource = AmbientModeTopicSource.ART_GALLERY;
     Polymer.dom.flush();
 
     const albumList = ambientModePhotosPage.$$('album-list');

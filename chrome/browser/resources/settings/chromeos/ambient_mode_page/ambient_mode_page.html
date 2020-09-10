@@ -67,7 +67,8 @@
     <template is="dom-if" if="[[prefs.settings.ambient_mode.enabled.value]]">
       <div id="topicSourceListDiv" class="layout vertical flex">
         <topic-source-list topic-sources="[[topicSources_]]"
-            selected-item="[[selectedTopicSource_]]"
+            selected-topic-source="[[selectedTopicSource_]]"
+            has-google-photos-albums="[[hasGooglePhotosAlbums_]]"
             disabled="[[!isValidTopicSource_(selectedTopicSource_)]]">
         </topic-source-list>
       </div>

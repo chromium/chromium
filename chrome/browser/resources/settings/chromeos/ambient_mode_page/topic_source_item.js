@@ -23,6 +23,11 @@ Polymer({
       reflectToAttribute: true,
     },
 
+    hasGooglePhotosAlbums: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @type {!AmbientModeTopicSource} */
     item: Object,
 
@@ -69,7 +74,12 @@ Polymer({
    */
   getItemDescription_() {
     if (this.item === AmbientModeTopicSource.GOOGLE_PHOTOS) {
-      return this.i18n('ambientModeTopicSourceGooglePhotosDescription');
+      if (this.hasGooglePhotosAlbums) {
+        return this.i18n('ambientModeTopicSourceGooglePhotosDescription');
+      } else {
+        return this.i18n(
+            'ambientModeTopicSourceGooglePhotosDescriptionNoAlbum');
+      }
     } else if (this.item === AmbientModeTopicSource.ART_GALLERY) {
       return this.i18n('ambientModeTopicSourceArtGalleryDescription');
     } else {
@@ -107,16 +117,8 @@ Polymer({
    */
   onKeydown_(event) {
     // The only key event handled by this element is pressing Enter.
-    // (1) Pressing the subpage arrow leads to the subpage.
-    // (2) Pressing anywhere on an already-selected item leads to the subpage.
+    // Pressing anywhere leads to the subpage.
     if (event.key !== 'Enter') {
-      return;
-    }
-
-    // If the item is not checked, it will be handled by
-    // onSelectedItemChanged_() in topic_source_list.js.
-    if (!this.checked &&
-        this.$$('#subpage-button') !== this.shadowRoot.activeElement) {
       return;
     }
 
@@ -130,11 +132,9 @@ Polymer({
    * @private
    */
   onItemClick_(event) {
-    // Clicking anywhere on an already-selected item leads to the subpage.
-    if (this.checked) {
-      this.fireShowAlbums_();
-      event.stopPropagation();
-    }
+    // Clicking anywhere leads to the subpage.
+    this.fireShowAlbums_();
+    event.stopPropagation();
   },
 
   /**

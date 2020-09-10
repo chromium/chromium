@@ -80,7 +80,7 @@ os_settings_auto_imports = settings_auto_imports +
                            cr_components_chromeos_auto_imports +
                            cr_elements_chromeos_auto_imports + [
                              "chrome/browser/resources/settings/chromeos/ambient_mode_page/ambient_mode_browser_proxy.html|AmbientModeBrowserProxy,AmbientModeBrowserProxyImpl",
-                             "chrome/browser/resources/settings/chromeos/ambient_mode_page/constants.html|AmbientModeTopicSource,AmbientModeTemperatureUnit,AmbientModeAlbum,AmbientModeSettings",
+                             "chrome/browser/resources/settings/chromeos/ambient_mode_page/constants.html|AmbientModeTopicSource,AmbientModeTemperatureUnit,AmbientModeAlbum,AmbientModeSettings,TopicSourceItem",
                              "chrome/browser/resources/settings/chromeos/deep_linking_behavior.html|DeepLinkingBehavior",
                              "chrome/browser/resources/settings/chromeos/metrics_recorder.html|recordSettingChange",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_browser_proxy.html|MultiDeviceBrowserProxy,MultiDeviceBrowserProxyImpl",

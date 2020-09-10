@@ -13,7 +13,6 @@ Polymer({
       [I18nBehavior, settings.RouteObserverBehavior, WebUIListenerBehavior],
 
   properties: {
-    /** @private */
     photoPreviewEnabled: {
       type: Boolean,
       value() {
@@ -22,16 +21,14 @@ Polymer({
       readOnly: true,
     },
 
-    /** @private {!AmbientModeTopicSource} */
-    topicSource_: {
+    /** @type {!AmbientModeTopicSource} */
+    topicSource: {
       type: Number,
-      value() {
-        return AmbientModeTopicSource.UNKNOWN;
-      },
+      value: AmbientModeTopicSource.UNKNOWN,
     },
 
-    /** @private {Array<!AmbientModeAlbum>} */
-    albums_: {
+    /** @type {?Array<!AmbientModeAlbum>} */
+    albums: {
       type: Array,
       notify: true,
       // Set to null to differentiate from an empty album.
@@ -77,11 +74,11 @@ Polymer({
       return;
     }
 
-    this.topicSource_ = /** @type {!AmbientModeTopicSource} */ (topicSourceInt);
-    if (this.topicSource_ === AmbientModeTopicSource.GOOGLE_PHOTOS) {
+    this.topicSource = /** @type {!AmbientModeTopicSource} */ (topicSourceInt);
+    if (this.topicSource === AmbientModeTopicSource.GOOGLE_PHOTOS) {
       this.parentNode.pageTitle =
           this.i18n('ambientModeTopicSourceGooglePhotos');
-    } else if (this.topicSource_ === AmbientModeTopicSource.ART_GALLERY) {
+    } else if (this.topicSource === AmbientModeTopicSource.ART_GALLERY) {
       this.parentNode.pageTitle = this.i18n('ambientModeTopicSourceArtGallery');
     } else {
       assertNotReached();
@@ -90,8 +87,8 @@ Polymer({
 
     // TODO(b/162793904): Have a better plan to cache the UI data.
     // Reset to null to distinguish empty albums fetched from server.
-    this.albums_ = null;
-    this.browserProxy_.requestAlbums(this.topicSource_);
+    this.albums = null;
+    this.browserProxy_.requestAlbums(this.topicSource);
   },
 
   /**
@@ -101,10 +98,10 @@ Polymer({
   onAlbumsChanged_(settings) {
     // This page has been reused by other topic source since the last time
     // requesting the albums. Do not update on this stale event.
-    if (settings.topicSource !== this.topicSource_) {
+    if (settings.topicSource !== this.topicSource) {
       return;
     }
-    this.albums_ = settings.albums;
+    this.albums = settings.albums;
   },
 
   /**
@@ -112,13 +109,13 @@ Polymer({
    * @private
    */
   onAlbumPreviewChanged_(album) {
-    if (album.topicSource !== this.topicSource_) {
+    if (album.topicSource !== this.topicSource) {
       return;
     }
 
-    for (let i = 0; i < this.albums_.length; ++i) {
-      if (this.albums_[i].albumId === album.albumId) {
-        this.set('albums_.' + i + '.url', album.url);
+    for (let i = 0; i < this.albums.length; ++i) {
+      if (this.albums[i].albumId === album.albumId) {
+        this.set('albums.' + i + '.url', album.url);
       }
     }
   },
@@ -142,13 +139,14 @@ Polymer({
    */
   onSelectedAlbumsChanged_(event) {
     const albums = [];
-    this.albums_.forEach((/** @param {AmbientModeAlbum} album */ (album) => {
+    this.albums.forEach(/** @param {AmbientModeAlbum} album */ (album) => {
       if (album.checked) {
         albums.push({albumId: album.albumId});
       }
-    }));
+    });
+
     this.browserProxy_.setSelectedAlbums(
-        {topicSource: this.topicSource_, albums: albums});
+        {topicSource: this.topicSource, albums: albums});
   },
 
   /** @private */
@@ -161,7 +159,14 @@ Polymer({
       }
     });
     this.browserProxy_.setSelectedAlbums(
-        {topicSource: this.topicSource_, albums: albums});
-  }
+        {topicSource: this.topicSource, albums: albums});
+  },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  hasNoAlbums_() {
+    return !!this.albums && !this.albums.length;
+  },
 });

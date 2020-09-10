@@ -193,8 +193,6 @@ void PersonalizationSection::AddLoadTimeData(
        IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW},
       {"ambientModeTopicSourceSubpage",
        IDS_OS_SETTINGS_AMBIENT_MODE_TOPIC_SOURCE_SUBPAGE},
-      {"ambientModeAlbumsSubpageGooglePhotosNoAlbum",
-       IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM},
       {"ambientModeWeatherTitle", IDS_OS_SETTINGS_AMBIENT_MODE_WEATHER_TITLE},
       {"ambientModeTemperatureUnitFahrenheit",
        IDS_OS_SETTINGS_AMBIENT_MODE_TEMPERATURE_UNIT_FAHRENHEIT},
@@ -239,6 +237,11 @@ void PersonalizationSection::AddLoadTimeData(
       "ambientModeAlbumsSubpageGooglePhotosTitle",
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_TITLE,
+          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+  html_source->AddString(
+      "ambientModeAlbumsSubpageGooglePhotosNoAlbum",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
           base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
 }
 

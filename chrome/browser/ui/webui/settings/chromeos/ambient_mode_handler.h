@@ -54,9 +54,6 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   // WebUI call to sync temperature unit with server.
   void HandleSetSelectedTemperatureUnit(const base::ListValue* args);
 
-  // WebUI call to sync topic source with server.
-  void HandleSetSelectedTopicSource(const base::ListValue* args);
-
   // WebUI call to sync albums with server.
   void HandleSetSelectedAlbums(const base::ListValue* args);
 
@@ -99,6 +96,10 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   // Prune the |selected_album_id| which does not exist any more.
   // Populate albums with selected info which will be shown on Settings UI.
   void SyncSettingsAndAlbums();
+
+  // Update topic source if needed.
+  void UpdateTopicSource(ash::AmbientModeTopicSource topic_source);
+  void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
   void DownloadAlbumPreviewImage(ash::AmbientModeTopicSource topic_source);
 

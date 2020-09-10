@@ -51,6 +51,9 @@ Polymer({
       value: AmbientModeTopicSource.UNKNOWN,
     },
 
+    /** @private */
+    hasGooglePhotosAlbums_: Boolean,
+
     /** @private {!AmbientModeTemperatureUnit} */
     selectedTemperatureUnit_: {
       type: AmbientModeTemperatureUnit,
@@ -60,7 +63,6 @@ Polymer({
   },
 
   listeners: {
-    'selected-topic-source-changed': 'onSelectedTopicSourceChanged_',
     'show-albums': 'onShowAlbums_',
   },
 
@@ -76,8 +78,9 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'topic-source-changed',
-        (/** @type {!AmbientModeTopicSource} */ topicSource) => {
-          this.selectedTopicSource_ = topicSource;
+        (/** @type {!TopicSourceItem} */ topicSourceItem) => {
+          this.selectedTopicSource_ = topicSourceItem.topicSource;
+          this.hasGooglePhotosAlbums_ = topicSourceItem.hasGooglePhotosAlbums;
         },
     );
     this.addWebUIListener(
@@ -139,15 +142,6 @@ Polymer({
         newValue !== oldValue) {
       this.browserProxy_.setSelectedTemperatureUnit(newValue);
     }
-  },
-
-  /**
-   * @param {!CustomEvent<{item: !AmbientModeTopicSource}>} event
-   * @private
-   */
-  onSelectedTopicSourceChanged_(event) {
-    this.browserProxy_.setSelectedTopicSource(
-        /** @type {!AmbientModeTopicSource} */ (event.detail));
   },
 
   /**
