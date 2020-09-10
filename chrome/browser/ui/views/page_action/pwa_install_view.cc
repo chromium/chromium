@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 
 #include "base/bind_helpers.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager.h"
@@ -15,6 +17,23 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+const base::Feature kInstallIconExperiment{"InstallIconExperiment",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+enum class ExperimentIcon { kDownloadToDevice, kDownload };
+
+constexpr base::FeatureParam<ExperimentIcon>::Option kIconParamOptions[] = {
+    {ExperimentIcon::kDownloadToDevice, "downloadToDevice"},
+    {ExperimentIcon::kDownload, "download"}};
+
+constexpr base::FeatureParam<ExperimentIcon> kInstallIconParam{
+    &kInstallIconExperiment, "shape", ExperimentIcon::kDownloadToDevice,
+    &kIconParamOptions};
+
+}  // namespace
 
 PwaInstallView::PwaInstallView(
     CommandUpdater* command_updater,
@@ -69,6 +88,15 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
+  if (base::FeatureList::IsEnabled(kInstallIconExperiment)) {
+    ExperimentIcon icon = kInstallIconParam.Get();
+    switch (icon) {
+      case ExperimentIcon::kDownloadToDevice:
+        return omnibox::kInstallDesktopIcon;
+      case ExperimentIcon::kDownload:
+        return omnibox::kInstallDownloadIcon;
+    }
+  }
   return omnibox::kPlusIcon;
 }
 

@@ -50,6 +50,8 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "http.icon",
     "https_valid.icon",
     "https_valid_in_chip.icon",
+    "install_desktop.icon",
+    "install_download.icon",
     "keyword_search.icon",
     "not_secure_warning.icon",
     "offline_pin.icon",
