@@ -372,11 +372,11 @@ _mdc_public_headers = [
   "src/components/Tabs/src/private/MDCItemBarCell+Private.h",
   "src/components/Tabs/src/private/MDCItemBarCell.h",
   "src/components/Tabs/src/private/MDCItemBarDelegate.h",
-  "src/components/Tabs/src/private/MDCItemBarStringConstants.h",
   "src/components/Tabs/src/private/MDCItemBarStyle.h",
   "src/components/Tabs/src/private/MDCTabBarIndicatorView.h",
   "src/components/Tabs/src/private/MDCTabBarPrivateIndicatorContext.h",
   "src/components/TextControls/src/BaseTextAreas/MDCBaseTextArea.h",
+  "src/components/TextControls/src/BaseTextAreas/MDCBaseTextAreaDelegate.h",
   "src/components/TextControls/src/BaseTextAreas/MaterialTextControls+BaseTextAreas.h",
   "src/components/TextControls/src/BaseTextAreas/private/MDCBaseTextAreaLayout.h",
   "src/components/TextControls/src/BaseTextAreas/private/MDCBaseTextAreaTextView.h",
@@ -1247,7 +1247,6 @@ _mdc_sources = [
   "src/components/Tabs/src/private/MDCItemBarCell.h",
   "src/components/Tabs/src/private/MDCItemBarCell.m",
   "src/components/Tabs/src/private/MDCItemBarDelegate.h",
-  "src/components/Tabs/src/private/MDCItemBarStringConstants.h",
   "src/components/Tabs/src/private/MDCItemBarStyle.h",
   "src/components/Tabs/src/private/MDCItemBarStyle.m",
   "src/components/Tabs/src/private/MDCTabBarIndicatorView.h",
@@ -1256,6 +1255,7 @@ _mdc_sources = [
   "src/components/Tabs/src/private/MDCTabBarPrivateIndicatorContext.m",
   "src/components/TextControls/src/BaseTextAreas/MDCBaseTextArea.h",
   "src/components/TextControls/src/BaseTextAreas/MDCBaseTextArea.m",
+  "src/components/TextControls/src/BaseTextAreas/MDCBaseTextAreaDelegate.h",
   "src/components/TextControls/src/BaseTextAreas/MaterialTextControls+BaseTextAreas.h",
   "src/components/TextControls/src/BaseTextAreas/private/MDCBaseTextAreaLayout.h",
   "src/components/TextControls/src/BaseTextAreas/private/MDCBaseTextAreaLayout.m",
@@ -1634,7 +1634,6 @@ _components = [
   "Dialogs",
   "PageControl",
   "Snackbar",
-  "Tabs",
 ]
 
 foreach(_component, _components) {
