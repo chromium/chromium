@@ -367,12 +367,12 @@ class PpdProviderImpl : public PpdProvider {
   };
 
   PpdProviderImpl(const std::string& browser_locale,
-                  network::mojom::URLLoaderFactory* loader_factory,
+                  LoaderFactoryGetter loader_factory_getter,
                   scoped_refptr<PpdCache> ppd_cache,
                   const base::Version& current_version,
                   const PpdProvider::Options& options)
       : browser_locale_(browser_locale),
-        loader_factory_(loader_factory),
+        loader_factory_getter_(loader_factory_getter),
         ppd_cache_(ppd_cache),
         disk_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
@@ -786,7 +786,7 @@ class PpdProviderImpl : public PpdProvider {
 
       // TODO(luum): consider using unbounded size
       fetcher_->DownloadToString(
-          loader_factory_,
+          loader_factory_getter_.Run(),
           base::BindOnce(&PpdProviderImpl::OnURLFetchComplete, this),
           network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
@@ -1734,7 +1734,7 @@ class PpdProviderImpl : public PpdProvider {
   // BrowserContext::GetApplicationLocale();
   const std::string browser_locale_;
 
-  network::mojom::URLLoaderFactory* loader_factory_;
+  LoaderFactoryGetter loader_factory_getter_;
 
   // For file:// fetches, a staging buffer and result flag for loading the file.
   std::string file_fetch_contents_;
@@ -1780,11 +1780,12 @@ PrinterSearchData::~PrinterSearchData() = default;
 // static
 scoped_refptr<PpdProvider> PpdProvider::Create(
     const std::string& browser_locale,
-    network::mojom::URLLoaderFactory* loader_factory,
+    LoaderFactoryGetter loader_factory_getter,
     scoped_refptr<PpdCache> ppd_cache,
     const base::Version& current_version,
     const PpdProvider::Options& options) {
-  return scoped_refptr<PpdProvider>(new PpdProviderImpl(
-      browser_locale, loader_factory, ppd_cache, current_version, options));
+  return scoped_refptr<PpdProvider>(
+      new PpdProviderImpl(browser_locale, loader_factory_getter, ppd_cache,
+                          current_version, options));
 }
 }  // namespace chromeos

@@ -176,11 +176,16 @@ class CHROMEOS_EXPORT PpdProvider : public base::RefCounted<PpdProvider> {
                               const std::string& manufacturer,
                               const std::string& model)>;
 
+  // Called to get the current URLLoaderFactory on demand. Needs to be
+  // Repeating since it gets called once per fetch.
+  using LoaderFactoryGetter =
+      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
+
   // Create and return a new PpdProvider with the given cache and options.
   // A references to |url_context_getter| is taken.
   static scoped_refptr<PpdProvider> Create(
       const std::string& browser_locale,
-      network::mojom::URLLoaderFactory* loader_factory,
+      LoaderFactoryGetter loader_factory_getter,
       scoped_refptr<PpdCache> cache,
       const base::Version& current_version,
       const Options& options = Options());
