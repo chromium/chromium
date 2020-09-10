@@ -37,8 +37,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.WindowDelegate;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -358,7 +358,7 @@ public class LocationBarLayout extends FrameLayout
         updateMicButtonVisibility();
 
         mAssistantVoiceSearchService =
-                new AssistantVoiceSearchService(getContext(), ExternalAuthUtils.getInstance(),
+                new AssistantVoiceSearchService(getContext(), AppHooks.get().getExternalAuthUtils(),
                         TemplateUrlServiceFactory.get(), GSAState.getInstance(getContext()), this);
         mVoiceRecognitionHandler.setAssistantVoiceSearchService(mAssistantVoiceSearchService);
         onAssistantVoiceSearchServiceChanged();

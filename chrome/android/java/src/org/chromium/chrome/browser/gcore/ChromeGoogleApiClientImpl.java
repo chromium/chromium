@@ -11,6 +11,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
 
     private final Context mApplicationContext;
     private final GoogleApiClient mClient;
+    private final ExternalAuthUtils mExternalAuthUtils;
 
     /**
      * @param context its application context will be exposed through
@@ -35,7 +37,8 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
             boolean requireFirstPartyBuild) {
         mApplicationContext = context.getApplicationContext();
         mClient = client;
-        if (requireFirstPartyBuild && !ExternalAuthUtils.getInstance().isChromeGoogleSigned()) {
+        mExternalAuthUtils = AppHooks.get().getExternalAuthUtils();
+        if (requireFirstPartyBuild && !mExternalAuthUtils.isChromeGoogleSigned()) {
             throw new IllegalStateException("GoogleApiClient requires first-party build");
         }
     }
@@ -49,7 +52,7 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
     public boolean isGooglePlayServicesAvailable() {
         TraceEvent.begin("ChromeGoogleApiClientImpl:isGooglePlayServicesAvailable");
         try {
-            return ExternalAuthUtils.canUseGooglePlayServices();
+            return mExternalAuthUtils.canUseGooglePlayServices();
         } finally {
             TraceEvent.end("ChromeGoogleApiClientImpl:isGooglePlayServicesAvailable");
         }

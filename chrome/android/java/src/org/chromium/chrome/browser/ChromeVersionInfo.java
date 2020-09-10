@@ -99,9 +99,10 @@ public class ChromeVersionInfo {
         final long installedGmsVersion = getPlayServicesApkVersionNumber(context);
 
         final String accessType;
-        if (ExternalAuthUtils.canUseFirstPartyGooglePlayServices()) {
+        ExternalAuthUtils externalAuthUtils = AppHooks.get().getExternalAuthUtils();
+        if (externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
             accessType = "1p";
-        } else if (ExternalAuthUtils.canUseGooglePlayServices()) {
+        } else if (externalAuthUtils.canUseGooglePlayServices()) {
             accessType = "3p";
         } else {
             accessType = "none";

@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsD
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -65,7 +64,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                 new TabContextMenuItemDelegate(
                         tab, mActivity.getTabModelSelector(), mEphemeralTabCoordinatorSupplier),
                 mShareDelegateSupplier, ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
-                ExternalAuthUtils.getInstance());
+                AppHooks.get().getExternalAuthUtils());
     }
 
     @Override

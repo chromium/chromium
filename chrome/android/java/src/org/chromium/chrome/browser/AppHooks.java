@@ -139,14 +139,12 @@ public abstract class AppHooks {
     /**
      * @return An instance of ExternalAuthUtils to be installed as a singleton.
      */
-    public ExternalAuthUtils createExternalAuthUtils() {
+    protected ExternalAuthUtils createExternalAuthUtils() {
         return new ExternalAuthUtils();
     }
 
     /**
      * @return The singleton instance of ExternalAuthUtils.
-     *
-     * TODO(https://crbug.com/1104817): Make createExternalAuthUtils protected.
      */
     public ExternalAuthUtils getExternalAuthUtils() {
         if (mExternalAuthUtils == null) {

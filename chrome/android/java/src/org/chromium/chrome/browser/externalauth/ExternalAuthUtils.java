@@ -23,7 +23,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -37,15 +36,6 @@ public class ExternalAuthUtils {
     public static final int FLAG_SHOULD_BE_GOOGLE_SIGNED = 1 << 0;
     public static final int FLAG_SHOULD_BE_SYSTEM = 1 << 1;
     private static final String TAG = "ExternalAuthUtils";
-
-    private static final ExternalAuthUtils sInstance = AppHooks.get().createExternalAuthUtils();
-
-    /**
-     * Returns the singleton instance of ExternalAuthUtils, creating it if needed.
-     */
-    public static ExternalAuthUtils getInstance() {
-        return sInstance;
-    }
 
     /**
      * Gets the calling package names for the current transaction.
@@ -212,8 +202,8 @@ public class ExternalAuthUtils {
      *
      * @return true if and only if Google Play Services can be used
      */
-    public static boolean canUseGooglePlayServices() {
-        return sInstance.canUseGooglePlayServices(new UserRecoverableErrorHandler.Silent());
+    public boolean canUseGooglePlayServices() {
+        return canUseGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
     /**
@@ -247,9 +237,8 @@ public class ExternalAuthUtils {
      *
      * @return true if and only if first-party Google Play Services can be used
      */
-    public static boolean canUseFirstPartyGooglePlayServices() {
-        return sInstance.canUseFirstPartyGooglePlayServices(
-                new UserRecoverableErrorHandler.Silent());
+    public boolean canUseFirstPartyGooglePlayServices() {
+        return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
     /**

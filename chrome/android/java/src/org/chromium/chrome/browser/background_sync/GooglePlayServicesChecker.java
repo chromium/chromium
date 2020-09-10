@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.chrome.browser.AppHooks;
 
 /**
  * Used to check whether Google Play Services version on the device is as
@@ -29,7 +29,7 @@ final class GooglePlayServicesChecker {
     @VisibleForTesting
     protected static boolean shouldDisableBackgroundSync() {
         boolean isAvailable = true;
-        if (!ExternalAuthUtils.canUseGooglePlayServices()) {
+        if (!AppHooks.get().getExternalAuthUtils().canUseGooglePlayServices()) {
             Log.i(TAG, "Disabling Background Sync because Play Services is not up to date.");
             isAvailable = false;
         }

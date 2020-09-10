@@ -10,6 +10,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.AppHooks;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,9 +59,10 @@ public class VerifiedHandler extends Handler {
      *         set during construction.
      */
     public boolean checkCallerIsValid() {
+        ExternalAuthUtils externalAuthUtils = AppHooks.get().getExternalAuthUtils();
         return TextUtils.isEmpty(mCallerPackageToMatch)
-                ? ExternalAuthUtils.getInstance().isCallerValid(mContext, mAuthRequirements)
-                : ExternalAuthUtils.getInstance().isCallerValidForPackage(
-                          mContext, mAuthRequirements, mCallerPackageToMatch);
+                ? externalAuthUtils.isCallerValid(mContext, mAuthRequirements)
+                : externalAuthUtils.isCallerValidForPackage(
+                        mContext, mAuthRequirements, mCallerPackageToMatch);
     }
 }

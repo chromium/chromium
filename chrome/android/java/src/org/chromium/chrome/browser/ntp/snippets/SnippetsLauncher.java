@@ -16,8 +16,8 @@ import com.google.android.gms.gcm.Task;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeBackgroundService;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -83,7 +83,7 @@ public class SnippetsLauncher {
 
     private void checkGCM() {
         // Check to see if Play Services is up to date, and disable GCM if not.
-        if (!ExternalAuthUtils.canUseGooglePlayServices()) {
+        if (!AppHooks.get().getExternalAuthUtils().canUseGooglePlayServices()) {
             mGCMEnabled = false;
             Log.i(TAG, "Disabling SnippetsLauncher because Play Services is not up to date.");
         }

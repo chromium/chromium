@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
@@ -80,7 +80,7 @@ class SearchBoxMediator
     @Override
     public void onFinishNativeInitialization() {
         mAssistantVoiceSearchService =
-                new AssistantVoiceSearchService(mContext, ExternalAuthUtils.getInstance(),
+                new AssistantVoiceSearchService(mContext, AppHooks.get().getExternalAuthUtils(),
                         TemplateUrlServiceFactory.get(), GSAState.getInstance(mContext), this);
         onAssistantVoiceSearchServiceChanged();
     }

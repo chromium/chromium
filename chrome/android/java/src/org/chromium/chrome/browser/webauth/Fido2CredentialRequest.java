@@ -32,8 +32,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.externalauth.UserRecoverableErrorHandler;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -254,7 +254,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return true;
         }
 
-        if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices(
+        if (!AppHooks.get().getExternalAuthUtils().canUseGooglePlayServices(
                     new UserRecoverableErrorHandler.Silent())) {
             return false;
         }

@@ -21,6 +21,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.signin.AccountTrackerService;
@@ -247,7 +248,7 @@ public class SigninManager
         assert identityManager != null;
         assert identityMutator != null;
         return new SigninManager(nativeSigninManagerAndroid, accountTrackerService, identityManager,
-                identityMutator, AndroidSyncSettings.get(), ExternalAuthUtils.getInstance());
+                identityMutator, AndroidSyncSettings.get(), AppHooks.get().getExternalAuthUtils());
     }
 
     @VisibleForTesting
