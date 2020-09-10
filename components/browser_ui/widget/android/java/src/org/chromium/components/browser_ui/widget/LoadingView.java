@@ -31,6 +31,12 @@ public class LoadingView extends ProgressBar {
      */
     public interface Observer {
         /**
+         * Notify the listener a call to {@link #showLoadingUI()} is complete and loading view
+         * is VISIBLE.
+         */
+        void onShowLoadingUIComplete();
+
+        /**
          * Notify the listener a call to {@link #hideLoadingUI()} is complete and loading view is
          * GONE.
          */
@@ -40,7 +46,7 @@ public class LoadingView extends ProgressBar {
     private long mStartTime = -1;
     private boolean mDisableAnimationForTest;
 
-    private final List<Observer> mListeners = new ArrayList<>();
+    private final List<Observer> mObservers = new ArrayList<>();
 
     private final Runnable mDelayedShow = new Runnable() {
         @Override
@@ -49,6 +55,10 @@ public class LoadingView extends ProgressBar {
             mStartTime = SystemClock.elapsedRealtime();
             setVisibility(View.VISIBLE);
             setAlpha(1.0f);
+
+            for (Observer observer : mObservers) {
+                observer.onShowLoadingUIComplete();
+            }
         }
     };
 
@@ -132,7 +142,7 @@ public class LoadingView extends ProgressBar {
     public void destroy() {
         removeCallbacks(mDelayedShow);
         removeCallbacks(mDelayedHide);
-        mListeners.clear();
+        mObservers.clear();
     }
 
     /**
@@ -142,12 +152,12 @@ public class LoadingView extends ProgressBar {
      *         completely hidden with {@link #hideLoadingUI()}.
      */
     public void addObserver(Observer listener) {
-        mListeners.add(listener);
+        mObservers.add(listener);
     }
 
     private void onHideLoadingFinished() {
         setVisibility(GONE);
-        for (Observer observer : mListeners) {
+        for (Observer observer : mObservers) {
             observer.onHideLoadingUIComplete();
         }
     }

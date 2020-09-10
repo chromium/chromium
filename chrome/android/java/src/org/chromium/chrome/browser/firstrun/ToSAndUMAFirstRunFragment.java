@@ -201,6 +201,10 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         }
     }
 
+    protected View getToSAndPrivacyText() {
+        return mTosAndPrivacy;
+    }
+
     /**
      * @return Whether the check box for Uma metrics can be shown. It should be used in conjunction
      *         with whether other non-spinner elements can generally be shown.
