@@ -218,8 +218,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
                                      base::i18n::TextDirection main_text_hint,
                                      base::string16* sub_text,
                                      base::i18n::TextDirection sub_text_hint);
-  void SetMouseOverURL(const blink::WebURL& url) override;
-  void SetKeyboardFocusURL(const blink::WebURL& url) override;
   bool AcceptsLoadDrops() override;
   void FocusNext() override;
   void FocusPrevious() override;
@@ -381,7 +379,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void OnSetRendererPrefs(
       const blink::mojom::RendererPreferences& renderer_prefs);
   void OnSuppressDialogsUntilSwapOut();
-  void OnUpdateTargetURLAck();
   void OnUpdateWebPreferences(const WebPreferences& prefs);
 
   // Page message handlers -----------------------------------------------------
@@ -408,10 +405,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // In OOPIF-enabled modes, this tells each RenderFrame with a pending state
   // update to inform the browser process.
   void SendFrameStateUpdates();
-
-  // Update the target url and tell the browser that the target URL has changed.
-  // If |url| is empty, show |fallback_url|.
-  void UpdateTargetURL(const GURL& url, const GURL& fallback_url);
 
   // RenderFrameImpl accessible state ------------------------------------------
   // The following section is the set of methods that RenderFrameImpl needs
@@ -495,14 +488,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // processes.  We won't know about them until the next navigation in this
   // process.
   int history_list_length_ = 0;
-
-  // UI state ------------------------------------------------------------------
-
-  // The URL the user's mouse is hovering over.
-  GURL mouse_over_url_;
-
-  // The URL that has keyboard focus.
-  GURL focus_url_;
 
   // View ----------------------------------------------------------------------
 

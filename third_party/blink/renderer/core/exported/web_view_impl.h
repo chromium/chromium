@@ -189,7 +189,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
   void Focus() override;
-  void UpdateTargetURL(const WebURL& url, const WebURL& fallback_url) override;
+  void SetMouseOverURL(const WebURL& url) override;
+  void SetKeyboardFocusURL(const WebURL& url) override;
   void SetDeviceScaleFactor(float) override;
   void SetZoomFactorForDeviceScaleFactor(float) override;
   float ZoomFactorForDeviceScaleFactor() override {
@@ -498,8 +499,14 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   bool SelectionBounds(WebRect& anchor, WebRect& focus) const;
   WebURL GetURLForDebugTrace();
 
-  void UpdateTargetURLInBrowser(const KURL& target_url);
-  void TargetURLUpdated();
+  // Update the target url locally and tell the browser that the target URL has
+  // changed. If |url| is empty, show |fallback_url|.
+  void UpdateTargetURL(const WebURL& url, const WebURL& fallback_url);
+
+  // Helper functions to send the updated target URL to the right render frame
+  // in the browser process, and to handle its associated reply message.
+  void SendUpdatedTargetURLToBrowser(const KURL& target_url);
+  void TargetURLUpdatedInBrowser();
 
   void SetPageScaleFactorAndLocation(float scale,
                                      bool is_pinch_gesture_active,
@@ -644,6 +651,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // The next target URL we want to send to the browser.
   KURL pending_target_url_;
+
+  // The URL the user's mouse is hovering over.
+  KURL mouse_over_url_;
+
+  // The URL that has keyboard focus.
+  KURL focus_url_;
 
   // Keeps track of the current zoom level. 0 means no zoom, positive numbers
   // mean zoom in, negative numbers mean zoom out.

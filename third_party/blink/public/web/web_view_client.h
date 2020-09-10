@@ -44,7 +44,6 @@
 namespace blink {
 
 class WebPagePopup;
-class WebURL;
 class WebURLRequest;
 class WebView;
 struct WebRect;
@@ -102,12 +101,6 @@ class WebViewClient {
   virtual void OnPageFrozenChanged(bool frozen) {}
 
   // UI ------------------------------------------------------------------
-
-  // Called when hovering over an anchor with the given URL.
-  virtual void SetMouseOverURL(const WebURL&) {}
-
-  // Called when keyboard focus switches to an anchor with the given URL.
-  virtual void SetKeyboardFocusURL(const WebURL&) {}
 
   // Called to determine if drag-n-drop operations may initiate a page
   // navigation.

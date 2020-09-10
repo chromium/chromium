@@ -1432,16 +1432,6 @@ void RenderViewImpl::StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame) {
                               this, &RenderViewImpl::SendFrameStateUpdates);
 }
 
-void RenderViewImpl::SetMouseOverURL(const WebURL& url) {
-  mouse_over_url_ = GURL(url);
-  GetWebView()->UpdateTargetURL(mouse_over_url_, focus_url_);
-}
-
-void RenderViewImpl::SetKeyboardFocusURL(const WebURL& url) {
-  focus_url_ = GURL(url);
-  GetWebView()->UpdateTargetURL(focus_url_, mouse_over_url_);
-}
-
 bool RenderViewImpl::AcceptsLoadDrops() {
   return renderer_preferences_.can_accept_load_drops;
 }

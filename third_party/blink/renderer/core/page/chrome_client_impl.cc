@@ -228,7 +228,7 @@ void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
   if (new_focus_element && new_focus_element->IsLiveLink() &&
       new_focus_element->ShouldHaveFocusAppearance())
     focus_url = new_focus_element->HrefURL();
-  web_view_->Client()->SetKeyboardFocusURL(focus_url);
+  web_view_->SetKeyboardFocusURL(focus_url);
 }
 
 void ChromeClientImpl::StartDragging(LocalFrame* frame,
@@ -568,7 +568,7 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
     }
   }
 
-  web_view_->Client()->SetMouseOverURL(url);
+  web_view_->SetMouseOverURL(url);
 }
 
 void ChromeClientImpl::SetToolTip(LocalFrame& frame,
