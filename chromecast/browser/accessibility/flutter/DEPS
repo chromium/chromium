@@ -1,0 +1,13 @@
+include_rules = [
+  "+chromecast/browser",
+  "+chromecast/common/extensions_api",
+  "+components/exo",
+  "+content/browser",
+  "+content/public/browser",
+  "+extensions/browser",
+  '+third_party/grpc',
+  "+ui/accessibility",
+  "+ui/aura",
+  "+ui/gfx",
+  "+ui/views",
+]

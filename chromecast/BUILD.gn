@@ -94,6 +94,12 @@ cast_test_group("cast_tests") {
     "//ui/base:ui_base_unittests",
   ]
 
+  if (enable_chromecast_extensions) {
+    tests += [
+      "//chromecast/browser/accessibility/flutter:cast_accessibility_unittests",
+    ]
+  }
+
   if (!is_cast_audio_only) {
     tests += [ "//gpu:gpu_unittests" ]
 
