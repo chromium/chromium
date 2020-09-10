@@ -24,6 +24,18 @@ struct CommandItem {
     // On selection, the user is prompted for further information.
     kComposite,
   };
+  // What *the text* of this command represents. For example, in the composite
+  // command "Move Current Tab To Window", the user will be prompted to select
+  // a window by name. In that case, the original command will have Entity =
+  // kCommand, and the follow-up will have Entity kWindow.
+  // This is used in the UI to give different visual treatments to different
+  // entity types.
+  enum Entity {
+    kCommand,
+    kBookmark,
+    kTab,
+    kWindow,
+  };
   CommandItem();
   virtual ~CommandItem();
   CommandItem(const CommandItem& other) = delete;
@@ -34,6 +46,11 @@ struct CommandItem {
   Type GetType();
   // The title to display to the user.
   base::string16 title;
+  // See Entity documentation above.
+  Entity entity_type = kCommand;
+  // Optional secondary text for the command. Typically used to display a
+  // hotkey.
+  base::string16 annotation;
   // The code to execute if the user selects this option, if it's a one-shot.
   // Must be unset if |delegate_factory| is set.
   base::Optional<base::OnceClosure> command;

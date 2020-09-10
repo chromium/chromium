@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/string16.h"
+#include "chrome/browser/ui/commander/command_source.h"
 #include "ui/gfx/range/range.h"
 
 namespace commander {
@@ -15,8 +16,12 @@ namespace commander {
 // A view model for a single command to be presented by the commander UI.
 struct CommandItemViewModel {
  public:
-  CommandItemViewModel(base::string16& title,
-                       std::vector<gfx::Range>& matched_ranges);
+  CommandItemViewModel(
+      const base::string16& title,
+      const std::vector<gfx::Range>& matched_ranges,
+      CommandItem::Entity entity_type = CommandItem::Entity::kCommand,
+      const base::string16& annotation = base::string16());
+  explicit CommandItemViewModel(const CommandItem& item);
   ~CommandItemViewModel();
   CommandItemViewModel(const CommandItemViewModel& other);
   // The displayed title of the command.
@@ -24,10 +29,16 @@ struct CommandItemViewModel {
   // The locations of spans in |title| that should be emphasised to
   // indicate to the user why the command was surfaced for their input.
   std::vector<gfx::Range> matched_ranges;
+  // See CommandItem::Entity documentation.
+  CommandItem::Entity entity_type;
+  // Optional secondary text for the command. Typically used to display a
+  // hotkey.
+  base::string16 annotation;
 };
 
 // A view model for a set of results to be presented by the commander UI.
 struct CommanderViewModel {
+  // The action
   enum Action {
     // Display the items in |items|.
     kDisplayResults,

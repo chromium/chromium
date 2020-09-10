@@ -56,7 +56,7 @@ void CommanderController::OnTextChanged(const base::string16& text,
   vm.result_set_id = ++current_result_set_id_;
   vm.action = CommanderViewModel::Action::kDisplayResults;
   for (auto& item : current_items_) {
-    vm.items.emplace_back(item->title, item->matched_ranges);
+    vm.items.emplace_back(*item);
   }
   callback_.Run(vm);
 }

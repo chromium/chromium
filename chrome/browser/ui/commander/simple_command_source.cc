@@ -7,10 +7,12 @@
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace commander {
@@ -50,6 +52,15 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
     item->title = title;
     item->score = score;
     item->matched_ranges = ranges;
+
+    ui::Accelerator accelerator;
+    ui::AcceleratorProvider* provider =
+        chrome::AcceleratorProviderForBrowser(browser);
+    if (provider->GetAcceleratorForCommandId(command_spec.command_id,
+                                             &accelerator)) {
+      item->annotation = accelerator.GetShortcutText();
+    }
+
     // TODO(lgrey): For base::Unretained to be safe here, we need to ensure
     // that if |browser| is destroyed, the palette is reset. It's likely
     // that this will be the case anyway, but leaving this comment so:

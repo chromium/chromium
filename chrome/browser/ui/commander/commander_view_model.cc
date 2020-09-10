@@ -7,9 +7,20 @@
 namespace commander {
 
 CommandItemViewModel::CommandItemViewModel(
-    base::string16& title,
-    std::vector<gfx::Range>& matched_ranges)
-    : title(title), matched_ranges(matched_ranges) {}
+    const base::string16& title,
+    const std::vector<gfx::Range>& matched_ranges,
+    CommandItem::Entity entity_type,
+    const base::string16& annotation)
+    : title(title),
+      matched_ranges(matched_ranges),
+      entity_type(entity_type),
+      annotation(annotation) {}
+
+CommandItemViewModel::CommandItemViewModel(const CommandItem& item)
+    : CommandItemViewModel(item.title,
+                           item.matched_ranges,
+                           item.entity_type,
+                           item.annotation) {}
 CommandItemViewModel::~CommandItemViewModel() = default;
 CommandItemViewModel::CommandItemViewModel(const CommandItemViewModel& other) =
     default;

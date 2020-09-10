@@ -213,8 +213,10 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
   auto second = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const base::string16&, Browser* browser) {
         CommandSource::CommandResults result;
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99));
+        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
+        item->annotation = base::ASCIIToUTF16("2nd");
+        item->entity_type = CommandItem::Entity::kBookmark;
+        result.push_back(std::move(item));
         return result;
       }));
   sources.push_back(std::move(first));
@@ -232,8 +234,14 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   ASSERT_EQ(model.items.size(), 2u);
+
   EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
+  EXPECT_EQ(model.items[0].annotation, base::string16());
+  EXPECT_EQ(model.items[0].entity_type, CommandItem::Entity::kCommand);
+
   EXPECT_EQ(model.items[1].title, base::ASCIIToUTF16("second"));
+  EXPECT_EQ(model.items[1].annotation, base::ASCIIToUTF16("2nd"));
+  EXPECT_EQ(model.items[1].entity_type, CommandItem::Entity::kBookmark);
 }
 
 // TODO(lgrey): This will need to change when scoring gets more sophisticated
