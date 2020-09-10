@@ -60,7 +60,14 @@ Polymer({
         return loadTimeData.getBoolean('isKioskModeActive');
       }
     },
+  },
 
+  /** @private {?OsA11yPageBrowserProxy} */
+  browserProxy_: null,
+
+  /** @override */
+  created() {
+    this.browserProxy_ = OsA11yPageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -70,7 +77,7 @@ Polymer({
         this.onScreenReaderStateChanged_.bind(this));
 
     // Enables javascript and gets the screen reader state.
-    chrome.send('a11yPageReady');
+    this.browserProxy_.a11yPageReady();
   },
 
   /**
@@ -87,7 +94,7 @@ Polymer({
   onToggleAccessibilityImageLabels_() {
     const a11yImageLabelsOn = this.$.a11yImageLabels.checked;
     if (a11yImageLabelsOn) {
-      chrome.send('confirmA11yImageLabels');
+      this.browserProxy_.confirmA11yImageLabels();
     }
   },
 

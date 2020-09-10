@@ -77,6 +77,18 @@ Polymer({
     },
   },
 
+  /** @private {?TtsSubpageBrowserProxy} */
+  ttsBrowserProxy_: null,
+
+  /** @private {?settings.LanguagesBrowserProxy} */
+  langBrowserProxy_: null,
+
+  /** @override */
+  created() {
+    this.ttsBrowserProxy_ = TtsSubpageBrowserProxyImpl.getInstance();
+    this.langBrowserProxy_ = settings.LanguagesBrowserProxyImpl.getInstance();
+  },
+
   /** @override */
   ready() {
     // Populate the preview text with textToSpeechPreviewInput. Users can change
@@ -84,12 +96,12 @@ Polymer({
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
     this.addWebUIListener(
         'all-voice-data-updated', this.populateVoiceList_.bind(this));
-    chrome.send('getAllTtsVoiceData');
+    this.ttsBrowserProxy_.getAllTtsVoiceData();
     this.addWebUIListener(
         'tts-extensions-updated', this.populateExtensionList_.bind(this));
     this.addWebUIListener(
         'tts-preview-state-changed', this.onTtsPreviewStateChanged_.bind(this));
-    chrome.send('getTtsExtensions');
+    this.ttsBrowserProxy_.getTtsExtensions();
   },
 
   /**
@@ -366,22 +378,23 @@ Polymer({
       this.set('defaultPreviewVoice', this.getBestVoiceForLocale_(allVoices));
     }
 
-    const browserProxy = settings.LanguagesBrowserProxyImpl.getInstance();
-    browserProxy.getProspectiveUILanguage().then(prospectiveUILanguage => {
-      let result;
-      if (prospectiveUILanguage && prospectiveUILanguage != '' &&
-          languageCodeMap[prospectiveUILanguage]) {
-        const code = languageCodeMap[prospectiveUILanguage];
-        // First try the pref value.
-        result = this.prefs.settings['tts']['lang_to_voice_name'].value[code];
-      }
-      if (!result) {
-        // If it's not a pref value yet, or the prospectiveUILanguage was
-        // missing, try using the voice score.
-        result = this.getBestVoiceForLocale_(allVoices);
-      }
-      this.set('defaultPreviewVoice', result);
-    });
+    this.langBrowserProxy_.getProspectiveUILanguage().then(
+        prospectiveUILanguage => {
+          let result;
+          if (prospectiveUILanguage && prospectiveUILanguage != '' &&
+              languageCodeMap[prospectiveUILanguage]) {
+            const code = languageCodeMap[prospectiveUILanguage];
+            // First try the pref value.
+            result =
+                this.prefs.settings['tts']['lang_to_voice_name'].value[code];
+          }
+          if (!result) {
+            // If it's not a pref value yet, or the prospectiveUILanguage was
+            // missing, try using the voice score.
+            result = this.getBestVoiceForLocale_(allVoices);
+          }
+          this.set('defaultPreviewVoice', result);
+        });
   },
 
   /**
@@ -404,8 +417,8 @@ Polymer({
 
   /** @private */
   onPreviewTtsClick_() {
-    chrome.send(
-        'previewTtsVoice', [this.previewText_, this.$.previewVoice.value]);
+    this.ttsBrowserProxy_.previewTtsVoice(
+        this.previewText_, this.$.previewVoice.value);
   },
 
   /**
@@ -413,7 +426,7 @@ Polymer({
    * @private
    */
   onEngineSettingsTap_(event) {
-    chrome.send('wakeTtsEngine');
+    this.ttsBrowserProxy_.wakeTtsEngine();
     window.open(event.model.extension.optionsPage);
   },
 });

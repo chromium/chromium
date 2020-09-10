@@ -69,6 +69,12 @@
       <structure name="IDR_OS_SETTINGS_A11Y_PAGE_HTML"
                  file="chromeos/os_a11y_page/os_a11y_page.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_A11Y_PAGE_BROWSER_PROXY_JS"
+                 file="chromeos/os_a11y_page/os_a11y_page_browser_proxy.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_A11Y_PAGE_BROWSER_PROXY_HTML"
+                 file="chromeos/os_a11y_page/os_a11y_page_browser_proxy.html"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_AMBIENT_MODE_PAGE_JS"
                  file="chromeos/ambient_mode_page/ambient_mode_page.js"
                  compress="false" type="chrome_html" />
@@ -306,6 +312,12 @@
       <structure name="IDR_OS_SETTINGS_MANAGE_A11Y_PAGE_HTML"
                  file="chromeos/os_a11y_page/manage_a11y_page.html"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_MANAGE_A11Y_PAGE_BROWSER_PROXY_JS"
+                 file="chromeos/os_a11y_page/manage_a11y_page_browser_proxy.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_MANAGE_A11Y_PAGE_BROWSER_PROXY_HTML"
+                 file="chromeos/os_a11y_page/manage_a11y_page_browser_proxy.html"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_SWITCH_ACCESS_CONSTANTS_JS"
                  file="chromeos/os_a11y_page/switch_access_constants.js"
                  compress="false" type="chrome_html" />
@@ -323,6 +335,12 @@
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_TTS_SUBPAGE_HTML"
                  file="chromeos/os_a11y_page/tts_subpage.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_TTS_SUBPAGE_BROWSER_PROXY_JS"
+                 file="chromeos/os_a11y_page/tts_subpage_browser_proxy.js"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_TTS_SUBPAGE_BROWSER_PROXY_HTML"
+                 file="chromeos/os_a11y_page/tts_subpage_browser_proxy.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_MANIFEST"
                  file="os_settings_manifest.json"

@@ -8,17 +8,26 @@ js_type_check("closure_compile") {
   deps = [
     ":externs",
     ":manage_a11y_page",
+    ":manage_a11y_page_browser_proxy",
     ":os_a11y_page",
+    ":os_a11y_page_browser_proxy",
     ":switch_access_constants",
     ":switch_access_subpage",
     ":tts_subpage",
+    ":tts_subpage_browser_proxy",
     "../../a11y_page:captions_subpage",
     "../../appearance_page:fonts_browser_proxy",
   ]
 }
 
+js_library("os_a11y_page_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
 js_library("os_a11y_page") {
   deps = [
+    ":os_a11y_page_browser_proxy",
     "..:os_route",
     "../../:router",
     "../../settings_page:settings_animated_pages",
@@ -27,8 +36,14 @@ js_library("os_a11y_page") {
   ]
 }
 
+js_library("manage_a11y_page_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
 js_library("manage_a11y_page") {
   deps = [
+    ":manage_a11y_page_browser_proxy",
     "..:os_route",
     "..:route_origin_behavior",
     "../..:router",
@@ -54,9 +69,15 @@ js_library("switch_access_subpage") {
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
+js_library("tts_subpage_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
 js_library("tts_subpage") {
   deps = [
     ":externs",
+    ":tts_subpage_browser_proxy",
     "../..:router",
     "../../controls:settings_slider",
     "../../languages_page:languages_browser_proxy",
@@ -71,16 +92,21 @@ js_library("externs") {
 }
 
 # TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":externs.m",
-#    ":manage_a11y_page.m",
-#    ":os_a11y_page.m",
-#    ":switch_access_subpage.m",
-#    ":tts_subpage.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    #    ":externs.m",
+    #    ":manage_a11y_page.m",
+    ":manage_a11y_page_browser_proxy.m",
+
+    #    ":os_a11y_page.m",
+    ":os_a11y_page_browser_proxy.m",
+
+    #    ":switch_access_subpage.m",
+    #    ":tts_subpage.m"
+    ":tts_subpage_browser_proxy.m",
+  ]
+}
 
 js_library("externs.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/externs.m.js" ]
@@ -98,12 +124,26 @@ js_library("manage_a11y_page.m") {
   extra_deps = [ ":manage_a11y_page_module" ]
 }
 
+js_library("manage_a11y_page_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/manage_a11y_page_browser_proxy.m.js" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("os_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/os_a11y_page.m.js" ]
   deps = [
     # TODO: Fill those in.
   ]
   extra_deps = [ ":os_a11y_page_module" ]
+}
+
+js_library("os_a11y_page_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/os_a11y_page_browser_proxy.m.js" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("switch_access_subpage.m") {
@@ -120,6 +160,13 @@ js_library("tts_subpage.m") {
     # TODO: Fill those in.
   ]
   extra_deps = [ ":tts_subpage_module" ]
+}
+
+js_library("tts_subpage_browser_proxy.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage_browser_proxy.m.js" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 import("//tools/polymer/polymer.gni")
@@ -161,5 +208,10 @@ polymer_modulizer("tts_subpage") {
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
-  input_files = [ "externs.js" ]
+  input_files = [
+    "externs.js",
+    "manage_a11y_page_browser_proxy.js",
+    "os_a11y_page_browser_proxy.js",
+    "tts_subpage_browser_proxy.js",
+  ]
 }

@@ -239,11 +239,15 @@ Polymer({
   /** settings.RouteOriginBehavior override */
   route_: settings.routes.MANAGE_ACCESSIBILITY,
 
+  /** @private {?ManageA11yPageBrowserProxy} */
+  manageBrowserProxy_: null,
+
   /** @private {?settings.DevicePageBrowserProxy} */
   deviceBrowserProxy_: null,
 
   /** @override */
   created() {
+    this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
     this.deviceBrowserProxy_ =
         settings.DevicePageBrowserProxyImpl.getInstance();
   },
@@ -265,7 +269,7 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'initial-data-ready', this.onManageAllyPageReady_.bind(this));
-    chrome.send('manageA11yPageReady');
+    this.manageBrowserProxy_.manageA11yPageReady();
 
     this.addWebUIListener(
         'tablet-mode-changed', this.onTabletModeChanged_.bind(this));
@@ -314,7 +318,7 @@ Polymer({
    * @private
    */
   toggleStartupSoundEnabled_(e) {
-    chrome.send('setStartupSoundEnabled', [e.detail]);
+    this.manageBrowserProxy_.setStartupSoundEnabled(e.detail);
   },
 
   /** @private */
@@ -325,7 +329,7 @@ Polymer({
 
   /** @private */
   onChromeVoxSettingsTap_() {
-    chrome.send('showChromeVoxSettings');
+    this.manageBrowserProxy_.showChromeVoxSettings();
   },
 
   /** @private */
@@ -336,7 +340,7 @@ Polymer({
 
   /** @private */
   onSelectToSpeakSettingsTap_() {
-    chrome.send('showSelectToSpeakSettings');
+    this.manageBrowserProxy_.showSelectToSpeakSettings();
   },
 
   /** @private */
@@ -429,7 +433,8 @@ Polymer({
     this.set(
         'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value',
         enabled);
-    chrome.send('recordSelectedShowShelfNavigationButtonValue', [enabled]);
+    this.manageBrowserProxy_.recordSelectedShowShelfNavigationButtonValue(
+        enabled);
   },
 
   /**

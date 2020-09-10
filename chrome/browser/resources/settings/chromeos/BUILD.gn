@@ -304,8 +304,7 @@ group("closure_compile_module") {
     "localized_link:closure_compile_module",
     "multidevice_page:closure_compile_module",
     "nearby_share_page:closure_compile_module",
-
-    #"os_a11y_page:closure_compile_module",
+    "os_a11y_page:closure_compile_module",
     "os_about_page:closure_compile_module",
 
     #"os_apps_page:closure_compile_module",
