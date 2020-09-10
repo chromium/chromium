@@ -1242,7 +1242,29 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
       GetSwapChainMedia();
   if (swap_chain_media) {
     UINT duration_100ns = FrameRateToPresentDuration(frame_rate_);
-    HRESULT hr = swap_chain_media->SetPresentDuration(duration_100ns);
+    UINT requested_duration = 0u;
+    if (duration_100ns > 0) {
+      UINT smaller_duration = 0u, larger_duration = 0u;
+      HRESULT hr = swap_chain_media->CheckPresentDurationSupport(
+          duration_100ns, &smaller_duration, &larger_duration);
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "CheckPresentDurationSupport failed with error "
+                    << std::hex << hr;
+        return;
+      }
+      constexpr UINT kDurationThreshold = 1000u;
+      // Smaller duration should be used to avoid frame loss. However, we want
+      // to take into consideration the larger duration is the same as the
+      // requested duration but was slightly different due to frame rate
+      // estimation errors.
+      if (larger_duration > 0 &&
+          larger_duration - duration_100ns < kDurationThreshold) {
+        requested_duration = larger_duration;
+      } else if (smaller_duration > 0) {
+        requested_duration = smaller_duration;
+      }
+    }
+    HRESULT hr = swap_chain_media->SetPresentDuration(requested_duration);
     if (FAILED(hr)) {
       DLOG(ERROR) << "SetPresentDuration failed with error " << std::hex << hr;
     }
