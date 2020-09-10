@@ -12,7 +12,7 @@ namespace blink {
 WebMouseEvent SyntheticWebMouseEventBuilder::Build(
     blink::WebInputEvent::Type type) {
   return WebMouseEvent(type, WebInputEvent::kNoModifiers,
-                       WebInputEvent::GetStaticTimeStampForTests());
+                       ui::EventTimeForNow());
 }
 
 WebMouseEvent SyntheticWebMouseEventBuilder::Build(
@@ -22,8 +22,7 @@ WebMouseEvent SyntheticWebMouseEventBuilder::Build(
     int modifiers,
     blink::WebPointerProperties::PointerType pointer_type) {
   DCHECK(WebInputEvent::IsMouseEventType(type));
-  WebMouseEvent result(type, modifiers,
-                       WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent result(type, modifiers, ui::EventTimeForNow());
   result.SetPositionInWidget(window_x, window_y);
   result.SetPositionInScreen(window_x, window_y);
   result.SetModifiers(modifiers);
@@ -35,8 +34,7 @@ WebMouseEvent SyntheticWebMouseEventBuilder::Build(
 WebMouseWheelEvent SyntheticWebMouseWheelEventBuilder::Build(
     WebMouseWheelEvent::Phase phase) {
   WebMouseWheelEvent result(WebInputEvent::Type::kMouseWheel,
-                            WebInputEvent::kNoModifiers,
-                            WebInputEvent::GetStaticTimeStampForTests());
+                            WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   result.phase = phase;
   result.event_action =
       WebMouseWheelEvent::GetPlatformSpecificDefaultEventAction(result);
@@ -63,7 +61,7 @@ WebMouseWheelEvent SyntheticWebMouseWheelEventBuilder::Build(
     int modifiers,
     ui::ScrollGranularity delta_units) {
   WebMouseWheelEvent result(WebInputEvent::Type::kMouseWheel, modifiers,
-                            WebInputEvent::GetStaticTimeStampForTests());
+                            ui::EventTimeForNow());
   result.SetPositionInScreen(global_x, global_y);
   result.SetPositionInWidget(x, y);
   result.delta_units = delta_units;
@@ -84,9 +82,7 @@ WebGestureEvent SyntheticWebGestureEventBuilder::Build(
     blink::WebGestureDevice source_device,
     int modifiers) {
   DCHECK(WebInputEvent::IsGestureEventType(type));
-  WebGestureEvent result(type, modifiers,
-                         WebInputEvent::GetStaticTimeStampForTests(),
-                         source_device);
+  WebGestureEvent result(type, modifiers, ui::EventTimeForNow(), source_device);
   if (type == WebInputEvent::Type::kGestureTap ||
       type == WebInputEvent::Type::kGestureTapUnconfirmed ||
       type == WebInputEvent::Type::kGestureDoubleTap) {
@@ -152,7 +148,7 @@ WebGestureEvent SyntheticWebGestureEventBuilder::BuildFling(
 
 SyntheticWebTouchEvent::SyntheticWebTouchEvent() : WebTouchEvent() {
   unique_touch_event_id = ui::GetNextTouchEventId();
-  SetTimestamp(WebInputEvent::GetStaticTimeStampForTests());
+  SetTimestamp(ui::EventTimeForNow());
   pointer_id_ = 0;
 }
 
