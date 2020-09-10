@@ -30,6 +30,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -273,6 +274,14 @@ public class PageInfoController
                     this, view2.getPermissionsRowView(), mDelegate, mDisplayUrlBuilder.toString());
             mCookiesController = new PageInfoCookiesController(this, view2.getCookiesRowView(),
                     mDelegate, viewParams.cookieControlsShown, mFullUrl);
+            mDelegate.getFavicon(mFullUrl, favicon -> {
+                if (favicon != null) {
+                    mView.setFavicon(favicon);
+                } else {
+                    mView.setFavicon(
+                            SettingsUtils.getTintedIcon(mContext, R.drawable.ic_globe_24dp));
+                }
+            });
         } else {
             mView.showPerformanceInfo(mDelegate.shouldShowPerformanceBadge(mFullUrl));
             mView.showHttpsImageCompressionInfo(mDelegate.isHttpsImageCompressionApplied());

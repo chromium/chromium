@@ -6,9 +6,14 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
@@ -23,6 +28,7 @@ import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.SiteSettingsIntentHelper;
 
 /**
@@ -107,6 +113,18 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
     @NonNull
     public SiteSettingsClient getSiteSettingsClient() {
         return new WebLayerSiteSettingsClient(getBrowserContext());
+    }
+
+    @Override
+    public void getFavicon(String url, Callback<Drawable> callback) {
+        mProfile.getCachedFaviconForPageUri(
+                url, ObjectWrapper.wrap((ValueCallback<Bitmap>) (bitmap) -> {
+                    if (bitmap != null) {
+                        callback.onResult(new BitmapDrawable(mContext.getResources(), bitmap));
+                    } else {
+                        callback.onResult(null);
+                    }
+                }));
     }
 
     private static boolean isHttpOrHttps(GURL url) {

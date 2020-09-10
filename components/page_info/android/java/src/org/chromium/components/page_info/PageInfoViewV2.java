@@ -5,6 +5,7 @@
 package org.chromium.components.page_info;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -31,6 +32,17 @@ public class PageInfoViewV2 extends PageInfoView {
     }
 
     @Override
+    public void setFavicon(Drawable favicon) {
+        int padding =
+                getResources().getDimensionPixelSize(R.dimen.page_info_popup_button_padding_sides);
+        int size = getResources().getDimensionPixelSize(R.dimen.page_info_favicon_size);
+
+        favicon.setBounds(0, 0, size, size);
+        mTruncatedUrlTitle.setCompoundDrawablePadding(padding);
+        mTruncatedUrlTitle.setCompoundDrawablesRelative(favicon, null, null, null);
+    }
+
+    @Override
     protected void init(PageInfoView.PageInfoViewParams params) {
         super.init(params);
         mRowWrapper = findViewById(R.id.page_info_row_wrapper);
@@ -49,7 +61,10 @@ public class PageInfoViewV2 extends PageInfoView {
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         mTruncatedUrlTitle.setText(params.truncatedUrl);
         if (params.urlTitleLongClickCallback != null) {
-            mTruncatedUrlTitle.setOnLongClickListener(this);
+            mTruncatedUrlTitle.setOnLongClickListener(v -> {
+                params.urlTitleLongClickCallback.run();
+                return true;
+            });
         }
         initializePageInfoViewChild(
                 mTruncatedUrlTitle, params.urlTitleShown, 0f, params.urlTitleClickCallback);

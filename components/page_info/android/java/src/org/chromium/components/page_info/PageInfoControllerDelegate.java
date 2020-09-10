@@ -5,11 +5,13 @@
 package org.chromium.components.page_info;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsClient;
@@ -224,4 +226,10 @@ public abstract class PageInfoControllerDelegate {
      */
     @NonNull
     public abstract SiteSettingsClient getSiteSettingsClient();
+
+    /**
+     * Fetches a favicon for the current page and passes it to callback.
+     * The UI will use a fallback icon if null is supplied.
+     */
+    public abstract void getFavicon(String url, Callback<Drawable> callback);
 }
