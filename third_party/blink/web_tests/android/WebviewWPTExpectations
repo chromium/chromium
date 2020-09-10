@@ -6,6 +6,11 @@
 # file. When the test failures below are triaged, new bugs will be created and we will change the
 # bug for the expectation to the new bug.
 
+# https://crbug.com/1126079
+crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property.https.html [ Failure ]
+crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Failure ]
+crbug.com/1126079 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-from-coop-page-to-openee_coop-ro.https.html [ Pass CRASH ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/File-constructor.html [ Failure ]
 crbug.com/1050754 external/wpt/FileAPI/historical.https.html [ Failure ]
@@ -2422,15 +2427,6 @@ crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-unspecified
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-unspecified-with-same-origin.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-unspecified-with-same-site.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/popup-with-structured-header.https.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/openee-accessed_openee-coop-ro.https.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/opener-accessed_openee-coop-ro.https.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property.https.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-coop-navigated-popup.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-allow-popups-report-to.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-coep-report-to.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin.https.html [ Failure ]
-crbug.com/1050754 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-unsafe-none-report-to.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/dom/documents/dom-tree-accessors/document.getElementsByName/document.getElementsByName-namespace-xhtml.xhtml [ Failure ]
 crbug.com/1050754 external/wpt/html/dom/documents/dom-tree-accessors/document.getElementsByName/document.getElementsByName-namespace.html [ Failure ]
 crbug.com/1050754 external/wpt/html/dom/documents/dom-tree-accessors/nameditem-names.html [ Failure ]
