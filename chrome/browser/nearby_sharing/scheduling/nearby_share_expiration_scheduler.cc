@@ -4,7 +4,6 @@
 
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_expiration_scheduler.h"
 
-#include <algorithm>
 #include <utility>
 
 NearbyShareExpirationScheduler::NearbyShareExpirationScheduler(
@@ -32,5 +31,8 @@ NearbyShareExpirationScheduler::TimeUntilRecurringRequest(
   if (!expiration_time)
     return base::nullopt;
 
-  return std::max(base::TimeDelta::FromSeconds(0), *expiration_time - now);
+  if (*expiration_time <= now)
+    return base::TimeDelta::FromSeconds(0);
+
+  return *expiration_time - now;
 }
