@@ -282,7 +282,6 @@ public class SwitchToTabTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
-    @DisabledTest(message = "Flaky - https://crbug.com/1126145")
     @EnableFeatures("OmniboxTabSwitchSuggestions")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
