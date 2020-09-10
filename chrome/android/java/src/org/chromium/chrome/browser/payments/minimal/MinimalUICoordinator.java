@@ -8,10 +8,12 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.payments.ui.LineItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -148,6 +150,22 @@ public class MinimalUICoordinator {
      */
     public void showErrorAndClose(ErrorAndCloseObserver observer, int errorMessageResourceId) {
         mMediator.showErrorAndClose(observer, null, errorMessageResourceId);
+    }
+
+    /**
+     * Runs when the payment request is closed.
+     * @param result The status of PaymentComplete.
+     * @param onMinimalUiErroredAndClosed The function called when MinimalUI errors and closes.
+     * @param onMinimalUiCompletedAndClosed The function called when MinimalUI completes and closes.
+     */
+    public void onPaymentRequestComplete(int result,
+                                         ErrorAndCloseObserver onMinimalUiErroredAndClosed,
+                                         CompleteAndCloseObserver onMinimalUiCompletedAndClosed) {
+        if (result == PaymentComplete.FAIL) {
+            showErrorAndClose(onMinimalUiErroredAndClosed, R.string.payments_error_message);
+        } else {
+            showCompleteAndClose(onMinimalUiCompletedAndClosed);
+        }
     }
 
     /** Confirms payment in minimal UI. Used only in tests. */

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.payments.ShippingStrings;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
+import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.OptionSection.FocusChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,7 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.payments.BrowserPaymentRequest;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
@@ -141,6 +142,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     private TabModelSelector mObservedTabModelSelector;
     private TabModel mObservedTabModel;
     private OverviewModeBehavior mOverviewModeBehavior;
+    private MinimalUICoordinator mMinimalUi;
 
     /**
      * True if we should skip showing PaymentRequest UI.
@@ -386,6 +388,99 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** @return Whether PaymentRequestUI has requested autofill data. */
     public boolean haveRequestedAutofillData() {
         return mHaveRequestedAutofillData;
+    }
+
+    /** @return The minimal UI coordinator. */
+    public MinimalUICoordinator getMinimalUI() { return mMinimalUi; }
+
+    /** @return Whether the Payment Request or Minimal UIs are showing. */
+    public boolean isShowingUI() {
+        return mPaymentRequestUI != null || mMinimalUi != null;
+    }
+
+    /**
+     * Confirms payment in minimal UI. Used only in test.
+     *
+     * @return Whether the payment was confirmed successfully.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean confirmMinimalUIForTest() {
+        if (mMinimalUi == null) return false;
+        mMinimalUi.confirmForTest();
+        return true;
+    }
+
+    /**
+     * Dismisses the minimal UI. Used only in test.
+     *
+     * @return Whether the dismissal was successful.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean dismissMinimalUIForTest() {
+        if (mMinimalUi == null) return false;
+        mMinimalUi.dismissForTest();
+        return true;
+    }
+
+    /** Hides the minimal UI for when objects are closed and destroyed. */
+    public void hideMinimalUI() {
+        if (mMinimalUi != null) {
+            mMinimalUi.hide();
+            mMinimalUi = null;
+        }
+    }
+
+    /**
+     * Triggers the minimal UI.
+     * @param chromeActivity The Android activity for the Chrome UI that will host the minimal UI.
+     * @param mRawTotal The raw total of the payment item.
+     * @param readyObserver The onMinimalUIReady function.
+     * @param confirmObserver The onMinimalUiConfirmed function.
+     * @param dismissObserver The onMinimalUiDismissed function.
+     */
+    public boolean triggerMinimalUI(ChromeActivity chromeActivity, PaymentItem mRawTotal,
+                                 MinimalUICoordinator.ReadyObserver readyObserver,
+                                 MinimalUICoordinator.ConfirmObserver confirmObserver,
+                                 MinimalUICoordinator.DismissObserver dismissObserver) {
+        // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
+        mPaymentUisShowStateReconciler.onBottomSheetShown();
+        mMinimalUi = new MinimalUICoordinator();
+        if (mMinimalUi.show(chromeActivity,
+                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
+                (PaymentApp) mPaymentMethodsSection.getSelectedItem(),
+                mCurrencyFormatterMap.get(mRawTotal.amount.currency),
+                mUiShoppingCart.getTotal(), readyObserver,
+                confirmObserver, dismissObserver)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Called when the payment request is complete.
+     * @param result The status of PaymentComplete.
+     * @param onMinimalUiErroredAndClosed The function called when MinimalUI errors and closes.
+     * @param onMinimalUiCompletedAndClosed The function called when MinimalUI completes and closes.
+     * @param onPaymentRequestCompleteForNonMinimalUI The function called when PaymentRequest
+     *                                                completes for non-minimal UI.
+     */
+    public void onPaymentRequestComplete(int result,
+                     MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
+                     MinimalUICoordinator.CompleteAndCloseObserver onMinimalUiCompletedAndClosed,
+                     Runnable onPaymentRequestCompleteForNonMinimalUI) {
+        // Update records of the used payment app for sorting payment apps next time.
+        EditableOption selectedPaymentMethod = mPaymentMethodsSection.getSelectedItem();
+        PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod.getIdentifier());
+        PaymentPreferencesUtil.setPaymentAppLastUseDate(
+                selectedPaymentMethod.getIdentifier(), System.currentTimeMillis());
+
+        if (mMinimalUi != null) {
+            mMinimalUi.onPaymentRequestComplete(result, onMinimalUiErroredAndClosed,
+                    onMinimalUiCompletedAndClosed);
+            return;
+        }
+
+        onPaymentRequestCompleteForNonMinimalUI.run();
     }
 
     /** @return Whether PaymentRequestUI should be skipped. */

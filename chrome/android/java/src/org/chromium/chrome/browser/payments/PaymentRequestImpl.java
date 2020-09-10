@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
-import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.payments.ui.ShoppingCart;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
@@ -187,7 +185,6 @@ public class PaymentRequestImpl
     private int mShippingType;
     private boolean mIsFinishedQueryingPaymentApps;
     private List<PaymentApp> mPendingApps = new ArrayList<>();
-    private MinimalUICoordinator mMinimalUi;
     private PaymentApp mInvokedPaymentApp;
     private boolean mHideServerAutofillCards;
     private boolean mWaitForUpdatedDetails;
@@ -425,7 +422,7 @@ public class PaymentRequestImpl
     public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
         if (mComponentPaymentRequestImpl == null) return;
 
-        if (mPaymentUIsManager.getPaymentRequestUI() != null || mMinimalUi != null) {
+        if (mPaymentUIsManager.isShowingUI()) {
             // Can be triggered only by a compromised renderer. In normal operation, calling show()
             // twice on the same instance of PaymentRequest in JavaScript is rejected at the
             // renderer level.
@@ -516,7 +513,14 @@ public class PaymentRequestImpl
             assert mPaymentUIsManager.getPaymentRequestUI() != null;
 
             if (isMinimalUiApplicable()) {
-                triggerMinimalUi(chromeActivity);
+                if (mPaymentUIsManager.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
+                        this::onMinimalUIReady, this::onMinimalUiConfirmed,
+                        this::onMinimalUiDismissed)) {
+                    mDidRecordShowEvent = true;
+                    mJourneyLogger.setEventOccurred(Event.SHOWN);
+                } else {
+                    disconnectFromClientWithDebugMessage(ErrorStrings.MINIMAL_UI_SUPPRESSED);
+                }
                 return;
             }
 
@@ -553,30 +557,6 @@ public class PaymentRequestImpl
         return PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MINIMAL_UI);
     }
 
-    /**
-     * Triggers the minimal UI.
-     * @param chromeActivity The Android activity for the Chrome UI that will host the minimal UI.
-     */
-    private void triggerMinimalUi(ChromeActivity chromeActivity) {
-        // Do not show the Payment Request UI dialog even if the minimal UI is suppressed.
-        mPaymentUIsManager.getPaymentUisShowStateReconciler().onBottomSheetShown();
-
-        mMinimalUi = new MinimalUICoordinator();
-        if (mMinimalUi.show(chromeActivity,
-                    BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                    (PaymentApp) mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem(),
-                    mPaymentUIsManager.getCurrencyFormatterMap().get(
-                            mSpec.getRawTotal().amount.currency),
-                    mPaymentUIsManager.getUiShoppingCart().getTotal(), this::onMinimalUIReady,
-                    this::onMinimalUiConfirmed, this::onMinimalUiDismissed)) {
-            mDidRecordShowEvent = true;
-            mJourneyLogger.setEventOccurred(Event.SHOWN);
-            return;
-        }
-
-        disconnectFromClientWithDebugMessage(ErrorStrings.MINIMAL_UI_SUPPRESSED);
-    }
-
     private void onMinimalUIReady() {
         if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
             ComponentPaymentRequestImpl.getNativeObserverForTest().onMinimalUIReady();
@@ -605,6 +585,14 @@ public class PaymentRequestImpl
             mComponentPaymentRequestImpl.onComplete();
         }
         close();
+        closeUIAndDestroyNativeObjects();
+    }
+
+    private void onPaymentRequestCompleteForNonMinimalUI() {
+        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
+            ComponentPaymentRequestImpl.getNativeObserverForTest().onCompleteCalled();
+        }
+
         closeUIAndDestroyNativeObjects();
     }
 
@@ -740,9 +728,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean confirmMinimalUIForTestInternal() {
-        if (mMinimalUi == null) return false;
-        mMinimalUi.confirmForTest();
-        return true;
+        return mPaymentUIsManager.confirmMinimalUIForTest();
     }
 
     /**
@@ -758,9 +744,7 @@ public class PaymentRequestImpl
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     private boolean dismissMinimalUIForTestInternal() {
-        if (mMinimalUi == null) return false;
-        mMinimalUi.dismissForTest();
-        return true;
+        return mPaymentUIsManager.dismissMinimalUIForTest();
     }
 
     /**
@@ -1307,28 +1291,8 @@ public class PaymentRequestImpl
                     mSpec.getRawTotal().amount.value, true /*completed*/);
         }
 
-        /** Update records of the used payment app for sorting payment apps next time. */
-        EditableOption selectedPaymentMethod =
-                mPaymentUIsManager.getPaymentMethodsSection().getSelectedItem();
-        PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod.getIdentifier());
-        PaymentPreferencesUtil.setPaymentAppLastUseDate(
-                selectedPaymentMethod.getIdentifier(), System.currentTimeMillis());
-
-        if (mMinimalUi != null) {
-            if (result == PaymentComplete.FAIL) {
-                mMinimalUi.showErrorAndClose(
-                        this::onMinimalUiErroredAndClosed, R.string.payments_error_message);
-            } else {
-                mMinimalUi.showCompleteAndClose(this::onMinimalUiCompletedAndClosed);
-            }
-            return;
-        }
-
-        if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
-            ComponentPaymentRequestImpl.getNativeObserverForTest().onCompleteCalled();
-        }
-
-        closeUIAndDestroyNativeObjects();
+        mPaymentUIsManager.onPaymentRequestComplete(result, this::onMinimalUiErroredAndClosed,
+                this::onMinimalUiCompletedAndClosed, this::onPaymentRequestCompleteForNonMinimalUI);
     }
 
     // Implement BrowserPaymentRequest:
@@ -1872,9 +1836,9 @@ public class PaymentRequestImpl
     public void onInstrumentDetailsError(String errorMessage) {
         if (mComponentPaymentRequestImpl == null) return;
         mInvokedPaymentApp = null;
-        if (mMinimalUi != null) {
+        if (mPaymentUIsManager.getMinimalUI() != null) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            mMinimalUi.showErrorAndClose(
+            mPaymentUIsManager.getMinimalUI().showErrorAndClose(
                     this::onMinimalUiErroredAndClosed, R.string.payments_error_message);
             return;
         }
@@ -1944,10 +1908,7 @@ public class PaymentRequestImpl
      */
     private void closeUIAndDestroyNativeObjects() {
         mPaymentUIsManager.ensureHideAndResetPaymentHandlerUi();
-        if (mMinimalUi != null) {
-            mMinimalUi.hide();
-            mMinimalUi = null;
-        }
+        mPaymentUIsManager.hideMinimalUI();
 
         if (mPaymentUIsManager.getPaymentRequestUI() != null) {
             mPaymentUIsManager.getPaymentRequestUI().close();
