@@ -2166,10 +2166,6 @@ static_library("ui") {
       "webui/chromeos/drive_internals_ui.h",
       "webui/chromeos/edu_account_login_handler_chromeos.cc",
       "webui/chromeos/edu_account_login_handler_chromeos.h",
-      "webui/chromeos/file_manager/file_manager_page_handler.cc",
-      "webui/chromeos/file_manager/file_manager_page_handler.h",
-      "webui/chromeos/file_manager/file_manager_ui.cc",
-      "webui/chromeos/file_manager/file_manager_ui.h",
       "webui/chromeos/first_run/first_run_actor.cc",
       "webui/chromeos/first_run/first_run_actor.h",
       "webui/chromeos/first_run/first_run_handler.cc",
@@ -2538,7 +2534,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/file_manager:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
@@ -2644,6 +2639,7 @@ static_library("ui") {
         ]
       }
       deps += [
+        "//chromeos/components/file_manager:file_manager_ui",
         "//chromeos/components/sample_system_web_app_ui",
         "//chromeos/components/telemetry_extension_ui",
       ]

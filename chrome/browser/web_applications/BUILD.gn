@@ -118,7 +118,10 @@ source_set("web_applications") {
     ]
 
     if (!is_official_build) {
-      deps += [ "//chromeos/components/sample_system_web_app_ui" ]
+      deps += [
+        "//chromeos/components/file_manager:file_manager_ui",
+        "//chromeos/components/sample_system_web_app_ui",
+      ]
     }
   }
 

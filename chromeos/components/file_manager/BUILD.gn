@@ -1,0 +1,31 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos, "File Manager is Chrome OS only")
+assert(!is_official_build, "File Manager is only built for unofficial builds")
+
+mojom("file_manager_mojom") {
+  sources = [ "file_manager.mojom" ]
+}
+
+static_library("file_manager_ui") {
+  sources = [
+    "file_manager_page_handler.cc",
+    "file_manager_page_handler.h",
+    "file_manager_ui.cc",
+    "file_manager_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    ":file_manager_mojom",
+    "//chromeos/constants",
+    "//chromeos/resources:file_manager_resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

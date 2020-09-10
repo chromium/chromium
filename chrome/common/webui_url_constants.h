@@ -236,7 +236,6 @@ extern const char kChromeUICrostiniUpgraderUrl[];
 extern const char kChromeUICryptohomeHost[];
 extern const char kChromeUIDeviceEmulatorHost[];
 extern const char kChromeUIDiscoverURL[];
-extern const char kChromeUIFileManagerHost[];
 extern const char kChromeUIFirstRunHost[];
 extern const char kChromeUIFirstRunURL[];
 extern const char kChromeUIIntenetConfigDialogURL[];
