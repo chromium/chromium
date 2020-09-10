@@ -1182,6 +1182,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // this won't create one if none exists.
   FindRequestManager* GetFindRequestManagerForTesting();
 
+  // Convenience method to notify observers that an inner WebContents was
+  // created with |this| WebContents as its owner. This does *not* immediately
+  // guarantee that |inner_web_contents| has been added to the WebContents tree.
+  void InnerWebContentsCreated(WebContents* inner_web_contents);
+
   // Detaches this WebContents from its outer WebContents.
   std::unique_ptr<WebContents> DetachFromOuterWebContents();
 
@@ -1555,11 +1560,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Walks up the outer WebContents chain and focuses the FrameTreeNode where
   // each inner WebContents is attached.
   void FocusOuterAttachmentFrameChain();
-
-  // Convenience method to notify observers that an inner WebContents was
-  // created with |this| WebContents as its owner. This does *not* immediately
-  // guarantee that |inner_web_contents| has been added to the WebContents tree.
-  void InnerWebContentsCreated(WebContents* inner_web_contents);
 
   // Called just after an inner web contents is attached.
   void InnerWebContentsAttached(WebContents* inner_web_contents);

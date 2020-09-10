@@ -148,6 +148,26 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   DISALLOW_COPY_AND_ASSIGN(DownloadItemCreatedObserver);
 };
 
+class InnerContentsCreationObserver : public content::WebContentsObserver {
+ public:
+  InnerContentsCreationObserver(
+      content::WebContents* web_contents,
+      base::RepeatingCallback<void(content::WebContents*)>
+          on_inner_contents_created)
+      : content::WebContentsObserver(web_contents),
+        on_inner_contents_created_(on_inner_contents_created) {}
+
+  // WebContentsObserver:
+  void InnerWebContentsCreated(
+      content::WebContents* inner_web_contents) override {
+    on_inner_contents_created_.Run(inner_web_contents);
+  }
+
+ private:
+  base::RepeatingCallback<void(content::WebContents*)>
+      on_inner_contents_created_;
+};
+
 // Test class to help create SafeBrowsingNavigationObservers for each
 // WebContents before they are actually installed through AttachTabHelper.
 class TestNavigationObserverManager
@@ -162,6 +182,11 @@ class TestNavigationObserverManager
     ASSERT_TRUE(contents);
     observer_list_.push_back(
         std::make_unique<SafeBrowsingNavigationObserver>(contents, this));
+    inner_contents_creation_observers_.push_back(
+        std::make_unique<InnerContentsCreationObserver>(
+            contents,
+            base::BindRepeating(&TestNavigationObserverManager::ObserveContents,
+                                this)));
   }
 
   // TabStripModelObserver:
@@ -183,6 +208,8 @@ class TestNavigationObserverManager
 
  private:
   std::vector<std::unique_ptr<SafeBrowsingNavigationObserver>> observer_list_;
+  std::vector<std::unique_ptr<InnerContentsCreationObserver>>
+      inner_contents_creation_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNavigationObserverManager);
 };
@@ -2678,7 +2705,7 @@ class SBNavigationObserverPortalBrowserTest
 };
 
 // Click a link which activates a portal to the landing page, and then click on
-// the landing page to trigger download.
+// the landing page to trigger the download.
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                        PortalActivation) {
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
@@ -2697,15 +2724,6 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                           "});",
                           landing_url)));
 
-  std::vector<content::WebContents*> inner_web_contents =
-      browser()
-          ->tab_strip_model()
-          ->GetActiveWebContents()
-          ->GetInnerWebContents();
-  ASSERT_EQ(1u, inner_web_contents.size());
-  content::WebContents* portal_contents = inner_web_contents[0];
-  observer_manager_->ObserveContents(portal_contents);
-
   // Note that this runs with a user gesture.
   ASSERT_EQ(true, content::EvalJs(
                       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -2717,7 +2735,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
   auto* nav_list = navigation_event_list();
   ASSERT_TRUE(nav_list);
-  ASSERT_EQ(3U, nav_list->Size());
+  ASSERT_EQ(4U, nav_list->Size());
   VerifyNavigationEvent(GURL(),       // source_url
                         GURL(),       // source_main_frame_url
                         initial_url,  // original_request_url
@@ -2726,6 +2744,14 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         true,         // has_committed
                         false,        // has_server_redirect
                         nav_list->Get(0));
+  VerifyNavigationEvent(GURL(),       // source_url
+                        GURL(),       // source_main_frame_url
+                        landing_url,  // original_request_url
+                        landing_url,  // destination_url
+                        false,        // is_user_initiated,
+                        true,         // has_committed
+                        false,        // has_server_redirect
+                        nav_list->Get(1));
   VerifyNavigationEvent(initial_url,  // source_url
                         initial_url,  // source_main_frame_url
                         landing_url,  // original_request_url
@@ -2733,7 +2759,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         true,         // is_user_initiated,
                         true,         // has_committed
                         false,        // has_server_redirect
-                        nav_list->Get(1));
+                        nav_list->Get(2));
   VerifyNavigationEvent(landing_url,   // source_url
                         landing_url,   // source_main_frame_url
                         download_url,  // original_request_url
@@ -2741,7 +2767,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverPortalBrowserTest,
                         true,          // is_user_initiated,
                         false,         // has_committed
                         false,         // has_server_redirect
-                        nav_list->Get(2));
+                        nav_list->Get(3));
   VerifyHostToIpMap();
 
   ReferrerChain referrer_chain;

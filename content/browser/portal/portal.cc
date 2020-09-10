@@ -152,6 +152,7 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
     WebContents::CreateParams params(outer_contents_impl->GetBrowserContext());
     portal_contents_.SetOwned(base::WrapUnique(
         static_cast<WebContentsImpl*>(WebContents::Create(params).release())));
+    outer_contents_impl->InnerWebContentsCreated(portal_contents_.get());
     web_contents_created = true;
   }
 
