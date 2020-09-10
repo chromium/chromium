@@ -62,12 +62,6 @@ Polymer({
       type: String,
       computed: 'computePasswordManagerSubLabel_(compromisedPasswordsCount)',
     },
-
-    /** @private */
-    enablePasswordCheck_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('enablePasswordCheck'),
-    },
   },
 
   /**
@@ -102,10 +96,6 @@ Polymer({
    * @private
    */
   computePasswordManagerSubLabel_() {
-    if (!this.enablePasswordCheck_) {
-      return '';
-    }
-
     return this.leakedPasswords.length > 0 ? this.compromisedPasswordsCount :
                                              '';
   },

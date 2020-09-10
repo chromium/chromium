@@ -217,11 +217,6 @@ var CrSettingsPasswordsSectionV3Test = class extends CrSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/passwords_section_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {enabled: ['password_manager::features::kPasswordCheck']};
-  }
 };
 
 // Flaky on Debug builds https://crbug.com/1090931
@@ -287,11 +282,6 @@ var CrSettingsPasswordsCheckV3Test = class extends CrSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {enabled: ['password_manager::features::kPasswordCheck']};
-  }
 };
 
 TEST_F('CrSettingsPasswordsCheckV3Test', 'All', function() {
@@ -303,15 +293,6 @@ var CrSettingsSafetyCheckPageV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'password_manager::features::kPasswordCheck',
-      ],
-    };
   }
 };
 

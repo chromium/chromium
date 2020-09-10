@@ -300,13 +300,6 @@ suite('PasswordsUITest', function() {
   let passwordManager;
   let pluralString;
 
-  suiteSetup(function() {
-    // Forces navigation to Google Password Manager to be off by default.
-    loadTimeData.overrideValues({
-      enablePasswordCheck: true,
-    });
-  });
-
   setup(function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.instance_ = openWindowProxy;

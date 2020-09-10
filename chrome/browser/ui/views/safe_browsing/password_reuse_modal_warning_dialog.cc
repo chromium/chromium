@@ -14,7 +14,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/password_protection/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -88,11 +87,7 @@ base::string16 GetOkButtonLabel(
     case safe_browsing::ReusedPasswordAccountType::NON_GAIA_ENTERPRISE:
       return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON);
     case safe_browsing::ReusedPasswordAccountType::SAVED_PASSWORD:
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kPasswordCheck)) {
-        return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
-      }
-      return l10n_util::GetStringUTF16(IDS_CLOSE);
+      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
     default:
       return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
   }
@@ -126,10 +121,8 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
       password_type_(password_type) {
   bool show_check_passwords = false;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  show_check_passwords = base::FeatureList::IsEnabled(
-                             password_manager::features::kPasswordCheck) &&
-                         password_type_.account_type() ==
-                             ReusedPasswordAccountType::SAVED_PASSWORD;
+  show_check_passwords = password_type_.account_type() ==
+                         ReusedPasswordAccountType::SAVED_PASSWORD;
 #endif
   SetShowIcon(true);
   if (password_type.account_type() !=

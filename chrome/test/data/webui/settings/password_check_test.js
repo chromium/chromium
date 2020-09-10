@@ -120,10 +120,6 @@ suite('PasswordsCheckSection', function() {
   /** @type {TestPasswordManagerProxy} */
   let passwordManager = null;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePasswordCheck: true});
-  });
-
   setup(function() {
     PolymerTest.clearBody();
     // Override the PasswordManagerImpl for testing.

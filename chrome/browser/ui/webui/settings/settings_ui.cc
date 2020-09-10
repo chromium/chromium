@@ -264,10 +264,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection));
 
   html_source->AddBoolean(
-      "enablePasswordCheck",
-      base::FeatureList::IsEnabled(password_manager::features::kPasswordCheck));
-
-  html_source->AddBoolean(
       "passwordsWeaknessCheck",
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordsWeaknessCheck));

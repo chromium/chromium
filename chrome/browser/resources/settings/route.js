@@ -132,13 +132,10 @@ function createBrowserSettingsRoutes() {
   if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection('/autofill', 'autofill');
     r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
+    r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
 
     if (loadTimeData.getBoolean('enableAccountStorage')) {
       r.DEVICE_PASSWORDS = r.PASSWORDS.createChild('device');
-    }
-
-    if (loadTimeData.getBoolean('enablePasswordCheck')) {
-      r.CHECK_PASSWORDS = r.PASSWORDS.createChild('check');
     }
 
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');

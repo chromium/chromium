@@ -319,10 +319,6 @@ suite('PasswordsSection', function() {
   /** @type {TestPluralStringProxy} */
   let pluralString = null;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({enablePasswordCheck: true});
-  });
-
   setup(function() {
     PolymerTest.clearBody();
     // Override the PasswordManagerImpl for testing.

@@ -216,8 +216,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
  public:
   PasswordCheckDelegateTest() {
     prefs_.registry()->RegisterDoublePref(kLastTimePasswordCheckCompleted, 0.0);
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kPasswordCheck);
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
@@ -232,13 +230,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
   PasswordCheckDelegate& delegate() { return delegate_; }
 
   void EnableWellKnownChangePasswordFeatureFlag() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {
-            password_manager::features::kPasswordCheck,
-            password_manager::features::kWellKnownChangePassword,
-        },
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kWellKnownChangePassword);
   }
 
  private:

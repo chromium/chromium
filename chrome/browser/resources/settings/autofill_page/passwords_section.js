@@ -120,14 +120,6 @@ Polymer({
     },
 
     /** @private */
-    enablePasswordCheck_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enablePasswordCheck');
-      }
-    },
-
-    /** @private */
     signedIn_: {
       type: Boolean,
       value: true,
@@ -328,11 +320,9 @@ Polymer({
     // Populate the |focusConfig| map of the parent <settings-autofill-page>
     // element, with additional entries that correspond to subpage trigger
     // elements residing in this element's Shadow DOM.
-    if (this.enablePasswordCheck_) {
-      this.focusConfig.set(assert(routes.CHECK_PASSWORDS).path, () => {
-        focusWithoutInk(assert(this.$$('#icon')));
-      });
-    }
+    this.focusConfig.set(assert(routes.CHECK_PASSWORDS).path, () => {
+      focusWithoutInk(assert(this.$$('#icon')));
+    });
   },
 
   /** @override */

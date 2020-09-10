@@ -49,7 +49,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/page_info/page_info.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -318,17 +317,9 @@ void BubbleHeaderView::AddPasswordReuseButtons(bool is_saved_password) {
     password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
   }
 
-  int change_password_template = 0;
-  if (is_saved_password && !base::FeatureList::IsEnabled(
-                               password_manager::features::kPasswordCheck)) {
-    change_password_template = 0;
-  } else {
-    change_password_template =
-        is_saved_password && base::FeatureList::IsEnabled(
-                                 password_manager::features::kPasswordCheck)
-            ? IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON
-            : IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
-  }
+  int change_password_template = is_saved_password
+                                     ? IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON
+                                     : IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON;
 
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {

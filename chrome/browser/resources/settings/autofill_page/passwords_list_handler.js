@@ -74,14 +74,6 @@ Polymer({
     // </if>
 
     /** @private */
-    enablePasswordCheck_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('enablePasswordCheck');
-      }
-    },
-
-    /** @private */
     editPasswordsInSettings_: {
       type: Boolean,
       value() {

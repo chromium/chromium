@@ -551,7 +551,6 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
       buttonClass: 'action-button',
     });
 
-    loadTimeData.overrideValues({enablePasswordCheck: true});
     const passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.instance_ = passwordManager;
 
