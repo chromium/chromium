@@ -20263,6 +20263,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Screenshot_ShowInFolder">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <description>
+    User clicks the body of the notification displayed after taking a screenshot
+    in order to show the screenshot file in its folder.
+  </description>
+</action>
+
 <action name="Screenshot_TakeFull">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
