@@ -34,14 +34,16 @@ promise_test(async testCase => {
   await kServiceWorkerActivatedPromise;
 
   {
-    const subscriptions = [{ name: 'cookie-name1', url: `${kScope}/path1` }];
+    const subscriptions = [
+      { name: 'cookie-name1', matchType: 'equals', url: `${kScope}/path1` },
+    ];
     await registration.cookies.subscribe(subscriptions);
     testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
   }
   {
     const subscriptions = [
       { },  // Test the default values for subscription properties.
-      { name: 'cookie-name2' },
+      { name: 'cookie-prefix', matchType: 'starts-with' },
     ];
     await registration.cookies.subscribe(subscriptions);
     testCase.add_cleanup(() => registration.cookies.unsubscribe(subscriptions));
