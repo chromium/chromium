@@ -973,19 +973,10 @@ bool SwapChainPresenter::VideoProcessorBlt(
   TRACE_EVENT2("gpu", "SwapChainPresenter::VideoProcessorBlt", "content_rect",
                content_rect.ToString(), "swap_chain_size",
                swap_chain_size_.ToString());
-  if (!layer_tree_->InitializeVideoProcessor(content_rect.size(),
-                                             swap_chain_size_)) {
-    return false;
-  }
-  Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
-      layer_tree_->video_context();
-  Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
-      layer_tree_->video_processor();
 
   gfx::ColorSpace output_color_space = IsYUVSwapChainFormat(swap_chain_format_)
                                            ? src_color_space
                                            : gfx::ColorSpace::CreateSRGB();
-
   if (base::FeatureList::IsEnabled(kFallbackBT709VideoToBT601) &&
       (output_color_space == gfx::ColorSpace::CreateREC709())) {
     output_color_space = gfx::ColorSpace::CreateREC601();
@@ -993,38 +984,14 @@ bool SwapChainPresenter::VideoProcessorBlt(
   if (content_is_hdr)
     output_color_space = gfx::ColorSpace::CreateHDR10();
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
-  Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
-  if (SUCCEEDED(swap_chain_.As(&swap_chain3)) &&
-      SUCCEEDED(video_context.As(&context1))) {
-    DCHECK(swap_chain3);
-    DCHECK(context1);
-    // Set input color space.
-    context1->VideoProcessorSetStreamColorSpace1(
-        video_processor.Get(), 0,
-        gfx::ColorSpaceWin::GetDXGIColorSpace(src_color_space));
-    // Set output color space.
-    DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
-        gfx::ColorSpaceWin::GetDXGIColorSpace(
-            output_color_space,
-            IsYUVSwapChainFormat(swap_chain_format_) /* force_yuv */);
-
-    if (SUCCEEDED(swap_chain3->SetColorSpace1(output_dxgi_color_space))) {
-      context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
-                                                   output_dxgi_color_space);
-    }
-  } else {
-    // This can't handle as many different types of color spaces, so use it
-    // only if ID3D11VideoContext1 isn't available.
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(src_color_space);
-    video_context->VideoProcessorSetStreamColorSpace(video_processor.Get(), 0,
-                                                     &src_d3d11_color_space);
-    D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
-        gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
-    video_context->VideoProcessorSetOutputColorSpace(video_processor.Get(),
-                                                     &output_d3d11_color_space);
+  if (!layer_tree_->InitializeVideoProcessor(content_rect.size(),
+                                             swap_chain_size_, src_color_space,
+                                             output_color_space)) {
+    return false;
   }
+  layer_tree_->SetColorspaceForVideoProcessor(
+      src_color_space, output_color_space, swap_chain_,
+      IsYUVSwapChainFormat(swap_chain_format_));
 
   {
     base::Optional<ScopedReleaseKeyedMutex> release_keyed_mutex;
@@ -1062,6 +1029,10 @@ bool SwapChainPresenter::VideoProcessorBlt(
       return false;
     }
 
+    Microsoft::WRL::ComPtr<ID3D11VideoContext> video_context =
+        layer_tree_->video_context();
+    Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
+        layer_tree_->video_processor();
     D3D11_VIDEO_PROCESSOR_STREAM stream = {};
     stream.Enable = true;
     stream.OutputIndex = 0;

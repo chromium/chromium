@@ -3531,6 +3531,18 @@
       "features": [
         "disable_accelerated_vp8_decode"
       ]
+    },
+    {
+      "id": 350,
+      "cr_bugs": [1121061],
+      "description": "Intel GPUs need reset VP when colorspace changes",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "reset_vp_when_colorspace_changes"
+      ]
     }
   ]
 }

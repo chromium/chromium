@@ -35,6 +35,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
     bool disable_vp_scaling = false;
     size_t max_pending_frames = 2;
     bool use_angle_texture_offset = false;
+    bool reset_vp_when_colorspace_changes = false;
   };
 
   DirectCompositionSurfaceWin(

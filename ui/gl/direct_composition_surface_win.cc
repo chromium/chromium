@@ -335,7 +335,8 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_larger_than_screen_overlays,
-          settings.disable_vp_scaling)) {
+          settings.disable_vp_scaling,
+          settings.reset_vp_when_colorspace_changes)) {
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }
 

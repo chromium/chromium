@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <d3d11_1.h>
+
 #include "ui/gl/dc_layer_tree.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -19,10 +21,12 @@ bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
 
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
                          bool disable_larger_than_screen_overlays,
-                         bool disable_vp_scaling)
+                         bool disable_vp_scaling,
+                         bool reset_vp_when_colorspace_changes)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
       disable_larger_than_screen_overlays_(disable_larger_than_screen_overlays),
-      disable_vp_scaling_(disable_vp_scaling) {}
+      disable_vp_scaling_(disable_vp_scaling),
+      reset_vp_when_colorspace_changes_(reset_vp_when_colorspace_changes) {}
 
 DCLayerTree::~DCLayerTree() = default;
 
@@ -59,8 +63,11 @@ bool DCLayerTree::Initialize(
   return true;
 }
 
-bool DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
-                                           const gfx::Size& output_size) {
+bool DCLayerTree::InitializeVideoProcessor(
+    const gfx::Size& input_size,
+    const gfx::Size& output_size,
+    const gfx::ColorSpace& input_color_space,
+    const gfx::ColorSpace& output_color_space) {
   if (!video_device_) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
     if (FAILED(d3d11_device_.As(&video_device_))) {
@@ -78,9 +85,13 @@ bool DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
     DCHECK(video_context_);
   }
 
+  bool colorspace_changed = !(input_color_space == video_input_color_space_ &&
+                              output_color_space == video_output_color_space_);
   if (video_processor_ && SizeContains(video_input_size_, input_size) &&
-      SizeContains(video_output_size_, output_size))
+      SizeContains(video_output_size_, output_size) &&
+      !(colorspace_changed && reset_vp_when_colorspace_changes_)) {
     return true;
+  }
   TRACE_EVENT2("gpu", "DCLayerTree::InitializeVideoProcessor", "input_size",
                input_size.ToString(), "output_size", output_size.ToString());
   video_input_size_ = input_size;
@@ -124,11 +135,65 @@ bool DCLayerTree::InitializeVideoProcessor(const gfx::Size& input_size,
     DirectCompositionSurfaceWin::DisableOverlays();
     return false;
   }
+  // Color spaces should be updated later through
+  // SetColorspaceForVideoProcessor() for the new VP.
+  video_input_color_space_ = gfx::ColorSpace();
+  video_output_color_space_ = gfx::ColorSpace();
 
   // Auto stream processing (the default) can hurt power consumption.
   video_context_->VideoProcessorSetStreamAutoProcessingMode(
       video_processor_.Get(), 0, FALSE);
   return true;
+}
+
+void DCLayerTree::SetColorspaceForVideoProcessor(
+    const gfx::ColorSpace& input_color_space,
+    const gfx::ColorSpace& output_color_space,
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swapchain,
+    bool is_yuv_swapchain) {
+  // Reset colorspace of video processor in two circumstances:
+  // 1. Input/output colorspaces change.
+  // 2. Swapchain changes.
+  // Others just return.
+  if ((input_color_space == video_input_color_space_) &&
+      (output_color_space == video_output_color_space_) &&
+      swapchain == last_swapchain_setting_colorspace_)
+    return;
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
+  Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
+  if (SUCCEEDED(swapchain.As(&swap_chain3)) &&
+      SUCCEEDED(video_context_.As(&context1))) {
+    DCHECK(swap_chain3);
+    DCHECK(context1);
+    // Set input color space.
+    context1->VideoProcessorSetStreamColorSpace1(
+        video_processor_.Get(), 0,
+        gfx::ColorSpaceWin::GetDXGIColorSpace(input_color_space));
+    // Set output color space.
+    DXGI_COLOR_SPACE_TYPE output_dxgi_color_space =
+        gfx::ColorSpaceWin::GetDXGIColorSpace(output_color_space,
+                                              is_yuv_swapchain /* force_yuv */);
+
+    if (SUCCEEDED(swap_chain3->SetColorSpace1(output_dxgi_color_space))) {
+      context1->VideoProcessorSetOutputColorSpace1(video_processor_.Get(),
+                                                   output_dxgi_color_space);
+    }
+    last_swapchain_setting_colorspace_ = swapchain;
+  } else {
+    // This can't handle as many different types of color spaces, so use it
+    // only if ID3D11VideoContext1 isn't available.
+    D3D11_VIDEO_PROCESSOR_COLOR_SPACE src_d3d11_color_space =
+        gfx::ColorSpaceWin::GetD3D11ColorSpace(input_color_space);
+    video_context_->VideoProcessorSetStreamColorSpace(video_processor_.Get(), 0,
+                                                      &src_d3d11_color_space);
+    D3D11_VIDEO_PROCESSOR_COLOR_SPACE output_d3d11_color_space =
+        gfx::ColorSpaceWin::GetD3D11ColorSpace(output_color_space);
+    video_context_->VideoProcessorSetOutputColorSpace(
+        video_processor_.Get(), &output_d3d11_color_space);
+  }
+  video_input_color_space_ = input_color_space;
+  video_output_color_space_ = output_color_space;
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>
