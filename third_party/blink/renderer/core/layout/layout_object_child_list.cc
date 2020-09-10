@@ -242,12 +242,8 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   if (new_child->WasNotifiedOfSubtreeChange())
     owner->NotifyAncestorsOfSubtreeChange();
 
-  if (owner->ForceLegacyLayout()) {
+  if (owner->ForceLegacyLayout() && !new_child->IsLayoutNGObject())
     new_child->SetForceLegacyLayout();
-    // TODO(crbug.com/943574): This would be a great place to DCHECK that the
-    // child isn't an NG object, but there are unfortunately cases where this
-    // actually happens.
-  }
 
   new_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
       layout_invalidation_reason::kAddedToLayout);
