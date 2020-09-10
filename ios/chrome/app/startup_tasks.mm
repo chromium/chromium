@@ -77,17 +77,6 @@ NSString* const kStartProfileStartupTaskRunners =
            object:nil];
 }
 
-- (void)donateIntents {
-  SearchInChromeIntent* searchInChromeIntent =
-      [[SearchInChromeIntent alloc] init];
-  searchInChromeIntent.suggestedInvocationPhrase = l10n_util::GetNSString(
-      IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
-  INInteraction* interaction =
-      [[INInteraction alloc] initWithIntent:searchInChromeIntent response:nil];
-  [interaction donateInteractionWithCompletion:^(NSError* _Nullable error){
-  }];
-}
-
 #pragma mark - Private methods.
 
 + (void)performDeferredInitializationForBrowserState:
