@@ -428,8 +428,17 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
 void LaunchPlatformAppWithPath(content::BrowserContext* context,
                                const Extension* app,
                                const base::FilePath& file_path) {
-  scoped_refptr<PlatformAppPathLauncher> launcher =
-      new PlatformAppPathLauncher(context, app, file_path);
+  auto launcher =
+      base::MakeRefCounted<PlatformAppPathLauncher>(context, app, file_path);
+  launcher->Launch();
+}
+
+void LaunchPlatformAppWithFilePaths(
+    content::BrowserContext* context,
+    const extensions::Extension* app,
+    const std::vector<base::FilePath>& file_paths) {
+  auto launcher =
+      base::MakeRefCounted<PlatformAppPathLauncher>(context, app, file_paths);
   launcher->Launch();
 }
 

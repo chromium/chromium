@@ -310,6 +310,18 @@ WebContents* OpenEnabledApplication(Profile* profile,
   prefs->SetActiveBit(extension->id(), true);
 
   if (CanLaunchViaEvent(extension)) {
+    // When launching an app with a command line, there might be a file path to
+    // work with that command line, so
+    // LaunchPlatformAppWithCommandLineAndLaunchId should be called to handle
+    // the command line. If |launch_files| is set without |command_line|, that
+    // means launching the app with files, so call
+    // LaunchPlatformAppWithFilePaths to forward |launch_files| to the app.
+    if (params.command_line.GetArgs().empty() && !params.launch_files.empty()) {
+      apps::LaunchPlatformAppWithFilePaths(profile, extension,
+                                           params.launch_files);
+      return nullptr;
+    }
+
     apps::LaunchPlatformAppWithCommandLineAndLaunchId(
         profile, extension, params.launch_id, params.command_line,
         params.current_directory, params.source);

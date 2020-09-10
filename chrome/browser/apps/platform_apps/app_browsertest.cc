@@ -228,6 +228,31 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
         extension_name, *base::CommandLine::ForCurrentProcess());
   }
 
+  void RunPlatformAppTestWithFiles(const std::string& extension_name,
+                                   const std::string& test_file) {
+    extensions::ResultCatcher catcher;
+
+    base::FilePath test_doc(test_data_dir_.AppendASCII(test_file));
+    base::FilePath file_path = test_doc.NormalizePathSeparators();
+
+    base::FilePath extension_path = test_data_dir_.AppendASCII(extension_name);
+    const extensions::Extension* extension =
+        LoadExtensionWithFlags(extension_path, kFlagNone);
+    ASSERT_TRUE(extension);
+
+    apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
+    launch_files->file_paths.push_back(file_path);
+    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+        ->LaunchAppWithFiles(
+            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            apps::GetEventFlags(
+                apps::mojom::LaunchContainer::kLaunchContainerNone,
+                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                true /* preferred_container */),
+            apps::mojom::LaunchSource::kFromTest, std::move(launch_files));
+    ASSERT_TRUE(catcher.GetNextResult());
+  }
+
  private:
   bool RunPlatformAppTestWithCommandLine(
       const std::string& extension_name,
@@ -567,6 +592,13 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_ExtensionWindowingApis) {
 // ChromeOS does not support passing arguments on the command line, so the tests
 // that rely on this functionality are disabled.
 #if !defined(OS_CHROMEOS)
+// Tests that launch data is sent through if the file extension matches.
+IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
+                       LaunchFilesWithFileExtension) {
+  RunPlatformAppTestWithFiles("platform_apps/launch_file_by_extension",
+                              kTestFilePath);
+}
+
 // Tests that command line parameters get passed through to platform apps
 // via launchData correctly when launching with a file.
 // TODO(benwells/jeremya): tests need a way to specify a handler ID.
