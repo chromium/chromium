@@ -184,6 +184,7 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
     const JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK(web_contents);  // Verified in Java before invoking this function.
   return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
       jis_incognito, ukm::GetSourceIdForWebContentsDocument(web_contents)));
 }

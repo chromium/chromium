@@ -20,7 +20,14 @@ public class JourneyLogger {
 
     private boolean mHasRecorded;
 
+    /**
+     * Creates the journey logger.
+     * @param isIncognito Whether the user profile is incognito.
+     * @param webContents The web contents where PaymentRequest API is invoked. Should not be null.
+     */
     public JourneyLogger(boolean isIncognito, WebContents webContents) {
+        assert webContents != null;
+        assert !webContents.isDestroyed();
         // Note that this pointer could leak the native object. The called must call destroy() to
         // ensure that the native object is destroyed.
         mJourneyLoggerAndroid = JourneyLoggerJni.get().initJourneyLoggerAndroid(

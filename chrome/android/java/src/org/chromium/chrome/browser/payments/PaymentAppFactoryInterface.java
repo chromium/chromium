@@ -13,6 +13,10 @@ public interface PaymentAppFactoryInterface {
      * 3) Call delegate.onPaymentAppCreated(app) for apps that match the method data.
      * 4) Call delegate.onDoneCreatingPaymentApps(this) exactly once.
      *
+     * If called while the RenderFrameHost object is still available in Java, but its counterparts
+     * has been deleted in C++, then none of the `delegate` methods are expected to be called,
+     * because the frame is being unloaded.
+     *
      * @param delegate Provides information about payment request and receives a list of payment
      * apps.
      */
