@@ -2487,7 +2487,7 @@
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="394984172568887996">Імпортовано із IE</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{Цей додаток може бути небезпечним}one{Ці додатки можуть бути небезпечними}few{Ці додатки можуть бути небезпечними}many{Ці додатки можуть бути небезпечними}other{Ці додатки можуть бути небезпечними}}</translation>
-<translation id="3950820424414687140">Увійти</translation>
+<translation id="3950820424414687140">Вхід</translation>
 <translation id="3953834000574892725">Мої облікові записи</translation>
 <translation id="3954354850384043518">Завантаження триває</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> герц)</translation>
@@ -6468,7 +6468,7 @@
 <translation id="8898840733695078011">Рівень сигналу</translation>
 <translation id="8899851313684471736">Відкрити посилання у новому &amp;вікні</translation>
 <translation id="8900413463156971200">Увімкнути мобільну мережу</translation>
-<translation id="8902667442496790482">Відкрити налаштування служби Читання з екрана</translation>
+<translation id="8902667442496790482">Відкрити налаштування функції читання з екрана</translation>
 <translation id="8903263458134414071">Виберіть обліковий запис для входу</translation>
 <translation id="890616557918890486">Змінити джерело</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
