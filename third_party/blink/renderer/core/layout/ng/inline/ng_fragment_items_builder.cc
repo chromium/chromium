@@ -159,6 +159,7 @@ void NGFragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
       continue;
     }
 
+    const unsigned children_count = child.children_count;
     // Children of inline boxes are flattened and added to |items_|, with the
     // count of descendant items to preserve the tree structure.
     //
@@ -167,14 +168,14 @@ void NGFragmentItemsBuilder::AddItems(NGLogicalLineItem* child_begin,
     items_.emplace_back(child.rect.offset, std::move(child), writing_mode);
 
     // Add all children, including their desendants, skipping this item.
-    CHECK_GE(child.children_count, 1u);  // 0 will loop infinitely.
-    NGLogicalLineItem* end_child_iter = child_iter + child.children_count;
+    CHECK_GE(children_count, 1u);  // 0 will loop infinitely.
+    NGLogicalLineItem* end_child_iter = child_iter + children_count;
     CHECK_LE(end_child_iter - child_begin, child_end - child_begin);
     AddItems(child_iter + 1, end_child_iter);
     child_iter = end_child_iter;
 
     // All children are added. Compute how many items are actually added. The
-    // number of items added maybe different from |child.children_count|.
+    // number of items added may be different from |children_count|.
     const wtf_size_t item_count = items_.size() - box_start_index;
     NGFragmentItem& box_item = items_[box_start_index].item;
     DCHECK_EQ(box_item.DescendantsCount(), 1u);
