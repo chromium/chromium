@@ -930,26 +930,6 @@
             ]
         }
     ],
-    "CacheStorageEagerReading": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled2",
-                    "enable_features": [
-                        "CacheStorageEagerReading"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheStorageSequenceChromeOS": [
         {
             "platforms": [
