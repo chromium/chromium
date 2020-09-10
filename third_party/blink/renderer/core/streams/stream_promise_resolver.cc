@@ -34,16 +34,19 @@ StreamPromiseResolver* StreamPromiseResolver::CreateRejected(
   return promise;
 }
 
-// The constructor crashes if a v8::Promise::Resolver object cannot be created.
-// TODO(ricea): If necessary change this to make all the methods no-op instead.
-StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state)
-    : resolver_(script_state->GetIsolate(),
-                v8::Promise::Resolver::New(script_state->GetContext())
-                    .ToLocalChecked()) {}
+StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
+  v8::Local<v8::Promise::Resolver> resolver;
+  if (v8::Promise::Resolver::New(script_state->GetContext())
+          .ToLocal(&resolver)) {
+    resolver_.Set(script_state->GetIsolate(), resolver);
+  }
+}
 
 void StreamPromiseResolver::Resolve(ScriptState* script_state,
                                     v8::Local<v8::Value> value) {
-  DCHECK(!resolver_.IsEmpty());
+  if (resolver_.IsEmpty()) {
+    return;
+  }
   if (is_settled_) {
     return;
   }
@@ -61,7 +64,9 @@ void StreamPromiseResolver::ResolveWithUndefined(ScriptState* script_state) {
 
 void StreamPromiseResolver::Reject(ScriptState* script_state,
                                    v8::Local<v8::Value> reason) {
-  DCHECK(!resolver_.IsEmpty());
+  if (resolver_.IsEmpty()) {
+    return;
+  }
   if (is_settled_) {
     return;
   }
@@ -80,17 +85,27 @@ ScriptPromise StreamPromiseResolver::GetScriptPromise(
 
 v8::Local<v8::Promise> StreamPromiseResolver::V8Promise(
     v8::Isolate* isolate) const {
-  DCHECK(!resolver_.IsEmpty());
+  if (resolver_.IsEmpty()) {
+    return v8::Local<v8::Promise>();
+  }
   return resolver_.NewLocal(isolate)->GetPromise();
 }
 
 void StreamPromiseResolver::MarkAsHandled(v8::Isolate* isolate) {
-  V8Promise(isolate)->MarkAsHandled();
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return;
+  }
+  promise->MarkAsHandled();
 }
 
 v8::Promise::PromiseState StreamPromiseResolver::State(
     v8::Isolate* isolate) const {
-  return V8Promise(isolate)->State();
+  v8::Local<v8::Promise> promise = V8Promise(isolate);
+  if (promise.IsEmpty()) {
+    return v8::Promise::PromiseState::kPending;
+  }
+  return promise->State();
 }
 
 void StreamPromiseResolver::Trace(Visitor* visitor) const {
