@@ -5,7 +5,7 @@
 #include "chrome/browser/media/android/router/chrome_media_router_client.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/android/features/media_router/jni_headers/ChromeMediaRouterClient_jni.h"
+#include "chrome/android/chrome_jni_headers/ChromeMediaRouterClient_jni.h"
 
 namespace media_router {
 

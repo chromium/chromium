@@ -4124,7 +4124,6 @@ test("unit_tests") {
       "//chrome:chrome_android_core",
       "//chrome/android:app_hooks_java",
       "//chrome/android:chrome_java",
-      "//chrome/android/features/media_router:java",
       "//chrome/browser/optimization_guide/android:native_j_unittests_jni_headers",
       "//chrome/browser/optimization_guide/android:native_java_unittests",
       "//chrome/browser/password_check/android:unit_tests",

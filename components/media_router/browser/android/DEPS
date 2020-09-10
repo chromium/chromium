@@ -1,0 +1,7 @@
+include_rules = [
+  "+base/android",
+  "+components/browser_ui/media/android",
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+  "+services/media_session/public/cpp/android",
+]

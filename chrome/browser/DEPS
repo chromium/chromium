@@ -162,6 +162,7 @@ include_rules = [
   "+components/lookalikes/core",
   "+components/login",
   "+components/media_message_center",
+  "+components/media_router/browser",
   "+components/messages/android",
   "+components/metal_util",
   "+components/metrics",

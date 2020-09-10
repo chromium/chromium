@@ -30,14 +30,8 @@
     <item type="id" name="translate_infobar_target_spinner" />
     <item type="id" name="subresource_filter_infobar_toggle" />
 
-    <!-- Cast notification -->
-    <item type="id" name="remote_notification" />
-
     <!-- Media playback notification -->
     <item type="id" name="media_playback_notification" />
-
-    <!-- Presentation API notification -->
-    <item type="id" name="presentation_notification" />
 
     <!-- Sync UI constants -->
     <item type="id" name="passphrase_type_list" />

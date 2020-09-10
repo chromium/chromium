@@ -6,8 +6,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
-#include "chrome/android/features/media_router/jni_headers/FlingingControllerBridge_jni.h"
-#include "chrome/android/features/media_router/jni_headers/MediaStatusBridge_jni.h"
+#include "components/media_router/browser/android/jni_headers/FlingingControllerBridge_jni.h"
+#include "components/media_router/browser/android/jni_headers/MediaStatusBridge_jni.h"
 
 namespace media_router {
 

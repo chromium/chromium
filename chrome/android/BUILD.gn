@@ -192,6 +192,7 @@ android_resources("chrome_app_java_resources") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/find_in_page/android:java_resources",
     "//components/javascript_dialogs/android:java_resources",
+    "//components/media_router/browser/android:java_resources",
     "//components/messages/android:java_resources",
     "//components/omnibox/browser:java_resources",
     "//components/page_info/android:java_resources",
@@ -386,6 +387,7 @@ android_library("chrome_java") {
     "//components/language/android:language_bridge_java",
     "//components/location/android:location_java",
     "//components/location/android:settings_java",
+    "//components/media_router/browser/android:java",
     "//components/messages/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/module_installer/android:module_installer_java",
@@ -600,7 +602,6 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/android/features/media_router:java",
     "//chrome/android/modules/extra_icu/provider:java",
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/password_check:internal_java",
@@ -638,7 +639,6 @@ group("jni_headers") {
     ":chrome_jni_headers",
     "//chrome/android/features/autofill_assistant:jni_headers",
     "//chrome/android/features/keyboard_accessory:jni_headers",
-    "//chrome/android/features/media_router:jni_headers",
     "//chrome/browser/download/android:jni_headers",
     "//chrome/browser/enterprise/util:jni_headers",
     "//chrome/browser/flags:jni_headers",
@@ -653,6 +653,7 @@ group("jni_headers") {
     "//chrome/browser/ui/messages/android:jni_headers",
     "//chrome/browser/util:jni_headers",
     "//chrome/browser/webauthn/android:jni_headers",
+    "//components/media_router/browser/android:jni_headers",
   ]
 }
 
@@ -900,7 +901,6 @@ android_library("chrome_test_util_java") {
     "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTestRule.java",
     "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/directactions/FakeDirectActionReporter.java",
-    "javatests/src/org/chromium/chrome/browser/media/RouterTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/webapps/TestFetchStorageCallback.java",
     "javatests/src/org/chromium/chrome/browser/webapps/WebappActivityTestRule.java",
   ]
@@ -1057,6 +1057,8 @@ android_library("chrome_test_java") {
     "//components/infobars/core:infobar_enums_java",
     "//components/javascript_dialogs/android:java",
     "//components/location/android:location_java",
+    "//components/media_router/browser/android:java",
+    "//components/media_router/browser/android:test_support_java",
     "//components/messages/android:java",
     "//components/messages/android:javatests",
     "//components/metrics:metrics_java",
@@ -2338,7 +2340,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     ":chrome_test_java",
     "//chrome/android/features/autofill_assistant:test_java",
     "//chrome/android/features/keyboard_accessory:test_java",
-    "//chrome/android/features/media_router:test_java",
     "//chrome/android/webapk/libs/runtime_library:runtime_library_javatests",
     "//chrome/android/webapk/shell_apk:shell_apk_javatests",
     "//chrome/browser/download/android:download_java_tests",
@@ -3030,6 +3031,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/login/ChromeHttpAuthHandler.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureDevicesDispatcherAndroid.java",
     "java/src/org/chromium/chrome/browser/media/PictureInPictureActivity.java",
+    "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/metrics/BackgroundTaskMemoryMetricsEmitter.java",
     "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
     "java/src/org/chromium/chrome/browser/metrics/PageLoadMetrics.java",

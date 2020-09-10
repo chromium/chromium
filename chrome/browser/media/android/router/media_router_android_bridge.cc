@@ -6,9 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/features/media_router/jni_headers/BrowserMediaRouter_jni.h"
 #include "chrome/browser/media/android/remote/flinging_controller_bridge.h"
 #include "chrome/browser/media/android/router/media_router_android.h"
+#include "components/media_router/browser/android/jni_headers/BrowserMediaRouter_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_controller.h"
 

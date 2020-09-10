@@ -1805,12 +1805,6 @@
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/"
       },
       {
-        "name": "media_router_junit_tests",
-        "swarming": {},
-        "test": "media_router_junit_tests",
-        "test_id_prefix": "ninja://chrome/android/features/media_router:media_router_junit_tests/"
-      },
-      {
         "name": "module_installer_junit_tests",
         "swarming": {},
         "test": "module_installer_junit_tests",
@@ -20591,12 +20585,6 @@
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/"
       },
       {
-        "name": "media_router_junit_tests",
-        "swarming": {},
-        "test": "media_router_junit_tests",
-        "test_id_prefix": "ninja://chrome/android/features/media_router:media_router_junit_tests/"
-      },
-      {
         "name": "module_installer_junit_tests",
         "swarming": {},
         "test": "module_installer_junit_tests",
@@ -29243,13 +29231,6 @@
         "swarming": {},
         "test": "media_base_junit_tests",
         "test_id_prefix": "ninja://media/base/android:media_base_junit_tests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "name": "media_router_junit_tests",
-        "swarming": {},
-        "test": "media_router_junit_tests",
-        "test_id_prefix": "ninja://chrome/android/features/media_router:media_router_junit_tests/"
       },
       {
         "isolate_profile_data": true,
