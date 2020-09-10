@@ -845,7 +845,6 @@ crbug.com/591099 external/wpt/css/css-text/hyphens/shy-styling-001.html [ Failur
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-009.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-010.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
-crbug.com/1002815 external/wpt/css/cssom-view/offsetTopLeft-trailing-space-inline.html [ Failure ]
 crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-003.html [ Failure ]
 crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-007.html [ Failure ]
 crbug.com/591099 fast/backgrounds/quirks-mode-line-box-backgrounds.html [ Failure ]
