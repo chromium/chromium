@@ -74,11 +74,15 @@ _THIRD_PARTY_EXCEPT_BLINK = 'third_party/(?!blink/)'
 
 _TEST_ONLY_WARNING = (
     'You might be calling functions intended only for testing from\n'
-    'production code.  It is OK to ignore this warning if you know what\n'
-    'you are doing, as the heuristics used to detect the situation are\n'
-    'not perfect.  The commit queue will not block on this warning,\n'
-    'however the android-binary-size trybot will block if the method\n'
-    'exists in the release apk.')
+    'production code.  If you are doing this from inside another method\n'
+    'named as *ForTesting(), then consider exposing things to have tests\n'
+    'make that same call directly.\n'
+    'If that is not possible, you may put a comment on the same line with\n'
+    '  // IN-TEST \n'
+    'to tell the PRESUBMIT script that the code is inside a *ForTesting()\n'
+    'method and can be ignored. Do not do this inside production code.\n'
+    'The android-binary-size trybot will block if the method exists in the\n'
+    'release apk.')
 
 
 _INCLUDE_ORDER_WARNING = (
