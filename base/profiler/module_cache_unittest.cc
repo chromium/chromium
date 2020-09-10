@@ -106,8 +106,13 @@ MAYBE_TEST(ModuleCacheTest, GetDebugBasename) {
       cache.GetModuleForAddress(reinterpret_cast<uintptr_t>(&AFunctionForTest));
   ASSERT_NE(nullptr, module);
 #if defined(OS_ANDROID)
-  EXPECT_EQ("libbase_unittests__library.so",
-            module->GetDebugBasename().value());
+  EXPECT_EQ("libbase_unittests__library",
+            // Different build configurations varyingly use .so vs. .cr.so for
+            // the module extension. Remove all the extensions in both cases.
+            module->GetDebugBasename()
+                .RemoveFinalExtension()
+                .RemoveFinalExtension()
+                .value());
 #elif defined(OS_POSIX)
   EXPECT_EQ("base_unittests", module->GetDebugBasename().value());
 #elif defined(OS_WIN)
