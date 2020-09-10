@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/ios/ios_util.h"
 #include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -10421,6 +10422,13 @@ TEST_F(AutofillMetricsTest,
 // Verify that we don't log Autofill.WebOTP.OneTimeCode.FromAutocomplete if the
 // frame has no form.
 TEST_F(AutofillMetricsTest, FrameHasNoForm) {
+#if defined(OS_IOS) && !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1127005): Test is failing on iOS 12 device.
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    return;
+  }
+#endif
+
   autofill_manager_.reset();
   EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(
       "Autofill.WebOTP.OneTimeCode.FromAutocomplete"));
