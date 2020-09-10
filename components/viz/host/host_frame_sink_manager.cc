@@ -195,6 +195,11 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
     return false;
   }
 
+  // TODO(crbug.com/1115094): Convert to DCHECKs after root cause of the
+  // deserialization error is identified.
+  CHECK(parent_frame_sink_id.is_valid()) << parent_frame_sink_id;
+  CHECK(child_frame_sink_id.is_valid()) << child_frame_sink_id;
+
   // Register and store the parent.
   frame_sink_manager_->RegisterFrameSinkHierarchy(parent_frame_sink_id,
                                                   child_frame_sink_id);
