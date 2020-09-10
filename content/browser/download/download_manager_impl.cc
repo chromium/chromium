@@ -1323,8 +1323,8 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                 storage_partition->GetPartitionDomain()));
   } else if (params->url().SchemeIs(url::kDataScheme)) {
     pending_url_loader_factory =
-        CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
-            std::make_unique<DataURLLoaderFactory>(params->url()));
+        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+            DataURLLoaderFactory::CreateForOneSpecificUrl(params->url()));
   } else if (rfh && !blink::network_utils::IsURLHandledByNetworkService(
                         params->url())) {
     ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap

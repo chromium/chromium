@@ -23,9 +23,6 @@
 
 namespace network {
 class SharedURLLoaderFactory;
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 }  // namespace network
 
 namespace mojo {
@@ -127,8 +124,6 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   SignedExchangeDevToolsProxy* devtools_proxy_;
   bool has_notified_completion_to_devtools_ = false;
   base::Optional<base::UnguessableToken> cert_request_id_;
-
-  std::unique_ptr<network::mojom::URLLoaderFactory> data_url_loader_factory_;
 
   net::IPAddress cert_server_ip_address_;
 

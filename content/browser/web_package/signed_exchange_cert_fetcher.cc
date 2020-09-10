@@ -336,8 +336,9 @@ void SignedExchangeCertFetcher::OnDataURLRequest(
     mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient>
         url_loader_client_remote) {
-  data_url_loader_factory_ = std::make_unique<DataURLLoaderFactory>();
-  data_url_loader_factory_->CreateLoaderAndStart(
+  mojo::Remote<network::mojom::URLLoaderFactory> factory(
+      DataURLLoaderFactory::Create());
+  factory->CreateLoaderAndStart(
       std::move(url_loader_receiver), 0, 0, 0, resource_request,
       std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(kCertFetcherTrafficAnnotation));

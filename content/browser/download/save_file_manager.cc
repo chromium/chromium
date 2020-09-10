@@ -262,8 +262,8 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
     // can handle blob, file, webui, embedder provided schemes etc?
     // https://crbug.com/953967
     if (url.SchemeIs(url::kDataScheme)) {
-      url_loader_factory = std::make_unique<DataURLLoaderFactory>();
-      factory = url_loader_factory.get();
+      factory_remote.Bind(DataURLLoaderFactory::Create());
+      factory = factory_remote.get();
     } else if (url.SchemeIsFile()) {
       factory_remote.Bind(FileURLLoaderFactory::Create(
           context->GetPath(), context->GetSharedCorsOriginAccessList(),

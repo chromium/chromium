@@ -1212,8 +1212,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   non_network_url_loader_factories_.emplace(url::kAboutScheme,
                                             AboutURLLoaderFactory::Create());
 
-  non_network_uniquely_owned_factories_.emplace(
-      url::kDataScheme, std::make_unique<DataURLLoaderFactory>());
+  non_network_url_loader_factories_.emplace(url::kDataScheme,
+                                            DataURLLoaderFactory::Create());
 
   // USER_BLOCKING because this scenario is exactly one of the examples
   // given by the doc comment for USER_BLOCKING:

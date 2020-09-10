@@ -198,8 +198,8 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
   ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
       non_network_uniquely_owned_factories;
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
-  non_network_uniquely_owned_factories[url::kDataScheme] =
-      std::make_unique<DataURLLoaderFactory>();
+  non_network_factories.emplace(url::kDataScheme,
+                                DataURLLoaderFactory::Create());
   if (filesystem_url_support) {
     // TODO(https://crbug.com/986188): Pass ChildProcessHost::kInvalidUniqueID
     // instead of valid |worker_process_id| for |factory_bundle_for_browser|

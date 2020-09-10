@@ -6240,8 +6240,8 @@ void RenderFrameHostImpl::CommitNavigation(
                                     partition->GetFileSystemContext(),
                                     partition->GetPartitionDomain()));
 
-    non_network_uniquely_owned_factories_.emplace(
-        url::kDataScheme, std::make_unique<DataURLLoaderFactory>());
+    non_network_factories.emplace(url::kDataScheme,
+                                  DataURLLoaderFactory::Create());
 
     GetContentClient()
         ->browser()

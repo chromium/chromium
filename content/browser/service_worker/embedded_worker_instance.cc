@@ -1260,8 +1260,7 @@ EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
   ContentBrowserClient::NonNetworkURLLoaderFactoryDeprecatedMap
       non_network_uniquely_owned_factories;
   ContentBrowserClient::NonNetworkURLLoaderFactoryMap non_network_factories;
-  non_network_uniquely_owned_factories[url::kDataScheme] =
-      std::make_unique<DataURLLoaderFactory>();
+  non_network_factories[url::kDataScheme] = DataURLLoaderFactory::Create();
   GetContentClient()
       ->browser()
       ->RegisterNonNetworkSubresourceURLLoaderFactories(

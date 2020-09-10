@@ -39,10 +39,12 @@ void OnWrite(std::unique_ptr<WriteData> write_data, MojoResult result) {
 
 }  // namespace
 
-DataURLLoaderFactory::DataURLLoaderFactory() = default;
-DataURLLoaderFactory::~DataURLLoaderFactory() = default;
+DataURLLoaderFactory::DataURLLoaderFactory(
+    const GURL& url,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)), url_(url) {}
 
-DataURLLoaderFactory::DataURLLoaderFactory(const GURL& url) : url_(url) {}
+DataURLLoaderFactory::~DataURLLoaderFactory() = default;
 
 void DataURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -65,7 +67,10 @@ void DataURLLoaderFactory::CreateLoaderAndStart(
   net::Error result = net::DataURL::BuildResponse(
       *url, request.method, &response->mime_type, &response->charset, &data,
       &response->headers);
-  url_ = GURL();  // Don't need it anymore.
+
+  // Users of CreateAndBindForOneSpecificUrl should only submit one load
+  // request - we won't need the URL anymore.
+  url_ = GURL();
 
   mojo::Remote<network::mojom::URLLoaderClient> client_remote(
       std::move(client));
@@ -102,9 +107,23 @@ void DataURLLoaderFactory::CreateLoaderAndStart(
       base::BindOnce(OnWrite, std::move(write_data)));
 }
 
-void DataURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  receivers_.Add(this, std::move(loader));
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+DataURLLoaderFactory::Create() {
+  return CreateForOneSpecificUrl(GURL());
+}
+
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+DataURLLoaderFactory::CreateForOneSpecificUrl(const GURL& url) {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+  // The DataURLLoaderFactory will delete itself when there are no more
+  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  new DataURLLoaderFactory(url,
+                           pending_remote.InitWithNewPipeAndPassReceiver());
+
+  return pending_remote;
 }
 
 }  // namespace content
