@@ -20,9 +20,9 @@
 #pragma mark - InfobarBannerInteractionHandler
 
 PasswordInfobarBannerInteractionHandler::
-    PasswordInfobarBannerInteractionHandler()
-    : InfobarBannerInteractionHandler(
-          SavePasswordInfobarBannerOverlayRequestConfig::RequestSupport()) {}
+    PasswordInfobarBannerInteractionHandler(
+        const OverlayRequestSupport* request_support)
+    : InfobarBannerInteractionHandler(request_support) {}
 
 PasswordInfobarBannerInteractionHandler::
     ~PasswordInfobarBannerInteractionHandler() = default;

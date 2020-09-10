@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/save_password_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/update_password_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
@@ -47,6 +48,7 @@
 + (NSArray<Class>*)supportedMediatorClasses {
   return @[
     [SavePasswordInfobarBannerOverlayMediator class],
+    [UpdatePasswordInfobarBannerOverlayMediator class],
     [ConfirmInfobarBannerOverlayMediator class],
     [TranslateInfobarBannerOverlayMediator class],
     [SaveCardInfobarBannerOverlayMediator class],
