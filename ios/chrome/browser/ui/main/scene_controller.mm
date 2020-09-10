@@ -413,11 +413,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         // Consider the scene as still not active at this point as the handling
         // of startup parameters is not yet done (and will be later in this
         // function).
-        [UserActivityHandler continueUserActivity:activityWithCompletion
-                              applicationIsActive:NO
-                                        tabOpener:self
-                            connectionInformation:self
-                               startupInformation:self.mainController];
+        [UserActivityHandler
+             continueUserActivity:activityWithCompletion
+              applicationIsActive:NO
+                        tabOpener:self
+            connectionInformation:self
+               startupInformation:self.mainController
+                     browserState:self.currentInterface.browserState];
       }
       self.sceneState.connectionOptions = nil;
     }
@@ -491,7 +493,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                         applicationIsActive:sceneIsActive
                                   tabOpener:self
                       connectionInformation:self
-                         startupInformation:self.mainController];
+                         startupInformation:self.mainController
+                               browserState:self.currentInterface.browserState];
   // It is necessary to reset the pendingUserActivity after handling it.
   // Handle the reset asynchronously to avoid interfering with other observers.
   dispatch_async(dispatch_get_main_queue(), ^{

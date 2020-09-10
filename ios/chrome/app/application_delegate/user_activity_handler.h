@@ -20,13 +20,16 @@ class ChromeBrowserState;
 @interface UserActivityHandler : NSObject
 
 // If the userActivity is a Handoff or an opening from Spotlight, opens a new
-// tab or setup startupParameters to open it later.
-// Returns wether it could continue userActivity.
+// tab or setup startupParameters to open it later. If a new tab must be
+// opened immediately (e.g. if a Siri Shortcut was triggered by the user while
+// Chrome was already in the foreground), it will be done with the provided
+// |browserState|. Returns wether it could continue userActivity.
 + (BOOL)continueUserActivity:(NSUserActivity*)userActivity
          applicationIsActive:(BOOL)applicationIsActive
                    tabOpener:(id<TabOpening>)tabOpener
        connectionInformation:(id<ConnectionInformation>)connectionInformation
-          startupInformation:(id<StartupInformation>)startupInformation;
+          startupInformation:(id<StartupInformation>)startupInformation
+                browserState:(ChromeBrowserState*)browserState;
 
 // Handles the 3D touch application static items. If the First Run UI is active,
 // |completionHandler| will be called with NO.

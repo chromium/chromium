@@ -89,7 +89,8 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
          applicationIsActive:(BOOL)applicationIsActive
                    tabOpener:(id<TabOpening>)tabOpener
        connectionInformation:(id<ConnectionInformation>)connectionInformation
-          startupInformation:(id<StartupInformation>)startupInformation {
+          startupInformation:(id<StartupInformation>)startupInformation
+                browserState:(ChromeBrowserState*)browserState {
   NSURL* webpageURL = userActivity.webpageURL;
 
   if ([userActivity.activityType
@@ -151,7 +152,8 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
                     applicationIsActive:isActive
                               tabOpener:tabOpener
                   connectionInformation:connectionInformation
-                     startupInformation:startupInformation];
+                     startupInformation:startupInformation
+                           browserState:browserState];
         });
       });
       return YES;
@@ -179,6 +181,7 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     [connectionInformation setStartupParameters:startupParams];
     webpageURL =
         [NSURL URLWithString:base::SysUTF8ToNSString(kChromeUINewTabURL)];
+
   } else if ([userActivity.activityType
                  isEqualToString:kSiriShortcutOpenInChrome]) {
     base::RecordAction(UserMetricsAction("IOSLaunchedByOpenInChromeIntent"));
@@ -235,14 +238,16 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
                    applicationIsActive:applicationIsActive
                              tabOpener:tabOpener
                  connectionInformation:connectionInformation
-                    startupInformation:startupInformation];
+                    startupInformation:startupInformation
+                          browserState:browserState];
 }
 
 + (BOOL)continueUserActivityURL:(NSURL*)webpageURL
             applicationIsActive:(BOOL)applicationIsActive
                       tabOpener:(id<TabOpening>)tabOpener
           connectionInformation:(id<ConnectionInformation>)connectionInformation
-             startupInformation:(id<StartupInformation>)startupInformation {
+             startupInformation:(id<StartupInformation>)startupInformation
+                   browserState:(ChromeBrowserState*)browserState {
   if (!webpageURL)
     return NO;
 
@@ -256,6 +261,15 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     ApplicationModeForTabOpening targetMode =
         [[connectionInformation startupParameters] applicationMode];
     UrlLoadParams params = UrlLoadParams::InNewTab(webpageGURL);
+
+    if (connectionInformation.startupParameters.textQuery) {
+      NSString* query = connectionInformation.startupParameters.textQuery;
+
+      GURL result = [self generateResultGURLFromSearchQuery:query
+                                               browserState:browserState];
+      params.web_params.url = result;
+    }
+
     if (![[connectionInformation startupParameters] launchInIncognito] &&
         [tabOpener URLIsOpenedInRegularMode:webpageGURL]) {
       // Record metric.
@@ -376,6 +390,25 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
        [userActivityType isEqualToString:CSSearchableItemActionType]);
 }
 
++ (GURL)generateResultGURLFromSearchQuery:(NSString*)searchQuery
+                             browserState:(ChromeBrowserState*)browserState {
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
+  DCHECK(!defaultURL->url().empty());
+  DCHECK(
+      defaultURL->url_ref().IsValid(templateURLService->search_terms_data()));
+  base::string16 queryString = base::SysNSStringToUTF16(searchQuery);
+  TemplateURLRef::SearchTermsArgs search_args(queryString);
+
+  GURL result(defaultURL->url_ref().ReplaceSearchTerms(
+      search_args, templateURLService->search_terms_data()));
+
+  return result;
+}
+
 + (void)handleStartupParametersWithTabOpener:(id<TabOpening>)tabOpener
                        connectionInformation:
                            (id<ConnectionInformation>)connectionInformation
@@ -442,19 +475,8 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     } else if (connectionInformation.startupParameters.textQuery) {
       NSString* query = connectionInformation.startupParameters.textQuery;
 
-      TemplateURLService* templateURLService =
-          ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-
-      const TemplateURL* defaultURL =
-          templateURLService->GetDefaultSearchProvider();
-      DCHECK(!defaultURL->url().empty());
-      DCHECK(defaultURL->url_ref().IsValid(
-          templateURLService->search_terms_data()));
-      base::string16 queryString = base::SysNSStringToUTF16(query);
-      TemplateURLRef::SearchTermsArgs search_args(queryString);
-
-      GURL result(defaultURL->url_ref().ReplaceSearchTerms(
-          search_args, templateURLService->search_terms_data()));
+      GURL result = [self generateResultGURLFromSearchQuery:query
+                                               browserState:browserState];
       params.web_params.url = result;
     }
 

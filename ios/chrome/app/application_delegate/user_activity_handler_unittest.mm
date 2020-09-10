@@ -90,6 +90,11 @@ typedef void (^startupParameterBlock)(id,
 typedef void (^conditionBlock)(BOOL);
 
 class UserActivityHandlerTest : public PlatformTest {
+ public:
+  UserActivityHandlerTest() {
+    interfaceProvider_ = [[StubBrowserInterfaceProvider alloc] init];
+  }
+
  protected:
   void swizzleHandleStartupParameters() {
     handle_startup_parameters_has_been_called_ = NO;
@@ -136,6 +141,10 @@ class UserActivityHandlerTest : public PlatformTest {
 
   BOOL completionHandlerArgument() { return block_argument_; }
 
+  StubBrowserInterfaceProvider* GetInterfaceProvider() {
+    return interfaceProvider_;
+  }
+
  private:
   __block BOOL block_executed_;
   __block BOOL block_argument_;
@@ -143,6 +152,7 @@ class UserActivityHandlerTest : public PlatformTest {
   startupParameterBlock swizzle_block_;
   conditionBlock completion_block_;
   __block BOOL handle_startup_parameters_has_been_called_;
+  StubBrowserInterfaceProvider* interfaceProvider_;
 };
 
 #pragma mark - Tests.
@@ -198,12 +208,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityFromGarbage) {
         [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
 
     // Action.
-    BOOL result =
-        [UserActivityHandler continueUserActivity:userActivity
-                              applicationIsActive:NO
-                                        tabOpener:tabOpenerMock
-                            connectionInformation:connectionInformation
-                               startupInformation:startupInformationMock];
+    BOOL result = [UserActivityHandler
+         continueUserActivity:userActivity
+          applicationIsActive:NO
+                    tabOpener:tabOpenerMock
+        connectionInformation:connectionInformation
+           startupInformation:startupInformationMock
+                 browserState:GetInterfaceProvider()
+                                  .currentInterface.browserState];
 
     // Tests.
     EXPECT_FALSE(result);
@@ -225,12 +237,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityNoWebpage) {
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:NO
-                                      tabOpener:tabOpenerMock
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:NO
+                  tabOpener:tabOpenerMock
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Tests.
   EXPECT_FALSE(result);
@@ -266,12 +280,14 @@ TEST_F(UserActivityHandlerTest,
   id connectionInformationMock =
       [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:NO
-                                      tabOpener:tabOpenerMock
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:NO
+                  tabOpener:tabOpenerMock
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Tests.
   EXPECT_FALSE(result);
@@ -303,12 +319,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityBackground) {
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:NO
-                                      tabOpener:tabOpenerMock
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:NO
+                  tabOpener:tabOpenerMock
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -338,12 +356,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityForeground) {
       startupParameters];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:YES
-                                      tabOpener:tabOpener
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:YES
+                  tabOpener:tabOpener
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Test.
   EXPECT_EQ(gurl, tabOpener.urlLoadParams.web_params.url);
@@ -369,12 +389,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityBrowsingWeb) {
   FakeConnectionInformation* connectionInformationMock =
       [[FakeConnectionInformation alloc] init];
 
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:YES
-                                      tabOpener:tabOpener
-                          connectionInformation:connectionInformationMock
-                             startupInformation:fakeStartupInformation];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:YES
+                  tabOpener:tabOpener
+      connectionInformation:connectionInformationMock
+         startupInformation:fakeStartupInformation
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   GURL newTabURL(kChromeUINewTabURL);
   EXPECT_EQ(newTabURL, tabOpener.urlLoadParams.web_params.url);
@@ -436,12 +458,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityShortcutActions) {
     id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
     // Action.
-    BOOL result =
-        [UserActivityHandler continueUserActivity:userActivity
-                              applicationIsActive:NO
-                                        tabOpener:tabOpenerMock
-                            connectionInformation:connectionInformationMock
-                               startupInformation:fakeStartupInformation];
+    BOOL result = [UserActivityHandler
+         continueUserActivity:userActivity
+          applicationIsActive:NO
+                    tabOpener:tabOpenerMock
+        connectionInformation:connectionInformationMock
+           startupInformation:fakeStartupInformation
+                 browserState:GetInterfaceProvider()
+                                  .currentInterface.browserState];
 
     // Tests.
     EXPECT_TRUE(result);
@@ -499,12 +523,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoBackground) {
   MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:NO
-                                      tabOpener:tabOpener
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:NO
+                  tabOpener:tabOpener
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
   EXPECT_TRUE(result);
@@ -551,12 +577,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentBackground) {
   id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:NO
-                                      tabOpener:tabOpenerMock
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:NO
+                  tabOpener:tabOpenerMock
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -620,12 +648,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentIncognitoForeground) {
   MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:YES
-                                      tabOpener:tabOpener
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:YES
+                  tabOpener:tabOpener
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -684,12 +714,14 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentForeground) {
       startupParameters];
 
   // Action.
-  BOOL result =
-      [UserActivityHandler continueUserActivity:userActivity
-                            applicationIsActive:YES
-                                      tabOpener:tabOpener
-                          connectionInformation:connectionInformationMock
-                             startupInformation:startupInformationMock];
+  BOOL result = [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:YES
+                  tabOpener:tabOpener
+      connectionInformation:connectionInformationMock
+         startupInformation:startupInformationMock
+               browserState:GetInterfaceProvider()
+                                .currentInterface.browserState];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -724,16 +756,14 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
   // The test will fail is a method of this object is called.
   //  id interfaceProviderMock =
   //      [OCMockObject mockForProtocol:@protocol(BrowserInterfaceProvider)];
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
 
   // Action.
   [UserActivityHandler
       handleStartupParametersWithTabOpener:tabOpener
                      connectionInformation:connectionInformationMock
                         startupInformation:startupInformationMock
-                              browserState:interfaceProvider.currentInterface
-                                               .browserState];
+                              browserState:GetInterfaceProvider()
+                                               .currentInterface.browserState];
   [tabOpener completionBlock]();
 
   // Tests.
@@ -771,16 +801,14 @@ TEST_F(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
   // The test will fail is a method of this object is called.
   //  id interfaceProviderMock =
   //      [OCMockObject mockForProtocol:@protocol(BrowserInterfaceProvider)];
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
 
   // Action.
   [UserActivityHandler
       handleStartupParametersWithTabOpener:tabOpener
                      connectionInformation:connectionInformationMock
                         startupInformation:startupInformationMock
-                              browserState:interfaceProvider.currentInterface
-                                               .browserState];
+                              browserState:GetInterfaceProvider()
+                                               .currentInterface.browserState];
   [tabOpener completionBlock]();
 
   // Tests.
@@ -892,8 +920,6 @@ TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithRealShortcut) {
 
     // The test will fail is a method of those objects is called.
     id tabOpenerMock = [OCMockObject mockForProtocol:@protocol(TabOpening)];
-    StubBrowserInterfaceProvider* interfaceProvider =
-        [[StubBrowserInterfaceProvider alloc] init];
 
     // Action.
     [UserActivityHandler performActionForShortcutItem:shortcut
@@ -901,7 +927,7 @@ TEST_F(UserActivityHandlerTest, PerformActionForShortcutItemWithRealShortcut) {
                                             tabOpener:tabOpenerMock
                                 connectionInformation:fakeConnectionInformation
                                    startupInformation:fakeStartupInformation
-                                    interfaceProvider:interfaceProvider];
+                                    interfaceProvider:GetInterfaceProvider()];
 
     // Tests.
     EXPECT_EQ(gurlNewTab,

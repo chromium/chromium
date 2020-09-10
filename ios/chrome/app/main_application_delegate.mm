@@ -343,11 +343,14 @@
   BOOL applicationIsActive =
       [application applicationState] == UIApplicationStateActive;
 
-  return [UserActivityHandler continueUserActivity:userActivity
-                               applicationIsActive:applicationIsActive
-                                         tabOpener:_tabOpener
-                             connectionInformation:self.sceneController
-                                startupInformation:_startupInformation];
+  return [UserActivityHandler
+       continueUserActivity:userActivity
+        applicationIsActive:applicationIsActive
+                  tabOpener:_tabOpener
+      connectionInformation:self.sceneController
+         startupInformation:_startupInformation
+               browserState:_mainController.interfaceProvider.currentInterface
+                                .browserState];
 }
 
 - (void)application:(UIApplication*)application
