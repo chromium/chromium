@@ -24,21 +24,21 @@
       "include": "webrtc_tests.json",
       "device type": "iPhone 6s Plus",
       "os": "12.4",
-      "host os": "Mac-10.14.6",
+      "host os": "Mac-10.15",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPhone 6s",
       "os": "12.4",
-      "host os": "Mac-10.14.6",
+      "host os": "Mac-10.15",
       "pool": "chromium.tests"
     },
     {
       "include": "webrtc_tests.json",
       "device type": "iPad Air 2",
       "os": "12.4",
-      "host os": "Mac-10.14.6",
+      "host os": "Mac-10.15",
       "pool": "chromium.tests"
     }
   ]
