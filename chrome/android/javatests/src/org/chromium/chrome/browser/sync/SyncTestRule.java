@@ -202,8 +202,10 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * @return the test account that is signed in.
      */
     public Account setUpAccountAndSignInForTesting() {
-        Account account = addTestAccount();
-        signinAndEnableSync(account);
+        Account account = mAccountManagerTestRule.addAndSignInTestAccount(mProfileSyncService);
+        enableUKM();
+        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
         return account;
     }
 
@@ -429,10 +431,8 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
                                     Assert.fail("Sign-in was aborted");
                                 }
                             });
-            // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in UI.
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    Profile.getLastUsedRegularProfile(), true);
         });
+        enableUKM();
         if (setFirstSetupComplete) {
             SyncTestUtil.waitForSyncActive();
             SyncTestUtil.triggerSyncAndWaitForCompletion();
@@ -440,5 +440,13 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
             SyncTestUtil.waitForSyncTransportActive();
         }
         Assert.assertEquals(account, mAccountManagerTestRule.getCurrentSignedInAccount());
+    }
+
+    private static void enableUKM() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in UI.
+            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                    Profile.getLastUsedRegularProfile(), true);
+        });
     }
 }
