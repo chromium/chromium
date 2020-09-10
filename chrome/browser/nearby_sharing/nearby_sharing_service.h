@@ -62,10 +62,18 @@ class NearbySharingService : public KeyedService {
     kForeground,
   };
 
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnHighVisibilityChanged(bool in_high_visibility) = 0;
+  };
+
   using StatusCodesCallback =
       base::OnceCallback<void(StatusCodes status_codes)>;
 
   ~NearbySharingService() override = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Registers a send surface for handling payload transfer status and device
   // discovery.
@@ -84,9 +92,12 @@ class NearbySharingService : public KeyedService {
       TransferUpdateCallback* transfer_callback,
       ReceiveSurfaceState state) = 0;
 
-  // Unregistesrs the current receive surface.
+  // Unregisters the current receive surface.
   virtual StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) = 0;
+
+  // Returns true if a foreground receive surface is registered.
+  virtual bool IsInHighVisibility() = 0;
 
   // Sends |attachments| to the remote |share_target|.
   virtual StatusCodes SendAttachments(

@@ -3411,6 +3411,7 @@ static_library("browser") {
       "nearby_sharing/nearby_connection.h",
       "nearby_sharing/nearby_connection_impl.cc",
       "nearby_sharing/nearby_connection_impl.h",
+      "nearby_sharing/nearby_connections_manager.cc",
       "nearby_sharing/nearby_connections_manager.h",
       "nearby_sharing/nearby_connections_manager_impl.cc",
       "nearby_sharing/nearby_connections_manager_impl.h",

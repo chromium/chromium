@@ -920,6 +920,15 @@ class NearbySharingServiceImplSendFailureTest
     : public NearbySharingServiceImplTest,
       public testing::WithParamInterface<SendFailureTestData> {};
 
+class TestObserver : public NearbySharingService::Observer {
+ public:
+  void OnHighVisibilityChanged(bool in_high_visibility) override {
+    in_high_visibility_ = in_high_visibility;
+  }
+
+  bool in_high_visibility_ = false;
+};
+
 }  // namespace
 
 TEST_F(NearbySharingServiceImplTest, AddsNearbyProcessObserver) {
@@ -3419,4 +3428,37 @@ TEST_F(NearbySharingServiceImplTest, ProfileChangedControlsAdvertising) {
       .WillByDefault(Return(true));
   service_->OnNearbyProfileChanged(/*profile=*/nullptr);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       RegisterForegroundReceiveSurfaceEntersHighVisibility) {
+  TestObserver observer;
+  NiceMock<MockTransferUpdateCallback> callback;
+  ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
+
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  local_device_data_manager()->SetDeviceName(kDeviceName);
+  service_->AddObserver(&observer);
+
+  // To start, we should not be in high visibility state.
+  EXPECT_FALSE(service_->IsInHighVisibility());
+
+  // If we register a foreground surface we should end up in high visibility
+  // state.
+  SetUpForegroundReceiveSurface(callback);
+
+  // At this point we should have a new high visibility state and the observer
+  // should have been called as well.
+  EXPECT_TRUE(service_->IsInHighVisibility());
+  EXPECT_TRUE(observer.in_high_visibility_);
+
+  // If we unregister the foreground receive surface we should no longer be in
+  // high visibility and the observer should be notified.
+  EXPECT_EQ(NearbySharingService::StatusCodes::kOk,
+            service_->UnregisterReceiveSurface(&callback));
+  EXPECT_FALSE(service_->IsInHighVisibility());
+  EXPECT_FALSE(observer.in_high_visibility_);
+
+  service_->RemoveObserver(&observer);
 }

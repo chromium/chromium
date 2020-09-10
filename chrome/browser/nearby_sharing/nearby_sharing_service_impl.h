@@ -69,6 +69,8 @@ class NearbySharingServiceImpl
 
   // NearbySharingService:
   void Shutdown() override;
+  void AddObserver(NearbySharingService::Observer* observer) override;
+  void RemoveObserver(NearbySharingService::Observer* observer) override;
   StatusCodes RegisterSendSurface(
       TransferUpdateCallback* transfer_callback,
       ShareTargetDiscoveredCallback* discovery_callback,
@@ -78,9 +80,9 @@ class NearbySharingServiceImpl
       ShareTargetDiscoveredCallback* discovery_callback) override;
   StatusCodes RegisterReceiveSurface(TransferUpdateCallback* transfer_callback,
                                      ReceiveSurfaceState state) override;
-
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
+  bool IsInHighVisibility() override;
   StatusCodes SendAttachments(
       const ShareTarget& share_target,
       std::vector<std::unique_ptr<Attachment>> attachments) override;
@@ -290,6 +292,11 @@ class NearbySharingServiceImpl
   base::Optional<int64_t> GetAttachmentPayloadId(int64_t attachment_id);
   void UnregisterShareTarget(const ShareTarget& share_target);
 
+  void OnStartAdvertisingResult(
+      bool used_device_name,
+      NearbyConnectionsManager::ConnectionsStatus status);
+  void SetInHighVisibility(bool in_high_visibility);
+
   Profile* profile_;
   NearbyShareSettings settings_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
@@ -306,6 +313,8 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
   NearbyFileHandler file_handler_;
 
+  // A list of service observers.
+  base::ObserverList<NearbySharingService::Observer> observers_;
   // A list of foreground receivers.
   base::ObserverList<TransferUpdateCallback> foreground_receive_callbacks_;
   // A list of foreground receivers.
@@ -376,6 +385,8 @@ class NearbySharingServiceImpl
   bool is_connecting_ = false;
   // The time scanning began.
   base::Time scanning_start_timestamp_;
+  // True when we are advertising with a device name visible to everyone.
+  bool in_high_visibility = false;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.

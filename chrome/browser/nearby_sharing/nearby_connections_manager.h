@@ -64,6 +64,9 @@ class NearbyConnectionsManager {
     virtual void OnStatusUpdate(PayloadTransferUpdatePtr update) = 0;
   };
 
+  // Converts the status to a logging-friendly string.
+  static std::string ConnectionsStatusToString(ConnectionsStatus status);
+
   virtual ~NearbyConnectionsManager() = default;
 
   // Disconnects from all endpoints and shut down Nearby Connections.

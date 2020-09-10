@@ -25,6 +25,8 @@ void FakeNearbyConnectionsManager::StartAdvertising(
   advertising_data_usage_ = data_usage;
   advertising_power_level_ = power_level;
   adverting_endpoint_info_ = std::move(endpoint_info);
+  std::move(callback).Run(
+      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
 
 void FakeNearbyConnectionsManager::StopAdvertising() {

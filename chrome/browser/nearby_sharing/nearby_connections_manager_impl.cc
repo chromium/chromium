@@ -47,43 +47,6 @@ bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
 
 }  // namespace
 
-// static
-std::string NearbyConnectionsManagerImpl::ConnectionsStatusToString(
-    ConnectionsStatus status) {
-  switch (status) {
-    case ConnectionsStatus::kSuccess:
-      return "kSuccess";
-    case ConnectionsStatus::kError:
-      return "kError";
-    case ConnectionsStatus::kOutOfOrderApiCall:
-      return "kOutOfOrderApiCall";
-    case ConnectionsStatus::kAlreadyHaveActiveStrategy:
-      return "kAlreadyHaveActiveStrategy";
-    case ConnectionsStatus::kAlreadyAdvertising:
-      return "kAlreadyAdvertising";
-    case ConnectionsStatus::kAlreadyDiscovering:
-      return "kAlreadyDiscovering";
-    case ConnectionsStatus::kEndpointIOError:
-      return "kEndpointIOError";
-    case ConnectionsStatus::kEndpointUnknown:
-      return "kEndpointUnknown";
-    case ConnectionsStatus::kConnectionRejected:
-      return "kConnectionRejected";
-    case ConnectionsStatus::kAlreadyConnectedToEndpoint:
-      return "kAlreadyConnectedToEndpoint";
-    case ConnectionsStatus::kNotConnectedToEndpoint:
-      return "kNotConnectedToEndpoint";
-    case ConnectionsStatus::kBluetoothError:
-      return "kBluetoothError";
-    case ConnectionsStatus::kBleError:
-      return "kBleError";
-    case ConnectionsStatus::kWifiLanError:
-      return "kWifiLanError";
-    case ConnectionsStatus::kPayloadUnknown:
-      return "kPayloadUnknown";
-  }
-}
-
 NearbyConnectionsManagerImpl::NearbyConnectionsManagerImpl(
     NearbyProcessManager* process_manager,
     Profile* profile)
