@@ -76,6 +76,12 @@
         padding-inline-end: 0;
       }
 
+      .subsection > settings-toggle-button,
+      .subsection > cr-link-row {
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
+
       .internal-wrapper,
       .external-wrapper {
         display: flex;
@@ -214,6 +220,16 @@
             </template>
           </div>
         </div>
+        <settings-toggle-button id="enhancedSpellCheckToggle"
+            class="hr" label="$i18n{spellCheckEnhancedLabel}"
+            pref="{{prefs.spellcheck.use_spelling_service}}"
+            disabled="[[!prefs.browser.enable_spellchecking.value]]">
+        </settings-toggle-button>
+        <cr-link-row class="hr" label="$i18n{editDictionaryLabel}"
+            id="editDictionarySubpageTrigger"
+            disabled="[[!prefs.browser.enable_spellchecking.value]]"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </div>
     </div>
 

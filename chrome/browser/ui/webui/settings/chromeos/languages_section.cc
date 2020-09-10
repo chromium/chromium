@@ -289,8 +289,8 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
       {"removeInputMethodLabel",
        IDS_OS_SETTINGS_LANGUAGES_REMOVE_INPUT_METHOD_LABEL},
       {"spellCheckTitle", IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_TITLE},
-      {"spellCheckDisabledReason",
-       IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_DISABLED_REASON},
+      {"spellCheckEnhancedLabel",
+       IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL},
       {"spellCheckLanguagesListTitle",
        IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_LANGUAGES_LIST_TITLE},
       {"spellCheckLanguagesListDescription",
@@ -301,6 +301,7 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_LABEL},
       {"languagesDictionaryDownloadRetryDescription",
        IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_DESCRIPTION},
+      {"editDictionaryLabel", IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 }

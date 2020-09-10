@@ -441,5 +441,23 @@ suite('input page', () => {
       assertTrue(errorDivs[0].hidden);
       assertTrue(retryButtons[0].hidden);
     });
+
+    test('toggle off disables enhanced spell check', () => {
+      const enhancedSpellCheckToggle =
+          inputPage.$$('#enhancedSpellCheckToggle');
+      assertFalse(enhancedSpellCheckToggle.disabled);
+      spellCheckToggle.click();
+
+      assertTrue(enhancedSpellCheckToggle.disabled);
+    });
+
+    test('toggle off disables edit dictionary', () => {
+      const editDictionarySubpageTrigger =
+          inputPage.$$('#editDictionarySubpageTrigger');
+      assertFalse(editDictionarySubpageTrigger.disabled);
+      spellCheckToggle.click();
+
+      assertTrue(editDictionarySubpageTrigger.disabled);
+    });
   });
 });
