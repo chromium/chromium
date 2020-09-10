@@ -55,6 +55,9 @@ const CGFloat kDiscoverFeedContentWith = 430;
 const CGFloat kPaginationOffset = 400;
 // Height for the Discover Feed section header.
 const CGFloat kDiscoverFeedFeaderHeight = 30;
+// Minimum height of the Discover feed content to indicate that the articles
+// have loaded.
+const CGFloat kDiscoverFeedLoadedHeight = 1000;
 }
 
 NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
@@ -816,6 +819,12 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   if (object == self.feedView && [keyPath isEqualToString:@"contentSize"]) {
     // Reload the CollectionView data to adjust to the new Feed height.
     [self.collectionView reloadData];
+    // Indicates that the feed articles have been loaded by checking its height.
+    // TODO(crbug.com/1126940): Use a callback from Mulder to determine this
+    // more reliably.
+    if (self.feedView.contentSize.height > kDiscoverFeedLoadedHeight) {
+      [self.discoverFeedMenuHandler notifyFeedLoadedForHeaderMenu];
+    }
   }
 }
 

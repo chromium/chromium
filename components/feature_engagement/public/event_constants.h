@@ -75,6 +75,9 @@ extern const char kTriggeredTranslateInfobar[];
 
 // The user has viewed the the BottomToolbar tip.
 extern const char kBottomToolbarOpened[];
+
+// The Discover feed has loaded content in the NTP.
+extern const char kDiscoverFeedLoaded[];
 #endif  // defined(OS_IOS)
 
 }  // namespace events

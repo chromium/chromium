@@ -8,6 +8,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observer.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/ntp_snippets/pref_names.h"
@@ -23,6 +25,7 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
@@ -477,6 +480,12 @@
                 }
                  style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];
+}
+
+- (void)notifyFeedLoadedForHeaderMenu {
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      self.browser->GetBrowserState())
+      ->NotifyEvent(feature_engagement::events::kDiscoverFeedLoaded);
 }
 
 #pragma mark - DiscoverFeedDelegate

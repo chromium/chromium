@@ -42,6 +42,7 @@ const char kClearedBrowsingData[] = "cleared_browsing_data";
 const char kViewedReadingList[] = "viewed_reading_list";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
+const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
 #endif  // defined(OS_IOS)
 
 }  // namespace events

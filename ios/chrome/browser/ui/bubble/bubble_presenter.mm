@@ -271,9 +271,14 @@ presentBubbleForFeature:(const base::Feature&)feature
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSStringWithFixup(IDS_IOS_DISCOVER_FEED_HEADER_IPH);
+
+  NamedGuide* guide = [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
+                                           view:self.rootViewController.view];
+  DCHECK(guide);
+  UIView* menuButton = guide.constrainedView;
   CGPoint discoverFeedHeaderAnchor =
-      [self anchorPointToGuide:kDiscoverFeedHeaderMenuGuide
-                     direction:arrowDirection];
+      [menuButton.superview convertPoint:menuButton.frame.origin toView:nil];
+  discoverFeedHeaderAnchor.x += menuButton.frame.size.width / 2;
 
   // If the feature engagement tracker does not consider it valid to display
   // the new tab tip, then end early to prevent the potential reassignment
