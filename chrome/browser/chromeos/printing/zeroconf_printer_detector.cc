@@ -154,7 +154,7 @@ bool ConvertToPrinter(const std::string& service_type,
   printer.set_uuid(metadata.UUID);
   printer.set_display_name(service_description.instance_name());
   printer.set_description(metadata.note);
-  printer.set_make_and_model(metadata.product);
+  printer.set_make_and_model(metadata.ty);
   Uri uri;
   std::string rp = metadata.rp;
   if (service_type == ZeroconfPrinterDetector::kIppServiceName ||

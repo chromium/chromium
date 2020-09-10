@@ -104,10 +104,10 @@ PrinterDetector::DetectedPrinter MakeExpectedPrinter(const std::string& name,
   printer.set_uuid(base::StrCat({name, "_UUID"}));
   printer.set_display_name(name);
   printer.set_description(base::StrCat({name, "_note"}));
-  printer.set_make_and_model(base::StrCat({name, "_product"}));
-  detected.ppd_search_data.make_and_model.push_back(
-      base::StrCat({name, "_ty"}));
+  printer.set_make_and_model(base::StrCat({name, "_ty"}));
   detected.ppd_search_data.make_and_model.push_back(printer.make_and_model());
+  detected.ppd_search_data.make_and_model.push_back(
+      base::StrCat({name, "_product"}));
   if (GetUsbFor(name)) {
     // We should get an effective make and model guess from the usb fields
     // if they exist.
