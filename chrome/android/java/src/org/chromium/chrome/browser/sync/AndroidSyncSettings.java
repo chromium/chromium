@@ -118,8 +118,18 @@ public class AndroidSyncSettings {
         updateSyncability(callback);
 
         mSyncContentResolverDelegate.addStatusChangeListener(
-                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS,
-                new AndroidSyncSettingsChangedObserver());
+                ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, new SyncStatusObserver() {
+                    @Override
+                    public void onStatusChanged(int which) {
+                        if (which == ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS) {
+                            // Sync settings have changed; update our cached values.
+                            if (updateCachedSettings()) {
+                                // If something actually changed, tell our observers.
+                                notifyObservers();
+                            }
+                        }
+                    }
+                });
     }
 
     /**
@@ -284,24 +294,6 @@ public class AndroidSyncSettings {
                 if (callback != null) callback.onResult(true);
             });
         });
-    }
-
-    /**
-     * Helper class to be used by observers whenever sync settings change.
-     *
-     * To register the observer, call AndroidSyncSettings.registerObserver(...).
-     */
-    private class AndroidSyncSettingsChangedObserver implements SyncStatusObserver {
-        @Override
-        public void onStatusChanged(int which) {
-            if (which == ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS) {
-                // Sync settings have changed; update our cached values.
-                if (updateCachedSettings()) {
-                    // If something actually changed, tell our observers.
-                    notifyObservers();
-                }
-            }
-        }
     }
 
     /**
