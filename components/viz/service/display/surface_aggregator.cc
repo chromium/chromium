@@ -1741,6 +1741,15 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   // intersect this area.
   root_damage_rect_.Union(target_damage);
 
+  // Changing color usage will cause the renderer to reshape the output surface,
+  // therefore the renderer might expand the damage to the whole frame. The
+  // following makes sure SA will produce all the quads to cover the full frame.
+  if (root_content_color_usage_ != prewalk_result.content_color_usage) {
+    root_damage_rect_ = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+        root_surface_transform_,
+        gfx::Rect(root_surface_frame.size_in_pixels()));
+  }
+
   root_content_color_usage_ = prewalk_result.content_color_usage;
 
   if (prewalk_result.frame_sinks_changed)
