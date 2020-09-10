@@ -13,6 +13,7 @@
 #include "base/numerics/math_constants.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/audio/wav_audio_handler.h"
 #include "media/base/audio_bus.h"
 
@@ -28,7 +29,8 @@ std::unique_ptr<char[]> ReadWavFile(const base::FilePath& wav_filename,
       wav_filename, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!wav_file.IsValid()) {
     LOG(ERROR) << "Failed to read " << wav_filename.value()
-               << " as input to the fake device.";
+               << " as input to the fake device."
+                  " Try disabling the sandbox with --no-sandbox.";
     return nullptr;
   }
 
