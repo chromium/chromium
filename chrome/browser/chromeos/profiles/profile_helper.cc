@@ -62,6 +62,7 @@ const char* kNonRiskyExtensionsIdsHashes[] = {
     "40FF1103292F40C34066E023B8BE8CAE18306EAE",  // Chromeos help
     "3C654B3B6682CA194E75AD044CEDE927675DDEE8",  // Easy unlock
     "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // ChromeVox
+    "4D725C894DA4CF1F4D96C60F0D83BD745EB530CA",  // Switch Access
 };
 
 // As defined in /chromeos/dbus/cryptohome/cryptohome_client.cc.
