@@ -535,8 +535,7 @@ class DelayingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
 };
 
 // Disabled on multiple platforms due to flakiness. crbug.com/580766
-#if defined(OS_CHROMEOS) || \
-    (defined(OS_WIN) || defined(OS_LINUX)) && defined(NDEBUG)
+#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_LINUX)
 #define MAYBE_SaveHTMLOnlyTabDestroy DISABLED_SaveHTMLOnlyTabDestroy
 #else
 #define MAYBE_SaveHTMLOnlyTabDestroy SaveHTMLOnlyTabDestroy
