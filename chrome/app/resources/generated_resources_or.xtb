@@ -506,6 +506,7 @@
 <translation id="158849752021629804">ହୋମ୍‌ ନେଟ୍‌ୱର୍କ ଦରକାର</translation>
 <translation id="1588870296199743671">ଏହା ମାଧ୍ୟମରେ ଲିଙ୍କ ଖୋଲନ୍ତୁ...</translation>
 <translation id="1589055389569595240">'ବନାନ ଏବଂ ବ୍ୟାକରଣ' ବିକଳ୍ପ ଦେଖାନ୍ତୁ</translation>
+<translation id="1591679663873027990">Parallels Desktopକୁ USB ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ। କୌଣସି USB ଡିଭାଇସକୁ କାଢ଼ି ଦିଆଯିବା ପରେ Parallels Desktop ଏହାକୁ ମନେ ରଖିବ ନାହିଁ।</translation>
 <translation id="1593594475886691512">ଫର୍ମାଟ୍‍ କରାଯାଉଛି…</translation>
 <translation id="159359590073980872">ଛବି କେଚ୍‍</translation>
 <translation id="1593926297800505364">ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ସେଭ୍‍ କରନ୍ତୁ</translation>
@@ -820,6 +821,7 @@
 <translation id="1954813140452229842">ସେୟାର୍ ଖଞ୍ଜିବାରେ ତ୍ରୁଟି। ଦୟାକରି ଆପଣଙ୍କର କ୍ରେଡେନ୍ସିଆଲ୍ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1956050014111002555">ଫାଇଲ୍‌ରେ ଅନେକ ସାର୍ଟିଫିକେଟ୍ ଅଛି, ଏଥିମଧ୍ୟରୁ କୌଣସିଟି ଇମ୍ପୋର୍ଟ ହୋଇନାହିଁ:</translation>
 <translation id="1956390763342388273">ଏହା "<ph name="FOLDER_PATH" />"ରୁ ସମସ୍ତ ଫାଇଲ୍‌କୁ ଅପ୍‌ଲୋଡ୍ କରିବ। ଆପଣ ଯଦି ସାଇଟ୍‌କୁ ବିଶ୍ଵାସ କରନ୍ତି, ତା'ହେଲେ ହିଁ ଏହା କରନ୍ତୁ।</translation>
+<translation id="196040970347962278">ପ୍ରଥମେ ଏକ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ସ୍ଥାପନ କରନ୍ତୁ</translation>
 <translation id="1962233722219655970">ଏହି ପୃଷ୍ଠାକୁ ଏପରି ମୂଳ କ୍ଲାଏଣ୍ଟର ବ୍ୟବହାର କରେ ଯାହା ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରେ କାର୍ଯ୍ୟ କରେନାହିଁ।</translation>
 <translation id="1963227389609234879">ସମସ୍ତ ଅପସାରଣ କରନ୍ତୁ</translation>
 <translation id="1963976881984600709">ଷ୍ଟାଣ୍ଡାର୍ଡ ସୁରକ୍ଷା</translation>
@@ -1857,6 +1859,7 @@
 <translation id="321834671654278338">Linux ଅନ୍‌ଇନ୍‌ଷ୍ଟଲର୍</translation>
 <translation id="3220586366024592812"><ph name="CLOUD_PRINT_NAME" />ସଂଯୋଜକ ପ୍ରକ୍ରିୟା କ୍ରାସ୍ ହୋଇଯାଇଛି। ରିଷ୍ଟାର୍ଟ କରିବେ?</translation>
 <translation id="3222066309010235055">ପୂର୍ବପ୍ରସ୍ତୁତି: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222779980972075989"><ph name="USB_VM_NAME" />ରେ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3223531857777746191">ବଟନ୍‌କୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3225084153129302039">ଡିଫଲ୍ଟ ପର୍ପଲ୍ ଅବତାର</translation>
 <translation id="3225319735946384299">କୋଡ୍‌ ହସ୍ତାକ୍ଷର</translation>
@@ -1869,6 +1872,7 @@
 <translation id="3246107497225150582">{0,plural, =1{ଗୋଟିଏ ଦିନ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}other{# ଦିନ ଭିତରେ ଡିଭାଇସ୍ ଅପଡେଟ୍ କରନ୍ତୁ}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
 <translation id="3248902735035392926">ସୁରକ୍ଷା ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅଟେ। କିଛି ସମୟ ନିଅନ୍ତୁ ଏବଂ <ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଏକ୍ସଟେନ୍‍ସନ୍‍ଗୁଡ଼ିକର ଯାଞ୍ଚ କରନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="325036368918787455">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3251759466064201842">&lt;ସାର୍ଟିଫିକେଟ୍‍ର ଅଂଶ ନୁହେଁ&gt;</translation>
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3253448572569133955">ଅଜଣା ଆକାଉଣ୍ଟ</translation>
@@ -2108,6 +2112,7 @@
 <translation id="3527085408025491307">ଫୋଲ୍ଡର୍</translation>
 <translation id="3528498924003805721">ସର୍ଟକଟ୍ ଟାର୍ଗେଟ୍</translation>
 <translation id="3532273508346491126">ସିଙ୍କ୍ ପରିଚାଳନା</translation>
+<translation id="3532521178906420528">ନେଟୱାର୍କ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଉଛି ...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - ଅଡିଓକୁ ମ୍ୟୁଟ୍ କରାଗଲା</translation>
 <translation id="3537881477201137177">ଏହାକୁ ସେଟିଂସରେ ପରେ ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ</translation>
 <translation id="3538066758857505094">Linux ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍ କରିବା ସମୟରେ ତ୍ରୁଟି ହୋଇଛି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -3116,6 +3121,7 @@
 <translation id="4750394297954878236">ପରାମର୍ଶ</translation>
 <translation id="475088594373173692">ପ୍ରଥମ ଉପଯୋଗକର୍ତ୍ତା</translation>
 <translation id="4751476147751820511">ମୋସନ୍ କିମ୍ବା ଲାଇଟ୍ ସେନ୍ସର୍</translation>
+<translation id="4752124003533492687"><ph name="USB_DEVICE_NAME" />କୁ ସଂଯୋଗ କରିବା ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="4756378406049221019">ବନ୍ଦ/ପୁଣି ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="4756388243121344051">&amp;ଇତିବୃତ୍ତି</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
@@ -4634,6 +4640,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <ph name="EXTENSION_NAME" /> ସ୍ଥାୟୀ ଆକ୍ସେସ୍ ଚାହୁଁଛି।</translation>
 <translation id="6635944431854494329">'ସେଟିଂସ୍ &gt; ଉନ୍ନତ &gt; ସ୍ଵଚାଳିତ ଭାବେ Googleକୁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଓ ବ୍ୟବହାର ଡାଟା ପଠାନ୍ତୁ'ରୁ ମାଲିକ ଏହି ଫିଚରକୁ ନିୟନ୍ତ୍ରଣ କରିପାରିବେ।</translation>
 <translation id="6635956300022133031">ଟେକ୍ସଟ୍‌ରୁ ସ୍ପିଚ୍‌ ଭଏସ୍ ବାଛନ୍ତୁ ଏବଂ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
+<translation id="6636588250634969791">ଆଗକୁ ବଢ଼ିବା ପୂର୍ବରୁ SIM ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6639554308659482635">SQLite ମେମୋରୀ</translation>
 <translation id="6641138807883536517">ମିଶାମିଶି ସୃଷ୍ଟି ହେଉଥିବା ସୁରକ୍ଷିତ ମଡ୍ୟୁଲ୍‍ ପାସ୍‌ୱର୍ଡ ଉପଲବ୍ଧ ନାହିଁ। ଏକ ପାୱାର୍‍ୱାସ୍ ପରେ ଏହା ସ୍ୱାଭାବିକ ଅଟେ।</translation>
 <translation id="6642720633335369752">ସବୁ ଦେଖିବା ପାଇଁ ଆପ୍ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ, ତଳୁ ଉପରକୁ ସ୍ୱାଇପ୍ କରି ଧରି ରଖନ୍ତୁ।</translation>
@@ -5176,6 +5183,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7303900363563182677">କ୍ଲିପବୋର୍ଡ୍‌କୁ ଛବି କପି କରିବା ଏବଂ ଟେକ୍ସଟ୍ ଦେଖିବାରୁ ଏହି ସାଇଟ୍‌କୁ ଅବରୋଧ କରିଦିଆଯାଇଛି।</translation>
 <translation id="7305123176580523628">USB ପ୍ରିଣ୍ଟର୍ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="730515362922783851">ସ୍ଥାନୀୟ ନେଟ୍‍ୱର୍କ କିମ୍ବା ଇଣ୍ଟର୍ନେଟ୍‌ରେ ଥିବା ଯେକୌଣସି ଡିଭାଇସ୍ ସହିତ ଡାଟା ଆଦାନ-ପ୍ରଦାନ କରନ୍ତୁ</translation>
+<translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" />କୁ <ph name="USB_VM_NAME" />ରେ ସଂଯୋଗ କରିବା ପାଇଁ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="7307129035224081534">ବିରତ କରାଯାଇଛି</translation>
 <translation id="7308002049209013926">ନୂଆ ଆପ୍‍ ଓ ଗତିବିଧିଗୁଡ଼ିକୁ ଶୀଘ୍ର ପ୍ରାପ୍ତ କରିବା ପାଇଁ ଲଞ୍ଚର୍ ବ୍ୟବହାର କରନ୍ତୁ। କୀବୋର୍ଡ ଦ୍ୱାରା ଏଠାରେ ପହଞ୍ଚିବା ପାଇଁ, Alt + Shift + L ଦବାନ୍ତୁ।</translation>
 <translation id="7309257895202129721">&amp;ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
@@ -6794,6 +6802,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="947329552760389097">&amp;ଉପାଦାନଗୁଡ଼ିକ ନିରୀକ୍ଷଣ କରନ୍ତୁ</translation>
 <translation id="951991426597076286">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
+<translation id="956444359529327203">ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="956500788634395331">ଆପଣ ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛନ୍ତି</translation>
 <translation id="957960681186851048">ଏହି ସାଇଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ଏକାଧିକ ଫାଇଲ୍ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
 <translation id="9580706199804957">Google ସେବା ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</translation>
