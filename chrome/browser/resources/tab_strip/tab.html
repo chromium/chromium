@@ -193,8 +193,27 @@
     font-size: 100%;
     font-weight: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
+    position: relative;
     white-space: nowrap;
+  }
+
+  #titleText::after {
+    background: linear-gradient(
+        to right, transparent, var(--tabstrip-tab-background-color));
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 3ch;
+  }
+
+  :host-context([dir='rtl']) #titleText::after {
+    background: linear-gradient(
+        to left, transparent, var(--tabstrip-tab-background-color));
+    left: 0;
+    right: auto;
   }
 
   :host([has-alert-states_]) #titleText {
