@@ -185,7 +185,6 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
             favicon::GetDefaultFavicon().AsImageSkia());
   }
   tab_data->show_icon = tab_renderer_data.show_icon;
-  tab_data->last_active_time_ticks = contents->GetLastActiveTime();
 
   return tab_data;
 }

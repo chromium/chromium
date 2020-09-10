@@ -6,5 +6,4 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "tab_search.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
 }
