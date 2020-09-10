@@ -240,10 +240,55 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 }
 
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
+  // Make sure the service has been shut down properly before.
+  DCHECK(!nearby_notification_manager_);
+  DCHECK(!bluetooth_adapter_ || !bluetooth_adapter_->HasObserver(this));
+}
+
+void NearbySharingServiceImpl::Shutdown() {
+  // Clear in-progress transfers.
+  ClearOutgoingShareTargetInfoMap();
+  incoming_share_target_info_map_.clear();
+
+  StopAdvertising();
+  StopScanning();
+  nearby_connections_manager_->Shutdown();
+
+  // Destroy NearbyNotificationManager as its profile has been shut down.
   nearby_notification_manager_.reset();
+
+  // Stop listening to NearbyProcessManager events and stop the utility process.
+  nearby_process_observer_.Remove(process_manager_);
+  if (process_manager_->IsActiveProfile(profile_))
+    process_manager_->StopProcess(profile_);
+
+  StopFastInitiationAdvertising();
 
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
+
+  foreground_receive_callbacks_.Clear();
+  background_receive_callbacks_.Clear();
+  foreground_send_transfer_callbacks_.Clear();
+  foreground_send_discovery_callbacks_.Clear();
+  background_send_transfer_callbacks_.Clear();
+  background_send_discovery_callbacks_.Clear();
+
+  last_incoming_metadata_.reset();
+  last_outgoing_metadata_.reset();
+  attachment_info_map_.clear();
+  mutual_acceptance_timeout_alarm_.Cancel();
+  disconnection_timeout_alarms_.clear();
+
+  is_transferring_ = false;
+  is_receiving_files_ = false;
+  is_sending_files_ = false;
+  is_connecting_ = false;
+
+  settings_receiver_.reset();
+
+  // |profile_| has now been shut down so we shouldn't use it anymore.
+  profile_ = nullptr;
 }
 
 NearbySharingService::StatusCodes NearbySharingServiceImpl::RegisterSendSurface(
@@ -470,6 +515,13 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
 void NearbySharingServiceImpl::Accept(
     const ShareTarget& share_target,
     StatusCodesCallback status_codes_callback) {
+  ShareTargetInfo* info = GetShareTargetInfo(share_target);
+  if (!info || !info->connection()) {
+    NS_LOG(WARNING) << __func__ << ": Accept invoked for unknown share target";
+    std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
+    return;
+  }
+
   base::Optional<std::pair<ShareTarget, TransferMetadata>> metadata =
       share_target.is_incoming ? last_incoming_metadata_
                                : last_outgoing_metadata_;
@@ -535,6 +587,9 @@ void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
 
 NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(
     const std::string& notification_id) {
+  if (!nearby_notification_manager_)
+    return nullptr;
+
   return nearby_notification_manager_->GetNotificationDelegate(notification_id);
 }
 
@@ -544,22 +599,30 @@ NearbyShareSettings* NearbySharingServiceImpl::GetSettings() {
 
 void NearbySharingServiceImpl::OnNearbyProfileChanged(Profile* profile) {
   // TODO(crbug.com/1084576): Notify UI about the new active profile.
-  NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed to: "
-                  << profile_->GetProfileUserName();
+  if (profile) {
+    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed to: "
+                    << profile->GetProfileUserName();
+  } else {
+    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile cleared";
+  }
   InvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStarted() {
-  if (process_manager_->IsActiveProfile(profile_))
+  DCHECK(profile_);
+  if (process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby process started for profile: "
                     << profile_->GetProfileUserName();
+  }
 }
 
 void NearbySharingServiceImpl::OnNearbyProcessStopped() {
+  DCHECK(profile_);
   InvalidateSurfaceState();
-  if (process_manager_->IsActiveProfile(profile_))
+  if (process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped for profile: "
                     << profile_->GetProfileUserName();
+  }
 }
 
 void NearbySharingServiceImpl::OnIncomingConnection(
@@ -568,7 +631,7 @@ void NearbySharingServiceImpl::OnIncomingConnection(
     NearbyConnection* connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection);
-
+  DCHECK(profile_);
   ShareTarget placeholder_share_target;
   placeholder_share_target.is_incoming = true;
   ShareTargetInfo& share_target_info =
@@ -592,6 +655,7 @@ void NearbySharingServiceImpl::OnEndpointDiscovered(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
   if (!is_scanning_) {
     NS_LOG(VERBOSE)
         << __func__
@@ -834,6 +898,12 @@ void NearbySharingServiceImpl::OnAllowedContactsChanged(
 }
 
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
+  if (!profile_) {
+    NS_LOG(INFO)
+        << "Failed to advertise FastInitiation. Profile is shutting down.";
+    return;
+  }
+
   if (!IsBluetoothPowered()) {
     NS_LOG(INFO) << "Failed to advertise FastInitiation. Bluetooth is not "
                     "powered.";
@@ -960,6 +1030,10 @@ void NearbySharingServiceImpl::InvalidateSurfaceState() {
 }
 
 bool NearbySharingServiceImpl::ShouldStopNearbyProcess() {
+  // Nothing to do if we're shutting down the profile.
+  if (!profile_)
+    return false;
+
   // Cannot stop process without being the active profile.
   if (!process_manager_->IsActiveProfile(profile_))
     return false;
@@ -990,6 +1064,10 @@ void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateAdvertisingState() {
+  // Nothing to do if we're shutting down the profile.
+  if (!profile_)
+    return;
+
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping advertising because profile was not active: "
@@ -1142,6 +1220,10 @@ void NearbySharingServiceImpl::InvalidateSendSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateScanningState() {
+  // Nothing to do if we're shutting down the profile.
+  if (!profile_)
+    return;
+
   if (!process_manager_->IsActiveProfile(profile_)) {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping discovery because profile was not active: "
@@ -1200,6 +1282,8 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
 }
 
 void NearbySharingServiceImpl::StartScanning() {
+  DCHECK(profile_);
+
   if (!settings_.GetEnabled()) {
     NS_LOG(VERBOSE) << __func__
                     << ": Failed to scan because we're not enabled.";
@@ -1365,7 +1449,13 @@ void NearbySharingServiceImpl::OnTransferStarted(bool is_incoming) {
 void NearbySharingServiceImpl::ReceivePayloads(
     ShareTarget share_target,
     StatusCodesCallback status_codes_callback) {
+  DCHECK(profile_);
   mutual_acceptance_timeout_alarm_.Cancel();
+
+  base::FilePath download_path =
+      DownloadPrefs::FromDownloadManager(
+          content::BrowserContext::GetDownloadManager(profile_))
+          ->DownloadPath();
 
   // Register payload path for all valid file payloads.
   base::flat_map<int64_t, base::FilePath> valid_file_payloads;
@@ -1379,13 +1469,8 @@ void NearbySharingServiceImpl::ReceivePayloads(
       continue;
     }
 
-    base::FilePath download_path =
-        DownloadPrefs::FromDownloadManager(
-            content::BrowserContext::GetDownloadManager(profile_))
-            ->DownloadPath()
-            .AppendASCII(file.file_name());
-
-    valid_file_payloads.emplace(file.id(), std::move(download_path));
+    base::FilePath file_path = download_path.AppendASCII(file.file_name());
+    valid_file_payloads.emplace(file.id(), std::move(file_path));
   }
 
   auto aggregated_success = std::make_unique<bool>(true);
@@ -2058,6 +2143,7 @@ void NearbySharingServiceImpl::RunPairedKeyVerification(
     const std::string& endpoint_id,
     base::OnceCallback<void(
         PairedKeyVerificationRunner::PairedKeyVerificationResult)> callback) {
+  DCHECK(profile_);
   base::Optional<std::vector<uint8_t>> token =
       nearby_connections_manager_->GetRawAuthenticationToken(endpoint_id);
   if (!token) {
@@ -2206,7 +2292,7 @@ void NearbySharingServiceImpl::OnOutgoingConnectionKeyVerificationDone(
 void NearbySharingServiceImpl::RefreshUIOnDisconnection(
     ShareTarget share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (info->transfer_update_callback()) {
+  if (info && info->transfer_update_callback()) {
     info->transfer_update_callback()->OnTransferUpdate(
         share_target,
         TransferMetadataBuilder()
@@ -2246,6 +2332,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
     return;
   }
   NearbyConnection* connection = info->connection();
+  DCHECK(profile_);
 
   if (!frame) {
     connection->Close();
@@ -2596,7 +2683,7 @@ void NearbySharingServiceImpl::HandleCertificateInfoFrame(
 void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
     const ShareTarget& share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (info->transfer_update_callback()) {
+  if (info && info->transfer_update_callback()) {
     info->transfer_update_callback()->OnTransferUpdate(
         share_target, TransferMetadataBuilder()
                           .set_status(TransferMetadata::Status::kFailed)
@@ -2608,7 +2695,7 @@ void NearbySharingServiceImpl::OnIncomingConnectionDisconnected(
 void NearbySharingServiceImpl::OnOutgoingConnectionDisconnected(
     const ShareTarget& share_target) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (info->transfer_update_callback()) {
+  if (info && info->transfer_update_callback()) {
     info->transfer_update_callback()->OnTransferUpdate(
         share_target,
         TransferMetadataBuilder()
@@ -2725,7 +2812,7 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
   }
 
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
-  if (info->transfer_update_callback())
+  if (info && info->transfer_update_callback())
     info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
 }
 

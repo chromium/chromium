@@ -369,6 +369,9 @@ class NearbySharingServiceImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (service_)
+      service_->Shutdown();
+
     if (profile_) {
       DownloadCoreServiceFactory::GetForBrowserContext(profile_)
           ->SetDownloadManagerDelegateForTesting(nullptr);
@@ -925,6 +928,7 @@ TEST_F(NearbySharingServiceImplTest, AddsNearbyProcessObserver) {
 }
 
 TEST_F(NearbySharingServiceImplTest, RemovesNearbyProcessObserver) {
+  service_->Shutdown();
   service_.reset();
   EXPECT_FALSE(mock_nearby_process_manager().observers_.might_have_observers());
 }

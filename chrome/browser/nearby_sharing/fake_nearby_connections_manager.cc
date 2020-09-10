@@ -124,7 +124,6 @@ void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
 }
 
 void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
-  DCHECK(!is_shutdown());
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   incoming_payloads_.clear();

@@ -68,6 +68,7 @@ class NearbySharingServiceImpl
   ~NearbySharingServiceImpl() override;
 
   // NearbySharingService:
+  void Shutdown() override;
   StatusCodes RegisterSendSurface(
       TransferUpdateCallback* transfer_callback,
       ShareTargetDiscoveredCallback* discovery_callback,
