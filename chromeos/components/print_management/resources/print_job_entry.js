@@ -229,10 +229,33 @@ Polymer({
      */
     showFullOngoingStatus_: Boolean,
   },
+  observers: [
+    'printJobEntryDataChanged_(jobTitle_, printerName_, creationTime_, ' +
+        'completionStatus_)'
+  ],
 
   listeners: {
     'click': 'onClick_',
   },
+
+  /**
+   * Check if any elements with the class "overflow-ellipsis" needs to
+   * add/remove the title attribute.
+   * @private
+   */
+  printJobEntryDataChanged_() {
+    Array.from(this.shadowRoot.querySelectorAll('.overflow-ellipsis')).forEach(
+      (/** @type {HTMLElement} */ e) => {
+        // Checks if text is truncated
+        if (e.offsetWidth < e.scrollWidth) {
+          e.setAttribute("title", e.textContent);
+        }
+        else {
+          e.removeAttribute("title");
+        }
+      }
+                                                                              )
+ },
 
   /** @private */
   onClick_() {
