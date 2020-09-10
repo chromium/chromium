@@ -509,10 +509,10 @@ class SequenceBound {
   // Note: this doesn't handle a void return type, which has an explicit
   // specialization below.
   template <typename ReturnType>
-  class AsyncCallWithBoundArgsBuilder
+  class AsyncCallWithBoundArgsBuilderDefault
       : public AsyncCallWithBoundArgsBuilderBase<ReturnType> {
    public:
-    ~AsyncCallWithBoundArgsBuilder() {
+    ~AsyncCallWithBoundArgsBuilderDefault() {
       // Must use Then() since the method's return type is not void.
       // Should be optimized out if the code is bug-free.
       CHECK(!this->sequence_bound_);
@@ -535,13 +535,13 @@ class SequenceBound {
    private:
     friend SequenceBound;
 
-    AsyncCallWithBoundArgsBuilder(AsyncCallWithBoundArgsBuilder&&) = default;
-    AsyncCallWithBoundArgsBuilder& operator=(AsyncCallWithBoundArgsBuilder&&) =
-        default;
+    AsyncCallWithBoundArgsBuilderDefault(
+        AsyncCallWithBoundArgsBuilderDefault&&) = default;
+    AsyncCallWithBoundArgsBuilderDefault& operator=(
+        AsyncCallWithBoundArgsBuilderDefault&&) = default;
   };
 
-  template <>
-  class AsyncCallWithBoundArgsBuilder<void>
+  class AsyncCallWithBoundArgsBuilderVoid
       : public AsyncCallWithBoundArgsBuilderBase<void> {
    public:
     // Note: despite being here, this is actually still protected, since it is
@@ -549,7 +549,7 @@ class SequenceBound {
     using AsyncCallWithBoundArgsBuilderBase<
         void>::AsyncCallWithBoundArgsBuilderBase;
 
-    ~AsyncCallWithBoundArgsBuilder() {
+    ~AsyncCallWithBoundArgsBuilderVoid() {
       if (this->sequence_bound_) {
         this->sequence_bound_->impl_task_runner_->PostTask(
             *this->location_, std::move(this->callback_));
@@ -566,10 +566,17 @@ class SequenceBound {
    private:
     friend SequenceBound;
 
-    AsyncCallWithBoundArgsBuilder(AsyncCallWithBoundArgsBuilder&&) = default;
-    AsyncCallWithBoundArgsBuilder& operator=(AsyncCallWithBoundArgsBuilder&&) =
+    AsyncCallWithBoundArgsBuilderVoid(AsyncCallWithBoundArgsBuilderVoid&&) =
         default;
+    AsyncCallWithBoundArgsBuilderVoid& operator=(
+        AsyncCallWithBoundArgsBuilderVoid&&) = default;
   };
+
+  template <typename ReturnType>
+  using AsyncCallWithBoundArgsBuilder = typename std::conditional<
+      std::is_void<ReturnType>::value,
+      AsyncCallWithBoundArgsBuilderVoid,
+      AsyncCallWithBoundArgsBuilderDefault<ReturnType>>::type;
 
   void PostTaskAndThenHelper(const Location& location,
                              OnceCallback<void()> callback,
