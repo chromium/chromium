@@ -139,10 +139,8 @@ bool VP9VaapiVideoDecoderDelegate::SubmitDecode(
   }
 
   if (!vaapi_wrapper_->SubmitBuffers(
-          {{VAPictureParameterBufferType,
-            sizeof(VADecPictureParameterBufferVP9), &pic_param},
-           {VASliceParameterBufferType, sizeof(VASliceParameterBufferVP9),
-            &slice_param},
+          {{VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
+           {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
            {VASliceDataBufferType, frame_hdr->frame_size, frame_hdr->data}})) {
     return false;
   }
