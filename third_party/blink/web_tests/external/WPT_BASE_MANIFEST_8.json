@@ -96253,6 +96253,32 @@
         {}
        ]
       ],
+      "tab-size-inline-001.html": [
+       "ecdcfeff010c1fdbb0c845e5f1c2e5eeb5e1667d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/tab-size/tab-size-inline-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "tab-size-inline-002.html": [
+       "f87c107949a4da4b4c64710c5c476090833f9b43",
+       [
+        null,
+        [
+         [
+          "/css/css-text/tab-size/tab-size-inline-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "tab-size-integer-001.html": [
        "410df6fceb33df66973beff4ea0398ead97de3b4",
        [
@@ -96286,6 +96312,19 @@
         [
          [
           "/css/css-text/tab-size/tab-size-integer-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "tab-size-integer-004.html": [
+       "70dc7bf6f8ac4a1a675923a53c477601e4bd7834",
+       [
+        null,
+        [
+         [
+          "/css/css-text/tab-size/tab-size-integer-004-ref.html",
           "=="
          ]
         ],
@@ -143550,7 +143589,7 @@
      ]
     ],
     "forced-colors-mode-08.html": [
-     "8c87576bee23abec7a6f50dd78379efe9f1b2d36",
+     "a8819743fe99666b6753ded0fb73956e0bdc0af1",
      [
       null,
       [
@@ -143576,7 +143615,7 @@
      ]
     ],
     "forced-colors-mode-17.html": [
-     "fbdc9da0b42eec84f42013837ed61f2ee57ad903",
+     "97dd36938550d21b3417a1b66c148c51e9b15244",
      [
       null,
       [
@@ -143660,6 +143699,123 @@
       [
        [
         "/forced-colors-mode/forced-colors-mode-28-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-29.html": [
+     "794cca771f45df5cb5457659ee5633978ba2d5a0",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-29-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-30.html": [
+     "2f2a5e2e1276e67b00e1b6d9858d5a4f1ded4212",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-30-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-31.html": [
+     "ba338c1e0cc8eb56acc578265b4c220c830bdca5",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-31-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-33.html": [
+     "17299efa2b95057e3b2b72d57c442edfe10b3998",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-33-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-34.html": [
+     "f4ec066e30fa9c742b26572f6cd1e07a0ae02d6d",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-34-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-35.html": [
+     "098a9ce9d339260af059354235874123831683af",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-35-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-36.html": [
+     "0fd90810dce2a0b16938f2fbeb39b9d18d721db7",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-36-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-37.html": [
+     "80e06ed8703f85c6a8d69f5631116aa7c9b1ba1f",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-37-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "forced-colors-mode-38.html": [
+     "3179aaf4b99344d85ab5d6f3d46bee7f119a4b1d",
+     [
+      null,
+      [
+       [
+        "/forced-colors-mode/forced-colors-mode-38-ref.html",
         "=="
        ]
       ],
@@ -158571,7 +158727,7 @@
      []
     ],
     "Accelerometer.https-expected.txt": [
-     "e1b3ac768d6e6c6bdd7607ac7871af84c4887275",
+     "89a15a3d8b9a92eea02fbc667b97dee4a5eca6fa",
      []
     ],
     "META.yml": [
@@ -187970,8 +188126,20 @@
        "5e253df9490e5182dde59a23077815a2176583ee",
        []
       ],
+      "tab-size-inline-001-ref.html": [
+       "36347454947367e8fd4a00825e216ad294a4cc1b",
+       []
+      ],
+      "tab-size-inline-002-ref.html": [
+       "b595b3f9a5d120af3a521cefc7838cdfb52065d7",
+       []
+      ],
       "tab-size-integer-001-ref.html": [
        "db1d6b0ed5b9f16779841931ef5a999dbcd1ea50",
+       []
+      ],
+      "tab-size-integer-004-ref.html": [
+       "0f29998d2387462262b5b00c988d143c64cce7c6",
        []
       ],
       "tab-size-length-001-ref.html": [
@@ -205015,7 +205183,7 @@
      []
     ],
     "forced-colors-mode-08-ref.html": [
-     "6d6a3e1cc3f449998d05d4c68851a18c6d8dfc22",
+     "479ead11aa72d6239597873c2dbeb57840961d8d",
      []
     ],
     "forced-colors-mode-14-ref.html": [
@@ -205023,7 +205191,7 @@
      []
     ],
     "forced-colors-mode-17-ref.html": [
-     "5a5d7f980f4d1ea51b03c4ce26442f64956df517",
+     "125c4364129e81f4d1db3d22d8f76201a80f65c0",
      []
     ],
     "forced-colors-mode-18-ref.html": [
@@ -205048,6 +205216,42 @@
     ],
     "forced-colors-mode-28-ref.html": [
      "9792073004b07893281ec6e4d96f52fb0e3939a1",
+     []
+    ],
+    "forced-colors-mode-29-ref.html": [
+     "825f63ae85b2be93829f0fc3895d521e6e969250",
+     []
+    ],
+    "forced-colors-mode-30-ref.html": [
+     "6029573933b9977a8658d0204ef9af1efb5508a7",
+     []
+    ],
+    "forced-colors-mode-31-ref.html": [
+     "93d4045978f4f5af7ab2527a73689f6f19990046",
+     []
+    ],
+    "forced-colors-mode-33-ref.html": [
+     "ae7148ba8ed9c9700e6b8a00276551d04d76980c",
+     []
+    ],
+    "forced-colors-mode-34-ref.html": [
+     "b317d2f440c45346728d72b344d591f9ca613452",
+     []
+    ],
+    "forced-colors-mode-35-ref.html": [
+     "ba38e484b5591c28d2493362f2b3e1355fc8f0e4",
+     []
+    ],
+    "forced-colors-mode-36-ref.html": [
+     "838b10da953c32ef9088c19b6a061e9070210aff",
+     []
+    ],
+    "forced-colors-mode-37-ref.html": [
+     "a2cc4b7efee30d714f976b7250b7ad8cab6c9238",
+     []
+    ],
+    "forced-colors-mode-38-ref.html": [
+     "e72a73fcef72f1d7943fab1871b8715c4809f2da",
      []
     ],
     "forced-colors-mode-40-ref.html": [
@@ -205165,7 +205369,7 @@
      []
     ],
     "generic-sensor-tests.js": [
-     "7aac34945212e3424ec47a554e081b70591dfb88",
+     "129ccd48543d6dfbc3f1e339443d44a3d864ce7b",
      []
     ],
     "resources": {
@@ -205239,7 +205443,7 @@
      []
     ],
     "GeolocationSensor.https-expected.txt": [
-     "5e0d973fd266816fa27f1a0e995e2d25b138c21f",
+     "908101b03564b911e0246b9eb6eca2b0d2ed6496",
      []
     ],
     "GeolocationSensor_read.https-expected.txt": [
@@ -220601,7 +220805,7 @@
      []
     ],
     "Magnetometer.https-expected.txt": [
-     "e65ddc53085932d1ac563d20bfdde60ac58a73fd",
+     "f8572ea5d6ca6b1a49ffd2eabfc1706ec8eec881",
      []
     ],
     "OWNERS": [
@@ -239665,7 +239869,7 @@
      },
      "timelines": {
       "update-and-send-events-replacement-expected.txt": [
-       "10522b9a820f5144416999721408851ed9b0dbd6",
+       "f84fd4111c0ca91f4775a316a447af2c00721e9a",
        []
       ]
      }
@@ -317830,6 +318034,13 @@
     ],
     "forced-colors-mode-27.html": [
      "5a42f947adcac841cc00be7a233ea2fbd94828c8",
+     [
+      null,
+      {}
+     ]
+    ],
+    "forced-colors-mode-32.html": [
+     "bd3595bf3bf33d5c65210c2f155a2431ef976e44",
      [
       null,
       {}
