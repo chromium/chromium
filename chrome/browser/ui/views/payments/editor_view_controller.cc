@@ -214,7 +214,8 @@ EditorViewController::CreateComboboxForField(const EditorField& field,
 
   // Using autofill field type as a view ID.
   combobox->SetID(GetInputFieldViewId(field.type));
-  combobox->set_listener(this);
+  combobox->set_callback(base::BindRepeating(
+      &EditorViewController::OnPerformAction, base::Unretained(this)));
   comboboxes_.insert(std::make_pair(combobox.get(), field));
   return combobox;
 }
@@ -227,8 +228,7 @@ void EditorViewController::ContentsChanged(views::Textfield* sender,
 }
 
 void EditorViewController::OnPerformAction(views::Combobox* sender) {
-  ValidatingCombobox* sender_cast = static_cast<ValidatingCombobox*>(sender);
-  sender_cast->OnContentsChanged();
+  static_cast<ValidatingCombobox*>(sender)->OnContentsChanged();
   primary_button()->SetEnabled(ValidateInputFields());
 }
 

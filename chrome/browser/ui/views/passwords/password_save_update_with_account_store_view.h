@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/view.h"
 
@@ -33,7 +32,6 @@ class FeaturePromoBubbleView;
 class PasswordSaveUpdateWithAccountStoreView
     : public PasswordBubbleViewBase,
       public views::ButtonListener,
-      public views::ComboboxListener,
       public views::WidgetObserver,
       public views::AnimatingLayoutManager::Observer {
  public:
@@ -65,10 +63,6 @@ class PasswordSaveUpdateWithAccountStoreView
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // views::ComboboxListener:
-  // Used for the destination combobox.
-  void OnPerformAction(views::Combobox* combobox) override;
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -90,6 +84,8 @@ class PasswordSaveUpdateWithAccountStoreView
   void TogglePasswordVisibility();
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();
+
+  void OnPerformAction(views::Combobox* combobox);
 
   // Whether we should show the IPH informing the user about the destination
   // picker and that they can now select where to store the passwords. It

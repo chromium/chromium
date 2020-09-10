@@ -7,13 +7,13 @@
 
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
 
 class Checkbox;
+class Combobox;
 class GridLayout;
 class Label;
 
@@ -21,7 +21,6 @@ namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
                                            public ButtonListener,
-                                           public ComboboxListener,
                                            public TextfieldController {
  public:
   LabelExample();
@@ -33,8 +32,7 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   // ButtonListener:
   void ButtonPressed(Button* button, const ui::Event& event) override;
 
-  // ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override;
+  void OnPerformAction(Combobox* combobox);
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,

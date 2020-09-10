@@ -21,7 +21,6 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/examples/create_examples.h"
 #include "ui/views/layout/fill_layout.h"
@@ -109,8 +108,7 @@ class ComboboxModelExampleList : public ui::ComboboxModel {
   DISALLOW_COPY_AND_ASSIGN(ComboboxModelExampleList);
 };
 
-class ExamplesWindowContents : public WidgetDelegateView,
-                               public ComboboxListener {
+class ExamplesWindowContents : public WidgetDelegateView {
  public:
   ExamplesWindowContents(base::OnceClosure on_close, ExampleVector examples)
       : on_close_(std::move(on_close)) {
@@ -122,7 +120,8 @@ class ExamplesWindowContents : public WidgetDelegateView,
     auto combobox = std::make_unique<Combobox>(std::move(combobox_model));
 
     instance_ = this;
-    combobox->set_listener(this);
+    combobox->set_callback(base::BindRepeating(
+        &ExamplesWindowContents::OnPerformAction, base::Unretained(this)));
 
     SetBackground(CreateThemedSolidBackground(
         this, ui::NativeTheme::kColorId_DialogBackground));
@@ -181,10 +180,9 @@ class ExamplesWindowContents : public WidgetDelegateView,
     return size;
   }
 
-  // ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override {
+  void OnPerformAction(Combobox* combobox) {
     DCHECK_EQ(combobox, combobox_);
-    int index = combobox->GetSelectedIndex();
+    int index = combobox_->GetSelectedIndex();
     DCHECK_LT(index, combobox_model_->GetItemCount());
     example_shown_->RemoveAllChildViews(false);
     example_shown_->AddChildView(combobox_model_->GetItemViewAt(index));

@@ -12,7 +12,6 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 
 namespace views {
 class Combobox;
@@ -30,8 +29,7 @@ class Textfield;
 // DialogModel::host(). This helps minimize platform-specific code from
 // platform-agnostic model-delegate code.
 class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
-                                           public ui::DialogModelHost,
-                                           public ComboboxListener {
+                                           public ui::DialogModelHost {
  public:
   // Constructs a BubbleDialogModelHost, which for most purposes is to used as a
   // BubbleDialogDelegateView. The BubbleDialogDelegateView is nominally handed
@@ -52,9 +50,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void SelectAllText(int unique_id) override;
   void OnFieldAdded(ui::DialogModelField* field) override;
 
-  // ComboboxListener:
-  void OnPerformAction(views::Combobox* combobox) override;
-
  private:
   void OnWindowClosing();
 
@@ -72,7 +67,6 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   void OnViewCreatedForField(View* view, ui::DialogModelField* field);
 
   void NotifyTextfieldTextChanged(views::Textfield* textfield);
-  void NotifyComboboxSelectedIndexChanged(views::Combobox* combobox);
 
   View* FieldToView(ui::DialogModelField* field);
 

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
@@ -77,8 +76,7 @@ struct EditorField {
 // The PaymentRequestSheetController subtype for the editor screens of the
 // Payment Request flow.
 class EditorViewController : public PaymentRequestSheetController,
-                             public views::TextfieldController,
-                             public views::ComboboxListener {
+                             public views::TextfieldController {
  public:
   using TextFieldsMap =
       std::unordered_map<ValidatingTextfield*, const EditorField>;
@@ -152,8 +150,8 @@ class EditorViewController : public PaymentRequestSheetController,
   bool ShouldShowSecondaryButton() override;
   void FillContentView(views::View* content_view) override;
 
-  // views::ComboboxListener:
-  void OnPerformAction(views::Combobox* combobox) override;
+  // Combobox callback.
+  virtual void OnPerformAction(views::Combobox* combobox);
 
   // Update the editor view by removing all it's child views and recreating
   // the input fields returned by GetFieldDefinitions. Note that

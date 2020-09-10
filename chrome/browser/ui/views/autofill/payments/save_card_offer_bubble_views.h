@@ -8,12 +8,15 @@
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
+
+namespace views {
+class Combobox;
+}  // namespace views
 
 namespace autofill {
 
@@ -22,7 +25,6 @@ namespace autofill {
 // previously saved. It includes a description of the card that is being saved
 // and an [Save] button. (Non-material UI's include a [No Thanks] button).
 class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
-                                 public views::ComboboxListener,
                                  public views::TextfieldController {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -38,9 +40,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const base::string16& new_contents) override;
-
-  // views::ComboboxListener:
-  void OnPerformAction(views::Combobox* combobox) override;
 
  private:
   std::unique_ptr<views::View> CreateMainContentView() override;

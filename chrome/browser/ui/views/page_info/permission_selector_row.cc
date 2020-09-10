@@ -23,7 +23,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
@@ -93,8 +92,7 @@ base::string16 ComboboxModelAdapter::GetItemAt(int index) const {
 }
 
 // The |PermissionCombobox| provides a combobox for selecting a permission type.
-class PermissionCombobox : public views::Combobox,
-                           public views::ComboboxListener {
+class PermissionCombobox : public views::Combobox {
  public:
   PermissionCombobox(ComboboxModelAdapter* model,
                      bool enabled,
@@ -109,8 +107,7 @@ class PermissionCombobox : public views::Combobox,
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  // views::ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override;
+  void OnPerformAction(Combobox* combobox);
 
   ComboboxModelAdapter* model_;
 
@@ -124,7 +121,8 @@ PermissionCombobox::PermissionCombobox(ComboboxModelAdapter* model,
                                        bool enabled,
                                        bool use_default)
     : views::Combobox(model), model_(model) {
-  set_listener(this);
+  set_callback(base::BindRepeating(&PermissionCombobox::OnPerformAction,
+                                   base::Unretained(this)));
   SetEnabled(enabled);
   UpdateSelectedIndex(use_default);
   SetSizeToLargestLabel(false);

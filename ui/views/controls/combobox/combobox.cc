@@ -676,7 +676,7 @@ void Combobox::OnPerformAction() {
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
   SchedulePaint();
 
-  callback_.Run();
+  callback_.Run(this);
 
   // Note |this| may be deleted by |callback_|.
 }

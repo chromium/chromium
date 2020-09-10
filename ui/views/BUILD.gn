@@ -122,7 +122,6 @@ component("views") {
     "controls/button/toggle_button.h",
     "controls/color_tracking_icon_view.h",
     "controls/combobox/combobox.h",
-    "controls/combobox/combobox_listener.h",
     "controls/combobox/combobox_util.h",
     "controls/editable_combobox/editable_combobox.h",
     "controls/focus_ring.h",

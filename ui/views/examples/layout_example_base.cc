@@ -169,7 +169,8 @@ Combobox* LayoutExampleBase::CreateAndAddCombobox(
       gfx::Point(label->x() + label->width() + kLayoutExampleVerticalSpacing,
                  *vertical_pos));
   combo_box->SizeToPreferredSize();
-  combo_box->set_listener(this);
+  combo_box->set_callback(base::BindRepeating(
+      &LayoutExampleBase::OnPerformAction, base::Unretained(this)));
   label->SetSize(gfx::Size(label->width(), combo_box->height()));
   control_panel_->AddChildView(std::move(label));
 

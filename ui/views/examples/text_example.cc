@@ -154,7 +154,8 @@ Combobox* TextExample::AddCombobox(GridLayout* layout,
   auto combobox = std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
-  combobox->set_listener(this);
+  combobox->set_callback(base::BindRepeating(&TextExample::OnPerformAction,
+                                             base::Unretained(this)));
   return layout->AddView(std::move(combobox), kNumColumns - 1, 1);
 }
 

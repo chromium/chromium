@@ -376,7 +376,9 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         controller_.GetPrimaryAccountEmail(),
         controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
         controller_.IsUsingAccountStore());
-    destination_dropdown->set_listener(this);
+    destination_dropdown->set_callback(base::BindRepeating(
+        &PasswordSaveUpdateWithAccountStoreView::OnPerformAction,
+        base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();
   }
   const autofill::PasswordForm& password_form = controller_.pending_password();

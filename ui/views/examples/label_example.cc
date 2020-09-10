@@ -143,6 +143,8 @@ void LabelExample::ButtonPressed(Button* button, const ui::Event& event) {
 }
 
 void LabelExample::OnPerformAction(Combobox* combobox) {
+  // TODO(pbos): Provide different callbacks for alignment_ and elide_behavior_
+  // instead.
   if (combobox == alignment_) {
     custom_label_->SetHorizontalAlignment(
         static_cast<gfx::HorizontalAlignment>(combobox->GetSelectedIndex()));
@@ -229,7 +231,8 @@ Combobox* LabelExample::AddCombobox(GridLayout* layout,
   auto combobox = std::make_unique<Combobox>(
       std::make_unique<ExampleComboboxModel>(strings, count));
   combobox->SetSelectedIndex(0);
-  combobox->set_listener(this);
+  combobox->set_callback(base::BindRepeating(&LabelExample::OnPerformAction,
+                                             base::Unretained(this)));
   return layout->AddView(std::move(combobox));
 }
 

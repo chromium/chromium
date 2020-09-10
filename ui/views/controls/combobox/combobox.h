@@ -15,7 +15,6 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/style/typography.h"
 
@@ -45,7 +44,8 @@ class VIEWS_EXPORT Combobox : public View,
  public:
   METADATA_HEADER(Combobox);
 
-  using PerformActionCallback = base::RepeatingClosure;
+  using PerformActionCallback =
+      base::RepeatingCallback<void(Combobox* combobox)>;
 
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
   static constexpr int kDefaultComboboxTextStyle = style::STYLE_PRIMARY;
@@ -66,23 +66,17 @@ class VIEWS_EXPORT Combobox : public View,
 
   const gfx::FontList& GetFontList() const;
 
-  // TODO(pbos): Migrate users of this to set_callback().
-  void set_listener(ComboboxListener* listener) {
-    if (!listener) {
-      set_callback(base::DoNothing());
-      return;
-    }
-
-    set_callback(base::BindRepeating(
-        [](ComboboxListener* listener, Combobox* combobox) {
-          listener->OnPerformAction(combobox);
-        },
-        listener, this));
-  }
-
   // Sets the callback which will be called when a selection has been made.
   void set_callback(PerformActionCallback callback) {
     callback_ = std::move(callback);
+  }
+
+  // Version of set_callback() that takes a RepeatingClosure by discarding the
+  // argument.
+  void set_closure(base::RepeatingClosure closure) {
+    set_callback(base::BindRepeating(
+        [](base::RepeatingClosure closure, Combobox*) { closure.Run(); },
+        std::move(closure)));
   }
 
   // Gets/Sets the selected index.

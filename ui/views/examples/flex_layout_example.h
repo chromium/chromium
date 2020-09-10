@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/layout_example_base.h"
 #include "ui/views/layout/flex_layout.h"
@@ -27,14 +26,10 @@ class VIEWS_EXAMPLES_EXPORT FlexLayoutExample : public LayoutExampleBase {
   ~FlexLayoutExample() override;
 
  private:
-  // ComboboxListener
+  // LayoutExampleBase:
   void OnPerformAction(Combobox* combobox) override;
-
-  // TextfieldController
   void ContentsChanged(Textfield* sender,
                        const base::string16& new_contents) override;
-
-  // LayoutExampleBase
   void ButtonPressedImpl(Button* sender) override;
   void CreateAdditionalControls(int vertical_start_pos) override;
   void UpdateLayoutManager() override;

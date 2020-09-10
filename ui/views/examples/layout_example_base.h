@@ -10,12 +10,13 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/view.h"
 
 namespace views {
+class Combobox;
+
 namespace examples {
 
 // Provides an example of a layout manager with arbitrary specific manager and
@@ -23,7 +24,6 @@ namespace examples {
 // manager of choice.
 class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
                                                 public ButtonListener,
-                                                public ComboboxListener,
                                                 public TextfieldController {
  public:
   // Grouping of multiple textfields that provide insets.
@@ -126,6 +126,9 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
   // Handles buttons added by derived classes after button handling for
   // common controls is done.
   virtual void ButtonPressedImpl(Button* sender);
+
+  // Combobox callback defined by child classes.
+  virtual void OnPerformAction(views::Combobox* combobox) = 0;
 
   // Performs layout-specific update of the layout manager.
   virtual void UpdateLayoutManager() = 0;

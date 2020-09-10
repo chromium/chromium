@@ -127,11 +127,6 @@ void SaveCardOfferBubbleViews::ContentsChanged(
   DialogModelChanged();
 }
 
-void SaveCardOfferBubbleViews::OnPerformAction(views::Combobox* sender) {
-  DCHECK(month_input_dropdown_ == sender || year_input_dropdown_ == sender);
-  DialogModelChanged();
-}
-
 SaveCardOfferBubbleViews::~SaveCardOfferBubbleViews() {}
 
 std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
@@ -231,7 +226,8 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
 
   // Set up the month and year comboboxes.
   month_input_dropdown_ = new views::Combobox(&month_combobox_model_);
-  month_input_dropdown_->set_listener(this);
+  month_input_dropdown_->set_closure(base::BindRepeating(
+      &SaveCardOfferBubbleViews::DialogModelChanged, base::Unretained(this)));
   month_input_dropdown_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH));
   month_input_dropdown_->SetID(DialogViewId::EXPIRATION_DATE_DROPBOX_MONTH);
@@ -245,7 +241,8 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
   }
 
   year_input_dropdown_ = new views::Combobox(&year_combobox_model_);
-  year_input_dropdown_->set_listener(this);
+  year_input_dropdown_->set_closure(base::BindRepeating(
+      &SaveCardOfferBubbleViews::DialogModelChanged, base::Unretained(this)));
   year_input_dropdown_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
   year_input_dropdown_->SetID(DialogViewId::EXPIRATION_DATE_DROPBOX_YEAR);

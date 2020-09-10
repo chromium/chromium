@@ -28,14 +28,14 @@ class VIEWS_EXAMPLES_EXPORT BoxLayoutExample : public LayoutExampleBase {
   // Set the border insets on the current BoxLayout instance.
   void UpdateBorderInsets();
 
-  // ComboboxListener
+  // LayoutExampleBase:
   void OnPerformAction(Combobox* combobox) override;
 
-  // TextfieldController
+  // TextfieldController:
   void ContentsChanged(Textfield* sender,
                        const base::string16& new_contents) override;
 
-  // LayoutExampleBase
+  // LayoutExampleBase:
   void ButtonPressedImpl(Button* sender) override;
   void CreateAdditionalControls(int vertical_start_pos) override;
   void UpdateLayoutManager() override;

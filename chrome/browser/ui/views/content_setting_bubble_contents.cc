@@ -89,7 +89,7 @@ class MediaComboboxModel : public ui::ComboboxModel {
 // and/or camera).
 class MediaMenuBlock : public views::View {
  public:
-  MediaMenuBlock(views::ComboboxListener* listener,
+  MediaMenuBlock(views::Combobox::PerformActionCallback callback,
                  ContentSettingBubbleModel::MediaMenuMap media) {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
@@ -137,7 +137,7 @@ class MediaMenuBlock : public views::View {
       auto combobox =
           std::make_unique<views::Combobox>(std::move(combobox_model));
       combobox->SetEnabled(combobox_enabled);
-      combobox->set_listener(listener);
+      combobox->set_callback(callback);
       combobox->SetSelectedIndex(combobox_selected_index);
       layout->AddView(std::move(combobox));
     }
@@ -517,7 +517,10 @@ void ContentSettingBubbleContents::Init() {
   // Layout code for the media device menus.
   if (content_setting_bubble_model_->AsMediaStreamBubbleModel()) {
     rows.push_back(
-        {std::make_unique<MediaMenuBlock>(this, bubble_content.media_menus),
+        {std::make_unique<MediaMenuBlock>(
+             base::BindRepeating(&ContentSettingBubbleContents::OnPerformAction,
+                                 base::Unretained(this)),
+             bubble_content.media_menus),
          LayoutRowType::INDENTED});
   }
 

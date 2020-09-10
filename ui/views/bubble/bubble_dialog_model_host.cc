@@ -295,7 +295,17 @@ Combobox* BubbleDialogModelHost::AddOrUpdateCombobox(
   combobox->SetAccessibleName(model->accessible_name(GetPassKey()).empty()
                                   ? model->label(GetPassKey())
                                   : model->accessible_name(GetPassKey()));
-  combobox->set_listener(this);
+  combobox->set_callback(base::BindRepeating(
+      [](ui::DialogModelCombobox* model,
+         util::PassKey<DialogModelHost> pass_key, Combobox* combobox) {
+        // TODO(pbos): This should be a subscription through the Combobox
+        // directly, but Combobox right now doesn't support listening to
+        // selected-index changes.
+        model->OnSelectedIndexChanged(pass_key, combobox->GetSelectedIndex());
+        model->OnPerformAction(pass_key);
+      },
+      model, GetPassKey()));
+
   // TODO(pbos): Add subscription to combobox selected-index changes.
   combobox->SetSelectedIndex(model->selected_index());
   auto* combobox_ptr = combobox.get();
@@ -323,23 +333,6 @@ void BubbleDialogModelHost::NotifyTextfieldTextChanged(Textfield* textfield) {
   view_to_field_[textfield]
       ->AsTextfield(GetPassKey())
       ->OnTextChanged(GetPassKey(), textfield->GetText());
-}
-
-void BubbleDialogModelHost::NotifyComboboxSelectedIndexChanged(
-    Combobox* combobox) {
-  view_to_field_[combobox]
-      ->AsCombobox(GetPassKey())
-      ->OnSelectedIndexChanged(GetPassKey(), combobox->GetSelectedIndex());
-}
-
-void BubbleDialogModelHost::OnPerformAction(Combobox* combobox) {
-  // TODO(pbos): This should be a subscription through the Combobox directly,
-  // but Combobox right now doesn't support listening to selected-index changes.
-  NotifyComboboxSelectedIndexChanged(combobox);
-
-  view_to_field_[combobox]
-      ->AsCombobox(GetPassKey())
-      ->OnPerformAction(GetPassKey());
 }
 
 void BubbleDialogModelHost::OnViewCreatedForField(View* view,

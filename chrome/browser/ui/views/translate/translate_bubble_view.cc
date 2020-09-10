@@ -834,7 +834,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
   }
 
   source_language_combobox->SetID(COMBOBOX_ID_SOURCE_LANGUAGE);
-  source_language_combobox->set_listener(this);
+  source_language_combobox->set_callback(base::BindRepeating(
+      &TranslateBubbleView::OnPerformAction, base::Unretained(this)));
   source_language_combobox_ = source_language_combobox.get();
 
   auto advanced_done_button = std::make_unique<views::MdTextButton>(
@@ -866,7 +867,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
       std::make_unique<views::Combobox>(target_language_combobox_model_.get());
 
   target_language_combobox->SetID(COMBOBOX_ID_TARGET_LANGUAGE);
-  target_language_combobox->set_listener(this);
+  target_language_combobox->set_callback(base::BindRepeating(
+      &TranslateBubbleView::OnPerformAction, base::Unretained(this)));
   target_language_combobox_ = target_language_combobox.get();
 
   auto advanced_done_button = std::make_unique<views::MdTextButton>(

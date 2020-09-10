@@ -25,7 +25,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -37,13 +36,13 @@ class Browser;
 
 namespace views {
 class Checkbox;
+class Combobox;
 class LabelButton;
 class View;
 }  // namespace views
 
 class TranslateBubbleView : public LocationBarBubbleDelegateView,
                             public views::ButtonListener,
-                            public views::ComboboxListener,
                             public ui::SimpleMenuModel::Delegate,
                             public views::TabbedPaneListener {
  public:
@@ -81,6 +80,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   TranslateBubbleModel* model() { return model_.get(); }
 
+  void OnPerformAction(views::Combobox* combobox);
+
   // LocationBarBubbleDelegateView:
   void Init() override;
   View* GetInitiallyFocusedView() override;
@@ -93,9 +94,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* source, const ui::Event& event) override;
-
-  // views::ComboboxListener:
-  void OnPerformAction(views::Combobox* combobox) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;

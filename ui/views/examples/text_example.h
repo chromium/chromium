@@ -10,18 +10,17 @@
 
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
 class Checkbox;
+class Combobox;
 class GridLayout;
 
 namespace examples {
 
 class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
-                                          public ButtonListener,
-                                          public ComboboxListener {
+                                          public ButtonListener {
  public:
   TextExample();
   ~TextExample() override;
@@ -39,11 +38,10 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
                         const char* const* strings,
                         int count);
 
+  void OnPerformAction(Combobox* combobox);
+
   // ButtonListener:
   void ButtonPressed(Button* button, const ui::Event& event) override;
-
-  // ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override;
 
   class TextExampleView;
   // The content of the scroll view.

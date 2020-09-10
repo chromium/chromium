@@ -360,12 +360,14 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   // Add the month and year comboboxes if the expiration date is needed.
   auto month_input = std::make_unique<views::Combobox>(&month_combobox_model_);
-  month_input->set_listener(this);
+  month_input->set_callback(base::BindRepeating(
+      &CardUnmaskPromptViews::OnPerformAction, base::Unretained(this)));
   month_input->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_MONTH));
   month_input_ = input_row->AddChildView(std::move(month_input));
   auto year_input = std::make_unique<views::Combobox>(&year_combobox_model_);
-  year_input->set_listener(this);
+  year_input->set_callback(base::BindRepeating(
+      &CardUnmaskPromptViews::OnPerformAction, base::Unretained(this)));
   year_input->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_YEAR));
   year_input_ = input_row->AddChildView(std::move(year_input));

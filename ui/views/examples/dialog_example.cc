@@ -153,7 +153,8 @@ void DialogExample::CreateExampleView(View* container) {
 
   StartRowWithLabel(layout, "Modal Type");
   mode_ = layout->AddView(std::make_unique<Combobox>(&mode_model_));
-  mode_->set_listener(this);
+  mode_->set_closure(base::BindRepeating(&DialogExample::OnPerformAction,
+                                         base::Unretained(this)));
   mode_->SetSelectedIndex(ui::MODAL_TYPE_CHILD);
 
   StartRowWithLabel(layout, "Bubble");
@@ -274,12 +275,12 @@ void DialogExample::ButtonPressed(Button* sender, const ui::Event& event) {
       LogStatus("You nearly always want Child Modal for bubbles.");
     }
     persistent_bubble_->SetEnabled(bubble_->GetChecked());
-    OnPerformAction(mode_);  // Validate the modal type.
+    OnPerformAction();  // Validate the modal type.
 
     if (!bubble_->GetChecked() && GetModalType() == ui::MODAL_TYPE_CHILD) {
       // Do something reasonable when simply unchecking bubble and re-enable.
       mode_->SetSelectedIndex(ui::MODAL_TYPE_WINDOW);
-      OnPerformAction(mode_);
+      OnPerformAction();
     }
     return;
   }
@@ -310,7 +311,7 @@ void DialogExample::ContentsChanged(Textfield* sender,
   ResizeDialog();
 }
 
-void DialogExample::OnPerformAction(Combobox* combobox) {
+void DialogExample::OnPerformAction() {
   bool enable = bubble_->GetChecked() || GetModalType() != ui::MODAL_TYPE_CHILD;
 #if defined(OS_APPLE)
   enable = enable && GetModalType() != ui::MODAL_TYPE_SYSTEM;

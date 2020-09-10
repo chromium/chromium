@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "extensions/common/constants.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 
 class LaunchOptionsComboboxModel;
 class Profile;
@@ -31,7 +30,6 @@ class View;
 // The summary panel of the app info dialog, which provides basic information
 // and controls related to the app.
 class AppInfoSummaryPanel : public AppInfoPanel,
-                            public views::ComboboxListener,
                             public base::SupportsWeakPtr<AppInfoSummaryPanel> {
  public:
   AppInfoSummaryPanel(Profile* profile, const extensions::Extension* app);
@@ -45,8 +43,8 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   void AddLaunchOptionControl(views::View* vertical_stack);
   void AddSubviews();
 
-  // Overridden from views::ComboboxListener:
-  void OnPerformAction(views::Combobox* combobox) override;
+  // Called when the combobox selection changes.
+  void OnPerformAction(views::Combobox* combobox);
 
   // Called asynchronously to calculate and update the size of the app displayed
   // in the dialog.
