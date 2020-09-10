@@ -28,6 +28,7 @@ js_library("os_a11y_page_browser_proxy") {
 js_library("os_a11y_page") {
   deps = [
     ":os_a11y_page_browser_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../../:router",
     "../../settings_page:settings_animated_pages",
@@ -44,6 +45,7 @@ js_library("manage_a11y_page_browser_proxy") {
 js_library("manage_a11y_page") {
   deps = [
     ":manage_a11y_page_browser_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "..:route_origin_behavior",
     "../..:router",
@@ -60,6 +62,8 @@ js_library("switch_access_constants") {
 js_library("switch_access_subpage") {
   deps = [
     ":switch_access_constants",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:i18n_behavior",
@@ -78,6 +82,8 @@ js_library("tts_subpage") {
   deps = [
     ":externs",
     ":tts_subpage_browser_proxy",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "../..:router",
     "../../controls:settings_slider",
     "../../languages_page:languages_browser_proxy",

@@ -10,7 +10,12 @@
 Polymer({
   is: 'settings-tts-subpage',
 
-  behaviors: [WebUIListenerBehavior, I18nBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -75,6 +80,21 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kTextToSpeechRate,
+        chromeos.settings.mojom.Setting.kTextToSpeechPitch,
+        chromeos.settings.mojom.Setting.kTextToSpeechVolume,
+        chromeos.settings.mojom.Setting.kTextToSpeechVoice,
+        chromeos.settings.mojom.Setting.kTextToSpeechEngines,
+      ]),
+    },
   },
 
   /** @private {?TtsSubpageBrowserProxy} */
@@ -105,6 +125,19 @@ Polymer({
   },
 
   /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.MANAGE_TTS_SETTINGS) {
+      return;
+    }
+
+    this.attemptDeepLink();
+  },
+
+  /*
    * Ticks for the Speech Rate slider. Valid rates are between 0.1 and 5.
    * @return {!Array<!cr_slider.SliderTick>}
    * @private

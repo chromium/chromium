@@ -5,6 +5,7 @@
 <link rel="import" href="../../a11y_page/captions_subpage.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
@@ -28,14 +29,16 @@
               pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
               on-change="onToggleAccessibilityImageLabels_"
               label="$i18n{accessibleImageLabelsTitle}"
-              sub-label="$i18n{accessibleImageLabelsSubtitle}">
+              sub-label="$i18n{accessibleImageLabelsSubtitle}"
+              deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
           </settings-toggle-button>
         </template>
         <settings-toggle-button id="optionsInMenuToggle"
             class="hr"
             hidden="[[isKioskModeActive_]]"
             label="$i18n{optionsInMenuLabel}"
-            pref="{{prefs.settings.a11y.enable_menu}}">
+            pref="{{prefs.settings.a11y.enable_menu}}"
+            deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
         </settings-toggle-button>
         <cr-link-row class="hr" id="subpage-trigger"
             label="$i18n{manageAccessibilityFeatures}"

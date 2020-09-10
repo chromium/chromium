@@ -1795,6 +1795,27 @@ TEST_F('OSSettingsSmbPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Test fixture for the OS Accessibility page.
+// eslint-disable-next-line no-var
+var OSSettingsAccessibilityPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/os_a11y_page/os_a11y_page.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'os_a11y_page_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsAccessibilityPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Test fixture for the Manage Accessibility page.
 // eslint-disable-next-line no-var
 var OSSettingsManageAccessibilityPageTest =
@@ -1808,6 +1829,7 @@ var OSSettingsManageAccessibilityPageTest =
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'manage_accessibility_page_tests.js',
     ]);
   }
@@ -1816,6 +1838,29 @@ var OSSettingsManageAccessibilityPageTest =
 TEST_F('OSSettingsManageAccessibilityPageTest', 'AllJsTests', () => {
   mocha.run();
 });
+
+// Test fixture for the OS Accessibility Text-to-Speech subpage.
+// eslint-disable-next-line no-var
+var OSSettingsTextToSpeechSubpageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/os_a11y_page/tts_subpage.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'text_to_speech_subpage_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsTextToSpeechSubpageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 
 // Test fixture for the Switch Access page.
 // eslint-disable-next-line no-var
@@ -1830,6 +1875,7 @@ var OSSettingsSwitchAccessSubpageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'switch_access_subpage_tests.js',
     ]);
   }

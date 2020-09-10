@@ -13,7 +13,12 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
 Polymer({
   is: 'settings-manage-a11y-page',
 
-  behaviors: [WebUIListenerBehavior, settings.RouteOriginBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    settings.RouteObserverBehavior,
+    settings.RouteOriginBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -230,6 +235,35 @@ Polymer({
           'shelfNavigationButtonsImplicitlyEnabled_,' +
           'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled)',
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kChromeVox,
+        chromeos.settings.mojom.Setting.kSelectToSpeak,
+        chromeos.settings.mojom.Setting.kHighContrastMode,
+        chromeos.settings.mojom.Setting.kFullscreenMagnifier,
+        chromeos.settings.mojom.Setting.kDockedMagnifier,
+        chromeos.settings.mojom.Setting.kStickyKeys,
+        chromeos.settings.mojom.Setting.kOnScreenKeyboard,
+        chromeos.settings.mojom.Setting.kDictation,
+        chromeos.settings.mojom.Setting.kHighlightKeyboardFocus,
+        chromeos.settings.mojom.Setting.kHighlightTextCaret,
+        chromeos.settings.mojom.Setting.kAutoClickWhenCursorStops,
+        chromeos.settings.mojom.Setting.kLargeCursor,
+        chromeos.settings.mojom.Setting.kHighlightCursorWhileMoving,
+        chromeos.settings.mojom.Setting.kTabletNavigationButtons,
+        chromeos.settings.mojom.Setting.kMonoAudio,
+        chromeos.settings.mojom.Setting.kStartupSound,
+        chromeos.settings.mojom.Setting.kEnableSwitchAccess,
+        chromeos.settings.mojom.Setting.kLiveCaptions,
+        chromeos.settings.mojom.Setting.kEnableCursorColor,
+      ]),
+    },
   },
 
   observers: [
@@ -282,6 +316,19 @@ Polymer({
     this.addFocusConfig_(r.DISPLAY, '#displaySubpageButton');
     this.addFocusConfig_(r.KEYBOARD, '#keyboardSubpageButton');
     this.addFocusConfig_(r.POINTERS, '#pointerSubpageButton');
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.MANAGE_ACCESSIBILITY) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

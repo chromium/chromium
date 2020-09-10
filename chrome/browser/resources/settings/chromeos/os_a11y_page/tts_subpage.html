@@ -8,6 +8,9 @@
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="../../controls/settings_slider.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../languages_page/languages_browser_proxy.html">
 <link rel="import" href="../../settings_shared_css.html">
@@ -43,11 +46,13 @@
         $i18n{textToSpeechRate}
       </div>
       <settings-slider show-markers
+          id="textToSpeechRate"
           pref="{{prefs.settings.tts.speech_rate}}"
           ticks="[[speechRateTicks_()]]"
           label-aria="$i18n{textToSpeechRate}"
           label-min="$i18n{textToSpeechRateMinimumLabel}"
-          label-max="$i18n{textToSpeechRateMaximumLabel}">
+          label-max="$i18n{textToSpeechRateMaximumLabel}"
+          deep-link-focus-id$="[[Setting.kTextToSpeechRate]]">
       </settings-slider>
     </div>
     <div class="settings-box continuation">
@@ -59,7 +64,8 @@
           ticks="[[speechPitchTicks_()]]"
           label-aria="$i18n{textToSpeechPitch}"
           label-min="$i18n{textToSpeechPitchMinimumLabel}"
-          label-max="$i18n{textToSpeechPitchMaximumLabel}">
+          label-max="$i18n{textToSpeechPitchMaximumLabel}"
+          deep-link-focus-id$="[[Setting.kTextToSpeechPitch]]">
       </settings-slider>
     </div>
     <div class="settings-box continuation">
@@ -71,7 +77,8 @@
           ticks="[[speechVolumeTicks_()]]"
           label-aria="$i18n{textToSpeechVolume}"
           label-min="$i18n{textToSpeechVolumeMinimumLabel}"
-          label-max="$i18n{textToSpeechVolumeMaximumLabel}">
+          label-max="$i18n{textToSpeechVolumeMaximumLabel}"
+          deep-link-focus-id$="[[Setting.kTextToSpeechVolume]]">
       </settings-slider>
     </div>
 
@@ -84,7 +91,8 @@
       <select id="previewVoice" class="md-select"
           aria-labelledby="textToSpeechPreviewVoice"
           value="{{defaultPreviewVoice}}"
-          disabled="[[!hasVoices]]">
+          disabled="[[!hasVoices]]"
+          deep-link-focus-id$="[[Setting.kTextToSpeechVoice]]">
         <template is="dom-repeat" id="previewVoiceOptions"
             items="[[allVoices]]" as="voice">
           <!-- TODO: Use a combobox with a search field instead. -->
@@ -160,9 +168,11 @@
         <div id="extension_name_[[index]]" class="start settings-box-text">
           [[extension.name]]
         </div>
-        <cr-button on-click="onEngineSettingsTap_"
+        <cr-button id="extensionOptionsButton_[[index]]"
+            on-click="onEngineSettingsTap_"
             aria-describedby$="extension_name_[[index]]"
-            hidden$="[[!extension.optionsPage]]">
+            hidden$="[[!extension.optionsPage]]"
+            deep-link-focus-id$="[[Setting.kTextToSpeechEngines]]">
           $i18n{settings}
         </cr-button>
       </div>

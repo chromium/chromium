@@ -10,7 +10,11 @@
 Polymer({
   is: 'os-settings-a11y-page',
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -60,6 +64,18 @@ Polymer({
         return loadTimeData.getBoolean('isKioskModeActive');
       }
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kA11yQuickSettings,
+        chromeos.settings.mojom.Setting.kGetImageDescriptionsFromGoogle,
+      ]),
+    },
   },
 
   /** @private {?OsA11yPageBrowserProxy} */
@@ -78,6 +94,19 @@ Polymer({
 
     // Enables javascript and gets the screen reader state.
     this.browserProxy_.a11yPageReady();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.OS_ACCESSIBILITY) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

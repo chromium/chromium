@@ -14,9 +14,8 @@ function hasOptionWithValue(options, value) {
 suite('ManageAccessibilityPageTests', function() {
   let page = null;
 
-  function initPage() {
-    page = document.createElement('settings-switch-access-subpage');
-    page.prefs = {
+  function getDefaultPrefs() {
+    return {
       settings: {
         a11y: {
           switch_access: {
@@ -24,7 +23,7 @@ suite('ManageAccessibilityPageTests', function() {
               enabled: {
                 key: 'settings.a11y.switch_access.auto_scan.enabled',
                 type: chrome.settingsPrivate.PrefType.BOOLEAN,
-                value: false
+                value: false,
               }
             },
             next: {
@@ -52,6 +51,12 @@ suite('ManageAccessibilityPageTests', function() {
         }
       }
     };
+  }
+
+  /** @param {?Object} prefs */
+  function initPage(prefs) {
+    page = document.createElement('settings-switch-access-subpage');
+    page.prefs = prefs || getDefaultPrefs();
 
     document.body.appendChild(page);
   }
@@ -64,6 +69,7 @@ suite('ManageAccessibilityPageTests', function() {
     if (page) {
       page.remove();
     }
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test(
@@ -88,4 +94,28 @@ suite('ManageAccessibilityPageTests', function() {
             hasOptionWithValue(page.optionsForPrevious_, assignedValue));
         assertFalse(hasOptionWithValue(page.optionsForSelect_, assignedValue));
       });
+
+  test('Deep link to auto-scan keyboards', async () => {
+    loadTimeData.overrideValues({
+      isDeepLinkingEnabled: true,
+      showExperimentalAccessibilitySwitchAccessImprovedTextInput: true,
+    });
+    prefs = getDefaultPrefs();
+    prefs.settings.a11y.switch_access.auto_scan.enabled.value = true;
+    initPage(prefs);
+
+    Polymer.dom.flush();
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1525');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
+
+    const deepLinkElement = page.$$('#keyboardScanSpeedSlider').$$('cr-slider');
+    await test_util.waitAfterNextRender(deepLinkElement);
+
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Auto-scan keyboard toggle should be focused for settingId=1525.');
+  });
 });

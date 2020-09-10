@@ -64,6 +64,7 @@ suite('ManageAccessibilityPageTests', function() {
     if (page) {
       page.remove();
     }
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('Pointers row only visible if mouse/touchpad present', function() {
@@ -114,5 +115,26 @@ suite('ManageAccessibilityPageTests', function() {
 
     // Additional features link is not visible.
     assertFalse(isVisible(page.$.additionalFeaturesLink));
+  });
+
+  test('Deep link to switch access', async () => {
+    loadTimeData.overrideValues({
+      isKioskModeActive: false,
+      isDeepLinkingEnabled: true,
+    });
+    initPage();
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1522');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MANAGE_ACCESSIBILITY, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = page.$$('#enableSwitchAccess').$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Switch access toggle should be focused for settingId=1522.');
   });
 });

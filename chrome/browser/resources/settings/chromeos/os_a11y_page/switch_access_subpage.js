@@ -77,8 +77,10 @@ Polymer({
   is: 'settings-switch-access-subpage',
 
   behaviors: [
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
+    settings.RouteObserverBehavior,
   ],
 
   properties: {
@@ -166,6 +168,19 @@ Polymer({
         return [{value: -1, name: 'Placeholder'}];
       }
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kSwitchActionAssignment,
+        chromeos.settings.mojom.Setting.kSwitchActionAutoScan,
+        chromeos.settings.mojom.Setting.kSwitchActionAutoScanKeyboard,
+      ]),
+    },
   },
 
   /** @override */
@@ -187,6 +202,19 @@ Polymer({
   /** @override */
   ready() {
     this.updateOptionsForDropdowns_();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**
