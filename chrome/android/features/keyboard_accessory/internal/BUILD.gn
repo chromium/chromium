@@ -37,6 +37,7 @@ android_library("internal_java") {
     "//third_party/android_deps:material_design_java",
     "//ui/android:ui_java",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
@@ -53,6 +54,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewHolder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/Credential.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryIPHUtils.java",

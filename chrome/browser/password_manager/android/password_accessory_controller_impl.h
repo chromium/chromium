@@ -135,6 +135,10 @@ class PasswordAccessoryControllerImpl
   std::unique_ptr<AllPasswordsBottomSheetController>
       all_passords_bottom_sheet_controller_;
 
+  // Records the last focused field type that `RefreshSuggestionsForField()` was
+  // called with.
+  autofill::mojom::FocusedFieldType last_focused_field_type_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryControllerImpl);

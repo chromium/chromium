@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "ui/android/window_android.h"
 
+using autofill::mojom::FocusedFieldType;
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
@@ -56,7 +57,8 @@ AllPasswordsBottomSheetViewImpl::~AllPasswordsBottomSheetViewImpl() {
 }
 
 void AllPasswordsBottomSheetViewImpl::Show(
-    const std::vector<std::unique_ptr<autofill::PasswordForm>>& credentials) {
+    const std::vector<std::unique_ptr<autofill::PasswordForm>>& credentials,
+    FocusedFieldType focused_field_type) {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object)
     return;
@@ -78,7 +80,10 @@ void AllPasswordsBottomSheetViewImpl::Show(
         credential->is_affiliation_based_match);
   }
 
-  Java_AllPasswordsBottomSheetBridge_showCredentials(env, java_object);
+  const bool is_password_field =
+      focused_field_type == FocusedFieldType::kFillablePasswordField;
+  Java_AllPasswordsBottomSheetBridge_showCredentials(env, java_object,
+                                                     is_password_field);
 }
 
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(

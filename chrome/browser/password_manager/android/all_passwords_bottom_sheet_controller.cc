@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_store.h"
 #include "content/public/browser/web_contents.h"
 
+using autofill::mojom::FocusedFieldType;
 using password_manager::UiCredential;
 
 // No-op constructor for tests.
@@ -21,20 +22,24 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     std::unique_ptr<AllPasswordsBottomSheetView> view,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     password_manager::PasswordStore* store,
-    base::OnceCallback<void()> dismissal_callback)
+    base::OnceCallback<void()> dismissal_callback,
+    FocusedFieldType focused_field_type)
     : view_(std::move(view)),
       store_(store),
       dismissal_callback_(std::move(dismissal_callback)),
-      driver_(std::move(driver)) {}
+      driver_(std::move(driver)),
+      focused_field_type_(focused_field_type) {}
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
     password_manager::PasswordStore* store,
-    base::OnceCallback<void()> dismissal_callback)
+    base::OnceCallback<void()> dismissal_callback,
+    FocusedFieldType focused_field_type)
     : view_(std::make_unique<AllPasswordsBottomSheetViewImpl>(this)),
       web_contents_(web_contents),
       store_(store),
-      dismissal_callback_(std::move(dismissal_callback)) {
+      dismissal_callback_(std::move(dismissal_callback)),
+      focused_field_type_(focused_field_type) {
   DCHECK(web_contents_);
   DCHECK(store_);
   DCHECK(dismissal_callback_);
@@ -56,7 +61,7 @@ void AllPasswordsBottomSheetController::Show() {
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
   // TODO(crbug.com/1104132): Handle empty credentials case.
-  view_->Show(std::move(results));
+  view_->Show(std::move(results), focused_field_type_);
 }
 
 gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
@@ -65,7 +70,15 @@ gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
 
 void AllPasswordsBottomSheetController::OnCredentialSelected(
     const UiCredential& credential) {
-  driver_->FillSuggestion(credential.username(), credential.password());
+  const bool is_password_field =
+      focused_field_type_ == FocusedFieldType::kFillablePasswordField;
+  DCHECK(driver_);
+  if (is_password_field) {
+    driver_->FillIntoFocusedField(is_password_field, credential.password());
+  } else {
+    driver_->FillIntoFocusedField(is_password_field, credential.username());
+  }
+
   // Consumes the dismissal callback to destroy the native controller and java
   // controller after the user selects a credential.
   OnDismiss();

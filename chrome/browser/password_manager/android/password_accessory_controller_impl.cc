@@ -239,6 +239,7 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
     FocusedFieldType focused_field_type,
     bool is_manual_generation_available) {
+  last_focused_field_type_ = focused_field_type;
   // Prevent crashing by not acting at all if frame became unfocused at any
   // point. The next time a focus event happens, this will be called again and
   // ensure we show correct data.
@@ -408,12 +409,14 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   // |AllPasswordsSheetDismissed| we are sure that this controller is alive as
   // it owns |AllPasswordsBottomSheetController| from which the method is
   // called.
+  // TODO(crbug.com/1104132): Update the controller with the last focused field.
   all_passords_bottom_sheet_controller_ =
       std::make_unique<AllPasswordsBottomSheetController>(
           web_contents_, password_client_->GetProfilePasswordStore(),
           base::BindOnce(
               &PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed,
-              base::Unretained(this)));
+              base::Unretained(this)),
+          last_focused_field_type_);
 
   all_passords_bottom_sheet_controller_->Show();
 }

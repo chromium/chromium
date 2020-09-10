@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties defined here reflect the visible state of the AllPasswordsBottomSheet.
@@ -29,5 +35,46 @@ class AllPasswordsBottomSheetProperties {
                 .with(SHEET_ITEMS, new ListModel<>())
                 .with(DISMISS_HANDLER, handler)
                 .build();
+    }
+
+    static class CredentialProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<Credential> CREDENTIAL =
+                new PropertyModel.ReadableObjectPropertyKey<>("credential");
+        static final PropertyModel
+                .ReadableObjectPropertyKey<Callback<Credential>> ON_CLICK_LISTENER =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_click_listener");
+        static final PropertyModel.ReadableBooleanPropertyKey IS_PASSWORD_FIELD =
+                new PropertyModel.ReadableBooleanPropertyKey("is_password_field");
+        static final PropertyKey[] ALL_KEYS = {CREDENTIAL, ON_CLICK_LISTENER, IS_PASSWORD_FIELD};
+
+        private CredentialProperties() {}
+
+        static PropertyModel createCredentialModel(Credential credential,
+                Callback<Credential> clickListener, boolean isPasswordField) {
+            return new PropertyModel
+                    .Builder(AllPasswordsBottomSheetProperties.CredentialProperties.ALL_KEYS)
+                    .with(CREDENTIAL, credential)
+                    .with(ON_CLICK_LISTENER, clickListener)
+                    .with(IS_PASSWORD_FIELD, isPasswordField)
+                    .build();
+        }
+    }
+
+    @IntDef({ItemType.CREDENTIAL})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ItemType {
+        /**
+         * A section containing username, password and origin.
+         */
+        int CREDENTIAL = 0;
+    }
+
+    /**
+     * Returns the sheet item type for a given item.
+     * @param item An {@link MVCListAdapter.ListItem}.
+     * @return The {@link ItemType} of the given list item.
+     */
+    static @ItemType int getItemType(MVCListAdapter.ListItem item) {
+        return item.type;
     }
 }

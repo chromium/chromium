@@ -52,8 +52,8 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     }
 
     @CalledByNative
-    private void showCredentials() {
-        mAllPasswordsBottomSheetCoordinator.showCredentials(mCredentials);
+    private void showCredentials(boolean isPasswordField) {
+        mAllPasswordsBottomSheetCoordinator.showCredentials(mCredentials, isPasswordField);
     }
 
     @Override

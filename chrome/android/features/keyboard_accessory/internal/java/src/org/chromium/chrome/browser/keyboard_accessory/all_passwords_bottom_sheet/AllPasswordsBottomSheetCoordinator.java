@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -51,11 +53,14 @@ class AllPasswordsBottomSheetCoordinator {
     /**
      * Displays the given credentials in a new bottom sheet.
      * @param credentials An array of {@link Credential}s that will be displayed.
+     * @param isPasswordField True if the currently focused field is a password field and false for
+     *         any other field type (e.g username, ...).
      */
-    public void showCredentials(Credential[] credentials) {
-        mMediator.showCredentials(credentials);
+    public void showCredentials(Credential[] credentials, boolean isPasswordField) {
+        mMediator.showCredentials(credentials, isPasswordField);
     }
 
+    @VisibleForTesting
     static void setUpModelChangeProcessor(PropertyModel model, AllPasswordsBottomSheetView view) {
         PropertyModelChangeProcessor.create(
                 model, view, AllPasswordsBottomSheetViewBinder::bindAllPasswordsBottomSheet);

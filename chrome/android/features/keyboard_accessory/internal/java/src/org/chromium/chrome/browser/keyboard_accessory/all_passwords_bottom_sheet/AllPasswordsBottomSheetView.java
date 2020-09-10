@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -26,7 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 class AllPasswordsBottomSheetView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private Callback<Integer> mDismissHandler;
-    private final RecyclerView mContentView;
+    private final RecyclerView mSheetItemListView;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -56,8 +57,11 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     public AllPasswordsBottomSheetView(
             Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
-        mContentView = (RecyclerView) LayoutInflater.from(context).inflate(
+        mSheetItemListView = (RecyclerView) LayoutInflater.from(context).inflate(
                 R.layout.all_passwords_bottom_sheet, null);
+        mSheetItemListView.setLayoutManager(new LinearLayoutManager(
+                mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
+        mSheetItemListView.setItemAnimator(null);
     }
 
     /**
@@ -85,9 +89,13 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
         }
     }
 
+    void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
+        mSheetItemListView.setAdapter(adapter);
+    }
+
     @Override
     public View getContentView() {
-        return mContentView;
+        return mSheetItemListView;
     }
 
     @Nullable

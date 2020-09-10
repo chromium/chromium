@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/util/type_safety/pass_key.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -31,11 +32,14 @@ class AllPasswordsBottomSheetController
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       password_manager::PasswordStore* store,
-      base::OnceCallback<void()> dismissal_callback);
+      base::OnceCallback<void()> dismissal_callback,
+      autofill::mojom::FocusedFieldType focused_field_type);
+
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
       password_manager::PasswordStore* store,
-      base::OnceCallback<void()> dismissal_callback);
+      base::OnceCallback<void()> dismissal_callback,
+      autofill::mojom::FocusedFieldType focused_field_type);
   ~AllPasswordsBottomSheetController() override;
   AllPasswordsBottomSheetController(const AllPasswordsBottomSheetController&) =
       delete;
@@ -77,6 +81,9 @@ class AllPasswordsBottomSheetController
   // Either |driver_| is created and owned by this controller or received in
   // constructor specified for tests.
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
+
+  // The type of field on which the user is focused, e.g. PASSWORD.
+  autofill::mojom::FocusedFieldType focused_field_type_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
