@@ -662,12 +662,13 @@ void WaylandBufferManagerHost::OnChannelDestroyed() {
 
 wl::BufferFormatsWithModifiersMap
 WaylandBufferManagerHost::GetSupportedBufferFormats() const {
+#if defined(WAYLAND_GBM)
   if (connection_->zwp_dmabuf())
     return connection_->zwp_dmabuf()->supported_buffer_formats();
   else if (connection_->drm())
     return connection_->drm()->supported_buffer_formats();
-  else
-    return {};
+#endif
+  return {};
 }
 
 bool WaylandBufferManagerHost::SupportsDmabuf() const {
