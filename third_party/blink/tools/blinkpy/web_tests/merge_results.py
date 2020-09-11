@@ -628,6 +628,9 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(
             FilenameRegexMatch(r'wptserve_stderr\.txt$'),
             MergeFilesKeepFiles(self.filesystem))
+        # keep chromedriver log for webdriver tests
+        self.add_helper(FilenameRegexMatch(r'chromedriver\.log$'),
+                        MergeFilesKeepFiles(self.filesystem))
 
         # These JSON files have "result style" JSON in them.
         results_json_file_merger = MergeFilesJSONP(
