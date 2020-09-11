@@ -1156,8 +1156,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
                                         AutomationAXTreeWrapper* tree_wrapper,
                                         ui::AXNode* node) {
     const ui::AXNodeData& node_data = node->data();
-    const char* name =
-        node_data.GetStringAttribute(ax::mojom::StringAttribute::kName).c_str();
+    const char* name = nullptr;
     if (node_data.role == ax::mojom::Role::kPortal &&
         node_data.GetNameFrom() == ax::mojom::NameFrom::kNone) {
       if (GetRootOfChildTree(&node, &tree_wrapper)) {
@@ -1166,7 +1165,15 @@ void AutomationInternalCustomBindings::AddRoutes() {
                    .c_str();
       }
     }
-    result.Set(v8::String::NewFromUtf8(isolate, name).ToLocalChecked());
+
+    if (!name &&
+        node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+      name = node_data.GetStringAttribute(ax::mojom::StringAttribute::kName)
+                 .c_str();
+    }
+
+    if (name)
+      result.Set(v8::String::NewFromUtf8(isolate, name).ToLocalChecked());
   });
   RouteNodeIDFunction(
       "GetDescriptionFrom",

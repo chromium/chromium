@@ -2921,8 +2921,8 @@ TEST_F('ChromeVoxBackgroundTest', 'AudioVideo', function() {
         assertNotNullNorUndefined(audio);
         assertNotNullNorUndefined(video);
 
-        assertEquals('', audio.name);
-        assertEquals('', video.name);
+        assertEquals(undefined, audio.name);
+        assertEquals(undefined, video.name);
         assertEquals(undefined, audio.firstChild);
         assertEquals(undefined, video.firstChild);
 
@@ -3057,6 +3057,46 @@ TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
                 `Welcome This is some introductory text Exit Let's go`)
             .expectSpeech('Welcome')
             .expectSpeech('Heading 1')
+            .replay();
+      });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'ImageAnnotations', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <p>start</p>
+    <img alt="bar" src="data:image/png;base64,iVBORw0KGgoAAAANS">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANS">
+  `,
+      function(root) {
+        const [namedImg, unnamedImg] = root.findAll({role: RoleType.IMAGE});
+
+        assertNotNullNorUndefined(namedImg);
+        assertNotNullNorUndefined(unnamedImg);
+
+        assertEquals('bar', namedImg.name);
+        assertEquals(undefined, unnamedImg.name);
+
+        // Fake the image annotation.
+        Object.defineProperty(namedImg, 'imageAnnotation', {
+          get() {
+            return 'foo';
+          }
+        });
+        Object.defineProperty(unnamedImg, 'imageAnnotation', {
+          get() {
+            return 'foo';
+          }
+        });
+
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('start')
+            .expectNextSpeechUtteranceIsNot('foo')
+            .expectSpeech('bar', 'Image')
+            .call(doCmd('nextObject'))
+            .expectNextSpeechUtteranceIsNot('bar')
+            .expectSpeech('foo', 'Image')
             .replay();
       });
 });

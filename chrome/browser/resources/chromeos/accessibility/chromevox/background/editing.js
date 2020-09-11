@@ -1049,14 +1049,16 @@ editing.EditableLine = class {
     if (!AutomationPredicate.text(startNode) ||
         (this.start_.node != startNode &&
          this.start_.node.parent != startNode)) {
-      startIndex = this.start_.index == cursors.NODE_INDEX ?
+      startIndex =
+          (this.start_.index == cursors.NODE_INDEX && this.start_.node.name) ?
           this.start_.node.name.length :
           this.start_.index;
     }
 
     if (!AutomationPredicate.text(endNode) ||
         (this.end_.node != endNode && this.end_.node.parent != endNode)) {
-      endIndex = this.end_.index == cursors.NODE_INDEX ?
+      endIndex =
+          (this.end_.index == cursors.NODE_INDEX && this.end_.node.name) ?
           this.end_.node.name.length :
           this.end_.index;
     }

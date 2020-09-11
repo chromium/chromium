@@ -49,7 +49,7 @@ const hasActionableDescendant = function(node) {
 const nodeNameContainedInStaticTextChildren = function(node) {
   const name = node.name;
   let child = node.firstChild;
-  if (!child) {
+  if (name === undefined || !child) {
     return false;
   }
   let nameIndex = 0;
