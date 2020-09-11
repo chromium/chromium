@@ -38,13 +38,26 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
 
   ~KeySystemConfigSelector();
 
+  // The unsupported statuses will be mapped to different rejection messages.
+  // The statuses should not leak sensitive information, e.g. incognito mode or
+  // user settings. See https://crbug.com/760720
+  enum class Status {
+    kSupported,
+    kUnsupportedPlatform,
+    kUnsupportedKeySystem,
+    kUnsupportedConfigs,
+  };
+
+  // Callback for the result of `SelectConfig()`. The returned configs must be
+  // non-null iff `status` is `kSupported`.
+  using SelectConfigCB = base::OnceCallback<
+      void(Status status, blink::WebMediaKeySystemConfiguration*, CdmConfig*)>;
+
   void SelectConfig(
       const blink::WebString& key_system,
       const blink::WebVector<blink::WebMediaKeySystemConfiguration>&
           candidate_configurations,
-      base::OnceCallback<void(const blink::WebMediaKeySystemConfiguration&,
-                              const CdmConfig&)> succeeded_cb,
-      base::OnceClosure not_supported_cb);
+      SelectConfigCB cb);
 
   using IsSupportedMediaTypeCB =
       base::RepeatingCallback<bool(const std::string& container_mime_type,

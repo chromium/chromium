@@ -114,9 +114,7 @@ void WebEncryptedMediaClientImpl::RequestMediaKeySystemAccess(
 
   key_system_config_selector_.SelectConfig(
       request.KeySystem(), request.SupportedConfigurations(),
-      base::BindOnce(&WebEncryptedMediaClientImpl::OnRequestSucceeded,
-                     weak_factory_.GetWeakPtr(), request),
-      base::BindOnce(&WebEncryptedMediaClientImpl::OnRequestNotSupported,
+      base::BindOnce(&WebEncryptedMediaClientImpl::OnConfigSelected,
                      weak_factory_.GetWeakPtr(), request));
 }
 
@@ -131,13 +129,34 @@ void WebEncryptedMediaClientImpl::CreateCdm(
                      std::move(result)));
 }
 
-void WebEncryptedMediaClientImpl::OnRequestSucceeded(
+void WebEncryptedMediaClientImpl::OnConfigSelected(
     blink::WebEncryptedMediaRequest request,
-    const blink::WebMediaKeySystemConfiguration& accumulated_configuration,
-    const CdmConfig& cdm_config) {
+    KeySystemConfigSelector::Status status,
+    blink::WebMediaKeySystemConfiguration* accumulated_configuration,
+    CdmConfig* cdm_config) {
+  // Update encrypted_media_supported_types_browsertest.cc if updating these
+  // strings.
+  // TODO(xhwang): Consider using different messages for kUnsupportedKeySystem
+  // and kUnsupportedConfigs.
+  const char kUnsupportedKeySystemOrConfigMessage[] =
+      "Unsupported keySystem or supportedConfigurations.";
+  const char kUnsupportedPlatformMessage[] = "Unsupported platform.";
+
+  // Handle unsupported cases first.
+  switch (status) {
+    case KeySystemConfigSelector::Status::kUnsupportedKeySystem:
+    case KeySystemConfigSelector::Status::kUnsupportedConfigs:
+      request.RequestNotSupported(kUnsupportedKeySystemOrConfigMessage);
+      return;
+    case KeySystemConfigSelector::Status::kUnsupportedPlatform:
+      request.RequestNotSupported(kUnsupportedPlatformMessage);
+      return;
+    case KeySystemConfigSelector::Status::kSupported:
+      break;  // Handled below.
+  }
+
+  DCHECK_EQ(status, KeySystemConfigSelector::Status::kSupported);
   GetReporter(request.KeySystem())->ReportSupported();
-  // TODO(sandersd): Pass |are_secure_codecs_required| along and use it to
-  // configure the CDM security level and use of secure surfaces on Android.
 
   // If the frame is closed while the permission prompt is displayed,
   // the permission prompt is dismissed and this may result in the
@@ -151,19 +170,8 @@ void WebEncryptedMediaClientImpl::OnRequestSucceeded(
   }
 
   request.RequestSucceeded(WebContentDecryptionModuleAccessImpl::Create(
-      request.KeySystem(), origin, accumulated_configuration, cdm_config,
+      request.KeySystem(), origin, *accumulated_configuration, *cdm_config,
       weak_factory_.GetWeakPtr()));
-}
-
-void WebEncryptedMediaClientImpl::OnRequestNotSupported(
-    blink::WebEncryptedMediaRequest request) {
-  // The rejection message when the key system is not supported or when none of
-  // the requested configurations is supported should always be the same to help
-  // avoid leaking information unnecessarily. See https://crbug.com/760720
-  const char kUnsupportedKeySystemOrConfigMessage[] =
-      "Unsupported keySystem or supportedConfigurations.";
-
-  request.RequestNotSupported(kUnsupportedKeySystemOrConfigMessage);
 }
 
 WebEncryptedMediaClientImpl::Reporter* WebEncryptedMediaClientImpl::GetReporter(

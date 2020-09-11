@@ -380,9 +380,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
 
     key_system_config_selector.SelectConfig(
         key_system_, configs_,
-        base::BindOnce(&KeySystemConfigSelectorTest::OnSucceeded,
-                       base::Unretained(this)),
-        base::BindOnce(&KeySystemConfigSelectorTest::OnNotSupported,
+        base::BindOnce(&KeySystemConfigSelectorTest::OnConfigSelected,
                        base::Unretained(this)));
   }
 
@@ -418,14 +416,17 @@ class KeySystemConfigSelectorTest : public testing::Test {
     ASSERT_TRUE(media_permission_->requests != 0 && not_supported_count_ != 0);
   }
 
-  void OnSucceeded(const WebMediaKeySystemConfiguration& config,
-                   const CdmConfig& cdm_config) {
-    succeeded_count_++;
-    config_ = config;
-    cdm_config_ = cdm_config;
+  void OnConfigSelected(KeySystemConfigSelector::Status status,
+                        WebMediaKeySystemConfiguration* config,
+                        CdmConfig* cdm_config) {
+    if (status == KeySystemConfigSelector::Status::kSupported) {
+      succeeded_count_++;
+      config_ = *config;
+      cdm_config_ = *cdm_config;
+    } else {
+      not_supported_count_++;
+    }
   }
-
-  void OnNotSupported() { not_supported_count_++; }
 
   std::unique_ptr<FakeKeySystems> key_systems_;
   std::unique_ptr<FakeMediaPermission> media_permission_;
