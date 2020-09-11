@@ -32,7 +32,7 @@ static const int kMaxTestDelay = 40;
 
 namespace {
 
-class MockMessageHandler : public rtc::MessageHandler {
+class MockMessageHandler : public rtc::MessageHandlerAutoCleanup {
  public:
   MOCK_METHOD1(OnMessage, void(rtc::Message* msg));
 };
