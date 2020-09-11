@@ -569,7 +569,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode FindRegistrationForId(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       scoped_refptr<ServiceWorkerRegistration>* registration) {
     base::Optional<blink::ServiceWorkerStatusCode> result;
     base::RunLoop loop;
@@ -703,7 +703,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
             FindRegistrationForScope(kScope, &found_registration));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
             FindRegistrationForIdOnly(kRegistrationId, &found_registration));
@@ -799,7 +799,7 @@ TEST_F(ServiceWorkerStorageTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_FALSE(found_registration.get());
 
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   EXPECT_FALSE(found_registration.get());
 
@@ -856,7 +856,7 @@ TEST_F(ServiceWorkerStorageTest, StoreFindUpdateDeleteRegistration) {
 
   // Can be found by id too.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   ASSERT_TRUE(found_registration.get());
   EXPECT_EQ(kRegistrationId, found_registration->id());
@@ -987,7 +987,7 @@ TEST_F(ServiceWorkerStorageTest, InstallingRegistrationsAreFindable) {
 
   // Should not be findable, including by GetAllRegistrationsInfos.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   EXPECT_FALSE(found_registration.get());
 
@@ -1026,7 +1026,7 @@ TEST_F(ServiceWorkerStorageTest, InstallingRegistrationsAreFindable) {
 
   // Now should be findable.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   EXPECT_EQ(live_registration, found_registration);
   found_registration = nullptr;
@@ -1070,7 +1070,7 @@ TEST_F(ServiceWorkerStorageTest, InstallingRegistrationsAreFindable) {
 
   // Once again, should not be findable.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            FindRegistrationForId(kRegistrationId, kScope.GetOrigin(),
+            FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope),
                                   &found_registration));
   EXPECT_FALSE(found_registration.get());
 

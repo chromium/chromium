@@ -215,7 +215,7 @@ void ServiceWorkerStorage::FindRegistrationForScope(
 
 void ServiceWorkerStorage::FindRegistrationForId(
     int64_t registration_id,
-    const GURL& origin,
+    const url::Origin& origin,
     FindRegistrationDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -235,7 +235,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, origin)) {
+  if (!base::Contains(registered_origins_, origin.GetURL())) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -1536,12 +1536,12 @@ void ServiceWorkerStorage::FindForIdInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
-    const GURL& origin,
+    const url::Origin& origin,
     FindInDBCallback callback) {
   storage::mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
   ServiceWorkerDatabase::Status status = database->ReadRegistration(
-      registration_id, origin, &data, resources.get());
+      registration_id, origin.GetURL(), &data, resources.get());
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
                                 std::move(resources), status));
@@ -1563,8 +1563,8 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
                                   /*resources=*/nullptr, status));
     return;
   }
-  FindForIdInDB(database, original_task_runner, registration_id, origin,
-                std::move(callback));
+  FindForIdInDB(database, original_task_runner, registration_id,
+                url::Origin::Create(origin), std::move(callback));
 }
 
 // static

@@ -21,7 +21,8 @@ class NotificationStorageTest : public ::testing::Test {
  public:
   NotificationStorageTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
-        origin_(GURL("https://example.com")),
+        url_(GURL("https://example.com")),
+        origin_(url::Origin::Create(url_)),
         success_(false),
         service_worker_registration_id_(
             blink::mojom::kInvalidServiceWorkerRegistrationId) {
@@ -61,11 +62,11 @@ class NotificationStorageTest : public ::testing::Test {
   // blink::mojom::kInvalidServiceWorkerRegistrationId. The
   // ServiceWorkerRegistration will be kept alive for the test's lifetime.
   int64_t RegisterServiceWorker() {
-    GURL script_url = origin_;
+    GURL script_url = url_;
 
     {
       blink::mojom::ServiceWorkerRegistrationOptions options;
-      options.scope = origin_;
+      options.scope = url_;
       base::RunLoop run_loop;
       helper_->context()->RegisterServiceWorker(
           script_url, options, blink::mojom::FetchClientSettingsObject::New(),
@@ -154,7 +155,8 @@ class NotificationStorageTest : public ::testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;  // Must be first member
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  GURL origin_;
+  GURL url_;
+  url::Origin origin_;
   TestBrowserContext browser_context_;
   bool success_;
   int64_t service_worker_registration_id_;
@@ -173,7 +175,7 @@ class NotificationStorageTest : public ::testing::Test {
 TEST_F(NotificationStorageTest, WriteReadNotification) {
   NotificationDatabaseData data;
   data.notification_id = GenerateNotificationId();
-  data.origin = origin_;
+  data.origin = url_;
   data.service_worker_registration_id = RegisterServiceWorker();
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             data.service_worker_registration_id);
@@ -204,7 +206,7 @@ TEST_F(NotificationStorageTest, ReadInvalidNotification) {
 TEST_F(NotificationStorageTest, ReadAndUpdateInteraction) {
   NotificationDatabaseData data, read_data;
   data.notification_id = GenerateNotificationId();
-  data.origin = origin_;
+  data.origin = url_;
   data.service_worker_registration_id = RegisterServiceWorker();
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             data.service_worker_registration_id);

@@ -656,7 +656,7 @@ void ContentIndexDatabase::DidDeleteItem(
     return;
 
   service_worker_context_->FindReadyRegistrationForId(
-      service_worker_registration_id, origin.GetURL(),
+      service_worker_registration_id, origin,
       base::BindOnce(&ContentIndexDatabase::StartActiveWorkerForDispatch,
                      weak_ptr_factory_core_.GetWeakPtr(), description_id));
 }

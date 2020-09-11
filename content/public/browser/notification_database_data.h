@@ -46,6 +46,8 @@ struct CONTENT_EXPORT NotificationDatabaseData {
   std::string notification_id;
 
   // Origin of the website this notification is associated with.
+  // TODO(https://crbug.com/1095896): Consider making |origin| a url::Origin
+  // field.
   GURL origin;
 
   // Id of the Service Worker registration this notification is associated with.

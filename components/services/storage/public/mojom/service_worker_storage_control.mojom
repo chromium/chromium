@@ -123,7 +123,7 @@ interface ServiceWorkerStorageControl {
        ServiceWorkerFindRegistrationResult? result);
   // Reads a stored registration for |registration_id|. |origin| is to
   // be used as a hint to look up the registration faster.
-  FindRegistrationForId(int64 registration_id, url.mojom.Url? origin) =>
+  FindRegistrationForId(int64 registration_id, url.mojom.Origin? origin) =>
       (ServiceWorkerDatabaseStatus status,
        ServiceWorkerFindRegistrationResult? result);
 

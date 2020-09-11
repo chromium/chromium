@@ -142,7 +142,7 @@ void ServiceWorkerStorageControlImpl::FindRegistrationForScope(
 
 void ServiceWorkerStorageControlImpl::FindRegistrationForId(
     int64_t registration_id,
-    const base::Optional<GURL>& origin,
+    const base::Optional<url::Origin>& origin,
     FindRegistrationForClientUrlCallback callback) {
   if (origin.has_value()) {
     storage_->FindRegistrationForId(

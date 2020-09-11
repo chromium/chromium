@@ -273,7 +273,7 @@ void BackgroundFetchEventDispatcher::LoadServiceWorkerRegistrationForDispatch(
     ServiceWorkerLoadedCallback loaded_callback) {
   service_worker_context_->FindReadyRegistrationForId(
       registration_id.service_worker_registration_id(),
-      registration_id.origin().GetURL(),
+      registration_id.origin(),
       base::BindOnce(
           &BackgroundFetchEventDispatcher::StartActiveWorkerForDispatch, event,
           std::move(finished_closure), std::move(loaded_callback)));

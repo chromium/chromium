@@ -123,7 +123,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // is considered as "findable" when the registration is stored or in the
   // installing state.
   void FindRegistrationForId(int64_t registration_id,
-                             const GURL& origin,
+                             const url::Origin& origin,
                              FindRegistrationCallback callback);
   // Generally |FindRegistrationForId| should be used to look up a registration
   // by |registration_id| since it's more efficient. But if a |registration_id|

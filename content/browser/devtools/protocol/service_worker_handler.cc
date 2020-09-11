@@ -154,7 +154,7 @@ void DidFindRegistrationForDispatchPeriodicSyncEventOnCoreThread(
 void DispatchSyncEventOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     scoped_refptr<BackgroundSyncContextImpl> sync_context,
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t registration_id,
     const std::string& tag,
     bool last_chance) {
@@ -167,7 +167,7 @@ void DispatchSyncEventOnCoreThread(
 void DispatchPeriodicSyncEventOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     scoped_refptr<BackgroundSyncContextImpl> sync_context,
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t registration_id,
     const std::string& tag) {
   context->FindReadyRegistrationForId(
@@ -373,10 +373,11 @@ Response ServiceWorkerHandler::DispatchSyncEvent(
   BackgroundSyncContextImpl* sync_context =
       storage_partition_->GetBackgroundSyncContext();
 
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(&DispatchSyncEventOnCoreThread, context_,
-                                       base::WrapRefCounted(sync_context),
-                                       GURL(origin), id, tag, last_chance));
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+      base::BindOnce(&DispatchSyncEventOnCoreThread, context_,
+                     base::WrapRefCounted(sync_context),
+                     url::Origin::Create(GURL(origin)), id, tag, last_chance));
   return Response::Success();
 }
 
@@ -398,8 +399,8 @@ Response ServiceWorkerHandler::DispatchPeriodicSyncEvent(
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&DispatchPeriodicSyncEventOnCoreThread, context_,
-                     base::WrapRefCounted(sync_context), GURL(origin), id,
-                     tag));
+                     base::WrapRefCounted(sync_context),
+                     url::Origin::Create(GURL(origin)), id, tag));
   return Response::Success();
 }
 

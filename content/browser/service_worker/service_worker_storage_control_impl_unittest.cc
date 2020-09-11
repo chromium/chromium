@@ -239,7 +239,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
 
   FindRegistrationResult FindRegistrationForId(
       int64_t registration_id,
-      const base::Optional<GURL>& origin) {
+      const base::Optional<url::Origin>& origin) {
     FindRegistrationResult return_value;
     base::RunLoop loop;
     storage()->FindRegistrationForId(
@@ -710,7 +710,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, FindRegistration_NoRegistration) {
 
   {
     FindRegistrationResult result =
-        FindRegistrationForId(kRegistrationId, kScope.GetOrigin());
+        FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope));
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
   }
 
@@ -772,7 +772,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
 
     result = FindRegistrationForScope(kScope);
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
-    result = FindRegistrationForId(kRegistrationId, kScope.GetOrigin());
+    result =
+        FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope));
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
     result = FindRegistrationForId(kRegistrationId, base::nullopt);
     EXPECT_EQ(result.status, DatabaseStatus::kOk);
@@ -794,7 +795,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndDeleteRegistration) {
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
     result = FindRegistrationForScope(kScope);
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
-    result = FindRegistrationForId(kRegistrationId, kScope.GetOrigin());
+    result =
+        FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope));
     EXPECT_EQ(result.status, DatabaseStatus::kErrorNotFound);
   }
 }
@@ -818,7 +820,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateToActiveState) {
   // The stored registration shouldn't be activated yet.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_FALSE(result.entry->registration->is_active);
   }
@@ -830,7 +832,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateToActiveState) {
   // Now the stored registration should be active.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_TRUE(result.entry->registration->is_active);
   }
@@ -855,7 +857,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateLastUpdateCheckTime) {
   // The stored registration shouldn't have the last update check time yet.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_EQ(result.entry->registration->last_update_check, base::Time());
   }
@@ -868,7 +870,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, UpdateLastUpdateCheckTime) {
   // Now the stored registration should be active.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_EQ(result.entry->registration->last_update_check, now);
   }
@@ -893,7 +895,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, Update) {
   // Check the stored registration has default navigation preload fields.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_FALSE(result.entry->registration->navigation_preload_state->enabled);
     EXPECT_EQ(result.entry->registration->navigation_preload_state->header,
@@ -912,7 +914,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, Update) {
   // Check navigation preload fields are updated.
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     EXPECT_TRUE(result.entry->registration->navigation_preload_state->enabled);
     EXPECT_EQ(result.entry->registration->navigation_preload_state->header,
@@ -1507,7 +1509,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
   mojo::Remote<storage::mojom::ServiceWorkerLiveVersionRef> reference2;
   {
     FindRegistrationResult result =
-        FindRegistrationForId(registration_id, kScope.GetOrigin());
+        FindRegistrationForId(registration_id, url::Origin::Create(kScope));
     ASSERT_EQ(result.status, DatabaseStatus::kOk);
     ASSERT_TRUE(result.entry->version_reference);
     reference2.Bind(std::move(result.entry->version_reference));

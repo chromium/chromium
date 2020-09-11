@@ -2086,7 +2086,7 @@ void BackgroundSyncManager::FireReadyEventsImpl(
         registration_info->service_worker_registration_id;
     service_worker_context_->FindReadyRegistrationForId(
         service_worker_registration_id,
-        active_registrations_[service_worker_registration_id].origin.GetURL(),
+        active_registrations_[service_worker_registration_id].origin,
         base::BindOnce(
             &BackgroundSyncManager::FireReadyEventsDidFindRegistration,
             weak_ptr_factory_.GetWeakPtr(), std::move(registration_info),

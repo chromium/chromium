@@ -865,7 +865,7 @@ class ServiceWorkerRegistrationObjectHostTest
       const GURL& scope) {
     base::Optional<blink::ServiceWorkerStatusCode> status;
     registry()->FindRegistrationForId(
-        registration_id, scope,
+        registration_id, url::Origin::Create(scope),
         base::AdaptCallbackForRepeating(base::BindOnce(
             [](base::Optional<blink::ServiceWorkerStatusCode>* out_status,
                blink::ServiceWorkerStatusCode status,

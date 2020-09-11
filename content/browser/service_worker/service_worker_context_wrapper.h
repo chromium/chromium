@@ -263,7 +263,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   //
   // Can be called from any thread, and the callback is called on that thread.
   void FindReadyRegistrationForId(int64_t registration_id,
-                                  const GURL& origin,
+                                  const url::Origin& origin,
                                   FindRegistrationCallback callback);
 
   // Returns the registration for |registration_id|. It is guaranteed that the
@@ -516,7 +516,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       scoped_refptr<base::TaskRunner> callback_runner);
   void FindReadyRegistrationForIdOnCoreThread(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       FindRegistrationCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner);
   void FindReadyRegistrationForIdOnlyOnCoreThread(

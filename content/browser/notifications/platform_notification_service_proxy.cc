@@ -102,7 +102,7 @@ void PlatformNotificationServiceProxy::DisplayNotification(
       base::BindOnce(
           &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
           service_worker_context_, data.service_worker_registration_id,
-          data.origin,
+          url::Origin::Create(data.origin),
           base::BindOnce(
               &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
               weak_ptr_factory_io_.GetWeakPtr(), data, std::move(callback))));

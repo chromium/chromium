@@ -155,7 +155,7 @@ void DispatchNotificationEventOnRegistration(
 // Finds the ServiceWorkerRegistration associated with the |origin| and
 // |service_worker_registration_id|. Must be called on the UI thread.
 void FindServiceWorkerRegistration(
-    const GURL& origin,
+    const url::Origin& origin,
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
     NotificationOperationCallback notification_action_callback,
     NotificationDispatchCompleteCallback dispatch_complete_callback,
@@ -199,8 +199,8 @@ void ReadNotificationDatabaseData(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   notification_context->ReadNotificationDataAndRecordInteraction(
       notification_id, origin, interaction,
-      base::BindOnce(&FindServiceWorkerRegistration, origin,
-                     service_worker_context,
+      base::BindOnce(&FindServiceWorkerRegistration,
+                     url::Origin::Create(origin), service_worker_context,
                      std::move(notification_read_callback),
                      std::move(dispatch_complete_callback)));
 }

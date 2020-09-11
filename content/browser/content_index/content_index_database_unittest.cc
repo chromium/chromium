@@ -258,7 +258,7 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     {
       base::RunLoop run_loop;
       embedded_worker_test_helper_.context()->registry()->FindRegistrationForId(
-          service_worker_registration_id, origin_.GetURL(),
+          service_worker_registration_id, origin_,
           base::BindOnce(&DidFindServiceWorkerRegistration,
                          &service_worker_registration_,
                          run_loop.QuitClosure()));

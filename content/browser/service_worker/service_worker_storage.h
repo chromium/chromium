@@ -133,7 +133,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   void FindRegistrationForScope(const GURL& scope,
                                 FindRegistrationDataCallback callback);
   void FindRegistrationForId(int64_t registration_id,
-                             const GURL& origin,
+                             const url::Origin& origin,
                              FindRegistrationDataCallback callback);
   void FindRegistrationForIdOnly(int64_t registration_id,
                                  FindRegistrationDataCallback callback);
@@ -458,7 +458,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       FindInDBCallback callback);
   static void FindForIdOnlyInDB(
       ServiceWorkerDatabase* database,
