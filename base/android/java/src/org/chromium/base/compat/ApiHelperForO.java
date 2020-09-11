@@ -15,6 +15,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.Window;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.VerifiesOnO;
 
 /**
@@ -65,6 +66,8 @@ public final class ApiHelperForO {
     /** See {@link Context.createContextForSplit(String) }. */
     public static Context createContextForSplit(Context context, String name)
             throws PackageManager.NameNotFoundException {
-        return context.createContextForSplit(name);
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            return context.createContextForSplit(name);
+        }
     }
 }

@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.StrictMode;
 import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.webkit.ValueCallback;
@@ -710,7 +711,12 @@ public class WebLayer {
         /** See {@link Context.createContextForSplit(String) }. */
         public static Context createContextForSplit(Context context, String name)
                 throws PackageManager.NameNotFoundException {
-            return context.createContextForSplit(name);
+            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+            try {
+                return context.createContextForSplit(name);
+            } finally {
+                StrictMode.setThreadPolicy(oldPolicy);
+            }
         }
     }
 }
