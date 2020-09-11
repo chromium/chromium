@@ -32,6 +32,7 @@ namespace {
 // Wraps the strings in JS so they can be accessed by the code. The strings are
 // placed on the window object so they can always be accessed.
 const char kStringWrapper[] =
+    "window.KALEIDOSCOPE_STRINGS_FALLBACK = new Map(Object.entries(%s));"
     "window.KALEIDOSCOPE_STRINGS = new Map(Object.entries(%s));";
 
 bool OnShouldHandleRequest(const std::string& path) {
@@ -182,22 +183,26 @@ int GetResourceForLocale(const std::string& locale) {
 
 #endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
 
+std::string GetStringsForLocale(const std::string& locale) {
+  std::string str;
+#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
+  str = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      GetResourceForLocale(locale));
+#endif
+  return str;
+}
+
 void OnStringsRequest(const std::string& path,
                       content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(OnShouldHandleRequest(path));
 
-  std::string str;
-#if BUILDFLAG(ENABLE_KALEIDOSCOPE)
-  auto locale = base::ToLowerASCII(base::i18n::GetConfiguredLocale());
-
-  str = ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      GetResourceForLocale(locale));
-#else
-
-#endif  // BUILDFLAG(ENABLE_KALEIDOSCOPE)
+  auto str_lang = GetStringsForLocale(
+      base::ToLowerASCII(base::i18n::GetConfiguredLocale()));
+  auto str_lang_en = GetStringsForLocale("en");
 
   base::RefCountedString* ref_contents = new base::RefCountedString();
-  ref_contents->data() = base::StringPrintf(kStringWrapper, str.c_str());
+  ref_contents->data() =
+      base::StringPrintf(kStringWrapper, str_lang_en.c_str(), str_lang.c_str());
   std::move(callback).Run(ref_contents);
 }
 
