@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service.h"
+#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 
 using chromeos::launcher_search_provider::Service;
 
@@ -17,8 +18,32 @@ namespace app_list {
 
 namespace {
 
+using TokenizedString = chromeos::string_matching::TokenizedString;
+using FuzzyTokenizedStringMatch =
+    chromeos::string_matching::FuzzyTokenizedStringMatch;
+
 constexpr int kLauncherSearchProviderQueryDelayInMs = 100;
 constexpr int kLauncherSearchProviderMaxResults = 6;
+
+constexpr double kDefaultRelevance = 0.5;
+
+// Parameters for FuzzyTokenizedStringMatch. Note that the underlying file
+// search uses an exact substring match to retrieve file results, so using edit
+// distance here doesn't provide any benefit.
+constexpr bool kUsePrefixOnly = false;
+constexpr bool kUseWeightedRatio = true;
+constexpr bool kUseEditDistance = false;
+constexpr double kRelevanceThreshold = 0.0;
+constexpr double kPartialMatchPenaltyRate = 0.9;
+
+double FuzzyMatchRelevance(const TokenizedString& title,
+                           const TokenizedString& query) {
+  FuzzyTokenizedStringMatch match;
+  match.IsRelevant(query, title, kRelevanceThreshold, kUsePrefixOnly,
+                   kUseWeightedRatio, kUseEditDistance,
+                   kPartialMatchPenaltyRate);
+  return match.relevance();
+}
 
 }  // namespace
 
@@ -49,6 +74,7 @@ void LauncherSearchProvider::Start(const base::string16& query) {
   // Clear previously added search results.
   ClearResults();
 
+  last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
   DelayQuery(base::Bind(&LauncherSearchProvider::StartInternal,
                         weak_ptr_factory_.GetWeakPtr(), query));
 }
@@ -64,12 +90,25 @@ void LauncherSearchProvider::SetSearchResults(
 
   // Add this extension's results (erasing any existing results).
   extension_results_[extension_id] = std::move(results);
+  DCHECK_LE(extension_results_.size(), 1);
 
   // Update results with other extension results.
   SearchProvider::Results new_results;
   for (const auto& item : extension_results_) {
-    for (const auto& result : item.second)
-      new_results.emplace_back(result->Duplicate());
+    for (const auto& result : item.second) {
+      std::unique_ptr<LauncherSearchResult> new_result = result->Duplicate();
+
+      double relevance = kDefaultRelevance;
+      if (last_tokenized_query_) {
+        const TokenizedString tokenized_title(new_result->title(),
+                                              TokenizedString::Mode::kWords);
+        relevance =
+            FuzzyMatchRelevance(tokenized_title, last_tokenized_query_.value());
+      }
+      new_result->set_relevance(relevance);
+
+      new_results.push_back(std::move(new_result));
+    }
   }
   SwapResults(&new_results);
 }
