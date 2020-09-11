@@ -65,140 +65,114 @@ struct __declspec(uuid("d60cae9d-88cb-59f1-8576-3fba44796be8"))
 
 namespace base {
 namespace win {
+namespace {
 
-TEST(PostAsyncResultsTest, ValueType_Success) {
+template <typename T>
+class TemplatedValues {};
+
+template <>
+class TemplatedValues<int> {
+ public:
+  int GetDefaultValue_T() { return 0; }
+  int GetDefaultValue_AsyncResultsT() { return 0; }
+
+  int GetTestValue_T() { return 4; }
+  int GetTestValue_AsyncResultsT() { return 4; }
+};
+
+template <>
+class TemplatedValues<int*> {
+ public:
+  int* GetDefaultValue_T() { return nullptr; }
+  int* GetDefaultValue_AsyncResultsT() { return nullptr; }
+
+  int* GetTestValue_T() { return &test_value_; }
+  int* GetTestValue_AsyncResultsT() { return &test_value_; }
+
+ private:
+  int test_value_ = 4;
+};
+
+template <>
+class TemplatedValues<IUnknown*> {
+ public:
+  TemplatedValues() {
+    auto class_instance = Microsoft::WRL::Make<TestClassImplementingIUnknown>();
+    class_instance.As(&test_value_);
+  }
+
+  IUnknown* GetDefaultValue_T() { return nullptr; }
+  ComPtr<IUnknown> GetDefaultValue_AsyncResultsT() {
+    ComPtr<IUnknown> value{};
+    return value;
+  }
+
+  IUnknown* GetTestValue_T() { return test_value_.Get(); }
+  ComPtr<IUnknown> GetTestValue_AsyncResultsT() { return test_value_; }
+
+ private:
+  ComPtr<IUnknown> test_value_;
+};
+}  // namespace
+
+template <typename T>
+class PostAsyncResultsTest : public ::testing::Test {};
+
+TYPED_TEST_SUITE_P(PostAsyncResultsTest);
+
+TYPED_TEST_P(PostAsyncResultsTest, PostAsyncResults_Success) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<int>>();
-  ComPtr<IAsyncOperation<int>> async_op;
+  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<TypeParam>>();
+  ComPtr<IAsyncOperation<TypeParam>> async_op;
   ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
 
   RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
-  int value_received = 1;
-  ASSERT_EQ(
-      PostAsyncResults(async_op, base::BindLambdaForTesting([&](int result) {
-                         value_received = result;
-                         std::move(quit_closure).Run();
-                       })),
-      S_OK);
-
-  ASSERT_NO_FATAL_FAILURE(fake_iasync_op->CompleteWithResults(7));
-  run_loop.Run();
-  ASSERT_EQ(7, value_received);
-}
-
-TEST(PostAsyncResultsTest, ValueType_Failure) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<int>>();
-  ComPtr<IAsyncOperation<int>> async_op;
-  ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
-
-  RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  int value_received = 1;
-  ASSERT_EQ(
-      PostAsyncResults(async_op, base::BindLambdaForTesting([&](int result) {
-                         value_received = result;
-                         std::move(quit_closure).Run();
-                       })),
-      S_OK);
-
-  ASSERT_NO_FATAL_FAILURE(fake_iasync_op->CompleteWithError(E_FAIL));
-  run_loop.Run();
-  ASSERT_EQ(value_received, 0);
-}
-
-TEST(PostAsyncResultsTest, PointerType_Success) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<int*>>();
-  ComPtr<IAsyncOperation<int*>> async_op;
-  ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
-
-  RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  int* value_received = nullptr;
-  ASSERT_EQ(
-      PostAsyncResults(async_op, base::BindLambdaForTesting([&](int* result) {
-                         value_received = result;
-                         std::move(quit_closure).Run();
-                       })),
-      S_OK);
-
-  int test_value = 4;
-  ASSERT_NO_FATAL_FAILURE(fake_iasync_op->CompleteWithResults(&test_value));
-  run_loop.Run();
-  ASSERT_EQ(&test_value, value_received);
-}
-
-TEST(PostAsyncResultsTest, PointerType_Failure) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<int*>>();
-  ComPtr<IAsyncOperation<int*>> async_op;
-  ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
-
-  RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  int test_value = 2;
-  int* value_received = &test_value;
-  ASSERT_EQ(
-      PostAsyncResults(async_op, base::BindLambdaForTesting([&](int* result) {
-                         value_received = result;
-                         std::move(quit_closure).Run();
-                       })),
-      S_OK);
-
-  ASSERT_NO_FATAL_FAILURE(fake_iasync_op->CompleteWithError(E_FAIL));
-  run_loop.Run();
-  ASSERT_EQ(nullptr, value_received);
-}
-
-TEST(PostAsyncResultsTest, IUnknownType_Success) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<IUnknown*>>();
-  ComPtr<IAsyncOperation<IUnknown*>> async_op;
-  ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
-
-  RunLoop run_loop;
-  auto quit_closure = run_loop.QuitClosure();
-  ComPtr<IUnknown> value_received = nullptr;
-  ASSERT_EQ(PostAsyncResults(async_op, base::BindLambdaForTesting(
-                                           [&](ComPtr<IUnknown> result) {
-                                             value_received = result;
-                                             std::move(quit_closure).Run();
-                                           })),
+  TemplatedValues<TypeParam> templated_values;
+  auto value_received = templated_values.GetDefaultValue_AsyncResultsT();
+  ASSERT_EQ(PostAsyncResults(
+                async_op, base::BindLambdaForTesting(
+                              [&](internal::AsyncResultsT<TypeParam> result) {
+                                value_received = result;
+                                std::move(quit_closure).Run();
+                              })),
             S_OK);
 
-  auto test_value = Microsoft::WRL::Make<TestClassImplementingIUnknown>();
-  ComPtr<IUnknown> value_to_send;
-  ASSERT_EQ(test_value.As(&value_to_send), S_OK);
   ASSERT_NO_FATAL_FAILURE(
-      fake_iasync_op->CompleteWithResults(value_to_send.Get()));
+      fake_iasync_op->CompleteWithResults(templated_values.GetTestValue_T()));
   run_loop.Run();
-  ASSERT_EQ(value_to_send.Get(), value_received.Get());
+  ASSERT_EQ(templated_values.GetTestValue_AsyncResultsT(), value_received);
 }
 
-TEST(PostAsyncResultsTest, IUnknownType_Failure) {
+TYPED_TEST_P(PostAsyncResultsTest, PostAsyncResults_Failure) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<IUnknown*>>();
-  ComPtr<IAsyncOperation<IUnknown*>> async_op;
+  auto fake_iasync_op = Microsoft::WRL::Make<FakeIAsyncOperation<TypeParam>>();
+  ComPtr<IAsyncOperation<TypeParam>> async_op;
   ASSERT_EQ(fake_iasync_op.As(&async_op), S_OK);
 
   RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
-  auto test_value = Microsoft::WRL::Make<TestClassImplementingIUnknown>();
-  ComPtr<IUnknown> value_received;
-  ASSERT_EQ(test_value.As(&value_received), S_OK);
-  ASSERT_EQ(PostAsyncResults(async_op, base::BindLambdaForTesting(
-                                           [&](ComPtr<IUnknown> result) {
-                                             value_received = result;
-                                             std::move(quit_closure).Run();
-                                           })),
+  TemplatedValues<TypeParam> templated_values;
+  auto value_received = templated_values.GetTestValue_AsyncResultsT();
+  ASSERT_EQ(PostAsyncResults(
+                async_op, base::BindLambdaForTesting(
+                              [&](internal::AsyncResultsT<TypeParam> result) {
+                                value_received = result;
+                                std::move(quit_closure).Run();
+                              })),
             S_OK);
 
   ASSERT_NO_FATAL_FAILURE(fake_iasync_op->CompleteWithError(E_FAIL));
   run_loop.Run();
-  ASSERT_EQ(nullptr, value_received.Get());
+  ASSERT_EQ(templated_values.GetDefaultValue_AsyncResultsT(), value_received);
 }
+
+REGISTER_TYPED_TEST_SUITE_P(PostAsyncResultsTest,
+                            PostAsyncResults_Success,
+                            PostAsyncResults_Failure);
+
+using ResultTypes = ::testing::Types<int, int*, IUnknown*>;
+INSTANTIATE_TYPED_TEST_SUITE_P(Win, PostAsyncResultsTest, ResultTypes);
 
 }  // namespace win
 }  // namespace base
