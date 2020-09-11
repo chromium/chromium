@@ -17,18 +17,20 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "services/resource_coordinator/memory_instrumentation/aggregate_metrics_processor.h"
-#include "services/resource_coordinator/memory_instrumentation/graph_processor.h"
+#include "services/resource_coordinator/memory_instrumentation/memory_dump_map_converter.h"
 #include "services/resource_coordinator/memory_instrumentation/switches.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "third_party/perfetto/include/perfetto/ext/trace_processor/importers/memory_tracker/graph_processor.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-using base::trace_event::MemoryAllocatorDump;
-using base::trace_event::MemoryDumpLevelOfDetail;
 using base::trace_event::TracedValue;
-using Node = memory_instrumentation::GlobalDumpGraph::Node;
+using perfetto::trace_processor::GlobalNodeGraph;
+using perfetto::trace_processor::LevelOfDetail;
+using perfetto::trace_processor::RawMemoryGraphNode;
+using Node = perfetto::trace_processor::GlobalNodeGraph::Node;
+using perfetto::trace_processor::GraphProcessor;
 
 namespace memory_instrumentation {
 
@@ -89,7 +91,7 @@ memory_instrumentation::mojom::OSMemDumpPtr CreatePublicOSDump(
   return os_dump;
 }
 
-void NodeAsValueIntoRecursively(const GlobalDumpGraph::Node& node,
+void NodeAsValueIntoRecursively(const GlobalNodeGraph::Node& node,
                                 TracedValue* value,
                                 std::vector<base::StringPiece>* path) {
   // Don't dump the root node.
@@ -99,31 +101,31 @@ void NodeAsValueIntoRecursively(const GlobalDumpGraph::Node& node,
     std::string name = base::JoinString(*path, "/");
     value->BeginDictionaryWithCopiedName(name);
 
-    if (!node.guid().empty())
-      value->SetString("guid", node.guid().ToString());
+    if (!node.id().empty())
+      value->SetString("id", node.id().ToString());
 
     value->BeginDictionary("attrs");
     for (const auto& name_to_entry : node.const_entries()) {
       const auto& entry = name_to_entry.second;
       value->BeginDictionaryWithCopiedName(name_to_entry.first);
       switch (entry.type) {
-        case GlobalDumpGraph::Node::Entry::kUInt64:
+        case GlobalNodeGraph::Node::Entry::kUInt64:
           base::SStringPrintf(&string_conversion_buffer, "%" PRIx64,
                               entry.value_uint64);
-          value->SetString("type", MemoryAllocatorDump::kTypeScalar);
+          value->SetString("type", RawMemoryGraphNode::kTypeScalar);
           value->SetString("value", string_conversion_buffer);
           break;
-        case GlobalDumpGraph::Node::Entry::kString:
-          value->SetString("type", MemoryAllocatorDump::kTypeString);
+        case GlobalNodeGraph::Node::Entry::kString:
+          value->SetString("type", RawMemoryGraphNode::kTypeString);
           value->SetString("value", entry.value_string);
           break;
       }
       switch (entry.units) {
-        case GlobalDumpGraph::Node::Entry::ScalarUnits::kBytes:
-          value->SetString("units", MemoryAllocatorDump::kUnitsBytes);
+        case GlobalNodeGraph::Node::Entry::ScalarUnits::kBytes:
+          value->SetString("units", RawMemoryGraphNode::kUnitsBytes);
           break;
-        case GlobalDumpGraph::Node::Entry::ScalarUnits::kObjects:
-          value->SetString("units", MemoryAllocatorDump::kUnitsObjects);
+        case GlobalNodeGraph::Node::Entry::ScalarUnits::kObjects:
+          value->SetString("units", RawMemoryGraphNode::kUnitsObjects);
           break;
       }
       value->EndDictionary();
@@ -131,7 +133,7 @@ void NodeAsValueIntoRecursively(const GlobalDumpGraph::Node& node,
     value->EndDictionary();  // "attrs": { ... }
 
     if (node.is_weak())
-      value->SetInteger("flags", MemoryAllocatorDump::Flags::WEAK);
+      value->SetInteger("flags", RawMemoryGraphNode::Flags::kWeak);
 
     value->EndDictionary();  // "allocator_name/heap_subheap": { ... }
   }
@@ -144,7 +146,7 @@ void NodeAsValueIntoRecursively(const GlobalDumpGraph::Node& node,
 }
 
 std::unique_ptr<TracedValue> GetChromeDumpTracedValue(
-    const GlobalDumpGraph::Process& process) {
+    const GlobalNodeGraph::Process& process) {
   std::unique_ptr<TracedValue> traced_value = std::make_unique<TracedValue>();
   if (!process.root()->const_children().empty()) {
     traced_value->BeginDictionary("allocators");
@@ -156,9 +158,9 @@ std::unique_ptr<TracedValue> GetChromeDumpTracedValue(
 }
 
 std::unique_ptr<TracedValue> GetChromeDumpAndGlobalAndEdgesTracedValue(
-    const GlobalDumpGraph::Process& process,
-    const GlobalDumpGraph::Process& global_process,
-    const std::forward_list<GlobalDumpGraph::Edge>& edges) {
+    const GlobalNodeGraph::Process& process,
+    const GlobalNodeGraph::Process& global_process,
+    const std::forward_list<GlobalNodeGraph::Edge>& edges) {
   std::unique_ptr<TracedValue> traced_value = std::make_unique<TracedValue>();
   bool suppress_graphs = process.root()->const_children().empty() &&
                          global_process.root()->const_children().empty();
@@ -174,8 +176,8 @@ std::unique_ptr<TracedValue> GetChromeDumpAndGlobalAndEdgesTracedValue(
   traced_value->BeginArray("allocators_graph");
   for (const auto& edge : edges) {
     traced_value->BeginDictionary();
-    traced_value->SetString("source", edge.source()->guid().ToString());
-    traced_value->SetString("target", edge.target()->guid().ToString());
+    traced_value->SetString("source", edge.source()->id().ToString());
+    traced_value->SetString("target", edge.target()->id().ToString());
     traced_value->SetInteger("importance", edge.priority());
     traced_value->EndDictionary();
   }
@@ -438,18 +440,26 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
 #endif
   }  // for (response : request->responses)
 
+  MemoryDumpMapConverter converter;
+  perfetto::trace_processor::GraphProcessor::RawMemoryNodeMap perfettoNodeMap =
+      converter.Convert(pid_to_pmd);
+
   // Generate the global memory graph from the map of pids to dumps, removing
   // weak nodes.
-  std::unique_ptr<GlobalDumpGraph> global_graph =
-      GraphProcessor::CreateMemoryGraph(pid_to_pmd);
+  std::unique_ptr<GlobalNodeGraph> global_graph =
+      GraphProcessor::CreateMemoryGraph(perfettoNodeMap);
   GraphProcessor::RemoveWeakNodesFromGraph(global_graph.get());
 
   // Compute the shared memory footprint for each process from the graph.
-  std::map<base::ProcessId, uint64_t> shared_footprints =
+  auto original =
       GraphProcessor::ComputeSharedFootprintFromGraph(*global_graph);
-
+  std::map<base::ProcessId, uint64_t> shared_footprints;
+  for (const auto& item : original) {
+    shared_footprints.emplace(static_cast<base::ProcessId>(item.first),
+                              item.second);
+  }
   // Perform the rest of the computation on the graph.
-  GraphProcessor::AddOverheadsAndPropogateEntries(global_graph.get());
+  GraphProcessor::AddOverheadsAndPropagateEntries(global_graph.get());
   GraphProcessor::CalculateSizesForGraph(global_graph.get());
 
   // Build up the global dump by iterating on the |valid| process dumps.
@@ -476,16 +486,16 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
     if (raw_os_dump) {
       uint64_t shared_resident_kb = 0;
 #if defined(OS_MAC)
-      // The resident, anonymous shared memory for each process is only relevant
-      // on macOS.
+      // The resident, anonymous shared memory for each process is only
+      // relevant on macOS.
       const auto process_graph_it =
-          global_graph->process_dump_graphs().find(pid);
-      if (process_graph_it != global_graph->process_dump_graphs().end()) {
+          global_graph->process_node_graphs().find(pid);
+      if (process_graph_it != global_graph->process_node_graphs().end()) {
         const auto& process_graph = process_graph_it->second;
         auto* node = process_graph->FindNode("shared_memory");
         if (node) {
           const auto& entry =
-              node->entries()->find(MemoryAllocatorDump::kNameSize);
+              node->entries()->find(RawMemoryGraphNode::kNameSize);
           if (entry != node->entries()->end())
             shared_resident_kb = entry->second.value_uint64 / 1024;
         }
@@ -541,7 +551,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
     if (request->should_return_summaries() &&
         !request->args.memory_footprint_only) {
       const auto& process_graph =
-          global_graph->process_dump_graphs().find(pid)->second;
+          global_graph->process_node_graphs().find(pid)->second;
       for (const std::string& name : request->args.allocator_dump_names) {
         auto* node = process_graph->FindNode(name);
         // Silently ignore any missing node in the process graph.
@@ -590,7 +600,7 @@ bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(
     const base::trace_event::MemoryDumpRequestArgs& args,
     base::ProcessId pid,
     const base::trace_event::ProcessMemoryDump& raw_chrome_dump,
-    const GlobalDumpGraph& global_graph,
+    const GlobalNodeGraph& global_graph,
     const std::map<base::ProcessId, mojom::ProcessType>& pid_to_process_type,
     TracingObserver* tracing_observer) {
   bool is_chrome_tracing_enabled =
@@ -603,8 +613,8 @@ bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(
   if (!tracing_observer->ShouldAddToTrace(args))
     return false;
 
-  const GlobalDumpGraph::Process& process =
-      *global_graph.process_dump_graphs().find(pid)->second;
+  const GlobalNodeGraph::Process& process =
+      *global_graph.process_node_graphs().find(pid)->second;
 
   std::unique_ptr<TracedValue> traced_value;
   if (pid_to_process_type.find(pid)->second == mojom::ProcessType::BROWSER) {
