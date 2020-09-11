@@ -866,6 +866,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     } else if (e.detail.origin === 'pageselector') {
       PDFMetrics.record(PDFMetrics.UserAction.PAGE_SELECTOR_NAVIGATE);
     }
+    // TODO(dhoss): Add metrics for thumbnails.
   }
 
   /**

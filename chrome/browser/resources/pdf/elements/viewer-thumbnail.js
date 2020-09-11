@@ -20,6 +20,15 @@ export class ViewerThumbnailElement extends PolymerElement {
       pageNumber: Number,
     };
   }
+
+  /** @private */
+  onClick_() {
+    this.dispatchEvent(new CustomEvent('change-page', {
+      detail: {page: this.pageNumber - 1, origin: 'thumbnail'},
+      bubbles: true,
+      composed: true
+    }));
+  }
 }
 
 customElements.define(ViewerThumbnailElement.is, ViewerThumbnailElement);
