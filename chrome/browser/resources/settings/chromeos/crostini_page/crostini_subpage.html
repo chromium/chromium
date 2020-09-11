@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="crostini_browser_proxy.html">
 <link rel="import" href="crostini_mic_sharing_dialog.html">
@@ -22,10 +23,8 @@
     <style include="settings-shared"></style>
     <template is="dom-if" if="[[showCrostiniContainerUpgrade_]]">
       <div id="container-upgrade" class="settings-box first">
-        <!-- TODO(davidmunro): Add Icon from
-             https://docs.google.com/presentation/d/1cBU0TnQhuorL69NmifWJ1OzLMsu9dihw64Jo031jUZ4/edit#slide=id.g6b38a81213_0_0
-          --->
-        <div class="start" aria-hidden="true">
+        <iron-icon icon="cr:file-download"></iron-icon>
+        <div class="middle settings-box-text" aria-hidden="true">
           <div id="containerUpgradeLabel">
             $i18n{crostiniContainerUpgrade}
           </div>
