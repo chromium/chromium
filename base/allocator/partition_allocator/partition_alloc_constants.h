@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONSTANTS_H_
 
 #include <limits.h>
+#include <algorithm>
 #include <cstddef>
 
 #include "base/allocator/partition_allocator/checked_ptr_support.h"
@@ -149,6 +150,27 @@ static const size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 static const size_t kNumPartitionPagesPerSuperPage =
     kSuperPageSize / kPartitionPageSize;
 
+// Alignment has two constraints:
+// - Alignment requirement for scalar types: alignof(std::max_align_t)
+// - Alignment requirement for operator new().
+//
+// The two are separate on Windows 64 bits, where the first one is 8 bytes, and
+// the second one 16. We could technically return something different for
+// malloc() and operator new(), but this would complicate things, and most of
+// our allocations are presumaly coming from operator new() anyway.
+//
+// __STDCPP_DEFAULT_NEW_ALIGNMENT__ is C++17. As such, it is not defined on all
+// platforms, as Chrome's requirement is C++14 as of 2020.
+#if defined(__STDCPP_DEFAULT_NEW_ALIGNMENT__)
+static constexpr size_t kAlignment =
+    std::max(alignof(std::max_align_t), __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+#else
+static constexpr size_t kAlignment = alignof(std::max_align_t);
+#endif
+static_assert(kAlignment <= 16,
+              "PartitionAlloc doesn't support a fundamental alignment larger "
+              "than 16 bytes.");
+
 // The "order" of an allocation is closely related to the power-of-1 size of the
 // allocation. More precisely, the order is the bit index of the
 // most-significant-bit in the allocation size, where the bit numbers starts at
@@ -157,9 +179,6 @@ static const size_t kNumPartitionPagesPerSuperPage =
 // In terms of allocation sizes, order 0 covers 0, order 1 covers 1, order 2
 // covers 2->3, order 3 covers 4->7, order 4 covers 8->15.
 
-static_assert(alignof(std::max_align_t) <= 16,
-              "PartitionAlloc doesn't support a fundamental alignment larger "
-              "than 16 bytes.");
 // PartitionAlloc should return memory properly aligned for any type, to behave
 // properly as a generic allocator. This is not strictly required as long as
 // types are explicitly allocated with PartitionAlloc, but is to use it as a
@@ -172,7 +191,7 @@ static_assert(alignof(std::max_align_t) <= 16,
 static const size_t kMinBucketedOrder = 5;
 #else
 static const size_t kMinBucketedOrder =
-    alignof(std::max_align_t) == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
+    kAlignment == 16 ? 5 : 4;  // 2^(order - 1), that is 16 or 8.
 #endif
 // The largest bucketed order is 1 << (20 - 1), storing [512 KiB, 1 MiB):
 static const size_t kMaxBucketedOrder = 20;

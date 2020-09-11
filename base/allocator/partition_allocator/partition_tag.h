@@ -27,7 +27,7 @@ using PartitionTag = uint8_t;
 
 // Allocate extra space for the partition tag to satisfy the alignment
 // requirement.
-static constexpr size_t kInSlotTagBufferSize = alignof(std::max_align_t);
+static constexpr size_t kInSlotTagBufferSize = base::kAlignment;
 static_assert(sizeof(PartitionTag) <= kInSlotTagBufferSize,
               "PartitionTag should fit into the in-slot buffer.");
 

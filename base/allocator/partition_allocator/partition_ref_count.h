@@ -64,7 +64,7 @@ class BASE_EXPORT PartitionRefCount {
 
 // Allocate extra space for the reference count to satisfy the alignment
 // requirement.
-static constexpr size_t kInSlotRefCountBufferSize = alignof(std::max_align_t);
+static constexpr size_t kInSlotRefCountBufferSize = kAlignment;
 static_assert(sizeof(PartitionRefCount) <= kInSlotRefCountBufferSize,
               "PartitionRefCount should fit into the in-slot buffer.");
 

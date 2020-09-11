@@ -69,11 +69,9 @@ static_assert(kMaxDirectMapped <= (1UL << 31) + kPageAllocationGranularity,
               "maximum direct mapped allocation");
 // Check that some of our zanier calculations worked out as expected.
 #if ENABLE_TAG_FOR_MTE_CHECKED_PTR
-static_assert(kSmallestBucket >= alignof(std::max_align_t),
-              "generic smallest bucket");
+static_assert(kSmallestBucket >= kAlignment, "generic smallest bucket");
 #else
-static_assert(kSmallestBucket == alignof(std::max_align_t),
-              "generic smallest bucket");
+static_assert(kSmallestBucket == kAlignment, "generic smallest bucket");
 #endif
 static_assert(kMaxBucketed == 983040, "generic max bucketed");
 static_assert(kMaxSystemPagesPerSlotSpan < (1 << 8),

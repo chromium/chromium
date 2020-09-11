@@ -2447,7 +2447,7 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
   // See the test above for details. Essentially, checking the bucket size is
   // sufficient to ensure that alignment will always be respected, as long as
   // the fundamental alignment is <= 16 bytes.
-  size_t fundamental_alignment = alignof(std::max_align_t);
+  size_t fundamental_alignment = base::kAlignment;
   for (size_t size = 0; size < base::kSystemPageSize; size++) {
     // Allocate several pointers, as the first one in use in a size class will
     // be aligned on a page boundary.
