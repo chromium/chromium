@@ -425,8 +425,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       ImageDataStorageFormat storage_format = color_params.GetStorageFormat();
       base::CheckedNumeric<size_t> computed_byte_length = width;
       computed_byte_length *= height;
-      computed_byte_length *= 4;
-      computed_byte_length *= ImageData::StorageFormatDataSize(storage_format);
+      computed_byte_length *=
+          ImageData::StorageFormatBytesPerPixel(storage_format);
       if (!computed_byte_length.IsValid() ||
           computed_byte_length.ValueOrDie() != byte_length)
         return nullptr;

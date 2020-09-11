@@ -78,10 +78,12 @@ bool ImageData::ValidateConstructorArguments(
   }
 
   if (param_flags & (kParamWidth | kParamHeight)) {
-    base::CheckedNumeric<unsigned> data_size = 4;
+    base::CheckedNumeric<unsigned> data_size =
+        ImageData::StorageFormatBytesPerPixel(
+            kUint8ClampedArrayStorageFormatName);
     if (color_settings) {
-      data_size *=
-          ImageData::StorageFormatDataSize(color_settings->storageFormat());
+      data_size = ImageData::StorageFormatBytesPerPixel(
+          color_settings->storageFormat());
     }
     data_size *= width;
     data_size *= height;
@@ -373,8 +375,11 @@ ImageData* ImageData::Create(unsigned width,
     return nullptr;
 
   NotShared<DOMUint8ClampedArray> byte_array =
-      AllocateAndValidateUint8ClampedArray(4 * width * height,
-                                           &exception_state);
+      AllocateAndValidateUint8ClampedArray(
+          ImageData::StorageFormatBytesPerPixel(
+              kUint8ClampedArrayStorageFormat) *
+              width * height,
+          &exception_state);
   return byte_array ? MakeGarbageCollected<ImageData>(IntSize(width, height),
                                                       byte_array)
                     : nullptr;
@@ -467,7 +472,8 @@ ImageData* ImageData::CreateImageData(ImageDataArray& data,
 // This function accepts size (0, 0) and always returns the ImageData in
 // "srgb" color space and "uint8" storage format.
 ImageData* ImageData::CreateForTest(const IntSize& size) {
-  base::CheckedNumeric<unsigned> data_size = 4;
+  base::CheckedNumeric<unsigned> data_size =
+      ImageData::StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormat);
   data_size *= size.Width();
   data_size *= size.Height();
   if (!data_size.IsValid() ||
@@ -517,7 +523,7 @@ ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
                 data_size * buffer_view->TypeSize());
   } else {
     unsigned data_type_size =
-        ImageData::StorageFormatDataSize(color_settings_->storageFormat());
+        ImageData::StorageFormatBytesPerPixel(color_settings_->storageFormat());
     int src_index = (dst_rect.X() + dst_rect.Y() * src_rect.Width()) * 4;
     int dst_index = 0;
     if (flip_y)
@@ -525,11 +531,11 @@ ImageData* ImageData::CropRect(const IntRect& crop_rect, bool flip_y) {
     int src_row_stride = src_rect.Width() * 4;
     int dst_row_stride = flip_y ? -dst_rect.Width() * 4 : dst_rect.Width() * 4;
     for (int i = 0; i < dst_rect.Height(); i++) {
-      std::memcpy(
-          static_cast<char*>(buffer_view->BufferBase()->Data()) +
-              dst_index * data_type_size,
-          static_cast<char*>(BufferBase()->Data()) + src_index * data_type_size,
-          dst_rect.Width() * 4 * data_type_size);
+      std::memcpy(static_cast<char*>(buffer_view->BufferBase()->Data()) +
+                      dst_index / 4 * data_type_size,
+                  static_cast<char*>(BufferBase()->Data()) +
+                      src_index / 4 * data_type_size,
+                  dst_rect.Width() * data_type_size);
       src_index += src_row_stride;
       dst_index += dst_row_stride;
     }
@@ -635,26 +641,27 @@ ImageDataStorageFormat ImageData::GetImageDataStorageFormat() {
   return kUint8ClampedArrayStorageFormat;
 }
 
-unsigned ImageData::StorageFormatDataSize(const String& storage_format_name) {
+unsigned ImageData::StorageFormatBytesPerPixel(
+    const String& storage_format_name) {
   if (storage_format_name == kUint8ClampedArrayStorageFormatName)
-    return 1;
-  if (storage_format_name == kUint16ArrayStorageFormatName)
-    return 2;
-  if (storage_format_name == kFloat32ArrayStorageFormatName)
     return 4;
+  if (storage_format_name == kUint16ArrayStorageFormatName)
+    return 8;
+  if (storage_format_name == kFloat32ArrayStorageFormatName)
+    return 16;
   NOTREACHED();
   return 1;
 }
 
-unsigned ImageData::StorageFormatDataSize(
+unsigned ImageData::StorageFormatBytesPerPixel(
     ImageDataStorageFormat storage_format) {
   switch (storage_format) {
     case kUint8ClampedArrayStorageFormat:
-      return 1;
-    case kUint16ArrayStorageFormat:
-      return 2;
-    case kFloat32ArrayStorageFormat:
       return 4;
+    case kUint16ArrayStorageFormat:
+      return 8;
+    case kFloat32ArrayStorageFormat:
+      return 16;
   }
   NOTREACHED();
   return 1;
@@ -802,7 +809,7 @@ bool ImageData::ImageDataInCanvasColorSettings(
   // for every line.
   if (crop_rect) {
     unsigned bytes_per_pixel =
-        ImageData::StorageFormatDataSize(storage_format) * 4;
+        ImageData::StorageFormatBytesPerPixel(storage_format);
     unsigned src_index =
         (crop_rect->X() + crop_rect->Y() * width()) * bytes_per_pixel;
     unsigned dst_index = 0;

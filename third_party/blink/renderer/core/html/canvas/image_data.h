@@ -117,8 +117,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static CanvasColorSpace GetCanvasColorSpace(const String&);
   static String CanvasColorSpaceName(CanvasColorSpace);
   static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
-  static unsigned StorageFormatDataSize(const String&);
-  static unsigned StorageFormatDataSize(ImageDataStorageFormat);
+  static unsigned StorageFormatBytesPerPixel(const String&);
+  static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
   static NotShared<DOMArrayBufferView>
   ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
       ArrayBufferContents&,
