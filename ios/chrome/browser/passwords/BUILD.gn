@@ -171,10 +171,8 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "credential_manager_unittest.mm",
     "ios_chrome_password_check_manager_unittest.mm",
     "ios_chrome_password_manager_client_unittest.mm",
-    "js_credential_manager_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
@@ -196,13 +194,10 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/security_state/ios",
     "//components/ukm:test_support",
-    "//google_apis",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/passwords/test",
-    "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/web:test_support",
@@ -210,7 +205,6 @@ source_set("unit_tests") {
     "//ios/testing:ocmock_support",
     "//ios/web",
     "//ios/web/public/js_messaging",
-    "//ios/web/public/security",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net:test_support",
@@ -228,10 +222,8 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "credential_manager_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    ":feature_flags",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/common",

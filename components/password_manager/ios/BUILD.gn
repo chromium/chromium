@@ -64,7 +64,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
-    "credential_manager_util_unittest.cc",
     "password_form_helper_unittest.mm",
     "shared_password_controller_unittest.mm",
   ]

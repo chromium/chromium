@@ -22,7 +22,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/passwords/password_manager_features.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
@@ -174,29 +173,6 @@ TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   web::test::ExecuteJavaScript(web_view, script);
   EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
                              web_view, @"typeof __gCrWeb.autofill"));
-}
-
-// Tests that ChromeWebClient provides credential manager script for WKWebView
-// if and only if the feature is enabled.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptCredentialManager) {
-  // Chrome scripts rely on __gCrWeb object presence.
-  WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
-  web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
-
-  web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  NSString* script =
-      web_client.Get()->GetDocumentStartScriptForMainFrame(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"undefined", web::test::ExecuteJavaScript(
-                                web_view, @"typeof navigator.credentials"));
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCredentialManager);
-  script =
-      web_client.Get()->GetDocumentStartScriptForMainFrame(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             web_view, @"typeof navigator.credentials"));
 }
 
 // Tests PrepareErrorPage wth non-post, not Off The Record error.
