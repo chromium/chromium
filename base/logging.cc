@@ -832,17 +832,8 @@ LogMessage::~LogMessage() {
     if (tracker)
       tracker->RecordLogMessage(str_newline);
 
-    // Ensure the first characters of the string are on the stack so they
-    // are contained in minidumps for diagnostic purposes. We place start
-    // and end marker values at either end, so we can scan captured stacks
-    // for the data easily.
-    struct {
-      uint32_t start_marker = 0xbedead01;
-      char data[1024];
-      uint32_t end_marker = 0x5050dead;
-    } str_stack;
-    base::strlcpy(str_stack.data, str_newline.data(),
-                  base::size(str_stack.data));
+    char str_stack[1024];
+    base::strlcpy(str_stack, str_newline.data(), base::size(str_stack));
     base::debug::Alias(&str_stack);
 
     if (!GetLogAssertHandlerStack().empty()) {

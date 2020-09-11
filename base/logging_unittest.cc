@@ -904,57 +904,6 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
 }
 #endif  // defined(OS_CHROMEOS)
 
-#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
-    !BUILDFLAG(IS_HWASAN)
-// Since we scan potentially uninitialized portions of the stack, we can't run
-// this test under any sanitizer that checks for uninitialized reads.
-TEST_F(LoggingTest, LogMessageMarkersOnStack) {
-  const uint32_t kLogStartMarker = 0xbedead01;
-  const uint32_t kLogEndMarker = 0x5050dead;
-  const char kTestMessage[] = "Oh noes! I have crashed! 💩";
-
-  uint32_t stack_start = 0;
-
-  // Install a LogAssertHandler which will scan between |stack_start| and its
-  // local-scope stack for the start & end markers, and verify the message.
-  ScopedLogAssertHandler assert_handler(base::BindRepeating(
-      [](uint32_t* stack_start_ptr, const char* file, int line,
-         const base::StringPiece message, const base::StringPiece stack_trace) {
-        uint32_t stack_end;
-        uint32_t* stack_end_ptr = &stack_end;
-
-        // Scan the stack for the expected markers.
-        uint32_t* start_marker = nullptr;
-        uint32_t* end_marker = nullptr;
-        for (uint32_t* ptr = stack_end_ptr; ptr <= stack_start_ptr; ++ptr) {
-          if (*ptr == kLogStartMarker)
-            start_marker = ptr;
-          else if (*ptr == kLogEndMarker)
-            end_marker = ptr;
-        }
-
-        // Verify that start & end markers were found, somewhere, in-between
-        // this and the LogAssertHandler scope, in the LogMessage destructor's
-        // stack frame.
-        ASSERT_TRUE(start_marker);
-        ASSERT_TRUE(end_marker);
-
-        // Verify that the |message| is found in-between the markers.
-        const char* start_char_marker =
-            reinterpret_cast<char*>(start_marker + 1);
-        const char* end_char_marker = reinterpret_cast<char*>(end_marker);
-
-        const base::StringPiece stack_view(start_char_marker,
-                                           end_char_marker - start_char_marker);
-        ASSERT_FALSE(stack_view.find(message) == base::StringPiece::npos);
-      },
-      &stack_start));
-
-  // Trigger a log assertion, with a test message we can check for.
-  LOG(FATAL) << kTestMessage;
-}
-#endif  // !defined(ADDRESS_SANITIZER)
-
 }  // namespace
 
 }  // namespace logging
