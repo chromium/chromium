@@ -407,7 +407,7 @@ class QuicTestPacketMaker {
   void AddQuicPathResponseFrame();
   void AddQuicPathChallengeFrame();
   void AddQuicStopSendingFrame(quic::QuicStreamId stream_id,
-                               quic::QuicApplicationErrorCode error_code);
+                               quic::QuicRstStreamErrorCode error_code);
   void AddQuicCryptoFrame(quic::EncryptionLevel level,
                           quic::QuicStreamOffset offset,
                           quic::QuicPacketLength data_length);

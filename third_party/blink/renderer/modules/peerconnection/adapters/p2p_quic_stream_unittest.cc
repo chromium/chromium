@@ -225,8 +225,8 @@ TEST_F(P2PQuicStreamTest, StreamClosedAfterReceivingReset) {
     // send to close the other direction.
     EXPECT_CALL(*connection_, SendControlFrame(_));
     EXPECT_CALL(*connection_, OnStreamReset(kStreamId, testing::_));
-    quic::QuicStopSendingFrame stop_sending_frame(quic::kInvalidControlFrameId,
-                                                  kStreamId, 0);
+    quic::QuicStopSendingFrame stop_sending_frame(
+        quic::kInvalidControlFrameId, kStreamId, quic::QUIC_STREAM_NO_ERROR);
     session_->OnStopSendingFrame(stop_sending_frame);
   }
 

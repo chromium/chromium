@@ -437,3 +437,28 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_close_connection_on_serialization_failure,
     true)
+
+// If true, send PATH_RESPONSE upon receiving PATH_CHALLENGE regardless
+// of perspective.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_send_path_response, false)
+
+// If true, when switching from BBR to BBR2, use BBR's CWND as the initial CWND.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_copy_bbr_cwnd_to_bbr2, false)
+
+// If true, send the lowest stream ID that can be retried by the client in a
+// GOAWAY frame.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_fix_http3_goaway_stream_id,
+          false)
+
+// If true, close connection if writer is still blocked when OnCanWrite is
+// called.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_close_connection_in_on_can_write_with_blocked_writer,
+    false)
+
+// If true, include stream information in idle timeout connection close detail.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_add_stream_info_to_idle_close_detail,
+          true)

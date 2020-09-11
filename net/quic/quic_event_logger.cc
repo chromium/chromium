@@ -298,7 +298,7 @@ base::Value NetLogQuicStopSendingFrameParams(
     const quic::QuicStopSendingFrame* frame) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("stream_id", frame->stream_id);
-  dict.SetIntKey("application_error_code", frame->application_error_code);
+  dict.SetIntKey("error_code", frame->error_code);
   return dict;
 }
 

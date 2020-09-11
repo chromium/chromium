@@ -1205,7 +1205,7 @@ void QuicTestPacketMaker::AddQuicPathChallengeFrame() {
 
 void QuicTestPacketMaker::AddQuicStopSendingFrame(
     quic::QuicStreamId stream_id,
-    quic::QuicApplicationErrorCode error_code) {
+    quic::QuicRstStreamErrorCode error_code) {
   auto* stop_sending_frame =
       new quic::QuicStopSendingFrame(1, stream_id, error_code);
   frames_.push_back(quic::QuicFrame(stop_sending_frame));

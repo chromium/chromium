@@ -21,6 +21,8 @@ inline bool GetGooglePacketHeadersFromControlMessageImpl(
   return false;
 }
 
+inline void SetGoogleSocketOptionsImpl(int fd) {}
+
 }  // namespace quic
 
 #endif  // NET_QUIC_PLATFORM_IMPL_QUIC_UDP_SOCKET_PLATFORM_IMPL_H_
