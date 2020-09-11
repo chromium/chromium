@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_change_event.h"
-#include "third_party/blink/renderer/modules/cookie_store/cookie_store_metrics.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
@@ -44,13 +43,8 @@ network::mojom::blink::CookieManagerGetOptionsPtr ToBackendOptions(
     ExceptionState& exception_state) {
   auto backend_options = network::mojom::blink::CookieManagerGetOptions::New();
 
-  if (options->hasMatchType() && options->matchType() == "starts-with") {
-    backend_options->match_type =
-        network::mojom::blink::CookieMatchType::STARTS_WITH;
-  } else {
-    backend_options->match_type =
-        network::mojom::blink::CookieMatchType::EQUALS;
-  }
+  // TODO(crbug.com/1124499): Cleanup matchType after evaluation.
+  backend_options->match_type = network::mojom::blink::CookieMatchType::EQUALS;
 
   if (options->hasName()) {
     backend_options->name = options->name();
@@ -260,7 +254,6 @@ ScriptPromise CookieStore::getAll(ScriptState* script_state,
                                   ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
-  RecordMatchType(*options);
 
   return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetAllResult,
                 exception_state);
@@ -279,7 +272,6 @@ ScriptPromise CookieStore::get(ScriptState* script_state,
                                ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
-  RecordMatchType(*options);
 
   return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetResult,
                 exception_state);

@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_change_event.h"
-#include "third_party/blink/renderer/modules/cookie_store/cookie_store_metrics.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -51,14 +50,9 @@ mojom::blink::CookieChangeSubscriptionPtr ToBackendSubscription(
     backend_subscription->url = default_cookie_url;
   }
 
-  if (subscription->hasMatchType() &&
-      subscription->matchType() == "starts-with") {
-    backend_subscription->match_type =
-        network::mojom::blink::CookieMatchType::STARTS_WITH;
-  } else {
-    backend_subscription->match_type =
-        network::mojom::blink::CookieMatchType::EQUALS;
-  }
+  // TODO(crbug.com/1124499): Cleanup matchType after re-evaluation.
+  backend_subscription->match_type =
+      network::mojom::blink::CookieMatchType::EQUALS;
 
   if (subscription->hasName()) {
     backend_subscription->name = subscription->name();
@@ -78,20 +72,8 @@ CookieStoreGetOptions* ToCookieChangeSubscription(
   CookieStoreGetOptions* subscription = CookieStoreGetOptions::Create();
   subscription->setUrl(backend_subscription.url);
 
-  if (backend_subscription.match_type !=
-          network::mojom::blink::CookieMatchType::STARTS_WITH ||
-      !backend_subscription.name.IsEmpty()) {
+  if (!backend_subscription.name.IsEmpty())
     subscription->setName(backend_subscription.name);
-  }
-
-  switch (backend_subscription.match_type) {
-    case network::mojom::blink::CookieMatchType::STARTS_WITH:
-      subscription->setMatchType(WTF::String("starts-with"));
-      break;
-    case network::mojom::blink::CookieMatchType::EQUALS:
-      subscription->setMatchType(WTF::String("equals"));
-      break;
-  }
 
   return subscription;
 }
@@ -121,7 +103,6 @@ ScriptPromise CookieStoreManager::subscribe(
   Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_subscriptions;
   backend_subscriptions.ReserveInitialCapacity(subscriptions.size());
   for (const CookieStoreGetOptions* subscription : subscriptions) {
-    RecordMatchType(*subscription);
     mojom::blink::CookieChangeSubscriptionPtr backend_subscription =
         ToBackendSubscription(default_cookie_url_, subscription,
                               exception_state);
@@ -147,7 +128,6 @@ ScriptPromise CookieStoreManager::unsubscribe(
   Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_subscriptions;
   backend_subscriptions.ReserveInitialCapacity(subscriptions.size());
   for (const CookieStoreGetOptions* subscription : subscriptions) {
-    RecordMatchType(*subscription);
     mojom::blink::CookieChangeSubscriptionPtr backend_subscription =
         ToBackendSubscription(default_cookie_url_, subscription,
                               exception_state);

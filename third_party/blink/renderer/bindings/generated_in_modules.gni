@@ -802,8 +802,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_content_category.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_context_frame_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_context_frame_type.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cookie_match_type.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cookie_match_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cookie_same_site.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_cookie_same_site.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_credential_mediation_requirement.cc",
