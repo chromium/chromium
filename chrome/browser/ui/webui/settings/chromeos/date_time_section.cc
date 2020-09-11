@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_section.h"
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,7 +12,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -130,9 +128,6 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "timeZoneID",
       system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
-  html_source->AddBoolean(
-      "timeActionsProtectedForChild",
-      base::FeatureList::IsEnabled(features::kParentAccessCodeForTimeChange));
 
   bool is_child = user_manager::UserManager::Get()->GetActiveUser()->IsChild();
   html_source->AddBoolean("isChild", is_child);

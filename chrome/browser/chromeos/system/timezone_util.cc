@@ -26,7 +26,6 @@
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/system/timezone_resolver_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_switches.h"
@@ -176,14 +175,11 @@ bool CanSetSystemTimezone(const user_manager::User* user) {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::USER_TYPE_CHILD:
       return true;
 
     case user_manager::USER_TYPE_GUEST:
       return false;
-
-    case user_manager::USER_TYPE_CHILD:
-      return base::FeatureList::IsEnabled(
-          features::kParentAccessCodeForTimeChange);
 
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return CanSetSystemTimezoneFromManagedGuestSession();

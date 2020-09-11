@@ -69,8 +69,7 @@ Polymer({
      */
     displayManagedByParentIcon_: {
       type: Boolean,
-      value: loadTimeData.getBoolean('isChild') &&
-          loadTimeData.getBoolean('timeActionsProtectedForChild')
+      value: loadTimeData.getBoolean('isChild'),
     },
 
     /**

@@ -374,13 +374,7 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kOomIntervention;
 
 #if defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kParentAccessCode;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kParentAccessCodeForOnlineLogin;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kParentAccessCodeForTimeChange;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPerAppTimeLimits;

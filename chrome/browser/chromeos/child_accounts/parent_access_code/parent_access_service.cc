@@ -54,10 +54,6 @@ bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
   switch (action) {
     case SupervisedAction::kUpdateClock:
     case SupervisedAction::kUpdateTimezone:
-      if (!base::FeatureList::IsEnabled(
-              features::kParentAccessCodeForTimeChange)) {
-        return false;
-      }
       if (user_manager::UserManager::Get()->IsUserLoggedIn())
         return user_manager::UserManager::Get()->GetActiveUser()->IsChild();
       return IsDeviceOwnedByChild();

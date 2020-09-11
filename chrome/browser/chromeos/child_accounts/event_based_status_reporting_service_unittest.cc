@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/child_status_reporting_service.h"
 #include "chrome/browser/chromeos/child_accounts/child_status_reporting_service_factory.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
@@ -91,10 +89,6 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   void SetUp() override {
     PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
-
-    // TODO(agawronska): To enable this we need LoginScreenClient, but it causes
-    // test crashes on network connection change.
-    scoped_feature_list_.InitAndDisableFeature(features::kParentAccessCode);
 
     profile_ = std::make_unique<TestingProfile>();
     profile_.get()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
@@ -176,7 +170,6 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
       test_consumer_status_reporting_service_;
   TestingScreenTimeController* test_screen_time_controller_;
   session_manager::SessionManager session_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<EventBasedStatusReportingService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceTest);
