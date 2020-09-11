@@ -7,6 +7,13 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "chromeos/components/phonehub/feature_status_provider.h"
+
+namespace chromeos {
+namespace phonehub {
+class PhoneHubManager;
+}  // namespace phonehub
+}  // namespace chromeos
 
 namespace views {
 class ImageView;
@@ -18,12 +25,18 @@ class TrayBubbleWrapper;
 
 // This class represents the Phone Hub tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
-class ASH_EXPORT PhoneHubTray : public TrayBackgroundView {
+class ASH_EXPORT PhoneHubTray
+    : public TrayBackgroundView,
+      public chromeos::phonehub::FeatureStatusProvider::Observer {
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
   ~PhoneHubTray() override;
   PhoneHubTray& operator=(const PhoneHubTray&) = delete;
+
+  // Sets the PhoneHubManager that provides the data to drive the UI.
+  void SetPhoneHubManager(
+      chromeos::phonehub::PhoneHubManager* phone_hub_manager);
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
@@ -44,12 +57,21 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView {
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
+  // chromeos::phonehub::FeatureStatusProvider::Observer:
+  void OnFeatureStatusChanged() override;
+
   // Updates the visibility of the tray in the shelf based on the feature is
   // enabled.
   void UpdateVisibility();
 
+  // Cleans up |phone_hub_manager_| by removing all observers.
+  void CleanUpPhoneHubManager();
+
   // Icon of the tray. Unowned.
   views::ImageView* icon_;
+
+  // The PhoneHubManager that provides data for the UI.
+  chromeos::phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
 };

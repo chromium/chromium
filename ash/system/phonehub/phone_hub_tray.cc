@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
+#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -106,6 +107,21 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf) : TrayBackgroundView(shelf) {
 PhoneHubTray::~PhoneHubTray() {
   if (bubble_)
     bubble_->bubble_view()->ResetDelegate();
+  CleanUpPhoneHubManager();
+}
+
+void PhoneHubTray::SetPhoneHubManager(
+    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+  if (phone_hub_manager == phone_hub_manager_)
+    return;
+
+  CleanUpPhoneHubManager();
+
+  phone_hub_manager_ = phone_hub_manager;
+  if (phone_hub_manager_)
+    phone_hub_manager_->GetFeatureStatusProvider()->AddObserver(this);
+
+  OnFeatureStatusChanged();
 }
 
 void PhoneHubTray::ClickedOutsideBubble() {
@@ -200,9 +216,38 @@ void PhoneHubTray::CloseBubble() {
   shelf()->UpdateAutoHideState();
 }
 
+void PhoneHubTray::OnFeatureStatusChanged() {
+  UpdateVisibility();
+}
+
 void PhoneHubTray::UpdateVisibility() {
-  // TODO(tengs): Hook up visibility with phonehub::FeatureStatusProvider.
-  SetVisiblePreferred(chromeos::features::IsPhoneHubEnabled());
+  if (!phone_hub_manager_) {
+    SetVisiblePreferred(false);
+    return;
+  }
+
+  auto feature_status =
+      phone_hub_manager_->GetFeatureStatusProvider()->GetStatus();
+  bool is_visible;
+  switch (feature_status) {
+    case chromeos::phonehub::FeatureStatus::kNotEligibleForFeature:
+      FALLTHROUGH;
+    case chromeos::phonehub::FeatureStatus::kDisabled:
+      is_visible = false;
+      break;
+    default:
+      is_visible = true;
+      break;
+  }
+
+  SetVisiblePreferred(is_visible);
+}
+
+void PhoneHubTray::CleanUpPhoneHubManager() {
+  if (!phone_hub_manager_)
+    return;
+
+  phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(this);
 }
 
 }  // namespace ash

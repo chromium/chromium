@@ -1646,6 +1646,7 @@ component("ash") {
     "//cc/paint:paint",
     "//chromeos/assistant:buildflags",
     "//chromeos/components/bloom/public/cpp",
+    "//chromeos/components/phonehub",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//services/viz/public/mojom",
@@ -2072,6 +2073,7 @@ test("ash_unittests") {
     "system/palette/tools/create_note_unittest.cc",
     "system/palette/tools/metalayer_unittest.cc",
     "system/palette/tools/screenshot_unittest.cc",
+    "system/phonehub/phone_hub_tray_unittest.cc",
     "system/power/backlights_forced_off_setter_unittest.cc",
     "system/power/peripheral_battery_notifier_unittest.cc",
     "system/power/power_button_controller_unittest.cc",
@@ -2238,6 +2240,7 @@ test("ash_unittests") {
     # TODO(https://crbug.com/644336): Make CrasAudioHandler Chrome or Ash only.
     "//chromeos/audio",
     "//chromeos/components/bloom/public/cpp",
+    "//chromeos/components/phonehub:test_support",
     "//chromeos/components/quick_answers:quick_answers",
     "//chromeos/constants",
     "//chromeos/dbus:test_support",

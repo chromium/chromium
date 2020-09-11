@@ -15,8 +15,10 @@
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/network/active_network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "chromeos/components/phonehub/phone_hub_manager.h"
 
 namespace ash {
 
@@ -117,7 +119,10 @@ void SystemTrayModel::ShowNetworkDetailedViewBubble(bool show_by_click) {
 
 void SystemTrayModel::SetPhoneHubManager(
     chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
-  // TODO(tengs): Use |phone_hub_manager|.
+  auto* phone_hub_tray = Shell::GetPrimaryRootWindowController()
+                             ->GetStatusAreaWidget()
+                             ->phone_hub_tray();
+  phone_hub_tray->SetPhoneHubManager(phone_hub_manager);
 }
 
 }  // namespace ash
