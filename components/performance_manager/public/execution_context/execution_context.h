@@ -6,13 +6,15 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 
 #include "base/observer_list_types.h"
-#include "components/performance_manager/public/execution_context/execution_context_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
 
 namespace performance_manager {
 
 class FrameNode;
+class Graph;
+class ProcessNode;
 class WorkerNode;
 
 namespace execution_context {
@@ -55,14 +57,21 @@ class ExecutionContext {
 
   // Returns the unique token associated with this ExecutionContext. This is a
   // constant over the lifetime of the context. Tokens are unique for all time
-  // and should never be reused.
-  virtual const ExecutionContextToken& GetToken() const = 0;
+  // and will never be reused.
+  virtual blink::ExecutionContextToken GetToken() const = 0;
+
+  // Returns the graph to which this ExecutionContext belongs.
+  virtual Graph* GetGraph() const = 0;
 
   // Returns the final post-redirect committed URL associated with this
   // ExecutionContext. This is the URL of the HTML document (not the javascript)
   // in the case of a FrameNode, or the URL of the worker javascript in the case
   // of a WorkerNode.
   virtual const GURL& GetUrl() const = 0;
+
+  // Returns the ProcessNode corresponding to the process in which this
+  // ExecutionContext is hosted. This will never return nullptr.
+  virtual const ProcessNode* GetProcessNode() const = 0;
 
   // Returns the underlying FrameNode, if this context is a FrameNode, or
   // nullptr otherwise.
@@ -105,6 +114,13 @@ class ExecutionContextObserverDefaultImpl : public ExecutionContextObserver {
   void OnExecutionContextAdded(const ExecutionContext* ec) override {}
   void OnBeforeExecutionContextRemoved(const ExecutionContext* ec) override {}
 };
+
+// Helper function for converting from a WorkerToken to an
+// ExecutionContextToken.
+// TODO(crbug.com/1126285): Get rid of this once MultiToken handles compatible
+// assignment.
+blink::ExecutionContextToken ToExecutionContextToken(
+    const blink::WorkerToken& token);
 
 }  // namespace execution_context
 }  // namespace performance_manager

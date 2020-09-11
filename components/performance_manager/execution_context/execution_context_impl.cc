@@ -8,6 +8,7 @@
 #include "base/util/type_safety/pass_key.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 
@@ -52,9 +53,19 @@ class ExecutionContextImpl : public ExecutionContext,
     return kExecutionContextType;
   }
 
+  Graph* GetGraph() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return node_->graph();
+  }
+
   const GURL& GetUrl() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return node_->url();
+  }
+
+  const ProcessNode* GetProcessNode() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return node_->process_node();
   }
 
   const FrameNode* GetFrameNode() const override {
@@ -97,12 +108,9 @@ class FrameExecutionContext
 
   // Remaining ExecutionContext implementation not provided by
   // ExecutionContextImpl:
-  const ExecutionContextToken& GetToken() const override {
+  blink::ExecutionContextToken GetToken() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // The casting is safe because ExecutionContext guarantees it has the same
-    // layout as base::UnguessableToken.
-    return *reinterpret_cast<const ExecutionContextToken*>(
-        &node_->frame_token().value());
+    return blink::ExecutionContextToken(node_->frame_token());
   }
 
  protected:
@@ -123,12 +131,9 @@ class WorkerExecutionContext
 
   // Remaining ExecutionContext implementation not provided by
   // ExecutionContextImpl:
-  const ExecutionContextToken& GetToken() const override {
+  blink::ExecutionContextToken GetToken() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // The casting is safe because ExecutionContext guarantees it has the same
-    // layout as base::UnguessableToken.
-    return *reinterpret_cast<const ExecutionContextToken*>(
-        &node_->worker_token().value());
+    return ToExecutionContextToken(node_->worker_token());
   }
 
  protected:
@@ -138,6 +143,28 @@ class WorkerExecutionContext
 };
 
 }  // namespace
+
+// Declared in execution_context.h.
+blink::ExecutionContextToken ToExecutionContextToken(
+    const blink::WorkerToken& token) {
+  if (token.Is<blink::DedicatedWorkerToken>()) {
+    return blink::ExecutionContextToken(
+        token.GetAs<blink::DedicatedWorkerToken>());
+  }
+  if (token.Is<blink::ServiceWorkerToken>()) {
+    return blink::ExecutionContextToken(
+        token.GetAs<blink::ServiceWorkerToken>());
+  }
+  if (token.Is<blink::SharedWorkerToken>()) {
+    return blink::ExecutionContextToken(
+        token.GetAs<blink::SharedWorkerToken>());
+  }
+  // Unfortunately there's no enum of input types, so no way to ensure that
+  // all types are handled at compile time. This at least ensures via the CQ
+  // that all types are handled.
+  NOTREACHED();
+  return blink::ExecutionContextToken();
+}
 
 const ExecutionContext* GetOrCreateExecutionContextForFrameNode(
     const FrameNode* frame_node) {

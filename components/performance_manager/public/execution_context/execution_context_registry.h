@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_EXECUTION_CONTEXT_REGISTRY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_EXECUTION_CONTEXT_REGISTRY_H_
 
-#include "components/performance_manager/public/execution_context/execution_context_token.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -44,7 +43,7 @@ class ExecutionContextRegistry {
   // Looks up an ExecutionContext by token. Returns nullptr if no such context
   // exists.
   virtual const ExecutionContext* GetExecutionContextByToken(
-      const ExecutionContextToken& token) = 0;
+      const blink::ExecutionContextToken& token) = 0;
 
   // Does a typed lookup of a FrameNode ExecutionContext by FrameToken, returns
   // nullptr if no such FrameNode exists.

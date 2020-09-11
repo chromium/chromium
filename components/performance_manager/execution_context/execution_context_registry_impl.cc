@@ -18,7 +18,8 @@ namespace {
 // a custom ExecutionContext wrapper for the time being.
 class DummyExecutionContextForLookup : public ExecutionContext {
  public:
-  explicit DummyExecutionContextForLookup(const ExecutionContextToken& token)
+  explicit DummyExecutionContextForLookup(
+      const blink::ExecutionContextToken& token)
       : token_(token) {}
   DummyExecutionContextForLookup(const DummyExecutionContextForLookup&) =
       delete;
@@ -33,12 +34,22 @@ class DummyExecutionContextForLookup : public ExecutionContext {
     return ExecutionContextType::kFrameNode;
   }
 
-  const ExecutionContextToken& GetToken() const override { return token_; }
+  blink::ExecutionContextToken GetToken() const override { return token_; }
+
+  Graph* GetGraph() const override {
+    NOTREACHED();
+    return nullptr;
+  }
 
   const GURL& GetUrl() const override {
     NOTREACHED();
     static const GURL kUrl;
     return kUrl;
+  }
+
+  const ProcessNode* GetProcessNode() const override {
+    NOTREACHED();
+    return nullptr;
   }
 
   const FrameNode* GetFrameNode() const override {
@@ -52,7 +63,7 @@ class DummyExecutionContextForLookup : public ExecutionContext {
   }
 
  private:
-  const ExecutionContextToken& token_;
+  const blink::ExecutionContextToken& token_;
 };
 
 }  // namespace
@@ -91,7 +102,7 @@ void ExecutionContextRegistryImpl::RemoveObserver(
 
 const ExecutionContext*
 ExecutionContextRegistryImpl::GetExecutionContextByToken(
-    const ExecutionContextToken& token) {
+    const blink::ExecutionContextToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (token.value().is_empty())
     return nullptr;
@@ -105,10 +116,7 @@ ExecutionContextRegistryImpl::GetExecutionContextByToken(
 const FrameNode* ExecutionContextRegistryImpl::GetFrameNodeByFrameToken(
     const blink::LocalFrameToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The casting is safe because ExecutionContextToken guarantees it has the
-  // same layout as base::UnguessableToken.
-  auto* ec = GetExecutionContextByToken(
-      *reinterpret_cast<const ExecutionContextToken*>(&token.value()));
+  auto* ec = GetExecutionContextByToken(blink::ExecutionContextToken(token));
   if (!ec)
     return nullptr;
   return ec->GetFrameNode();
@@ -117,10 +125,7 @@ const FrameNode* ExecutionContextRegistryImpl::GetFrameNodeByFrameToken(
 const WorkerNode* ExecutionContextRegistryImpl::GetWorkerNodeByWorkerToken(
     const blink::WorkerToken& token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The casting is safe because ExecutionContextToken guarantees it has the
-  // same layout as base::UnguessableToken.
-  auto* ec = GetExecutionContextByToken(
-      *reinterpret_cast<const ExecutionContextToken*>(&token.value()));
+  auto* ec = GetExecutionContextByToken(ToExecutionContextToken(token));
   if (!ec)
     return nullptr;
   return ec->GetWorkerNode();

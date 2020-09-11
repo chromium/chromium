@@ -8,11 +8,11 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
-#include "components/performance_manager/public/execution_context/execution_context_token.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/worker_node.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 namespace execution_context {
@@ -40,7 +40,7 @@ class ExecutionContextRegistryImpl
   void AddObserver(ExecutionContextObserver* observer) override;
   void RemoveObserver(ExecutionContextObserver* observer) override;
   const ExecutionContext* GetExecutionContextByToken(
-      const ExecutionContextToken& token) override;
+      const blink::ExecutionContextToken& token) override;
   const FrameNode* GetFrameNodeByFrameToken(
       const blink::LocalFrameToken& token) override;
   const WorkerNode* GetWorkerNodeByWorkerToken(

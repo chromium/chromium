@@ -90,7 +90,6 @@ static_library("performance_manager") {
     "public/decorators/tab_properties_decorator.h",
     "public/execution_context/execution_context.h",
     "public/execution_context/execution_context_registry.h",
-    "public/execution_context/execution_context_token.h",
     "public/features.h",
     "public/frame_priority/boosting_vote_aggregator.h",
     "public/frame_priority/frame_priority.h",

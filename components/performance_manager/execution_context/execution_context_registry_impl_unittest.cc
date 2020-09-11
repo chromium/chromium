@@ -13,6 +13,7 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 namespace execution_context {
@@ -112,6 +113,7 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   EXPECT_EQ(ExecutionContextType::kFrameNode, frame1_ec->GetType());
   EXPECT_EQ(frame1->frame_token().value(), frame1_ec->GetToken().value());
   EXPECT_EQ(frame1->url(), frame1_ec->GetUrl());
+  EXPECT_EQ(frame1->process_node(), frame1_ec->GetProcessNode());
   EXPECT_EQ(frame1, frame1_ec->GetFrameNode());
   EXPECT_FALSE(frame1_ec->GetWorkerNode());
 
@@ -119,6 +121,7 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   EXPECT_EQ(ExecutionContextType::kWorkerNode, worker_ec->GetType());
   EXPECT_EQ(worker->worker_token().value(), worker_ec->GetToken().value());
   EXPECT_EQ(worker->url(), worker_ec->GetUrl());
+  EXPECT_EQ(worker->process_node(), worker_ec->GetProcessNode());
   EXPECT_FALSE(worker_ec->GetFrameNode());
   EXPECT_EQ(worker, worker_ec->GetWorkerNode());
 
@@ -142,10 +145,11 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
             registry_->GetWorkerNodeByWorkerToken(worker->worker_token()));
 
   // Querying an invalid token or a random token should fail.
-  EXPECT_FALSE(registry_->GetExecutionContextByToken(
-      ExecutionContextToken(base::UnguessableToken::Null())));
-  EXPECT_FALSE(registry_->GetExecutionContextByToken(
-      ExecutionContextToken(base::UnguessableToken::Create())));
+  EXPECT_FALSE(
+      registry_->GetExecutionContextByToken(blink::ExecutionContextToken(
+          blink::LocalFrameToken(base::UnguessableToken::Null()))));
+  EXPECT_FALSE(
+      registry_->GetExecutionContextByToken(blink::ExecutionContextToken()));
   EXPECT_FALSE(registry_->GetFrameNodeByFrameToken(blink::LocalFrameToken()));
   EXPECT_FALSE(registry_->GetWorkerNodeByWorkerToken(blink::WorkerToken()));
 
