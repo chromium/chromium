@@ -142,8 +142,9 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
       media::FindBestCaptureFormat([_captureDevice formats], width, height,
                                    frameRate),
       base::scoped_policy::RETAIN);
-
-  FourCharCode best_fourcc = kCMPixelFormat_422YpCbCr8;
+  // Default to NV12, a pixel format commonly supported by web cameras.
+  FourCharCode best_fourcc =
+      kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;  // NV12 (a.k.a. 420v)
   if (_bestCaptureFormat) {
     best_fourcc = CMFormatDescriptionGetMediaSubType(
         [_bestCaptureFormat formatDescription]);
@@ -442,9 +443,25 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
     if (videoFrame &&
         CVPixelBufferLockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly) ==
             kCVReturnSuccess) {
-      baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
-      frameSize = CVPixelBufferGetHeight(videoFrame) *
-                  CVPixelBufferGetBytesPerRow(videoFrame);
+      if (!CVPixelBufferIsPlanar(videoFrame)) {
+        // For nonplanar buffers, CVPixelBufferGetBaseAddress returns a pointer
+        // to (0,0). (For planar buffers, it returns something else.)
+        // https://developer.apple.com/documentation/corevideo/1457115-cvpixelbuffergetbaseaddress?language=objc
+        baseAddress =
+            static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
+      } else {
+        // For planar buffers, CVPixelBufferGetBaseAddressOfPlane() is used. If
+        // the buffer is contiguous (CHECK'd below) then we only need to know
+        // the address of the first plane, regardless of
+        // CVPixelBufferGetPlaneCount().
+        baseAddress = static_cast<char*>(
+            CVPixelBufferGetBaseAddressOfPlane(videoFrame, 0));
+      }
+      // CVPixelBufferGetDataSize() works for both nonplanar and planar buffers
+      // as long as they are contiguous in memory.
+      frameSize = CVPixelBufferGetDataSize(videoFrame);
+      // Only contiguous buffers are supported.
+      CHECK(frameSize);
 
       // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
       // from media::VTVideoDecodeAccelerator to media/base/mac and call it
