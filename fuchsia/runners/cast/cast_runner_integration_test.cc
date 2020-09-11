@@ -38,7 +38,6 @@
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/base/test_devtools_list_fetcher.h"
-#include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/base/url_request_rewrite_test_util.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
@@ -50,6 +49,7 @@
 namespace {
 
 constexpr char kTestAppId[] = "00000000";
+constexpr char kSecondTestAppId[] = "FFFFFFFF";
 
 constexpr char kBlankAppUrl[] = "/defaultresponse";
 constexpr char kEchoHeaderPath[] = "/echoheader?Test";
@@ -267,14 +267,21 @@ class CastRunnerIntegrationTest : public testing::Test {
     std::vector<chromium::cast::ApiBinding> binding_list;
     chromium::cast::ApiBinding eval_js_binding;
     eval_js_binding.set_before_load_script(cr_fuchsia::MemBufferFromString(
+        "function valueOrUndefinedString(value) {"
+        "    return (typeof(value) == 'undefined') ? 'undefined' : value;"
+        "}"
         "window.addEventListener('DOMContentLoaded', (event) => {"
         "  var port = cast.__platform__.PortConnector.bind('testport');"
         "  port.onmessage = (e) => {"
         "    var result = eval(e.data);"
-        "    if (typeof(result) == \"undefined\") {"
-        "      result = \"undefined\";"
+        "    if (result && typeof(result.then) == 'function') {"
+        "      result"
+        "        .then(result =>"
+        "                port.postMessage(valueOrUndefinedString(result)))"
+        "        .catch(e => port.postMessage(JSON.stringify(e)));"
+        "    } else {"
+        "      port.postMessage(valueOrUndefinedString(result));"
         "    }"
-        "    port.postMessage(result);"
         "  };"
         "});",
         "test"));
@@ -331,8 +338,9 @@ class CastRunnerIntegrationTest : public testing::Test {
     app_config_manager_.AddAppConfig(std::move(app_config));
   }
 
-  void CreateComponentContextAndStartComponent() {
-    auto component_url = base::StringPrintf("cast:%s", kTestAppId);
+  void CreateComponentContextAndStartComponent(
+      const char* app_id = kTestAppId) {
+    auto component_url = base::StringPrintf("cast:%s", app_id);
     CreateComponentContext(component_url);
     StartCastComponent(component_url);
     WaitComponentState();
@@ -390,8 +398,10 @@ class CastRunnerIntegrationTest : public testing::Test {
     });
   }
 
-  // Executes |code| in the context of the test application and the returns
-  // serialized as string.
+  // Executes |code| in the context of the test application and then returns
+  // the result serialized as string. If the code evaluates to a promise then
+  // execution is blocked until the promise is complete and the result of the
+  // promise is returned.
   std::string ExecuteJavaScript(const std::string& code) {
     fuchsia::web::WebMessage message;
     message.set_data(cr_fuchsia::MemBufferFromString(code, "test-msg"));
@@ -463,9 +473,14 @@ class CastRunnerIntegrationTest : public testing::Test {
 
     state_loop.Run();
 
+    ResetComponentState();
+  }
+
+  void ResetComponentState() {
     component_context_ = nullptr;
     component_services_client_ = nullptr;
     component_state_ = nullptr;
+    test_port_ = nullptr;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -806,28 +821,54 @@ TEST_F(CastRunnerIntegrationTest, CameraRedirect) {
   auto app_config =
       FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
 
-  fuchsia::web::PermissionDescriptor canera_permission;
-  canera_permission.set_type(fuchsia::web::PermissionType::CAMERA);
-  app_config.mutable_permissions()->push_back(std::move(canera_permission));
+  fuchsia::web::PermissionDescriptor camera_permission;
+  camera_permission.set_type(fuchsia::web::PermissionType::CAMERA);
+  app_config.mutable_permissions()->push_back(std::move(camera_permission));
   app_config_manager_.AddAppConfig(std::move(app_config));
 
   CreateComponentContextAndStartComponent();
 
   // Expect fuchsia.camera3.DeviceWatcher connection to be redirected to the
   // agent.
-  base::RunLoop run_loop;
+  bool received_device_watcher_request = false;
   component_state_->outgoing_directory()->AddPublicService(
       std::make_unique<vfs::Service>(
-          [quit_closure = run_loop.QuitClosure()](
+          [&received_device_watcher_request](
               zx::channel channel, async_dispatcher_t* dispatcher) mutable {
-            std::move(quit_closure).Run();
+            received_device_watcher_request = true;
           }),
       fuchsia::camera3::DeviceWatcher::Name_);
 
   ExecuteJavaScript("connectCamera();");
+  EXPECT_TRUE(received_device_watcher_request);
+}
 
-  // Will quit once camara3::DeviceWatcher is connected.
-  run_loop.Run();
+TEST_F(CastRunnerIntegrationTest, CameraAccessAfterComponentShutdown) {
+  GURL app_url = test_server_.GetURL("/camera.html");
+
+  // First app with camera permission.
+  auto app_config =
+      FakeApplicationConfigManager::CreateConfig(kTestAppId, app_url);
+  fuchsia::web::PermissionDescriptor camera_permission;
+  camera_permission.set_type(fuchsia::web::PermissionType::CAMERA);
+  app_config.mutable_permissions()->push_back(std::move(camera_permission));
+  app_config_manager_.AddAppConfig(std::move(app_config));
+
+  // Second app without camera permission (but it will still try to access
+  // fuchsia.camera3.DeviceWatcher service to enumerate devices).
+  auto app_config_2 =
+      FakeApplicationConfigManager::CreateConfig(kSecondTestAppId, app_url);
+  app_config_manager_.AddAppConfig(std::move(app_config_2));
+
+  // Start and then shutdown the first app.
+  CreateComponentContextAndStartComponent(kTestAppId);
+  ShutdownComponent();
+  ResetComponentState();
+
+  // Start the second app and try to connect the camera. It's expected to fail
+  // to initialize the camera without crashing CastRunner.
+  CreateComponentContextAndStartComponent(kSecondTestAppId);
+  EXPECT_EQ(ExecuteJavaScript("connectCamera();"), "getUserMediaFailed");
 }
 
 class HeadlessCastRunnerIntegrationTest : public CastRunnerIntegrationTest {

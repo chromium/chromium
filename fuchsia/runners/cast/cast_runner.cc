@@ -197,6 +197,9 @@ void CastRunner::CancelPendingComponent(
 void CastRunner::OnComponentDestroyed(CastComponent* component) {
   if (component == audio_capturer_component_)
     audio_capturer_component_ = nullptr;
+
+  if (component == video_capturer_component_)
+    video_capturer_component_ = nullptr;
 }
 
 fuchsia::web::CreateContextParams CastRunner::GetCommonContextParams() {
