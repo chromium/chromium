@@ -51,11 +51,13 @@ static std::string GetDecoderName(int i) {
   return std::string("VideoDecoder") + base::NumberToString(i);
 }
 
-DecoderPriority MockDecoderPriority(const VideoDecoderConfig& config) {
-  return config.visible_rect().height() >=
-                 TestVideoConfig::LargeCodedSize().height()
-             ? DecoderPriority::kPreferPlatformDecoders
-             : DecoderPriority::kPreferSoftwareDecoders;
+DecoderPriority MockDecoderPriority(const VideoDecoderConfig& config,
+                                    const VideoDecoder& decoder) {
+  auto const at_or_above_cutoff = config.visible_rect().height() >=
+                                  TestVideoConfig::LargeCodedSize().height();
+  return at_or_above_cutoff == decoder.IsPlatformDecoder()
+             ? DecoderPriority::kNormal
+             : DecoderPriority::kDeprioritized;
 }
 
 }  // namespace

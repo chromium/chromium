@@ -244,6 +244,19 @@ VideoDecoderConfig TestVideoConfig::ExtraLargeEncrypted(VideoCodec codec) {
 }
 
 // static
+VideoDecoderConfig TestVideoConfig::Custom(gfx::Size size, VideoCodec codec) {
+  return GetTestConfig(codec, MinProfile(codec), VideoColorSpace::JPEG(),
+                       VIDEO_ROTATION_0, size, false);
+}
+
+// static
+VideoDecoderConfig TestVideoConfig::CustomEncrypted(gfx::Size size,
+                                                    VideoCodec codec) {
+  return GetTestConfig(codec, MinProfile(codec), VideoColorSpace::JPEG(),
+                       VIDEO_ROTATION_0, size, true);
+}
+
+// static
 gfx::Size TestVideoConfig::NormalCodedSize() {
   return kNormalSize;
 }

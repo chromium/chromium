@@ -110,6 +110,11 @@ class TestVideoConfig {
   static VideoDecoderConfig ExtraLarge(VideoCodec codec = kCodecVP8);
   static VideoDecoderConfig ExtraLargeEncrypted(VideoCodec codec = kCodecVP8);
 
+  static VideoDecoderConfig Custom(gfx::Size size,
+                                   VideoCodec codec = kCodecVP8);
+  static VideoDecoderConfig CustomEncrypted(gfx::Size size,
+                                            VideoCodec codec = kCodecVP8);
+
   // Returns coded size for Normal and Large config.
   static gfx::Size NormalCodedSize();
   static gfx::Size LargeCodedSize();
