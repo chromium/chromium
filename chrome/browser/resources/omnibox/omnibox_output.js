@@ -1118,6 +1118,11 @@ const COLUMNS = [
           'duplicates of this match.',
       ['duplicates'], OutputTextProperty),
   new Column(
+      ['pi'],
+      'https://source.chromium.org/chromium/chromium/src/+/master:components/omnibox/browser/omnibox_pedal_concepts.h;l=19;drc=c741e070dbfcc33b2369e7a5131be87c7b21bb99',
+      'pedalId', false, 'Pedal ID\nThe ID of attached Pedal, or zero if none.',
+      ['pedalId'], OutputTextProperty),
+  new Column(
       ['Additional Info'], '', 'additionalInfo', false,
       'Additional Info\nProvider-specific information about the result.',
       ['additionalInfo'], OutputAdditionalInfoProperty)

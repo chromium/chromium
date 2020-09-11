@@ -43,6 +43,7 @@ struct AutocompleteMatch {
   bool starred;
   int32 duplicates;
   bool from_previous;
+  int32 pedal_id;
   array<AutocompleteAdditionalInfo> additional_info;
 };
 
