@@ -161,7 +161,7 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
   if (info->timestamp.is_zero())
     info->timestamp = reference_time - first_frame_ref_time_;
 
-  // Used by chrome/browser/extension/api/cast_streaming/performance_test.cc
+  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
   TRACE_EVENT_INSTANT2("cast_perf_test", "OnBufferReceived",
                        TRACE_EVENT_SCOPE_THREAD, "timestamp",
                        (reference_time - base::TimeTicks()).InMicroseconds(),

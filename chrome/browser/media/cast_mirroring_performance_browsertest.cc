@@ -20,15 +20,26 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/tab_capture/tab_capture_performance_test_base.h"
+#include "chrome/browser/media/cast_mirroring_service_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/tracing.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/cast_channel/cast_message_handler.h"
+#include "components/mirroring/mojom/cast_message_channel.mojom.h"
+#include "components/mirroring/mojom/mirroring_service_host.mojom.h"
+#include "components/mirroring/mojom/session_observer.mojom.h"
+#include "components/mirroring/mojom/session_parameters.mojom.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,17 +53,33 @@
 #include "media/cast/test/utility/net_utility.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "media/cast/test/utility/udp_proxy.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/rand_callback.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/udp_server_socket.h"
+#include "sandbox/policy/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
+#include "third_party/jsoncpp/source/include/json/reader.h"
+#include "third_party/jsoncpp/source/include/json/value.h"
+#include "third_party/jsoncpp/source/include/json/writer.h"
+#include "third_party/openscreen/src/cast/streaming/answer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/offer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/ssrc.h"
+#include "third_party/zlib/google/compression_utils.h"
+#include "ui/gl/gl_switches.h"
 
 namespace {
 
-// Number of events to trim from the begining and end. These events don't
+// Number of events to trim from the beginning and end. These events don't
 // contribute anything toward stable measurements: A brief moment of startup
 // "jank" is acceptable, and shutdown may result in missing events (e.g., if
 // streaming stops a few frames before capture stops).
@@ -63,6 +90,13 @@ constexpr int kMinDataPointsForFullRun = 100;  // 1s of audio, ~5s at 24fps.
 
 // Minimum number of events required for data analysis in a non-performance run.
 constexpr int kMinDataPointsForQuickRun = 3;
+
+// These are how long the browser is run with trace event recording taking
+// place.
+constexpr base::TimeDelta kFullRunObservationPeriod =
+    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kQuickRunObservationPeriod =
+    base::TimeDelta::FromSeconds(4);
 
 constexpr char kMetricPrefixCastV2[] = "CastV2.";
 constexpr char kMetricTimeBetweenCapturesMs[] = "time_between_captures";
@@ -80,6 +114,14 @@ constexpr char kMetricEncodeMs[] = "encode";
 constexpr char kMetricTransmitMs[] = "transmit";
 constexpr char kMetricDecodeMs[] = "decode";
 constexpr char kMetricCastLatencyMs[] = "cast_latency";
+
+constexpr char kTestPageLocation[] =
+    "/cast/cast_mirroring_performance_browsertest.html";
+
+constexpr base::StringPiece kFullPerformanceRunSwitch = "full-performance-run";
+
+// The test receiver and senders should share the target playout delay.
+constexpr int kTargetPlayoutDelayMs = 400;  // milliseconds
 
 perf_test::PerfResultReporter SetUpCastV2Reporter(const std::string& story) {
   perf_test::PerfResultReporter reporter(kMetricPrefixCastV2, story);
@@ -127,41 +169,137 @@ void MaybeAddResultList(const perf_test::PerfResultReporter& reporter,
 // "CQ run" setting. This is required because the test runs in the CQ may not be
 // long enough to collect sufficient tracing data; and, unfortunately, there's
 // nothing we can do about that.
-#define EXPECT_FOR_PERFORMANCE_RUN(expr)             \
-  if (!(expr)) {                                     \
-    const char *_out = #expr;                        \
-    if (is_full_performance_run()) {                 \
-      LOG(ERROR) << "Failure: " << _out;             \
-    } else {                                         \
-      LOG(WARNING) << "Allowing failure: " << _out;  \
-    }                                                \
+#define EXPECT_FOR_PERFORMANCE_RUN(expr)           \
+  if (!(expr)) {                                   \
+    const char* out = #expr;                       \
+    if (is_full_performance_run_) {                \
+      LOG(ERROR) << "Failure: " << out;            \
+    } else {                                       \
+      LOG(WARNING) << "Allowing failure: " << out; \
+    }                                              \
   }
 
 enum TestFlags {
-  kSmallWindow = 1 << 2,      // Window size: 1 = 800x600, 0 = 2000x1000
-  k24fps = 1 << 3,            // Use 24 fps video.
-  k30fps = 1 << 4,            // Use 30 fps video.
-  k60fps = 1 << 5,            // Use 60 fps video (captured at 30 fps).
-  kProxyWifi = 1 << 6,        // Run UDP through UDPProxy wifi profile.
-  kProxySlow = 1 << 7,        // Run UDP through UDPProxy slow profile.
-  kProxyBad = 1 << 8,         // Run UDP through UDPProxy bad profile.
-  kSlowClock = 1 << 9,        // Receiver clock is 10 seconds slow.
-  kFastClock = 1 << 10,       // Receiver clock is 10 seconds fast.
-  kAutoThrottling = 1 << 11,  // Use auto-resolution/framerate throttling.
+  kSmallWindow = 1 << 2,  // Window size: 1 = 800x600, 0 = 2000x1000
+  kProxyWifi = 1 << 6,    // Run UDP through UDPProxy wifi profile.
+  kProxySlow = 1 << 7,    // Run UDP through UDPProxy slow profile.
+  kProxyBad = 1 << 8,     // Run UDP through UDPProxy bad profile.
+  kSlowClock = 1 << 9,    // Receiver clock is 10 seconds slow.
+  kFastClock = 1 << 10,   // Receiver clock is 10 seconds fast.
 };
 
-// These are just for testing! Use cryptographically-secure random keys in
-// production code!
-static constexpr char kAesKey[16] = {0, 1, 2,  3,  4,  5,  6,  7,
-                                     8, 9, 10, 11, 12, 13, 14, 15};
-static constexpr char kAesIvMask[16] = {15, 14, 13, 12, 11, 10, 9, 8,
-                                        7,  6,  5,  4,  3,  2,  1, 0};
+struct SharedSenderReceiverConfig {
+  std::string aes_key;
+  std::string aes_iv_mask;
+  openscreen::cast::Ssrc receiver_ssrc;
+  openscreen::cast::Ssrc sender_ssrc;
+};
 
-media::cast::FrameReceiverConfig WithAesKeyAndIvSet(
-    const media::cast::FrameReceiverConfig& config) {
+struct SharedSenderReceiverConfigs {
+  SharedSenderReceiverConfig audio;
+  SharedSenderReceiverConfig video;
+};
+
+media::cast::FrameReceiverConfig WithSharedConfig(
+    const media::cast::FrameReceiverConfig& config,
+    const SharedSenderReceiverConfig& shared) {
   media::cast::FrameReceiverConfig result = config;
-  result.aes_key = std::string(kAesKey, kAesKey + sizeof(kAesKey));
-  result.aes_iv_mask = std::string(kAesIvMask, kAesIvMask + sizeof(kAesIvMask));
+  result.aes_key = shared.aes_key;
+  result.aes_iv_mask = shared.aes_iv_mask;
+  result.receiver_ssrc = shared.receiver_ssrc;
+  result.sender_ssrc = shared.sender_ssrc;
+  result.rtp_max_delay_ms = kTargetPlayoutDelayMs;
+  return result;
+}
+
+void ContinueBrowserFor(base::TimeDelta duration) {
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), duration);
+  run_loop.Run();
+}
+
+using TraceAnalyzerUniquePtr = std::unique_ptr<trace_analyzer::TraceAnalyzer>;
+
+void QueryTraceEvents(trace_analyzer::TraceAnalyzer* analyzer,
+                      base::StringPiece event_name,
+                      trace_analyzer::TraceEventVector* events) {
+  const trace_analyzer::Query kQuery =
+      trace_analyzer::Query::EventNameIs(event_name.as_string()) &&
+      (trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_BEGIN) ||
+       trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_ASYNC_BEGIN) ||
+       trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_FLOW_BEGIN) ||
+       trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_INSTANT) ||
+       trace_analyzer::Query::EventPhaseIs(TRACE_EVENT_PHASE_COMPLETE));
+  analyzer->FindEvents(kQuery, events);
+}
+
+std::string MakeBase64EncodedGZippedString(const std::string& input) {
+  std::string gzipped_input;
+  compression::GzipCompress(input, &gzipped_input);
+  std::string result;
+  base::Base64Encode(gzipped_input, &result);
+
+  // Break up the string with newlines to make it easier to handle in the
+  // console logs.
+  constexpr size_t kMaxLineWidth = 80;
+  std::string formatted_result;
+  formatted_result.reserve(result.size() + 1 + (result.size() / kMaxLineWidth));
+  for (std::string::size_type src_pos = 0; src_pos < result.size();
+       src_pos += kMaxLineWidth) {
+    formatted_result.append(result, src_pos, kMaxLineWidth);
+    formatted_result.append(1, '\n');
+  }
+  return formatted_result;
+}
+
+TraceAnalyzerUniquePtr TraceAndObserve(
+    bool is_full_performance_run,
+    const std::string& category_patterns,
+    const std::vector<base::StringPiece>& event_names,
+    int required_event_count) {
+  const base::TimeDelta observation_period = is_full_performance_run
+                                                 ? kFullRunObservationPeriod
+                                                 : kQuickRunObservationPeriod;
+
+  VLOG(1) << "Starting tracing...";
+  {
+    // Wait until all child processes have ACK'ed that they are now tracing.
+    base::trace_event::TraceConfig trace_config(
+        category_patterns, base::trace_event::RECORD_CONTINUOUSLY);
+    base::RunLoop run_loop;
+    const bool did_begin_tracing = tracing::BeginTracingWithTraceConfig(
+        trace_config, run_loop.QuitClosure());
+    CHECK(did_begin_tracing);
+    run_loop.Run();
+  }
+
+  VLOG(1) << "Running browser for " << observation_period.InSecondsF()
+          << " sec...";
+  ContinueBrowserFor(observation_period);
+
+  VLOG(1) << "Observation period has completed. Ending tracing...";
+  std::string json_events;
+  const bool success = tracing::EndTracing(&json_events);
+  CHECK(success);
+
+  std::unique_ptr<trace_analyzer::TraceAnalyzer> result(
+      trace_analyzer::TraceAnalyzer::Create(json_events));
+  result->AssociateAsyncBeginEndEvents();
+  bool have_enough_events = true;
+  for (const auto& event_name : event_names) {
+    trace_analyzer::TraceEventVector events;
+    QueryTraceEvents(result.get(), event_name, &events);
+    VLOG(1) << "Collected " << events.size() << " events ("
+            << required_event_count << " required) for: " << event_name;
+    if (static_cast<int>(events.size()) < required_event_count) {
+      have_enough_events = false;
+    }
+  }
+  LOG_IF(WARNING, !have_enough_events) << "Insufficient data collected.";
+
+  VLOG_IF(2, result) << "Dump of trace events (trace_events.json.gz.b64):\n"
+                     << MakeBase64EncodedGZippedString(json_events);
   return result;
 }
 
@@ -266,18 +404,19 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
   explicit TestPatternReceiver(
       const scoped_refptr<media::cast::CastEnvironment>& cast_environment,
       const net::IPEndPoint& local_end_point,
-      bool is_full_performance_run)
+      bool is_full_performance_run,
+      const SharedSenderReceiverConfigs& configs)
       : InProcessReceiver(
             cast_environment,
             local_end_point,
             net::IPEndPoint(),
-            WithAesKeyAndIvSet(media::cast::GetDefaultAudioReceiverConfig()),
-            WithAesKeyAndIvSet(media::cast::GetDefaultVideoReceiverConfig())),
+            WithSharedConfig(media::cast::GetDefaultAudioReceiverConfig(),
+                             configs.audio),
+            WithSharedConfig(media::cast::GetDefaultVideoReceiverConfig(),
+                             configs.video)),
         is_full_performance_run_(is_full_performance_run) {}
 
   typedef std::map<uint16_t, base::TimeTicks> TimeMap;
-
-  bool is_full_performance_run() const { return is_full_performance_run_; }
 
   // Build a map from frame ID (as encoded in the audio and video data)
   // to the rtp timestamp for that frame. Note that there will be multiple
@@ -310,17 +449,18 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     EXPECT_FOR_PERFORMANCE_RUN(min_data_points <=
                                static_cast<int>(audio_frame_times.size()));
     MapFrameTimes(video_events_, &video_frame_times);
+
     EXPECT_FOR_PERFORMANCE_RUN(min_data_points <=
                                static_cast<int>(video_frame_times.size()));
     std::vector<double> deltas;
     for (TimeMap::const_iterator i = audio_frame_times.begin();
-         i != audio_frame_times.end();
-         ++i) {
+         i != audio_frame_times.end(); ++i) {
       TimeMap::const_iterator j = video_frame_times.find(i->first);
       if (j != video_frame_times.end()) {
         deltas.push_back((i->second - j->second).InMillisecondsF());
       }
     }
+
     EXPECT_FOR_PERFORMANCE_RUN(min_data_points <=
                                static_cast<int>(deltas.size()));
 
@@ -392,8 +532,7 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
     // Note: This is the number of the video frame that this audio belongs to.
     uint16_t frame_no;
     if (media::cast::DecodeTimestamp(audio_frame->channel(0),
-                                     audio_frame->frames(),
-                                     &frame_no)) {
+                                     audio_frame->frames(), &frame_no)) {
       audio_events_.push_back(TimeData(frame_no, playout_time));
     } else {
       DVLOG(2) << "Failed to decode audio timestamp!";
@@ -430,15 +569,18 @@ class TestPatternReceiver : public media::cast::InProcessReceiver {
   DISALLOW_COPY_AND_ASSIGN(TestPatternReceiver);
 };
 
-class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
+class TestCompleteObserver {
+ public:
+  MOCK_METHOD(void, TestComplete, ());
+};
+
+class CastV2PerformanceTest : public InProcessBrowserTest,
                               public testing::WithParamInterface<int> {
  public:
   CastV2PerformanceTest() = default;
   ~CastV2PerformanceTest() override = default;
 
-  bool HasFlag(TestFlags flag) const {
-    return (GetParam() & flag) == flag;
-  }
+  bool HasFlag(TestFlags flag) const { return (GetParam() & flag) == flag; }
 
   std::string GetSuffixForTestFlags() const {
     std::string suffix;
@@ -447,12 +589,6 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     suffix += "gpu";
     if (HasFlag(kSmallWindow))
       suffix += "_small";
-    if (HasFlag(k24fps))
-      suffix += "_24fps";
-    if (HasFlag(k30fps))
-      suffix += "_30fps";
-    if (HasFlag(k60fps))
-      suffix += "_60fps";
     if (HasFlag(kProxyWifi))
       suffix += "_wifi";
     if (HasFlag(kProxySlow))
@@ -463,55 +599,45 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
       suffix += "_slow";
     if (HasFlag(kFastClock))
       suffix += "_fast";
-    if (HasFlag(kAutoThrottling))
-      suffix += "_autothrottling";
     return suffix;
   }
 
-  int get_fps() const {
-    if (HasFlag(k24fps))
-      return 24;
-    if (HasFlag(k30fps))
-      return 30;
-    if (HasFlag(k60fps))
-      return 60;
-    NOTREACHED();
-    return 0;
+  void SetUp() override {
+    // Necessary for screen capture.
+    EnablePixelOutput();
+
+    feature_list_.InitWithFeatures(
+        {
+            features::kAudioServiceSandbox,
+            features::kAudioServiceLaunchOnStartup,
+            features::kAudioServiceOutOfProcess,
+        },
+        {});
+    InProcessBrowserTest::SetUp();
   }
 
-  void SetUp() override {
-    // Produce the full HTML test page with the barcode video embedded within
-    // (as a data URI).
-    const base::FilePath video_file =
-        GetApiTestDataDir()
-            .AppendASCII("cast_streaming")
-            .AppendASCII(
-                base::StringPrintf("test_video_%dfps.webm", get_fps()));
-    std::string file_contents;
-    const bool success = base::ReadFileToString(video_file, &file_contents);
-    CHECK(success) << "Failed to load video at: " << video_file.AsUTF8Unsafe();
-    std::string video_in_base64;
-    base::Base64Encode(file_contents, &video_in_base64);
-    test_page_html_ =
-        base::StrCat({"<html><body>\n"
-                      "<video width='100%' height='100%'>\n"
-                      "  <source src='data:video/webm;base64,",
-                      video_in_base64,
-                      "'>\n"
-                      "</video>\n"
-                      "</body></html>"});
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
-    TabCapturePerformanceTestBase::SetUp();
+    best_effort_fence_.emplace();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    is_full_performance_run_ =
+        command_line->HasSwitch(kFullPerformanceRunSwitch);
+
     if (HasFlag(kSmallWindow)) {
       command_line->AppendSwitchASCII(switches::kWindowSize, "800,600");
     } else {
       command_line->AppendSwitchASCII(switches::kWindowSize, "2000,1500");
     }
 
-    TabCapturePerformanceTestBase::SetUpCommandLine(command_line);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   // The key contains the name of the argument and the argument.
@@ -529,8 +655,7 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     for (size_t i = 0; i < events.size(); i++) {
       std::map<std::string, double>::const_iterator j;
       for (j = events[i]->arg_numbers.begin();
-           j != events[i]->arg_numbers.end();
-           ++j) {
+           j != events[i]->arg_numbers.end(); ++j) {
         (*event_map)[*j] = events[i];
       }
     }
@@ -550,6 +675,10 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     if (event_it == event_map.end())
       return nullptr;
     return event_it->second;
+  }
+
+  void NavigateToTestPagePath(const std::string& path) const {
+    ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
   }
 
   // Given a vector of vector of data, extract the difference between
@@ -604,7 +733,7 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     // producing a matrix of when each frame reached each pipeline checkpoint.
     // See the "cheat sheet" below for a description of each pipeline
     // checkpoint.
-    const int trim_count = is_full_performance_run() ? kTrimEvents : 0;
+    const int trim_count = is_full_performance_run_ ? kTrimEvents : 0;
     EXPECT_FOR_PERFORMANCE_RUN((trim_count * 2) <=
                                static_cast<int>(capture_events.size()));
     std::vector<std::vector<double>> traced_frames;
@@ -635,7 +764,7 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     // Report the fraction of captured frames that were dropped somewhere along
     // the way (i.e., before playout at the receiver).
     const int capture_event_count = capture_events.size() - 2 * trim_count;
-    EXPECT_FOR_PERFORMANCE_RUN((is_full_performance_run()
+    EXPECT_FOR_PERFORMANCE_RUN((is_full_performance_run_
                                     ? kMinDataPointsForFullRun
                                     : kMinDataPointsForQuickRun) <=
                                capture_event_count);
@@ -674,7 +803,7 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     trace_analyzer::TraceEventVector events;
     QueryTraceEvents(analyzer, event_name, &events);
 
-    const int trim_count = is_full_performance_run() ? kTrimEvents : 0;
+    const int trim_count = is_full_performance_run_ ? kTrimEvents : 0;
     std::vector<double> deltas;
     for (int i = trim_count + 1;
          i < static_cast<int>(events.size()) - trim_count; ++i) {
@@ -684,44 +813,198 @@ class CastV2PerformanceTest : public TabCapturePerformanceTestBase,
     return deltas;
   }
 
- protected:
-  // The complete HTML test web page without any external dependencies,
-  // including the entire barcode video as an embedded data URI. Populated in
-  // SetUp().
-  std::string test_page_html_;
+  void StartReceiver(const net::IPEndPoint& endpoint,
+                     const SharedSenderReceiverConfigs& shared_configs) {
+    // Start the in-process receiver that examines audio/video for the expected
+    // test patterns.
+    base::TimeDelta delta = base::TimeDelta::FromSeconds(0);
+    if (HasFlag(kFastClock)) {
+      delta = base::TimeDelta::FromSeconds(10);
+    }
+    if (HasFlag(kSlowClock)) {
+      delta = base::TimeDelta::FromSeconds(-10);
+    }
 
-  // While the source video frame rate may vary (24, 30, or 60 FPS), the maximum
-  // capture frame rate is always fixed at 30 FPS. This allows testing of the
-  // entire system when it is forced to perform a 60→30 frame rate conversion.
-  static constexpr int kMaxCaptureFrameRate = 30;
+    cast_environment_ = base::MakeRefCounted<SkewedCastEnvironment>(delta);
+    receiver_ = std::make_unique<TestPatternReceiver>(
+        cast_environment_, endpoint, is_full_performance_run_, shared_configs);
+    receiver_->Start();
+  }
+
+ protected:
+  // Ensure best effort tasks are not required for this test to pass.
+  base::Optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+      best_effort_fence_;
+
+  // HTTPS server for loading pages from the test data dir.
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+  // Cast environment used for the Receiver.
+  scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment_;
+
+  // Test receiver.
+  std::unique_ptr<TestPatternReceiver> receiver_;
+
+  // Whether this is a full performance run, or if we just want to do a sanity
+  // check.
+  bool is_full_performance_run_ = true;
+
+  // Manages the audio service feature set.
+  base::test::ScopedFeatureList feature_list_;
 };
 
+class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
+                                public mirroring::mojom::CastMessageChannel {
+ public:
+  explicit TestTabMirroringSession(CastV2PerformanceTest* parent)
+      : parent_(parent) {}
+
+  // Start the mirroring session. Port is specified as well as endpoint, in
+  // case the sender needs to connect to a proxy.
+  void Start(content::WebContents* contents,
+             const net::IPEndPoint& endpoint,
+             int port) {
+    ASSERT_TRUE(contents);
+
+    receiver_endpoint_ = endpoint;
+    udp_port_ = port;
+    mirroring::CastMirroringServiceHost::GetForTab(
+        contents, host_.BindNewPipeAndPassReceiver());
+
+    mojo::PendingRemote<mirroring::mojom::SessionObserver> observer_remote;
+    observer_receiver_.Bind(observer_remote.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<mirroring::mojom::CastMessageChannel> channel_remote;
+    channel_receiver_.Bind(channel_remote.InitWithNewPipeAndPassReceiver());
+
+    const std::string receiver_model_name{};
+    auto session_params = mirroring::mojom::SessionParameters::New(
+        mirroring::mojom::SessionType::AUDIO_AND_VIDEO, endpoint.address(),
+        receiver_model_name,
+        base::TimeDelta::FromMilliseconds(kTargetPlayoutDelayMs));
+
+    host_->Start(std::move(session_params), std::move(observer_remote),
+                 std::move(channel_remote),
+                 channel_to_service_.BindNewPipeAndPassReceiver());
+  }
+
+  // SessionObserver implementation
+  void OnError(mirroring::mojom::SessionError error) override {
+    FAIL() << "Encountered session error: " << error;
+  }
+
+  void DidStart() override {}
+  void DidStop() override {}
+
+  // CastMessageChannel implementation
+  void Send(mirroring::mojom::CastMessagePtr message) override {
+    Json::CharReaderBuilder rb;
+    auto reader = std::unique_ptr<Json::CharReader>(rb.newCharReader());
+    Json::Value root;
+
+    const std::string& d = message->json_format_data;
+    ASSERT_TRUE(reader->parse(d.data(), d.data() + d.length(), &root, nullptr));
+
+    // Currently we only handle OFFER messages.
+    if (root["type"].asString() != "OFFER") {
+      return;
+    }
+
+    auto streams = GetStreamsFromOffer(root);
+    SetSharedConfigs(streams);
+    SendAnswer(root, std::move(message), streams);
+    // The shared configs have been set as part of building the answer,
+    // so we start the receiver now before sending the ANSWER message.
+    parent_->StartReceiver(receiver_endpoint_, shared_configs_);
+  }
+
+  const net::IPEndPoint& receiver_endpoint() const {
+    return receiver_endpoint_;
+  }
+
+ private:
+  std::string ToString(const std::array<uint8_t, 16>& key) {
+    return std::string(reinterpret_cast<const char*>(key.data()), key.size());
+  }
+
+  // Returns AUDIO + VIDEO
+  std::pair<openscreen::cast::Stream, openscreen::cast::Stream>
+  GetStreamsFromOffer(const Json::Value& offer_message_body) {
+    auto offer = openscreen::cast::Offer::Parse(offer_message_body["offer"]);
+    EXPECT_TRUE(offer);
+    EXPECT_LT(0u, offer.value().audio_streams.size());
+    EXPECT_LT(0u, offer.value().video_streams.size());
+    return std::make_pair(offer.value().audio_streams[0].stream,
+                          offer.value().video_streams[0].stream);
+  }
+
+  void SetSharedConfigs(const std::pair<openscreen::cast::Stream,
+                                        openscreen::cast::Stream>& streams) {
+    const auto& audio = streams.first;
+    const auto& video = streams.second;
+    shared_configs_.audio.aes_key = ToString(audio.aes_key);
+    shared_configs_.audio.aes_iv_mask = ToString(audio.aes_iv_mask);
+    shared_configs_.audio.sender_ssrc = audio.ssrc;
+    shared_configs_.audio.receiver_ssrc = audio.ssrc + 1;
+    shared_configs_.video.aes_key = ToString(video.aes_key);
+    shared_configs_.video.aes_iv_mask = ToString(video.aes_iv_mask);
+    shared_configs_.video.sender_ssrc = video.ssrc;
+    shared_configs_.video.receiver_ssrc = video.ssrc + 1;
+  }
+
+  void SendAnswer(const Json::Value& offer_message_body,
+                  mirroring::mojom::CastMessagePtr offer_message,
+                  const std::pair<openscreen::cast::Stream,
+                                  openscreen::cast::Stream>& streams) {
+    openscreen::cast::Answer answer;
+    answer.udp_port = udp_port_;
+
+    answer.ssrcs.push_back(streams.first.ssrc + 1);
+    answer.send_indexes.push_back(streams.first.index);
+    answer.ssrcs.push_back(streams.second.ssrc + 1);
+    answer.send_indexes.push_back(streams.second.index);
+
+    ASSERT_TRUE(answer.IsValid());
+
+    Json::StreamWriterBuilder wb;
+    wb["indentation"] = "";
+    std::unique_ptr<Json::StreamWriter> writer(wb.newStreamWriter());
+
+    Json::Value answer_message_body;
+    answer_message_body["type"] = "ANSWER";
+    answer_message_body["result"] = "ok";
+    answer_message_body["answer"] = answer.ToJson();
+    answer_message_body["seqNum"] = offer_message_body["seqNum"];
+    std::ostringstream ssb;
+    writer->write(answer_message_body, &ssb);
+
+    VLOG(1) << "Sending ANSWER";
+    offer_message->json_format_data = ssb.str();
+    channel_to_service_->Send(std::move(offer_message));
+  }
+
+  mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
+  mojo::Remote<mirroring::mojom::CastMessageChannel> channel_to_service_;
+  mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
+  mojo::Receiver<mirroring::mojom::CastMessageChannel> channel_receiver_{this};
+
+  net::IPEndPoint receiver_endpoint_;
+  int udp_port_ = -1;
+  SharedSenderReceiverConfigs shared_configs_;
+
+  CastV2PerformanceTest* const parent_;
+  scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment_;
+};
 }  // namespace
 
-// TODO(https://crbug.com/974427) Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, DISABLED_Performance) {
+IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, Performance) {
   net::IPEndPoint receiver_end_point = media::cast::test::GetFreeLocalPort();
-  VLOG(1) << "Got local UDP port for testing: "
+  VLOG(1) << "Got local UDP endpoint for testing: "
           << receiver_end_point.ToString();
-
-  // Start the in-process receiver that examines audio/video for the expected
-  // test patterns.
-  base::TimeDelta delta = base::TimeDelta::FromSeconds(0);
-  if (HasFlag(kFastClock)) {
-    delta = base::TimeDelta::FromSeconds(10);
-  }
-  if (HasFlag(kSlowClock)) {
-    delta = base::TimeDelta::FromSeconds(-10);
-  }
-  scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment(
-      new SkewedCastEnvironment(delta));
-  auto receiver = std::make_unique<TestPatternReceiver>(
-      cast_environment, receiver_end_point, is_full_performance_run());
-  receiver->Start();
 
   // Create a proxy for the UDP packets that simulates certain network
   // environments.
   std::unique_ptr<media::cast::test::UDPProxy> udp_proxy;
+  int udp_proxy_port = receiver_end_point.port();
   if (HasFlag(kProxyWifi) || HasFlag(kProxySlow) || HasFlag(kProxyBad)) {
     net::IPEndPoint proxy_end_point = media::cast::test::GetFreeLocalPort();
     if (HasFlag(kProxyWifi)) {
@@ -737,47 +1020,27 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, DISABLED_Performance) {
           proxy_end_point, receiver_end_point, media::cast::test::BadNetwork(),
           media::cast::test::BadNetwork(), nullptr);
     }
-    receiver_end_point = proxy_end_point;
+
+    VLOG(1) << "Setting UDP proxy port: " << udp_proxy_port;
+    udp_proxy_port = proxy_end_point.port();
   }
 
-  // Load the extension and test page, and tell the extension to start tab
-  // capture + Cast Streaming.
+  NavigateToTestPagePath(kTestPageLocation);
 
-  // TODO(https://crbug.com/974427): Update test to no longer require
-  // extension APIs.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
 
-  // LoadExtension(GetApiTestDataDir()
-  //                   .AppendASCII("cast_streaming")
-  //                  .AppendASCII("perftest_extension"));
-
-  NavigateToTestPage(test_page_html_);
-  const base::Value response = SendMessageToExtension(base::StringPrintf(
-      "{start:true, enableAutoThrottling:%s, maxFrameRate:%d, recvPort:%d,"
-      " aesKey:'%s', aesIvMask:'%s'}",
-      HasFlag(kAutoThrottling) ? "true" : "false", kMaxCaptureFrameRate,
-      receiver_end_point.port(),
-      base::HexEncode(kAesKey, sizeof(kAesKey)).c_str(),
-      base::HexEncode(kAesIvMask, sizeof(kAesIvMask)).c_str()));
-  const std::string* reason = response.FindStringKey("reason");
-  ASSERT_TRUE(response.FindBoolKey("success").value_or(false))
-      << (reason ? *reason : std::string("<MISSING REASON>"));
+  TestTabMirroringSession session(this);
+  session.Start(web_contents, receiver_end_point, udp_proxy_port);
 
   // Now that capture has started, start playing the barcode video in the test
   // page.
-  const std::string javascript_to_play_video(
-      "new Promise((resolve) => {\n"
-      "  const video = document.getElementsByTagName('video')[0];\n"
-      "  video.addEventListener('playing', () => { resolve(true); });\n"
-      "  video.play();\n"
-      "})");
-  LOG(INFO) << "Starting playback of barcode video...";
-  ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      javascript_to_play_video));
+  content::SimulateMouseClick(web_contents, 0,
+                              blink::WebMouseEvent::Button::kLeft);
 
   // Observe the running browser for a while, collecting a trace.
   TraceAnalyzerUniquePtr analyzer = TraceAndObserve(
-      "gpu.capture,cast_perf_test",
+      is_full_performance_run_, "gpu.capture,cast_perf_test",
       std::vector<base::StringPiece>{
           // From the Compositor/Capture pipeline...
           "Capture", "OnBufferReceived", "ConsumeVideoFrame",
@@ -790,16 +1053,15 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, DISABLED_Performance) {
       // In a full performance run, events will be trimmed from both ends of
       // trace. Otherwise, just require the bare-minimum to verify the stats
       // calculations will work.
-      is_full_performance_run() ? (2 * kTrimEvents + kMinDataPointsForFullRun)
-                                : kMinDataPointsForQuickRun);
+      is_full_performance_run_ ? (2 * kTrimEvents + kMinDataPointsForFullRun)
+                               : kMinDataPointsForQuickRun);
 
   // Shut down the receiver and all the CastEnvironment threads.
   VLOG(1) << "Shutting-down receiver and CastEnvironment...";
-  receiver->Stop();
-  cast_environment->Shutdown();
+  receiver_->Stop();
+  cast_environment_->Shutdown();
 
   VLOG(1) << "Analyzing trace events...";
-
   // This prints out the average time between capture events.
   // Depending on the test, the capture frame rate is capped (e.g., at 30fps,
   // this score cannot get any better than 33.33 ms). However, the measurement
@@ -810,22 +1072,19 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, DISABLED_Performance) {
   MaybeAddResultList(reporter, kMetricTimeBetweenCapturesMs,
                      AnalyzeTraceDistance(analyzer.get(), "Capture"));
 
-  receiver->Analyze(GetSuffixForTestFlags());
+  receiver_->Analyze(GetSuffixForTestFlags());
 
   AnalyzeLatency(analyzer.get());
 }
 
 #if !defined(OS_CHROMEOS) || !defined(MEMORY_SANITIZER)
+// TODO(b/161545049): reenable FPS value features.
 INSTANTIATE_TEST_SUITE_P(All,
                          CastV2PerformanceTest,
-                         testing::Values(k24fps,
-                                         k30fps,
-                                         k60fps,
-                                         k30fps | kProxyWifi,
-                                         k30fps | kProxyBad,
-                                         k30fps | kSlowClock,
-                                         k30fps | kFastClock,
-                                         k30fps | kProxyWifi | kAutoThrottling,
-                                         k30fps | kProxySlow | kAutoThrottling,
-                                         k30fps | kProxyBad | kAutoThrottling));
+                         testing::Values(kSmallWindow,
+                                         kProxyWifi,
+                                         kProxyBad,
+                                         kSlowClock,
+                                         kFastClock,
+                                         kProxySlow));
 #endif

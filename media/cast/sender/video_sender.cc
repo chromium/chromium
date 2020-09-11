@@ -141,7 +141,7 @@ void VideoSender::InsertRawVideoFrame(
   LogVideoCaptureTimestamps(cast_environment_.get(), *video_frame,
                             rtp_timestamp);
 
-  // Used by chrome/browser/extension/api/cast_streaming/performance_test.cc
+  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
   TRACE_EVENT_INSTANT2("cast_perf_test", "InsertRawVideoFrame",
                        TRACE_EVENT_SCOPE_THREAD, "timestamp",
                        (reference_time - base::TimeTicks()).InMicroseconds(),

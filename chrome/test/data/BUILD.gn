@@ -33,7 +33,11 @@ mojom("web_ui_test_bindings") {
 }
 
 group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
+  deps = [
+    ":closure_compile_local",
+    "cast:closure_compile",
+  ]
+
   if (enable_pdf) {
     deps += [ "pdf:closure_compile" ]
   }
@@ -43,7 +47,10 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_local") {
-  deps = [ ":test_api_js" ]
+  deps = [
+    ":test_api_js",
+    "cast",
+  ]
 }
 
 js_library("test_api_js") {

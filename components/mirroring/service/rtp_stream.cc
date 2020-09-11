@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
@@ -77,6 +78,13 @@ void VideoRtpStream::InsertVideoFrame(
     client_->OnError("Incompatible video frame format.");
     return;
   }
+
+  // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
+  TRACE_EVENT_INSTANT2("cast_perf_test", "ConsumeVideoFrame",
+                       TRACE_EVENT_SCOPE_THREAD, "timestamp",
+                       (reference_time - base::TimeTicks()).InMicroseconds(),
+                       "time_delta", video_frame->timestamp().InMicroseconds());
+
   video_sender_->InsertRawVideoFrame(std::move(video_frame), reference_time);
 }
 

@@ -82,6 +82,8 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
   friend class CastMirroringServiceHostBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(CastMirroringServiceHostTest,
                            TestGetClampedResolution);
+  friend class CastV2PerformanceTest;
+  FRIEND_TEST_ALL_PREFIXES(CastV2PerformanceTest, Performance);
 
   static gfx::Size GetCaptureResolutionConstraint();
   // Clamp resolution constraint to the screen size.
