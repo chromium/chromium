@@ -162,7 +162,6 @@ source_set("tests") {
     ":trust_tokens",
     "//base",
     "//base/test:test_support",
-    "//base/util/ranges",
     "//components/cbor",
     "//components/sqlite_proto",
     "//net",

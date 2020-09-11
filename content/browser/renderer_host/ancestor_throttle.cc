@@ -6,10 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/util/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -83,7 +83,7 @@ void RecordXFrameOptionsUsage(XFrameOptionsHistogram usage) {
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
-  return util::ranges::any_of(
+  return base::ranges::any_of(
       headers->content_security_policy, [](const auto& csp) {
         return csp->header->type ==
                    network::mojom::ContentSecurityPolicyType::kEnforce &&

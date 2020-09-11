@@ -19,10 +19,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/util/ranges/algorithm.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -105,7 +105,7 @@ constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
 bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
-  return util::ranges::all_of(kTagAndFileNamePairs, [&](const auto& pair) {
+  return base::ranges::all_of(kTagAndFileNamePairs, [&](const auto& pair) {
     return base::PathExists(install_dir.Append(pair.file_name));
   });
 }

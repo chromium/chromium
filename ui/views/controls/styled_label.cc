@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/util/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/font_list.h"
@@ -315,7 +315,7 @@ void StyledLabel::ClearStyleRanges() {
 
 void StyledLabel::ClickLinkForTesting() {
   const auto it =
-      util::ranges::find(children(), Link::kViewClassName, &View::GetClassName);
+      base::ranges::find(children(), Link::kViewClassName, &View::GetClassName);
   DCHECK(it != children().cend());
   (*it)->OnKeyPressed(
       ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE, ui::EF_NONE));

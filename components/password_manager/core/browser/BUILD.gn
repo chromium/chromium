@@ -281,7 +281,6 @@ static_library("browser") {
     ":proto",
     "//base",
     "//base:i18n",
-    "//base/util/ranges:ranges",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",

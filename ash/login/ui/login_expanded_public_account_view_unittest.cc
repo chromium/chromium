@@ -13,7 +13,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind_helpers.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -163,7 +163,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowWarningDialog) {
 
   // Tap on the learn more link.
   const auto& children = test_api.learn_more_label()->children();
-  const auto it = util::ranges::find(children, views::Link::kViewClassName,
+  const auto it = base::ranges::find(children, views::Link::kViewClassName,
                                      &views::View::GetClassName);
   DCHECK(it != children.cend());
   TapOnView(*it);

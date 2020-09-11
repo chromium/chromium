@@ -7,13 +7,13 @@
 #include <sstream>
 #include <string>
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
@@ -721,7 +721,7 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
       header.as_string(), type, mojom::ContentSecurityPolicySource::kHTTP);
 
   for (auto directive : directives) {
-    if (!util::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
+    if (!base::ranges::all_of(directive.first, IsDirectiveNameCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The Content-Security-Policy directive name '%s' contains one or "
           "more invalid characters. Only ASCII alphanumeric characters or "
@@ -730,7 +730,7 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
       continue;
     }
 
-    if (!util::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
+    if (!base::ranges::all_of(directive.second, IsDirectiveValueCharacter)) {
       out->parsing_errors.emplace_back(base::StringPrintf(
           "The value for the Content-Security-Policy directive '%s' contains "
           "one or more invalid characters. Non-whitespace characters outside "
@@ -903,8 +903,8 @@ bool PluginTypesSubsumes(
   }
 
   // Check that every plugin-type in |types_b| is allowed by |types_a|.
-  return util::ranges::all_of(types_b.value(), [&](const std::string& type_b) {
-    return util::ranges::any_of(
+  return base::ranges::all_of(types_b.value(), [&](const std::string& type_b) {
+    return base::ranges::any_of(
         policy_a.plugin_types.value(),
         [&](const std::string& type_a) { return type_a == type_b; });
   });
@@ -1115,7 +1115,7 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
       CSPDirectiveName::FrameAncestors, CSPDirectiveName::FormAction,
       CSPDirectiveName::NavigateTo};
 
-  return util::ranges::all_of(directives, [&](CSPDirectiveName directive) {
+  return base::ranges::all_of(directives, [&](CSPDirectiveName directive) {
     auto required = GetSourceList(directive, policy_a);
     if (!required.second)
       return true;

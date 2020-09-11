@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_RANGES_ITERATOR_H_
-#define BASE_UTIL_RANGES_ITERATOR_H_
+#ifndef BASE_RANGES_ITERATOR_H_
+#define BASE_RANGES_ITERATOR_H_
 
 #include <iterator>
 #include <type_traits>
 #include <utility>
 
-#include "base/util/ranges/functional.h"
+#include "base/ranges/functional.h"
 
-namespace util {
+namespace base {
 
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
@@ -55,6 +55,6 @@ struct projected {
   IndirectResultT operator*() const;  // not defined
 };
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_RANGES_ITERATOR_H_
+#endif  // BASE_RANGES_ITERATOR_H_

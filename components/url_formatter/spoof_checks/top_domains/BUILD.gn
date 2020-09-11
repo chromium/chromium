@@ -71,7 +71,6 @@ executable("make_top_domain_list_variables") {
     ":common",
     "//base",
     "//base:i18n",
-    "//base/util/ranges:ranges",
     "//components/url_formatter/spoof_checks/common_words:common",
     "//third_party/icu",
   ]

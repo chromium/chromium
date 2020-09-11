@@ -13,12 +13,12 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "base/time/time_to_iso8601.h"
-#include "base/util/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -670,7 +670,7 @@ TEST_F(TrustTokenRequestSigningHelperTest, CatchesSignatureFailure) {
   EXPECT_THAT(*my_request, Not(Header("Sec-Time")));
   EXPECT_THAT(*my_request, Not(Header("Sec-Signature")));
   EXPECT_THAT(*my_request, Header("Sec-Signed-Redemption-Record", IsEmpty()));
-  EXPECT_TRUE(util::ranges::any_of(
+  EXPECT_TRUE(base::ranges::any_of(
       net_log.GetEntriesWithType(
           net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING),
       [](const net::NetLogEntry& entry) {

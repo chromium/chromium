@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_RANGES_ALGORITHM_H_
-#define BASE_UTIL_RANGES_ALGORITHM_H_
+#ifndef BASE_RANGES_ALGORITHM_H_
+#define BASE_RANGES_ALGORITHM_H_
 
 #include <algorithm>
 #include <initializer_list>
@@ -11,12 +11,12 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/util/ranges/functional.h"
-#include "base/util/ranges/iterator.h"
-#include "base/util/ranges/ranges.h"
-#include "base/util/ranges/ranges_internal.h"
+#include "base/ranges/functional.h"
+#include "base/ranges/iterator.h"
+#include "base/ranges/ranges.h"
+#include "base/ranges/ranges_internal.h"
 
-namespace util {
+namespace base {
 
 namespace ranges {
 
@@ -4953,6 +4953,6 @@ constexpr auto prev_permutation(Range&& range, Comp comp = {}, Proj proj = {}) {
 
 }  // namespace ranges
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_RANGES_ALGORITHM_H_
+#endif  // BASE_RANGES_ALGORITHM_H_

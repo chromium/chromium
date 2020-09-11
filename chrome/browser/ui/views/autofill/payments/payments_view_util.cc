@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 
 #include "base/bind.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

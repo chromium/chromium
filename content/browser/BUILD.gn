@@ -48,7 +48,6 @@ source_set("browser") {
     "//base:base_static",
     "//base:clang_profiling_buildflags",
     "//base/third_party/dynamic_annotations",
-    "//base/util/ranges:ranges",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",

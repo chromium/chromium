@@ -6,7 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -45,7 +45,7 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
 void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<autofill::PasswordForm>> results) {
   // Store the results.
-  util::ranges::move(results, std::back_inserter(partial_results_));
+  base::ranges::move(results, std::back_inserter(partial_results_));
 
   // If we're still awaiting more results, nothing else to do.
   if (--wait_counter_ > 0)
@@ -68,7 +68,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
   }
 
   IsSaved is_saved(
-      util::ranges::any_of(partial_results_, [this](const auto& form) {
+      base::ranges::any_of(partial_results_, [this](const auto& form) {
         return form->url == url_ && form->username_value == username_;
       }));
 

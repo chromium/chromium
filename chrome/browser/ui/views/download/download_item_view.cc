@@ -22,9 +22,9 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
+#include "base/ranges/algorithm.h"
+#include "base/ranges/functional.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/ranges/algorithm.h"
-#include "base/util/ranges/functional.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "cc/paint/paint_flags.h"
@@ -538,7 +538,7 @@ gfx::Size DownloadItemView::CalculatePreferredSize() const {
     width +=
         kStartPadding * 2 + icon_size.width() + label->width() + kEndPadding;
     height = std::max(height, icon_size.height());
-    const int visible_buttons = util::ranges::count(
+    const int visible_buttons = base::ranges::count(
         std::array<const views::View*, 4>{save_button_, discard_button_,
                                           scan_button_, open_now_button_},
         true, &views::View::GetVisible);
@@ -1123,7 +1123,7 @@ int DownloadItemView::GetLabelWidth(const views::StyledLabel& label) const {
   // TODO(pkasting): Can use std::iota_view() when C++20 is available.
   std::vector<int> widths(max_width + 1 - min_width);
   std::iota(widths.begin(), widths.end(), min_width);
-  return *util::ranges::lower_bound(widths, 2, util::ranges::greater{},
+  return *base::ranges::lower_bound(widths, 2, base::ranges::greater{},
                                     std::move(lines_for_width));
 }
 

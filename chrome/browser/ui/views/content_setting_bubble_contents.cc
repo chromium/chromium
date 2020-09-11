@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -252,7 +252,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     link->set_callback(base::BindRepeating(
         [](const std::vector<Row>* items, const views::Link* link,
            ContentSettingBubbleContents* parent, int event_flags) {
-          const auto it = util::ranges::find(*items, link, &Row::second);
+          const auto it = base::ranges::find(*items, link, &Row::second);
           DCHECK(it != items->cend());
           parent->LinkClicked(std::distance(items->cbegin(), it), event_flags);
         },

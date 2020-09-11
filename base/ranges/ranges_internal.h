@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_RANGES_RANGES_INTERNAL_H_
-#define BASE_UTIL_RANGES_RANGES_INTERNAL_H_
+#ifndef BASE_RANGES_RANGES_INTERNAL_H_
+#define BASE_RANGES_RANGES_INTERNAL_H_
 
 #include <stddef.h>
 
-namespace util {
+namespace base {
 namespace ranges {
 namespace internal {
 
@@ -22,6 +22,6 @@ struct priority_tag<0> {};
 
 }  // namespace internal
 }  // namespace ranges
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_RANGES_RANGES_INTERNAL_H_
+#endif  // BASE_RANGES_RANGES_INTERNAL_H_

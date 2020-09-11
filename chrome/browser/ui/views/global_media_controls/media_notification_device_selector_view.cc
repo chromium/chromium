@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -271,7 +271,7 @@ void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
   if (current_device_entry_view_)
     current_device_entry_view_->SetHighlighted(false);
 
-  auto it = util::ranges::find_if(
+  auto it = base::ranges::find_if(
       audio_device_entries_container_->children(),
       [&current_device_id](auto& item) {
         return static_cast<DeviceEntryView*>(item)->GetDeviceId() ==
@@ -420,7 +420,7 @@ bool MediaNotificationDeviceSelectorView::ShouldBeVisible() {
   // * Or, there are two devices and one of them has the default ID but not the
   // default name.
   if (audio_device_entries_container_->children().size() == 2) {
-    return util::ranges::any_of(
+    return base::ranges::any_of(
         audio_device_entries_container_->children(), [](views::View* view) {
           auto* entry = static_cast<DeviceEntryView*>(view);
           return entry->GetDeviceId() ==

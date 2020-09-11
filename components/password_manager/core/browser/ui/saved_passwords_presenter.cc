@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
-#include "base/util/ranges/algorithm.h"
 #include "components/autofill/core/common/password_form.h"
 
 namespace password_manager {
@@ -41,7 +41,7 @@ void SavedPasswordsPresenter::Init() {
 
 bool SavedPasswordsPresenter::EditPassword(const autofill::PasswordForm& form,
                                            base::string16 new_password) {
-  auto found = util::ranges::find(passwords_, form);
+  auto found = base::ranges::find(passwords_, form);
   if (found == passwords_.end())
     return false;
 
@@ -108,7 +108,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   });
 
   // Profile store passwords are always stored first in `passwords_`.
-  auto account_passwords_it = util::ranges::partition_point(
+  auto account_passwords_it = base::ranges::partition_point(
       passwords_,
       [](auto& password) { return !password.IsUsingAccountStore(); });
   if (store == profile_store_) {
@@ -118,7 +118,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     new_passwords.reserve(results.size() + passwords_.end() -
                           account_passwords_it);
     auto new_passwords_back_inserter = std::back_inserter(new_passwords);
-    util::ranges::transform(results, new_passwords_back_inserter,
+    base::ranges::transform(results, new_passwords_back_inserter,
                             [](auto& result) { return std::move(*result); });
     std::move(account_passwords_it, passwords_.end(),
               new_passwords_back_inserter);
@@ -129,7 +129,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     passwords_.erase(account_passwords_it, passwords_.end());
     if (passwords_.capacity() < passwords_.size() + results.size())
       passwords_.reserve(passwords_.size() + results.size());
-    util::ranges::transform(results, std::back_inserter(passwords_),
+    base::ranges::transform(results, std::back_inserter(passwords_),
                             [](auto& result) { return std::move(*result); });
   }
   NotifySavedPasswordsChanged();

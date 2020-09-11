@@ -11,11 +11,11 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
-#include "base/util/ranges/algorithm.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/escape.h"
@@ -373,7 +373,7 @@ bool IdentificationSettingsManager::IsAllowed(const GURL& gurl) {
     return false;
 
   const std::string& host_name = base::ToLowerASCII(gurl.host());
-  if (util::ranges::find(full_host_names_, host_name) !=
+  if (base::ranges::find(full_host_names_, host_name) !=
       full_host_names_.end()) {
     return true;
   }

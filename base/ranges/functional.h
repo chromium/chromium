@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_RANGES_FUNCTIONAL_H_
-#define BASE_UTIL_RANGES_FUNCTIONAL_H_
+#ifndef BASE_RANGES_FUNCTIONAL_H_
+#define BASE_RANGES_FUNCTIONAL_H_
 
 #include <functional>
 #include <type_traits>
 #include <utility>
 
-namespace util {
+namespace base {
 
 namespace internal {
 
@@ -187,6 +187,6 @@ using greater_equal = std::greater_equal<>;
 using less_equal = std::less_equal<>;
 }  // namespace ranges
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_RANGES_FUNCTIONAL_H_
+#endif  // BASE_RANGES_FUNCTIONAL_H_

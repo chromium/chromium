@@ -5,7 +5,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 
 #include "base/containers/flat_set.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
@@ -177,8 +177,8 @@ bool UrlSourceListSubsumes(
 
   // Every item in |source_list_b| must be subsumed by at least one item in
   // |source_list_a|.
-  return util::ranges::all_of(source_list_b, [&](const auto& source_b) {
-    return util::ranges::any_of(source_list_a, [&](const auto& source_a) {
+  return base::ranges::all_of(source_list_b, [&](const auto& source_b) {
+    return base::ranges::any_of(source_list_a, [&](const auto& source_a) {
       return CSPSourceSubsumes(source_a, source_b);
     });
   });

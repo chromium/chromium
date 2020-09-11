@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/ranges/ranges.h"
+#include "base/ranges/ranges.h"
 
 #include <array>
 #include <initializer_list>
@@ -10,7 +10,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 namespace {
 
@@ -116,4 +116,4 @@ TEST(RangesTest, BeginEndStdArray) {
   static_assert(array[2] == 2, "");
 }
 
-}  // namespace util
+}  // namespace base

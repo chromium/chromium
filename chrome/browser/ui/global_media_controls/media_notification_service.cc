@@ -7,7 +7,7 @@
 #include "base/callback_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/presentation/start_presentation_context.h"
 #include "chrome/browser/profiles/profile.h"
@@ -165,7 +165,7 @@ void MediaNotificationService::Session::MediaSessionInfoChanged(
 void MediaNotificationService::Session::MediaSessionActionsChanged(
     const std::vector<media_session::mojom::MediaSessionAction>& actions) {
   bool is_audio_device_switching_supported =
-      util::ranges::find(
+      base::ranges::find(
           actions,
           media_session::mojom::MediaSessionAction::kSwitchAudioDevice) !=
       actions.end();

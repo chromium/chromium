@@ -30,10 +30,10 @@
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
@@ -74,7 +74,7 @@ std::string GetSkeleton(const std::string& domain,
 }
 
 bool ContainsOnlyDigits(const std::string& text) {
-  return util::ranges::all_of(text.begin(), text.end(), ::isdigit);
+  return base::ranges::all_of(text.begin(), text.end(), ::isdigit);
 }
 
 }  // namespace

@@ -57,7 +57,6 @@ cast_source_set("renderer") {
 
   deps = [
     "//base",
-    "//base/util/ranges",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/common",

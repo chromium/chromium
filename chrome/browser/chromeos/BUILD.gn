@@ -71,7 +71,7 @@ source_set("chromeos") {
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
-    "//base/util/ranges:ranges",
+    "//base",
     "//base/util/timer",
     "//build:branding_buildflags",
     "//chrome/app:command_ids",

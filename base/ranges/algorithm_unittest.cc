@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 
 #include <algorithm>
 #include <functional>
@@ -11,7 +11,7 @@
 #include <random>
 #include <utility>
 
-#include "base/util/ranges/functional.h"
+#include "base/ranges/functional.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +23,7 @@ using ::testing::Le;
 using ::testing::Lt;
 using ::testing::Pair;
 
-namespace util {
+namespace base {
 
 namespace {
 
@@ -1664,4 +1664,4 @@ TEST(RangesTest, PrevPermutation) {
   EXPECT_THAT(bits, ElementsAre(0, 0, 0, 1, 0));
 }
 
-}  // namespace util
+}  // namespace base

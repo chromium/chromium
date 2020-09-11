@@ -14,9 +14,9 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
-#include "base/util/ranges/algorithm.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/session_manager/core/session_manager.h"
@@ -306,7 +306,7 @@ void HttpFirewallRoutine::Connect(int socket_index) {
 void HttpFirewallRoutine::OnSocketConnected(int socket_index, int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto* iter = util::ranges::find(kRetryResponseCodes, result);
+  const auto* iter = base::ranges::find(kRetryResponseCodes, result);
   if (iter != std::end(kRetryResponseCodes) && num_retries_ > 0) {
     num_retries_--;
     // Disconnect the socket in case there is any data in the incoming buffer.

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_UTIL_RANGES_RANGES_H_
-#define BASE_UTIL_RANGES_RANGES_H_
+#ifndef BASE_RANGES_RANGES_H_
+#define BASE_RANGES_RANGES_H_
 
 #include <array>
 #include <iterator>
 #include <type_traits>
 #include <utility>
 
-#include "base/util/ranges/iterator.h"
-#include "base/util/ranges/ranges_internal.h"
+#include "base/ranges/iterator.h"
+#include "base/ranges/ranges_internal.h"
 
-namespace util {
+namespace base {
 
 namespace ranges {
 
@@ -136,6 +136,6 @@ using range_value_t = iter_value_t<iterator_t<Range>>;
 
 }  // namespace ranges
 
-}  // namespace util
+}  // namespace base
 
-#endif  // BASE_UTIL_RANGES_RANGES_H_
+#endif  // BASE_RANGES_RANGES_H_

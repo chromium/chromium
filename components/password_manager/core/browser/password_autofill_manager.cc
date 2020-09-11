@@ -18,10 +18,10 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -309,7 +309,7 @@ std::vector<autofill::Suggestion> SetUnlockLoadingState(
 void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
     const autofill::PasswordFormFillData& fill_data) {
   int account_store_passwords_count =
-      util::ranges::count_if(fill_data.additional_logins,
+      base::ranges::count_if(fill_data.additional_logins,
                              [](const autofill::PasswordAndMetadata& metadata) {
                                return metadata.uses_account_store;
                              });

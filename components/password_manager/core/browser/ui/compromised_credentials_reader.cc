@@ -6,8 +6,8 @@
 
 #include <iterator>
 
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "base/util/ranges/algorithm.h"
 #include "components/autofill/core/common/password_form.h"
 
 namespace password_manager {
@@ -70,7 +70,7 @@ void CompromisedCredentialsReader::OnGetCompromisedCredentialsFrom(
     return credential.in_store == to_remove;
   });
 
-  util::ranges::move(compromised_credentials,
+  base::ranges::move(compromised_credentials,
                      std::back_inserter(compromised_credentials_));
 
   // Observers are reptitively notified of compromised credentials, and hence

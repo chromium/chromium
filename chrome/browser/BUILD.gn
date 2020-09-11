@@ -1835,7 +1835,6 @@ static_library("browser") {
 
   public_deps = [
     "//base",
-    "//base/util/ranges",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/services/file_util/public/mojom",

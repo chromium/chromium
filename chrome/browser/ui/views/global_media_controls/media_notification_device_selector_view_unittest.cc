@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
 #include "base/callback_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/util/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
@@ -233,8 +233,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceHighlightedOnChange) {
 
   // There should be only one highlighted button. It should be the first button.
   // It's text should be "Speaker"
-  EXPECT_EQ(util::ranges::count_if(container_children, IsHighlighted), 1);
-  EXPECT_EQ(util::ranges::find_if(container_children, IsHighlighted),
+  EXPECT_EQ(base::ranges::count_if(container_children, IsHighlighted), 1);
+  EXPECT_EQ(base::ranges::find_if(container_children, IsHighlighted),
             container_children.begin());
   EXPECT_EQ(EntryLabelText(container_children.front()), "Speaker");
 
@@ -242,8 +242,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceHighlightedOnChange) {
   view_->UpdateCurrentAudioDevice("3");
 
   // The button for "Earbuds" should come before all others & be highlighted.
-  EXPECT_EQ(util::ranges::count_if(container_children, IsHighlighted), 1);
-  EXPECT_EQ(util::ranges::find_if(container_children, IsHighlighted),
+  EXPECT_EQ(base::ranges::count_if(container_children, IsHighlighted), 1);
+  EXPECT_EQ(base::ranges::find_if(container_children, IsHighlighted),
             container_children.begin());
   EXPECT_EQ(EntryLabelText(container_children.front()), "Earbuds");
 }

@@ -2229,7 +2229,6 @@ test("ash_unittests") {
     "//ash/system/machine_learning:user_settings_event_proto",
     "//base",
     "//base/test:test_support",
-    "//base/util/ranges",
     "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//chromeos:test_support",

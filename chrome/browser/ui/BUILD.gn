@@ -4025,7 +4025,7 @@ static_library("ui") {
     ]
 
     deps += [
-      "//base/util/ranges",
+      "//base",
       "//base/util/timer",
       "//chrome/browser/ui/views",
       "//chrome/common/qr_code_generator",

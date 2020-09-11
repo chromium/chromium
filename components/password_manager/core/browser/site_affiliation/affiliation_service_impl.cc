@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/util/ranges/algorithm.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/sync/driver/sync_service.h"

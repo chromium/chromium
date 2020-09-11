@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/ranges/functional.h"
+#include "base/ranges/functional.h"
 
 #include <functional>
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 TEST(RangesTest, Identity) {
   static constexpr identity id;
@@ -56,4 +56,4 @@ TEST(RangesTest, Less) {
   EXPECT_FALSE(lt(1, 0));
 }
 
-}  // namespace util
+}  // namespace base
