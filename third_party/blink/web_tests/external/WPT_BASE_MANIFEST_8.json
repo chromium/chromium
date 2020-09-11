@@ -161721,6 +161721,14 @@
      "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
+    "idlharness.tentative.https.any-expected.txt": [
+     "658eb80cabd171f1079b2b85be3d03cd8f817537",
+     []
+    ],
+    "idlharness.tentative.https.any.serviceworker-expected.txt": [
+     "16f41450af27726a46bd283d91b3c3a3087542c7",
+     []
+    ],
     "idlharness.tentative.https.any.sharedworker-expected.txt": [
      "ad18929256152fa1478c17ef8acb9acfbdaf8096",
      []
@@ -220006,7 +220014,7 @@
      []
     ],
     "cookie-store.idl": [
-     "6680d7dbaa1d370ac8c7429e49f7179ea997e995",
+     "cb59e74b93a36aa1a49db6cd281602f3f2d89780",
      []
     ],
     "cors-rfc1918.idl": [
@@ -244514,8 +244522,16 @@
         "e58fa4a51521ba19ff9ab87bc185984c99018833",
         []
        ],
-       "message-expected.txt": [
-        "e1f334a06db86587888aefcc96c66a025962ef96",
+       "message-classic-DOMException-expected.txt": [
+        "0743ef6504d1c06b61b319eed69285fb7ce0a014",
+        []
+       ],
+       "message-helper.js": [
+        "6271329b031402568ad862f9dadd6bdf6faf0b02",
+        []
+       ],
+       "message-module-DOMException-expected.txt": [
+        "d1238f95e07bccc6e851daaf3c95d5133a77f7a2",
         []
        ],
        "not-handled.js": [
@@ -415696,8 +415712,29 @@
          {}
         ]
        ],
-       "message.html": [
-        "cdb1343af02f5c97f6d17704482f76907721189b",
+       "message-classic-DOMException.html": [
+        "df8c85147509b4d104fff002ac16e155879388ea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "message-classic-Error.html": [
+        "e026b6ebf09f9febf3bde63c97082fe7177c02c5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "message-module-DOMException.html": [
+        "8ed873bc3227e8b80085f0cffb0148d07191964b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "message-module-Error.html": [
+        "046ff969d6bd7d928c09f26351eaf8aea0f86a4d",
         [
          null,
          {}

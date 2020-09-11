@@ -77,8 +77,8 @@ partial interface ServiceWorkerRegistration {
  SecureContext]
 interface CookieChangeEvent : Event {
   constructor(DOMString type, optional CookieChangeEventInit eventInitDict = {});
-  readonly attribute CookieList changed;
-  readonly attribute CookieList deleted;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> changed;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> deleted;
 };
 
 dictionary CookieChangeEventInit : EventInit {
@@ -89,8 +89,8 @@ dictionary CookieChangeEventInit : EventInit {
 [Exposed=ServiceWorker]
 interface ExtendableCookieChangeEvent : ExtendableEvent {
   constructor(DOMString type, optional ExtendableCookieChangeEventInit eventInitDict = {});
-  readonly attribute CookieList changed;
-  readonly attribute CookieList deleted;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> changed;
+  [SameObject] readonly attribute FrozenArray<CookieListItem> deleted;
 };
 
 dictionary ExtendableCookieChangeEventInit : ExtendableEventInit {

@@ -1,0 +1,91 @@
+This is a testharness.js-based test.
+Found 87 tests; 85 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface ServiceWorkerRegistration: original interface defined
+PASS Partial interface ServiceWorkerRegistration: valid exposure set
+PASS Partial interface ServiceWorkerRegistration: member names are unique
+PASS Partial interface Window: original interface defined
+PASS Partial interface Window: member names are unique
+PASS Partial interface ServiceWorkerGlobalScope: original interface defined
+PASS Partial interface ServiceWorkerGlobalScope: member names are unique
+PASS Partial interface Window[2]: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+PASS CookieStore interface: existence and properties of interface object
+PASS CookieStore interface object length
+PASS CookieStore interface object name
+PASS CookieStore interface: existence and properties of interface prototype object
+PASS CookieStore interface: existence and properties of interface prototype object's "constructor" property
+PASS CookieStore interface: existence and properties of interface prototype object's @@unscopables property
+PASS CookieStore interface: operation get(USVString)
+PASS CookieStore interface: operation get(optional CookieStoreGetOptions)
+PASS CookieStore interface: operation getAll(USVString)
+PASS CookieStore interface: operation getAll(optional CookieStoreGetOptions)
+PASS CookieStore interface: operation set(USVString, USVString)
+PASS CookieStore interface: operation set(CookieInit)
+PASS CookieStore interface: operation delete(USVString)
+PASS CookieStore interface: operation delete(CookieStoreDeleteOptions)
+PASS CookieStore interface: attribute onchange
+PASS CookieStore must be primary interface of self.cookieStore
+PASS Stringification of self.cookieStore
+PASS CookieStore interface: self.cookieStore must inherit property "get(USVString)" with the proper type
+PASS CookieStore interface: calling get(USVString) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "get(optional CookieStoreGetOptions)" with the proper type
+PASS CookieStore interface: calling get(optional CookieStoreGetOptions) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "getAll(USVString)" with the proper type
+PASS CookieStore interface: calling getAll(USVString) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "getAll(optional CookieStoreGetOptions)" with the proper type
+PASS CookieStore interface: calling getAll(optional CookieStoreGetOptions) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "set(USVString, USVString)" with the proper type
+PASS CookieStore interface: calling set(USVString, USVString) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "set(CookieInit)" with the proper type
+PASS CookieStore interface: calling set(CookieInit) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "delete(USVString)" with the proper type
+PASS CookieStore interface: calling delete(USVString) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "delete(CookieStoreDeleteOptions)" with the proper type
+PASS CookieStore interface: calling delete(CookieStoreDeleteOptions) on self.cookieStore with too few arguments must throw TypeError
+PASS CookieStore interface: self.cookieStore must inherit property "onchange" with the proper type
+PASS CookieStoreManager interface: existence and properties of interface object
+PASS CookieStoreManager interface object length
+PASS CookieStoreManager interface object name
+PASS CookieStoreManager interface: existence and properties of interface prototype object
+PASS CookieStoreManager interface: existence and properties of interface prototype object's "constructor" property
+PASS CookieStoreManager interface: existence and properties of interface prototype object's @@unscopables property
+PASS CookieStoreManager interface: operation subscribe(sequence<CookieStoreGetOptions>)
+PASS CookieStoreManager interface: operation getSubscriptions()
+PASS CookieStoreManager interface: operation unsubscribe(sequence<CookieStoreGetOptions>)
+PASS CookieStoreManager must be primary interface of self.registration.cookies
+PASS Stringification of self.registration.cookies
+PASS CookieStoreManager interface: self.registration.cookies must inherit property "subscribe(sequence<CookieStoreGetOptions>)" with the proper type
+PASS CookieStoreManager interface: calling subscribe(sequence<CookieStoreGetOptions>) on self.registration.cookies with too few arguments must throw TypeError
+PASS CookieStoreManager interface: self.registration.cookies must inherit property "getSubscriptions()" with the proper type
+PASS CookieStoreManager interface: self.registration.cookies must inherit property "unsubscribe(sequence<CookieStoreGetOptions>)" with the proper type
+PASS CookieStoreManager interface: calling unsubscribe(sequence<CookieStoreGetOptions>) on self.registration.cookies with too few arguments must throw TypeError
+PASS CookieChangeEvent interface: existence and properties of interface object
+PASS CookieChangeEvent interface object length
+PASS CookieChangeEvent interface object name
+PASS CookieChangeEvent interface: existence and properties of interface prototype object
+PASS CookieChangeEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS CookieChangeEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS CookieChangeEvent interface: attribute changed
+PASS CookieChangeEvent interface: attribute deleted
+PASS CookieChangeEvent must be primary interface of new CookieChangeEvent("change")
+PASS Stringification of new CookieChangeEvent("change")
+FAIL CookieChangeEvent interface: new CookieChangeEvent("change") must inherit property "changed" with the proper type assert_true: Value should be frozen expected true got false
+FAIL CookieChangeEvent interface: new CookieChangeEvent("change") must inherit property "deleted" with the proper type assert_true: Value should be frozen expected true got false
+PASS ExtendableCookieChangeEvent interface: existence and properties of interface object
+PASS ServiceWorkerRegistration interface: attribute cookies
+PASS ServiceWorkerRegistration interface: self.registration must inherit property "cookies" with the proper type
+PASS ServiceWorkerGlobalScope interface: existence and properties of interface object
+PASS ExtendableEvent interface: existence and properties of interface object
+PASS Window interface: attribute cookieStore
+PASS Window interface: self must inherit property "cookieStore" with the proper type
+PASS WorkerGlobalScope interface: existence and properties of interface object
+Harness: the test ran to completion.
+
