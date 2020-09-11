@@ -36,6 +36,7 @@ class WaylandDataDeviceManager;
 class WaylandCursorPosition;
 class WaylandWindowDragController;
 class GtkPrimarySelectionDeviceManager;
+class XdgForeignWrapper;
 
 class WaylandConnection {
  public:
@@ -133,6 +134,8 @@ class WaylandConnection {
     return window_drag_controller_.get();
   }
 
+  XdgForeignWrapper* xdg_foreign() const { return xdg_foreign_.get(); }
+
   // Returns true when dragging is entered or started.
   bool IsDragInProgress() const;
 
@@ -202,6 +205,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandDrm> drm_;
   std::unique_ptr<WaylandShm> shm_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
+  std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
 
   std::unique_ptr<GtkPrimarySelectionDeviceManager>
       primary_selection_device_manager_;
