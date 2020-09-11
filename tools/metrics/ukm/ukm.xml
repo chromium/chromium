@@ -5055,6 +5055,23 @@ be describing additional metrics about the same event.
     metrics are recorded for history navigations, but not for same-document
     navigations.
   </summary>
+  <metric name="BackForwardCache.BlocklistedFeatures"
+      enum="WebSchedulerTrackedFeature">
+    <summary>
+      When navigating back to a page in the session history, this records what
+      blocklisted features were used when the page was loaded and prevented this
+      page from being stored in the back-forward cache. Multiple blocklisted
+      features can be recorded for the same page as a binary mask.
+    </summary>
+  </metric>
+  <metric name="BackForwardCache.BrowsingInstanceNotSwappedReason"
+      enum="BackForwardCacheBrowsingInstanceNotSwappedReason">
+    <summary>
+      When navigating back to a page in the session history and the
+      BackForwardCache wasn't used because of the related browsing instances,
+      this records the reason why the browsing instance wasn't swapped.
+    </summary>
+  </metric>
   <metric name="BackForwardCache.IsServedFromBackForwardCache">
     <summary>
       Boolean whether the page was restored from the back-forward cache or not.
