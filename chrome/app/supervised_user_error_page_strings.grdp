@@ -70,13 +70,13 @@
       <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
         It may have mature content
       </message>
-      <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blacklist entry and the child has one parent.">
+      <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has one parent.">
         Your parent can unblock it for you
       </message>
-      <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blacklist entry and the child has two parents.">
+      <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has two parents.">
         Your parents can unblock it for you
       </message>
-      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL" desc="Message to be shown to a supervised user when a site is blocked due to a manual blacklist entry">
+      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL" desc="Message to be shown to a supervised user when a site is blocked due to a manual blocklist entry">
         Your manager can unblock it for you
       </message>
       <message name="IDS_SUPERVISED_USER_NOT_SIGNED_IN" desc="Message to be shown to a supervised user who is not signed in to Chrome">
