@@ -112,6 +112,8 @@ class IdentityTokenCache {
   const AccessTokensCache& access_tokens_cache();
 
  private:
+  void EraseStaleTokens();
+
   AccessTokensCache access_tokens_cache_;
   std::map<ExtensionTokenKey, IdentityTokenCacheValue>
       intermediate_value_cache_;
