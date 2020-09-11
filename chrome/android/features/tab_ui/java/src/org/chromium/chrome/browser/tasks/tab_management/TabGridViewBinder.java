@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
@@ -40,6 +41,7 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
  * This class supports both full and partial updates to the {@link TabGridViewHolder}.
  */
 class TabGridViewBinder {
+    private static TabListMediator.ThumbnailFetcher sThumbnailFetcherForTesting;
     /**
      * Bind a closable tab to a view.
      * @param model The model to bind.
@@ -291,10 +293,19 @@ class TabGridViewBinder {
                 thumbnail.setImageBitmap(result);
             }
         };
-        fetcher.fetch(callback);
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
+            sThumbnailFetcherForTesting.fetch(callback);
+        } else {
+            fetcher.fetch(callback);
+        }
     }
 
     private static void releaseThumbnail(ImageView thumbnail) {
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            thumbnail.setImageDrawable(null);
+            return;
+        }
+
         if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
             float expectedThumbnailAspectRatio =
                     (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
@@ -346,5 +357,10 @@ class TabGridViewBinder {
                     TabUiColorProvider.getActionButtonTintList(
                             actionButton.getContext(), isIncognito));
         }
+    }
+
+    @VisibleForTesting
+    static void setThumbnailFeatureForTesting(TabListMediator.ThumbnailFetcher fetcher) {
+        sThumbnailFetcherForTesting = fetcher;
     }
 }

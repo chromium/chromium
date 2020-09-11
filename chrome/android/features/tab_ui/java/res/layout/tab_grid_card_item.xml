@@ -51,7 +51,7 @@
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
-            <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+            <org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView
                 android:id="@+id/tab_thumbnail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
