@@ -73,16 +73,10 @@ class ProfileManager : public content::NotificationObserver,
 
   // Get the profile for the user which created the current session.
   // Note that in case of a guest account this will return a 'suitable' profile.
-  // This function is temporary and will soon be moved to ash. As such avoid
-  // using it at all cost.
-  // TODO(skuhne): Move into ash's new user management function.
   static Profile* GetPrimaryUserProfile();
 
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
-  // This function is temporary and will soon be moved to ash. As such avoid
-  // using it at all cost.
-  // TODO(skuhne): Move into ash's new user management function.
   static Profile* GetActiveUserProfile();
 
   // Load and return the initial profile for browser. On ChromeOS, this returns
