@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
 
 js_library("os_about_page") {
   deps = [
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "../..:lifetime_browser_proxy",
@@ -32,6 +33,9 @@ js_library("os_about_page") {
 
 js_library("detailed_build_info") {
   deps = [
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "../..:router",
     "../../about_page:about_page_browser_proxy",
     "../localized_link:localized_link",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
@@ -72,6 +76,9 @@ js_library("channel_switcher_dialog.m") {
 js_library("detailed_build_info.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/detailed_build_info.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
+    "..:os_route.m",
+    "../..:router.m",
     "../../about_page:about_page_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
@@ -83,6 +90,7 @@ js_library("detailed_build_info.m") {
 js_library("os_about_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_about_page/os_about_page.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
     "../..:lifetime_browser_proxy.m",

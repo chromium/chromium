@@ -8,7 +8,8 @@
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';
-// #import {eventToPromise,flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise,flushTasks,waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
 cr.define('settings_about_page', function() {
@@ -35,6 +36,7 @@ cr.define('settings_about_page', function() {
     teardown(function() {
       page.remove();
       page = null;
+      settings.Router.getInstance().resetRouteForTesting();
     });
 
     /**
@@ -353,6 +355,29 @@ cr.define('settings_about_page', function() {
       return aboutBrowserProxy.whenCalled('launchReleaseNotes');
     });
 
+    test('Deep link to release notes', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+      aboutBrowserProxy.setReleaseNotes(true);
+      aboutBrowserProxy.setInternetConnection(false);
+      await initNewPage();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1703');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ABOUT_ABOUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement =
+          page.$$('#releaseNotesOffline').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Release notes should be focused for settingId=1703.');
+    });
+
     test('RegulatoryInfo', async () => {
       const regulatoryInfo = {text: 'foo', url: 'bar'};
 
@@ -502,6 +527,7 @@ cr.define('settings_about_page', function() {
     teardown(function() {
       page.remove();
       page = null;
+      settings.Router.getInstance().resetRouteForTesting();
     });
 
     test('Initialization', async () => {
@@ -567,6 +593,27 @@ cr.define('settings_about_page', function() {
 
     test('ChangeChannel_DisabledWithDelayedChannelState', function() {
       return checkChangeChannelButtonWithDelayedChannelState(false);
+    });
+
+    test('Deep link to change channel', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+      page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1700');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.DETAILED_BUILD_INFO, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('cr-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Change channel button should be focused for settingId=1700.');
     });
 
     async function checkCopyBuildDetailsButton() {
@@ -695,16 +742,65 @@ cr.define('settings_about_page', function() {
   });
 
   suite('AboutPageTest_OfficialBuild', function() {
-    test('ReportAnIssue', function() {
-      const browserProxy = new TestAboutPageBrowserProxyChromeOS();
+    let page = null;
+    let browserProxy = null;
+
+    setup(function() {
+      browserProxy = new TestAboutPageBrowserProxyChromeOS();
       settings.AboutPageBrowserProxyImpl.instance_ = browserProxy;
       PolymerTest.clearBody();
-      const page = document.createElement('os-settings-about-page');
+      page = document.createElement('os-settings-about-page');
       document.body.appendChild(page);
+    });
 
+    teardown(function() {
+      page.remove();
+      page = null;
+      settings.Router.getInstance().resetRouteForTesting();
+    });
+
+    test('ReportAnIssue', function() {
       assertTrue(!!page.$.reportIssue);
       page.$.reportIssue.click();
       return browserProxy.whenCalled('openFeedbackDialog');
+    });
+
+    test('Deep link to report an issue', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1705');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ABOUT_ABOUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('#reportIssue').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Report an issue button should be focused for settingId=1705.');
+    });
+
+    test('Deep link to terms of service', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '1706');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ABOUT_ABOUT, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = page.$$('#aboutProductTos');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Terms of service link should be focused for settingId=1706.');
     });
   });
 

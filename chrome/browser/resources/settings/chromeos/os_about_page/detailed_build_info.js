@@ -10,7 +10,11 @@
 Polymer({
   is: 'settings-detailed-build-info',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    settings.RouteObserverBehavior,
+  ],
 
   properties: {
     /** @private {!VersionInfo} */
@@ -32,6 +36,18 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kChangeChromeChannel,
+        chromeos.settings.mojom.Setting.kCopyDetailedBuildInfo,
+      ]),
+    },
   },
 
   /** @override */
@@ -44,6 +60,19 @@ Polymer({
     });
 
     this.updateChannelInfo_();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.DETAILED_BUILD_INFO) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /** @private */

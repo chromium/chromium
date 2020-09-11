@@ -6,16 +6,17 @@
 <link rel="import" href="../../icons.html">
 <link rel="import" href="../../lifetime_browser_proxy.html">
 <link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
 <link rel="import" href="../os_settings_page/main_page_behavior.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_section.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../../settings_page_css.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_icons.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
 <link rel="import" href="../os_reset_page/os_powerwash_dialog.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="detailed_build_info.html">
@@ -135,7 +136,8 @@
                                   currentUpdateStatusEvent_)]]
               </cr-button>
               <cr-button id="checkForUpdates" hidden="[[!showCheckUpdates_]]"
-                  on-click="onCheckUpdatesClick_">
+                  on-click="onCheckUpdatesClick_"
+                  deep-link-focus-id$="[[Setting.kCheckForOsUpdate]]">
                 $i18n{aboutCheckForUpdates}
               </cr-button>
             </span>
@@ -158,22 +160,30 @@
               hasInternetConnection_)]]">
             <cr-link-row class="hr" id="releaseNotesOnline"
                 on-click="onReleaseNotesTap_"
-                label="$i18n{aboutShowReleaseNotes}" external></cr-link-row>
+                label="$i18n{aboutShowReleaseNotes}" external
+                deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
+            </cr-link-row>
           </template>
           <template is="dom-if" if="[[showReleaseNotesOffline_(hasReleaseNotes_,
               hasInternetConnection_)]]">
             <cr-link-row class="hr" id="releaseNotesOffline"
                 on-click="onReleaseNotesTap_"
                 label="$i18n{aboutShowReleaseNotes}"
-                title="$i18n{aboutReleaseNotesOffline}" external></cr-link-row>
+                title="$i18n{aboutReleaseNotesOffline}" external
+                deep-link-focus-id$="[[Setting.kSeeWhatsNew]]"> 
+            </cr-link-row>
           </template>
           <cr-link-row class="hr" id="help" on-click="onHelpClick_"
-              label="$i18n{aboutGetHelpUsingChromeOs}" external></cr-link-row>
+              label="$i18n{aboutGetHelpUsingChromeOs}" external
+              deep-link-focus-id$="[[Setting.kGetHelpWithChromeOs]]">
+          </cr-link-row>
 <if expr="_google_chrome">
           <cr-link-row class="hr" id="reportIssue"
               on-click="onReportIssueClick_"
               hidden="[[!prefs.feedback_allowed.value]]"
-              label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+              label="$i18n{aboutReportAnIssue}" external
+              deep-link-focus-id$="[[Setting.kReportAnIssue]]">
+          </cr-link-row>
 </if>
           <cr-link-row class="hr" id="detailed-build-info-trigger"
               on-click="onDetailedBuildInfoClick_"
@@ -182,7 +192,8 @@
           </cr-link-row>
           <cr-link-row class="hr" on-click="onManagementPageClick_"
               start-icon="cr:domain" label="$i18n{managementPage}"
-              hidden$="[[!isManaged_]]" external></cr-link-row>
+              hidden$="[[!isManaged_]]" external>
+          </cr-link-row>
         </div>
         <template is="dom-if" route-path="/help/details">
           <settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
@@ -211,7 +222,8 @@
         </div>
 <if expr="_google_chrome">
         <div class="secondary">
-          <a href="$i18n{aboutTermsURL}" target="_blank">
+          <a id="aboutProductTos" href="$i18n{aboutTermsURL}" target="_blank"
+              deep-link-focus-id$="[[Setting.kTermsOfService]]">
             $i18n{aboutProductTos}
           </a>
         </div>

@@ -11,6 +11,7 @@ Polymer({
   is: 'os-settings-about-page',
 
   behaviors: [
+    DeepLinkingBehavior,
     WebUIListenerBehavior,
     settings.MainPageBehavior,
     settings.RouteObserverBehavior,
@@ -150,6 +151,31 @@ Polymer({
 
     /** @private {!AboutPageUpdateInfo|undefined} */
     updateInfo_: Object,
+
+    /**
+     * Whether the deep link to the check for OS update setting was unable to
+     * be shown.
+     * @private
+     */
+    isPendingOsUpdateDeepLink_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kCheckForOsUpdate,
+        chromeos.settings.mojom.Setting.kSeeWhatsNew,
+        chromeos.settings.mojom.Setting.kGetHelpWithChromeOs,
+        chromeos.settings.mojom.Setting.kReportAnIssue,
+        chromeos.settings.mojom.Setting.kTermsOfService,
+      ]),
+    },
   },
 
   observers: [
@@ -216,6 +242,22 @@ Polymer({
   currentRouteChanged(newRoute, oldRoute) {
     settings.MainPageBehavior.currentRouteChanged.call(
         this, newRoute, oldRoute);
+
+    // Does not apply to this page.
+    if (newRoute !== settings.routes.ABOUT_ABOUT) {
+      return;
+    }
+
+    this.attemptDeepLink().then(result => {
+      if (!result.deepLinkShown && result.pendingSettingId) {
+        // Only the check for OS update is expected to fail deep link when
+        // awaiting the check for update.
+        assert(
+            result.pendingSettingId ===
+            chromeos.settings.mojom.Setting.kCheckForOsUpdate);
+        this.isPendingOsUpdateDeepLink_ = true;
+      }
+    });
   },
 
   // Override settings.MainPageBehavior method.
@@ -301,6 +343,18 @@ Polymer({
    */
   updateShowButtonContainer_() {
     this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
+
+    // Check if we have yet to focus the check for update button.
+    if (!this.isPendingOsUpdateDeepLink_) {
+      return;
+    }
+
+    this.showDeepLink(chromeos.settings.mojom.Setting.kCheckForOsUpdate)
+        .then(result => {
+          if (result.deepLinkShown) {
+            this.isPendingOsUpdateDeepLink_ = false;
+          }
+        });
   },
 
   /** @private */
