@@ -35,6 +35,17 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   }
 
   /**
+   * Create a function which performs the command |cmd|.
+   * @param {string} cmd
+   * @return {function(): void}
+   */
+  doCmd(cmd) {
+    return () => {
+      CommandHandler.onCommand(cmd);
+    };
+  }
+
+  /**
    * Dependencies defined on a background window other than this one.
    * @type {!Array<string>}
    */

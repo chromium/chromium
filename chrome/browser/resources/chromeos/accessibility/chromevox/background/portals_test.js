@@ -32,17 +32,6 @@ ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
   }
 
   /**
-   * Create a function which perform the command |cmd|.
-   * @param {string} cmd
-   * @return {function() : void}
-   */
-  doCmd(cmd) {
-    return function() {
-      CommandHandler.onCommand(cmd);
-    };
-  }
-
-  /**
    * Waits for |portal|'s tree to be ready.
    * @param {chrome.automation.AutomationNode} portal
    * @return {Promise}

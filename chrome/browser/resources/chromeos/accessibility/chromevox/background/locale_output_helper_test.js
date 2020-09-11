@@ -57,17 +57,6 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
   }
 
   /**
-   * Create a function which performs the command |cmd|.
-   * @param {string} cmd
-   * @return {function(): void}
-   */
-  doCmd(cmd) {
-    return function() {
-      CommandHandler.onCommand(cmd);
-    };
-  }
-
-  /**
    * Calls mock version of chrome.tts.getVoices() to populate
    * LocaleOutputHelper's available voice list with a specific set of voices.
    */

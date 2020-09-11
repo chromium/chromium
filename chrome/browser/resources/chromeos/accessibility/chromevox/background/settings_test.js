@@ -13,11 +13,7 @@ GEN_INCLUDE(['../testing/mock_feedback.js', '../testing/fake_objects.js']);
 ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
-    window.doCmd = (command) => {
-      return () => {
-        CommandHandler.onCommand(command);
-      };
-    };
+    window.doCmd = this.doCmd;
   }
 
   /** @override */

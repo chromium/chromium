@@ -34,17 +34,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     return mockFeedback;
   }
 
-  /**
-   * Create a function which perform the command |cmd|.
-   * @param {string} cmd
-   * @return {function() : void}
-   */
-  doCmd(cmd) {
-    return function() {
-      CommandHandler.onCommand(cmd);
-    };
-  }
-
   doGesture(gesture) {
     return () => {
       GestureCommandHandler.onAccessibilityGesture_(gesture);

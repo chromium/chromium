@@ -53,17 +53,6 @@ ChromeVoxAnnotationTest = class extends ChromeVoxNextE2ETest {
   }
 
   /**
-   * Create a function which performs the command |cmd|.
-   * @param {string} cmd
-   * @return {function(): void}
-   */
-  doCmd(cmd) {
-    return function() {
-      CommandHandler.onCommand(cmd);
-    };
-  }
-
-  /**
    * Returns the start node of the current ChromeVox range.
    * @return {AutomationNode}
    */
