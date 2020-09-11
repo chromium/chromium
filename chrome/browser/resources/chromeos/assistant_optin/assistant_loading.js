@@ -155,5 +155,7 @@ Polymer({
    */
   onShow() {
     this.reloadPage();
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$['loading-dialog'].focus());
   },
 });

@@ -354,6 +354,9 @@ Polymer({
         'click', this.hideOverlay.bind(this));
     this.valuePropView_ = this.$['value-prop-view'];
 
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$['next-button'].focus());
+
     if (!this.initialized_) {
       this.valuePropView_.request.onErrorOccurred.addListener(
           this.onWebViewErrorOccurred.bind(this), requestFilter);

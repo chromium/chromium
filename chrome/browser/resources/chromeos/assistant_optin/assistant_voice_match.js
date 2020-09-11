@@ -183,7 +183,8 @@ Polymer({
     this.browserProxy_.screenShown(VOICE_MATCH_SCREEN_ID);
     this.$['voice-match-lottie'].setPlay(true);
     this.$['already-setup-lottie'].setPlay(true);
-    this.$['agree-button'].focus();
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$['agree-button'].focus());
     if (loadTimeData.getBoolean('hotwordDspAvailable')) {
       this.$['no-dsp-message'].hidden = true;
     }

@@ -234,7 +234,8 @@ Polymer({
     if (!this.settingZippyLoaded_ || !this.consentStringLoaded_) {
       this.reloadPage();
     } else {
-      this.$['next-button'].focus();
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.$['next-button'].focus());
       this.browserProxy_.screenShown(THIRD_PARTY_SCREEN_ID);
       this.screenShown_ = true;
     }

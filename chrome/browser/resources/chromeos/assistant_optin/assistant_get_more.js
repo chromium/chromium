@@ -177,7 +177,8 @@ Polymer({
     if (!this.settingZippyLoaded_ || !this.consentStringLoaded_) {
       this.reloadPage();
     } else {
-      this.$['next-button'].focus();
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.$['next-button'].focus());
       this.browserProxy_.screenShown(GET_MORE_SCREEN_ID);
       this.screenShown_ = true;
     }
