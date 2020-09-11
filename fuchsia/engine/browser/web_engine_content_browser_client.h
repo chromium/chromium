@@ -35,7 +35,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   std::string GetProduct() final;
   std::string GetUserAgent() final;
   void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) final;
+                           blink::web_pref::WebPreferences* web_prefs) final;
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) final;

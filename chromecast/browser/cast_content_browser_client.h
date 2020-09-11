@@ -162,7 +162,7 @@ class CastContentBrowserClient
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
-                           content::WebPreferences* prefs) override;
+                           blink::web_pref::WebPreferences* prefs) override;
   std::string GetApplicationLocale() override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;

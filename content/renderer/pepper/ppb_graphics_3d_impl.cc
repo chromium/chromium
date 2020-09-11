@@ -15,7 +15,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_instance_throttler_impl.h"
@@ -28,6 +27,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ppapi/c/ppp_graphics_3d.h"
 #include "ppapi/thunk/enter.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -217,7 +217,8 @@ bool PPB_Graphics3D_Impl::InitRaw(
   if (!render_frame)
     return false;
 
-  const WebPreferences& prefs = render_frame->GetWebkitPreferences();
+  const blink::web_pref::WebPreferences& prefs =
+      render_frame->GetWebkitPreferences();
 
   // 3D access might be disabled.
   if (!prefs.pepper_3d_enabled)

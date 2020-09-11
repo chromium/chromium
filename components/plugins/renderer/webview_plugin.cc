@@ -16,13 +16,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/render_view.h"
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -48,7 +48,7 @@ using blink::WebURLError;
 using blink::WebURLResponse;
 using blink::WebVector;
 using blink::WebView;
-using content::WebPreferences;
+using blink::web_pref::WebPreferences;
 
 WebViewPlugin::WebViewPlugin(content::RenderView* render_view,
                              WebViewPlugin::Delegate* delegate,

@@ -358,7 +358,7 @@ HeadlessBrowserContext::Builder::SetBlockNewWebContents(
 
 HeadlessBrowserContext::Builder&
 HeadlessBrowserContext::Builder::SetOverrideWebPreferencesCallback(
-    base::RepeatingCallback<void(WebPreferences*)> callback) {
+    base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback) {
   options_->override_web_preferences_callback_ = std::move(callback);
   return *this;
 }

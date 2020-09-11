@@ -11,7 +11,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
 
@@ -252,7 +252,8 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
                        WheelListenerPreventingDoubleTap) {
   LoadURL();
 
-  WebPreferences prefs = shell()->web_contents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      shell()->web_contents()->GetOrCreateWebPreferences();
   prefs.double_tap_to_zoom_enabled = true;
   shell()->web_contents()->SetWebPreferences(prefs);
 

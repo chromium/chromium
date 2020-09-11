@@ -16,7 +16,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -25,6 +24,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
 namespace {
@@ -40,8 +40,9 @@ class ChromeContentBrowserClientOverrideWebAppScope
   ChromeContentBrowserClientOverrideWebAppScope() = default;
   ~ChromeContentBrowserClientOverrideWebAppScope() override = default;
 
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override {
+  void OverrideWebkitPrefs(
+      content::RenderViewHost* rvh,
+      blink::web_pref::WebPreferences* web_prefs) override {
     ChromeContentBrowserClient::OverrideWebkitPrefs(rvh, web_prefs);
 
     web_prefs->web_app_scope = web_app_scope_;

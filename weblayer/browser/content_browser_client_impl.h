@@ -45,7 +45,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
   std::string GetUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
-                           content::WebPreferences* prefs) override;
+                           blink::web_pref::WebPreferences* prefs) override;
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,

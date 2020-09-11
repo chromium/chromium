@@ -21,6 +21,7 @@ include_rules = [
     "+skia/public/mojom",
     "+third_party/blink/public/common",
     "+third_party/blink/public/mojom",
+    "+ui/base/pointer/pointer_device.h",
     "+ui/events/event_constants.h",
     "+ui/events/types",
     "+ui/gfx/color_space.h",

@@ -31,7 +31,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/user_agent.h"
-#include "content/public/common/web_preferences.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
@@ -48,6 +47,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/gurl.h"
@@ -284,7 +284,7 @@ SpeechRecognitionManagerDelegate*
 
 void ShellContentBrowserClient::OverrideWebkitPrefs(
     RenderViewHost* render_view_host,
-    WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode)) {
     prefs->preferred_color_scheme = blink::PreferredColorScheme::kDark;

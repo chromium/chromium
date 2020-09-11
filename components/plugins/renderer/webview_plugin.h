@@ -27,13 +27,15 @@
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 
 namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}  // namespace web_pref
 class WebLocalFrame;
 class WebMouseEvent;
 }
 
 namespace content {
 class RenderView;
-struct WebPreferences;
 }
 
 // This class implements the WebPlugin interface by forwarding drawing and
@@ -70,11 +72,12 @@ class WebViewPlugin : public blink::WebPlugin,
   // Convenience method to set up a new WebViewPlugin using |preferences|
   // and displaying |html_data|. |url| should be a (fake) data:text/html URL;
   // it is only used for navigation and never actually resolved.
-  static WebViewPlugin* Create(content::RenderView* render_view,
-                               Delegate* delegate,
-                               const content::WebPreferences& preferences,
-                               const std::string& html_data,
-                               const GURL& url);
+  static WebViewPlugin* Create(
+      content::RenderView* render_view,
+      Delegate* delegate,
+      const blink::web_pref::WebPreferences& preferences,
+      const std::string& html_data,
+      const GURL& url);
 
   blink::WebLocalFrame* main_frame() { return web_view_helper_.main_frame(); }
 
@@ -121,7 +124,7 @@ class WebViewPlugin : public blink::WebPlugin,
   friend class base::DeleteHelper<WebViewPlugin>;
   WebViewPlugin(content::RenderView* render_view,
                 Delegate* delegate,
-                const content::WebPreferences& preferences);
+                const blink::web_pref::WebPreferences& preferences);
   ~WebViewPlugin() override;
 
   blink::WebView* web_view() { return web_view_helper_.web_view(); }
@@ -162,7 +165,7 @@ class WebViewPlugin : public blink::WebPlugin,
                         public blink::mojom::WidgetHost {
    public:
     WebViewHelper(WebViewPlugin* plugin,
-                  const content::WebPreferences& preferences);
+                  const blink::web_pref::WebPreferences& preferences);
     ~WebViewHelper() override;
 
     blink::WebView* web_view() { return web_view_; }

@@ -4,14 +4,14 @@
 
 #include "content/renderer/pepper/ppapi_preferences_builder.h"
 
-#include "content/public/common/web_preferences.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
 
 ppapi::Preferences PpapiPreferencesBuilder::Build(
-    const WebPreferences& prefs,
+    const blink::web_pref::WebPreferences& prefs,
     const gpu::GpuFeatureInfo& gpu_feature_info) {
   ppapi::Preferences ppapi_prefs;
   ppapi_prefs.standard_font_family_map = prefs.standard_font_family_map;

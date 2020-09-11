@@ -85,6 +85,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/device_form_factor.h"
@@ -532,9 +533,10 @@ bool RenderViewHostImpl::IsNeverComposited() {
   return GetDelegate()->IsNeverComposited();
 }
 
-WebPreferences RenderViewHostImpl::GetWebkitPreferencesForWidget() {
+blink::web_pref::WebPreferences
+RenderViewHostImpl::GetWebkitPreferencesForWidget() {
   if (!delegate_)
-    return WebPreferences();
+    return blink::web_pref::WebPreferences();
   return delegate_->GetOrCreateWebPreferences();
 }
 

@@ -63,7 +63,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   SpeechRecognitionManagerDelegate* CreateSpeechRecognitionManagerDelegate()
       override;
   void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                           WebPreferences* prefs) override;
+                           blink::web_pref::WebPreferences* prefs) override;
   base::FilePath GetFontLookupTableCacheDir() override;
   DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
   void ExposeInterfacesToRenderer(
@@ -173,7 +173,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   }
 
   void set_override_web_preferences_callback(
-      base::RepeatingCallback<void(WebPreferences*)> callback) {
+      base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
+          callback) {
     override_web_preferences_callback_ = std::move(callback);
   }
 
@@ -216,7 +217,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   base::RepeatingCallback<std::vector<std::unique_ptr<NavigationThrottle>>(
       NavigationHandle*)>
       create_throttles_for_navigation_callback_;
-  base::RepeatingCallback<void(WebPreferences*)>
+  base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
       override_web_preferences_callback_;
 
   // Owned by content::BrowserMainLoop.

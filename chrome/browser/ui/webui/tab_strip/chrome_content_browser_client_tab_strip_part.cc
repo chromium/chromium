@@ -7,7 +7,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 ChromeContentBrowserClientTabStripPart::
     ChromeContentBrowserClientTabStripPart() = default;
@@ -16,7 +16,7 @@ ChromeContentBrowserClientTabStripPart::
 
 void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
     content::RenderViewHost* rvh,
-    content::WebPreferences* web_prefs) {
+    blink::web_pref::WebPreferences* web_prefs) {
   content::WebContents* contents =
       content::WebContents::FromRenderViewHost(rvh);
 
@@ -30,7 +30,7 @@ void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
     return;
   }
 
-  content::WebPreferences default_prefs;
+  blink::web_pref::WebPreferences default_prefs;
   web_prefs->default_font_size = default_prefs.default_font_size;
   web_prefs->default_fixed_font_size = default_prefs.default_fixed_font_size;
   web_prefs->minimum_font_size = default_prefs.minimum_font_size;

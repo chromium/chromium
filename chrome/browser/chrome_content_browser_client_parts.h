@@ -17,6 +17,9 @@ class FilePath;
 }
 
 namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}  // namespace web_pref
 class AssociatedInterfaceRegistry;
 }
 
@@ -26,7 +29,6 @@ class BrowserURLHandler;
 class RenderProcessHost;
 class RenderViewHost;
 class SiteInstance;
-struct WebPreferences;
 }
 
 namespace storage {
@@ -46,7 +48,8 @@ class ChromeContentBrowserClientParts {
   virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
   virtual void SiteInstanceDeleting(content::SiteInstance* site_instance) {}
   virtual void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                                   content::WebPreferences* web_prefs) {}
+                                   blink::web_pref::WebPreferences* web_prefs) {
+  }
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
   virtual void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_allowed_schemes) {}

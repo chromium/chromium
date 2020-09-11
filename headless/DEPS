@@ -28,4 +28,5 @@ include_rules = [
   "+services/network/public",
   "+services/service_manager/embedder",
   "+services/service_manager/public",
+  "+third_party/blink/public/common/web_preferences",
 ]

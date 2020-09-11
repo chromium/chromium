@@ -37,7 +37,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -52,6 +51,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace {
 
@@ -314,7 +314,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   void SetJsEnabledForActiveView(bool enabled) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    content::WebPreferences prefs = web_contents->GetOrCreateWebPreferences();
+    blink::web_pref::WebPreferences prefs =
+        web_contents->GetOrCreateWebPreferences();
     prefs.javascript_enabled = enabled;
     web_contents->SetWebPreferences(prefs);
   }

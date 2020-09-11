@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_WEB_PREFERENCES_H_
-#define CONTENT_PUBLIC_COMMON_WEB_PREFERENCES_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_PREFERENCES_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_PREFERENCES_H_
 
 #include <map>
 #include <string>
@@ -12,18 +12,18 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
 
 namespace blink {
-class WebView;
-}
 
-namespace content {
+class WebView;
+
+namespace web_pref {
 
 // Map of ISO 15924 four-letter script code to font family.  For example,
 // "Arab" to "My Arabic Font".
@@ -61,7 +61,7 @@ enum class AutoplayPolicy {
 // The ISO 15924 script code for undetermined script aka Common. It's the
 // default used on WebKit's side to get/set a font setting when no script is
 // specified.
-CONTENT_EXPORT extern const char kCommonScript[];
+BLINK_COMMON_EXPORT extern const char kCommonScript[];
 
 // A struct for managing blink's settings.
 //
@@ -69,7 +69,7 @@ CONTENT_EXPORT extern const char kCommonScript[];
 // blink::WebSettings, content/common/view_messages.h,
 // browser/profiles/profile.cc, and
 // content/public/common/common_param_traits_macros.h
-struct CONTENT_EXPORT WebPreferences {
+struct BLINK_COMMON_EXPORT WebPreferences {
   ScriptFontFamilyMap standard_font_family_map;
   ScriptFontFamilyMap fixed_font_family_map;
   ScriptFontFamilyMap serif_font_family_map;
@@ -368,9 +368,14 @@ struct CONTENT_EXPORT WebPreferences {
   // the embedder to use the same default value.
   WebPreferences();
   WebPreferences(const WebPreferences& other);
+  WebPreferences(WebPreferences&& other);
   ~WebPreferences();
+  WebPreferences& operator=(const WebPreferences& other);
+  WebPreferences& operator=(WebPreferences&& other);
 };
 
-}  // namespace content
+}  // namespace web_pref
 
-#endif  // CONTENT_PUBLIC_COMMON_WEB_PREFERENCES_H_
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WEB_PREFERENCES_WEB_PREFERENCES_H_

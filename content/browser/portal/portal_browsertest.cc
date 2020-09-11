@@ -2377,13 +2377,13 @@ class PortalPixelBrowserTest : public PortalBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(PortalPixelBrowserTest, MAYBE_PageScaleRaster) {
   ShellContentBrowserClient::Get()->set_override_web_preferences_callback(
-      base::BindRepeating([](WebPreferences* prefs) {
+      base::BindRepeating([](blink::web_pref::WebPreferences* prefs) {
         // Enable processing of the viewport <meta> tag in the same way the
         // Android browser would.
         prefs->viewport_enabled = true;
         prefs->viewport_meta_enabled = true;
         prefs->shrinks_viewport_contents_to_fit = true;
-        prefs->viewport_style = content::ViewportStyle::MOBILE;
+        prefs->viewport_style = blink::web_pref::ViewportStyle::MOBILE;
 
         // Hide scrollbars to make pixel testing more robust.
         prefs->hide_scrollbars = true;

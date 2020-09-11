@@ -4,7 +4,7 @@
 
 #include "content/test/stub_render_widget_host_owner_delegate.h"
 
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
 
@@ -25,7 +25,7 @@ bool StubRenderWidgetHostOwnerDelegate::IsNeverComposited() {
   return false;
 }
 
-WebPreferences
+blink::web_pref::WebPreferences
 StubRenderWidgetHostOwnerDelegate::GetWebkitPreferencesForWidget() {
   return {};
 }

@@ -91,6 +91,9 @@ class WebUsbService;
 class WindowFeatures;
 enum class WebFeature : int32_t;
 }  // namespace mojom
+namespace web_pref {
+struct WebPreferences;
+}  // namespace web_pref
 class AssociatedInterfaceRegistry;
 class URLLoaderThrottle;
 }  // namespace blink
@@ -223,7 +226,6 @@ struct OpenURLParams;
 struct PepperPluginInfo;
 struct Referrer;
 struct SocketPermissionRequest;
-struct WebPreferences;
 
 #if defined(OS_ANDROID)
 class TtsEnvironmentAndroid;
@@ -891,14 +893,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the renderer. The content layer will add its own settings, and then it's up
   // to the embedder to update it if it wants.
   virtual void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                                   WebPreferences* prefs) {}
+                                   blink::web_pref::WebPreferences* prefs) {}
 
   // Similar to OverrideWebkitPrefs, but is only called after navigations. Some
   // attributes in WebPreferences might need its value updated after navigation,
   // and this method will give the opportunity for embedder to update them.
   // Returns true if some values |prefs| changed due to embedder override.
-  virtual bool OverrideWebPreferencesAfterNavigation(WebContents* web_contents,
-                                                     WebPreferences* prefs);
+  virtual bool OverrideWebPreferencesAfterNavigation(
+      WebContents* web_contents,
+      blink::web_pref::WebPreferences* prefs);
 
   // Notifies that BrowserURLHandler has been created, so that the embedder can
   // optionally add their own handlers.

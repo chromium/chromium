@@ -11,10 +11,10 @@
 #include "content/common/input_messages.h"
 #include "content/common/unfreezable_frame_messages.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_view_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -79,7 +79,7 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
       "  }"
       "</script>";
 
-  WebPreferences prefs;
+  blink::web_pref::WebPreferences prefs;
   prefs.enable_scroll_animator = false;
 
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);

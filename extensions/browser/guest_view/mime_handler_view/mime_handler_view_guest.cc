@@ -16,7 +16,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
@@ -35,6 +34,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;

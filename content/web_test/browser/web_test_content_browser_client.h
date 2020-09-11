@@ -23,6 +23,12 @@
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace content {
 class FakeBluetoothChooser;
 class FakeBluetoothChooserFactory;
@@ -57,7 +63,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       blink::AssociatedInterfaceRegistry* associated_registry,
       RenderProcessHost* render_process_host) override;
   void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                           WebPreferences* prefs) override;
+                           blink::web_pref::WebPreferences* prefs) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(

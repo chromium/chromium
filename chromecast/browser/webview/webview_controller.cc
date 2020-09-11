@@ -23,7 +23,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace chromecast {
 
@@ -51,7 +51,8 @@ CastWebPreferences* GetCastPreferencesFor(content::WebContents* web_contents) {
 
 void UpdateWebkitPreferences(content::WebContents* web_contents,
                              CastWebPreferences* cast_prefs) {
-  content::WebPreferences prefs = web_contents->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      web_contents->GetOrCreateWebPreferences();
   cast_prefs->Update(&prefs);
   web_contents->SetWebPreferences(prefs);
 }
@@ -196,8 +197,8 @@ void WebviewController::HandleSetAutoMediaPlaybackPolicy(
 
   cast_prefs->preferences()->autoplay_policy =
       request.require_user_gesture()
-          ? content::AutoplayPolicy::kUserGestureRequired
-          : content::AutoplayPolicy::kNoUserGestureRequired;
+          ? blink::web_pref::AutoplayPolicy::kUserGestureRequired
+          : blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
   UpdateWebkitPreferences(contents, cast_prefs);
 }
 

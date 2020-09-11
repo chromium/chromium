@@ -13,7 +13,7 @@ CastWebPreferences::Preferences::Preferences() = default;
 
 CastWebPreferences::CastWebPreferences() = default;
 
-void CastWebPreferences::Update(content::WebPreferences* prefs) {
+void CastWebPreferences::Update(blink::web_pref::WebPreferences* prefs) {
   if (preferences_.autoplay_policy)
     prefs->autoplay_policy = preferences_.autoplay_policy.value();
 

@@ -80,7 +80,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "media/audio/audio_thread_impl.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/services/mojo_renderer_service.h"
@@ -90,6 +89,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/service_manager/embedder/descriptors.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gl/gl_switches.h"
@@ -527,7 +527,7 @@ CastContentBrowserClient::GetSystemNetworkContext() {
 
 void CastContentBrowserClient::OverrideWebkitPrefs(
     content::RenderViewHost* render_view_host,
-    content::WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   prefs->allow_scripts_to_close_windows = true;
   // TODO(halliwell): http://crbug.com/391089. This pref defaults to to true
   // because some content providers such as YouTube use plain http requests
@@ -550,7 +550,7 @@ void CastContentBrowserClient::OverrideWebkitPrefs(
   // 1280px wide layout viewport by default.
   DCHECK(prefs->viewport_enabled);
   DCHECK(prefs->viewport_meta_enabled);
-  prefs->viewport_style = content::ViewportStyle::TELEVISION;
+  prefs->viewport_style = blink::web_pref::ViewportStyle::TELEVISION;
 #endif  // defined(OS_ANDROID)
 
   // Disable WebSQL databases by default.

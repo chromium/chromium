@@ -4713,7 +4713,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebPreferences) {
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_NE(rfh_a, rfh_b);
 
-  WebPreferences prefs = web_contents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      web_contents()->GetOrCreateWebPreferences();
   prefs.preferred_color_scheme = blink::PreferredColorScheme::kDark;
   web_contents()->SetWebPreferences(prefs);
 

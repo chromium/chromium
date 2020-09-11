@@ -18,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -33,6 +32,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -261,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(CorsFileOriginBrowserTest,
       JsReplace(kScript, embedded_test_server()->GetURL("/title2.html"));
 
   // Activate the preference to allow universal access from file URLs.
-  WebPreferences prefs = shell()->web_contents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      shell()->web_contents()->GetOrCreateWebPreferences();
   prefs.allow_universal_access_from_file_urls = true;
   shell()->web_contents()->SetWebPreferences(prefs);
 

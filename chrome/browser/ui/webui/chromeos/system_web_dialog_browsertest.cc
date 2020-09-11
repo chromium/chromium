@@ -20,9 +20,9 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, InstanceTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
-  const content::WebPreferences kDefaultPrefs;
+  const blink::web_pref::WebPreferences kDefaultPrefs;
   const int kDefaultFontSize = kDefaultPrefs.default_font_size;
   const int kDefaultFixedFontSize = kDefaultPrefs.default_fixed_font_size;
 
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
   dialog->ShowSystemDialog();
 
   // Dialog font sizes are still the default values.
-  content::WebPreferences dialog_prefs =
+  blink::web_pref::WebPreferences dialog_prefs =
       dialog->GetWebUIForTest()->GetWebContents()->GetOrCreateWebPreferences();
   EXPECT_EQ(kDefaultFontSize, dialog_prefs.default_font_size);
   EXPECT_EQ(kDefaultFixedFontSize, dialog_prefs.default_fixed_font_size);

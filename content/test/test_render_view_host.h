@@ -17,9 +17,9 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/layout.h"
 #include "ui/base/page_transition_types.h"
@@ -195,7 +195,7 @@ class TestRenderViewHost
   // RenderViewHostImpl, see below.
   void SimulateWasHidden() override;
   void SimulateWasShown() override;
-  WebPreferences TestComputeWebPreferences() override;
+  blink::web_pref::WebPreferences TestComputeWebPreferences() override;
 
   void TestOnUpdateStateWithFile(const base::FilePath& file_path);
 

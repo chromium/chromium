@@ -5,4 +5,5 @@ include_rules = [
   "+ipc",
   "+net/base",
   "+net/test",
+  "+third_party/blink/public/common/web_preferences",
 ]

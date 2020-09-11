@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
-#include "content/public/common/web_preferences.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/shared_impl/var.h"
@@ -19,6 +18,7 @@
 #include "ppapi/thunk/ppb_image_data_api.h"
 #include "ppapi/thunk/thunk.h"
 #include "skia/ext/platform_canvas.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_float_rect.h"
 #include "third_party/blink/public/platform/web_font.h"
 #include "third_party/blink/public/platform/web_font_description.h"
@@ -44,9 +44,9 @@ namespace {
 // undefined reference linker error.
 const char kCommonScript[] = "Zyyy";
 
-base::string16 GetFontFromMap(const ScriptFontFamilyMap& map,
+base::string16 GetFontFromMap(const blink::web_pref::ScriptFontFamilyMap& map,
                               const std::string& script) {
-  ScriptFontFamilyMap::const_iterator it = map.find(script);
+  blink::web_pref::ScriptFontFamilyMap::const_iterator it = map.find(script);
   if (it != map.end())
     return it->second;
   return base::string16();

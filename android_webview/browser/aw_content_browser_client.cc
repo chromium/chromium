@@ -85,7 +85,6 @@
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/user_agent.h"
-#include "content/public/common/web_preferences.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -100,6 +99,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -598,7 +598,7 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 
 void AwContentBrowserClient::OverrideWebkitPrefs(
     content::RenderViewHost* rvh,
-    content::WebPreferences* web_prefs) {
+    blink::web_pref::WebPreferences* web_prefs) {
   AwSettings* aw_settings = AwSettings::FromWebContents(
       content::WebContents::FromRenderViewHost(rvh));
   if (aw_settings) {

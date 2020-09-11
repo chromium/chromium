@@ -13,7 +13,7 @@
 #include "base/stl_util.h"
 #include "components/base32/base32.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_list.h"
 #include "weblayer/browser/feature_list_creator.h"
@@ -258,7 +258,7 @@ std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState(
   return PersistMinimalState(this, max_size_in_bytes);
 }
 
-void BrowserImpl::SetWebPreferences(content::WebPreferences* prefs) {
+void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
 #if defined(OS_ANDROID)
   prefs->password_echo_enabled = Java_BrowserImpl_getPasswordEchoEnabled(
       AttachCurrentThread(), java_impl_);

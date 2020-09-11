@@ -22,8 +22,8 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace {
 
@@ -69,8 +69,9 @@ bool UseDefaultFontSize(const GURL& url) {
   return false;
 }
 
-void OverrideWebkitPrefsForTabletMode(content::WebContents* contents,
-                                      content::WebPreferences* web_prefs) {
+void OverrideWebkitPrefsForTabletMode(
+    content::WebContents* contents,
+    blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
   if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode())
     return;
@@ -95,7 +96,7 @@ void OverrideWebkitPrefsForTabletMode(content::WebContents* contents,
 }
 
 void OverrideFontSize(content::WebContents* contents,
-                      content::WebPreferences* web_prefs) {
+                      blink::web_pref::WebPreferences* web_prefs) {
   DCHECK(contents);
   // Check the URL because |contents| may not yet be associated with a window,
   // SettingsWindowManager, etc.
@@ -103,7 +104,7 @@ void OverrideFontSize(content::WebContents* contents,
   if (!url.is_empty() && UseDefaultFontSize(url)) {
     // System dialogs are considered native UI, so they do not follow the
     // browser's web-page font sizes. Reset fonts to the base sizes.
-    content::WebPreferences base_prefs;
+    blink::web_pref::WebPreferences base_prefs;
     web_prefs->default_font_size = base_prefs.default_font_size;
     web_prefs->default_fixed_font_size = base_prefs.default_fixed_font_size;
   }
@@ -119,7 +120,7 @@ ChromeContentBrowserClientChromeOsPart ::
 
 void ChromeContentBrowserClientChromeOsPart::OverrideWebkitPrefs(
     content::RenderViewHost* rvh,
-    content::WebPreferences* web_prefs) {
+    blink::web_pref::WebPreferences* web_prefs) {
   content::WebContents* contents =
       content::WebContents::FromRenderViewHost(rvh);
 

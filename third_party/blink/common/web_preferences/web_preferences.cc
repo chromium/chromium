@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -10,8 +10,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "ui/base/ui_base_switches_util.h"
-
-using blink::WebSettings;
 
 namespace {
 
@@ -24,7 +22,9 @@ bool IsTouchDragDropEnabled() {
 
 }  // namespace
 
-namespace content {
+namespace blink {
+
+namespace web_pref {
 
 // "Zyyy" is the ISO 15924 script code for undetermined script aka Common.
 const char kCommonScript[] = "Zyyy";
@@ -261,7 +261,15 @@ WebPreferences::WebPreferences()
 
 WebPreferences::WebPreferences(const WebPreferences& other) = default;
 
-WebPreferences::~WebPreferences() {
-}
+WebPreferences::WebPreferences(WebPreferences&& other) = default;
 
-}  // namespace content
+WebPreferences::~WebPreferences() = default;
+
+WebPreferences& WebPreferences::operator=(const WebPreferences& other) =
+    default;
+
+WebPreferences& WebPreferences::operator=(WebPreferences&& other) = default;
+
+}  // namespace web_pref
+
+}  // namespace blink

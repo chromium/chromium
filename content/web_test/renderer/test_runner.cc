@@ -45,6 +45,7 @@
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -2769,7 +2770,8 @@ void TestRunner::QueueLoad(const GURL& current_url,
 void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
                                           RenderFrame* frame) {
   RenderView* render_view = frame->GetRenderView();
-  WebPreferences web_prefs = render_view->GetWebkitPreferences();
+  blink::web_pref::WebPreferences web_prefs =
+      render_view->GetWebkitPreferences();
 
   // Turns the TestPreferences into WebPreferences.
   ExportWebTestSpecificPreferences(test_prefs, &web_prefs);

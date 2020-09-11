@@ -10,15 +10,20 @@
 
 #include <string>
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace content {
 struct TestPreferences;
-struct WebPreferences;
 
 // The TestRunner library keeps its settings in a TestPreferences object.
 // The content_shell, however, uses WebPreferences. This method exports the
 // settings from the TestRunner library which are relevant for web tests.
 void ExportWebTestSpecificPreferences(const TestPreferences& from,
-                                      WebPreferences* to);
+                                      blink::web_pref::WebPreferences* to);
 
 // Replaces file:///tmp/web_tests/ with the actual path to the web_tests
 // directory, or rewrite URLs generated from absolute path links in

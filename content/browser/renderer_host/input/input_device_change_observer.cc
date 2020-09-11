@@ -6,7 +6,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/public/common/web_preferences.h"
 
 #if defined(OS_WIN)
 #include "ui/events/devices/input_device_observer_win.h"

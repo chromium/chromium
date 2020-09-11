@@ -41,6 +41,12 @@
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_observer.h"
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace content {
 
 class TimeoutMonitor;
@@ -299,7 +305,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;
   bool IsNeverComposited() override;
-  WebPreferences GetWebkitPreferencesForWidget() override;
+  blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;
 
   // IPC message handlers.
   void OnShowView(int route_id,

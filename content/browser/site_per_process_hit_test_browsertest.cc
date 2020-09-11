@@ -36,7 +36,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -46,6 +45,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_overscroll_observer.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
@@ -5591,7 +5591,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   WebContentsImpl* contents = web_contents();
 
-  WebPreferences prefs = contents->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs = contents->GetOrCreateWebPreferences();
   prefs.double_tap_to_zoom_enabled = true;
   contents->SetWebPreferences(prefs);
 

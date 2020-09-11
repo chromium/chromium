@@ -60,6 +60,7 @@
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 
@@ -253,7 +254,7 @@ void WebTestContentBrowserClient::BindStorageAccessAutomation(
 
 void WebTestContentBrowserClient::OverrideWebkitPrefs(
     RenderViewHost* render_view_host,
-    WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   if (WebTestControlHost::Get())
     WebTestControlHost::Get()->OverrideWebkitPrefs(prefs);
 }

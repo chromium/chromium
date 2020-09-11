@@ -24,6 +24,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
 
 namespace content {
@@ -228,7 +229,8 @@ bool ExecuteScriptAndExtractRect(FrameTreeNode* frame,
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ScrollAndZoomIntoView) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  WebPreferences prefs = web_contents->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      web_contents->GetOrCreateWebPreferences();
   prefs.smooth_scroll_for_find_enabled = false;
   web_contents->SetWebPreferences(prefs);
 

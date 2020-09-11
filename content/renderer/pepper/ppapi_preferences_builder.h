@@ -12,13 +12,17 @@ namespace ppapi {
 struct Preferences;
 }
 
-namespace content {
-
+namespace blink {
+namespace web_pref {
 struct WebPreferences;
+}
+}  // namespace blink
+
+namespace content {
 
 class PpapiPreferencesBuilder {
  public:
-  static ppapi::Preferences Build(const WebPreferences& prefs,
+  static ppapi::Preferences Build(const blink::web_pref::WebPreferences& prefs,
                                   const gpu::GpuFeatureInfo& gpu_feature_info);
 };
 

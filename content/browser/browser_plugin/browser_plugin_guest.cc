@@ -137,7 +137,8 @@ void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
 
   // TODO(chrishtr): this code is wrong. The navigate_on_drag_drop field will
   // be reset again the next time preferences are updated.
-  WebPreferences prefs = GetWebContents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      GetWebContents()->GetOrCreateWebPreferences();
   prefs.navigate_on_drag_drop = false;
   GetWebContents()->SetWebPreferences(prefs);
 }

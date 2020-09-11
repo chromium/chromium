@@ -10,6 +10,9 @@
 #include "third_party/blink/public/common/widget/visual_properties.h"
 
 namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
 class WebMouseEvent;
 }
 
@@ -19,7 +22,6 @@ class Rect;
 
 namespace content {
 struct NativeWebKeyboardEvent;
-struct WebPreferences;
 
 //
 // RenderWidgetHostOwnerDelegate
@@ -75,7 +77,7 @@ class CONTENT_EXPORT RenderWidgetHostOwnerDelegate {
 
   // Returns the WebkitPreferences for the page. The preferences are shared
   // between all widgets for the page.
-  virtual WebPreferences GetWebkitPreferencesForWidget() = 0;
+  virtual blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() = 0;
 
  protected:
   virtual ~RenderWidgetHostOwnerDelegate() {}

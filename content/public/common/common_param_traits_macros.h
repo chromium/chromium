@@ -12,13 +12,13 @@
 #include "content/public/common/browser_controls_state.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/referrer.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/common/webplugininfo_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
 #include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
@@ -53,8 +53,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::WebHistoryScrollRestorationType,
 IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(content::EditingBehavior,
-                          content::EDITING_BEHAVIOR_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::web_pref::EditingBehavior,
+                          blink::web_pref::EDITING_BEHAVIOR_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,
                           WindowOpenDisposition::MAX_VALUE)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::V8CacheOptions,
@@ -65,16 +65,17 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::PointerType,
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(ui::HoverType,
                               ui::HOVER_TYPE_FIRST,
                               ui::HOVER_TYPE_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(content::ImageAnimationPolicy,
-                              content::IMAGE_ANIMATION_POLICY_ALLOWED,
-                              content::IMAGE_ANIMATION_POLICY_NO_ANIMATION)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(content::ViewportStyle,
-                              content::ViewportStyle::DEFAULT,
-                              content::ViewportStyle::LAST)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(
-    content::AutoplayPolicy,
-    content::AutoplayPolicy::kNoUserGestureRequired,
-    content::AutoplayPolicy::kDocumentUserActivationRequired)
+    blink::web_pref::ImageAnimationPolicy,
+    blink::web_pref::IMAGE_ANIMATION_POLICY_ALLOWED,
+    blink::web_pref::IMAGE_ANIMATION_POLICY_NO_ANIMATION)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::web_pref::ViewportStyle,
+                              blink::web_pref::ViewportStyle::DEFAULT,
+                              blink::web_pref::ViewportStyle::LAST)
+IPC_ENUM_TRAITS_MIN_MAX_VALUE(
+    blink::web_pref::AutoplayPolicy,
+    blink::web_pref::AutoplayPolicy::kNoUserGestureRequired,
+    blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::PreferredColorScheme,
                               blink::PreferredColorScheme::kDark,
                               blink::PreferredColorScheme::kMaxValue)
@@ -91,7 +92,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::Referrer)
   IPC_STRUCT_TRAITS_MEMBER(policy)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::WebPreferences)
+IPC_STRUCT_TRAITS_BEGIN(blink::web_pref::WebPreferences)
   IPC_STRUCT_TRAITS_MEMBER(standard_font_family_map)
   IPC_STRUCT_TRAITS_MEMBER(fixed_font_family_map)
   IPC_STRUCT_TRAITS_MEMBER(serif_font_family_map)

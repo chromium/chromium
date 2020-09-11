@@ -12,7 +12,7 @@
 #include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 class PrefService;
 class Profile;
@@ -24,9 +24,9 @@ FORWARD_DECLARE_TEST(FontFamilyCacheTest, Caching);
 // is a unique string. It also relies on the assumption that the (const char*)
 // keys used in both inner and outer maps are compile time constants.
 // This class caches the strings necessary to update
-// "content::ScriptFontFamilyMap". This is necessary since Chrome attempts to
-// update content::ScriptFontFamilyMap 20000 times at startup. See
-// https://crbug.com/308095.
+// "blink::web_pref::ScriptFontFamilyMap". This is necessary since Chrome
+// attempts to update blink::web_pref::ScriptFontFamilyMap 20000 times at
+// startup. See https://crbug.com/308095.
 class FontFamilyCache : public base::SupportsUserData::Data {
  public:
   explicit FontFamilyCache(Profile* profile);
@@ -35,11 +35,11 @@ class FontFamilyCache : public base::SupportsUserData::Data {
   // Gets or creates the relevant FontFamilyCache, and then fills |map|.
   static void FillFontFamilyMap(Profile* profile,
                                 const char* map_name,
-                                content::ScriptFontFamilyMap* map);
+                                blink::web_pref::ScriptFontFamilyMap* map);
 
   // Fills |map| with font family preferences.
   void FillFontFamilyMap(const char* map_name,
-                         content::ScriptFontFamilyMap* map);
+                         blink::web_pref::ScriptFontFamilyMap* map);
 
  protected:
   // Exposed and virtual for testing.

@@ -379,7 +379,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),
                                      sink_id.Utf8()));
 
-  const WebPreferences webkit_preferences =
+  const blink::web_pref::WebPreferences webkit_preferences =
       render_frame_->GetWebkitPreferences();
   bool embedded_media_experience_enabled = false;
 #if defined(OS_ANDROID)

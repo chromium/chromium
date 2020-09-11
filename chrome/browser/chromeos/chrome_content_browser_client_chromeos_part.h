@@ -18,7 +18,7 @@ class ChromeContentBrowserClientChromeOsPart
 
   // ChromeContentBrowserClientParts:
   void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override;
+                           blink::web_pref::WebPreferences* web_prefs) override;
 
   static bool UseDefaultFontSizeForTest(const GURL& url);
 

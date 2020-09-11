@@ -26,6 +26,9 @@ namespace blink {
 namespace mojom {
 class RendererPreferences;
 }
+namespace web_pref {
+struct WebPreferences;
+}
 }  // namespace blink
 
 namespace gfx {
@@ -43,7 +46,6 @@ class RenderViewHostDelegateView;
 class SessionStorageNamespace;
 class SiteInstance;
 class WebContents;
-struct WebPreferences;
 
 //
 // RenderViewHostDelegate
@@ -150,7 +152,8 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // WebPreferences. If we want to guarantee that the value reflects the current
   // state of the WebContents, NotifyPreferencesChanged() should be called
   // before calling this.
-  virtual const WebPreferences& GetOrCreateWebPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences&
+  GetOrCreateWebPreferences() = 0;
 
   // Returns true if the WebPreferences for this RenderViewHost is not null.
   virtual bool IsWebPreferencesSet() const;
@@ -158,7 +161,8 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // Sets the WebPreferences for the WebContents associated with this
   // RenderViewHost to |prefs| and send the new value to all renderers in the
   // WebContents.
-  virtual void SetWebPreferences(const WebPreferences& prefs) {}
+  virtual void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) {
+  }
 
   // Triggers a total recomputation of WebPreferences by resetting the current
   // cached WebPreferences to null and triggering the recomputation path for

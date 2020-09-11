@@ -178,7 +178,6 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "device/gamepad/gamepad_haptics_manager.h"
 #include "google_apis/gaia/gaia_switches.h"

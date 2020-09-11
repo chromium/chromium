@@ -23,15 +23,15 @@
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
 #include "net/http/http_util.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-using content::WebPreferences;
+using blink::web_pref::WebPreferences;
 
 namespace android_webview {
 
@@ -344,27 +344,27 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
     render_view_host_ext->SetTextZoomFactor(text_size_percent / 100.0f);
   }
 
-  web_prefs->standard_font_family_map[content::kCommonScript] =
+  web_prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getStandardFontFamilyLocked(env, obj));
 
-  web_prefs->fixed_font_family_map[content::kCommonScript] =
+  web_prefs->fixed_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getFixedFontFamilyLocked(env, obj));
 
-  web_prefs->sans_serif_font_family_map[content::kCommonScript] =
+  web_prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getSansSerifFontFamilyLocked(env, obj));
 
-  web_prefs->serif_font_family_map[content::kCommonScript] =
+  web_prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getSerifFontFamilyLocked(env, obj));
 
-  web_prefs->cursive_font_family_map[content::kCommonScript] =
+  web_prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getCursiveFontFamilyLocked(env, obj));
 
-  web_prefs->fantasy_font_family_map[content::kCommonScript] =
+  web_prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
       ConvertJavaStringToUTF16(
           Java_AwSettings_getFantasyFontFamilyLocked(env, obj));
 
@@ -438,8 +438,8 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->autoplay_policy =
       Java_AwSettings_getMediaPlaybackRequiresUserGestureLocked(env, obj)
-          ? content::AutoplayPolicy::kUserGestureRequired
-          : content::AutoplayPolicy::kNoUserGestureRequired;
+          ? blink::web_pref::AutoplayPolicy::kUserGestureRequired
+          : blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
 
   ScopedJavaLocalRef<jstring> url =
       Java_AwSettings_getDefaultVideoPosterURLLocked(env, obj);

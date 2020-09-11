@@ -50,7 +50,7 @@ class HeadlessBrowserContextOptions {
 
   // Callback that is invoked to override WebPreferences for RenderViews
   // created within this HeadlessBrowserContext.
-  base::RepeatingCallback<void(WebPreferences*)>
+  base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
   override_web_preferences_callback() const;
 
  private:
@@ -69,7 +69,8 @@ class HeadlessBrowserContextOptions {
   base::Optional<base::FilePath> user_data_dir_;
   base::Optional<bool> incognito_mode_;
   base::Optional<bool> block_new_web_contents_;
-  base::Optional<base::RepeatingCallback<void(WebPreferences*)>>
+  base::Optional<
+      base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>>
       override_web_preferences_callback_;
 
   base::Optional<gfx::FontRenderParams::Hinting> font_render_hinting_;

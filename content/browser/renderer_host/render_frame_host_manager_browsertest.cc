@@ -56,7 +56,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_state.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -82,6 +81,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using base::ASCIIToUTF16;
 using blink::ActionAfterPagehide;
@@ -3727,7 +3727,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
 
-  WebPreferences prefs = web_contents->GetOrCreateWebPreferences();
+  auto prefs = web_contents->GetOrCreateWebPreferences();
   prefs.allow_universal_access_from_file_urls = true;
   web_contents->SetWebPreferences(prefs);
 

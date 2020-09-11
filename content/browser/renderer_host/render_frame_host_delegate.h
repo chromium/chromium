@@ -72,6 +72,9 @@ namespace blink {
 namespace mojom {
 class FullscreenOptions;
 }
+namespace web_pref {
+struct WebPreferences;
+}
 }  // namespace blink
 
 namespace ui {
@@ -89,7 +92,6 @@ struct AXEventNotificationDetails;
 struct AXLocationChangeNotificationDetails;
 struct ContextMenuParams;
 struct GlobalRequestID;
-struct WebPreferences;
 
 namespace mojom {
 class CreateNewWindowParams;
@@ -474,7 +476,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // WebPreferences. If we want to guarantee that the value reflects the current
   // state of the WebContents, NotifyPreferencesChanged() should be called
   // before calling this.
-  virtual const WebPreferences& GetOrCreateWebPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences&
+  GetOrCreateWebPreferences() = 0;
 
   // Returns the visibility of the delegate.
   virtual Visibility GetVisibility();

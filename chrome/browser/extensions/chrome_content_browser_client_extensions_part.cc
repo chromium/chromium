@@ -77,13 +77,13 @@
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #endif  // defined(OS_CHROMEOS)
 
+using blink::web_pref::WebPreferences;
 using content::BrowserContext;
 using content::BrowserThread;
 using content::BrowserURLHandler;
 using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
-using content::WebPreferences;
 
 namespace extensions {
 

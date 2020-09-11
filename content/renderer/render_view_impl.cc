@@ -56,7 +56,6 @@
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/three_d_api_types.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_thread.h"
@@ -94,6 +93,7 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -331,7 +331,7 @@ UScriptCode GetScriptForWebSettings(UScriptCode scriptCode) {
   }
 }
 
-void ApplyFontsFromMap(const ScriptFontFamilyMap& map,
+void ApplyFontsFromMap(const blink::web_pref::ScriptFontFamilyMap& map,
                        SetFontFamilyWrapper setter,
                        WebSettings* settings) {
   for (auto it = map.begin(); it != map.end(); ++it) {
@@ -546,8 +546,9 @@ void RenderView::ForEach(RenderViewVisitor* visitor) {
 }
 
 /*static*/
-void RenderView::ApplyWebPreferences(const WebPreferences& prefs,
-                                     WebView* web_view) {
+void RenderView::ApplyWebPreferences(
+    const blink::web_pref::WebPreferences& prefs,
+    WebView* web_view) {
   WebSettings* settings = web_view->GetSettings();
   ApplyFontsFromMap(prefs.standard_font_family_map,
                     SetStandardFontFamilyWrapper, settings);
@@ -799,15 +800,15 @@ void RenderView::ApplyWebPreferences(const WebPreferences& prefs,
   settings->SetAccessibilityAlwaysShowFocus(prefs.always_show_focus);
 
   switch (prefs.autoplay_policy) {
-    case AutoplayPolicy::kNoUserGestureRequired:
+    case blink::web_pref::AutoplayPolicy::kNoUserGestureRequired:
       settings->SetAutoplayPolicy(
           WebSettings::AutoplayPolicy::kNoUserGestureRequired);
       break;
-    case AutoplayPolicy::kUserGestureRequired:
+    case blink::web_pref::AutoplayPolicy::kUserGestureRequired:
       settings->SetAutoplayPolicy(
           WebSettings::AutoplayPolicy::kUserGestureRequired);
       break;
-    case AutoplayPolicy::kDocumentUserActivationRequired:
+    case blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired:
       settings->SetAutoplayPolicy(
           WebSettings::AutoplayPolicy::kDocumentUserActivationRequired);
       break;
@@ -1529,11 +1530,12 @@ float RenderViewImpl::GetZoomLevel() {
   return webview_->ZoomLevel();
 }
 
-const WebPreferences& RenderViewImpl::GetWebkitPreferences() {
+const blink::web_pref::WebPreferences& RenderViewImpl::GetWebkitPreferences() {
   return webkit_preferences_;
 }
 
-void RenderViewImpl::SetWebkitPreferences(const WebPreferences& preferences) {
+void RenderViewImpl::SetWebkitPreferences(
+    const blink::web_pref::WebPreferences& preferences) {
   OnUpdateWebPreferences(preferences);
 }
 
@@ -1545,7 +1547,8 @@ bool RenderViewImpl::GetContentStateImmediately() {
   return send_content_state_immediately_;
 }
 
-void RenderViewImpl::OnUpdateWebPreferences(const WebPreferences& prefs) {
+void RenderViewImpl::OnUpdateWebPreferences(
+    const blink::web_pref::WebPreferences& prefs) {
   webkit_preferences_ = prefs;
   ApplyWebPreferences(webkit_preferences_, GetWebView());
   ApplyCommandLineToSettings(GetWebView()->GetSettings());

@@ -45,7 +45,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -511,7 +511,7 @@ void TabImpl::WebPreferencesChanged() {
   web_contents_->OnWebPreferencesChanged();
 }
 
-void TabImpl::SetWebPreferences(content::WebPreferences* prefs) {
+void TabImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->fullscreen_supported = !!fullscreen_delegate_;
 
   if (!browser_)

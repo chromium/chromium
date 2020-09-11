@@ -409,7 +409,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the current WebPreferences for the WebContents associated with this
   // RenderFrameHost. Will create one if it does not exist (and update all the
   // renderers with the newly computed value).
-  WebPreferences GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences GetOrCreateWebPreferences();
 
   // IPC::Sender
   bool Send(IPC::Message* msg) override;

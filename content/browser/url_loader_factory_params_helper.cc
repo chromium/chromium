@@ -15,12 +15,12 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "ipc/ipc_message.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace content {
 

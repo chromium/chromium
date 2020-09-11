@@ -118,7 +118,7 @@ class NotifyPreferencesChangedTestContentBrowserClient
   NotifyPreferencesChangedTestContentBrowserClient() = default;
 
   void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                           WebPreferences* prefs) override {
+                           blink::web_pref::WebPreferences* prefs) override {
     override_webkit_prefs_rvh_set_.insert(render_view_host);
   }
 

@@ -34,11 +34,16 @@ namespace autofill {
 class AutofillProvider;
 }  // namespace autofill
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace content {
 class RenderWidgetHostView;
 class WebContents;
 struct ContextMenuParams;
-struct WebPreferences;
 }
 
 namespace gfx {
@@ -231,7 +236,7 @@ class TabImpl : public Tab,
 #endif
 
   void WebPreferencesChanged();
-  void SetWebPreferences(content::WebPreferences* prefs);
+  void SetWebPreferences(blink::web_pref::WebPreferences* prefs);
 
   // Executes |script| with a user gesture.
   void ExecuteScriptWithUserGestureForTests(const base::string16& script);

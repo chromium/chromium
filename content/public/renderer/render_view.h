@@ -16,6 +16,9 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}  // namespace web_pref
 class WebView;
 }  // namespace blink
 
@@ -23,7 +26,6 @@ namespace content {
 
 class RenderFrame;
 class RenderViewVisitor;
-struct WebPreferences;
 
 // RenderView corresponds to the content container of a renderer's subset
 // of the frame tree. A frame tree that spans multiple renderers will have a
@@ -55,8 +57,9 @@ class CONTENT_EXPORT RenderView : public IPC::Sender {
   static void ForEach(RenderViewVisitor* visitor);
 
   // Applies WebKit related preferences to this view.
-  static void ApplyWebPreferences(const WebPreferences& preferences,
-                                  blink::WebView* web_view);
+  static void ApplyWebPreferences(
+      const blink::web_pref::WebPreferences& preferences,
+      blink::WebView* web_view);
 
   // Returns the main RenderFrame.
   virtual RenderFrame* GetMainRenderFrame() = 0;
@@ -68,11 +71,12 @@ class CONTENT_EXPORT RenderView : public IPC::Sender {
   virtual float GetZoomLevel() = 0;
 
   // Gets WebKit related preferences associated with this view.
-  virtual const WebPreferences& GetWebkitPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences& GetWebkitPreferences() = 0;
 
   // Overrides the WebKit related preferences associated with this view. Note
   // that the browser process may update the preferences at any time.
-  virtual void SetWebkitPreferences(const WebPreferences& preferences) = 0;
+  virtual void SetWebkitPreferences(
+      const blink::web_pref::WebPreferences& preferences) = 0;
 
   // Returns the associated WebView. May return NULL when the view is closing.
   virtual blink::WebView* GetWebView() = 0;

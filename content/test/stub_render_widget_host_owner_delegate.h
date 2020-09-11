@@ -25,7 +25,7 @@ class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
   void SetBackgroundOpaque(bool opaque) override {}
   bool IsMainFrameActive() override;
   bool IsNeverComposited() override;
-  WebPreferences GetWebkitPreferencesForWidget() override;
+  blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;
 };
 
 }  // namespace content

@@ -55,7 +55,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/common/window_container_type.mojom.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -67,6 +66,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -328,7 +328,7 @@ blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
 
 void ContentBrowserClientImpl::OverrideWebkitPrefs(
     content::RenderViewHost* render_view_host,
-    content::WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   prefs->default_encoding = l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING);
 
   content::WebContents* web_contents =

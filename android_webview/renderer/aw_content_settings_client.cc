@@ -5,8 +5,8 @@
 #include "android_webview/renderer/aw_content_settings_client.h"
 
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"

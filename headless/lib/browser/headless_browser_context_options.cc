@@ -70,7 +70,7 @@ bool HeadlessBrowserContextOptions::block_new_web_contents() const {
                                browser_options_->block_new_web_contents);
 }
 
-base::RepeatingCallback<void(WebPreferences*)>
+base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
 HeadlessBrowserContextOptions::override_web_preferences_callback() const {
   return ReturnOverriddenValue(
       override_web_preferences_callback_,

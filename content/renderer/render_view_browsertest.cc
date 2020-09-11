@@ -3110,7 +3110,7 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
   EXPECT_EQ(1.f, view()->GetWebView()->PageScaleFactor());
   EXPECT_EQ(1.f, view()->GetWebView()->MinimumPageScaleFactor());
 
-  WebPreferences prefs;
+  blink::web_pref::WebPreferences prefs;
   prefs.shrinks_viewport_contents_to_fit = true;
   prefs.default_minimum_page_scale_factor = 0.1f;
   prefs.default_maximum_page_scale_factor = 5.5f;

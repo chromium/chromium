@@ -42,6 +42,9 @@ namespace mojom {
 class WindowFeatures;
 class WebUsbService;
 }  // namespace mojom
+namespace web_pref {
+struct WebPreferences;
+}  // namespace web_pref
 class URLLoaderThrottle;
 }  // namespace blink
 
@@ -336,10 +339,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
   content::TtsPlatform* GetTtsPlatform() override;
   void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* prefs) override;
+                           blink::web_pref::WebPreferences* prefs) override;
   bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,
-      content::WebPreferences* prefs) override;
+      blink::web_pref::WebPreferences* prefs) override;
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   base::FilePath GetDefaultDownloadDirectory() override;
   std::string GetDefaultDownloadName() override;

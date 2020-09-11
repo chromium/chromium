@@ -13,9 +13,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 // Unit tests for the unified autoplay policy with the unified sound settings
 // UI enabled.
@@ -50,7 +50,7 @@ class UnifiedAutoplaySoundSettingsTest
     return UnifiedAutoplayConfig::ShouldBlockAutoplay(profile());
   }
 
-  content::AutoplayPolicy GetAppliedAutoplayPolicy() {
+  blink::web_pref::AutoplayPolicy GetAppliedAutoplayPolicy() {
     return web_contents()->GetOrCreateWebPreferences().autoplay_policy;
   }
 
@@ -72,7 +72,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Allow) {
   EXPECT_FALSE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kNoUserGestureRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kNoUserGestureRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -83,7 +83,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Block) {
   EXPECT_TRUE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kDocumentUserActivationRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 
   // Set back to ALLOW to ensure that the policy is updated on the next
@@ -92,7 +92,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Block) {
   EXPECT_FALSE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kNoUserGestureRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kNoUserGestureRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -106,7 +106,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, Feature_DisabledNoop) {
   EXPECT_FALSE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kDocumentUserActivationRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -114,7 +114,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, Pref_DefaultEnabled) {
   EXPECT_TRUE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kDocumentUserActivationRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -123,7 +123,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, Pref_Disabled) {
   EXPECT_FALSE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kNoUserGestureRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kNoUserGestureRequired,
             GetAppliedAutoplayPolicy());
 
   // Now update the pref and make sure we apply it on the next navigation.
@@ -131,7 +131,7 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, Pref_Disabled) {
   EXPECT_TRUE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kDocumentUserActivationRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -159,6 +159,6 @@ TEST_F(UnifiedAutoplaySoundSettingsOverrideTest, CommandLineOverride) {
   EXPECT_TRUE(ShouldBlockAutoplay());
 
   NavigateToTestPage();
-  EXPECT_EQ(content::AutoplayPolicy::kUserGestureRequired,
+  EXPECT_EQ(blink::web_pref::AutoplayPolicy::kUserGestureRequired,
             GetAppliedAutoplayPolicy());
 }

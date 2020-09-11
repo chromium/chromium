@@ -34,23 +34,23 @@ buildflag_header("buildflags") {
 
 source_set("common_export") {
   visibility = [
-    "//third_party/blink/public/common/*",
     "//third_party/blink/common/*",
+    "//third_party/blink/public/common/*",
   ]
   sources = [ "common_export.h" ]
 }
 
 source_set("headers") {
   visibility = [
+    ":*",
     "//chrome/*",
     "//chromecast/*",
+    "//components/*",
     "//content/*",
     "//fuchsia/*",
-    "//third_party/blink/*",
-    "//components/*",
     "//services/*",
     "//storage/*",
-    ":*",
+    "//third_party/blink/*",
   ]
 
   sources = [
@@ -182,6 +182,7 @@ source_set("headers") {
     "web_cache/web_cache_resource_type_stats.h",
     "web_package/signed_exchange_consts.h",
     "web_package/web_package_request_matcher.h",
+    "web_preferences/web_preferences.h",
     "widget/device_emulation_params.h",
     "widget/screen_info.h",
     "widget/visual_properties.h",
@@ -212,6 +213,7 @@ source_set("headers") {
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",
     "//net",
+    "//ui/base:base",
   ]
 
   # iOS doesn't use and must not depend on //media

@@ -32,7 +32,6 @@
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/common/referrer.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/render_view.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_widget.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -137,7 +137,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // or not.
   bool widgets_never_composited() const { return widgets_never_composited_; }
 
-  const WebPreferences& webkit_preferences() const {
+  const blink::web_pref::WebPreferences& webkit_preferences() const {
     return webkit_preferences_;
   }
 
@@ -241,8 +241,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   RenderFrameImpl* GetMainRenderFrame() override;
   int GetRoutingID() override;
   float GetZoomLevel() override;
-  const WebPreferences& GetWebkitPreferences() override;
-  void SetWebkitPreferences(const WebPreferences& preferences) override;
+  const blink::web_pref::WebPreferences& GetWebkitPreferences() override;
+  void SetWebkitPreferences(
+      const blink::web_pref::WebPreferences& preferences) override;
   blink::WebView* GetWebView() override;
   bool GetContentStateImmediately() override;
   const std::string& GetAcceptLanguages() override;
@@ -379,7 +380,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void OnSetRendererPrefs(
       const blink::mojom::RendererPreferences& renderer_prefs);
   void OnSuppressDialogsUntilSwapOut();
-  void OnUpdateWebPreferences(const WebPreferences& prefs);
+  void OnUpdateWebPreferences(const blink::web_pref::WebPreferences& prefs);
 
   // Page message handlers -----------------------------------------------------
   void SetPageFrozen(bool frozen);
@@ -455,7 +456,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Settings ------------------------------------------------------------------
 
-  WebPreferences webkit_preferences_;
+  blink::web_pref::WebPreferences webkit_preferences_;
   blink::mojom::RendererPreferences renderer_preferences_;
   // These are observing changes in |renderer_preferences_|. This is used for
   // keeping WorkerFetchContext in sync.

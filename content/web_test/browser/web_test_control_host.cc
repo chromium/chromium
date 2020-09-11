@@ -231,7 +231,7 @@ void DrawSelectionRect(const SkBitmap& bitmap, const blink::WebRect& wr) {
 // Applies settings that differ between web tests and regular mode. Some
 // of the defaults are controlled via command line flags which are
 // automatically set for web tests.
-void ApplyWebTestDefaultPreferences(WebPreferences* prefs) {
+void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
@@ -261,28 +261,33 @@ void ApplyWebTestDefaultPreferences(WebPreferences* prefs) {
   prefs->translate_service_available = true;
 
 #if defined(OS_MAC)
-  prefs->editing_behavior = EDITING_BEHAVIOR_MAC;
+  prefs->editing_behavior = blink::web_pref::EDITING_BEHAVIOR_MAC;
 #else
-  prefs->editing_behavior = EDITING_BEHAVIOR_WIN;
+  prefs->editing_behavior = blink::web_pref::EDITING_BEHAVIOR_WIN;
 #endif
 
 #if defined(OS_MAC)
-  prefs->cursive_font_family_map[kCommonScript] =
+  prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       base::ASCIIToUTF16("Apple Chancery");
-  prefs->fantasy_font_family_map[kCommonScript] = base::ASCIIToUTF16("Papyrus");
-  prefs->serif_font_family_map[kCommonScript] = base::ASCIIToUTF16("Times");
-  prefs->standard_font_family_map[kCommonScript] = base::ASCIIToUTF16("Times");
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Papyrus");
+  prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Times");
+  prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Times");
 #else
-  prefs->cursive_font_family_map[kCommonScript] =
+  prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       base::ASCIIToUTF16("Comic Sans MS");
-  prefs->fantasy_font_family_map[kCommonScript] = base::ASCIIToUTF16("Impact");
-  prefs->serif_font_family_map[kCommonScript] =
+  prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Impact");
+  prefs->serif_font_family_map[blink::web_pref::kCommonScript] =
       base::ASCIIToUTF16("times new roman");
-  prefs->standard_font_family_map[kCommonScript] =
+  prefs->standard_font_family_map[blink::web_pref::kCommonScript] =
       base::ASCIIToUTF16("times new roman");
 #endif
-  prefs->fixed_font_family_map[kCommonScript] = base::ASCIIToUTF16("Courier");
-  prefs->sans_serif_font_family_map[kCommonScript] =
+  prefs->fixed_font_family_map[blink::web_pref::kCommonScript] =
+      base::ASCIIToUTF16("Courier");
+  prefs->sans_serif_font_family_map[blink::web_pref::kCommonScript] =
       base::ASCIIToUTF16("Helvetica");
 }
 
@@ -665,7 +670,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   test_phase_ = BETWEEN_TESTS;
   expected_pixel_hash_.clear();
   test_url_ = GURL();
-  prefs_ = WebPreferences();
+  prefs_ = blink::web_pref::WebPreferences();
   should_override_prefs_ = false;
   WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(false);
   WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
@@ -727,7 +732,8 @@ void WebTestControlHost::SetTempPath(const base::FilePath& temp_path) {
   temp_path_ = temp_path;
 }
 
-void WebTestControlHost::OverrideWebkitPrefs(WebPreferences* prefs) {
+void WebTestControlHost::OverrideWebkitPrefs(
+    blink::web_pref::WebPreferences* prefs) {
   if (should_override_prefs_) {
     *prefs = prefs_;
   } else {
@@ -1350,7 +1356,8 @@ void WebTestControlHost::PrintMessage(const std::string& message) {
   printer_->AddMessageRaw(message);
 }
 
-void WebTestControlHost::OverridePreferences(const WebPreferences& prefs) {
+void WebTestControlHost::OverridePreferences(
+    const blink::web_pref::WebPreferences& prefs) {
   should_override_prefs_ = true;
   prefs_ = prefs;
 

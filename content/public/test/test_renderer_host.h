@@ -35,6 +35,12 @@ class AuraTestHelper;
 }
 }  // namespace aura
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace display {
 class Screen;
 }
@@ -62,7 +68,6 @@ class TestRenderViewHostFactory;
 class TestRenderWidgetHostFactory;
 class TestNavigationURLLoaderFactory;
 class WebContents;
-struct WebPreferences;
 
 // An interface and utility for driving tests of RenderFrameHost.
 class RenderFrameHostTester {
@@ -162,7 +167,7 @@ class RenderViewHostTester {
   virtual void SimulateWasShown() = 0;
 
   // Promote ComputeWebPreferences to public.
-  virtual WebPreferences TestComputeWebPreferences() = 0;
+  virtual blink::web_pref::WebPreferences TestComputeWebPreferences() = 0;
 };
 
 // You can instantiate only one class like this at a time.  During its

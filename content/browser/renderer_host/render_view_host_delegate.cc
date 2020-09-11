@@ -4,8 +4,6 @@
 
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 
-#include "content/public/common/web_preferences.h"
-
 namespace content {
 
 RenderViewHostDelegateView* RenderViewHostDelegate::GetDelegateView() {

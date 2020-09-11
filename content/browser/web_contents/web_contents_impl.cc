@@ -150,7 +150,6 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "content/public/common/web_preferences.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "net/base/url_util.h"
@@ -168,6 +167,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom.h"
@@ -2383,10 +2383,10 @@ void WebContentsImpl::DidChangeVisibleSecurityState() {
   });
 }
 
-const WebPreferences WebContentsImpl::ComputeWebPreferences() {
+const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   OPTIONAL_TRACE_EVENT0("browser", "WebContentsImpl::ComputeWebPreferences");
 
-  WebPreferences prefs;
+  blink::web_pref::WebPreferences prefs;
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -2441,13 +2441,16 @@ const WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   std::string autoplay_policy = media::GetEffectiveAutoplayPolicy(command_line);
   if (autoplay_policy == switches::autoplay::kNoUserGestureRequiredPolicy) {
-    prefs.autoplay_policy = AutoplayPolicy::kNoUserGestureRequired;
+    prefs.autoplay_policy =
+        blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
   } else if (autoplay_policy ==
              switches::autoplay::kUserGestureRequiredPolicy) {
-    prefs.autoplay_policy = AutoplayPolicy::kUserGestureRequired;
+    prefs.autoplay_policy =
+        blink::web_pref::AutoplayPolicy::kUserGestureRequired;
   } else if (autoplay_policy ==
              switches::autoplay::kDocumentUserActivationRequiredPolicy) {
-    prefs.autoplay_policy = AutoplayPolicy::kDocumentUserActivationRequired;
+    prefs.autoplay_policy =
+        blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired;
   } else {
     NOTREACHED();
   }
@@ -2535,7 +2538,7 @@ const WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
 void WebContentsImpl::SetSlowWebPreferences(
     const base::CommandLine& command_line,
-    WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetSlowWebPreferences");
 
   if (web_preferences_.get()) {
@@ -5742,7 +5745,8 @@ void WebContentsImpl::ResourceLoadComplete(
   });
 }
 
-const WebPreferences& WebContentsImpl::GetOrCreateWebPreferences() {
+const blink::web_pref::WebPreferences&
+WebContentsImpl::GetOrCreateWebPreferences() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::GetOrCreateWebPreferences");
   // Compute WebPreferences based on the current state if it's null.
@@ -5755,9 +5759,10 @@ bool WebContentsImpl::IsWebPreferencesSet() const {
   return web_preferences_.get();
 }
 
-void WebContentsImpl::SetWebPreferences(const WebPreferences& prefs) {
+void WebContentsImpl::SetWebPreferences(
+    const blink::web_pref::WebPreferences& prefs) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetWebPreferences");
-  web_preferences_ = std::make_unique<WebPreferences>(prefs);
+  web_preferences_ = std::make_unique<blink::web_pref::WebPreferences>(prefs);
   // Get all the RenderViewHosts (except the ones for currently back-forward
   // cached pages), and make them send the current WebPreferences
   // to the renderer. WebPreferences updates for back-forward cached pages will

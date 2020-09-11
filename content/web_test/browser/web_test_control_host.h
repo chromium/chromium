@@ -31,11 +31,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/web_preferences.h"
 #include "content/web_test/browser/leak_detector.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
@@ -129,7 +129,7 @@ class WebTestControlHost : public WebContentsObserver,
   void DidCreateOrAttachWebContents(WebContents* web_contents);
 
   void SetTempPath(const base::FilePath& temp_path);
-  void OverrideWebkitPrefs(WebPreferences* prefs);
+  void OverrideWebkitPrefs(blink::web_pref::WebPreferences* prefs);
   void OpenURL(const GURL& url);
   bool IsMainWindow(WebContents* web_contents) const;
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
@@ -203,7 +203,7 @@ class WebTestControlHost : public WebContentsObserver,
   void PrintMessage(const std::string& message) override;
   void Reload() override;
   void OverridePreferences(
-      const content::WebPreferences& web_preferences) override;
+      const blink::web_pref::WebPreferences& web_preferences) override;
   void SetMainWindowHidden(bool hidden) override;
   void CheckForLeakedWindows() override;
   void GoToOffset(int offset) override;
@@ -320,12 +320,12 @@ class WebTestControlHost : public WebContentsObserver,
 
   // Stores the default test-adapted WebPreferences which is then used to fully
   // reset the main window's preferences if and when it is reused.
-  WebPreferences default_prefs_;
+  blink::web_pref::WebPreferences default_prefs_;
 
   // True if the WebPreferences of newly created RenderViewHost should be
   // overridden with prefs_.
   bool should_override_prefs_;
-  WebPreferences prefs_;
+  blink::web_pref::WebPreferences prefs_;
 
   bool crash_when_leak_found_;
   std::unique_ptr<LeakDetector> leak_detector_;

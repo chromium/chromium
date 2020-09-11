@@ -428,7 +428,7 @@ class CONTENT_EXPORT RenderFrameImpl
   std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter() override;
   int GetRoutingID() override;
   blink::WebLocalFrame* GetWebFrame() override;
-  const WebPreferences& GetWebkitPreferences() override;
+  const blink::web_pref::WebPreferences& GetWebkitPreferences() override;
   int ShowContextMenu(ContextMenuClient* client,
                       const UntrustworthyContextMenuParams& params) override;
   void CancelContextMenu(int request_id) override;

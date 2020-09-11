@@ -312,7 +312,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/user_agent.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/process_map.h"
@@ -356,6 +355,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
@@ -635,6 +635,7 @@
 #endif
 
 using base::FileDescriptor;
+using blink::web_pref::WebPreferences;
 using content::BrowserThread;
 using content::BrowserURLHandler;
 using content::BrowsingDataFilterBuilder;
@@ -644,7 +645,6 @@ using content::RenderFrameHost;
 using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
-using content::WebPreferences;
 using message_center::NotifierId;
 
 #if defined(OS_POSIX)
@@ -3303,11 +3303,13 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       prefs->GetString(prefs::kAnimationPolicy);
   if (image_animation_policy == kAnimationPolicyOnce)
     web_prefs->animation_policy =
-        content::IMAGE_ANIMATION_POLICY_ANIMATION_ONCE;
+        blink::web_pref::IMAGE_ANIMATION_POLICY_ANIMATION_ONCE;
   else if (image_animation_policy == kAnimationPolicyNone)
-    web_prefs->animation_policy = content::IMAGE_ANIMATION_POLICY_NO_ANIMATION;
+    web_prefs->animation_policy =
+        blink::web_pref::IMAGE_ANIMATION_POLICY_NO_ANIMATION;
   else
-    web_prefs->animation_policy = content::IMAGE_ANIMATION_POLICY_ALLOWED;
+    web_prefs->animation_policy =
+        blink::web_pref::IMAGE_ANIMATION_POLICY_ALLOWED;
 #endif
 
   // Make sure we will set the default_encoding with canonical encoding name.
@@ -3487,17 +3489,18 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     // If autoplay is allowed by policy then force the no user gesture required
     // autoplay policy.
     web_prefs->autoplay_policy =
-        content::AutoplayPolicy::kNoUserGestureRequired;
+        blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
   } else if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
              web_prefs->autoplay_policy ==
-                 content::AutoplayPolicy::kDocumentUserActivationRequired) {
+                 blink::web_pref::AutoplayPolicy::
+                     kDocumentUserActivationRequired) {
     // If the autoplay disable settings feature is enabled and the autoplay
     // policy is set to using the unified policy then set the default autoplay
     // policy based on user preference.
     web_prefs->autoplay_policy =
         UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
-            ? content::AutoplayPolicy::kDocumentUserActivationRequired
-            : content::AutoplayPolicy::kNoUserGestureRequired;
+            ? blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired
+            : blink::web_pref::AutoplayPolicy::kNoUserGestureRequired;
   }
 
   auto* native_theme = GetWebTheme();

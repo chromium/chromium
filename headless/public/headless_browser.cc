@@ -163,7 +163,7 @@ Builder& Builder::SetBlockNewWebContents(bool block_new_web_contents) {
 }
 
 Builder& Builder::SetOverrideWebPreferencesCallback(
-    base::RepeatingCallback<void(WebPreferences*)> callback) {
+    base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback) {
   options_.override_web_preferences_callback = std::move(callback);
   return *this;
 }

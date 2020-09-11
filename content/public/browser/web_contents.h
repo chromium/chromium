@@ -55,6 +55,9 @@ namespace blink {
 namespace mojom {
 class RendererPreferences;
 }
+namespace web_pref {
+struct WebPreferences;
+}
 struct Manifest;
 struct UserAgentOverride;
 }  // namespace blink
@@ -89,7 +92,6 @@ class WebUI;
 struct CustomContextMenuContext;
 struct DropData;
 struct MHTMLGenerationParams;
-struct WebPreferences;
 
 // WebContents is the core class in content/. A WebContents renders web content
 // (usually HTML) in a rectangular area.
@@ -978,7 +980,8 @@ class WebContents : public PageNavigator,
   // WebPreferences. If we want to guarantee that the value reflects the current
   // state of the WebContents, NotifyPreferencesChanged() should be called
   // before calling this.
-  virtual const WebPreferences& GetOrCreateWebPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences&
+  GetOrCreateWebPreferences() = 0;
 
   // Notify this WebContents that the preferences have changed, so it needs to
   // recompute the current WebPreferences based on the current state of the
@@ -1008,7 +1011,8 @@ class WebContents : public PageNavigator,
   // recomputation logic in either of those functions.
   // TODO(rakina): Try to make values set through this function stick even after
   // recomputations.
-  virtual void SetWebPreferences(const WebPreferences& prefs) = 0;
+  virtual void SetWebPreferences(
+      const blink::web_pref::WebPreferences& prefs) = 0;
 
   // Passes current web preferences to all renderer in this WebContents after
   // possibly recomputing them as follows: all "fast" preferences (those not

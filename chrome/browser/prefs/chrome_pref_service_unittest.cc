@@ -12,11 +12,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/test_renderer_host.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
+using blink::web_pref::WebPreferences;
 using content::RenderViewHostTester;
-using content::WebPreferences;
 
 TEST(ChromePrefServiceTest, UpdateCommandLinePrefStore) {
   TestingPrefServiceSimple prefs;

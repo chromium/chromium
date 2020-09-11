@@ -31,9 +31,10 @@ FontFamilyCache::FontFamilyCache(Profile* profile)
 
 FontFamilyCache::~FontFamilyCache() = default;
 
-void FontFamilyCache::FillFontFamilyMap(Profile* profile,
-                                        const char* map_name,
-                                        content::ScriptFontFamilyMap* map) {
+void FontFamilyCache::FillFontFamilyMap(
+    Profile* profile,
+    const char* map_name,
+    blink::web_pref::ScriptFontFamilyMap* map) {
   FontFamilyCache* cache =
       static_cast<FontFamilyCache*>(profile->GetUserData(&kFontFamilyCacheKey));
   if (!cache) {
@@ -44,8 +45,9 @@ void FontFamilyCache::FillFontFamilyMap(Profile* profile,
   cache->FillFontFamilyMap(map_name, map);
 }
 
-void FontFamilyCache::FillFontFamilyMap(const char* map_name,
-                                        content::ScriptFontFamilyMap* map) {
+void FontFamilyCache::FillFontFamilyMap(
+    const char* map_name,
+    blink::web_pref::ScriptFontFamilyMap* map) {
   // TODO(falken): Get rid of the brute-force scan over possible
   // (font family / script) combinations - see http://crbug.com/308095.
   for (size_t i = 0; i < prefs::kWebKitScriptsForFontFamilyMapsLength; ++i) {

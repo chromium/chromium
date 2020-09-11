@@ -40,10 +40,10 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -60,8 +60,8 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #endif
 
+using blink::web_pref::WebPreferences;
 using content::WebContents;
-using content::WebPreferences;
 
 namespace {
 
@@ -246,11 +246,11 @@ UScriptCode GetScriptOfBrowserLocale(const std::string& locale) {
 }
 
 // Sets a font family pref in |prefs| to |pref_value|.
-void OverrideFontFamily(WebPreferences* prefs,
+void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
                         const std::string& generic_family,
                         const std::string& script,
                         const std::string& pref_value) {
-  content::ScriptFontFamilyMap* map = NULL;
+  blink::web_pref::ScriptFontFamilyMap* map = nullptr;
   if (generic_family == "standard")
     map = &prefs->standard_font_family_map;
   else if (generic_family == "fixed")
@@ -475,7 +475,8 @@ void PrefsTabHelper::OnFontFamilyPrefChanged(const std::string& pref_name) {
     PrefService* prefs = profile_->GetPrefs();
     std::string pref_value = prefs->GetString(pref_name);
     if (pref_value.empty()) {
-      WebPreferences web_prefs = web_contents_->GetOrCreateWebPreferences();
+      blink::web_pref::WebPreferences web_prefs =
+          web_contents_->GetOrCreateWebPreferences();
       OverrideFontFamily(&web_prefs, generic_family, script, std::string());
       web_contents_->SetWebPreferences(web_prefs);
       return;

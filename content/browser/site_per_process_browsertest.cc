@@ -1159,7 +1159,8 @@ class UpdateTextAutosizerInfoProxyObserver {
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
   UpdateTextAutosizerInfoProxyObserver update_text_autosizer_info_observer;
 
-  WebPreferences prefs = web_contents()->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences prefs =
+      web_contents()->GetOrCreateWebPreferences();
   prefs.text_autosizing_enabled = true;
 
   GURL main_url(embedded_test_server()->GetURL(
@@ -13089,7 +13090,7 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
   EnableForceZoomContentClient() = default;
 
   void OverrideWebkitPrefs(RenderViewHost* render_view_host,
-                           WebPreferences* prefs) override {
+                           blink::web_pref::WebPreferences* prefs) override {
     DCHECK(old_client_);
     old_client_->OverrideWebkitPrefs(render_view_host, prefs);
     prefs->force_enable_zoom = true;
@@ -14403,8 +14404,9 @@ class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
  public:
   DoubleTapZoomContentBrowserClient() = default;
 
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override {
+  void OverrideWebkitPrefs(
+      content::RenderViewHost* rvh,
+      blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->double_tap_to_zoom_enabled = true;
   }
 

@@ -1571,7 +1571,8 @@ bool RenderFrameHostImpl::IsSandboxed(network::mojom::WebSandboxFlags flags) {
   return static_cast<int>(active_sandbox_flags_) & static_cast<int>(flags);
 }
 
-WebPreferences RenderFrameHostImpl::GetOrCreateWebPreferences() {
+blink::web_pref::WebPreferences
+RenderFrameHostImpl::GetOrCreateWebPreferences() {
   return delegate()->GetOrCreateWebPreferences();
 }
 
@@ -1581,7 +1582,7 @@ RenderFrameHostImpl::CreateURLLoaderFactoriesForIsolatedWorlds(
     const base::flat_set<url::Origin>& isolated_world_origins,
     network::mojom::ClientSecurityStatePtr client_security_state,
     network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy) {
-  WebPreferences preferences = GetOrCreateWebPreferences();
+  auto preferences = GetOrCreateWebPreferences();
 
   blink::PendingURLLoaderFactoryBundle::OriginMap result;
   for (const url::Origin& isolated_world_origin : isolated_world_origins) {
@@ -8104,7 +8105,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // file: URLs can be allowed to access any other origin, based on settings.
   bool bypass_checks_for_file_scheme = false;
   if (params->origin.scheme() == url::kFileScheme) {
-    WebPreferences prefs = GetOrCreateWebPreferences();
+    auto prefs = GetOrCreateWebPreferences();
     if (prefs.allow_universal_access_from_file_urls)
       bypass_checks_for_file_scheme = true;
   }

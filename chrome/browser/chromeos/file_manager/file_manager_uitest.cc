@@ -9,10 +9,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace file_manager {
 

@@ -13,10 +13,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/web_preferences.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "content/web_test/renderer/test_preferences.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/display/display.h"
 
 #if defined(OS_MAC)
@@ -71,9 +71,10 @@ WebURL RewriteAbsolutePathInCsswgTest(base::StringPiece utf8_url) {
 namespace content {
 
 void ExportWebTestSpecificPreferences(const TestPreferences& from,
-                                      WebPreferences* to) {
+                                      blink::web_pref::WebPreferences* to) {
   to->javascript_can_access_clipboard = from.java_script_can_access_clipboard;
-  to->editing_behavior = static_cast<EditingBehavior>(from.editing_behavior);
+  to->editing_behavior =
+      static_cast<blink::web_pref::EditingBehavior>(from.editing_behavior);
   to->default_font_size = from.default_font_size;
   to->minimum_font_size = from.minimum_font_size;
   to->default_encoding = from.default_text_encoding_name.Utf8().data();

@@ -140,7 +140,6 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/page_state.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -188,6 +187,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(USE_NSS_CERTS)
@@ -283,8 +283,9 @@ class ChromeContentBrowserClientForMixedContentTest
     : public ChromeContentBrowserClient {
  public:
   ChromeContentBrowserClientForMixedContentTest() {}
-  void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override {
+  void OverrideWebkitPrefs(
+      content::RenderViewHost* rvh,
+      blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->allow_running_insecure_content = allow_running_insecure_content_;
     web_prefs->strict_mixed_content_checking = strict_mixed_content_checking_;
     web_prefs->strictly_block_blockable_mixed_content =
@@ -3573,7 +3574,8 @@ class SSLUIWorkerFetchTest
                                  bool strict_mixed_content_checking,
                                  bool strictly_block_blockable_mixed_content) {
     WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-    const content::WebPreferences& prefs = tab->GetOrCreateWebPreferences();
+    const blink::web_pref::WebPreferences& prefs =
+        tab->GetOrCreateWebPreferences();
     ASSERT_EQ(prefs.strictly_block_blockable_mixed_content,
               strictly_block_blockable_mixed_content);
     ASSERT_EQ(prefs.allow_running_insecure_content,

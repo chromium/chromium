@@ -130,10 +130,10 @@ HeadlessContentBrowserClient::CreateBrowserMainParts(
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(
     content::RenderViewHost* render_view_host,
-    content::WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   auto* browser_context = HeadlessBrowserContextImpl::From(
       render_view_host->GetProcess()->GetBrowserContext());
-  base::RepeatingCallback<void(WebPreferences*)> callback =
+  base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback =
       browser_context->options()->override_web_preferences_callback();
   if (callback)
     callback.Run(prefs);

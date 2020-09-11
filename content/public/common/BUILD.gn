@@ -177,8 +177,6 @@ source_set("common_sources") {
     "use_zoom_for_dsf_policy.cc",
     "use_zoom_for_dsf_policy.h",
     "user_agent.h",
-    "web_preferences.cc",
-    "web_preferences.h",
     "webplugininfo.cc",
     "webplugininfo.h",
     "webplugininfo_param_traits.h",
@@ -297,9 +295,9 @@ mojom("interfaces") {
   # Must depend on //content/public/common/ instead, for component build.
   visibility = [
     ":common_sources",
-    "//content/common/*",
     "//chrome/common:mojo_bindings",
     "//chrome/common:mojo_bindings_blink",
+    "//content/common/*",
     "//extensions/common:mojom",
     "//extensions/common:mojom_blink",
   ]

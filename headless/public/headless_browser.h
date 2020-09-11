@@ -188,7 +188,7 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   //
   // WARNING: We cannot provide any guarantees about the stability of the
   // exposed WebPreferences API, so use with care.
-  base::RepeatingCallback<void(WebPreferences*)>
+  base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
       override_web_preferences_callback;
 
   // Set a callback that is invoked when a new child process is spawned or
@@ -259,7 +259,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetSitePerProcess(bool site_per_process);
   Builder& SetBlockNewWebContents(bool block_new_web_contents);
   Builder& SetOverrideWebPreferencesCallback(
-      base::RepeatingCallback<void(WebPreferences*)> callback);
+      base::RepeatingCallback<void(blink::web_pref::WebPreferences*)> callback);
   Builder& SetCrashReporterEnabled(bool enabled);
   Builder& SetCrashDumpsDir(const base::FilePath& dir);
   Builder& SetFontRenderHinting(

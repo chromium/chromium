@@ -55,7 +55,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/common/three_d_api_types.h"
-#include "content/public/common/web_preferences.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -67,6 +66,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
@@ -543,9 +543,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
 
-  const WebPreferences& GetOrCreateWebPreferences() override;
+  const blink::web_pref::WebPreferences& GetOrCreateWebPreferences() override;
   void NotifyPreferencesChanged() override;
-  void SetWebPreferences(const WebPreferences& prefs) override;
+  void SetWebPreferences(const blink::web_pref::WebPreferences& prefs) override;
   void OnWebPreferencesChanged() override;
 
   // RenderFrameHostDelegate ---------------------------------------------------
@@ -1245,7 +1245,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Recomputes only the "fast" preferences (those not requiring slow
   // platform/device polling); the remaining "slow" ones are recomputed only if
   // the preference cache is empty.
-  const WebPreferences ComputeWebPreferences();
+  const blink::web_pref::WebPreferences ComputeWebPreferences();
 
  private:
   friend class WebContentsObserver;
@@ -1723,7 +1723,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Sets the hardware-related fields in |prefs| that are slow to compute.  The
   // fields are set from cache if available, otherwise recomputed.
   void SetSlowWebPreferences(const base::CommandLine& command_line,
-                             WebPreferences* prefs);
+                             blink::web_pref::WebPreferences* prefs);
 
   // Data for core operation ---------------------------------------------------
 
@@ -1978,7 +1978,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The last set/computed value of WebPreferences for this WebContents, either
   // set directly through SetWebPreferences, or set after recomputing values
   // from ComputeWebPreferences.
-  std::unique_ptr<WebPreferences> web_preferences_;
+  std::unique_ptr<blink::web_pref::WebPreferences> web_preferences_;
 
   bool updating_web_preferences_ = false;
 

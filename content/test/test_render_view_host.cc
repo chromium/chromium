@@ -26,12 +26,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/page_state.h"
-#include "content/public/common/web_preferences.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_type.h"
@@ -311,7 +311,8 @@ void TestRenderViewHost::SimulateWasShown() {
   GetWidget()->WasShown({} /* record_tab_switch_time_request */);
 }
 
-WebPreferences TestRenderViewHost::TestComputeWebPreferences() {
+blink::web_pref::WebPreferences
+TestRenderViewHost::TestComputeWebPreferences() {
   return static_cast<WebContentsImpl*>(WebContents::FromRenderViewHost(this))
       ->ComputeWebPreferences();
 }

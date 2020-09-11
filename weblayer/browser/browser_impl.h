@@ -21,9 +21,14 @@ namespace base {
 class FilePath;
 }
 
+namespace blink {
+namespace web_pref {
+struct WebPreferences;
+}
+}  // namespace blink
+
 namespace content {
 class WebContents;
-struct WebPreferences;
 }
 
 namespace weblayer {
@@ -95,7 +100,7 @@ class BrowserImpl : public Browser {
   }
 
   bool GetPasswordEchoEnabled();
-  void SetWebPreferences(content::WebPreferences* prefs);
+  void SetWebPreferences(blink::web_pref::WebPreferences* prefs);
 
 #if defined(OS_ANDROID)
   // On Android the Java Tab class owns the C++ Tab. DestroyTab() calls to the

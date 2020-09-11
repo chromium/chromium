@@ -258,8 +258,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ContextWebPreferences) {
   HeadlessBrowserContext* browser_context =
       browser()
           ->CreateBrowserContextBuilder()
-          .SetOverrideWebPreferencesCallback(
-              base::BindRepeating([](WebPreferences* preferences) {
+          .SetOverrideWebPreferencesCallback(base::BindRepeating(
+              [](blink::web_pref::WebPreferences* preferences) {
                 preferences->hide_scrollbars = true;
               }))
           .Build();

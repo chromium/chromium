@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
 #include "components/printing/common/print_messages.h"
-#include "content/public/common/web_preferences.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/css/page_orientation.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -75,7 +75,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 #endif
 
-using content::WebPreferences;
+using blink::web_pref::WebPreferences;
 
 namespace printing {
 

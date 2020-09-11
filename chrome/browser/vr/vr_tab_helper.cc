@@ -7,8 +7,8 @@
 #include "build/build_config.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/xr_runtime_manager.h"
-#include "content/public/common/web_preferences.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 #if defined(OS_ANDROID)
 #include "base/feature_list.h"
@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #endif
 
+using blink::web_pref::WebPreferences;
 using content::WebContents;
-using content::WebPreferences;
 
 namespace vr {
 
@@ -34,7 +34,8 @@ void VrTabHelper::SetIsInVr(bool is_in_vr) {
 
   is_in_vr_ = is_in_vr;
 
-  WebPreferences web_prefs = web_contents_->GetOrCreateWebPreferences();
+  blink::web_pref::WebPreferences web_prefs =
+      web_contents_->GetOrCreateWebPreferences();
   web_prefs.immersive_mode_enabled = is_in_vr_;
   web_contents_->SetWebPreferences(web_prefs);
 }

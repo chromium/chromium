@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace base {
 class CommandLine;

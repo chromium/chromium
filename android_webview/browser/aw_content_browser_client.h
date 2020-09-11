@@ -130,7 +130,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
   void OverrideWebkitPrefs(content::RenderViewHost* rvh,
-                           content::WebPreferences* web_prefs) override;
+                           blink::web_pref::WebPreferences* web_prefs) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) override;

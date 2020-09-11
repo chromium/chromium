@@ -28,9 +28,9 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/web_preferences.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace {
 

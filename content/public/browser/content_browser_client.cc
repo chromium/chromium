@@ -370,7 +370,7 @@ bool ContentBrowserClient::AllowSignedExchange(BrowserContext* context) {
 
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
-    WebPreferences* prefs) {
+    blink::web_pref::WebPreferences* prefs) {
   return false;
 }
 

@@ -9,7 +9,7 @@
 #include "chrome/browser/media/router/presentation/local_presentation_manager_factory.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/web_preferences.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using content::RenderFrameHost;
 
