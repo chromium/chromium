@@ -5,7 +5,10 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_SCREENSHOT_VIEW_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_SCREENSHOT_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -36,6 +39,8 @@ class ASH_EXPORT HoldingSpaceScreenshotView : public views::View {
 
   const HoldingSpaceItem* const item_;
   tray::RoundedImageView* image_ = nullptr;
+
+  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
 };
 
 }  // namespace ash

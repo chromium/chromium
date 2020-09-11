@@ -5,7 +5,6 @@
 #include "ash/system/holding_space/holding_space_screenshot_view.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/user/rounded_image_view.h"
@@ -29,6 +28,11 @@ HoldingSpaceScreenshotView::HoldingSpaceScreenshotView(
 
   image_ =
       AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
+
+  // Subscribe to be notified of changes to `item_`'s image.
+  image_subscription_ =
+      item_->image().AddImageSkiaChangedCallback(base::BindRepeating(
+          &HoldingSpaceScreenshotView::Update, base::Unretained(this)));
 
   Update();
 }

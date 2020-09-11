@@ -5,7 +5,6 @@
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 
 #include <map>
-#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -70,25 +69,16 @@ HoldingSpaceImage::HoldingSpaceImage(const gfx::ImageSkia& placeholder,
                                                     async_bitmap_resolver),
                   placeholder.size()) {}
 
-HoldingSpaceImage::~HoldingSpaceImage() {
-  NotifyDestroying();
-}
+HoldingSpaceImage::~HoldingSpaceImage() = default;
 
 bool HoldingSpaceImage::operator==(const HoldingSpaceImage& rhs) const {
   return gfx::BitmapsAreEqual(*image_skia_.bitmap(), *rhs.image_skia_.bitmap());
 }
 
-void HoldingSpaceImage::AddObserver(Observer* observer) const {
-  observers_.AddObserver(observer);
-}
-
-void HoldingSpaceImage::RemoveObserver(Observer* observer) const {
-  observers_.RemoveObserver(observer);
-}
-
-void HoldingSpaceImage::NotifyDestroying() {
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceImageDestroying(this);
+std::unique_ptr<HoldingSpaceImage::Subscription>
+HoldingSpaceImage::AddImageSkiaChangedCallback(
+    CallbackList::CallbackType callback) const {
+  return callback_list_.Add(std::move(callback));
 }
 
 void HoldingSpaceImage::NotifyUpdated(float scale) {
@@ -96,9 +86,7 @@ void HoldingSpaceImage::NotifyUpdated(float scale) {
   // updated `gfx::ImageSkiaRep` at next access.
   image_skia_.RemoveRepresentation(scale);
   image_skia_.RemoveUnsupportedRepresentationsForScale(scale);
-
-  for (auto& observer : observers_)
-    observer.OnHoldingSpaceImageUpdated(this);
+  callback_list_.Notify();
 }
 
 }  // namespace ash

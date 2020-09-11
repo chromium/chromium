@@ -5,7 +5,10 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -52,6 +55,8 @@ class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
   tray::RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
   views::ToggleImageButton* pin_ = nullptr;
+
+  std::unique_ptr<HoldingSpaceImage::Subscription> image_subscription_;
 };
 
 }  // namespace ash

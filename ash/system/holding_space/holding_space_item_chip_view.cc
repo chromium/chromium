@@ -5,7 +5,6 @@
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
@@ -65,6 +64,11 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   // Ink drop layers should be clipped to match the corner radius of this view.
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kHoldingSpaceChipCornerRadius);
+
+  // Subscribe to be notified of changes to `item_`'s image.
+  image_subscription_ =
+      item_->image().AddImageSkiaChangedCallback(base::BindRepeating(
+          &HoldingSpaceItemChipView::Update, base::Unretained(this)));
 
   Update();
 }
