@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -15,8 +16,10 @@ namespace password_manager {
 
 class AffiliationService : public KeyedService {
  public:
-  // Prefetches change password URLs for sites requested.
-  virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls) = 0;
+  // Prefetches change password URLs for sites requested. Receives a callback to
+  // run when the prefetch finishes.
+  virtual void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
+                                          base::OnceClosure callback) = 0;
 
   // Clears the result of URLs fetch.
   virtual void Clear() = 0;

@@ -90,8 +90,8 @@ WellKnownChangePasswordNavigationThrottle::
     affiliation_service_ =
         AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
             handle->GetWebContents()->GetBrowserContext()));
-    affiliation_service_->PrefetchChangePasswordURLs(
-        {navigation_handle()->GetURL()});
+    well_known_change_password_state_.PrefetchChangePasswordURLs(
+        affiliation_service_, {navigation_handle()->GetURL()});
   } else {
     change_password_url_service_ =
         ChangePasswordUrlServiceFactory::GetForBrowserContext(

@@ -47,8 +47,9 @@ class AffiliationServiceImpl : public AffiliationService,
 
   // Prefetches change password URLs and saves them to |change_password_urls_|
   // map. The verification if affiliation based matching is enabled must be
-  // performed.
-  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls) override;
+  // performed. Assigns the callback to |result_callback_|.
+  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls,
+                                  base::OnceClosure callback) override;
 
   // Clears the |change_password_urls_| map and cancels prefetch if still
   // running.
@@ -91,6 +92,10 @@ class AffiliationServiceImpl : public AffiliationService,
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   // TODO(crbug.com/1117045): A vector of pending fetchers to be created.
   std::unique_ptr<AffiliationFetcherInterface> fetcher_;
+  // Callback is passed in PrefetchChangePasswordURLs and is run in
+  // OnFetchSucceeded, OnFetchMalformed, OnFetchFailed to indicate the prefetch
+  // has finished.
+  base::OnceClosure result_callback_;
 };
 
 }  // namespace password_manager

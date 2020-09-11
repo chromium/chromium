@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -79,6 +80,16 @@ void WellKnownChangePasswordState::FetchNonExistingResource(
           base::Unretained(this)));
 }
 
+void WellKnownChangePasswordState::PrefetchChangePasswordURLs(
+    AffiliationService* affiliation_service,
+    const std::vector<GURL>& urls) {
+  affiliation_service->PrefetchChangePasswordURLs(
+      urls,
+      base::BindOnce(
+          &WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback,
+          weak_factory_.GetWeakPtr()));
+}
+
 void WellKnownChangePasswordState::SetChangePasswordResponseCode(
     int status_code) {
   change_password_response_code_ = status_code;
@@ -92,9 +103,14 @@ void WellKnownChangePasswordState::FetchNonExistingResourceCallback(
   ContinueProcessing();
 }
 
+void WellKnownChangePasswordState::PrefetchChangePasswordURLsCallback() {}
+
 void WellKnownChangePasswordState::ContinueProcessing() {
-  if (!BothRequestsFinished())
+  // TODO: Implement timer and insert condition (prefetch_completed_ ||
+  // prefetch_tiemout_) if ChangePasswordAffiliationInfo flag is enabled.
+  if (!BothRequestsFinished()) {
     return;
+  }
   delegate_->OnProcessingFinished(SupportsChangePasswordUrl());
 }
 

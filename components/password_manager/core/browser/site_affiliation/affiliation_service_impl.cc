@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/sync/driver/sync_service.h"
@@ -63,10 +64,15 @@ AffiliationServiceImpl::AffiliationServiceImpl(
 AffiliationServiceImpl::~AffiliationServiceImpl() = default;
 
 void AffiliationServiceImpl::PrefetchChangePasswordURLs(
-    const std::vector<GURL>& urls) {
+    const std::vector<GURL>& urls,
+    base::OnceClosure callback) {
+  result_callback_ = std::move(callback);
   if (ShouldAffiliationBasedMatchingBeActive(sync_service_)) {
     RequestFacetsAffiliations(ConvertMissingURLsToFacets(urls),
                               {.change_password_info = true});
+  } else {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(result_callback_));
   }
 }
 
@@ -115,16 +121,19 @@ void AffiliationServiceImpl::OnFetchSucceeded(
   }
 
   requested_tuple_origins_.clear();
+  std::move(result_callback_).Run();
 }
 
 void AffiliationServiceImpl::OnFetchFailed() {
   fetcher_.reset();
   requested_tuple_origins_.clear();
+  std::move(result_callback_).Run();
 }
 
 void AffiliationServiceImpl::OnMalformedResponse() {
   fetcher_.reset();
   requested_tuple_origins_.clear();
+  std::move(result_callback_).Run();
 }
 
 std::vector<FacetURI> AffiliationServiceImpl::ConvertMissingURLsToFacets(
