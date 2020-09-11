@@ -298,7 +298,7 @@ class CloseDialogCallbackWrapper
 
  private:
   friend class base::RefCountedThreadSafe<CloseDialogCallbackWrapper>;
-  ~CloseDialogCallbackWrapper() {}
+  ~CloseDialogCallbackWrapper() = default;
 
   CloseCallback callback_;
 };
@@ -529,10 +529,9 @@ std::unique_ptr<WebContents> WebContents::CreateWithSessionStorage(
     opener = opener_rfh->frame_tree_node();
   new_contents->SetOpenerForNewContents(opener, params.opener_suppressed);
 
-  for (auto it = session_storage_namespace_map.begin();
-       it != session_storage_namespace_map.end(); ++it) {
-    new_contents->GetController().SetSessionStorageNamespace(it->first,
-                                                             it->second.get());
+  for (const auto& it : session_storage_namespace_map) {
+    new_contents->GetController().SetSessionStorageNamespace(it.first,
+                                                             it.second.get());
   }
 
   WebContentsImpl* outer_web_contents = nullptr;
@@ -675,7 +674,7 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
           FrameTreeNode::kFrameTreeNodeInvalidId),
       focused_web_contents_(current_web_contents) {}
 
-WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() {}
+WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
 std::unique_ptr<WebContents>
 WebContentsImpl::WebContentsTreeNode::DisconnectFromOuterWebContents() {
@@ -845,7 +844,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   frame_tree_.SetFrameRemoveListener(base::BindRepeating(
       &WebContentsImpl::OnFrameRemoved, base::Unretained(this)));
 #if BUILDFLAG(ENABLE_PLUGINS)
-  pepper_playback_observer_.reset(new PepperPlaybackObserver(this));
+  pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
 #endif
 
 #if defined(OS_ANDROID)
@@ -2188,11 +2187,11 @@ void WebContentsImpl::AttachInnerWebContents(
 
   // When attaching a WebContents as an inner WebContents, we need to replace
   // the Webcontents' view with a WebContentsViewChildFrame.
-  inner_web_contents_impl->view_.reset(new WebContentsViewChildFrame(
+  inner_web_contents_impl->view_ = std::make_unique<WebContentsViewChildFrame>(
       inner_web_contents_impl,
       GetContentClient()->browser()->GetWebContentsViewDelegate(
           inner_web_contents_impl),
-      &inner_web_contents_impl->render_view_host_delegate_view_));
+      &inner_web_contents_impl->render_view_host_delegate_view_);
 
   // When the WebContents being initialized has an opener, the  browser side
   // Render{View,Frame}Host must be initialized and the RenderWidgetHostView
@@ -2768,8 +2767,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
 
   if (browser_plugin_guest_) {
-    view_.reset(new WebContentsViewChildFrame(
-        this, delegate, &render_view_host_delegate_view_));
+    view_ = std::make_unique<WebContentsViewChildFrame>(
+        this, delegate, &render_view_host_delegate_view_);
   } else {
     view_.reset(CreateWebContentsView(this, delegate,
                                       &render_view_host_delegate_view_));
@@ -2780,15 +2779,16 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   view_->CreateView(params.context);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  plugin_content_origin_allowlist_.reset(
-      new PluginContentOriginAllowlist(this));
+  plugin_content_origin_allowlist_ =
+      std::make_unique<PluginContentOriginAllowlist>(this);
 #endif
 
   registrar_.Add(this,
                  NOTIFICATION_RENDER_WIDGET_HOST_DESTROYED,
                  NotificationService::AllBrowserContextsAndSources());
 
-  screen_orientation_provider_.reset(new ScreenOrientationProvider(this));
+  screen_orientation_provider_ =
+      std::make_unique<ScreenOrientationProvider>(this);
 
 #if defined(OS_ANDROID)
   DateTimeChooserAndroid::CreateForWebContents(this);
@@ -2799,8 +2799,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   if (browser_plugin_guest_)
     browser_plugin_guest_->Init();
 
-  for (size_t i = 0; i < g_created_callbacks.Get().size(); i++)
-    g_created_callbacks.Get().at(i).Run(this);
+  for (auto& i : g_created_callbacks.Get())
+    i.Run(this);
 
   // If the WebContents creation was renderer-initiated, it means that the
   // corresponding RenderView and main RenderFrame have already been created.
@@ -3127,7 +3127,8 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
     return GetOuterWebContents()->GetInputEventRouter();
 
   if (!rwh_input_event_router_.get() && !is_being_destroyed_)
-    rwh_input_event_router_.reset(new RenderWidgetHostInputEventRouter);
+    rwh_input_event_router_ =
+        std::make_unique<RenderWidgetHostInputEventRouter>();
   return rwh_input_event_router_.get();
 }
 
@@ -4213,7 +4214,7 @@ device::mojom::GeolocationContext* WebContentsImpl::GetGeolocationContext() {
 
 device::mojom::WakeLockContext* WebContentsImpl::GetWakeLockContext() {
   if (!wake_lock_context_host_)
-    wake_lock_context_host_.reset(new WakeLockContextHost(this));
+    wake_lock_context_host_ = std::make_unique<WakeLockContextHost>(this);
   return wake_lock_context_host_->GetWakeLockContext();
 }
 
@@ -4253,9 +4254,9 @@ TextInputManager* WebContentsImpl::GetTextInputManager() {
     return GetOuterWebContents()->GetTextInputManager();
 
   if (!text_input_manager_ && !browser_plugin_guest_) {
-    text_input_manager_.reset(new TextInputManager(
+    text_input_manager_ = std::make_unique<TextInputManager>(
         GetBrowserContext() &&
-        !GetBrowserContext()->IsOffTheRecord()) /* should_do_learning */);
+        !GetBrowserContext()->IsOffTheRecord() /* should_do_learning */);
   }
 
   return text_input_manager_.get();
@@ -7213,10 +7214,9 @@ void WebContentsImpl::DidStopLoading() {
   // An entry may not exist for a stop when loading an initial blank page or
   // if an iframe injected by script into a blank page finishes loading.
   if (entry) {
-    details.reset(new LoadNotificationDetails(
-        entry->GetVirtualURL(),
-        &controller_,
-        controller_.GetCurrentEntryIndex()));
+    details = std::make_unique<LoadNotificationDetails>(
+        entry->GetVirtualURL(), &controller_,
+        controller_.GetCurrentEntryIndex());
   }
 
   LoadingStateChanged(true, details.get());
@@ -8229,7 +8229,7 @@ FindRequestManager* WebContentsImpl::GetOrCreateFindRequestManager() {
   DCHECK(!browser_plugin_guest_ || GetOuterWebContents());
 
   // No existing FindRequestManager found, so one must be created.
-  find_request_manager_.reset(new FindRequestManager(this));
+  find_request_manager_ = std::make_unique<FindRequestManager>(this);
 
   // Concurrent find sessions must not overlap, so destroy any existing
   // FindRequestManagers in any inner WebContentses.

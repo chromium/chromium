@@ -979,9 +979,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
           &RenderFrameHostImpl::OnUnloaded, weak_ptr_factory_.GetWeakPtr()));
-  beforeunload_timeout_.reset(new TimeoutMonitor(
+  beforeunload_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
-                          weak_ptr_factory_.GetWeakPtr())));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Local roots are:
   // - main frames; or
@@ -6626,7 +6626,7 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       remote_interfaces;
   frame_->GetInterfaceProvider(
       remote_interfaces.InitWithNewPipeAndPassReceiver());
-  remote_interfaces_.reset(new service_manager::InterfaceProvider);
+  remote_interfaces_ = std::make_unique<service_manager::InterfaceProvider>();
   remote_interfaces_->Bind(std::move(remote_interfaces));
 
   // Called to bind the receiver for this interface to the local frame. We need
@@ -7544,7 +7544,7 @@ void RenderFrameHostImpl::BindSerialService(
 void RenderFrameHostImpl::BindAuthenticatorReceiver(
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
   if (!authenticator_impl_)
-    authenticator_impl_.reset(new AuthenticatorImpl(this));
+    authenticator_impl_ = std::make_unique<AuthenticatorImpl>(this);
 
   authenticator_impl_->Bind(std::move(receiver));
 }
@@ -7603,10 +7603,10 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
 void RenderFrameHostImpl::GetSensorProvider(
     mojo::PendingReceiver<device::mojom::SensorProvider> receiver) {
   if (!sensor_provider_proxy_) {
-    sensor_provider_proxy_.reset(new SensorProviderProxyImpl(
+    sensor_provider_proxy_ = std::make_unique<SensorProviderProxyImpl>(
         PermissionControllerImpl::FromBrowserContext(
             GetProcess()->GetBrowserContext()),
-        this));
+        this);
   }
   sensor_provider_proxy_->Bind(std::move(receiver));
 }
@@ -7792,7 +7792,8 @@ void RenderFrameHostImpl::CreateIDBFactory(
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   if (!permission_service_context_)
-    permission_service_context_.reset(new PermissionServiceContext(this));
+    permission_service_context_ =
+        std::make_unique<PermissionServiceContext>(this);
 
   permission_service_context_->CreateService(std::move(receiver));
 }
@@ -8176,9 +8177,8 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // banned URLs into the navigation controller in the first place.
   process->FilterURL(false, &params->url);
   process->FilterURL(true, &params->referrer.url);
-  for (auto it(params->redirects.begin()); it != params->redirects.end();
-       ++it) {
-    process->FilterURL(false, &(*it));
+  for (auto& redirect : params->redirects) {
+    process->FilterURL(false, &redirect);
   }
 
   // Without this check, the renderer can trick the browser into using

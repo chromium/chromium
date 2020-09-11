@@ -50,7 +50,7 @@ std::set<SiteInstance*> CollectSiteInstances(FrameTree* tree) {
 
 FrameTree::NodeIterator::NodeIterator(const NodeIterator& other) = default;
 
-FrameTree::NodeIterator::~NodeIterator() {}
+FrameTree::NodeIterator::~NodeIterator() = default;
 
 FrameTree::NodeIterator& FrameTree::NodeIterator::operator++() {
   if (current_node_ != root_of_subtree_to_skip_) {

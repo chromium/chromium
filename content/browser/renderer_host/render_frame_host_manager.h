@@ -164,7 +164,7 @@ class CONTENT_EXPORT RenderFrameHostManager
     virtual int GetOuterDelegateFrameTreeNodeId() = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // The delegate pointer must be non-null and is not owned by this class. It
