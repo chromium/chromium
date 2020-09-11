@@ -311,6 +311,9 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   ash::NonClientFrameViewAsh* GetFrameView();
   const ash::NonClientFrameViewAsh* GetFrameView() const;
 
+  void EnsurePendingScale();
+  float GetClientToDpPendingScale() const;
+
   GeometryChangedCallback geometry_changed_callback_;
 
   int top_inset_height_ = 0;

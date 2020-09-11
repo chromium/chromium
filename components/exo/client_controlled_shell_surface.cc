@@ -52,6 +52,8 @@
 #include "ui/compositor/compositor_lock.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
@@ -321,8 +323,7 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     bool default_scale_cancellation)
     : ShellSurfaceBase(surface, gfx::Point(), true, can_minimize, container),
       current_pin_(ash::WindowPinType::kNone),
-      use_default_scale_cancellation_(default_scale_cancellation) {
-}
+      use_default_scale_cancellation_(default_scale_cancellation) {}
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
   // Reset the window delegate here so that we won't try to do any dragging
@@ -346,31 +347,11 @@ void ClientControlledShellSurface::SetBounds(int64_t display_id,
     return;
   }
 
-  // Handle the case where we receive bounds from the client before the initial
-  // scale has been set.
-  if (pending_scale_ == 0.0) {
-    DCHECK(!use_default_scale_cancellation_);
-    display::Display display;
-    if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                              &display)) {
-      SetScale(display.device_scale_factor());
-      CommitPendingScale();
-    }
-  }
-
-  float client_to_dp_scale = 1.f;
-  // When the client is scale-aware, we expect that it will resize windows when
-  // reacting to scale changes. Since we do not commit the scale until the
-  // buffer size changes, any bounds sent after a scale change and before the
-  // scale commit will result in mismatched sizes between widget and the buffer.
-  // To work around this, we use pending_scale_ to calculate bounds in DP
-  // instead of GetClientToDpScale().
-  if (!use_default_scale_cancellation_)
-    client_to_dp_scale = 1.f / pending_scale_;
-
-  gfx::Rect bounds_dp = gfx::ScaleToRoundedRect(bounds, client_to_dp_scale);
-
   SetDisplay(display_id);
+  EnsurePendingScale();
+
+  const gfx::Rect bounds_dp =
+      gfx::ScaleToRoundedRect(bounds, GetClientToDpPendingScale());
   SetGeometry(bounds_dp);
 }
 
@@ -378,7 +359,10 @@ void ClientControlledShellSurface::SetBoundsOrigin(const gfx::Point& origin) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetBoundsOrigin", "origin",
                origin.ToString());
 
-  pending_geometry_.set_origin(origin);
+  EnsurePendingScale();
+  const gfx::Point origin_dp =
+      gfx::ScaleToRoundedPoint(origin, GetClientToDpPendingScale());
+  pending_geometry_.set_origin(origin_dp);
 }
 
 void ClientControlledShellSurface::SetBoundsSize(const gfx::Size& size) {
@@ -390,8 +374,12 @@ void ClientControlledShellSurface::SetBoundsSize(const gfx::Size& size) {
     return;
   }
 
-  pending_geometry_.set_size(size);
+  EnsurePendingScale();
+  const gfx::Size size_dp =
+      gfx::ScaleToRoundedSize(size, GetClientToDpPendingScale());
+  pending_geometry_.set_size(size_dp);
 }
+
 void ClientControlledShellSurface::SetMaximized() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::SetMaximized");
   pending_window_state_ = ash::WindowStateType::kMaximized;
@@ -1392,6 +1380,30 @@ const ash::NonClientFrameViewAsh* ClientControlledShellSurface::GetFrameView()
     const {
   return static_cast<const ash::NonClientFrameViewAsh*>(
       widget_->non_client_view()->frame_view());
+}
+
+void ClientControlledShellSurface::EnsurePendingScale() {
+  // Handle the case where we receive bounds from the client before the initial
+  // scale has been set.
+  if (pending_scale_ == 0.0) {
+    DCHECK(!use_default_scale_cancellation_);
+    display::Display display;
+    if (display::Screen::GetScreen()->GetDisplayWithDisplayId(
+            pending_display_id_, &display)) {
+      SetScale(display.device_scale_factor());
+      CommitPendingScale();
+    }
+  }
+}
+
+float ClientControlledShellSurface::GetClientToDpPendingScale() const {
+  // When the client is scale-aware, we expect that it will resize windows when
+  // reacting to scale changes. Since we do not commit the scale until the
+  // buffer size changes, any bounds sent after a scale change and before the
+  // scale commit will result in mismatched sizes between widget and the buffer.
+  // To work around this, we use pending_scale_ to calculate bounds in DP
+  // instead of GetClientToDpScale().
+  return use_default_scale_cancellation_ ? 1.f : 1.f / pending_scale_;
 }
 
 // static

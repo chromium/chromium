@@ -1820,6 +1820,58 @@ TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
   EXPECT_EQ(secondary_display.id(), display.id());
 }
 
+// Test if the surface bounds is correctly set when default scale cancellation
+// is enabled or disabled.
+TEST_F(ClientControlledShellSurfaceTest,
+       SetBoundsWithAndWithoutDefaultScaleCancellation) {
+  UpdateDisplay("800x600*2");
+
+  const auto primary_display_id =
+      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+
+  const gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  const gfx::Rect bounds(64, 64, 128, 128);
+  const gfx::Rect bounds_dp = gfx::ScaleToRoundedRect(bounds, 1.f / 2.f);
+
+  for (const auto default_scale_cancellation : {true, false}) {
+    const auto bounds_to_set = default_scale_cancellation ? bounds_dp : bounds;
+
+    {
+      // Set display id, bounds origin, bounds size at the same time via
+      // SetBounds method.
+      std::unique_ptr<Surface> surface(new Surface);
+      auto shell_surface(exo_test_helper()->CreateClientControlledShellSurface(
+          surface.get(), /*is_modal=*/false, default_scale_cancellation));
+
+      shell_surface->SetBounds(primary_display_id, bounds_to_set);
+      surface->Attach(buffer.get());
+      surface->Commit();
+
+      EXPECT_EQ(bounds_dp,
+                shell_surface->GetWidget()->GetWindowBoundsInScreen());
+    }
+
+    {
+      // Set display id, bounds origin, bounds size separately.
+      std::unique_ptr<Surface> surface(new Surface);
+      auto shell_surface(exo_test_helper()->CreateClientControlledShellSurface(
+          surface.get(), /*is_modal=*/false, default_scale_cancellation));
+
+      shell_surface->SetDisplay(primary_display_id);
+      shell_surface->SetBoundsOrigin(bounds_to_set.origin());
+      shell_surface->SetBoundsSize(bounds_to_set.size());
+      surface->Attach(buffer.get());
+      surface->Commit();
+
+      EXPECT_EQ(bounds_dp,
+                shell_surface->GetWidget()->GetWindowBoundsInScreen());
+    }
+  }
+}
+
 // Set orientation lock to a window.
 TEST_F(ClientControlledShellSurfaceTest, SetOrientationLock) {
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
