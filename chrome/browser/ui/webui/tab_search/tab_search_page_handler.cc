@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,6 +73,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 }
 
 void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
+  TRACE_EVENT0("browser", "TabSearchPageHandler::GetProfileTabs");
   auto profile_tabs = tab_search::mojom::ProfileTabs::New();
   Profile* profile = browser_->profile();
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -207,6 +209,7 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (!browser)
     return;
+  TRACE_EVENT0("browser", "TabSearchPageHandler::TabChangedAt");
   page_->TabUpdated(GetTabData(browser->tab_strip_model(), contents, index));
 }
 
