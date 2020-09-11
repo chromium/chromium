@@ -67,6 +67,11 @@ bool UseMultiChannelCaptureProcessing() {
       features::kWebRtcEnableCaptureMultiChannelApm);
 }
 
+bool Allow48kHzApmProcessing() {
+  return base::FeatureList::IsEnabled(
+      features::kWebRtcAllow48kHzProcessingOnArm);
+}
+
 constexpr int kAudioProcessingNumberOfChannels = 1;
 constexpr int kBuffersPerSecond = 100;  // 10 ms per buffer.
 
@@ -601,6 +606,12 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
     // is enabled by default.
     typing_detector_.reset(new webrtc::TypingDetection());
     blink::EnableTypingDetection(&apm_config, typing_detector_.get());
+  }
+
+  // Ensure that 48 kHz APM processing is always active. This overrules the
+  // default setting in WebRTC of 32 kHz for ARM platforms.
+  if (Allow48kHzApmProcessing()) {
+    apm_config.pipeline.maximum_internal_processing_rate = 48000;
   }
 
   apm_config.residual_echo_detector.enabled = false;
