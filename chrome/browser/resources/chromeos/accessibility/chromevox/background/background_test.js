@@ -3034,3 +3034,29 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', function() {
             .replay();
       });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'DialogAutoSummaryTextContent', function() {
+  // This was overridden in setUp() for most all tests, but we want the
+  // production behavior here.
+  Output.ROLE_INFO_[RoleType.DIALOG]['outputContextFirst'] = true;
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <p>start</p>
+    <div role="dialog" aria-label="Setup">
+      <h1>Welcome</h1>
+      <p>This is some introductory text<p>
+      <button>Exit</button>
+      <button>Let's go</button>
+    </div>
+  `,
+      function(root) {
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('Setup', 'Dialog')
+            .expectSpeech(
+                `Welcome This is some introductory text Exit Let's go`)
+            .expectSpeech('Welcome')
+            .expectSpeech('Heading 1')
+            .replay();
+      });
+});

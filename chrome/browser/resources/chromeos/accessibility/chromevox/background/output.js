@@ -1067,8 +1067,8 @@ Output = class {
             this.node_(
                 related, related, Output.EventType.NAVIGATE, buff, ruleStr);
           }
-        } else if (token == 'nameOrTextContent') {
-          if (node.name) {
+        } else if (token == 'nameOrTextContent' || token == 'textContent') {
+          if (node.name && token == 'nameOrTextContent') {
             ruleStr.writeToken(token);
             this.format_({
               node,
@@ -2437,7 +2437,7 @@ Output.RULES = {
           $state`
     },
     alertDialog: {
-      enter: `$earcon(ALERT_MODAL) $name $state $description`,
+      enter: `$earcon(ALERT_MODAL) $name $state $description $textContent`,
       speak: `$earcon(ALERT_MODAL) $name $nameOrTextContent $description $state
           $role`
     },
@@ -2468,7 +2468,7 @@ Output.RULES = {
           $state $restriction $role $description`,
     },
     date: {enter: `$nameFromNode $role $state $restriction $description`},
-    dialog: {enter: `$nameFromNode $role $description`},
+    dialog: {enter: `$nameFromNode $role $description $textContent`},
     genericContainer: {
       enter: `$nameFromNode $description $state`,
       speak: `$nameOrTextContent $description $state`
