@@ -46,15 +46,6 @@ class SingleClientExtensionAppsSyncTest
   DISALLOW_COPY_AND_ASSIGN(SingleClientExtensionAppsSyncTest);
 };
 
-// crbug.com/1001437
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_InstallSomePlatformApps DISABLED_InstallSomePlatformApps
-#define MAYBE_InstallSomeApps DISABLED_InstallSomeApps
-#else
-#define MAYBE_InstallSomePlatformApps InstallSomePlatformApps
-#define MAYBE_InstallSomeApps InstallSomeApps
-#endif
-
 IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest, StartWithNoApps) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameApps());
@@ -64,7 +55,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
                        StartWithSomeLegacyApps) {
   ASSERT_TRUE(SetupClients());
 
-  const int kNumApps = 5;
+  const int kNumApps = 2;
   for (int i = 0; i < kNumApps; ++i) {
     InstallHostedApp(GetProfile(0), i);
     InstallHostedApp(verifier(), i);
@@ -78,7 +69,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
                        StartWithSomePlatformApps) {
   ASSERT_TRUE(SetupClients());
 
-  const int kNumApps = 5;
+  const int kNumApps = 2;
   for (int i = 0; i < kNumApps; ++i) {
     InstallPlatformApp(GetProfile(0), i);
     InstallPlatformApp(verifier(), i);
@@ -92,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
                        InstallSomeLegacyApps) {
   ASSERT_TRUE(SetupSync());
 
-  const int kNumApps = 5;
+  const int kNumApps = 2;
   for (int i = 0; i < kNumApps; ++i) {
     InstallHostedApp(GetProfile(0), i);
     InstallHostedApp(verifier(), i);
@@ -103,10 +94,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
-                       MAYBE_InstallSomePlatformApps) {
+                       InstallSomePlatformApps) {
   ASSERT_TRUE(SetupSync());
 
-  const int kNumApps = 5;
+  const int kNumApps = 2;
   for (int i = 0; i < kNumApps; ++i) {
     InstallPlatformApp(GetProfile(0), i);
     InstallPlatformApp(verifier(), i);
@@ -116,19 +107,21 @@ IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest,
-                       MAYBE_InstallSomeApps) {
+IN_PROC_BROWSER_TEST_P(SingleClientExtensionAppsSyncTest, InstallSomeApps) {
   ASSERT_TRUE(SetupSync());
+
+  // TODO(crbug.com/1124986): Determine if these values
+  // can be raised without introducing flakiness.
+  const int kNumApps = 1;
+  const int kNumPlatformApps = 1;
 
   int i = 0;
 
-  const int kNumApps = 5;
   for (int j = 0; j < kNumApps; ++i, ++j) {
     InstallHostedApp(GetProfile(0), i);
     InstallHostedApp(verifier(), i);
   }
 
-  const int kNumPlatformApps = 5;
   for (int j = 0; j < kNumPlatformApps; ++i, ++j) {
     InstallPlatformApp(GetProfile(0), i);
     InstallPlatformApp(verifier(), i);
