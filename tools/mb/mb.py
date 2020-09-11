@@ -1392,6 +1392,8 @@ class MetaBuildWrapper(object):
       cmdline = []
 
     if test_type == 'generated_script' or is_ios or is_lacros:
+      assert 'script' not in isolate_map[target], (
+          'generated_scripts can no longer customize the script path')
       if is_win:
         default_script = 'bin\\run_{}.bat'.format(target)
       else:

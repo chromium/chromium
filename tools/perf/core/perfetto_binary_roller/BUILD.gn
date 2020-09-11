@@ -22,7 +22,7 @@ generate_wrapper("upload_trace_processor") {
   }
 
   executable = "upload_trace_processor.py"
-  wrapper_script = "$root_build_dir/bin/upload_trace_processor"
+  wrapper_script = "$root_build_dir/bin/run_upload_trace_processor"
   executable_args = [
     "--path",
     "@WrappedPath(./$binary_name)",
