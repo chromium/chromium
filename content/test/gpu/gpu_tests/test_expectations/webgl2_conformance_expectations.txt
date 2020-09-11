@@ -69,7 +69,6 @@ crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_inst
 # ========================
 
 # Failing new updated tests
-crbug.com/1108588 conformance/glsl/bugs/character-set.html [ Failure ]
 crbug.com/1108044 conformance2/renderbuffers/readbuffer.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
