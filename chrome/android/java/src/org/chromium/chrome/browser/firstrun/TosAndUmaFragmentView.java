@@ -81,14 +81,14 @@ public class TosAndUmaFragmentView extends FrameLayout {
         // Cache resource dimensions that used in #onMeasure.
         mImageBottomMargin = getResources().getDimensionPixelSize(R.dimen.fre_image_bottom_margin);
         mVerticalSpacing = getResources().getDimensionPixelSize(R.dimen.fre_vertical_spacing);
-        mImageSize = getResources().getDimensionPixelSize(R.dimen.fre_image_height);
+        mImageSize = getResources().getDimensionPixelSize(R.dimen.fre_tos_image_height);
         mLoadingSpinnerSize =
                 getResources().getDimensionPixelSize(R.dimen.fre_loading_spinner_size);
         mLandscapeTopPadding =
                 getResources().getDimensionPixelSize(R.dimen.fre_landscape_top_padding);
         mHeadlineSize = getResources().getDimensionPixelSize(R.dimen.headline_size);
         mContentMargin = getResources().getDimensionPixelSize(R.dimen.fre_content_margin);
-        mButtonBarHeight = getResources().getDimensionPixelSize(R.dimen.fre_button_bar_height);
+        mButtonBarHeight = getResources().getDimensionPixelSize(R.dimen.fre_tos_button_bar_height);
     }
 
     @Override
