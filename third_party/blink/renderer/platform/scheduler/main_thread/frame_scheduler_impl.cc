@@ -440,7 +440,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
           QueueTraits::PrioritisationType::kHighPriorityLocalFrame);
     case TaskType::kInternalContinueScriptLoading:
       return PausableTaskQueueTraits().SetPrioritisationType(
-          QueueTraits::PrioritisationType::kVeryHigh);
+          QueueTraits::PrioritisationType::kInternalScriptContinuation);
     case TaskType::kDatabaseAccess:
       if (base::FeatureList::IsEnabled(kHighPriorityDatabaseTaskType)) {
         return PausableTaskQueueTraits().SetPrioritisationType(

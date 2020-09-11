@@ -103,7 +103,7 @@ void FrameTaskQueueController::CreateTaskQueue(
           .SetFrameScheduler(frame_scheduler_impl_);
 
   switch (queue_traits.prioritisation_type) {
-    case QueueTraits::PrioritisationType::kVeryHigh:
+    case QueueTraits::PrioritisationType::kInternalScriptContinuation:
       queue_creation_params = queue_creation_params.SetFixedPriority(
         TaskQueue::QueuePriority::kVeryHighPriority);
       break;

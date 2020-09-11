@@ -240,7 +240,7 @@ class FrameSchedulerImplTest : public testing::Test {
   // space delimited task identifiers. The first letter of each task identifier
   // specifies the prioritisation type:
   // - 'R': Regular (normal priority)
-  // - 'V': Very high
+  // - 'V': Internal Script Continuation (very high priority)
   // - 'B': Best-effort
   // - 'D': Database
   void PostTestTasksForPrioritisationType(Vector<String>* run_order,
@@ -255,7 +255,7 @@ class FrameSchedulerImplTest : public testing::Test {
           prioritisation_type = PrioritisationType::kRegular;
           break;
         case 'V':
-          prioritisation_type = PrioritisationType::kVeryHigh;
+          prioritisation_type = PrioritisationType::kInternalScriptContinuation;
           break;
         case 'B':
           prioritisation_type = PrioritisationType::kBestEffort;

@@ -324,7 +324,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     TaskQueueCreationFromQueueTraitsTest,
     ::testing::Values(
-        QueueTraits::PrioritisationType::kVeryHigh,
+        QueueTraits::PrioritisationType::kInternalScriptContinuation,
         QueueTraits::PrioritisationType::kBestEffort,
         QueueTraits::PrioritisationType::kRegular,
         QueueTraits::PrioritisationType::kLoading,
