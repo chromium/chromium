@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
@@ -85,10 +86,17 @@ void FileHandlerManager::EnableAndRegisterOsFileHandlers(const AppId& app_id) {
     return;
   }
 
+// File handler registration is done via shortcuts creation on MacOS,
+// WebAppShortcutManager::BuildShortcutInfoForWebApp collects file handler
+// information to shortcut_info->file_handler_extensions, then used by MacOS
+// implementation of |internals::CreatePlatformShortcuts|. So we avoid creating
+// shortcuts twice here.
+#if !defined(OS_MAC)
   std::string app_name = registrar_->GetAppShortName(app_id);
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
   if (file_handlers)
     RegisterFileHandlersWithOs(app_id, app_name, profile(), *file_handlers);
+#endif
 }
 
 void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
@@ -106,7 +114,13 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
     return;
   }
 
+  // File handler information is embedded in the shortcut, when
+  // |DeleteSharedAppShims| is called in
+  // |OsIntegrationManager::UninstallOsHooks|, file handlers are also
+  // unregistered./
+#if !defined(OS_MAC)
   UnregisterFileHandlersWithOs(app_id, profile());
+#endif
 }
 
 void FileHandlerManager::MaybeUpdateFileHandlingOriginTrialExpiry(

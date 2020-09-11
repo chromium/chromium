@@ -93,11 +93,6 @@ class OsIntegrationManager {
   void GetShortcutInfoForApp(
       const AppId& app_id,
       AppShortcutManager::GetShortcutInfoCallback callback);
-  // TODO(https://crbug.com/1123201): remove exposing this from
-  // OsIntegrationManager.
-  void CreateShortcuts(const AppId& app_id,
-                       bool add_to_desktop,
-                       CreateShortcutsCallback callback);
 
   // Proxy calls for FileHandlerManager.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);

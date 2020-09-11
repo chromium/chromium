@@ -65065,6 +65065,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Failure"/>
 </enum>
 
+<enum name="ShortcutsCreationResult">
+  <summary>Result of creating shortcuts for PWA.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to create shortcut"/>
+</enum>
+
 <enum name="ShortcutsMenuRegistrationWinResult">
   <summary>
     Result of registering app icon shortcuts menu for PWA on Windows

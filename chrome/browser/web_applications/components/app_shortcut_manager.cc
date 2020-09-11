@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,6 +21,19 @@
 namespace web_app {
 
 namespace {
+
+// UMA metric name for shortcuts creation result.
+constexpr const char* kCreationResultMetric =
+    "WebApp.Shortcuts.Creation.Result";
+
+// Result of shortcuts creation process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CreationResult {
+  kSuccess = 0,
+  kFailToCreateShortcut = 1,
+  kMaxValue = kFailToCreateShortcut
+};
 
 AppShortcutManager::ShortcutCallback& GetShortcutUpdateCallbackForTesting() {
   static base::NoDestructor<AppShortcutManager::ShortcutCallback> callback;
@@ -134,6 +148,9 @@ void AppShortcutManager::OnShortcutsCreated(const AppId& app_id,
                                             CreateShortcutsCallback callback,
                                             bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  UMA_HISTOGRAM_ENUMERATION(kCreationResultMetric,
+                            success ? CreationResult::kSuccess
+                                    : CreationResult::kFailToCreateShortcut);
   std::move(callback).Run(success);
 }
 

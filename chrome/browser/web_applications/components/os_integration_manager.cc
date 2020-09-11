@@ -203,14 +203,6 @@ bool OsIntegrationManager::CanCreateShortcuts() const {
   return shortcut_manager_->CanCreateShortcuts();
 }
 
-void OsIntegrationManager::CreateShortcuts(const AppId& app_id,
-                                           bool add_to_desktop,
-                                           CreateShortcutsCallback callback) {
-  DCHECK(shortcut_manager_);
-  return shortcut_manager_->CreateShortcuts(app_id, add_to_desktop,
-                                            std::move(callback));
-}
-
 void OsIntegrationManager::GetShortcutInfoForApp(
     const AppId& app_id,
     AppShortcutManager::GetShortcutInfoCallback callback) {
