@@ -185,22 +185,15 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
   }
 
   LayoutUnit MinimalSpaceShortage() const {
-    if (!HasRareData())
+    if (!HasRareData() || rare_data_->minimal_space_shortage == kIndefiniteSize)
       return LayoutUnit::Max();
-#if DCHECK_IS_ON()
-    // This field shares storage with another field.
-    DCHECK(!rare_data_->has_tallest_unbreakable_block_size);
-#endif
     return rare_data_->minimal_space_shortage;
   }
 
   LayoutUnit TallestUnbreakableBlockSize() const {
-    if (!HasRareData())
+    if (!HasRareData() ||
+        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize)
       return LayoutUnit();
-#if DCHECK_IS_ON()
-    // This field shares storage with another field.
-    DCHECK(rare_data_->has_tallest_unbreakable_block_size);
-#endif
     return rare_data_->tallest_unbreakable_block_size;
   }
 
@@ -400,7 +393,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
       // couldn't fit all the content, and we're allowed to stretch columns
       // further, we'll perform another pass with the column block-size
       // increased by this amount.
-      LayoutUnit minimal_space_shortage = LayoutUnit::Max();
+      LayoutUnit minimal_space_shortage = kIndefiniteSize;
     };
     NGExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
@@ -408,10 +401,6 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     LayoutUnit overflow_block_size = kIndefiniteSize;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
-
-#if DCHECK_IS_ON()
-    bool has_tallest_unbreakable_block_size = false;
-#endif
     bool is_single_use = false;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;

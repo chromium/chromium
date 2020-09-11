@@ -76,14 +76,11 @@ NGLayoutResult::NGLayoutResult(
     if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
       rare_data->tallest_unbreakable_block_size =
           builder->tallest_unbreakable_block_size_;
-#if DCHECK_IS_ON()
-      rare_data->has_tallest_unbreakable_block_size = true;
-#endif
-    }
-    if (builder->minimal_space_shortage_ != LayoutUnit::Max()) {
-#if DCHECK_IS_ON()
-      DCHECK(!rare_data->has_tallest_unbreakable_block_size);
-#endif
+
+      // This field shares storage with "minimal space shortage", so both
+      // cannot be set at the same time.
+      DCHECK_EQ(builder->minimal_space_shortage_, LayoutUnit::Max());
+    } else if (builder->minimal_space_shortage_ != LayoutUnit::Max()) {
       rare_data->minimal_space_shortage = builder->minimal_space_shortage_;
     }
 

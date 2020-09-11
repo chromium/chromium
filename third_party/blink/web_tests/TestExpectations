@@ -1014,8 +1014,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-break/fieldse
 crbug.com/1066380 virtual/layout_ng_block_frag/external/wpt/css/css-break/widows-orphans-002.html [ Failure ]
 crbug.com/1066380 virtual/layout_ng_block_frag/external/wpt/css/css-break/widows-orphans-004.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-break/widows-orphans-005.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-breaks-001.html [ Crash Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-monolithic-001.html [ Crash Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-multicol-001.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/change-out-of-flow-type-and-remove-inner-multicol-crash.html [ Crash Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/composited-under-clip-under-multicol.html [ Failure Crash ]
