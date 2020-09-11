@@ -26,7 +26,6 @@ class TabSearchBrowserTest extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'network::features::kOutOfBlinkCors',
         'features::kTabSearch',
       ]
     };
