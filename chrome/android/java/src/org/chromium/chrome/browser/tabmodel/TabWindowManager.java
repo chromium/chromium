@@ -171,6 +171,24 @@ public class TabWindowManager implements ActivityStateListener {
     }
 
     /**
+     * @param tab The tab to look for in each model.
+     * @return The TabModel containing the given Tab or null if one doesn't exist.
+     **/
+    public TabModel getTabModelForTab(Tab tab) {
+        if (tab == null) return null;
+
+        for (int i = 0; i < mSelectors.size(); i++) {
+            TabModelSelector selector = mSelectors.get(i);
+            if (selector != null) {
+                TabModel tabModel = selector.getModelForTabId(tab.getId());
+                if (tabModel != null) return tabModel;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param tabId The ID of the tab in question.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
