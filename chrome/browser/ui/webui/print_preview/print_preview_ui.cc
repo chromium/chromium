@@ -548,6 +548,7 @@ void PrintPreviewUI::ClearPreviewUIId() {
   if (!id_)
     return;
 
+  receiver_.reset();
   PrintPreviewDataService::GetInstance()->RemoveEntry(*id_);
   g_print_preview_request_id_map.Get().Erase(*id_);
   g_print_preview_ui_id_map.Get().Remove(*id_);
