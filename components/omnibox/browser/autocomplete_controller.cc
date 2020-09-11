@@ -680,10 +680,6 @@ void AutocompleteController::UpdateResult(
   if (OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
-  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
-    result_.ConvertInSuggestionPedalMatches(provider_client_.get());
-  }
-
   UpdateHeaderInfoFromZeroSuggestProvider(&result_);
 
   // Sort the matches and trim to a small number of "best" matches.
@@ -694,6 +690,10 @@ void AutocompleteController::UpdateResult(
     preserve_default_match = &last_default_match.value();
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
+
+  if (OmniboxFieldTrial::IsPedalSuggestionsEnabled()) {
+    result_.ConvertInSuggestionPedalMatches(provider_client_.get());
+  }
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.
