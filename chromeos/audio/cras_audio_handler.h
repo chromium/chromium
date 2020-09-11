@@ -322,6 +322,11 @@ class COMPONENT_EXPORT(CHROMEOS_AUDIO) CrasAudioHandler
   // returned.
   int32_t system_aec_group_id() const;
 
+  // Asks  CRAS to resend BluetoothBatteryChanged signal, used in cases when
+  // Chrome cleans up the stored battery information but still has the device
+  // connected afterward. For example: User logout.
+  void ResendBluetoothBattery();
+
  protected:
   CrasAudioHandler(
       mojo::PendingRemote<media_session::mojom::MediaControllerManager>

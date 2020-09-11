@@ -187,6 +187,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void SetPlayerMetadata(
       const std::map<std::string, std::string>& metadata) = 0;
 
+  // Asks Cras to resend battery level for Bluetooth device if exists .
+  virtual void ResendBluetoothBattery() = 0;
+
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback) = 0;

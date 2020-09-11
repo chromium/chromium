@@ -247,6 +247,11 @@ void FakeCrasAudioClient::AddActiveOutputNode(uint64_t node_id) {
   }
 }
 
+void FakeCrasAudioClient::ResendBluetoothBattery() {
+  for (auto& observer : observers_)
+    observer.BluetoothBatteryChanged("11:22:33:44:55:66", battery_level_);
+}
+
 void FakeCrasAudioClient::WaitForServiceToBeAvailable(
     WaitForServiceToBeAvailableCallback callback) {
   std::move(callback).Run(true);
@@ -301,6 +306,10 @@ void FakeCrasAudioClient::NotifyHotwordTriggeredForTesting(uint64_t tv_sec,
                                                            uint64_t tv_nsec) {
   for (auto& observer : observers_)
     observer.HotwordTriggered(tv_sec, tv_nsec);
+}
+
+void FakeCrasAudioClient::SetBluetoothBattteryLevelForTesting(uint32_t level) {
+  battery_level_ = level;
 }
 
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {

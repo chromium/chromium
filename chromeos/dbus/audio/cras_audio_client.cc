@@ -419,6 +419,14 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void ResendBluetoothBattery() override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kResendBluetoothBattery);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
   void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback) override {
     cras_proxy_->WaitForServiceToBeAvailable(std::move(callback));

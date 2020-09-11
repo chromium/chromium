@@ -1262,4 +1262,18 @@ TEST_F(CrasAudioClientTest, SetPlayerMetadata) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, ResendBluetoothBattery) {
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(cras::kResendBluetoothBattery,
+                       base::BindRepeating(&ExpectNoArgument), response.get());
+
+  // Call method.
+  client()->ResendBluetoothBattery();
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace chromeos

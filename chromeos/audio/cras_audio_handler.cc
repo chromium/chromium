@@ -859,6 +859,10 @@ void CrasAudioHandler::BluetoothBatteryChanged(const std::string& address,
     observer.OnBluetoothBatteryChanged(address, level);
 }
 
+void CrasAudioHandler::ResendBluetoothBattery() {
+  CrasAudioClient::Get()->ResendBluetoothBattery();
+}
+
 void CrasAudioHandler::OnAudioPolicyPrefChanged() {
   ApplyAudioPolicy();
 }
