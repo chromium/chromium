@@ -162,6 +162,9 @@ enum ShellWindowId {
   // region selector for partial screenshots.
   kShellWindowId_OverlayContainer,
 
+  // The container for ambient mode screen saver.
+  kShellWindowId_AmbientModeContainer,
+
   // The container for mouse cursor.
   kShellWindowId_MouseCursorContainer,
 

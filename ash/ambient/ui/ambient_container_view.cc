@@ -59,7 +59,7 @@ class AmbientContainerView::HostWidgetEventObserver : public ui::EventObserver {
       : container_(container) {
     DCHECK(container_);
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-        this, container_->GetWidget()->GetNativeWindow(),
+        this, container_->GetWidget()->GetNativeWindow()->GetRootWindow(),
         {ui::ET_KEY_PRESSED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_MOVED});
   }
 

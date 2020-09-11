@@ -40,8 +40,10 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -70,14 +72,9 @@ std::unique_ptr<AmbientBackendController> CreateAmbientBackendController() {
 #endif  // BUILDFLAG(ENABLE_CROS_AMBIENT_MODE_BACKEND)
 }
 
-// Returns the parent container of ambient widget. Will return a nullptr for
-// the in-session UI when lock-screen is currently not shown.
 aura::Window* GetWidgetContainer() {
-  if (ambient::util::IsShowing(LockScreen::ScreenType::kLock)) {
-    return Shell::GetContainer(Shell::GetPrimaryRootWindow(),
-                               kShellWindowId_LockScreenContainer);
-  }
-  return nullptr;
+  return Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                             kShellWindowId_AmbientModeContainer);
 }
 
 // Returns the name of the ambient widget.
@@ -111,6 +108,11 @@ bool IsAmbientModeEnabled() {
   DCHECK(prefs);
   return prefs->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
+
+class AmbientWidgetDelegate : public views::WidgetDelegate {
+ public:
+  AmbientWidgetDelegate() { SetCanMaximize(true); }
+};
 
 }  // namespace
 
@@ -533,6 +535,7 @@ void AmbientController::CreateAndShowWidget() {
   params.name = GetWidgetName();
   params.show_state = ui::SHOW_STATE_FULLSCREEN;
   params.parent = GetWidgetContainer();
+  params.delegate = new AmbientWidgetDelegate();
 
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
