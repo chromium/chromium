@@ -245,8 +245,11 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
 
   const LayoutUnit static_width_left = line[initial_index_left].InlineOffset();
   LayoutUnit static_width_right = LayoutUnit(0);
-  for (wtf_size_t i = initial_index_right + 1; i < line.size(); ++i)
-    static_width_right += line[i].inline_size;
+  if (initial_index_right + 1 < line.size()) {
+    const NGLogicalLineItem& item = line[initial_index_right + 1];
+    static_width_right =
+        line_width - item.InlineOffset() + item.margin_line_left;
+  }
   const LayoutUnit available_width =
       available_width_ - static_width_left - static_width_right;
   if (available_width <= ellipsis_width_)
