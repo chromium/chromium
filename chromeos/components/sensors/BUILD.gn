@@ -1,0 +1,48 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("sensors") {
+  output_name = "chromeos_sensors"
+  defines = [ "IS_CHROMEOS_SENSORS_IMPL" ]
+  sources = [
+    "sensor_hal_dispatcher.cc",
+    "sensor_hal_dispatcher.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/components/sensors/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_sensor_hal_client.cc",
+    "fake_sensor_hal_client.h",
+    "fake_sensor_hal_server.cc",
+    "fake_sensor_hal_server.h",
+  ]
+  deps = [
+    ":sensors",
+    "//base",
+    "//chromeos/components/sensors/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sensor_hal_dispatcher_unittest.cc" ]
+  deps = [
+    ":sensors",
+    ":test_support",
+    "//base/test:test_support",
+    "//chromeos/components/sensors/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

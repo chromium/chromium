@@ -28,6 +28,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/proximity_auth:unit_tests",
     "//chromeos/components/quick_answers:unit_tests",
     "//chromeos/components/security_token_pin:unit_tests",
+    "//chromeos/components/sensors:unit_tests",
     "//chromeos/components/smbfs:unit_tests",
     "//chromeos/components/string_matching:unit_tests",
     "//chromeos/components/sync_wifi:unit_tests",
