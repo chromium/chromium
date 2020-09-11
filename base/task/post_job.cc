@@ -126,7 +126,7 @@ void JobHandle::Detach() {
 JobHandle PostJob(const Location& from_here,
                   const TaskTraits& traits,
                   RepeatingCallback<void(JobDelegate*)> worker_task,
-                  RepeatingCallback<size_t(size_t)> max_concurrency_callback) {
+                  MaxConcurrencyCallback max_concurrency_callback) {
   DCHECK(ThreadPoolInstance::Get())
       << "Ref. Prerequisite section of post_task.h.\n\n"
          "Hint: if this is in a unit test, you're likely merely missing a "

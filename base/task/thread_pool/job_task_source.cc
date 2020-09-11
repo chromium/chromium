@@ -78,12 +78,11 @@ bool JobTaskSource::JoinFlag::ShouldWorkerSignal() {
   return value_.exchange(kNotWaiting, std::memory_order_relaxed) != kNotWaiting;
 }
 
-JobTaskSource::JobTaskSource(
-    const Location& from_here,
-    const TaskTraits& traits,
-    RepeatingCallback<void(JobDelegate*)> worker_task,
-    RepeatingCallback<size_t(size_t)> max_concurrency_callback,
-    PooledTaskRunnerDelegate* delegate)
+JobTaskSource::JobTaskSource(const Location& from_here,
+                             const TaskTraits& traits,
+                             RepeatingCallback<void(JobDelegate*)> worker_task,
+                             MaxConcurrencyCallback max_concurrency_callback,
+                             PooledTaskRunnerDelegate* delegate)
     : TaskSource(traits, nullptr, TaskSourceExecutionMode::kJob),
       from_here_(from_here),
       max_concurrency_callback_(std::move(max_concurrency_callback)),

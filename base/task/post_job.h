@@ -125,6 +125,15 @@ class BASE_EXPORT JobHandle {
   DISALLOW_COPY_AND_ASSIGN(JobHandle);
 };
 
+// Callback used in PostJob() to control the maximum number of threads calling
+// the worker task concurrently.
+
+// Returns the maximum number of threads which may call a job's worker task
+// concurrently. |worker_count| is the number of threads currently assigned to
+// this job which some callers may need to determine their return value.
+using MaxConcurrencyCallback =
+    RepeatingCallback<size_t(size_t /*worker_count*/)>;
+
 // Posts a repeating |worker_task| with specific |traits| to run in parallel on
 // base::ThreadPool.
 // Returns a JobHandle associated with the Job, which can be joined, canceled or
@@ -154,9 +163,8 @@ class BASE_EXPORT JobHandle {
 //   }
 //
 // |max_concurrency_callback| controls the maximum number of threads calling
-// |worker_task| concurrently, given the number of threads currently assigned to
-// this job. |worker_task| is only invoked if the number of threads previously
-// running |worker_task| was less than the value returned by
+// |worker_task| concurrently. |worker_task| is only invoked if the number of
+// threads previously running |worker_task| was less than the value returned by
 // |max_concurrency_callback|. In general, |max_concurrency_callback| should
 // return the latest number of incomplete work items (smallest unit of work)
 // left to processed. JobHandle/JobDelegate::NotifyConcurrencyIncrease() *must*
@@ -171,11 +179,10 @@ class BASE_EXPORT JobHandle {
 // |traits| requirements:
 // - base::ThreadPolicy must be specified if the priority of the task runner
 //   will ever be increased from BEST_EFFORT.
-JobHandle BASE_EXPORT
-PostJob(const Location& from_here,
-        const TaskTraits& traits,
-        RepeatingCallback<void(JobDelegate*)> worker_task,
-        RepeatingCallback<size_t(size_t)> max_concurrency_callback);
+JobHandle BASE_EXPORT PostJob(const Location& from_here,
+                              const TaskTraits& traits,
+                              RepeatingCallback<void(JobDelegate*)> worker_task,
+                              MaxConcurrencyCallback max_concurrency_callback);
 
 }  // namespace base
 

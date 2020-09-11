@@ -35,7 +35,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   JobTaskSource(const Location& from_here,
                 const TaskTraits& traits,
                 RepeatingCallback<void(JobDelegate*)> worker_task,
-                RepeatingCallback<size_t(size_t)> max_concurrency_callback,
+                MaxConcurrencyCallback max_concurrency_callback,
                 PooledTaskRunnerDelegate* delegate);
 
   static JobHandle CreateJobHandle(
