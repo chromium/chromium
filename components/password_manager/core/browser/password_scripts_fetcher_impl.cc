@@ -7,8 +7,10 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -72,12 +74,22 @@ base::flat_set<ParsingResult> ExtractPasswordDomains(
 
 namespace password_manager {
 
-constexpr char kChangePasswordScriptsListUrl[] =
+constexpr char kDefaultChangePasswordScriptsListUrl[] =
     "https://www.gstatic.com/chrome/duplex/change_password_scripts.json";
+
+constexpr base::FeatureParam<std::string> kScriptsListUrlParam{
+    &features::kPasswordChangeInSettings, "scripts_list_url",
+    kDefaultChangePasswordScriptsListUrl};
 
 PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    : PasswordScriptsFetcherImpl(std::move(url_loader_factory),
+                                 kScriptsListUrlParam.Get()) {}
+PasswordScriptsFetcherImpl::PasswordScriptsFetcherImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string scripts_list_url)
+    : scripts_list_url_(std::move(scripts_list_url)),
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 PasswordScriptsFetcherImpl::~PasswordScriptsFetcherImpl() = default;
 
@@ -139,7 +151,7 @@ void PasswordScriptsFetcherImpl::StartFetch() {
   if (url_loader_)
     return;
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kChangePasswordScriptsListUrl);
+  resource_request->url = GURL(scripts_list_url_);
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("gstatic_change_password_scripts",

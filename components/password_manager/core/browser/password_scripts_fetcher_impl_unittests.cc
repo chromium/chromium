@@ -77,12 +77,12 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
 
   void SimulateResponseWithContent(const std::string& content) {
     EXPECT_TRUE(test_url_loader_factory_->SimulateResponseForPendingRequest(
-        kChangePasswordScriptsListUrl, content));
+        kDefaultChangePasswordScriptsListUrl, content));
   }
 
   void SimulateFailedResponse() {
     EXPECT_TRUE(test_url_loader_factory_->SimulateResponseForPendingRequest(
-        kChangePasswordScriptsListUrl, kTestResponseContent,
+        kDefaultChangePasswordScriptsListUrl, kTestResponseContent,
         net::HttpStatusCode::HTTP_BAD_REQUEST));
   }
 
@@ -310,6 +310,37 @@ TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
   EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
   EXPECT_EQ(0, GetNumberOfPendingRequests());
+}
+
+TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
+  // Create a special fetcher with a non-default URL.
+  const char kNonDefaultScriptsListUrl[] =
+      "https://gstatic.com/experimental_list.json";
+  network::TestURLLoaderFactory test_url_loader_factory;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory);
+  PasswordScriptsFetcherImpl fetcher(test_shared_loader_factory,
+                                     kNonDefaultScriptsListUrl);
+
+  fetcher.PrewarmCache();
+  const char kNonDefaultResponseContent[] =
+      R"json(
+      {
+        "experiment.com": {
+          "domains": ["https://experiment.com"]
+        }
+      }
+    )json";
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      kNonDefaultScriptsListUrl, kNonDefaultResponseContent);
+
+  const char kExperimentalDomain[] = "https://experiment.com";
+  // Use |IsScriptAvailable(origin)| instead of |FetchScriptAvailability(origin,
+  // callback)| to simplify the test.
+  EXPECT_TRUE(fetcher.IsScriptAvailable(
+      url::Origin::Create(GURL(kExperimentalDomain))));
+  EXPECT_FALSE(fetcher.IsScriptAvailable(GetOriginWithScript3()));
 }
 
 }  // namespace password_manager

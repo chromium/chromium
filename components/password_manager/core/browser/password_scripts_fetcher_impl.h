@@ -27,7 +27,7 @@ class SharedURLLoaderFactory;
 
 namespace password_manager {
 
-extern const char kChangePasswordScriptsListUrl[];
+extern const char kDefaultChangePasswordScriptsListUrl[];
 
 class PasswordScriptsFetcherImpl
     : public password_manager::PasswordScriptsFetcher {
@@ -58,8 +58,14 @@ class PasswordScriptsFetcherImpl
     kMaxValue = kInvalidJson,
   };
 
-  explicit PasswordScriptsFetcherImpl(
+  // The first constructor calls the second one. The second one is called
+  // directly only from tests.
+  PasswordScriptsFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  PasswordScriptsFetcherImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::string scripts_list_url);
+
   ~PasswordScriptsFetcherImpl() override;
 
   // PasswordScriptsFetcher:
@@ -94,6 +100,9 @@ class PasswordScriptsFetcherImpl
   bool IsCacheStale() const;
   // Runs |callback| immediately with the script availability for |origin|.
   void RunResponseCallback(url::Origin origin, ResponseCallback callback);
+
+  // URL to fetch a list of scripts from.
+  const std::string scripts_list_url_;
 
   // Parsed set of domains from gstatic.
   base::flat_set<url::Origin> password_change_domains_;
