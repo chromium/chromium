@@ -42,7 +42,6 @@ extern const base::Feature kNewSearchFeatures;
 // Features below this line should be sorted alphabetically by their comments.
 
 // Entity suggestion features.
-extern const base::Feature kOmniboxLocalEntitySuggestions;
 extern const base::Feature kEntitySuggestionsReduceLatency;
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.

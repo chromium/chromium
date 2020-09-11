@@ -3371,11 +3371,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "omnibox-local-entity-suggestions",
-    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "omnibox-local-zero-suggest-frecency-ranking",
     "owners": [ "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 89

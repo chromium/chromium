@@ -1550,13 +1550,6 @@ const char kOmniboxHistoryQuickProviderAllowMidwordContinuationsDescription[] =
     "Midword matches are allowed and scored when the match begins immediately "
     "after the previous match ends.";
 
-const char kOmniboxLocalEntitySuggestionsName[] =
-    "Omnibox Local Entity Suggestions";
-const char kOmniboxLocalEntitySuggestionsDescription[] =
-    "Enables location specific suggestions displayed with images and enhanced "
-    "layout, similar to #omnibox-rich-entity-suggestions. Enabling this feature"
-    "will also enable #omnibox-rich-entity-suggestions.";
-
 const char kOmniboxLocalZeroSuggestFrecencyRankingName[] =
     "Frecency ranking for local history zero-prefix suggestions";
 const char kOmniboxLocalZeroSuggestFrecencyRankingDescription[] =

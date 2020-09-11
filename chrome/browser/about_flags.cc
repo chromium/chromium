@@ -3725,11 +3725,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          omnibox::kOmniboxPreserveDefaultMatchAgainstAsyncUpdate)},
 
-    {"omnibox-local-entity-suggestions",
-     flag_descriptions::kOmniboxLocalEntitySuggestionsName,
-     flag_descriptions::kOmniboxLocalEntitySuggestionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxLocalEntitySuggestions)},
-
     {"omnibox-local-zero-suggest-frecency-ranking",
      flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingName,
      flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingDescription,

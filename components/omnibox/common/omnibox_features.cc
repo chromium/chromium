@@ -162,11 +162,6 @@ const base::Feature kOmniboxDemoteByType{"OmniboxDemoteByType",
 const base::Feature kNewSearchFeatures{"OmniboxNewSearchFeatures",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Feature used to enable local entity suggestions. Similar to rich entities but
-// but location specific. E.g., typing 'starbucks near' could display the local
-// entity suggestion 'starbucks near disneyland \n starbucks * Anaheim, CA'.
-const base::Feature kOmniboxLocalEntitySuggestions{
-    "OmniboxLocalEntitySuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 // Feature used to reduce entity latency by sharing a decoder. Param values will
 // configure other optimizations as well.
 const base::Feature kEntitySuggestionsReduceLatency{

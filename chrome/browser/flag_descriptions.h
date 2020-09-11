@@ -903,9 +903,6 @@ extern const char kOmniboxHistoryQuickProviderAllowMidwordContinuationsName[];
 extern const char
     kOmniboxHistoryQuickProviderAllowMidwordContinuationsDescription[];
 
-extern const char kOmniboxLocalEntitySuggestionsName[];
-extern const char kOmniboxLocalEntitySuggestionsDescription[];
-
 extern const char kOmniboxLocalZeroSuggestFrecencyRankingName[];
 extern const char kOmniboxLocalZeroSuggestFrecencyRankingDescription[];
 
