@@ -1176,12 +1176,9 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   //         <a>
   //           \
   //           text
-  AXObject* ax_parent = ax_layout_obj->ParentObjectIncludedInTree();
-  if (ax_parent) {
-    for (const auto& ax_child : ax_parent->CachedChildrenIncludingIgnored()) {
-      DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout,
-                      ax_child->GetNode(), ax_child);
-    }
+  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node); child;
+       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+    DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, child);
   }
 }
 
