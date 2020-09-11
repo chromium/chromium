@@ -20,6 +20,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomShee
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.ApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -64,6 +67,7 @@ import java.io.IOException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+@Batch(Batch.PER_CLASS)
 public class AccountPickerBottomSheetRenderTest {
     private static final ProfileDataSource.ProfileData PROFILE_DATA1 =
             new ProfileDataSource.ProfileData(
@@ -92,7 +96,9 @@ public class AccountPickerBottomSheetRenderTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        });
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
@@ -105,6 +111,11 @@ public class AccountPickerBottomSheetRenderTest {
     public void setUp() {
         initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
     }
 
     @AfterClass
