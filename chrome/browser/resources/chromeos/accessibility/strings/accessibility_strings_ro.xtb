@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">decupează <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Atingeți cu două degete ca să opriți vorbirea temporar</translation>
 <translation id="3564729643041517261">Stilul de afișare actual este alăturat</translation>
+<translation id="3587482841069643663">Toate</translation>
 <translation id="3589661172894441357">Glosar</translation>
 <translation id="3591784666823501596">Albastru regal</translation>
 <translation id="3594207934078151302">Verde marin mediu</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Întrebări și răspunsuri</translation>
 <translation id="4391478986194775161">informații conținut</translation>
 <translation id="4402014469255336455">Albastru celest</translation>
+<translation id="4406249099130339147">Redare vocală a punctuației:</translation>
 <translation id="4432457053224379116">Roșu indian</translation>
 <translation id="4437615272777527928">Tastează pentru a căuta în meniuri. Folosește săgețile în sus și în jos pentru a răsfoi rezultatele. Folosește săgețile spre dreapta și spre stânga pentru a ajusta cursorul pentru text și pentru a trece de la un meniu la altul.</translation>
 <translation id="4457472090507035117">Selectează vocea actuală:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Comenzi rapide utile pentru Chrome</translation>
 <translation id="7569983096843329377">Negru</translation>
 <translation id="7579911500627256166">punctul <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Câteva</translation>
 <translation id="7595446402663080101">Nu există un tabel anterior</translation>
 <translation id="7596131838331109045">Roz portocaliu deschis</translation>
 <translation id="7604026522577407655">Accesați începutul coloanei curente</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Câmp editare text de tip adresă URL</translation>
 <translation id="7685589220304187312">bară de instrumente</translation>
 <translation id="7693840228159394336">Butonul radio anterior</translation>
+<translation id="7701040980221191251">Niciuna</translation>
 <translation id="7701196182766842984">completare automată listă</translation>
 <translation id="7714340021005120797">Nu există o casetă combo următoare</translation>
 <translation id="772146615414628379">Felicitări! Ai învățat noțiunile de bază cu privire la folosirea ChromeVox. Reține că poți deschide oricând meniul de comenzi ChromeVox apăsând pe tasta de căutare + tasta punct. Pentru a afla mai multe despre ChromeVox și sistemul de operare Chrome, accesează următoarele articole.

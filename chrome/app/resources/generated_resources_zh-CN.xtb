@@ -182,7 +182,6 @@
 <translation id="120368089816228251">乐谱</translation>
 <translation id="1203942045716040624">Shared Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS 延迟时间</translation>
-<translation id="1205489148908752564">读取和更改已列入白名单的用户</translation>
 <translation id="1206407435587370571">探索 Chromebook</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1211364473545090084">如果您使用无痕式窗口浏览网页，系统便不会保存您的浏览记录</translation>
@@ -2636,6 +2635,7 @@
 <translation id="4104163789986725820">导出(&amp;X)...</translation>
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">针对支持此设置的应用自定义字幕大小和样式</translation>
 <translation id="4110490973560452005">下载完成：<ph name="FILE_NAME" />。按 Shift+F6 可切换到下载内容栏区域。</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4110895898888439383">以高反差模式浏览网页</translation>
@@ -2835,6 +2835,7 @@
 <translation id="4390000551125140321">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
 <translation id="439266289085815679">蓝牙配置由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">修改配置文件</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> 已停用 ADB 调试。重启 <ph name="DEVICE_TYPE" /> 后，您将无法旁加载应用。</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="439817266247065935">您的设备未正常关闭。要使用 Linux 应用，请重启 Linux。</translation>
 <translation id="4400367121200150367">一律不保存密码的网站将显示在这里</translation>
@@ -3524,6 +3525,7 @@
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="5266113311903163739">证书授权中心导入错误</translation>
 <translation id="5269977353971873915">打印失败</translation>
+<translation id="5274738462757057090">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
 <translation id="5278823018825269962">状态 ID</translation>
@@ -3959,6 +3961,7 @@
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
 <translation id="5797070761912323120">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索、广告和其他 Google 服务</translation>
+<translation id="5798301976526354562">文字大小（也适用于实时字幕）</translation>
 <translation id="579915268381781820">您的安全密钥已被拔出。</translation>
 <translation id="5799508265798272974">Linux 虚拟机：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">目标文件在上次下载后被截断或删除。</translation>
@@ -4867,6 +4870,7 @@
 <translation id="6911324888870229398">网络连接中断了。请检查您的网络连接，或尝试连接到其他 Wi-Fi 网络。</translation>
 <translation id="6911734910326569517">内存占用空间</translation>
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
+<translation id="691289340230098384">字幕偏好设置</translation>
 <translation id="6914783257214138813">所有能查看此导出文件的人员都能看到您的密码。</translation>
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
@@ -6154,6 +6158,7 @@
 <translation id="8467326454809944210">选择另一种语言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已保存用于登录 <ph name="ORIGIN" /> 的密码</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 调试。这将在 24 小时过后重置您的 <ph name="DEVICE_TYPE" />。请备份您想保留的所有文件。</translation>
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8475313423285172237">您计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。</translation>

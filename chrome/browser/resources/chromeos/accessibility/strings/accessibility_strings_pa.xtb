@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> ਕੱਟੋ।</translation>
 <translation id="3549680091535286226">ਬੋਲੇ ਜਾਣ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਰੋਕਣ ਲਈ 2 ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="3564729643041517261">ਮੌਜੂਦਾ ਡਿਸਪਲੇ ਸਟਾਈਲ ਸਾਈਡ ਦਰ ਸਾਈਡ ਹੈ</translation>
+<translation id="3587482841069643663">ਸਾਰੇ</translation>
 <translation id="3589661172894441357">ਸ਼ਬਦਾਵਲੀ</translation>
 <translation id="3591784666823501596">ਮੋਰਪੰਖੀਆ ਨੀਲਾ</translation>
 <translation id="3594207934078151302">ਮੱਧਮ ਸਮੁੰਦਰੀ ਹਰਾ</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ਸਵਾਲ-ਜਵਾਬ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ਗੂੜ੍ਹਾ ਅਸਮਾਨੀ</translation>
+<translation id="4406249099130339147">ਵਿਰਾਮ ਚਿੰਨ੍ਹ ਈਕੋ:</translation>
 <translation id="4432457053224379116">ਭਾਰਤੀ ਲਾਲ</translation>
 <translation id="4437615272777527928">ਮੀਨੂ ਖੋਜਣ ਲਈ ਟਾਈਪ ਕਰੋ। ਨਤੀਜਿਆਂ ਦੇ ਵਿੱਚ ਚੱਕਰ ਲਗਾਉਣ ਲਈ ਉੱਪਰ ਅਤੇ ਹੇਠਾਂ ਵਾਲੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ, ਅਤੇ ਮੀਨੂਆਂ ਵਿਚਾਲੇ ਅੱਗੇ-ਪਿੱਛੇ ਜਾਣ ਲਈ ਖੱਬੀ ਅਤੇ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="4457472090507035117">ਵਰਤਮਾਨ ਅਵਾਜ਼ ਨੂੰ ਚੁਣੋ:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">ਲਾਭਕਾਰੀ Chrome ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7569983096843329377">ਕਾਲਾ</translation>
 <translation id="7579911500627256166"><ph name="DOT" /> ਬਿੰਦੂ</translation>
+<translation id="7592060599656252486">ਕੁਝ</translation>
 <translation id="7595446402663080101">ਕੋਈ ਪਿਛਲੀ ਸਾਰਨੀ ਨਹੀਂ</translation>
 <translation id="7596131838331109045">ਹਲਕਾ ਨਾਰੰਗੀ</translation>
 <translation id="7604026522577407655">ਮੌਜੂਦਾ ਕਾੱਲਮ ਦੇ ਸ਼ੁਰੂ ਤੇ ਜਾਓ</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">ਲਿਖਤ, URL ਐਂਟਰੀ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ਪਿਛਲਾ ਰੇਡੀਓ ਬਟਨ</translation>
+<translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ਕੋਈ ਅਗਲਾ ਕੋਂਬੋ ਬਾਕਸ ਨਹੀਂ</translation>
 <translation id="772146615414628379">ਵਧਾਈਆਂ! ਤੁਸੀਂ ਸਫਲਤਾਪੂਰਵਕ ChromeVox ਨੂੰ ਵਰਤਣ ਲਈ ਜ਼ਰੂਰੀ ਚੀਜ਼ਾਂ ਸਿੱਖ ਚੁੱਕੇ ਹੋ। ਯਾਦ ਰੱਖੋ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਵੇਲੇ ਵੀ Search+Period ਨੂੰ ਦਬਾ ਕੇ ChromeVox ਆਦੇਸ਼ ਮੀਨੂ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ। ChromeVox ਅਤੇ Chrome OS ਬਾਰੇ ਹੋਰ ਜ਼ਿਆਦਾ ਜਾਣਨ ਲਈ, ਅੱਗੇ ਦਿੱਤੇ ਗਏ ਲੇਖ ਦੇਖੋ।

@@ -182,7 +182,6 @@
 <translation id="120368089816228251">సంగీత స్వరం</translation>
 <translation id="1203942045716040624">షేర్ చేయబడిన వర్కర్: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS ప్రతిస్పందన సమయం</translation>
-<translation id="1205489148908752564">అనుమతి జాబితాలోని వినియోగదారులను చదవండి మరియు మార్చండి</translation>
 <translation id="1206407435587370571">మీ Chromebookను పరిశీలించండి</translation>
 <translation id="1209796539517632982">స్వయంచాలక పేరు సర్వర్‌లు</translation>
 <translation id="1211364473545090084">అజ్ఞాత విండోలో మీ బ్రౌజింగ్ చరిత్రను సేవ్ చేయకుండానే వెబ్‌ను ఉపయోగించండి</translation>
@@ -2641,6 +2640,7 @@
 <translation id="4104163789986725820">ఎ&amp;గుమతి...</translation>
 <translation id="4107048419833779140">నిల్వ డివైజ్‌లను గుర్తించి, తొలగించండి</translation>
 <translation id="4109135793348361820">విండోను <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)కు తరలించు</translation>
+<translation id="411031910327788420">ఈ సెట్టింగ్‌ను సపోర్ట్ చేసే యాప్‌ల కోసం క్యాప్షన్ సైజ్, స్టయిల్‌ను అనుకూలీకరించండి</translation>
 <translation id="4110490973560452005">డౌన్‌లోడ్ పూర్తయింది: <ph name="FILE_NAME" />. డౌన్‌లోడ్‌ల బార్ ప్రాంతంలోకి వెళ్లడం కోసం Shift+F6 నొక్కండి.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
 <translation id="4110895898888439383">అధిక కాంట్రాస్ట్ మోడ్‌లో వెబ్‌ను బ్రౌజ్ చేయండి</translation>
@@ -2840,6 +2840,7 @@
 <translation id="4390000551125140321">{0,plural, =1{అజ్ఞాతం}other{# తెరవబడిన అజ్ఞాత విండోలు}}</translation>
 <translation id="439266289085815679">బ్లూటూత్ కాన్ఫిగరేషన్ <ph name="USER_EMAIL" /> ద్వారా నియంత్రించబడుతుంది.</translation>
 <translation id="4392896746540753732">కాన్ఫిగరేషన్ ఫైల్‌ను సవరించండి</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేసింది. ఒకసారి మీరు మీ <ph name="DEVICE_TYPE" />ను రీస్టార్ట్ చేశాక, మీరు యాప్‌లను సైడ్‌లోడ్ చేయలేరు.</translation>
 <translation id="4394049700291259645">నిలిపివేయి</translation>
 <translation id="439817266247065935">మీ పరికరాన్ని సరిగ్గా షట్ డౌన్ చేయలేదు. Linux యాప్‌లను ఉపయోగించడానికి Linuxను రీస్టార్ట్ చేయండి.</translation>
 <translation id="4400367121200150367">పాస్‌వర్డ్‌లను ఎప్పుడూ సేవ్ చేయని సైట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
@@ -3529,6 +3530,7 @@
 <translation id="5265797726250773323">ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="5266113311903163739">సర్టిఫికెట్ అధికారి దిగుమతి ఎర్రర్</translation>
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
+<translation id="5274738462757057090">Chrome బ్రౌజర్‌లోని మీడియా కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది (ప్రస్తుతం ఇంగ్లీష్‌లో మాత్రమే అందుబాటులో ఉంది)</translation>
 <translation id="5275352920323889391">కుక్క</translation>
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
@@ -3964,6 +3966,7 @@
 <translation id="5794700615121138172">Linux షేర్ చేసిన ఫోల్డర్‌లు</translation>
 <translation id="5794786537412027208">అన్ని Chrome యాప్‌ల నుండి నిష్క్రమించు</translation>
 <translation id="5797070761912323120">శోధన, ప్రకటనలు, ఇతర Google సేవలను వ్యక్తిగతీకరించడానికి Google మీ చరిత్రను ఉపయోగించే అవకాశం ఉంటుంది</translation>
+<translation id="5798301976526354562">టెక్స్ట్ సైజ్ (లైవ్ క్యాప్షన్‌కు కూడా వర్తిస్తుంది)</translation>
 <translation id="579915268381781820">మీ 'సెక్యూరిటీ కీ' తీసివేయబడింది.</translation>
 <translation id="5799508265798272974">Linux వర్చువల్ మెషీన్: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">గమ్యస్థానం ఫైల్ చివరి డౌన్‌లోడ్ తర్వాత కుదించబడింది లేదా తీసివేయబడింది.</translation>
@@ -4872,6 +4875,7 @@
 <translation id="6911324888870229398">నెట్‌వర్క్ కనెక్షన్ పోయింది. దయచేసి మీ కనెక్షన్‌ని తనిఖీ చేయండి లేదా మరో Wi-Fi నెట్‌వర్క్‌తో ప్రయత్నించండి.</translation>
 <translation id="6911734910326569517">మెమరీ ఫుట్‌ప్రింట్</translation>
 <translation id="6912007319859991306">సెల్యూలార్ SIM పిన్</translation>
+<translation id="691289340230098384">క్యాప్షన్ ప్రాధాన్యతలు</translation>
 <translation id="6914783257214138813">ఎగుమతి చేయబడిన ఫైల్‌ను చూడగల ఎవరికైనా మీ పాస్‌వర్డ్‌లు కనిపిస్తాయి.</translation>
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6916590542764765824">పొడిగింపులను నిర్వహించండి</translation>
@@ -6156,6 +6160,7 @@
 <translation id="8467326454809944210">మరొక భాషను ఎంచుకోండి</translation>
 <translation id="8470214316007448308">ఇతర వ్యక్తులు</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> కోసం సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" />, ADB డీబగ్గింగ్‌ను డిజేబుల్ చేస్తోంది. ఇది మీ <ph name="DEVICE_TYPE" />ను 24 గంటలలో రీసెట్ చేస్తుంది. మీరు ఉంచాలనుకునే ఫైల్స్‌ను బ్యాకప్ చేసుకోండి.</translation>
 <translation id="8472623782143987204">హార్డ్‌వేర్ మద్దతు గలది</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="8475313423285172237">మీ కంప్యూటర్‌లోని మరో ప్రోగ్రామ్ జోడించిన ఎక్స్‌టెన్షన్ కారణంగా Chrome పని చేసే విధానం మారవచ్చు.</translation>

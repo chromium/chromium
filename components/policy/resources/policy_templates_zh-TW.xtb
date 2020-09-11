@@ -5046,6 +5046,7 @@
 
       如果不設定，網站可要求存取序列埠，但使用者可以變更這項設定。</translation>
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
+<translation id="8284296539558710573">跨來源 HTTP 驗證提示</translation>
 <translation id="8285435910062771358">已啟用全螢幕放大鏡</translation>
 <translation id="8288199156259560552">啟用 Android Google 定位服務</translation>
 <translation id="8290875622178450531">啟用語音輸入無障礙功能。

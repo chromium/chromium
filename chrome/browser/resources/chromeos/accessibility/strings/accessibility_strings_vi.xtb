@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">cắt <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Nhấn bằng 2 ngón tay để tạm thời dừng lời nói</translation>
 <translation id="3564729643041517261">Kiểu hiển thị hiện tại là song song</translation>
+<translation id="3587482841069643663">Tất cả</translation>
 <translation id="3589661172894441357">Bảng thuật ngữ</translation>
 <translation id="3591784666823501596">Màu xanh hoàng gia</translation>
 <translation id="3594207934078151302">Màu xanh biển hài hòa</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Hỏi và đáp</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Màu xanh da trời đậm</translation>
+<translation id="4406249099130339147">Đọc to dấu câu:</translation>
 <translation id="4432457053224379116">Màu đỏ Ấn Độ</translation>
 <translation id="4437615272777527928">Nhập để tìm kiếm trong trình đơn. Sử dụng các mũi tên lên và xuống để chuyển qua kết quả. Sử dụng các mũi tên trái và phải để điều chỉnh điểm chèn văn bản và di chuyển giữa các trình đơn.</translation>
 <translation id="4457472090507035117">Chọn giọng nói hiện tại:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Phím tắt hữu ích của Chrome</translation>
 <translation id="7569983096843329377">Đen</translation>
 <translation id="7579911500627256166">chấm <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Một vài</translation>
 <translation id="7595446402663080101">Không có bảng nào trước đó</translation>
 <translation id="7596131838331109045">Màu hồng cam nhạt</translation>
 <translation id="7604026522577407655">Đi tới đầu cột hiện tại</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Chỉnh sửa văn bản, mục nhập URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Nút radio trước</translation>
+<translation id="7701040980221191251">Không có</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Không có hộp kết hợp nào tiếp theo</translation>
 <translation id="772146615414628379">Xin chúc mừng! Bạn đã tìm hiểu xong thông tin cơ bản để sử dụng hiệu quả ChromeVox. Hãy nhớ rằng bạn có thể mở trình đơn lệnh của ChromeVox bất cứ lúc nào bằng cách nhấn tổ hợp phím Tìm kiếm+Dấu chấm. Để tìm hiểu thêm về ChromeVox và Chrome OS, hãy truy cập vào các bài viết sau đây.

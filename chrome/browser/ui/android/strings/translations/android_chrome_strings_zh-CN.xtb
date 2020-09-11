@@ -895,6 +895,7 @@
 <translation id="7930998711684428189">在密码遭遇数据泄露时向您发出警告。</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7947953824732555851">接受并登录</translation>
+<translation id="7961926449547174351">您已停用 Storage 的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7963646190083259054">供应商：</translation>
 <translation id="7967911570373677897">要扫描二维码，请更改您的设置以允许 Chrome 使用您的摄像头</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>

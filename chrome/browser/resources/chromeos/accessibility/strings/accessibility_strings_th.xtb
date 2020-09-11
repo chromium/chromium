@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">ตัด <ph name="TEXT" /></translation>
 <translation id="3549680091535286226">ใช้ 2 นิ้วแตะเพื่อหยุดเสียงพูดชั่วคราว</translation>
 <translation id="3564729643041517261">รูปแบบการแสดงผลปัจจุบันคือการแสดงคู่กัน</translation>
+<translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3589661172894441357">อภิธานศัพท์</translation>
 <translation id="3591784666823501596">สีน้ำเงินรอยัลบลู</translation>
 <translation id="3594207934078151302">สีเขียวน้ำทะเลปานกลาง</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ถามและตอบ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">สีฟ้าท้องฟ้าเข้ม</translation>
+<translation id="4406249099130339147">เสียงสะท้อนของเครื่องหมายวรรคตอน</translation>
 <translation id="4432457053224379116">สีแดงอินเดียนเรด</translation>
 <translation id="4437615272777527928">พิมพ์เพื่อค้นหาเมนู ใช้ลูกศรขึ้นและลงเพื่อวนดูผลการค้นหา ใช้แป้นลูกศรซ้ายและขวาเพื่อปรับเครื่องหมาย Caret ของข้อความและเพื่อย้ายระหว่างเมนู</translation>
 <translation id="4457472090507035117">เลือกเสียงปัจจุบัน:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">แป้นพิมพ์ลัดของ Chrome ที่มีประโยชน์</translation>
 <translation id="7569983096843329377">สีดำ</translation>
 <translation id="7579911500627256166">จุด <ph name="DOT" /></translation>
+<translation id="7592060599656252486">บางอย่าง</translation>
 <translation id="7595446402663080101">ไม่มีตารางก่อนหน้า</translation>
 <translation id="7596131838331109045">สีส้มแซลมอนอ่อน</translation>
 <translation id="7604026522577407655">ไปที่ด้านบนของคอลัมน์ปัจจุบัน</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">แก้ไขข้อความ, รายการ URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ปุ่มตัวเลือกก่อนหน้า</translation>
+<translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ไม่มีช่องตัวเลือกรวมถัดไป</translation>
 <translation id="772146615414628379">ยินดีด้วย! คุณได้เรียนรู้ข้อมูลสำคัญเกี่ยวกับการใช้งาน ChromeVox เรียบร้อยแล้ว โปรดทราบว่าคุณเปิดเมนูคำสั่ง ChromeVox ได้ทุกเมื่อด้วยการกดแป้นค้นหา + เครื่องหมายจุด ดูข้อมูลเพิ่มเติมเกี่ยวกับ ChromeVox และ Chrome OS ได้ที่บทความต่อไปนี้

@@ -182,7 +182,6 @@
 <translation id="120368089816228251">نوتة موسيقية</translation>
 <translation id="1203942045716040624">عامل مشترَك: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
-<translation id="1205489148908752564">قراءة وتغيير المستخدمين في القائمة البيضاء</translation>
 <translation id="1206407435587370571">‏استكشاف جهاز Chromebook</translation>
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1211364473545090084">استخدِم الويب بدون حفظ سجلّ التصفُّح باستخدام نافذة تصفُّح متخفٍ</translation>
@@ -2638,6 +2637,7 @@
 <translation id="4104163789986725820">ت&amp;صدير...</translation>
 <translation id="4107048419833779140">تحديد أجهزة التخزين وإخراجها</translation>
 <translation id="4109135793348361820">نقل النافذة إلى <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">يمكنك تخصيص حجم الشرح ونمطه للتطبيقات المتوافقة مع هذا الإعداد.</translation>
 <translation id="4110490973560452005">‏اكتمل التنزيل: <ph name="FILE_NAME" />. يمكنك الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4110686435123617899">اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">تصفُّح الويب في وضع التباين العالي</translation>
@@ -2837,6 +2837,7 @@
 <translation id="4390000551125140321">{0,plural, =1{نافذة واحدة للتصفّح المتخفي}zero{ما من نوافذ مفتوحة للتصفّح المتخفي}two{نافذتان مفتوحان للتصفّح المتخفي}few{# نوافذ مفتوحة للتصفّح المتخفي}many{# نافذةً مفتوحةً للتصفّح المتخفي}other{# نافذة مفتوحة للتصفّح المتخفي}}</translation>
 <translation id="439266289085815679">يتم التحكّم في تهيئة البلوتوث من قِبل <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">تعديل ملف الضبط</translation>
+<translation id="4393691030048716353">‏أوقف <ph name="DOMAIN" /> تفعيل خيار "تصحيح الأخطاء عبر ADB". بعد إعادة تشغيل جهاز <ph name="DEVICE_TYPE" />، لن تتمكّن من تثبيت تطبيقات من مصادر غير معروفة.</translation>
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="439817266247065935">‏لم يتم إيقاف تشغيل جهازك بالشكل الملائم. أعِد تشغيل نظام التشغيل Linux لاستخدام تطبيقاته.</translation>
 <translation id="4400367121200150367">ستظهر هنا المواقع الإلكترونية التي لا يتم حفظ كلمات المرور لها مطلقًا</translation>
@@ -3526,6 +3527,7 @@
 <translation id="5265797726250773323">حدث خطأ أثناء التثبيت</translation>
 <translation id="5266113311903163739">خطأ استيراد مرجع مصدق</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
+<translation id="5274738462757057090">‏يتم إنشاء مقاطع الشرح للوسائط تلقائيًا في متصفّح Chrome (لا تتوفّر هذه الميزة سوى باللغة الإنجليزية حاليًا).</translation>
 <translation id="5275352920323889391">كلب</translation>
 <translation id="527605982717517565">‏السماح بتشغيل JavaScript على الموقع <ph name="HOST" /> دومًا</translation>
 <translation id="5278823018825269962">رقم تعريف الحالة</translation>
@@ -3962,6 +3964,7 @@
 <translation id="5794700615121138172">‏مجلدات نظام التشغيل Linux التي تمت مشاركتها</translation>
 <translation id="5794786537412027208">‏إنهاء جميع تطبيقات Chrome</translation>
 <translation id="5797070761912323120">‏قد تستخدم Google سجلّك لتخصيص البحث والإعلانات وخدمات Google الأخرى.</translation>
+<translation id="5798301976526354562">حجم النص (ينطبق هذا الإعداد أيضًا على ميزة "النسخ النصي التلقائي")</translation>
 <translation id="579915268381781820">تمت إزالة مفتاح الأمان.</translation>
 <translation id="5799508265798272974">‏آلة Linux الافتراضية: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">تم اقتطاع ملف الوجهة أو إزالته أثناء آخر تنزيل.</translation>
@@ -4871,6 +4874,7 @@
 <translation id="6911324888870229398">‏تم فقد اتصال الشبكة. يُرجى التحقق من اتصالك أو تجربة شبكة Wi-Fi أخرى.</translation>
 <translation id="6911734910326569517">الذاكرة المستخدَمة</translation>
 <translation id="6912007319859991306">‏رقم التعريف الشخصي لشريحة SIM الخاصة بشبكة الجوّال</translation>
+<translation id="691289340230098384">الإعدادات المفضّلة للشرح</translation>
 <translation id="6914783257214138813">ستكون كلمات مرورك مرئية لأي شخص يمكنه الاطلاع على الملف الذي تم تصديره.</translation>
 <translation id="6915804003454593391">المستخدم:</translation>
 <translation id="6916590542764765824">إدارة الإضافات</translation>
@@ -6159,6 +6163,7 @@
 <translation id="8467326454809944210">اختيار لغة أخرى</translation>
 <translation id="8470214316007448308">مستخدمون آخرون</translation>
 <translation id="8470513973197838199">كلمات المرور المحفوظة لـ <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232">‏أوقف <ph name="DOMAIN" /> تفعيل خيار "تصحيح الأخطاء عبر ADB"، وسيؤدي هذا إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> خلال 24 ساعة. يُرجى الاحتفاظ بنسخة احتياطية من كل الملفات التي تريدها.</translation>
 <translation id="8472623782143987204">يستند إلى الجهاز</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8475313423285172237">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.</translation>

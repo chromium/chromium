@@ -182,7 +182,6 @@
 <translation id="120368089816228251">음표</translation>
 <translation id="1203942045716040624">공유한 작업자: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS 지연 시간</translation>
-<translation id="1205489148908752564">허용 목록에 있는 사용자를 읽고 변경하기</translation>
 <translation id="1206407435587370571">Chromebook 살펴보기</translation>
 <translation id="1209796539517632982">자동 네임서버</translation>
 <translation id="1211364473545090084">시크릿 창에서는 인터넷 사용 기록을 저장하지 않고 웹을 사용할 수 있습니다.</translation>
@@ -2639,6 +2638,7 @@
 <translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
+<translation id="411031910327788420">이 설정을 지원하는 앱에 적용할 자막 크기와 스타일을 맞춤설정합니다.</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4110895898888439383">고대비 모드로 웹 탐색</translation>
@@ -2838,6 +2838,7 @@
 <translation id="4390000551125140321">{0,plural, =1{시크릿 모드}other{열려 있는 시크릿 창 #개}}</translation>
 <translation id="439266289085815679">블루투스 구성은 <ph name="USER_EMAIL" />님이 관리합니다.</translation>
 <translation id="4392896746540753732">설정 파일 수정</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" />에서 ADB 디버깅을 사용 중지했습니다. <ph name="DEVICE_TYPE" /> 기기를 다시 시작하면 앱을 사이드로드할 수 없게 됩니다.</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="439817266247065935">기기가 제대로 종료되지 않았습니다. Linux 앱을 사용하려면 Linux를 다시 시작하세요.</translation>
 <translation id="4400367121200150367">비밀번호를 저장하지 않는 사이트가 표시됩니다.</translation>
@@ -3527,6 +3528,7 @@
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
+<translation id="5274738462757057090">Chrome 브라우저에서 자동으로 미디어 자막을 생성합니다. 현재는 영어로만 제공됩니다.</translation>
 <translation id="5275352920323889391">개</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
 <translation id="5278823018825269962">상태 ID</translation>
@@ -3962,6 +3964,7 @@
 <translation id="5794700615121138172">Linux 공유 폴더</translation>
 <translation id="5794786537412027208">모든 Chrome 앱 종료</translation>
 <translation id="5797070761912323120">Google에서 내 방문 기록을 사용하여 Google 검색, 광고 및 다른 Google 서비스를 맞춤설정할 수 있습니다.</translation>
+<translation id="5798301976526354562">텍스트 크기(실시간 자막에도 적용됨)</translation>
 <translation id="579915268381781820">보안 키가 삭제되었습니다.</translation>
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
@@ -4870,6 +4873,7 @@
 <translation id="6911324888870229398">네트워크 연결이 끊어졌습니다. 연결을 확인하거나 다른 Wi-Fi 네트워크를 사용해 보세요.</translation>
 <translation id="6911734910326569517">메모리 사용량</translation>
 <translation id="6912007319859991306">셀룰러 SIM PIN</translation>
+<translation id="691289340230098384">자막 환경설정</translation>
 <translation id="6914783257214138813">내보낸 파일을 볼 수 있는 모든 사용자에게 비밀번호가 표시됩니다.</translation>
 <translation id="6915804003454593391">사용자:</translation>
 <translation id="6916590542764765824">확장 프로그램 관리</translation>
@@ -6158,6 +6162,7 @@
 <translation id="8467326454809944210">다른 언어 선택</translation>
 <translation id="8470214316007448308">다른 사용자</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />의 저장된 비밀번호</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" />에서 ADB 디버깅을 사용 중지하고 있습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
 <translation id="8472623782143987204">하드웨어 지원</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8475313423285172237">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.</translation>

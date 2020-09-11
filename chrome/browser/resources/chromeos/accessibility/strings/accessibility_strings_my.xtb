@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> ကို ဖြတ်ယူပါ။</translation>
 <translation id="3549680091535286226">စကားသံကို ခဏရပ်ရန် လက် ၂ ချောင်းဖြင့် တို့ပါ</translation>
 <translation id="3564729643041517261">လက်ရှိ မျက်နှာပြင်ပြသမှုပုံစံသည် ဘေးချင်းကပ်ဖြစ်သည်</translation>
+<translation id="3587482841069643663">အားလုံး</translation>
 <translation id="3589661172894441357">ခက်ဆစ်</translation>
 <translation id="3591784666823501596">တော်ဝင်ပြာ</translation>
 <translation id="3594207934078151302">ပင်လယ်အစိမ်း မနုမရင့်</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">အမေးအဖြေ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ကောင်းကင်ပြာ အရင့်</translation>
+<translation id="4406249099130339147">ပုဒ်ဖြတ်ပုဒ်ရပ် ပဲ့တင့်သံ-</translation>
 <translation id="4432457053224379116">အိန္ဒိယ အနီ</translation>
 <translation id="4437615272777527928">စာရိုက်၍ မီနူးများ ရှာပါ။ ရလဒ်များကို ဝိုင်းရန် အပေါ်၊ အောက် မြားများ အသုံးပြုပါ။ စာသားကာရက် ချိန်ညှိရန်နှင့် မီနူးများအကြား ရွှေ့ရန် ဘယ်၊ ညာ မြားများ အသုံးပြုပါ။</translation>
 <translation id="4457472090507035117">လက်ရှိအသံကို ရွေးပါ−</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">အသုံးဝင်သည့် Chrome ဖြတ်လမ်းများ</translation>
 <translation id="7569983096843329377">အနက်ရောင်</translation>
 <translation id="7579911500627256166">အစက် <ph name="DOT" /></translation>
+<translation id="7592060599656252486">အချို့</translation>
 <translation id="7595446402663080101">ယခင် ဇယား မရှိပါ</translation>
 <translation id="7596131838331109045">ဆယ်လမွန် အနု</translation>
 <translation id="7604026522577407655">လက်ရှိ ကော်လံ အစပိုင်းသို့ သွားရန်</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">စာသား၊ URL ရိုက်ထည့်မှု တည်းဖြတ်ရန်</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ယခင် ရေဒီယို ခလုတ်</translation>
+<translation id="7701040980221191251">မရှိ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">နောက်ထပ် ပူးပေါင်းအကွက် မရှိပါ</translation>
 <translation id="772146615414628379">ဂုဏ်ယူပါသည်။ ChromeVox သုံးရန်အတွက် သိထားသင့်သည့်အရာများကို အောင်မြင်စွာ လေ့လာသင်ယူပြီးပါပြီ။ Search+Period ကိုနှိပ်၍ ChromeVox ကွန်မန်းမီနူးကို အချိန်မရွေး ဖွင့်နိုင်ပါသည်။ ChromeVox နှင့် Chrome OS အကြောင်း ပိုမိုလေ့လာရန် အောက်ပါဆောင်းပါးများကို ဝင်ကြည့်ပါ။

@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
 <translation id="3549680091535286226">ತಾತ್ಕಾಲಿಕವಾಗಿ ಮಾತನ್ನು ನಿಲ್ಲಿಸಲು 2 ಬೆರಳುಗಳ ಮೂಲಕ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="3564729643041517261">ಪ್ರಸ್ತುತ ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿ ಅಕ್ಕ ಪಕ್ಕ ಆಗಿದೆ</translation>
+<translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3589661172894441357">ಪದಕೋಶ</translation>
 <translation id="3591784666823501596">ಕಡು ನೀಲಿ</translation>
 <translation id="3594207934078151302">ಮಧ್ಯಮ ಸಮುದ್ರ ಹಸಿರು</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ಪ್ರಶ್ನೋತ್ತರ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ಗಾಢ ಆಕಾಶ ನೀಲಿ</translation>
+<translation id="4406249099130339147">ವಿರಾಮಚಿಹ್ನೆ ಪ್ರತಿಧ್ವನಿ:</translation>
 <translation id="4432457053224379116">ಇಂಡಿಯನ್ ರೆಡ್</translation>
 <translation id="4437615272777527928">ಮೆನುಗಳನ್ನು ಹುಡುಕಲು, ಟೈಪ್ ಮಾಡಿ. ಫಲಿತಾಂಶಗಳ ಮೂಲಕ ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮೇಲಿನ ಮತ್ತು ಕೆಳಗಿನ ಬಾಣಗಳನ್ನು ಬಳಸಿ. ಪಠ್ಯ ಕೆರೆಟ್ ಅನ್ನು ಹೊಂದಿಸಲು ಮತ್ತು ಮೆನುಗಳ ನಡುವೆ ಸರಿಸಲು ಎಡ ಮತ್ತು ಬಲ ಬಾಣಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="4457472090507035117">ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">ಉಪಯುಕ್ತ Chrome ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="7569983096843329377">ಕಪ್ಪು</translation>
 <translation id="7579911500627256166">ಡಾಟ್‌ <ph name="DOT" /></translation>
+<translation id="7592060599656252486">ಕೆಲವು</translation>
 <translation id="7595446402663080101">ಯಾವುದೇ ಹಿಂದಿನ ಟೇಬಲ್ ಇಲ್ಲ</translation>
 <translation id="7596131838331109045">ತಿಳಿ ಗುಲಾಬಿ ಕಿತ್ತಳೆ ಬಣ್ಣ</translation>
 <translation id="7604026522577407655">ಪ್ರಸ್ತುತ ಕಾಲಮ್‌ನ ಆರಂಭಕ್ಕೆ ಹೋಗಿ</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡಿ, URL ನಮೂದು</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ಹಿಂದಿನ ರೇಡಿಯೊ ಬಟನ್</translation>
+<translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ಯಾವುದೇ ಮುಂದಿನ ಕಾಂಬೊ ಬಾಕ್ಸ್ ಇಲ್ಲ</translation>
 <translation id="772146615414628379">ಅಭಿನಂದನೆಗಳು! ChromeVox ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬಳಸಲು ಅಗತ್ಯವಿರುವ ಸಂಗತಿಗಳ ಕುರಿತು ನೀವು ತಿಳಿದುಕೊಂಡಿದ್ದೀರಿ. Search+Period ಒತ್ತುವ ಮೂಲಕ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ChromeVox ಕಮಾಂಡ್ ಮೆನುವನ್ನು ತೆರೆಯಬಹುದು ಎಂಬುದನ್ನು ನೆನಪಿಡಿ. ChromeVox ಹಾಗೂ Chrome OS ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು, ಕೆಳಗಿನ ಲೇಖನಗಳನ್ನು ಓದಿ.

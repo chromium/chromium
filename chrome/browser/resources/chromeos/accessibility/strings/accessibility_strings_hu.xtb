@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">A következő szöveg kivágása: <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">A beszéd ideiglenes leállításához koppintson két ujjal</translation>
 <translation id="3564729643041517261">A jelenlegi megjelenítési mód egymás melletti</translation>
+<translation id="3587482841069643663">Mind</translation>
 <translation id="3589661172894441357">Szószedet</translation>
 <translation id="3591784666823501596">Királykék</translation>
 <translation id="3594207934078151302">Közepes tengerzöld</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Kérdések és válaszok</translation>
 <translation id="4391478986194775161">tartalominformáció</translation>
 <translation id="4402014469255336455">Mély égszínkék</translation>
+<translation id="4406249099130339147">Írásjelek felolvasása:</translation>
 <translation id="4432457053224379116">Indiai vörös</translation>
 <translation id="4437615272777527928">Kezdjen el gépelni a menükben való kereséshez. A találatok között a felfelé és lefelé mutató nyilakkal mozoghat. A jobbra és balra mutató nyílbillentyűkkel a szövegbeszúrási pontot módosíthatja, illetve a menükben mozoghat.</translation>
 <translation id="4457472090507035117">Az aktuális hang kiválasztása:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">Hasznos Chrome-billentyűparancsok</translation>
 <translation id="7569983096843329377">Fekete</translation>
 <translation id="7579911500627256166"><ph name="DOT" /> pont</translation>
+<translation id="7592060599656252486">Néhány</translation>
 <translation id="7595446402663080101">Nincs előző táblázat</translation>
 <translation id="7596131838331109045">Világos lazacrózsaszín</translation>
 <translation id="7604026522577407655">Ugrás az aktuális oszlop elejére</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">Szövegszerkesztés, URL-bevitel</translation>
 <translation id="7685589220304187312">eszközsor</translation>
 <translation id="7693840228159394336">Előző választógomb</translation>
+<translation id="7701040980221191251">Nincs</translation>
 <translation id="7701196182766842984">automatikus kiegészítés lista</translation>
 <translation id="7714340021005120797">Nincs következő kombinált mező</translation>
 <translation id="772146615414628379">Gratulálunk! Megtanulta a ChromeVox használatának alapjait. Ne feledje, hogy bármikor megnyithatja a ChromeVox parancsmenüjét a Keresés + pont billentyűkombinációval. Az alábbi cikkekből még többet megtudhat a ChromeVoxról és a Chrome OS-ről.

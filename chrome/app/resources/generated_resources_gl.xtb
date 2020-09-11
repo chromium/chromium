@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Nota musical</translation>
 <translation id="1203942045716040624">Traballador compartido: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
-<translation id="1205489148908752564">Ler e cambiar os usuarios da lista branca</translation>
 <translation id="1206407435587370571">Explora o teu Chromebook</translation>
 <translation id="1209796539517632982">Servidores de nomes automáticos</translation>
 <translation id="1211364473545090084">Utiliza a web sen gardar o teu historial de navegación cunha ventá do modo de incógnito</translation>
@@ -2640,6 +2639,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e expulsar dispositivos de almacenamento</translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Personaliza o tamaño e o estilo dos subtítulos para as aplicacións compatibles con esta opción de configuración</translation>
 <translation id="4110490973560452005">Completouse a descarga: <ph name="FILE_NAME" />. Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Navega pola web no modo de contraste alto</translation>
@@ -2839,6 +2839,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4390000551125140321">{0,plural, =1{Modo de incógnito}other{# ventás do modo de incógnito abertas}}</translation>
 <translation id="439266289085815679">A configuración de Bluetooth contrólaa <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Edita o ficheiro de configuración</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> desactivou a depuración de ADB. Unha vez que reinicies o dispositivo (<ph name="DEVICE_TYPE" />), non poderás instalar aplicacións externamente.</translation>
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439817266247065935">O teu dispositivo non pechou correctamente. Reinicia Linux para usar as súas aplicacións.</translation>
 <translation id="4400367121200150367">Os sitios que nunca gardan contrasinais aparecerán aquí</translation>
@@ -3528,6 +3529,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5265797726250773323">Produciuse un erro durante a instalación</translation>
 <translation id="5266113311903163739">Erro de importación da autoridade de certificación</translation>
 <translation id="5269977353971873915">Non se puido efectuar a impresión</translation>
+<translation id="5274738462757057090">Crea subtítulos automaticamente para o contido multimedia que se reproduza no navegador Chrome (actualmente, esta función só está dispoñible en inglés)</translation>
 <translation id="5275352920323889391">Can</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript en <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Identificador de estado</translation>
@@ -3963,6 +3965,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5794700615121138172">Cartafoles compartidos de Linux</translation>
 <translation id="5794786537412027208">Saír de todas as aplicacións de Chrome</translation>
 <translation id="5797070761912323120">Google pode utilizar o teu historial para personalizar a Busca, os anuncios e outros servizos seus.</translation>
+<translation id="5798301976526354562">Tamaño do texto (tamén se aplica á función Subtítulos instantáneos)</translation>
 <translation id="579915268381781820">Quitouse a túa chave de seguranza.</translation>
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O ficheiro de destino truncouse ou eliminouse desde a última descarga.</translation>
@@ -4871,6 +4874,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6911324888870229398">Perdeuse a conexión de rede. Comproba a túa conexión ou proba con outra rede wifi.</translation>
 <translation id="6911734910326569517">Uso de memoria</translation>
 <translation id="6912007319859991306">PIN da SIM do móbil</translation>
+<translation id="691289340230098384">Preferencias dos subtítulos</translation>
 <translation id="6914783257214138813">Todas as persoas que poidan ver o ficheiro exportado tamén poderán ver os teus contrasinais.</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916590542764765824">Xestionar extensións</translation>
@@ -6158,6 +6162,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8467326454809944210">Escoller outro idioma</translation>
 <translation id="8470214316007448308">Outras persoas</translation>
 <translation id="8470513973197838199">Gardáronse os contrasinais para <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> vai desactivar a depuración de ADB. Esta acción restablecerá o dispositivo (<ph name="DEVICE_TYPE" />) en 24 horas. Crea copias de seguranza dos ficheiros que queiras conservar.</translation>
 <translation id="8472623782143987204">teclas de hardware</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8475313423285172237">Outro programa do teu ordenador engadiu unha extensión que pode cambiar o funcionamento de Chrome.</translation>

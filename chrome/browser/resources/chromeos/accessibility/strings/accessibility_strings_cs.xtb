@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">vyjmout <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Klepnutím dvěma prsty hlasovou odezvu dočasně zastavíte</translation>
 <translation id="3564729643041517261">Aktuální styl zobrazení je vedle sebe</translation>
+<translation id="3587482841069643663">Vše</translation>
 <translation id="3589661172894441357">Glosář</translation>
 <translation id="3591784666823501596">Královská modrá</translation>
 <translation id="3594207934078151302">Střední mořská zelená</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Dotazy</translation>
 <translation id="4391478986194775161">info o obsahu</translation>
 <translation id="4402014469255336455">Sytá nebeská modrá</translation>
+<translation id="4406249099130339147">Hlasová odezva interpunkce:</translation>
 <translation id="4432457053224379116">Indiánská červená</translation>
 <translation id="4437615272777527928">Zadejte, co chcete v nabídkách vyhledat. K procházení výsledků můžete použít šipky nahoru a dolů. Pomocí šipek vlevo a vpravo můžete upravit textový kurzor a přecházet mezi nabídkami.</translation>
 <translation id="4457472090507035117">Vybrat aktuální hlas:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">Užitečné klávesové zkratky prohlížeče Chrome</translation>
 <translation id="7569983096843329377">Černá</translation>
 <translation id="7579911500627256166">bod <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Některé</translation>
 <translation id="7595446402663080101">Žádná předchozí tabulka není</translation>
 <translation id="7596131838331109045">Světle lososová</translation>
 <translation id="7604026522577407655">Přejít na začátek aktuálního sloupce</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">Úprava textu, webová adresa</translation>
 <translation id="7685589220304187312">lišta</translation>
 <translation id="7693840228159394336">Předchozí přepínač</translation>
+<translation id="7701040980221191251">Žádné</translation>
 <translation id="7701196182766842984">auto sezn</translation>
 <translation id="7714340021005120797">Žádné další pole se seznamem není</translation>
 <translation id="772146615414628379">Gratulujeme! Naučili jste se základy používání nástroje ChromeVox. Nabídku příkazů nástroje ChromeVox můžete kdykoliv otevřít stisknutím kláves Hledat + Tečka. Další informace o nástroji ChromeVox a systému Chrome OS najdete v následujících článcích.

@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Музыка ноталары</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS кідірісі</translation>
-<translation id="1205489148908752564">Өкілеттілер тізіміне енгізілген пайдаланушыларды оқу және өзгерту</translation>
 <translation id="1206407435587370571">Chromebook құрылғысымен танысыңыз</translation>
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
 <translation id="1211364473545090084">Интернетті инкогнито терезесі арқылы пайдалансаңыз, браузер тарихы сақталмайды</translation>
@@ -2638,6 +2637,7 @@
 <translation id="4104163789986725820">Э&amp;кспорттау…</translation>
 <translation id="4107048419833779140">Жад құрылғыларын анықтау және шығару</translation>
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
+<translation id="411031910327788420">Бұл параметрлерді пайдалануға болатын қолданбалар үшін жазулар өлшемі мен стилін реттеңіз.</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4110686435123617899">"<ph name="TITLE" />" альбомын таңдаңыз (<ph name="DESC" />).</translation>
 <translation id="4110895898888439383">Беттерді жоғары контраст режимінде қараңыз</translation>
@@ -2837,6 +2837,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Инкогнито}other{# инкогнито терезесі ашық}}</translation>
 <translation id="439266289085815679">Bluetooth конфигурациясын <ph name="USER_EMAIL" /> басқарады.</translation>
 <translation id="4392896746540753732">Конфигурация файлын өзгерту</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> сайты ADB түзетуін өшірді. <ph name="DEVICE_TYPE" /> құрылғысы қайта қосылғаннан кейін, сырт ресурстан жүктеп алынған қолданбаларды пайдалана аласыз.</translation>
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="439817266247065935">Құрылғыңыз дұрыс өшірілмеді. Linux қолданбаларын пайдалану үшін Linux жүйесін қайта қосыңыз.</translation>
 <translation id="4400367121200150367">Құпия сөздерді ешқашан сақтамайтын сайттар тізімі осы жерге шығады</translation>
@@ -3526,6 +3527,7 @@
 <translation id="5265797726250773323">Орнату кезінде қате кетті</translation>
 <translation id="5266113311903163739">Сертификат беру орталығының импорттау қатесі</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
+<translation id="5274738462757057090">Chrome браузерінде медиамазмұн үшін жазуларды автоматты жасайды (әзірге тек ағылшын тілінде қолжетімді).</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
 <translation id="5278823018825269962">Күй идентификаторы</translation>
@@ -3961,6 +3963,7 @@
 <translation id="5794700615121138172">Linux ортақ қалталары</translation>
 <translation id="5794786537412027208">Барлық Chrome қолданбаларынан шығу</translation>
 <translation id="5797070761912323120">Search, жарнамалар және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
+<translation id="5798301976526354562">Мәтін өлшемі (Live Caption үшін де қолданылады)</translation>
 <translation id="579915268381781820">Қауіпсіздік кілтіңіз өшірілді.</translation>
 <translation id="5799508265798272974">Linux виртуалды машинасы: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Мақсатты файл соңғы жүктеуден кейін қысқартылды немесе жойылды.</translation>
@@ -4869,6 +4872,7 @@
 <translation id="6911324888870229398">Желімен байланыс үзілді. Байланысты тексеріңіз немесе басқа Wi-Fi желісін пайдаланып көріңіз.</translation>
 <translation id="6911734910326569517">Пайдаланылатын жад көлемі</translation>
 <translation id="6912007319859991306">SIM картасының PIN коды</translation>
+<translation id="691289340230098384">Субтитр параметрлері</translation>
 <translation id="6914783257214138813">Құпия сөз экспортталған құпия сөздер файлын көре алатын кез келген адамға қолжетімді болады.</translation>
 <translation id="6915804003454593391">Пайдаланушы:</translation>
 <translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
@@ -6156,6 +6160,7 @@
 <translation id="8467326454809944210">Басқа тілді таңдау</translation>
 <translation id="8470214316007448308">Басқа адамдар</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> сайты үшін құпия сөздер сақталды</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> сайты ADB түзетуін өшіріп жатыр. <ph name="DEVICE_TYPE" /> құрылғыңыз 24 сағаттан кейін бастапқы күйіне қайтарылады. Қалдырғыңыз келетін файлдардың сақтық көшірмесін жасаңыз.</translation>
 <translation id="8472623782143987204">жабдық қажет</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8475313423285172237">Компьютеріңіздегі басқа бір бағдарлама кеңейтім қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>

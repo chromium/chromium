@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">Исеци <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Додирните са два прста да бисте привремено зауставили говор</translation>
 <translation id="3564729643041517261">Актуелни стил приказа је упоредни</translation>
+<translation id="3587482841069643663">Све</translation>
 <translation id="3589661172894441357">Речник термина</translation>
 <translation id="3591784666823501596">Краљевско плава</translation>
 <translation id="3594207934078151302">Средња плавозелена</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Питања и одговори</translation>
 <translation id="4391478986194775161">информације о садржају</translation>
 <translation id="4402014469255336455">Тамна небескоплава</translation>
+<translation id="4406249099130339147">Одјек интерпункције:</translation>
 <translation id="4432457053224379116">Браонцрвена</translation>
 <translation id="4437615272777527928">Унесите текст да бисте претражили меније. Користите тастере са стрелицама нагоре и надоле за кретање кроз резултате. Користите тастере са стрелицама улево и удесно да бисте прилагодили курсор за текст и прелазили из једног менија у други.</translation>
 <translation id="4457472090507035117">Изаберите актуелни глас:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Корисне пречице за Chrome</translation>
 <translation id="7569983096843329377">Црна</translation>
 <translation id="7579911500627256166">тачка <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Делимичан</translation>
 <translation id="7595446402663080101">Нема претходне табеле</translation>
 <translation id="7596131838331109045">Светлонаранџаста</translation>
 <translation id="7604026522577407655">Прелазак на почетак актуелне колоне</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Измените текст, унос за URL</translation>
 <translation id="7685589220304187312">трака с алаткама</translation>
 <translation id="7693840228159394336">Претходно дугме за избор</translation>
+<translation id="7701040980221191251">Ништа</translation>
 <translation id="7701196182766842984">аутоматско довршавање листе</translation>
 <translation id="7714340021005120797">Нема следећег комбинованог оквира</translation>
 <translation id="772146615414628379">Честитамо! Научили сте основе коришћења ChromeVox-а. Запамтите да ChromeVox мени са командама можете да отворите у сваком тренутку ако притиснете тастер за претрагу + тастер са тачком. Да бисте сазнали још више о ChromeVox-у и Chrome ОС-у, погледајте следеће чланке.

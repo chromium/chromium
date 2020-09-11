@@ -347,6 +347,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3549141990712742152"><ph name="TEXT" />ని కత్తిరించండి.</translation>
 <translation id="3549680091535286226">తాత్కాలికంగా ప్రసంగాన్ని ఆపడం కోసం 2 వేళ్లతో నొక్కండి</translation>
 <translation id="3564729643041517261">ప్రస్తుత ప్రదర్శన శైలి పక్కపక్కకు ఉంది</translation>
+<translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3589661172894441357">పదకోశం</translation>
 <translation id="3591784666823501596">దివ్యమైన నీలం రంగు</translation>
 <translation id="3594207934078151302">మధ్యస్థ సముద్ర ఆకుపచ్చ</translation>
@@ -450,6 +451,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4384583879834880242">Q&amp;A</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ముదురు ఆకాశ నీలం రంగు</translation>
+<translation id="4406249099130339147">విరామచిహ్న ప్రతిధ్వని:</translation>
 <translation id="4432457053224379116">భారతీయ ఎర్రని రంగు</translation>
 <translation id="4437615272777527928">మెనూలను వెతకడానికి టైప్ చేయండి. ఫలితాలను ఒక్కొక్కటిగా చూడటానికి ఎగువ మరియు దిగువ బాణం కీలను ఉపయోగించండి. టెక్స్ట్ క్యారెట్‌ను సర్దుబాటు చేయడానికి, మెనూల మధ్య కదలడానికి ఎడమ, కుడి బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="4457472090507035117">ప్రస్తుత వాయిస్‌ని ఎంచుకోండి:</translation>
@@ -826,6 +828,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7552432549459840808">సహాయకరమైన Chrome సత్వరమార్గాలు</translation>
 <translation id="7569983096843329377">నలుపు</translation>
 <translation id="7579911500627256166">చుక్క <ph name="DOT" /></translation>
+<translation id="7592060599656252486">కొన్ని</translation>
 <translation id="7595446402663080101">మునుపటి టేబుల్ లేదు</translation>
 <translation id="7596131838331109045">లేత గులాబీ నారింజ రంగు</translation>
 <translation id="7604026522577407655">ప్రస్తుత నిలువు వరుస ప్రారంభానికి వెళ్లండి</translation>
@@ -845,6 +848,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7684431668231950609">వచనం, URL నమోదును సవరించండి</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">మునుపటి రేడియో బటన్</translation>
+<translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">తర్వాత కాంబో పెట్టె లేదు</translation>
 <translation id="772146615414628379">అభినందనలు! ChromeVoxను ఉపయోగించడానికి అవసరమైన ముఖ్యమైన అంశాలను మీరు నేర్చుకున్నారు. మీరు 'Search+Period' నొక్కడం ద్వారా ChromeVox ఆదేశం మెనూను ఎప్పుడైనా తెరవవచ్చని గుర్తుంచుకోండి. ChromeVox, Chrome OS గురించి మరింత తెలుసుకోవడానికి, కింది కథనాలను సందర్శించండి.

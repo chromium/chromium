@@ -182,7 +182,6 @@
 <translation id="120368089816228251">সংগীতৰ নোট</translation>
 <translation id="1203942045716040624">শ্বেয়াৰ কৰা কৰ্মচাৰী: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS বিলম্বতা</translation>
-<translation id="1205489148908752564">হোৱাইটলিষ্ট কৰা ব্যৱহাৰকাৰী পঢ়ক আৰু সলনি কৰক</translation>
 <translation id="1206407435587370571">আপোনাৰ Chromebook অন্বেষণ কৰক</translation>
 <translation id="1209796539517632982">স্বয়ংক্ৰিয় নাম ছার্ভাৰ</translation>
 <translation id="1211364473545090084">আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ছেভ নকৰাকৈ কোনো ইনক’গনিট’ ৱিণ্ড’ৰ জৰিয়তে ৱেব ব্যৱহাৰ কৰক</translation>
@@ -2635,6 +2634,7 @@
 <translation id="4104163789986725820">ৰ&amp;প্তানি কৰক...</translation>
 <translation id="4107048419833779140">ষ্ট’ৰেজ ডিভাইচ চিনাক্ত কৰক আৰু বাহিৰ কৰক</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)লৈ ৱিণ্ড’ক আঁতৰাওক</translation>
+<translation id="411031910327788420">এই ছেটিংটো সমৰ্থন কৰা এপ্‌সমূহৰ বাবে কেপশ্বনৰ আকাৰ আৰু শৈলী কাষ্টমাইজ কৰক</translation>
 <translation id="4110490973560452005">ডাউনল’ড সম্পূৰ্ণ হ’ল: <ph name="FILE_NAME" />। ডাউনল’ড বাৰৰ ক্ষেত্ৰলৈ যাবলৈ Shift+F6 টিপক।</translation>
 <translation id="4110686435123617899">এলবাম বাছনি কৰক <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">হাই কনট্ৰাষ্ট ম’ডত ৱেব ব্ৰাউজ কৰক</translation>
@@ -2834,6 +2834,7 @@
 <translation id="4390000551125140321">{0,plural, =1{ইনক’গনিট’}one{# সংখ্যক খোলা ইনক’গনিট’ ৱিণ্ড’}other{# সংখ্যক খোলা ইনক’গনিট’ ৱিণ্ড’}}</translation>
 <translation id="439266289085815679">ব্লুটুথ কনফিগাৰেশ্বন <ph name="USER_EMAIL" />ৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়।</translation>
 <translation id="4392896746540753732">কনফিগাৰেশ্বন ফাইলটো সম্পাদনা কৰক</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" />এ ADB ডিবাগিং অক্ষম কৰিছে। আপুনি নিজৰ <ph name="DEVICE_TYPE" /> ৰিষ্টাৰ্ট কৰিলে আপুনি এপ্‌সমূহ ছাইডল’ড কৰিব নোৱাৰিব।</translation>
 <translation id="4394049700291259645">অক্ষম কৰক</translation>
 <translation id="439817266247065935">আপোনাৰ ডিভাইচটো সঠিকভাৱে শ্বাট ডাউন হোৱা নাছিল। Linux এপ্‌সমূহ ব্যৱহাৰ কৰিবলৈ Linux ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="4400367121200150367">কেতিয়াও পাছৱর্ডসমূহ ছেভ নকৰা ছাইটসমূহ ইয়াত প্ৰদর্শিত হ’ব</translation>
@@ -3522,6 +3523,7 @@
 <translation id="5265797726250773323">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="5266113311903163739">প্ৰমাণপত্ৰ প্ৰদানকাৰী আমদানি কৰোঁতে আসোঁৱাহ হ’ল</translation>
 <translation id="5269977353971873915">প্ৰিণ্ট কৰিব পৰা নগ'ল</translation>
+<translation id="5274738462757057090">Chrome ব্ৰাউজাৰত থকা মিডিয়াৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে (বৰ্তমানে কেৱল ইংৰাজীত উপলব্ধ)</translation>
 <translation id="5275352920323889391">কুকুৰ</translation>
 <translation id="527605982717517565"><ph name="HOST" />ত সদায় JavaScriptক অনুমতি দিয়ক</translation>
 <translation id="5278823018825269962">স্থিতিৰ আইডি</translation>
@@ -3956,6 +3958,7 @@
 <translation id="5794700615121138172">Linuxৰ শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ</translation>
 <translation id="5794786537412027208">সকলো Chrome এপৰ পৰা বাহিৰ হওঁক</translation>
 <translation id="5797070761912323120">Googleএ Search, বিজ্ঞাপন আৰু অন্য Google সেৱা ব্যক্তিকৃত কৰিবলৈ আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে</translation>
+<translation id="5798301976526354562">পাঠৰ আকাৰ (লাইভ কেপশ্বনৰ ক্ষেত্ৰতো প্ৰযোজ্য)</translation>
 <translation id="579915268381781820">আপোনাৰ সুৰক্ষাৰ চাবিটো আঁতৰোৱা হৈছিল।</translation>
 <translation id="5799508265798272974">Linux ভাৰ্চুৱেল মেচিন: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">ডাউনল’ডৰ পাছত গন্তব্যস্থানৰ ফাইল চুটি কৰা বা আঁতৰোৱা হৈছে।</translation>
@@ -4860,6 +4863,7 @@
 <translation id="6911324888870229398">নেটৱৰ্ক সংযোগ হেৰাইছিল। অনুগ্ৰহ কৰি আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক বা অন্য ৱাই-ফাই নেটৱৰ্কলৈ সংযোগ কৰক।</translation>
 <translation id="6911734910326569517">মেম’ৰি ফুটপ্ৰিণ্ট</translation>
 <translation id="6912007319859991306">চেলুলাৰ ছিম পিন</translation>
+<translation id="691289340230098384">কেপশ্বনৰ অগ্ৰাধিকাৰসমূহ</translation>
 <translation id="6914783257214138813">ৰপ্তানি কৰা ফাইল দেখা পোৱা যিকোনো লোকে আপোনাৰ পাছৱৰ্ড দেখা পাব।</translation>
 <translation id="6915804003454593391">ব্যৱহাৰকাৰী:</translation>
 <translation id="6916590542764765824">এক্সটেনশ্বন পৰিচালনা কৰক</translation>
@@ -6143,6 +6147,7 @@
 <translation id="8467326454809944210">অন্য এটা ভাষা বাছনি কৰক</translation>
 <translation id="8470214316007448308">অন্য লোক</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />ৰ বাবে ছেভ কৰি থোৱা পাছৱৰ্ড</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" />এ ADB ডিবাগিং অক্ষম কৰি আছে। ই ২৪ ঘণ্টাত আপোনাৰ <ph name="DEVICE_TYPE" /> ৰিছেট কৰিব। আপুনি ৰাখিবলৈ বিচৰা সকলো ফাইল বেক আপ কৰক।</translation>
 <translation id="8472623782143987204">হাৰ্ডৱেৰ-সমৰ্থিত</translation>
 <translation id="8473863474539038330">ঠিকনা আৰু অধিক</translation>
 <translation id="8475313423285172237">আপোনাৰ কম্পিউটাৰৰ অন্য প্ৰ'গ্ৰেম যোগ কৰা এক্সটেনশ্বনে Chrome কার্যপ্ৰণালী সলনি কৰিব পাৰে।</translation>

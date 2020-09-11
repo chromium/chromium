@@ -97,7 +97,6 @@
 <translation id="4544142686420020088">Chromium ບໍ່ອັບເດດ, ມີບາງຢ່າງຜິດພາດ. <ph name="BEGIN_LINK" />ແກ້ໄຂບັນຫາການອັບເດດ Chromium ແລະ ການອັບເດດທີ່ບໍ່ສຳເລັດ.<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">ທ່ານລົງຊື່ເຂົ້າ​ໃຊ້ເປັນ <ph name="USER_EMAIL_ADDRESS" />. ດຽວນີ້ທ່ານສາມາດເຂົ້າຫາບຸກມາກສ໌, ປະຫວັດ, ແລະການຕັ້ງຄ່າອື່ນຢູ່ໃນທຸກອຸປະກອນທີ່ລົງຊື່ເຂົ້າ​ໃຊ້ຂອງທ່ານ.</translation>
 <translation id="459535195905078186">ແອັບ Chromium</translation>
-<translation id="4628757576491864469">ອຸ​ປະ​ກອນ</translation>
 <translation id="4677944499843243528">ປະກົດວ່າໂປຣໄຟລ໌ໃຊ້ງານຢູ່ໂດຍຂະບວນການ Chromium ອື່ນ (<ph name="PROCESS_ID" />) ຢູ່ໃນຄອມພິວເຕີອື່ນ (<ph name="HOST_NAME" />). Chromium ໄດ້ລັອກໂປຣໄຟລ໌ໄວ້ ເພື່ອບໍ່ໃຫ້ມັນໄດ້ຮັບການ​ຂັດຂ້ອງ. ຖ້າທ່ານແນ່ໃຈວ່າ ບໍ່ມີຂະບວນການອື່ນໃຊ້ໂປຣໄຟລ໌ນີ້ຢູ່, ທ່ານສາມາດປົດລັອກໂປຣໄຟລ໌ ແລະເລີ່ມເປີດໃຊ້ Chromium ໃໝ່ໄດ້.</translation>
 <translation id="469338717132742108">ຂໍຄວາມຊ່ວຍເຫຼືອເລື່ອງ Chromium OS</translation>
 <translation id="4708774505295300557">ຄົນອື່ນເຄີຍເຂົ້າສູ່ລະບົບ Chromium ໃນຄອມພິວເຕີນີ້ເປັນ <ph name="ACCOUNT_EMAIL_LAST" /> ມາກ່ອນແລ້ວ. ກະລຸນາສ້າງຜູ້ໃຊ້ Chromium ໃໝ່ເພື່ອເກັບຂໍ້ມູນຂອງທ່ານໃຫ້ແຍກກັນຕ່າງຫາກ.</translation>

@@ -182,7 +182,6 @@
 <translation id="120368089816228251">მუსიკალური ნოტი</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS-ის რეაგირების დრო</translation>
-<translation id="1205489148908752564">უფლებამოსილი მომხმარებლების წაკითხვა და შეცვლა</translation>
 <translation id="1206407435587370571">გაიცანით თქვენი Chromebook</translation>
 <translation id="1209796539517632982">ავტომატური სახელის სერვერები</translation>
 <translation id="1211364473545090084">გამოიყენეთ ინკოგნიტო ფანჯარა და დაათვალიერეთ ვები ისტორიის შენახვის გარეშე</translation>
@@ -2640,6 +2639,7 @@
 <translation id="4104163789986725820">ე&amp;ქსპორტი…</translation>
 <translation id="4107048419833779140">მეხსიერების მოწყობილობების იდენტიფიცირება და ამოღება</translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">სუბტიტრების ზომისა და სტილის მორგება აპებისთვის, რომელთა მიერაც მხარდაჭერილია ეს პარამეტრი</translation>
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">დაათვალიერეთ ვები მაღალკონტრასტულ რეჟიმში</translation>
@@ -2839,6 +2839,7 @@
 <translation id="4390000551125140321">{0,plural, =1{ინკოგნიტო}other{# გახსნილი ინკოგნიტო ფანჯარა}}</translation>
 <translation id="439266289085815679">Bluetooth-ის კონფიგურაციას მართავს <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">კონფიგურაციის ფაილის რედაქტირება</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" />-მა გაითიშა ADB გამართვა. <ph name="DEVICE_TYPE" />-ის გადატვირთვის შემდეგ აპების გარეშე წყაროდან ჩატვირთვას ვეღარ მოახერხებთ.</translation>
 <translation id="4394049700291259645">გამორთვა</translation>
 <translation id="439817266247065935">თქვენი მოწყობილობა სათანადოდ არ გაითიშა. Linux აპების გამოსაყენებლად გადატვირთეთ Linux.</translation>
 <translation id="4400367121200150367">საიტები, რომლებიც არასოდეს იმახსოვრებს პაროლებს, აქ გამოჩნდება</translation>
@@ -3528,6 +3529,7 @@
 <translation id="5265797726250773323">შეცდომა ინსტალაციისას</translation>
 <translation id="5266113311903163739">სერთიფიკატის ავტორიზაციის იმპორტის შეეცდომა</translation>
 <translation id="5269977353971873915">ბეჭვდის შეცდომა</translation>
+<translation id="5274738462757057090">ავტომატურად ქმნის სუბტიტრებს მედიაფაილებისთვის Chrome ბრაუზერში (ამჟამად ხელმისაწვდომია მხოლოდ ინგლისურ ენაზე)</translation>
 <translation id="5275352920323889391">ძაღლი</translation>
 <translation id="527605982717517565">ყოველთვის დაუშვით JavaScript <ph name="HOST" />-ზე</translation>
 <translation id="5278823018825269962">სტატუსის ID</translation>
@@ -3963,6 +3965,7 @@
 <translation id="5794700615121138172">Linux-ის გაზიარებული საქაღალდეები</translation>
 <translation id="5794786537412027208">Chrome-ის ყველა პროგრამის დახურვა</translation>
 <translation id="5797070761912323120">Google-მა შეიძლება გამოიყენოს თქვენი ისტორია Search-ის, რეკლამისა და Google-ის სხვა სერვისების თქვენზე მოსარგებად</translation>
+<translation id="5798301976526354562">ტექსტის ზომა (ვრცელდება ავტოსუბტიტრების ფუნქციაზეც)</translation>
 <translation id="579915268381781820">თქვენი უსაფრთხოების გასაღები ამოღებულია.</translation>
 <translation id="5799508265798272974">ვირტუალური Linux მოწყობილობა: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">დანიშნულების ფაილი არასრულია ან წაიშალა ბოლო ჩამოტვირთვის შემდეგ.</translation>
@@ -4871,6 +4874,7 @@
 <translation id="6911324888870229398">ქსელთან კავშირი გაწყდა. გთხოვთ, შეამოწმოთ კავშირი ან ცადოთ სხვა Wi-Fi ქსელის გამოყენება.</translation>
 <translation id="6911734910326569517">მეხსიერების მოხმარება</translation>
 <translation id="6912007319859991306">SIM ბარათის დაბლოკვა PIN-კოდით ფიჭური ქსელის მეშვეობით</translation>
+<translation id="691289340230098384">სუბტიტრების პარამეტრები</translation>
 <translation id="6914783257214138813">თქვენს პაროლებს დაინახავს ნებისმიერი, ვისაც ექნება წვდომა ექსპორტირებულ ფაილზე.</translation>
 <translation id="6915804003454593391">მომხმარებელი:</translation>
 <translation id="6916590542764765824">პროგრამული გაფართოებები</translation>
@@ -6157,6 +6161,7 @@
 <translation id="8467326454809944210">სხვა ენის არჩევა</translation>
 <translation id="8470214316007448308">სხვა ადამიანები</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" />-ისთვის შენახული პაროლები</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> აპირებს, გათიშოს ADB გამართვა. ამის გამო თქვენი <ph name="DEVICE_TYPE" /> გადაიტვირთება 24 საათში. შექმენით იმ ფაილების სარეზერვო ასლები, რომელთა შენარჩუნებაც გსურთ.</translation>
 <translation id="8472623782143987204">აპარატურული რეზერვით</translation>
 <translation id="8473863474539038330">მისამართები და სხვა</translation>
 <translation id="8475313423285172237">სხვა პროგრამამ თქვენს კომპიუტერში დაამატა გაფართოება, რომელსაც შეუძლია შეცვალოს Chrome-ის მუშაობის ფორმა.</translation>

@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">Cortar <ph name="TEXT" /></translation>
 <translation id="3549680091535286226">Presiona con 2 dedos para silenciar la voz temporalmente</translation>
 <translation id="3564729643041517261">El estilo actual de la pantalla es lado a lado</translation>
+<translation id="3587482841069643663">Todos</translation>
 <translation id="3589661172894441357">Glosario</translation>
 <translation id="3591784666823501596">Azul real</translation>
 <translation id="3594207934078151302">Verde mar medio</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Preguntas y respuestas</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Azul cielo oscuro</translation>
+<translation id="4406249099130339147">Eco de los signos de puntuación:</translation>
 <translation id="4432457053224379116">Rojo indio</translation>
 <translation id="4437615272777527928">Escribe para realizar una búsqueda en los menús. Usa las flechas hacia arriba y abajo para moverte entre los resultados. Usa las flechas hacia la izquierda y la derecha para ajustar el símbolo de intercalación de texto y para moverte entre los menús.</translation>
 <translation id="4457472090507035117">Seleccionar voz actual:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Accesos directos útiles de Chrome</translation>
 <translation id="7569983096843329377">Negro</translation>
 <translation id="7579911500627256166">punto <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Algunos</translation>
 <translation id="7595446402663080101">No hay tablas anteriores</translation>
 <translation id="7596131838331109045">Salmón claro</translation>
 <translation id="7604026522577407655">Ir al principio de la columna actual</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Editar texto, entrada de URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Botón de selección anterior</translation>
+<translation id="7701040980221191251">Ninguna</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">No hay cuadros combinados siguientes</translation>
 <translation id="772146615414628379">Felicitaciones. Aprendiste los conceptos básicos para usar ChromeVox de forma correcta. Presiona Búsqueda + punto para abrir el menú de comandos de ChromeVox en cualquier momento. Para obtener más información sobre ChromeVox y el Sistema operativo Chrome, visita los siguientes artículos.

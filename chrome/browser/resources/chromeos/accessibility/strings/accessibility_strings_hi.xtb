@@ -346,6 +346,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3549141990712742152"><ph name="TEXT" /> को काटें.</translation>
 <translation id="3549680091535286226">कुछ समय तक बोला जाना रोकने के लिए दो उंगलियों से टैप करें</translation>
 <translation id="3564729643041517261">मौजूदा डिसप्ले शैली आमने-सामने है</translation>
+<translation id="3587482841069643663">सभी</translation>
 <translation id="3589661172894441357">शब्दावली</translation>
 <translation id="3591784666823501596">गहरा चमकदार नीला</translation>
 <translation id="3594207934078151302">मध्यम समुद्री हरा</translation>
@@ -449,6 +450,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4384583879834880242">सवाल और जवाब</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">गहरा आसमानी नीला</translation>
+<translation id="4406249099130339147">विराम चिह्न इको:</translation>
 <translation id="4432457053224379116">हल्का मरून</translation>
 <translation id="4437615272777527928">मेन्यू खोजने के लिए टाइप करें. नतीजों पर जाने के लिए अप और डाउन ऐरो का इस्तेमाल करें. टेक्स्ट कैरेट को व्यवस्थित करने और एक से दूसरे मेन्यू पर जाने के लिए, लेफ़्ट और राइट ऐरो का इस्तेमाल करें.</translation>
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
@@ -824,6 +826,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7552432549459840808">उपयोगी Chrome शॉर्टकट</translation>
 <translation id="7569983096843329377">काला</translation>
 <translation id="7579911500627256166">बिंदु <ph name="DOT" /></translation>
+<translation id="7592060599656252486">कुछ</translation>
 <translation id="7595446402663080101">पहले से कोई टेबल नहीं है</translation>
 <translation id="7596131838331109045">हल्का सामन रंग</translation>
 <translation id="7604026522577407655">वर्तमान स्‍तंभ के प्रारंभ पर जाएं</translation>
@@ -843,6 +846,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7684431668231950609">लेख, यूआरएल में बदलाव करें</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">पिछला रेडियो बटन</translation>
+<translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">आगे कोई कॉम्‍बो बॉक्‍स नहीं है</translation>
 <translation id="772146615414628379">बधाई हो! आपने ChromeVox का इस्तेमाल करने की ज़रूरी बातें सीख ली हैं. याद रखें कि आप Search+Period दबाकर, किसी भी समय ChromeVox का निर्देश मेन्यू खोल सकते हैं. ChromeVox और Chrome OS के बारे में और भी ज़्यादा जानने के लिए, नीचे दिए गए लेखों पर जाएं.

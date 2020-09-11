@@ -346,6 +346,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3549141990712742152">lõika tekst <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Kõne ajutiseks peatamiseks puudutage kahe sõrmega</translation>
 <translation id="3564729643041517261">Praegu on valitud kuvastiil Kõrvuti</translation>
+<translation id="3587482841069643663">Kõik</translation>
 <translation id="3589661172894441357">Sõnastik</translation>
 <translation id="3591784666823501596">Kuninglik sinine</translation>
 <translation id="3594207934078151302">Keskmine mereroheline</translation>
@@ -449,6 +450,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4384583879834880242">Küsimused ja vastused</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Sügav taevasinine</translation>
+<translation id="4406249099130339147">Kirjavahemärkide kordamine:</translation>
 <translation id="4432457053224379116">Indiaanipunane</translation>
 <translation id="4437615272777527928">Sisestage menüüdest otsimiseks. Tulemustes liikumiseks kasutage üles- ja allanoolt. Teksti sisestusmärgi kohandamiseks ning menüüde vahel liikumiseks kasutage vasak- ja paremnoolt.</translation>
 <translation id="4457472090507035117">Valige praegune hääl:</translation>
@@ -825,6 +827,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7552432549459840808">Kasulikud Chrome'i otseteed</translation>
 <translation id="7569983096843329377">Must</translation>
 <translation id="7579911500627256166">punkt <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Mõni</translation>
 <translation id="7595446402663080101">Eelmist tabelit ei ole</translation>
 <translation id="7596131838331109045">Hele lõheroosa</translation>
 <translation id="7604026522577407655">Mine praeguse veeru algusesse</translation>
@@ -844,6 +847,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7684431668231950609">URL-i muutmine</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Eelmine raadionupp</translation>
+<translation id="7701040980221191251">Pole</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Järgmist liitboksi ei ole</translation>
 <translation id="772146615414628379">Õnnitleme! Olete omandanud ChromeVoxi kasutamiseks vajalikud põhiteadmised. Pidage meeles, et saate ChromeVoxi käsumenüü avada igal ajal, vajutades otsinguklahvi ja punktiklahvi. ChromeVoxi ja Chrome OS-i kohta lisateabe saamiseks lugege järgmisi artikleid.

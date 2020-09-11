@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Nota musical</translation>
 <translation id="1203942045716040624">Trabajador compartido: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
-<translation id="1205489148908752564">Leer y cambiar los usuarios incluidos en la lista blanca</translation>
 <translation id="1206407435587370571">Explora tu Chromebook</translation>
 <translation id="1209796539517632982">Servidores de nombres automáticos</translation>
 <translation id="1211364473545090084">Con una ventana de incógnito, podrás usar la Web sin que se guarde tu historial de navegación</translation>
@@ -1876,7 +1875,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3246107497225150582">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo en el transcurso de # días}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: Error de red</translation>
 <translation id="3248902735035392926">La seguridad es importante. Ahora, tómate un momento para <ph name="BEGIN_LINK" />revisar tus extensiones<ph name="END_LINK" /></translation>
-<translation id="325036368918787455">Cerrar el modo Incógnito</translation>
+<translation id="325036368918787455">Cerrar las ventanas de incógnito</translation>
 <translation id="3251759466064201842">&lt;No forma parte de un certificado&gt;</translation>
 <translation id="3253225298092156258">No disponible</translation>
 <translation id="3253448572569133955">Cuenta desconocida</translation>
@@ -2638,6 +2637,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar los dispositivos de almacenamiento</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Personaliza el tamaño y el estilo de los subtítulos para las apps compatibles con esta configuración.</translation>
 <translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">Navegar en la Web en el modo de contraste alto</translation>
@@ -2837,6 +2837,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4390000551125140321">{0,plural, =1{Incógnito}other{# ventanas de incógnito abiertas}}</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuración de Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> inhabilitó la depuración de ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="439817266247065935">El dispositivo no se apagó correctamente. Reinicia Linux para usar las apps de este sistema operativo.</translation>
 <translation id="4400367121200150367">Aquí aparecerán los sitios que nunca guardan las contraseñas</translation>
@@ -3526,6 +3527,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
 <translation id="5266113311903163739">Error en la importación de Entidad de certificación</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
+<translation id="5274738462757057090">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (disponible por el momento solo en inglés).</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de estado</translation>
@@ -3961,6 +3963,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
 <translation id="5797070761912323120">Es posible que Google use tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google</translation>
+<translation id="5798301976526354562">Tamaño del texto (también se aplica al Subtitulado instantáneo)</translation>
 <translation id="579915268381781820">Se quitó la llave de seguridad.</translation>
 <translation id="5799508265798272974">Máquina virtual de Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">El archivo de destino se truncó o eliminó desde la última descarga.</translation>
@@ -4869,6 +4872,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6911324888870229398">Se interrumpió la conexión de red. Comprueba la conexión o intenta usar otra red Wi-Fi.</translation>
 <translation id="6911734910326569517">Espacio en memoria</translation>
 <translation id="6912007319859991306">PIN de la SIM de red móvil</translation>
+<translation id="691289340230098384">Preferencias de subtítulos</translation>
 <translation id="6914783257214138813">Las personas que tengan acceso al archivo exportado podrán ver tus contraseñas.</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916590542764765824">Administrar extensiones</translation>
@@ -6157,6 +6161,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8470214316007448308">Otras personas</translation>
 <translation id="8470513973197838199">Se guardaron contraseñas para <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> está inhabilitando la depuración de ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que quieras conservar.</translation>
 <translation id="8472623782143987204">respaldado por hardware</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8475313423285172237">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chrome.</translation>

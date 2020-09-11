@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> ይቁረጡ።</translation>
 <translation id="3549680091535286226">በጊዜያዊነት ንግግርን ለማቆም በ2 ጣቶች ይጎትቱ</translation>
 <translation id="3564729643041517261">የአሁኑ የማሳያ ቅጥ ጎን ለጎን ነው</translation>
+<translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3589661172894441357">ሙዳየ ቃላት</translation>
 <translation id="3591784666823501596">ንጉሣዊ ሰማያዊ</translation>
 <translation id="3594207934078151302">መካከለኛ የባሕር አረንጓዴ</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ጥያቄ እና መልስ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ጠለቅ ያለ የሰማይ ሰማያዊ</translation>
+<translation id="4406249099130339147">የሥርዓተ ነጥብ ማሚቶ፦</translation>
 <translation id="4432457053224379116">የህንድ ቀይ</translation>
 <translation id="4437615272777527928">ምናሌዎችን ለመፈለግ ይተይቡ። ውጤቶቹን ለማሰስ ወደ ላይ እና ወደታች ቀስቶችን ይጠቀሙ የጽሑፍ ክብደቱን ለማስተካከል እና በምናሌዎች መካከል ለማንቀሳቀስ የግራ እና ይቀኝ ቀስቶችን ይጠቀሙ።</translation>
 <translation id="4457472090507035117">አሁን ያለውን ድምፅ ይመረጡ፦</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">አጋዥ የChrome አቋራጮች</translation>
 <translation id="7569983096843329377">ጥቁር</translation>
 <translation id="7579911500627256166">ነጥብ <ph name="DOT" /></translation>
+<translation id="7592060599656252486">አንዳንድ</translation>
 <translation id="7595446402663080101">ምንም ቀዳሚ ሠንጠረዥ የለም</translation>
 <translation id="7596131838331109045">በጣም ፈዘዝ ያለ ሐምራዊ-ብርቱካናማ</translation>
 <translation id="7604026522577407655">ወደ የአሁኑ አምድ መጀመሪያ ሂድ</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">ጽሑፍ፣ የዩ አር ኤል ግቤት ያርትዑ</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ቀዳሚ የሬዲዮ አዝራር</translation>
+<translation id="7701040980221191251">ምንም</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ምንም ቀጣይ ጥምድ ሳጥን የለም</translation>
 <translation id="772146615414628379">እንኳን ደስ አለዎት! በተስካ ሁኔታ ChromeVox ለመጠቀም የሚያስፈልጉትን መሠረታዊ ነገሮች ተምረዋል። ፍለጋ+ነጥብ ላይ በመጫን በማንኛውም ጊዜ የChromeVox ትዕዛዝ ምናሌን መክፈት እንደሚችሉ ያስታውሱ። እንዲያውም ስለChromeVox እና Chrome OS የበለጠ ለመረዳት የሚከተሉትን ጽሑፎች ይጎብኙ።

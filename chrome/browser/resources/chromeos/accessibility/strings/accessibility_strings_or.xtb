@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" /> କଟ୍ କରନ୍ତୁ।</translation>
 <translation id="3549680091535286226">ସ୍ପିଚ୍‍କୁ ସାମୟିକ ଭାବେ ବନ୍ଦ କରିବା ପାଇଁ 2 ଆଙ୍ଗୁଳି ଦେ‍ଇ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="3564729643041517261">ବର୍ତ୍ତମାନର ଡିସପ୍ଲେ ଶୈଳୀ ପାଖାପାଖି ଅଛି</translation>
+<translation id="3587482841069643663">ସମସ୍ତ</translation>
 <translation id="3589661172894441357">ଶବ୍ଦାବଳୀ</translation>
 <translation id="3591784666823501596">ରୟାଲ୍ ବ୍ଲ୍ୟୁ</translation>
 <translation id="3594207934078151302">ମଧ୍ୟମ ସାମୁଦ୍ରିକ ସବୁଜ</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ପ୍ରଶ୍ନ&amp;ଉତ୍ତର</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ଗାଢ଼ ଆକାଶିଆ ନୀଳ</translation>
+<translation id="4406249099130339147">ବିରାମ ଚିହ୍ନର ଇକୋ:</translation>
 <translation id="4432457053224379116">ଇଣ୍ଡିଆନ୍ ରେଡ୍</translation>
 <translation id="4437615272777527928">ମେନୁ ସନ୍ଧାନ କରିବାକୁ ଟାଇପ୍ କରନ୍ତୁ। ଫଳାଫଳକୁ ଯିବା ପାଇଁ ଅପ୍ ଏବଂ ଡାଉନ୍ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ। ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ଆଡଜଷ୍ଟ କରିବାକୁ ଏବଂ ମେନୁଗୁଡ଼ିକ ମଧ୍ୟରେ ମୁଭ୍ କରିବାକୁ ବାମ ଏବଂ ଡାହାଣ ତୀର କୀ'ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="4457472090507035117">ବର୍ତ୍ତମାନର ସ୍ୱରକୁ ଚୟନ କରନ୍ତୁ:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">ଉପଯୋଗୀ Chrome ସର୍ଟକଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="7569983096843329377">କଳା</translation>
 <translation id="7579911500627256166">ଡଟ୍ <ph name="DOT" /></translation>
+<translation id="7592060599656252486">କିଛି</translation>
 <translation id="7595446402663080101">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ଟେବଲ୍ ନାହିଁ</translation>
 <translation id="7596131838331109045">ହାଲୁକା ସାଲ୍‌ମନ୍</translation>
 <translation id="7604026522577407655">ସାମ୍ପ୍ରତିକ ସ୍ତମ୍ଭର ପ୍ରାରମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">ଟେକ୍ସଟ୍ ଏଡିଟ୍ କରନ୍ତୁ, URL ଲେଖନ୍ତୁ</translation>
 <translation id="7685589220304187312">ଟୁଲ୍ ବାର୍</translation>
 <translation id="7693840228159394336">ପୂର୍ବବର୍ତ୍ତୀ ରେଡିଓ ବଟନ୍</translation>
+<translation id="7701040980221191251">କିଛି ନାହିଁ</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">କୌଣସି ପରବର୍ତ୍ତୀ କମ୍ବୋ ବକ୍ସ ନାହିଁ</translation>
 <translation id="772146615414628379">ଅଭିନନ୍ଦନ! ChromeVox ସଫଳତାର ସହିତ ବ୍ୟବହାର କରିବା ପାଇଁ ଆବଶ୍ୟକ ଜିନିଷଗୁଡ଼ିକୁ ଆପଣ ଶିଖିଛନ୍ତି। ମନେରଖନ୍ତୁ ଯେ, ଆପଣ Search+Periodକୁ ଦବାଇ ଯେ କୌଣସି ସମୟରେ ChromeVox କମାଣ୍ଡ ମେନୁକୁ ଖୋଲିପାରିବେ। ChromeVox ଓ Chrome OS, ବିଷୟରେ ଆହୁରି ଅଧିକ ଜାଣିବା ପାଇଁ, ନିମ୍ନରେ ଥିବା ଆର୍ଟିକିଲଗୁଡ଼ିକୁ ଯାଆନ୍ତୁ।

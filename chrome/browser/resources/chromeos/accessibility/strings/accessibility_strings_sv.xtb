@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">klipp ut <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Stoppa uppläsningen tillfälligt genom att trycka med två fingrar</translation>
 <translation id="3564729643041517261">Aktuellt visningsformat är sida vid sida</translation>
+<translation id="3587482841069643663">Alla</translation>
 <translation id="3589661172894441357">Ordlista</translation>
 <translation id="3591784666823501596">Kungsblå</translation>
 <translation id="3594207934078151302">Mellanmörkt havsgrön</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Frågor och svar</translation>
 <translation id="4391478986194775161">innehållsinformation</translation>
 <translation id="4402014469255336455">Djupt himmelsblå</translation>
+<translation id="4406249099130339147">Upprepa skiljetecken:</translation>
 <translation id="4432457053224379116">Brunröd</translation>
 <translation id="4437615272777527928">Skriv det du vill söka efter i menyerna. Bläddra bland resultat med upp- och nedpilarna. Justera textmarkören och navigera mellan menyer med vänster- och högerpilarna.</translation>
 <translation id="4457472090507035117">Välj den aktuella rösten:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Användbara kortkommandon i Chrome</translation>
 <translation id="7569983096843329377">Svart</translation>
 <translation id="7579911500627256166">punkt <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Vissa</translation>
 <translation id="7595446402663080101">Det finns ingen föregående tabell</translation>
 <translation id="7596131838331109045">Ljust laxrosa</translation>
 <translation id="7604026522577407655">Flytta till början av den aktuella kolumnen</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Textinmatning, webbadress</translation>
 <translation id="7685589220304187312">verktygsfält</translation>
 <translation id="7693840228159394336">Föregående alternativknapp</translation>
+<translation id="7701040980221191251">Inga</translation>
 <translation id="7701196182766842984">autoslutför i lista</translation>
 <translation id="7714340021005120797">Det finns inga fler kombinationsrutor</translation>
 <translation id="772146615414628379">Grattis! Nu kan du grunderna i att använda ChromeVox. Kom ihåg att du kan öppna kommandomenyn för ChromeVox när som helst genom att trycka på söktangenten + punkt. Om du vill veta ännu mer om ChromeVox och Chrome OS kan du läsa följande artiklar.

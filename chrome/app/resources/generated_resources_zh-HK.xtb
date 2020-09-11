@@ -182,7 +182,6 @@
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
-<translation id="1205489148908752564">讀取及變更許可名單上的使用者</translation>
 <translation id="1206407435587370571">探索您的 Chromebook</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1211364473545090084">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
@@ -2640,6 +2639,7 @@
 <translation id="4104163789986725820">匯出(&amp;X)…</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">為支援此設定的應用程式自訂字幕大小和樣式</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4110895898888439383">以高對比模式瀏覽網頁</translation>
@@ -2839,6 +2839,7 @@
 <translation id="4390000551125140321">{0,plural, =1{無痕模式}other{# 開啟無痕式視窗}}</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔案</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="439817266247065935">您的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="4400367121200150367">永不儲存密碼的網站會在這裡顯示</translation>
@@ -3528,6 +3529,7 @@
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
 <translation id="5269977353971873915">列印失敗</translation>
+<translation id="5274738462757057090">在 Chrome 瀏覽器中自動建立媒體字幕 (目前僅支援英文)</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
@@ -3963,6 +3965,7 @@
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
 <translation id="5797070761912323120">Google 可能會使用您的記錄，為您提供個人化的搜尋服務、廣告和其他 Google 服務</translation>
+<translation id="5798301976526354562">文字大小 (亦適用於即時字幕)</translation>
 <translation id="579915268381781820">您的安全密鑰已被移除。</translation>
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已被截斷或移除。</translation>
@@ -4871,6 +4874,7 @@
 <translation id="6911324888870229398">網絡連線已中斷。請檢查您的網絡連線，或改用其他 Wi-Fi 網絡。</translation>
 <translation id="6911734910326569517">記憶體使用量</translation>
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
+<translation id="691289340230098384">字幕偏好設定</translation>
 <translation id="6914783257214138813">任何能查看匯出檔案的使用者都可看到您的密碼。</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
@@ -6158,6 +6162,7 @@
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
 <translation id="8472623782143987204">硬件支援</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>

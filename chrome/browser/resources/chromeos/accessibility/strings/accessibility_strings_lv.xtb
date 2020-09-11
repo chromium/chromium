@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">izgriezt tekstu “<ph name="TEXT" />”.</translation>
 <translation id="3549680091535286226">Pieskarieties ar diviem pirkstiem, lai īslaicīgi apturētu runas izvadi</translation>
 <translation id="3564729643041517261">Pašreizējais displeja veids ir attēlojums līdzās.</translation>
+<translation id="3587482841069643663">Visi</translation>
 <translation id="3589661172894441357">Glosārijs</translation>
 <translation id="3591784666823501596">Karaliski zila</translation>
 <translation id="3594207934078151302">Vidēji jūrazsaļa</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Jautājumi un atbildes</translation>
 <translation id="4391478986194775161">satura informācija</translation>
 <translation id="4402014469255336455">Piesātināti debeszils</translation>
+<translation id="4406249099130339147">Pieturzīmju atbalss:</translation>
 <translation id="4432457053224379116">Dzelzs oksīda sarkana</translation>
 <translation id="4437615272777527928">Rakstiet, lai meklētu saturu izvēlnēs. Lai pārlūkotu rezultātus, izmantojiet augšupvērsto un lejupvērsto bultiņu. Izmantojiet pa kreisi un pa labi vērstās bultiņas, lai pielāgotu teksta ievietošanas punktu un pārvietotos pa izvēlnēm.</translation>
 <translation id="4457472090507035117">Atlasiet pašreizējo balsi:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Noderīgi Chrome īsinājumtaustiņi</translation>
 <translation id="7569983096843329377">Melna</translation>
 <translation id="7579911500627256166">punkts <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Dažas</translation>
 <translation id="7595446402663080101">Nav iepriekšējās tabulas.</translation>
 <translation id="7596131838331109045">Gaiša lašu</translation>
 <translation id="7604026522577407655">Pāriet uz pašreizējās slejas sākumu</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Rediģējams teksts: URL ievade</translation>
 <translation id="7685589220304187312">rīkjosla</translation>
 <translation id="7693840228159394336">Iepriekšējā radiopoga</translation>
+<translation id="7701040980221191251">Nav</translation>
 <translation id="7701196182766842984">automātiski pabeigts saraksts</translation>
 <translation id="7714340021005120797">Nav nākamā kombinētā lodziņa.</translation>
 <translation id="772146615414628379">Apsveicam! Esat veiksmīgi apguvis ChromeVox lietošanas pamatus. Jebkurā brīdī varat atvērt ChromeVox komandu izvēlni, vienlaikus nospiežot meklēšanas taustiņu un punkta taustiņu. Papildu informāciju par ChromeVox un Chrome OS skatiet tālāk norādītajos rakstos.

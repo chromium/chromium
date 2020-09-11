@@ -895,6 +895,7 @@
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
+<translation id="7961926449547174351">ストレージへのアクセスは無効になっています。[設定] で有効にしてください。</translation>
 <translation id="7963646190083259054">ベンダー:</translation>
 <translation id="7967911570373677897">QR コードをスキャンするには、Chrome にカメラの使用を許可するよう設定を変更してください</translation>
 <translation id="7971136598759319605">最終同期: 1 日前</translation>

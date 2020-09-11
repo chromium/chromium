@@ -346,6 +346,7 @@
 <translation id="3549141990712742152"><ph name="TEXT" />-г таслах.</translation>
 <translation id="3549680091535286226">Яриаг түр зогсоохын тулд 2 хуруугаараа товшино уу</translation>
 <translation id="3564729643041517261">Одоогийн дэлгэцийн загвар нь зэрэгцсэн байна</translation>
+<translation id="3587482841069643663">Бүгд</translation>
 <translation id="3589661172894441357">Тайлбар толь</translation>
 <translation id="3591784666823501596">Тод хөх</translation>
 <translation id="3594207934078151302">Tэнгисийн гүн ногоон</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Асуулт, хариулт</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Тэнгэрийн гүн хөх</translation>
+<translation id="4406249099130339147">Цэг таслалын дуудлага:</translation>
 <translation id="4432457053224379116">Гүн улаан</translation>
 <translation id="4437615272777527928">Цэсүүдийг хайхын тулд бичнэ үү. Илэрцүүдийн хооронд шилжихийн тулд дээш болон доош сумыг ашиглана уу. Текст оруулах тэмдгийг тохируулах болон цэс хооронд шилжихийн тулд зүүн болон баруун сумыг ашиглана уу.</translation>
 <translation id="4457472090507035117">Одоогийн дуу хоолойг сонгоно уу:</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Chrome-н хэрэгтэй товчлол</translation>
 <translation id="7569983096843329377">Хар</translation>
 <translation id="7579911500627256166">цэг <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Зарим</translation>
 <translation id="7595446402663080101">Өмнөх хүснэгт алга байна</translation>
 <translation id="7596131838331109045">Улбар шар туяатай цайвар ягаан</translation>
 <translation id="7604026522577407655">Одоо байгаа баганын эхэн рүү очих</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Бичвэр засварлах, холбоос оруулах</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Өмнөх ганц сонголтот талбар</translation>
+<translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Дараагийн комбо нүд алга байна</translation>
 <translation id="772146615414628379">Баяр хүргэе! Та ChromeVox-г ашиглахад шаардлагатай зүйлсийг амжилттай сурлаа. Та Search+Period дээр дарснаар ChromeVox-н тушаалын цэсийг хүссэн үедээ нээх боломжтой болохыг санана уу. ChromeVox болон Chrome үйлдлийн системийн талаар нэмэлт мэдээлэл авах бол дараах нийтлэлийг уншина уу.

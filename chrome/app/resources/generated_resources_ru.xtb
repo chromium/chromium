@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Ноты</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">Задержка DNS</translation>
-<translation id="1205489148908752564">Просмотр и изменение белого списка пользователей</translation>
 <translation id="1206407435587370571">Знакомство с Chromebook</translation>
 <translation id="1209796539517632982">Автоматические серверы имен</translation>
 <translation id="1211364473545090084">Не хотите, чтобы сохранялась история просмотров? Используйте режим инкогнито.</translation>
@@ -2639,6 +2638,7 @@
 <translation id="4104163789986725820">Э&amp;кспорт...</translation>
 <translation id="4107048419833779140">Идентификация и извлечение запоминающих устройств</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Функция позволяет настроить стиль и размер субтитров для приложений, поддерживающих эту настройку</translation>
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4110895898888439383">Просматривайте веб-страницы в режиме высокой контрастности.</translation>
@@ -2838,6 +2838,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Инкогнито}one{# окно в режиме инкогнито}few{# окна в режиме инкогнито}many{# окон в режиме инкогнито}other{# окна в режиме инкогнито}}</translation>
 <translation id="439266289085815679">Конфигурацию Bluetooth контролирует пользователь <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Изменение файла конфигурации.</translation>
+<translation id="4393691030048716353">Отладка с помощью ADB отключена администратором домена <ph name="DOMAIN" />. После перезагрузки <ph name="DEVICE_TYPE" /> вы не сможете устанавливать приложения из неизвестного источника.</translation>
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="439817266247065935">Работа устройства была завершена неправильно. Чтобы использовать приложения для Linux, перезагрузите эту операционную систему.</translation>
 <translation id="4400367121200150367">Здесь появятся сайты, которые никогда не сохраняют пароли</translation>
@@ -3527,6 +3528,7 @@
 <translation id="5265797726250773323">Ошибка при установке</translation>
 <translation id="5266113311903163739">Ошибка при импорте Центра сертификации</translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
+<translation id="5274738462757057090">Функция автоматически создает субтитры к медиаконтенту в Chrome (доступно только на английском языке)</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Идентификатор состояния</translation>
@@ -3962,6 +3964,7 @@
 <translation id="5794700615121138172">Общие папки Linux</translation>
 <translation id="5794786537412027208">Закрыть все приложения Chrome</translation>
 <translation id="5797070761912323120">Google может использовать вашу историю, чтобы персонализировать рекламу, а также Поиск и другие сервисы.</translation>
+<translation id="5798301976526354562">Размер текста (также применяется к автоматическим субтитрам)</translation>
 <translation id="579915268381781820">Электронный ключ не подключен.</translation>
 <translation id="5799508265798272974">Виртуальная машина Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Выбранный файл был поврежден или удален после скачивания.</translation>
@@ -4870,6 +4873,7 @@
 <translation id="6911324888870229398">Соединение прервано. Проверьте подключение или используйте другую сеть Wi-Fi.</translation>
 <translation id="6911734910326569517">Объем потребляемой памяти</translation>
 <translation id="6912007319859991306">PIN-код SIM-карты</translation>
+<translation id="691289340230098384">Настройки субтитров</translation>
 <translation id="6914783257214138813">Ваши пароли будут видны всем, у кого есть доступ к файлу экспорта.</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6916590542764765824">Управление расширениями</translation>
@@ -6157,6 +6161,7 @@
 <translation id="8467326454809944210">Выбрать другой язык</translation>
 <translation id="8470214316007448308">Другие пользователи</translation>
 <translation id="8470513973197838199">Сохраненные пароли для <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232">Отладка с помощью ADB отключена администратором домена <ph name="DOMAIN" />. Все заданные параметры <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="8472623782143987204">требуется оборудование</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8475313423285172237">Одна из программ на вашем компьютере установила расширение, которое может влиять на работу Chrome.</translation>

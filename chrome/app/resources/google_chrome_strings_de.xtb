@@ -158,7 +158,7 @@
 <translation id="5633355459292055250">Fragen, wenn ich Chrome öffne</translation>
 <translation id="5657226924540934362">Wenn Sie auf dieser Seite eine Einstellung nicht finden können, sehen Sie in den <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> nach</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
-<translation id="5678190148303298925">{COUNT,plural, =0{Laut Ihrem Administrator sollten Sie Chrome neu starten, um dieses Update durchzuführen}=1{Laut Ihrem Administrator sollten Sie Chrome neu starten, um dieses Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator sollten Sie Chrome neu starten, um dieses Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
+<translation id="5678190148303298925">{COUNT,plural, =0{Ihr Administrator empfiehlt Ihnen, Chrome neu zu starten, um dieses Update durchzuführen}=1{Ihr Administrator empfiehlt Ihnen, Chrome neu zu starten, um dieses Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ihr Administrator empfiehlt Ihnen, Chrome neu starten, um dieses Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="5686916850681061684">Sie können Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert Ihre Aufmerksamkeit – klicken Sie, um mehr zu erfahren.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome wird in 1 Sekunde neu gestartet}other{Google Chrome wird in # Sekunden neu gestartet}}</translation>

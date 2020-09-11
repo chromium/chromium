@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Նոտա</translation>
 <translation id="1203942045716040624">Shared Worker՝ <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
-<translation id="1205489148908752564">Կարդալ և փոփոխել սպիտակ ցուցակի օգտատերերին</translation>
 <translation id="1206407435587370571">Ուսումնասիրեք ձեր Chromebook-ը</translation>
 <translation id="1209796539517632982">Անունների ավտոմատ սերվերներ</translation>
 <translation id="1211364473545090084">Եթե չեք ուզում, որ ձեր այցելությունների պատմությունը պահվի, բացեք ինկոգնիտո պատուհան:</translation>
@@ -2641,6 +2640,7 @@
 <translation id="4104163789986725820">Ար&amp;տահանել…</translation>
 <translation id="4107048419833779140">Գտնել և անջատել հիշասարքերը</translation>
 <translation id="4109135793348361820">Տեղափոխել պատուհանը <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Անհատականացրեք ենթագրերի չափսը և ոճը այն հավելվածների համար, որոնք աջակցում են այս գործառույթը</translation>
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Կայքերի բարձր կոնտրաստի ռեժիմ</translation>
@@ -2840,6 +2840,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Ինկոգնիտո}one{# բաց ինկոգնիտո պատուհան}other{# բաց ինկոգնիտո պատուհան}}</translation>
 <translation id="439266289085815679">Bluetooth-ի կազմաձևումը վերահսկում է <ph name="USER_EMAIL" /> հաշվի օգտատերը:</translation>
 <translation id="4392896746540753732">Կարգավորման ֆայլի փոփոխում</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ Ձեր <ph name="DEVICE_TYPE" /> սարքը վերագործարկելուց հետո դուք չեք կարողանա բեռնել հավելվածներ անհայտ աղբյուրներից։</translation>
 <translation id="4394049700291259645">Անջատել</translation>
 <translation id="439817266247065935">Ձեր սարքը ճիշտ չի անջատվել։ Վերագործարկեք Լինուքսը՝ դրա հավելվածներն օգտագործելու համար։</translation>
 <translation id="4400367121200150367">Կայքերը, որոնք գաղտնաբառեր չեն պահում, կցուցադրվեն այստեղ</translation>
@@ -3530,6 +3531,7 @@
 <translation id="5265797726250773323">Չհաջողվեց տեղադրել</translation>
 <translation id="5266113311903163739">Հավաստագրման կենտրոնի ներմուծման սխալ</translation>
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
+<translation id="5274738462757057090">Chrome դիտարկիչում ավտոմատ ստեղծում է ենթագրեր մեդիա ֆայլի համար (այս պահին հասանելի է միայն անգլերեն լեզվով)</translation>
 <translation id="5275352920323889391">Շուն</translation>
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
 <translation id="5278823018825269962">Կարգավիճակի նույնացուցիչ</translation>
@@ -3967,6 +3969,7 @@
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
 <translation id="5797070761912323120">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումը, գովազդն ու Google-ի մյուս ծառայություններն անհատականացնելու համար</translation>
+<translation id="5798301976526354562">Տեքստի չափսը (կիրառվում է նաև Կենդանի ենթագրերի համար)</translation>
 <translation id="579915268381781820">Անվտանգության բանալին հեռացվել է:</translation>
 <translation id="5799508265798272974">Linux վիրտուալ մեքենա՝ <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Վերջին ներբեռնումից հետո ընտրված ֆայլը վնասվել կամ հեռացվել է:</translation>
@@ -4875,6 +4878,7 @@
 <translation id="6911324888870229398">Կապը խափանվել է։ Ստուգեք ձեր ինտերնետ կապը կամ միացեք այլ Wi-Fi ցանցի։</translation>
 <translation id="6911734910326569517">Օգտագործված հիշողության ծավալ</translation>
 <translation id="6912007319859991306">SIM քարտի PIN կոդ</translation>
+<translation id="691289340230098384">Ենթագրերի կարգավորումներ</translation>
 <translation id="6914783257214138813">Ձեր գաղտնաբառերը տեսանելի կլինեն արտահանված ֆայլին մուտք ունեցող բոլոր օգտատերերին:</translation>
 <translation id="6915804003454593391">Օգտատեր`</translation>
 <translation id="6916590542764765824">Կառավարել ընդլայնումները</translation>
@@ -6161,6 +6165,7 @@
 <translation id="8467326454809944210">Ընտրել մեկ այլ լեզու</translation>
 <translation id="8470214316007448308">Այլ մարդիկ</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> կայքի պահված գաղտնաբառերը</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="8472623782143987204">պահանջվում է սարքակազմ</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
 <translation id="8475313423285172237">Ձեր համակարգչի ծրագրերից մեկն ավելացրել է ընդլայնում, որը կարող է միջամտել Chrome-ի աշխատանքին:</translation>

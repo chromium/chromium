@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">剪切<ph name="TEXT" />。</translation>
 <translation id="3549680091535286226">用 2 根手指点按即可暂时关闭语音</translation>
 <translation id="3564729643041517261">当前的显示样式为并排</translation>
+<translation id="3587482841069643663">全部</translation>
 <translation id="3589661172894441357">词汇表</translation>
 <translation id="3591784666823501596">宝蓝色</translation>
 <translation id="3594207934078151302">中海绿色</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">问答</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">深天蓝色</translation>
+<translation id="4406249099130339147">标点符号语音提示：</translation>
 <translation id="4432457053224379116">印度红色</translation>
 <translation id="4437615272777527928">输入文字即可在菜单中搜索。使用向上和向下箭头键可上下浏览结果。使用向左和向右箭头键可调整文本插入符号以及切换菜单。</translation>
 <translation id="4457472090507035117">请选择当前的声音：</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">实用的 Chrome 快捷键</translation>
 <translation id="7569983096843329377">黑色</translation>
 <translation id="7579911500627256166">点 <ph name="DOT" /></translation>
+<translation id="7592060599656252486">部分</translation>
 <translation id="7595446402663080101">没有上一个表格</translation>
 <translation id="7596131838331109045">亮鲑红</translation>
 <translation id="7604026522577407655">转到当前列的开头</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">编辑文本，网址条目</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">上一个单选按钮</translation>
+<translation id="7701040980221191251">无</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">没有下一个组合框</translation>
 <translation id="772146615414628379">恭喜！您已完成对 ChromeVox 基本使用方法的学习。提示：您可以随时通过按下“搜索键+句点键”打开 ChromeVox 命令菜单。如需详细了解 ChromeVox 和 Chrome 操作系统，请阅读以下文章。

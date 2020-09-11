@@ -182,7 +182,6 @@
 <translation id="120368089816228251">Музычная нота</translation>
 <translation id="1203942045716040624">Агульны рабочы працэс: <ph name="SCRIPT_URL" /></translation>
 <translation id="1204296502688602597">Затрымка DNS</translation>
-<translation id="1205489148908752564">Чытаць і змяняць белы спіс карыстальнікаў</translation>
 <translation id="1206407435587370571">Знаёмства з прыладай Chromebook</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1211364473545090084">Акно ў рэжыме інкогніта дазваляе карыстацца інтэрнэтам без захавання гісторыі прагляду сайтаў</translation>
@@ -2641,6 +2640,7 @@
 <translation id="4104163789986725820">Ідзе э&amp;кспарт...</translation>
 <translation id="4107048419833779140">Вызначыць і выдаліць прылады сховішча</translation>
 <translation id="4109135793348361820">Перамясціць акно карыстальніку <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="411031910327788420">Наладжванне памеру і стылю субцітраў для праграм, якія падтрымліваюць гэту наладу</translation>
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
 <translation id="4110686435123617899">Выберыце альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4110895898888439383">Прагляд вэб-сайтаў у рэжыме высокай кантраснасці</translation>
@@ -2840,6 +2840,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Інкогніта}one{# адкрытае акно ў рэжыме інкогніта}few{# адкрытыя акны ў рэжыме інкогніта}many{# адкрытых вокнаў у рэжыме інкогніта}other{# адкрытага акна ў рэжыме інкогніта}}</translation>
 <translation id="439266289085815679">Карыстальнік <ph name="USER_EMAIL" /> кіруе канфігурацыяй Bluetooth.</translation>
 <translation id="4392896746540753732">Рэдагаванне файла канфігурацыі</translation>
+<translation id="4393691030048716353">Сайт <ph name="DOMAIN" /> выключыў адладку ADB. Пасля перазапуску прылады <ph name="DEVICE_TYPE" /> вы не зможаце загружаць праграмы са старонняй крыніцы.</translation>
 <translation id="4394049700291259645">Выключыць</translation>
 <translation id="439817266247065935">Работа прылады была завершана няправільна. Каб карыстацца праграмамі Linux, перазапусціце Linux.</translation>
 <translation id="4400367121200150367">Тут будуць паказвацца сайты, якія ніколі не захоўваюць паролі</translation>
@@ -3529,6 +3530,7 @@
 <translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="5266113311903163739">Памылка імпарту файла цэнтра сертыфікацыі</translation>
 <translation id="5269977353971873915">Збой друку</translation>
+<translation id="5274738462757057090">Аўтаматычна стварае субцітры для мультымедыйных файлаў у браўзеры Chrome (пакуль што падтрымліваецца толькі англійская мова)</translation>
 <translation id="5275352920323889391">Сабака</translation>
 <translation id="527605982717517565">Заўсёды дазваляць сайту <ph name="HOST" /> выкарыстоўваць JavaScript</translation>
 <translation id="5278823018825269962">Ідэнтыфікатар стану</translation>
@@ -3964,6 +3966,7 @@
 <translation id="5794700615121138172">Абагуленыя папкі Linux</translation>
 <translation id="5794786537412027208">Выйсці з усіх праграм Chrome</translation>
 <translation id="5797070761912323120">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук, паказ рэкламы і іншыя сэрвісы Google</translation>
+<translation id="5798301976526354562">Памер тэксту (таксама выкарыстоўваецца функцыяй "Імгненныя субцітры")</translation>
 <translation id="579915268381781820">Ключ бяспекі адключаны.</translation>
 <translation id="5799508265798272974">Віртуальная машына Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">З моманту апошняга спампоўвання мэтавы файл быў абрэзаны або выдалены.</translation>
@@ -4872,6 +4875,7 @@
 <translation id="6911324888870229398">Падключэнне да сеткі страчана. Праверце падключэнне або падключыцеся да іншай сеткі Wi-Fi.</translation>
 <translation id="6911734910326569517">Выкарыстанне памяці</translation>
 <translation id="6912007319859991306">PIN-код SIM-карты</translation>
+<translation id="691289340230098384">Налады субцітраў</translation>
 <translation id="6914783257214138813">Усе карыстальнікі, якія будуць бачыць экспартаваны файл, змогуць пабачыць вашы паролі.</translation>
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6916590542764765824">Кіраваць пашырэннямі</translation>
@@ -6159,6 +6163,7 @@
 <translation id="8467326454809944210">Выбраць іншую мову</translation>
 <translation id="8470214316007448308">Іншыя людзі</translation>
 <translation id="8470513973197838199">Захаваныя паролі для сайта <ph name="ORIGIN" /></translation>
+<translation id="8471256130228705232">Сайт <ph name="DOMAIN" /> выключае адладку ADB. Гэта прывядзе да скіду прылады <ph name="DEVICE_TYPE" /> праз 24 гадзіны. Зрабіце рэзервовыя копіі ўсіх файлаў, якія трэба захаваць.</translation>
 <translation id="8472623782143987204">патрабуюцца апаратныя сродкі</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8475313423285172237">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.</translation>

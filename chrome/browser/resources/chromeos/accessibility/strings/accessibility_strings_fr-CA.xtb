@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">couper <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Touchez avec deux doigts pour arrêter temporairement le contenu vocal</translation>
 <translation id="3564729643041517261">Le style d'affichage actuel est côte à côte</translation>
+<translation id="3587482841069643663">Tous</translation>
 <translation id="3589661172894441357">Glossaire</translation>
 <translation id="3591784666823501596">Bleu royal</translation>
 <translation id="3594207934078151302">Vert mer moyen</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Questions/réponses</translation>
 <translation id="4391478986194775161">info contenu</translation>
 <translation id="4402014469255336455">Bleu ciel foncé</translation>
+<translation id="4406249099130339147">Énonciation de la ponctuation :</translation>
 <translation id="4432457053224379116">Rouge indien</translation>
 <translation id="4437615272777527928">Tapez pour effectuer une recherche dans les menus. Servez-vous des flèches vers le haut et vers le bas pour naviguer dans les résultats. Servez-vous des flèches de gauche et de droite pour ajuster le point d'insertion de texte et pour vous déplacer entre les menus.</translation>
 <translation id="4457472090507035117">Sélectionner la voix actuelle :</translation>
@@ -825,6 +827,7 @@
 <translation id="7552432549459840808">Raccourcis utiles de Google Chrome</translation>
 <translation id="7569983096843329377">Noir</translation>
 <translation id="7579911500627256166">point <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Certains</translation>
 <translation id="7595446402663080101">Aucun tableau précédent</translation>
 <translation id="7596131838331109045">Saumon clair</translation>
 <translation id="7604026522577407655">Aller au début de la présente colonne</translation>
@@ -844,6 +847,7 @@
 <translation id="7684431668231950609">Modifier le texte de l'adresse URL</translation>
 <translation id="7685589220304187312">barre d'outils</translation>
 <translation id="7693840228159394336">Case d'option précédente</translation>
+<translation id="7701040980221191251">Aucun</translation>
 <translation id="7701196182766842984">liste remplissage automatique</translation>
 <translation id="7714340021005120797">Aucune zone de liste ou de texte suivante</translation>
 <translation id="772146615414628379">Félicitations! Vous avez appris les bases nécessaires pour utiliser ChromeVox. Rappelez-vous : vous pouvez ouvrir le menu de commande de ChromeVox en tout temps en appuyant sur les touches Rechercher+Point. Pour en apprendre encore plus sur ChromeVox et sur Chrome OS, consultez les articles suivants.

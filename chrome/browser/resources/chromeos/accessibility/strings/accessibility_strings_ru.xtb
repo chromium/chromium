@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">вырезать <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Чтобы приостановить озвучивание текста, коснитесь экрана двумя пальцами.</translation>
 <translation id="3564729643041517261">Текущий стиль дисплея: параллельный</translation>
+<translation id="3587482841069643663">Все</translation>
 <translation id="3589661172894441357">Словарь</translation>
 <translation id="3591784666823501596">Королевский синий</translation>
 <translation id="3594207934078151302">Умеренный цвет морской волны</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Вопросы и ответы</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Насыщенный небесно-голубой</translation>
+<translation id="4406249099130339147">Озвучивание знаков пунктуации:</translation>
 <translation id="4432457053224379116">Индийский красный</translation>
 <translation id="4437615272777527928">Чтобы выполнить поиск в меню, начните вводить текст. Для переключения между результатами используйте клавиши со стрелками вверх и вниз. Чтобы перемещать текстовый курсор и переходить из одного меню в другое, используйте клавиши со стрелками влево и вправо.</translation>
 <translation id="4457472090507035117">Голос:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">Быстрые клавиши для работы с Chrome</translation>
 <translation id="7569983096843329377">Черный</translation>
 <translation id="7579911500627256166">точка <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Озвучивать некоторые</translation>
 <translation id="7595446402663080101">Предыдущей таблицы нет</translation>
 <translation id="7596131838331109045">Светло-лососевый</translation>
 <translation id="7604026522577407655">Перейти к началу текущего столбца</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">Редактирование текста, URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Перейти к предыдущему переключателю</translation>
+<translation id="7701040980221191251">Нет</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Следующего поля со списком нет</translation>
 <translation id="772146615414628379">Поздравляем! Вы изучили основы работы с ChromeVox. Меню с командами ChromeVox можно открыть в любой момент, нажав Поиск + Ю. Подробную информацию о ChromeVox и Chrome OS можно найти в перечисленных ниже статьях.

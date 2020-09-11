@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">ຕັດ <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">ໃຊ້ 2 ນິ້ວມືລາກເພື່ອຢຸດການເວົ້າໄວ້ຊົ່ວຄາວ</translation>
 <translation id="3564729643041517261">ຮູບແບບການສະແດງຜົນປັດຈຸບັນເປັນການສະແດງຄູ່ກັນ</translation>
+<translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3589661172894441357">ປະມວນຄຳສັບ</translation>
 <translation id="3591784666823501596">ສີຟ້າໂຣຢານບລູ</translation>
 <translation id="3594207934078151302">ສີຂຽວທະເລປານກາງ</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">ຖາມ-ຕອບ</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">ສີຟ້າທ້ອງຟ້າເຂັ້ມ</translation>
+<translation id="4406249099130339147">ສຽງສະທ້ອນຂອງເຄື່ອງໝາຍວັກຕອນ:</translation>
 <translation id="4432457053224379116">ສີແດງອິນເດຍເຣດ</translation>
 <translation id="4437615272777527928">ພິມເພື່ອຊອກຫາເມນູ. ໃຊ້ລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອວົນເບິ່ງຜົນການຊອກຫາ. ໃຊ້ລູກສອນຊ້າຍ ແລະ ຂວາເພື່ອປັບເຄື່ອງໝາຍກຸບຂອງຂໍ້ຄວາມ ແລະ ຍ້າຍໄປມາລະຫວ່າງເມນູ.</translation>
 <translation id="4457472090507035117">ເລືອກສຽງປັດຈຸບັນ:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">ທາງລັດທີ່ເປັນປະໂຫຍດຂອງ Chrome</translation>
 <translation id="7569983096843329377">ສີ​ດໍາ</translation>
 <translation id="7579911500627256166">ຈໍ້າ <ph name="DOT" /></translation>
+<translation id="7592060599656252486">ບາງສ່ວນ</translation>
 <translation id="7595446402663080101">ບໍ່ມີຕາຕະລາງກ່ອນໜ້າ</translation>
 <translation id="7596131838331109045">ສີຊາມອນອ່ອນ</translation>
 <translation id="7604026522577407655">ໄປທີ່ຕອນຕົ້ນຂອງຖັນປະຈຸບັນ</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">ດັດ​ແກ້​ຂໍ້​ຄວາມ​, ການປ້ອນເຂົ້າ URL</translation>
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">ປຸ່ມ​ວິ​ທະ​ຍຸ​ຜ່ານ​ມາ​</translation>
+<translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">ບໍ່ມີກ່ອງຄອມໂບຖັດໄປ</translation>
 <translation id="772146615414628379">ຂໍສະແດງຄວາມຍິນດີ! ທ່ານໄດ້ຮຽນຮູ້ສິ່ງສຳຄັນໃນການນຳໃຊ້ ChromeVox ສຳເລັດແລ້ວ. ຈື່ວ່າທ່ານສາມາດເປີດເມນູຄຳສັ່ງຂອງ ChromeVox ໄດ້ທຸກເວລາໂດຍການກົດປຸ່ມຊອກຫາ+ໝາຍຈໍ້າ. ເພື່ອຮຽນຮູ້ເພີ່ມເຕີມອີກກ່ຽວກັບ ChromeVox ແລະ Chrome OS, ກະລຸນາເຂົ້າເບິ່ງບົດຄວາມຕໍ່ໄປນີ້.

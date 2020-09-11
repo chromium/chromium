@@ -346,6 +346,7 @@
 <translation id="3549141990712742152">вирізати <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Торкніться 2 пальцями, щоб тимчасово припинити озвучення</translation>
 <translation id="3564729643041517261">Поточний стиль дисплея – паралельний перегляд</translation>
+<translation id="3587482841069643663">Все</translation>
 <translation id="3589661172894441357">Глосарій</translation>
 <translation id="3591784666823501596">Королівський синій</translation>
 <translation id="3594207934078151302">Помірний зелене море</translation>
@@ -449,6 +450,7 @@
 <translation id="4384583879834880242">Запитання</translation>
 <translation id="4391478986194775161">інформація про вміст</translation>
 <translation id="4402014469255336455">Насичений небесно-голубий</translation>
+<translation id="4406249099130339147">Озвучення розділових знаків:</translation>
 <translation id="4432457053224379116">Індійський червоний</translation>
 <translation id="4437615272777527928">Щоб шукати параметри в меню, введіть текст. Щоб переходити між результатами, натискайте стрілки вгору та вниз. Щоб змінити місце введення тексту або переходити між меню, натискайте стрілки вліво та вправо.</translation>
 <translation id="4457472090507035117">Виберіть поточний голос:</translation>
@@ -824,6 +826,7 @@
 <translation id="7552432549459840808">Корисні комбінації клавіш у Chrome</translation>
 <translation id="7569983096843329377">Чорний</translation>
 <translation id="7579911500627256166">крапка <ph name="DOT" /></translation>
+<translation id="7592060599656252486">Деякі розділові знаки</translation>
 <translation id="7595446402663080101">Немає попередньої таблиці</translation>
 <translation id="7596131838331109045">Світло-лососевий</translation>
 <translation id="7604026522577407655">Перейти на початок поточного стовпця</translation>
@@ -843,6 +846,7 @@
 <translation id="7684431668231950609">Редагування введеного тексту, URL-адреси</translation>
 <translation id="7685589220304187312">панель інструментів</translation>
 <translation id="7693840228159394336">Попередній перемикач</translation>
+<translation id="7701040980221191251">Немає</translation>
 <translation id="7701196182766842984">список автозавершення</translation>
 <translation id="7714340021005120797">Немає наступного поля зі списком</translation>
 <translation id="772146615414628379">Вітаємо! Ви дізналися про основні функції ChromeVox. Ви завжди можете відкрити командне меню ChromeVox, натиснувши клавішу пошуку й клавішу крапки. Щоб дізнатися більше про ChromeVox і ОС Chrome, перегляньте статті нижче.
