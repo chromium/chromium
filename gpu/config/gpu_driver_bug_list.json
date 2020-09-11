@@ -3516,6 +3516,21 @@
       "features": [
         "disable_accelerated_vp8_encode"
       ]
+    },
+    {
+      "id": 349,
+      "cr_bugs": [1126058],
+      "description": "VP8 decoding hangs on Intel Broadwell",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "broadwell"
+      ],
+      "features": [
+        "disable_accelerated_vp8_decode"
+      ]
     }
   ]
 }

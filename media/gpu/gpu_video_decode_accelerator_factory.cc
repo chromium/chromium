@@ -71,6 +71,14 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
   vda_profiles = VaapiVideoDecodeAccelerator::GetSupportedProfiles();
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
       vda_profiles, &capabilities.supported_profiles);
+
+  if (workarounds.disable_accelerated_vp8_decode) {
+    base::EraseIf(
+        capabilities.supported_profiles,
+        [](const VideoDecodeAccelerator::SupportedProfile& supported_profile) {
+          return supported_profile.profile == VP8PROFILE_ANY;
+        });
+  }
 #endif
 #elif defined(OS_MAC)
   capabilities.supported_profiles =
