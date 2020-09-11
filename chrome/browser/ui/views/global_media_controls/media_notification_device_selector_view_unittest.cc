@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -137,6 +138,7 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<MediaNotificationDeviceSelectorView> view_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
@@ -350,4 +352,111 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceChangeIsNotSupported) {
   delegate.supports_switching = true;
   delegate.RunSupportsDeviceSwitchingCallback();
   EXPECT_TRUE(view_->GetVisible());
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       AudioDevicesCountHistogramRecorded) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
+  histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 0);
+
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+  view_->ShowDevices();
+
+  histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kAudioDevicesCountHistogramName, 3, 1);
+
+  provider->AddDevice("Monitor", "4");
+  provider->RunUICallback();
+
+  histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kAudioDevicesCountHistogramName, 3, 1);
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       DeviceSelectorAvailableHistogramRecorded) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker",
+                      media::AudioDeviceDescription::kDefaultDeviceId);
+  delegate.supports_switching = false;
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 0);
+
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+
+  EXPECT_FALSE(view_->GetVisible());
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 0);
+
+  provider->AddDevice("Headphones", "2");
+  provider->RunUICallback();
+
+  EXPECT_FALSE(view_->GetVisible());
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 0);
+
+  view_.reset();
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kDeviceSelectorAvailableHistogramName,
+                                      false, 1);
+
+  delegate.supports_switching = true;
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+
+  EXPECT_TRUE(view_->GetVisible());
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kDeviceSelectorAvailableHistogramName,
+                                      true, 1);
+
+  view_.reset();
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 2);
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       DeviceSelectorOpenedHistogramRecorded) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker",
+                      media::AudioDeviceDescription::kDefaultDeviceId);
+  provider->AddDevice("Headphones", "2");
+  delegate.supports_switching = false;
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 0);
+
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+  EXPECT_FALSE(view_->GetVisible());
+  view_.reset();
+
+  // The histrogram should not be recorded when the device selector is not
+  // available.
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 0);
+
+  delegate.supports_switching = true;
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+  view_.reset();
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 1);
+  histogram_tester_.ExpectBucketCount(kDeviceSelectorOpenedHistogramName, false,
+                                      1);
+
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+  view_->ShowDevices();
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 2);
+  histogram_tester_.ExpectBucketCount(kDeviceSelectorOpenedHistogramName, true,
+                                      1);
+
+  view_.reset();
+
+  histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 2);
 }

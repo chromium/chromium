@@ -81643,6 +81643,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.DeviceSelectorAvailable"
+    enum="Boolean" expires_after="2021-09-08">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records if the Global Media Controls device selector was available. Recorded
+    once per notification either when the device selector was shown or when the
+    notification disappears.
+  </summary>
+</histogram>
+
+<histogram name="Media.GlobalMediaControls.DeviceSelectorOpened" enum="Boolean"
+    expires_after="2021-09-08">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records if the Global Media Controls device selector was opened. Recorded
+    once per notification either when the device selector was opened or when the
+    notification disappears. This histogram is only recorded if the device
+    selector was available.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.DismissReason"
     enum="GlobalMediaControlsDismissReason" expires_after="2021-02-14">
   <owner>steimel@chromium.org</owner>
@@ -81663,6 +81686,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the media or clicking on the notification to go back to the tab). Records
     the time passed since it was last interacted with (or since when it was
     paused if this is the first post-pause interaction).
+  </summary>
+</histogram>
+
+<histogram name="Media.GlobalMediaControls.NumberOfAvailableAudioDevices"
+    units="devices" expires_after="2021-09-08">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded each time the Global Media Controls Device picker dialog is opened
+    and is populated with devices. Records the number of device options
+    displayed, possibly including the default fallback device.
   </summary>
 </histogram>
 

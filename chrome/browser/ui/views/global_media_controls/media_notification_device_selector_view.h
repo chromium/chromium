@@ -16,6 +16,12 @@
 namespace {
 class DeviceEntryView;
 class ExpandDeviceSelectorButton;
+const char kAudioDevicesCountHistogramName[] =
+    "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
+const char kDeviceSelectorAvailableHistogramName[] =
+    "Media.GlobalMediaControls.DeviceSelectorAvailable";
+const char kDeviceSelectorOpenedHistogramName[] =
+    "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 
 class MediaNotificationDeviceSelectorViewDelegate;
@@ -67,6 +73,10 @@ class MediaNotificationDeviceSelectorView
                            DeviceHighlightedOnChange);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceButtonsChange);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+                           AudioDevicesCountHistogramRecorded);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+                           DeviceSelectorOpenedHistogramRecorded);
 
   void UpdateVisibility();
 
@@ -74,6 +84,9 @@ class MediaNotificationDeviceSelectorView
 
   void ShowDevices();
   void HideDevices();
+
+  bool has_expand_button_been_shown_ = false;
+  bool have_devices_been_shown_ = false;
 
   bool is_expanded_ = false;
   bool is_audio_device_switching_enabled_ = false;

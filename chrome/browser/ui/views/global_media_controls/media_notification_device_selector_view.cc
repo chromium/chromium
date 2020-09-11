@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
@@ -60,6 +61,12 @@ class DeviceEntryView : public views::Button {
   views::Label* device_name_label_;
   views::Label* device_subtext_label_ = nullptr;
 };
+
+// The maximum number of audio devices to count when recording the
+// Media.GlobalMediaControls.NumberOfAvailableAudioDevices histogram. 30 was
+// chosen because it would be very unlikely to see a user with 30+ audio
+// devices.
+const int kAudioDevicesCountHistogramMax = 30;
 
 }  // anonymous namespace
 
@@ -295,6 +302,15 @@ void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
 
 MediaNotificationDeviceSelectorView::~MediaNotificationDeviceSelectorView() {
   audio_device_subscription_.release();
+
+  // If this metric has not been recorded during the lifetime of this view, it
+  // means that the device selector was never made available.
+  if (!has_expand_button_been_shown_) {
+    base::UmaHistogramBoolean(kDeviceSelectorAvailableHistogramName, false);
+  } else if (!have_devices_been_shown_) {
+    // Record if the device selector was available but never opened
+    base::UmaHistogramBoolean(kDeviceSelectorOpenedHistogramName, false);
+  }
 }
 
 void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
@@ -393,6 +409,15 @@ void MediaNotificationDeviceSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
 
+  if (!have_devices_been_shown_) {
+    base::UmaHistogramExactLinear(
+        kAudioDevicesCountHistogramName,
+        audio_device_entries_container_->children().size(),
+        kAudioDevicesCountHistogramMax);
+    base::UmaHistogramBoolean(kDeviceSelectorOpenedHistogramName, true);
+    have_devices_been_shown_ = true;
+  }
+
   audio_device_entries_container_->SetVisible(true);
   PreferredSizeChanged();
 }
@@ -407,6 +432,12 @@ void MediaNotificationDeviceSelectorView::HideDevices() {
 
 void MediaNotificationDeviceSelectorView::UpdateVisibility() {
   SetVisible(ShouldBeVisible());
+
+  if (!has_expand_button_been_shown_ && GetVisible()) {
+    base::UmaHistogramBoolean(kDeviceSelectorAvailableHistogramName, true);
+    has_expand_button_been_shown_ = true;
+  }
+
   delegate_->OnDeviceSelectorViewSizeChanged();
 }
 
