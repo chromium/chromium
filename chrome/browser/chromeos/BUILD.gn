@@ -2682,6 +2682,8 @@ source_set("chromeos") {
     "web_applications/system_web_app_install_utils.h",
     "web_applications/terminal_source.cc",
     "web_applications/terminal_source.h",
+    "web_applications/terminal_system_web_app_info.cc",
+    "web_applications/terminal_system_web_app_info.h",
     "wilco_dtc_supportd/fake_wilco_dtc_supportd_client.cc",
     "wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h",
     "wilco_dtc_supportd/wilco_dtc_supportd_bridge.cc",

@@ -49,16 +49,6 @@ void ReadFile(const std::string& relative_path,
   if (!result) {
     static const base::NoDestructor<base::flat_map<std::string, std::string>>
         kTestFiles({
-            {"html/pwa.html",
-             "<html><head><link rel='manifest' "
-             "href='/manifest.json'></head></html>"},
-            {"manifest.json", R"({
-               "name": "Test Terminal",
-               "icons": [{ "src": "/icon.svg", "sizes": "any" }],
-               "start_url": "/html/terminal.html"})"},
-            {"icon.svg",
-             "<svg xmlns='http://www.w3.org/2000/svg'><rect "
-             "fill='red'/></svg>"},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},

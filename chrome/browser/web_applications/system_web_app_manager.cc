@@ -50,6 +50,7 @@
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/terminal_source.h"
+#include "chrome/browser/chromeos/web_applications/terminal_system_web_app_info.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -140,8 +141,9 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::TERMINAL)) {
     infos.emplace(
         SystemAppType::TERMINAL,
-        SystemAppInfo("Terminal",
-                      GURL("chrome-untrusted://terminal/html/pwa.html")));
+        SystemAppInfo(
+            "Terminal", GURL(chrome::kChromeUIUntrustedTerminalURL),
+            base::BindRepeating(&CreateWebAppInfoForTerminalSystemWebApp)));
     infos.at(SystemAppType::TERMINAL).single_window = false;
   }
 
