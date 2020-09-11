@@ -9379,7 +9379,10 @@
       'example_value': True,
       'id': 127,
       'caption': '''Enable metrics reporting''',
-      'tags': ['admin-sharing'],
+      'tags': [
+        'admin-sharing',
+        'google-sharing',
+      ],
       'desc': '''Controls whether usage metrics and diagnostic data, including crash reports, are reported back to Google.
 
       If set to true, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> will report usage metrics and diagnostic data.
