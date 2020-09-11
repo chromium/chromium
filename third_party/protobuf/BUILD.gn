@@ -1,6 +1,7 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
@@ -137,7 +138,7 @@ if (is_win) {
 # libmirclient -> libmirprotobuf -> libprotobuf-lite.  Trying to load
 # the system libprotobuf-lite after already having loaded the libprotobuf_lite
 # component will result in an immediate crash. (crbug.com/700120)
-if (is_component_build && is_desktop_linux) {
+if (is_component_build && use_gtk) {
   shared_library("mirclient") {
     inputs = [ "mirclient.map" ]
     sources = [ "mirclient.cc" ]
@@ -183,7 +184,7 @@ component("protobuf_lite") {
 
   cflags = protobuf_lite_cflags
 
-  if (is_component_build && is_desktop_linux) {
+  if (is_component_build && use_gtk) {
     deps = [ ":mirclient" ]
   }
 
