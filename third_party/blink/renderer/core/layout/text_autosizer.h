@@ -121,9 +121,12 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     explicit NGLayoutScope(LayoutBox*, LayoutUnit inline_size);
     ~NGLayoutScope();
 
+    bool WasFontSizeAdjusted() const { return was_font_size_adjusted_; }
+
    protected:
     TextAutosizer* text_autosizer_;
     LayoutBox* box_;
+    bool was_font_size_adjusted_ = false;
   };
 
   class CORE_EXPORT DeferUpdatePageInfo {
@@ -302,7 +305,9 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     bool setting_enabled_;
   };
 
-  void BeginLayout(LayoutBlock*, SubtreeLayoutScope*);
+  // Returns true if the font size was adjusted.
+  bool BeginLayout(LayoutBlock*, SubtreeLayoutScope*);
+
   void EndLayout(LayoutBlock*);
   void InflateAutoTable(LayoutNGTableInterface*);
   float Inflate(LayoutObject*,

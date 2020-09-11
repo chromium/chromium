@@ -1425,8 +1425,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     SetIntrinsicLogicalWidthsDirty();
   }
   void SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-      LayoutInvalidationReasonForTracing reason) {
-    SetNeedsLayoutAndFullPaintInvalidation(reason);
+      LayoutInvalidationReasonForTracing reason,
+      MarkingBehavior mark_parents = kMarkContainerChain,
+      SubtreeLayoutScope* layouter = nullptr) {
+    SetNeedsLayoutAndFullPaintInvalidation(reason, mark_parents, layouter);
     SetIntrinsicLogicalWidthsDirty();
   }
 

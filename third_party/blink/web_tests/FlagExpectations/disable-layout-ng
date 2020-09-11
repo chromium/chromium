@@ -369,6 +369,9 @@ crbug.com/591099 external/wpt/quirks/line-height-trailing-collapsable-whitespace
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]
 
+### fast/text-autosizing/
+crbug.com/1125109 fast/text-autosizing/shrink-to-fit.html [ Failure ]
+
 ### fast/writing-mode/
 crbug.com/591099 fast/writing-mode/flipped-blocks-inline-map-local-to-container.html [ Failure ]
 
