@@ -22,6 +22,25 @@ void RetainElementAndExecuteCallback(
   std::move(callback).Run(status);
 }
 
+void OnFindElement(
+    base::OnceCallback<void(const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    base::OnceCallback<void(const ClientStatus&)> done,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element_result) {
+  if (!element_status.ok()) {
+    VLOG(1) << __func__ << " Failed to find element.";
+    std::move(done).Run(element_status);
+    return;
+  }
+
+  std::move(perform).Run(
+      *element_result,
+      base::BindOnce(&RetainElementAndExecuteCallback,
+                     std::move(element_result), std::move(done)));
+}
+
 void OnScrollIntoViewForClickOrTap(
     ActionDelegate* delegate,
     ClickType click_type,
@@ -65,23 +84,6 @@ void PerformClickOrTap(ActionDelegate* delegate,
                      delegate, click_type, element, std::move(callback)));
 }
 
-void OnFindElementForClickOrTap(
-    ActionDelegate* delegate,
-    ClickType click_type,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find the element to click or tap.";
-    std::move(callback).Run(element_status);
-    return;
-  }
-
-  PerformClickOrTap(delegate, click_type, *element,
-                    base::BindOnce(&RetainElementAndExecuteCallback,
-                                   std::move(element), std::move(callback)));
-}
-
 void OnClickOrTapForSendKeyboardInput(
     ActionDelegate* delegate,
     const std::vector<UChar32> codepoints,
@@ -110,80 +112,45 @@ void PerformSendKeyboardInput(
                      delay_in_millis, element, std::move(callback)));
 }
 
-void OnFindElementForSendKeyboardInput(
-    ActionDelegate* delegate,
-    const std::vector<UChar32> codepoints,
-    int delay_in_millis,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__
-            << " Failed to find the element to send keyboad input to.";
-    std::move(callback).Run(element_status);
-    return;
-  }
-
-  PerformSendKeyboardInput(
-      delegate, codepoints, delay_in_millis, *element,
-      base::BindOnce(&RetainElementAndExecuteCallback, std::move(element),
-                     std::move(callback)));
-}
-
-void OnFindElementForSetFieldValue(
+void PerformSetFieldValue(
     ActionDelegate* delegate,
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find element to set value.";
-    std::move(callback).Run(element_status);
-    return;
-  }
-
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
   // TODO(b/158153191): This should reuse the callback chains in the util
   //  instead of relying on the |WebController| to properly implement it.
   //  This requires to extract more methods and some internal logic of
   //  |SetFieldValue|.
-  delegate->SetFieldValue(
-      *element, value, fill_strategy, key_press_delay_in_millisecond,
-      base::BindOnce(&RetainElementAndExecuteCallback, std::move(element),
-                     std::move(callback)));
-}
-
-void OnFindElementForSelectOption(
-    ActionDelegate* delegate,
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find element to select option.";
-    std::move(callback).Run(element_status);
-    return;
-  }
-
-  delegate->SelectOption(
-      *element, value, select_strategy,
-      base::BindOnce(&RetainElementAndExecuteCallback, std::move(element),
-                     std::move(callback)));
+  delegate->SetFieldValue(element, value, fill_strategy,
+                          key_press_delay_in_millisecond, std::move(callback));
 }
 
 }  // namespace
+
+void FindElementAndPerform(
+    ActionDelegate* delegate,
+    const Selector& selector,
+    base::OnceCallback<void(const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    base::OnceCallback<void(const ClientStatus&)> done) {
+  DCHECK(!selector.empty());
+  VLOG(3) << __func__ << " " << selector;
+  delegate->FindElement(
+      selector,
+      base::BindOnce(&OnFindElement, std::move(perform), std::move(done)));
+}
 
 void ClickOrTapElement(ActionDelegate* delegate,
                        const Selector& selector,
                        ClickType click_type,
                        base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  DCHECK(!selector.empty());
-  delegate->FindElement(selector,
-                        base::BindOnce(&OnFindElementForClickOrTap, delegate,
-                                       click_type, std::move(callback)));
+  FindElementAndPerform(
+      delegate, selector,
+      base::BindOnce(&PerformClickOrTap, delegate, click_type),
+      std::move(callback));
 }
 
 void SendKeyboardInput(ActionDelegate* delegate,
@@ -191,12 +158,10 @@ void SendKeyboardInput(ActionDelegate* delegate,
                        const std::vector<UChar32> codepoints,
                        int delay_in_millis,
                        base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  DCHECK(!selector.empty());
-  delegate->FindElement(
-      selector,
-      base::BindOnce(&OnFindElementForSendKeyboardInput, delegate, codepoints,
-                     delay_in_millis, std::move(callback)));
+  FindElementAndPerform(delegate, selector,
+                        base::BindOnce(&PerformSendKeyboardInput, delegate,
+                                       codepoints, delay_in_millis),
+                        std::move(callback));
 }
 
 void SetFieldValue(ActionDelegate* delegate,
@@ -205,24 +170,11 @@ void SetFieldValue(ActionDelegate* delegate,
                    KeyboardValueFillStrategy fill_strategy,
                    int key_press_delay_in_millisecond,
                    base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  DCHECK(!selector.empty());
-  delegate->FindElement(
-      selector, base::BindOnce(&OnFindElementForSetFieldValue, delegate, value,
-                               fill_strategy, key_press_delay_in_millisecond,
-                               std::move(callback)));
-}
-
-void SelectOption(ActionDelegate* delegate,
-                  const Selector& selector,
-                  const std::string& value,
-                  DropdownSelectStrategy select_strategy,
-                  base::OnceCallback<void(const ClientStatus&)> callback) {
-  VLOG(3) << __func__ << " " << selector;
-  DCHECK(!selector.empty());
-  delegate->FindElement(
-      selector, base::BindOnce(&OnFindElementForSelectOption, delegate, value,
-                               select_strategy, std::move(callback)));
+  FindElementAndPerform(
+      delegate, selector,
+      base::BindOnce(&PerformSetFieldValue, delegate, value, fill_strategy,
+                     key_press_delay_in_millisecond),
+      std::move(callback));
 }
 
 }  // namespace ActionDelegateUtil
