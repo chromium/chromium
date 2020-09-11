@@ -2321,6 +2321,9 @@ extern const char kEnableSuggestedFilesDescription[];
 extern const char kEnterpriseReportingInChromeOSName[];
 extern const char kEnterpriseReportingInChromeOSDescription[];
 
+extern const char kExoGamepadVibrationName[];
+extern const char kExoGamepadVibrationDescription[];
+
 extern const char kExoOrdinalMotionName[];
 extern const char kExoOrdinalMotionDescription[];
 

@@ -2424,6 +2424,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "exo-gamepad-vibration",
+    "owners": [ "prabirmsp" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "exo-ordinal-motion",
     "owners": [ "hollingum@google.com" ],
     "expiry_milestone": 90

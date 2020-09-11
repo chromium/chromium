@@ -4013,6 +4013,11 @@ const char kEnterpriseReportingInChromeOSDescription[] =
     "Enable the enterprise cloud reporting in Chrome OS. This feature requires "
     "user level cloud management.";
 
+const char kExoGamepadVibrationName[] = "Gamepad Vibration for Exo Clients";
+const char kExoGamepadVibrationDescription[] =
+    "Allow Exo clients like Android to request vibration events for gamepads "
+    "that support it.";
+
 const char kExoOrdinalMotionName[] =
     "Raw (unaccelerated) motion for Linux applications";
 const char kExoOrdinalMotionDescription[] =
