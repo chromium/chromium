@@ -34,6 +34,7 @@ source_set("test_support") {
     "root_view_controller_test.h",
     "root_view_controller_test.mm",
     "scoped_key_window.h",
+    "scoped_key_window.mm",
     "testing_application_context.h",
     "testing_application_context.mm",
   ]
@@ -55,6 +56,7 @@ source_set("test_support") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/safe_browsing:test_support",
+    "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:test_support",
