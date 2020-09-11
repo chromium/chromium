@@ -92,6 +92,11 @@ source_set("tests") {
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
   ]
 
+  if (is_android && current_cpu == "arm64") {
+    sources +=
+        [ "public/cpp/stack_sampling/stack_unwinder_arm64_android_unittest.cc" ]
+  }
+
   if (!is_android) {
     sources += [ "tracing_service_unittest.cc" ]
   }
