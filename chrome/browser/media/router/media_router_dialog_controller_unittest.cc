@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
+#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"

@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/router/presentation/start_presentation_context.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
@@ -57,6 +58,7 @@ bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
         Profile::FromBrowserContext(initiator()->GetBrowserContext());
     MediaNotificationService* const service =
         MediaNotificationServiceFactory::GetForProfile(profile);
+    service->OnStartPresentationContextCreated(std::move(context));
     Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
     BrowserView* const browser_view =
         browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;

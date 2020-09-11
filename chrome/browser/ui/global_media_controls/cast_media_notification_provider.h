@@ -20,10 +20,6 @@ namespace media_message_center {
 class MediaNotificationController;
 }  // namespace media_message_center
 
-namespace media_router {
-class MediaRouter;
-}  // namespace media_router
-
 // Manages media notifications shown in the Global Media Controls dialog for
 // active Cast sessions.
 class CastMediaNotificationProvider : public media_router::MediaRoutesObserver {

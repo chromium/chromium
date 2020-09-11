@@ -62,6 +62,8 @@ static_library("router") {
     "presentation/presentation_service_delegate_observers.h",
     "presentation/receiver_presentation_service_delegate_impl.cc",
     "presentation/receiver_presentation_service_delegate_impl.h",
+    "presentation/start_presentation_context.cc",
+    "presentation/start_presentation_context.h",
     "presentation/web_contents_presentation_manager.cc",
     "presentation/web_contents_presentation_manager.h",
     "route_message_observer.cc",

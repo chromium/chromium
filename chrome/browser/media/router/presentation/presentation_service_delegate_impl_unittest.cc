@@ -555,8 +555,8 @@ TEST_F(PresentationServiceDelegateImplTest,
   EXPECT_CALL(success_cb, Run(_));
 
   delegate_impl_->OnStartPresentationSucceeded(
-      rfh_id, success_cb.Get(), presentation_info, /** connection */ nullptr,
-      media_route);
+      rfh_id, success_cb.Get(), presentation_info,
+      /** connection */ nullptr, media_route);
 
   EXPECT_CALL(mock_local_manager,
               UnregisterLocalPresentationController(kPresentationId, rfh_id))

@@ -28,6 +28,11 @@ struct CONTENT_EXPORT PresentationRequest {
   PresentationRequest(const PresentationRequest& other);
   PresentationRequest& operator=(const PresentationRequest& other);
 
+  bool operator==(const PresentationRequest& other) const;
+  bool operator!=(const PresentationRequest& other) const {
+    return !(*this == other);
+  }
+
   // ID of RenderFrameHost that initiated the request.
   GlobalFrameRoutingId render_frame_host_id;
 

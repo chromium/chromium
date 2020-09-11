@@ -8,11 +8,13 @@
 #include "base/bind_helpers.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_sinks_observer.h"
+#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/presentation_request.h"
 
 using testing::_;
 using testing::DoAll;

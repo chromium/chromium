@@ -28,6 +28,7 @@
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
 #include "chrome/browser/media/router/media_routes_observer.h"
+#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -758,8 +759,6 @@ base::Optional<RouteParameters> MediaRouterUI::GetRouteParameters(
                      sink_id, cast_mode, GetPresentationRequestSourceName()));
   if (for_presentation_source) {
     if (start_presentation_context_) {
-      // |start_presentation_context_| will be nullptr after this call, as the
-      // object will be transferred to the callback.
       params.presentation_callback =
           base::BindOnce(&StartPresentationContext::HandleRouteResponse,
                          std::move(start_presentation_context_));

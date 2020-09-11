@@ -31,7 +31,8 @@ class MediaNotificationProviderImpl
 
   // MediaNotificationServiceObserver implementations.
   void OnNotificationListChanged() override;
-  void OnMediaDialogOpenedOrClosed() override {}
+  void OnMediaDialogOpened() override {}
+  void OnMediaDialogClosed() override {}
 
   // SessionManagerobserver implementation.
   void OnUserProfileLoaded(const AccountId& account_id) override;

@@ -51,8 +51,9 @@ class MockMediaNotificationServiceObserver
   ~MockMediaNotificationServiceObserver() override = default;
 
   // MediaNotificationServiceObserver implementation.
-  MOCK_METHOD0(OnNotificationListChanged, void());
-  MOCK_METHOD0(OnMediaDialogOpenedOrClosed, void());
+  MOCK_METHOD(void, OnNotificationListChanged, ());
+  MOCK_METHOD(void, OnMediaDialogOpened, ());
+  MOCK_METHOD(void, OnMediaDialogClosed, ());
 };
 
 class MockMediaDialogDelegate : public MediaDialogDelegate {
@@ -381,7 +382,7 @@ TEST_F(MediaNotificationServiceTest, ShowControllableOnGainAndHideOnLoss) {
   // Simulate opening a MediaDialogView.
   MockMediaDialogDelegate dialog_delegate;
   EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  EXPECT_CALL(observer(), OnMediaDialogOpenedOrClosed());
+  EXPECT_CALL(observer(), OnMediaDialogOpened());
   EXPECT_FALSE(HasOpenDialog());
   SimulateDialogOpened(&dialog_delegate);
 

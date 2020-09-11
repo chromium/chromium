@@ -12,12 +12,14 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/media/router/media_router_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace media_router {
 
 class MediaRouterUI;
+class StartPresentationContext;
 
 // A Views implementation of MediaRouterDialogController.
 class MediaRouterDialogControllerViews

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_sinks_observer.h"
+#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/media/router/test/test_helper.h"
@@ -236,14 +237,15 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
     blink::mojom::PresentationError expected_error(error_type, error_message);
     auto request_callbacks =
         std::make_unique<PresentationRequestCallbacks>(expected_error);
-    auto context = std::make_unique<StartPresentationContext>(
+    start_presentation_context_ = std::make_unique<StartPresentationContext>(
         presentation_request_,
         base::Bind(&PresentationRequestCallbacks::Success,
                    base::Unretained(request_callbacks.get())),
         base::Bind(&PresentationRequestCallbacks::Error,
                    base::Unretained(request_callbacks.get())));
-    StartPresentationContext* context_ptr = context.get();
-    ui_->set_start_presentation_context_for_test(std::move(context));
+    StartPresentationContext* context_ptr = start_presentation_context_.get();
+    ui_->set_start_presentation_context_for_test(
+        std::move(start_presentation_context_));
     ui_->OnDefaultPresentationChanged(&context_ptr->presentation_request());
     return request_callbacks;
   }

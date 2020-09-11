@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -22,6 +21,7 @@ class WebContents;
 
 namespace media_router {
 
+class StartPresentationContext;
 enum class MediaRouterDialogOpenOrigin;
 
 // An abstract base class for Media Router dialog controllers. Tied to a

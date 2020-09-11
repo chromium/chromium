@@ -23,7 +23,8 @@ class MediaToolbarButtonController : public MediaNotificationServiceObserver {
 
   // MediaNotificationServiceObserver implementation.
   void OnNotificationListChanged() override;
-  void OnMediaDialogOpenedOrClosed() override;
+  void OnMediaDialogOpened() override;
+  void OnMediaDialogClosed() override;
 
  private:
   // Tracks the current display state of the toolbar button delegate.

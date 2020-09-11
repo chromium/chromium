@@ -24,7 +24,11 @@ void MediaToolbarButtonController::OnNotificationListChanged() {
   UpdateToolbarButtonState();
 }
 
-void MediaToolbarButtonController::OnMediaDialogOpenedOrClosed() {
+void MediaToolbarButtonController::OnMediaDialogOpened() {
+  UpdateToolbarButtonState();
+}
+
+void MediaToolbarButtonController::OnMediaDialogClosed() {
   UpdateToolbarButtonState();
 }
 

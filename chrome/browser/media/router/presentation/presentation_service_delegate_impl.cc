@@ -26,7 +26,6 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
-#include "components/media_router/common/route_request_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
@@ -293,55 +292,6 @@ void PresentationFrame::ListenForConnectionStateChange(
   connection_state_subscriptions_.emplace(
       route_id, router_->AddPresentationConnectionStateChangedCallback(
                     route_id, state_changed_cb));
-}
-
-StartPresentationContext::StartPresentationContext(
-    const content::PresentationRequest& presentation_request,
-    PresentationConnectionCallback success_cb,
-    PresentationConnectionErrorCallback error_cb)
-    : presentation_request_(presentation_request),
-      success_cb_(std::move(success_cb)),
-      error_cb_(std::move(error_cb)) {
-  DCHECK(success_cb_);
-  DCHECK(error_cb_);
-}
-
-StartPresentationContext::~StartPresentationContext() {
-  if (success_cb_ && error_cb_) {
-    std::move(error_cb_).Run(blink::mojom::PresentationError(
-        blink::mojom::PresentationErrorType::UNKNOWN, "Unknown error."));
-  }
-}
-
-void StartPresentationContext::InvokeSuccessCallback(
-    const std::string& presentation_id,
-    const GURL& presentation_url,
-    const MediaRoute& route,
-    mojom::RoutePresentationConnectionPtr connection) {
-  if (success_cb_ && error_cb_) {
-    std::move(success_cb_)
-        .Run(blink::mojom::PresentationInfo(presentation_url, presentation_id),
-             std::move(connection), route);
-  }
-}
-
-void StartPresentationContext::InvokeErrorCallback(
-    const blink::mojom::PresentationError& error) {
-  if (success_cb_ && error_cb_) {
-    std::move(error_cb_).Run(error);
-  }
-}
-
-void StartPresentationContext::HandleRouteResponse(
-    mojom::RoutePresentationConnectionPtr connection,
-    const RouteRequestResult& result) {
-  if (!result.route()) {
-    InvokeErrorCallback(blink::mojom::PresentationError(
-        blink::mojom::PresentationErrorType::UNKNOWN, result.error()));
-  } else {
-    InvokeSuccessCallback(result.presentation_id(), result.presentation_url(),
-                          *result.route(), std::move(connection));
-  }
 }
 
 PresentationServiceDelegateImpl*

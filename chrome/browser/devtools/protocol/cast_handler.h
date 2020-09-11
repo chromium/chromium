@@ -9,11 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/cast.h"
 #include "chrome/browser/media/router/issues_observer.h"
-#include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace content {
 class WebContents;
@@ -21,6 +22,7 @@ class WebContents;
 
 namespace media_router {
 class MediaRouter;
+class StartPresentationContext;
 }  // namespace media_router
 
 class CastHandler : public protocol::Cast::Backend,

@@ -13,9 +13,9 @@ class MediaNotificationServiceObserver : public base::CheckedObserver {
   // changes.
   virtual void OnNotificationListChanged() = 0;
 
-  // Called when a media dialog associated with the service is either opened or
-  // closed.
-  virtual void OnMediaDialogOpenedOrClosed() = 0;
+  // Called when a media dialog associated with the service is opened or closed.
+  virtual void OnMediaDialogOpened() = 0;
+  virtual void OnMediaDialogClosed() = 0;
 
  protected:
   ~MediaNotificationServiceObserver() override = default;
