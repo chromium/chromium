@@ -16,6 +16,15 @@ flag, ‘enable-reader-mode’. To run Chrome with Reader Mode, set the “Enabl
 Reader Mode” flag to “Enabled” in chrome://flags or start Chrome with
 --enable-feature=”ReaderMode”.
 
+There's also a flag that instead exposes a Setting; with this variant, users
+need to first enable the Setting once and then they can use Reader Mode
+on any supported page. Enabling this variant requires a long command-line
+argument:
+
+```
+--enable-features="ReaderMode<FakeStudy" --force-fieldtrials=FakeStudy/FakeGroup --force-fieldtrial-params="FakeStudy.FakeGroup:discoverability/offer-in-settings"
+```
+
 ### Code Locations
 
 Most of Reader Mode code is in components/dom_distiller (see the
