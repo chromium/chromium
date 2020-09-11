@@ -50,6 +50,8 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
     GetService()->test_url_loader_factory_for_fetcher_ =
         base::MakeRefCounted<::network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
+
+    feature_list_.InitWithFeatures({}, {media::kKaleidoscopeModuleCacheOnly});
   }
 
   ::network::TestURLLoaderFactory* url_loader_factory() {
@@ -109,6 +111,8 @@ class KaleidoscopeServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   ::network::TestURLLoaderFactory url_loader_factory_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(KaleidoscopeServiceTest, Success) {
