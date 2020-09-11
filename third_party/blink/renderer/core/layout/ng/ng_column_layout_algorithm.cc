@@ -281,18 +281,19 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
 
   // TODO(mstensho): Propagate baselines.
 
-  LayoutUnit block_size;
-  if (border_box_size.block_size == kIndefiniteSize) {
-    // Get the block size from the contents if it's auto.
-    block_size = intrinsic_block_size_;
-  } else {
-    // TODO(mstensho): end border and padding may overflow the parent
-    // fragmentainer, and we should avoid that.
-    block_size = border_box_size.block_size - previously_consumed_block_size;
-  }
+  // Save the unconstrained intrinsic size on the builder before clamping it.
+  container_builder_.SetOverflowBlockSize(intrinsic_block_size_);
 
-  container_builder_.SetFragmentsTotalBlockSize(previously_consumed_block_size +
-                                                block_size);
+  intrinsic_block_size_ =
+      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                              BorderScrollbarPadding(), intrinsic_block_size_);
+
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(),
+      previously_consumed_block_size + intrinsic_block_size_,
+      border_box_size.inline_size);
+
+  container_builder_.SetFragmentsTotalBlockSize(block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
   container_builder_.SetBlockOffsetForAdditionalColumns(
       CurrentContentBlockOffset());

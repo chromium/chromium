@@ -2893,8 +2893,8 @@ TEST_F(NGColumnLayoutAlgorithmTest, ColumnBalancingMinHeight) {
 
   String dump = DumpFragmentTree(GetElementById("container"));
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x60
-    offset:0,0 size:330x60
+  offset:unplaced size:1000x80
+    offset:0,0 size:330x80
       offset:5,5 size:100x50
         offset:0,0 size:30x50
       offset:115,5 size:100x50
@@ -2961,8 +2961,8 @@ TEST_F(NGColumnLayoutAlgorithmTest,
 
   String dump = DumpFragmentTree(GetElementById("container"));
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x60
-    offset:0,0 size:330x60
+  offset:unplaced size:1000x80
+    offset:0,0 size:330x80
       offset:5,5 size:100x50
         offset:0,0 size:30x50
       offset:115,5 size:100x50
