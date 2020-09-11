@@ -318,9 +318,11 @@ class Logger {
 As before, both clients and implementations of this interface use the same
 signature for the `GetTail` method: implementations use the `callback` argument
 to *respond* to the request, while clients pass a `callback` argument to
-asynchronously `receive` the response. A client's `callback` runs on the same
-sequence on which they invoked `GetTail` (the sequence to which their `logger`
-is bound). Here's an updated implementation:
+asynchronously `receive` the response. The parameter `GetTailCallback` passed to
+the implementation of `GetTail` is sequence-affine. It must be invoked on the
+same sequence that `GetTail` is called on. A client's `callback` runs on the
+same sequence on which they invoked `GetTail` (the sequence to which their
+`logger` is bound). Here's an updated implementation:
 
 ```cpp
 class LoggerImpl : public sample::mojom::Logger {
