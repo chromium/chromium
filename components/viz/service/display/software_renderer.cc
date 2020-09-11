@@ -248,13 +248,15 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     return;
 
   TRACE_EVENT0("viz", "SoftwareRenderer::DoDrawQuad");
-  bool do_save = draw_region || is_scissor_enabled_;
+  const bool should_apply_rounded_corner = ShouldApplyRoundedCorner(quad);
+  bool do_save =
+      draw_region || is_scissor_enabled_ || should_apply_rounded_corner;
   SkAutoCanvasRestore canvas_restore(current_canvas_, do_save);
   if (is_scissor_enabled_) {
     SetClipRect(scissor_rect_);
   }
 
-  if (ShouldApplyRoundedCorner(quad))
+  if (should_apply_rounded_corner)
     SetClipRRect(quad->shared_quad_state->rounded_corner_bounds);
 
   gfx::Transform quad_rect_matrix;
