@@ -23,9 +23,9 @@ class FileMetadataFormatter extends cr.EventTarget {
    */
   setDateTimeFormat(use12hourClock) {
     this.timeFormatter_ = new Intl.DateTimeFormat(
-        [] /* default locale */,
+        navigator.language,
         {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
-    this.dateFormatter_ = new Intl.DateTimeFormat([] /* default locale */, {
+    this.dateFormatter_ = new Intl.DateTimeFormat(navigator.language, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
