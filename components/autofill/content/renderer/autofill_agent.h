@@ -142,19 +142,10 @@ class AutofillAgent : public content::RenderFrameObserver,
     // after the last character in the element.
     bool requires_caret_at_end;
 
-    // Specifies that all of <datalist> suggestions and no autofill suggestions
-    // are shown. |autofill_on_empty_values| and |requires_caret_at_end| are
-    // ignored if |datalist_only| is true.
-    bool datalist_only;
-
     // Specifies that all autofill suggestions should be shown and none should
     // be elided because of the current value of |element| (relevant for inline
     // autocomplete).
     bool show_full_suggestion_list;
-
-    // Specifies that only show a suggestions box if |element| is part of a
-    // password form, otherwise show no suggestions.
-    bool show_password_suggestions_only;
 
     // Specifies that the first suggestion must be auto-selected when the
     // dropdown is shown. Enabled when the user presses ARROW_DOWN on a field.

@@ -114,7 +114,6 @@ AutofillAgent::ShowSuggestionsOptions::ShowSuggestionsOptions()
     : autofill_on_empty_values(false),
       requires_caret_at_end(false),
       show_full_suggestion_list(false),
-      show_password_suggestions_only(false),
       autoselect_first_suggestion(false) {}
 
 AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
@@ -662,9 +661,6 @@ void AutofillAgent::ShowSuggestions(const WebFormControlElement& element,
   }
 
   if (is_generation_popup_possibly_visible_)
-    return;
-
-  if (options.show_password_suggestions_only)
     return;
 
   // Password field elements should only have suggestions shown by the password
