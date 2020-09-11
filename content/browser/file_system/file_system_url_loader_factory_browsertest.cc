@@ -464,10 +464,11 @@ class FileSystemURLLoaderFactoryTest
       request.headers.MergeFrom(*extra_headers);
     const std::string storage_domain = url.GetOrigin().host();
 
-    auto factory = content::CreateFileSystemURLLoaderFactory(
-        render_frame_host()->GetProcess()->GetID(),
-        render_frame_host()->GetFrameTreeNodeId(), file_system_context,
-        storage_domain);
+    mojo::Remote<network::mojom::URLLoaderFactory> factory(
+        CreateFileSystemURLLoaderFactory(
+            render_frame_host()->GetProcess()->GetID(),
+            render_frame_host()->GetFrameTreeNodeId(), file_system_context,
+            storage_domain));
 
     auto client = std::make_unique<network::TestURLLoaderClient>();
     loader_.reset();

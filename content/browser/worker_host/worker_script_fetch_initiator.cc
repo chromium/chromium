@@ -204,10 +204,11 @@ WorkerScriptFetchInitiator::CreateFactoryBundle(
     // TODO(https://crbug.com/986188): Pass ChildProcessHost::kInvalidUniqueID
     // instead of valid |worker_process_id| for |factory_bundle_for_browser|
     // once CanCommitURL-like check is implemented in PlzWorker.
-    non_network_uniquely_owned_factories[url::kFileSystemScheme] =
+    non_network_factories.emplace(
+        url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
             worker_process_id, RenderFrameHost::kNoFrameTreeNodeId,
-            storage_partition->GetFileSystemContext(), storage_domain);
+            storage_partition->GetFileSystemContext(), storage_domain));
   }
   if (file_support) {
     // USER_VISIBLE because worker script fetch may affect the UI.

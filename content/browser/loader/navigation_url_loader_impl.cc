@@ -1201,7 +1201,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     }
 
     const std::string storage_domain;
-    non_network_uniquely_owned_factories_.emplace(
+    non_network_url_loader_factories_.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
             ChildProcessHost::kInvalidUniqueID,

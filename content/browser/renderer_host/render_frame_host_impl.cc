@@ -6234,8 +6234,8 @@ void RenderFrameHostImpl::CommitNavigation(
     auto* partition =
         static_cast<StoragePartitionImpl*>(BrowserContext::GetStoragePartition(
             browser_context, GetSiteInstance()));
-    non_network_uniquely_owned_factories_.emplace(
-        url::kFileSystemScheme, content::CreateFileSystemURLLoaderFactory(
+    non_network_factories.emplace(
+        url::kFileSystemScheme, CreateFileSystemURLLoaderFactory(
                                     GetProcess()->GetID(), GetFrameTreeNodeId(),
                                     partition->GetFileSystemContext(),
                                     partition->GetPartitionDomain()));

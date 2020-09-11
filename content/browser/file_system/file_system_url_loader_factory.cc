@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/loader/non_network_url_loader_factory_base.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,7 +30,6 @@
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -600,12 +600,15 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
 // A URLLoaderFactory used for the filesystem:// scheme used when the Network
 // Service is enabled.
-class FileSystemURLLoaderFactory : public network::mojom::URLLoaderFactory {
+class FileSystemURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
  public:
   FileSystemURLLoaderFactory(
       FactoryParams params,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-      : params_(std::move(params)), io_task_runner_(io_task_runner) {}
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+        params_(std::move(params)),
+        io_task_runner_(io_task_runner) {}
 
   ~FileSystemURLLoaderFactory() override = default;
 
@@ -638,13 +641,7 @@ class FileSystemURLLoaderFactory : public network::mojom::URLLoaderFactory {
                                             io_task_runner_);
   }
 
-  void Clone(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) override {
-    receivers_.Add(this, std::move(loader));
-  }
-
   const FactoryParams params_;
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(FileSystemURLLoaderFactory);
@@ -652,16 +649,23 @@ class FileSystemURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
 }  // anonymous namespace
 
-std::unique_ptr<network::mojom::URLLoaderFactory>
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateFileSystemURLLoaderFactory(
     int render_process_host_id,
     int frame_tree_node_id,
     scoped_refptr<FileSystemContext> file_system_context,
     const std::string& storage_domain) {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
   FactoryParams params = {render_process_host_id, frame_tree_node_id,
                           file_system_context, storage_domain};
-  return std::make_unique<FileSystemURLLoaderFactory>(
-      std::move(params), GetIOThreadTaskRunner({}));
+
+  // The FileSystemURLLoaderFactory will delete itself when there are no more
+  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  new FileSystemURLLoaderFactory(
+      std::move(params), GetIOThreadTaskRunner({}),
+      pending_remote.InitWithNewPipeAndPassReceiver());
+
+  return pending_remote;
 }
 
 }  // namespace content
