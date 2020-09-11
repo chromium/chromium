@@ -137,7 +137,7 @@
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_http_job.h"
 #include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
@@ -689,11 +689,10 @@ class OCSPErrorTestDelegate : public TestDelegate {
 class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
  public:
   URLRequestTest()
-      : default_context_(std::make_unique<TestURLRequestContext>(true)) {
+      : job_factory_(std::make_unique<URLRequestJobFactory>()),
+        default_context_(std::make_unique<TestURLRequestContext>(true)) {
     default_context_->set_network_delegate(&default_network_delegate_);
     default_context_->set_net_log(&net_log_);
-    job_factory_impl_ = new URLRequestJobFactoryImpl();
-    job_factory_.reset(job_factory_impl_);
   }
 
   ~URLRequestTest() override {
@@ -739,7 +738,6 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
  protected:
   RecordingTestNetLog net_log_;
   TestNetworkDelegate default_network_delegate_;  // Must outlive URLRequest.
-  URLRequestJobFactoryImpl* job_factory_impl_;
   std::unique_ptr<URLRequestJobFactory> job_factory_;
   std::unique_ptr<TestURLRequestContext> default_context_;
   base::ScopedTempDir temp_dir_;
@@ -2903,7 +2901,7 @@ class URLRequestTestHTTP : public URLRequestTest {
   // URLRequestTest interface:
   void SetUpFactory() override {
     // Add FTP support to the default URLRequestContext.
-    job_factory_impl_->SetProtocolHandler(
+    job_factory_->SetProtocolHandler(
         "unsafe", std::make_unique<UnsafeRedirectProtocolHandler>());
   }
 
@@ -11208,7 +11206,7 @@ class URLRequestTestFTP : public URLRequestTest {
   // URLRequestTest interface:
   void SetUpFactory() override {
     // Add FTP support to the default URLRequestContext.
-    job_factory_impl_->SetProtocolHandler(
+    job_factory_->SetProtocolHandler(
         "ftp", FtpProtocolHandler::Create(&host_resolver_, &ftp_auth_cache_));
   }
 

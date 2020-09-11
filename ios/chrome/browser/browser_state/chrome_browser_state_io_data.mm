@@ -62,7 +62,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -209,7 +209,7 @@ ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
 
 // static
 void ChromeBrowserStateIOData::InstallProtocolHandlers(
-    net::URLRequestJobFactoryImpl* job_factory,
+    net::URLRequestJobFactory* job_factory,
     ProtocolHandlerMap* protocol_handlers) {
   for (ProtocolHandlerMap::iterator it = protocol_handlers->begin();
        it != protocol_handlers->end(); ++it) {

@@ -13,7 +13,7 @@
 #include "ios/web/webui/url_data_manager_ios_backend.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 
 namespace web {
@@ -40,7 +40,7 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
   ~TestContextURLRequestContextGetter() override {}
 
   net::TestURLRequestContext context_;
-  net::URLRequestJobFactoryImpl job_factory_;
+  net::URLRequestJobFactory job_factory_;
 };
 
 }  // namespace

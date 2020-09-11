@@ -46,7 +46,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_throttler_manager.h"
 #include "url/url_constants.h"
 
@@ -606,8 +606,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
   storage->set_http_transaction_factory(std::move(http_transaction_factory));
 
-  std::unique_ptr<URLRequestJobFactoryImpl> job_factory =
-      std::make_unique<URLRequestJobFactoryImpl>();
+  std::unique_ptr<URLRequestJobFactory> job_factory =
+      std::make_unique<URLRequestJobFactory>();
   // Adds caller-provided protocol handlers first so that these handlers are
   // used over the ftp handler below.
   for (auto& scheme_handler : protocol_handlers_) {

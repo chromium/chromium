@@ -38,7 +38,6 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/http/http_server_properties.h"
-#include "net/http/http_stream_factory.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_util.h"
 #include "net/log/file_net_log_observer.h"
@@ -52,7 +51,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory_impl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_util.h"
 

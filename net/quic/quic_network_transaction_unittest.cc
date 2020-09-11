@@ -85,7 +85,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -6807,7 +6807,7 @@ class QuicURLRequestContext : public URLRequestContext {
         HttpAuthHandlerFactory::CreateDefault());
     storage_.set_http_server_properties(
         std::make_unique<HttpServerProperties>());
-    storage_.set_job_factory(std::make_unique<URLRequestJobFactoryImpl>());
+    storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
     storage_.set_http_network_session(std::move(session));
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
         storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),

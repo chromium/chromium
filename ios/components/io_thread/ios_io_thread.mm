@@ -65,7 +65,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -361,9 +361,8 @@ net::URLRequestContext* IOSIOThread::ConstructSystemRequestContext(
       globals->system_proxy_resolution_service.get());
   context->set_ct_policy_enforcer(globals->ct_policy_enforcer.get());
 
-  net::URLRequestJobFactoryImpl* system_job_factory =
-      new net::URLRequestJobFactoryImpl();
-  globals->system_url_request_job_factory.reset(system_job_factory);
+  globals->system_url_request_job_factory =
+      std::make_unique<net::URLRequestJobFactory>();
   context->set_job_factory(globals->system_url_request_job_factory.get());
 
   context->set_cookie_store(globals->system_cookie_store.get());

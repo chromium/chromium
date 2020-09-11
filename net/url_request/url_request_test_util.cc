@@ -29,7 +29,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -167,8 +167,7 @@ void TestURLRequestContext::Init() {
         HttpCache::DefaultBackend::InMemory(0), true /* is_main_cache */));
   }
   if (!job_factory()) {
-    context_storage_.set_job_factory(
-        std::make_unique<URLRequestJobFactoryImpl>());
+    context_storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   }
 }
 

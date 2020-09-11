@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -44,9 +44,7 @@ class MockURLRequestJob : public URLRequestJob {
   ~MockURLRequestJob() override = default;
 
  private:
-  void StartAsync() {
-    NotifyHeadersComplete();
-  }
+  void StartAsync() { NotifyHeadersComplete(); }
 
   base::WeakPtrFactory<MockURLRequestJob> weak_factory_{this};
 };
@@ -78,7 +76,7 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   TestDelegate delegate;
-  URLRequestJobFactoryImpl job_factory;
+  URLRequestJobFactory job_factory;
   TestURLRequestContext request_context;
   request_context.set_job_factory(&job_factory);
   job_factory.SetProtocolHandler("foo",
@@ -95,7 +93,7 @@ TEST(URLRequestJobFactoryTest, BasicProtocolHandler) {
 TEST(URLRequestJobFactoryTest, DeleteProtocolHandler) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
-  URLRequestJobFactoryImpl job_factory;
+  URLRequestJobFactory job_factory;
   TestURLRequestContext request_context;
   request_context.set_job_factory(&job_factory);
   job_factory.SetProtocolHandler("foo",

@@ -42,7 +42,7 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using net::test::IsError;
@@ -455,7 +455,7 @@ SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
       HttpAuthHandlerFactory::CreateDefault());
   storage_.set_http_server_properties(std::make_unique<HttpServerProperties>());
   storage_.set_quic_context(std::make_unique<QuicContext>());
-  storage_.set_job_factory(std::make_unique<URLRequestJobFactoryImpl>());
+  storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   HttpNetworkSession::Params session_params;
   session_params.enable_spdy_ping_based_connection_checking = false;
 

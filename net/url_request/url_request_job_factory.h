@@ -5,6 +5,8 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_JOB_FACTORY_H_
 #define NET_URL_REQUEST_URL_REQUEST_JOB_FACTORY_H_
 
+#include <map>
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -18,11 +20,13 @@ namespace net {
 
 class NetworkDelegate;
 class URLRequest;
+class URLRequestInterceptor;
 class URLRequestJob;
 
+// Creates URLRequestJobs for URLRequests. Internally uses a mapping of schemes
+// to ProtocolHandlers, which handle the actual requests.
 class NET_EXPORT URLRequestJobFactory {
  public:
-  // TODO(shalev): Move this to URLRequestJobFactoryImpl.
   class NET_EXPORT ProtocolHandler {
    public:
     virtual ~ProtocolHandler();
@@ -31,25 +35,49 @@ class NET_EXPORT URLRequestJobFactory {
         URLRequest* request, NetworkDelegate* network_delegate) const = 0;
 
     // Indicates if it should be safe to redirect to |location|. Should handle
-    // protocols handled by MaybeCreateJob().  Only called when registered with
-    // URLRequestJobFactoryImpl::SetProtocolHandler() not called when used with
-    // ProtocolInterceptJobFactory.
-    // NOTE(pauljensen): Default implementation returns true.
+    // protocols handled by MaybeCreateJob().
     virtual bool IsSafeRedirectTarget(const GURL& location) const;
   };
 
   URLRequestJobFactory();
   virtual ~URLRequestJobFactory();
 
-  virtual URLRequestJob* CreateJob(URLRequest* request,
-                                   NetworkDelegate* network_delegate) const = 0;
+  // Sets the ProtocolHandler for a scheme. Returns true on success, false on
+  // failure (a ProtocolHandler already exists for |scheme|).
+  bool SetProtocolHandler(const std::string& scheme,
+                          std::unique_ptr<ProtocolHandler> protocol_handler);
 
-  virtual bool IsSafeRedirectTarget(const GURL& location) const = 0;
+  // Creates a URLRequestJob for |request|. Returns a URLRequestJob that fails
+  // with net::Error code if unable to handle request->url().
+  //
+  // Virtual for tests.
+  virtual URLRequestJob* CreateJob(URLRequest* request,
+                                   NetworkDelegate* network_delegate) const;
+
+  // Returns true if it's safe to redirect to |location|.
+  //
+  // Virtual for tests.
+  virtual bool IsSafeRedirectTarget(const GURL& location) const;
 
  protected:
+  // Protected for (test-only) subclasses.
   THREAD_CHECKER(thread_checker_);
 
  private:
+  // For testing only.
+  friend class URLRequestFilter;
+
+  using ProtocolHandlerMap =
+      std::map<std::string, std::unique_ptr<ProtocolHandler>>;
+
+  // Sets a global URLRequestInterceptor for testing purposes.  The interceptor
+  // is given the chance to intercept any request before the corresponding
+  // ProtocolHandler. If an interceptor is set, the old interceptor must be
+  // cleared before setting a new one.
+  static void SetInterceptorForTesting(URLRequestInterceptor* interceptor);
+
+  ProtocolHandlerMap protocol_handler_map_;
+
   DISALLOW_COPY_AND_ASSIGN(URLRequestJobFactory);
 };
 

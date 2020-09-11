@@ -8,7 +8,7 @@
 #include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 namespace net {
 
@@ -142,12 +142,12 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
 
 URLRequestFilter::URLRequestFilter() : hit_count_(0) {
   DCHECK(OnMessageLoopForInterceptorAddition());
-  URLRequestJobFactoryImpl::SetInterceptorForTesting(this);
+  URLRequestJobFactory::SetInterceptorForTesting(this);
 }
 
 URLRequestFilter::~URLRequestFilter() {
   DCHECK(OnMessageLoopForInterceptorRemoval());
-  URLRequestJobFactoryImpl::SetInterceptorForTesting(nullptr);
+  URLRequestJobFactory::SetInterceptorForTesting(nullptr);
 }
 
 }  // namespace net

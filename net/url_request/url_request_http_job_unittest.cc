@@ -45,7 +45,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_job_factory_impl.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
 #include "net/websockets/websocket_test_util.h"

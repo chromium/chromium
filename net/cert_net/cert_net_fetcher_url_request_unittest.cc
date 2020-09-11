@@ -28,7 +28,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +84,7 @@ class RequestContext : public URLRequestContext {
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
         storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),
         false /* is_main_cache */));
-    storage_.set_job_factory(std::make_unique<URLRequestJobFactoryImpl>());
+    storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   }
 
   ~RequestContext() override { AssertNoURLRequests(); }

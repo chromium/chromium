@@ -38,7 +38,7 @@
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -146,9 +146,7 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
         storage_->http_network_session(), std::move(main_backend),
         true /* set_up_quic_server_info */));
 
-    std::unique_ptr<net::URLRequestJobFactoryImpl> job_factory(
-        new net::URLRequestJobFactoryImpl());
-    storage_->set_job_factory(std::move(job_factory));
+    storage_->set_job_factory(std::make_unique<net::URLRequestJobFactory>());
   }
 
   return url_request_context_.get();

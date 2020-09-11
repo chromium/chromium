@@ -48,7 +48,7 @@ class ReportSender;
 class SystemCookieStore;
 class TransportSecurityPersister;
 class TransportSecurityState;
-class URLRequestJobFactoryImpl;
+class URLRequestJobFactory;
 }  // namespace net
 
 // Conceptually speaking, the ChromeBrowserStateIOData represents data that
@@ -67,9 +67,8 @@ class ChromeBrowserStateIOData {
   // Utility to install additional WebUI handlers into the |job_factory|.
   // Ownership of the handlers is transferred from |protocol_handlers|
   // to the |job_factory|.
-  static void InstallProtocolHandlers(
-      net::URLRequestJobFactoryImpl* job_factory,
-      ProtocolHandlerMap* protocol_handlers);
+  static void InstallProtocolHandlers(net::URLRequestJobFactory* job_factory,
+                                      ProtocolHandlerMap* protocol_handlers);
 
   // Initializes the ChromeBrowserStateIOData object and primes the
   // RequestContext generation. Must be called prior to any of the Get*()
