@@ -29,7 +29,7 @@ void ScopedIdentifiabilityTestSampleCollector::Record(
     std::vector<IdentifiableSample> metrics) {
   entries_.emplace_back(source, std::move(metrics));
   AggregatingSampleCollector::UkmMetricsContainerType metrics_map;
-  for (auto metric : metrics) {
+  for (auto metric : entries_.back().metrics) {
     metrics_map.emplace(metric.surface.ToUkmMetricHash(),
                         metric.value.ToUkmMetricValue());
   }
