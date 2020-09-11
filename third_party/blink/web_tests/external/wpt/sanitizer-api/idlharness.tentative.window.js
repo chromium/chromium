@@ -6,7 +6,7 @@ idl_test(
   ['html'],
   idl_array => {
     idl_array.add_objects({
-      Sanitizer: ['new Sanitizer()']
+      Sanitizer: ['new Sanitizer({})']
     });
   }
 );

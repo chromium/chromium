@@ -3,3 +3,5 @@
 # found in the LICENSE file.
 
 modules_idl_files = [ "sanitizer.idl" ]
+
+modules_dictionary_idl_files = [ "sanitizer_config.idl" ]

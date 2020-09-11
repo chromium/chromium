@@ -8,7 +8,7 @@
 
 <body>
 <script>
-    const s = new Sanitizer();
+    const s = new Sanitizer({});
 
     testcases.forEach(c => test(t => {
         assert_equals(s.sanitizeToString(c.value), c.result);

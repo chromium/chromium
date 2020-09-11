@@ -637,6 +637,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_track_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_track_event_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_save_file_picker_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_options.cc",

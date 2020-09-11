@@ -4,6 +4,7 @@
 
 #include "sanitizer.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -13,11 +14,13 @@
 
 namespace blink {
 
-Sanitizer* Sanitizer::Create(ExceptionState& exception_state) {
-  return MakeGarbageCollected<Sanitizer>();
+Sanitizer* Sanitizer::Create(const SanitizerConfig* config,
+                             ExceptionState& exception_state) {
+  return MakeGarbageCollected<Sanitizer>(config);
 }
 
-Sanitizer::Sanitizer() = default;
+Sanitizer::Sanitizer(const SanitizerConfig* config)
+    : config_(const_cast<SanitizerConfig*>(config)) {}
 
 Sanitizer::~Sanitizer() = default;
 
@@ -42,6 +45,15 @@ DocumentFragment* Sanitizer::sanitize(ScriptState* script_state,
   DCHECK(document->QuerySelector("body"));
   fragment->ParseHTML(input, document->QuerySelector("body"));
   return fragment;
+}
+
+SanitizerConfig* Sanitizer::creationOptions() const {
+  return config_;
+}
+
+void Sanitizer::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  visitor->Trace(config_);
 }
 
 }  // namespace blink

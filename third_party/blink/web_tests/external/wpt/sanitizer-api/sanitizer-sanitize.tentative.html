@@ -13,11 +13,11 @@
       d.appendChild(fragment);
       return d.innerHTML;
     }
-    const s = new Sanitizer();
+    const s = new Sanitizer({});
 
     testcases.forEach(c => test(t => {
         fragment = s.sanitize(c.value);
-        assert_equals("[object DocumentFragment]", fragment.toString());
+        assert_true(fragment instanceof DocumentFragment);
         assert_equals(getString(fragment), c.result);
     }, "SanitizerAPI sanitize function for " + c.message));
 </script>

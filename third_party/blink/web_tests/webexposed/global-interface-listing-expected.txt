@@ -7929,6 +7929,7 @@ interface SVGViewElement : SVGElement
     setter zoomAndPan
 interface Sanitizer
     attribute @@toStringTag
+    getter creationOptions
     method constructor
     method sanitize
     method sanitizeToString
