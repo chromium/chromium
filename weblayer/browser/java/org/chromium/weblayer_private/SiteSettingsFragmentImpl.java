@@ -7,6 +7,7 @@ package org.chromium.weblayer_private;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -93,7 +94,9 @@ public class SiteSettingsFragmentImpl extends RemoteFragmentImpl {
             attachBaseContext(mFragmentImpl.getWebLayerContext());
             // Register ourselves as a the LayoutInflater factory so we can handle loading Views.
             // See onCreateView for information about why this is needed.
-            getLayoutInflater().setFactory2(this);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                getLayoutInflater().setFactory2(this);
+            }
             // This class doesn't extend AppCompatActivity, so some appcompat functionality doesn't
             // get initialized, which leads to some appcompat widgets (like switches) rendering
             // incorrectly. There are some resource issues with having this class extend
