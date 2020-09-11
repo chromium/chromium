@@ -83,6 +83,7 @@
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
+  self.formInputAccessoryView.hidden = NO;
   [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
@@ -91,6 +92,7 @@
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   DCHECK(_currentEditingCell == cell);
   [textField setInputAccessoryView:nil];
+  self.formInputAccessoryView.hidden = YES;
   _currentEditingCell = nil;
 }
 
