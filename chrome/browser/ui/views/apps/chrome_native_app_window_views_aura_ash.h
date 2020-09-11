@@ -67,8 +67,6 @@ class ChromeNativeAppWindowViewsAuraAsh
   std::unique_ptr<views::NonClientFrameView> CreateNonStandardAppFrame()
       override;
   bool ShouldRemoveStandardFrame() override;
-  void AdjustBoundsToBeVisibleOnDisplayForNewWindows(
-      gfx::Rect* out_bounds) override;
   void EnsureAppIconCreated() override;
 
   // ui::BaseWindow:

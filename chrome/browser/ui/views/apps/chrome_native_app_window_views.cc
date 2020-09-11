@@ -137,24 +137,14 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   SetContentSizeConstraints(create_params.GetContentMinimumSize(frame_insets),
                             create_params.GetContentMaximumSize(frame_insets));
   if (!window_bounds.IsEmpty()) {
-    auto position_specified = [](const gfx::Rect& window_bounds) -> bool {
-      using BoundsSpecification = AppWindow::BoundsSpecification;
-      return window_bounds.x() != BoundsSpecification::kUnspecifiedPosition &&
-             window_bounds.y() != BoundsSpecification::kUnspecifiedPosition;
-    };
-
-    // Windows without saved bounds should be centered.
-    const bool center_window = !position_specified(window_bounds);
-
-    // Adjust bounds to be on the display for new windows.
-    AdjustBoundsToBeVisibleOnDisplayForNewWindows(&window_bounds);
-
-    // Widget::SetBounds should not take unspecified coordinates.
-    if (position_specified(window_bounds))
-      widget()->SetBounds(window_bounds);
-
-    if (center_window)
+    using BoundsSpecification = AppWindow::BoundsSpecification;
+    bool position_specified =
+        window_bounds.x() != BoundsSpecification::kUnspecifiedPosition &&
+        window_bounds.y() != BoundsSpecification::kUnspecifiedPosition;
+    if (!position_specified)
       widget()->CenterWindow(window_bounds.size());
+    else
+      widget()->SetBounds(window_bounds);
   }
 
 #if defined(OS_CHROMEOS)
@@ -203,9 +193,6 @@ ChromeNativeAppWindowViews::CreateStandardDesktopAppFrame() {
 bool ChromeNativeAppWindowViews::ShouldRemoveStandardFrame() {
   return IsFrameless() || has_frame_color_;
 }
-
-void ChromeNativeAppWindowViews::AdjustBoundsToBeVisibleOnDisplayForNewWindows(
-    gfx::Rect* out_bounds) {}
 
 // ui::BaseWindow implementation.
 
