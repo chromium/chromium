@@ -139,9 +139,6 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 
-  if (!vaapi_wrapper_->SubmitBuffer(VAPictureParameterBufferType, &pic_param))
-    return DecodeStatus::kFail;
-
   VAIQMatrixBufferH264 iq_matrix_buf;
   memset(&iq_matrix_buf, 0, sizeof(iq_matrix_buf));
 
@@ -171,9 +168,10 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
     }
   }
 
-  return vaapi_wrapper_->SubmitBuffer(VAIQMatrixBufferType, &iq_matrix_buf)
-             ? DecodeStatus::kOk
-             : DecodeStatus::kFail;
+  const bool success = vaapi_wrapper_->SubmitBuffers(
+      {{VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
+       {VAIQMatrixBufferType, sizeof(iq_matrix_buf), &iq_matrix_buf}});
+  return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
@@ -275,12 +273,10 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
 
-  if (!vaapi_wrapper_->SubmitBuffer(VASliceParameterBufferType, &slice_param))
-    return DecodeStatus::kFail;
-
-  return vaapi_wrapper_->SubmitBuffer(VASliceDataBufferType, size, data)
-             ? DecodeStatus::kOk
-             : DecodeStatus::kFail;
+  const bool success = vaapi_wrapper_->SubmitBuffers(
+      {{VASliceParameterBufferType, sizeof(slice_param), &slice_param},
+       {VASliceDataBufferType, size, data}});
+  return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
 DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
