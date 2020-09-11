@@ -47,11 +47,15 @@ class SharesheetService : public KeyedService {
 
   // Displays the dialog (aka bubble) for sharing content (or files) with
   // other applications and targets. |intent| contains the list of the
-  // files/content to be shared.
+  // files/content to be shared. If the files to share contains Google
+  // Drive hosted document, only drive share action will be shown.
   void ShowBubble(views::View* bubble_anchor_view,
                   apps::mojom::IntentPtr intent);
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent);
+  void ShowBubble(content::WebContents* web_contents,
+                  apps::mojom::IntentPtr intent,
+                  bool contains_hosted_document);
   void OnBubbleClosed(uint32_t id, const base::string16& active_action);
   void OnTargetSelected(uint32_t delegate_id,
                         const base::string16& target_name,
@@ -59,7 +63,11 @@ class SharesheetService : public KeyedService {
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
   SharesheetServiceDelegate* GetDelegate(uint32_t delegate_id);
-  bool HasShareTargets(const apps::mojom::IntentPtr& intent);
+
+  // If the files to share contains a Google Drive hosted document, only the
+  // drive share action will be shown.
+  bool HasShareTargets(const apps::mojom::IntentPtr& intent,
+                       bool contains_hosted_document);
   Profile* GetProfile();
 
  private:
@@ -83,7 +91,8 @@ class SharesheetService : public KeyedService {
 
   void ShowBubbleWithDelegate(
       std::unique_ptr<SharesheetServiceDelegate> delegate,
-      apps::mojom::IntentPtr intent);
+      apps::mojom::IntentPtr intent,
+      bool contains_hosted_document);
 
   uint32_t delegate_counter_ = 0;
   Profile* profile_;

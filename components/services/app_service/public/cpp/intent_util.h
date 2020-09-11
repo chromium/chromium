@@ -28,6 +28,13 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
     const std::vector<GURL>& filesystem_urls,
     const std::vector<std::string>& mime_types);
 
+// Create an intent struct from the filesystem url, mime type
+// and the drive share url for a Google Drive file.
+apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
+    const GURL& filesystem_url,
+    const std::string& mime_type,
+    const GURL& drive_share_url);
+
 // Return true if |value| matches with the |condition_value|, based on the
 // pattern match type in the |condition_value|.
 bool ConditionValueMatches(

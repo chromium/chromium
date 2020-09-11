@@ -153,6 +153,20 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
   return intent;
 }
 
+apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
+    const GURL& filesystem_url,
+    const std::string& mime_type,
+    const GURL& drive_share_url) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = kIntentActionSend;
+  intent->mime_type = mime_type;
+  intent->file_urls = std::vector<GURL>{filesystem_url};
+  if (!drive_share_url.is_empty()) {
+    intent->drive_share_url = drive_share_url;
+  }
+  return intent;
+}
+
 bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value) {

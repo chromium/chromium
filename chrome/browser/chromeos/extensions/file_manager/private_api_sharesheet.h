@@ -14,8 +14,19 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "storage/browser/file_system/file_system_url.h"
+
+namespace base {
+class File;
+}
 
 namespace extensions {
+
+namespace api {
+namespace file_manager_private {
+struct EntryProperties;
+}
+}  // namespace api
 
 namespace app_file_handler_util {
 class MimeTypeCollector;
@@ -41,10 +52,17 @@ class FileManagerPrivateInternalSharesheetHasTargetsFunction
   void OnMimeTypesCollected(
       std::unique_ptr<std::vector<std::string>> mime_types);
 
+  void OnDrivePropertyCollected(
+      std::unique_ptr<std::vector<std::string>> mime_types,
+      std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+      base::File::Error error);
+
   std::unique_ptr<app_file_handler_util::MimeTypeCollector>
       mime_type_collector_;
   std::vector<GURL> urls_;
   const ChromeExtensionFunctionDetails chrome_details_;
+  std::vector<storage::FileSystemURL> file_system_urls_;
+  bool contains_hosted_document_ = false;
 };
 
 // Implements the chrome.fileManagerPrivateInternal.invokeSharesheet method.
@@ -66,10 +84,17 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
   void OnMimeTypesCollected(
       std::unique_ptr<std::vector<std::string>> mime_types);
 
+  void OnDrivePropertyCollected(
+      std::unique_ptr<std::vector<std::string>> mime_types,
+      std::unique_ptr<api::file_manager_private::EntryProperties> properties,
+      base::File::Error error);
+
   std::unique_ptr<app_file_handler_util::MimeTypeCollector>
       mime_type_collector_;
   std::vector<GURL> urls_;
   const ChromeExtensionFunctionDetails chrome_details_;
+  std::vector<storage::FileSystemURL> file_system_urls_;
+  bool contains_hosted_document_ = false;
 };
 
 }  // namespace extensions

@@ -88,22 +88,6 @@ constexpr base::TimeDelta kDriveSlowOperationThreshold =
 constexpr base::TimeDelta kDriveVerySlowOperationThreshold =
     base::TimeDelta::FromMinutes(1);
 
-std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
-    const GURL& alternate_url) {
-  // Set |share_url| to a modified version of |alternate_url| that opens the
-  // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
-  // TODO(sashab): Add an endpoint to the Drive API that generates this URL,
-  // instead of manually modifying it here.
-  GURL::Replacements replacements;
-  std::string new_query =
-      (alternate_url.has_query() ? alternate_url.query() + "&" : "") +
-      "userstoinvite=%22%22";
-  replacements.SetQueryStr(new_query);
-
-  return std::make_unique<std::string>(
-      alternate_url.ReplaceComponents(replacements).spec());
-}
-
 class SingleEntryPropertiesGetterForFileSystemProvider {
  public:
   typedef base::OnceCallback<void(std::unique_ptr<EntryProperties> properties,
@@ -240,184 +224,6 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
   base::WeakPtrFactory<SingleEntryPropertiesGetterForFileSystemProvider>
       weak_ptr_factory_{this};
 };  // class SingleEntryPropertiesGetterForFileSystemProvider
-
-class SingleEntryPropertiesGetterForDriveFs {
- public:
-  using ResultCallback =
-      base::OnceCallback<void(std::unique_ptr<EntryProperties> properties,
-                              base::File::Error error)>;
-
-  // Creates an instance and starts the process.
-  static void Start(const storage::FileSystemURL& file_system_url,
-                    Profile* const profile,
-                    ResultCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    SingleEntryPropertiesGetterForDriveFs* instance =
-        new SingleEntryPropertiesGetterForDriveFs(file_system_url, profile,
-                                                  std::move(callback));
-    instance->StartProcess();
-
-    // The instance will be destroyed by itself.
-  }
-
- private:
-  SingleEntryPropertiesGetterForDriveFs(
-      const storage::FileSystemURL& file_system_url,
-      Profile* const profile,
-      ResultCallback callback)
-      : callback_(std::move(callback)),
-        file_system_url_(file_system_url),
-        running_profile_(profile),
-        properties_(std::make_unique<EntryProperties>()) {
-    DCHECK(callback_);
-    DCHECK(profile);
-  }
-
-  void StartProcess() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    drive::DriveIntegrationService* integration_service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(running_profile_);
-    if (!integration_service || !integration_service->IsMounted()) {
-      CompleteGetEntryProperties(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
-      return;
-    }
-    base::FilePath path;
-    if (!integration_service->GetRelativeDrivePath(file_system_url_.path(),
-                                                   &path)) {
-      CompleteGetEntryProperties(drive::FILE_ERROR_INVALID_OPERATION);
-      return;
-    }
-
-    auto* drivefs_interface = integration_service->GetDriveFsInterface();
-    if (!drivefs_interface) {
-      CompleteGetEntryProperties(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
-      return;
-    }
-
-    drivefs_interface->GetMetadata(
-        path, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                  base::BindOnce(
-                      &SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo,
-                      weak_ptr_factory_.GetWeakPtr()),
-                  drive::FILE_ERROR_SERVICE_UNAVAILABLE, nullptr));
-  }
-
-  void OnGetFileInfo(drive::FileError error,
-                     drivefs::mojom::FileMetadataPtr metadata) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    if (!metadata) {
-      CompleteGetEntryProperties(error);
-      return;
-    }
-
-    properties_->size = std::make_unique<double>(metadata->size);
-    properties_->present = std::make_unique<bool>(metadata->available_offline);
-    properties_->dirty = std::make_unique<bool>(metadata->dirty);
-    properties_->hosted =
-        std::make_unique<bool>(drivefs::IsHosted(metadata->type));
-    properties_->available_offline = std::make_unique<bool>(
-        metadata->available_offline || *properties_->hosted);
-    properties_->available_when_metered = std::make_unique<bool>(
-        metadata->available_offline || *properties_->hosted);
-    properties_->pinned = std::make_unique<bool>(metadata->pinned);
-    properties_->shared = std::make_unique<bool>(metadata->shared);
-    properties_->starred = std::make_unique<bool>(metadata->starred);
-
-    if (metadata->modification_time != base::Time()) {
-      properties_->modification_time =
-          std::make_unique<double>(metadata->modification_time.ToJsTime());
-    }
-    if (metadata->last_viewed_by_me_time != base::Time()) {
-      properties_->modification_by_me_time =
-          std::make_unique<double>(metadata->last_viewed_by_me_time.ToJsTime());
-    }
-    if (!metadata->content_mime_type.empty()) {
-      properties_->content_mime_type =
-          std::make_unique<std::string>(metadata->content_mime_type);
-    }
-    if (!metadata->custom_icon_url.empty()) {
-      properties_->custom_icon_url =
-          std::make_unique<std::string>(std::move(metadata->custom_icon_url));
-    }
-    if (!metadata->alternate_url.empty()) {
-      properties_->alternate_url =
-          std::make_unique<std::string>(std::move(metadata->alternate_url));
-      properties_->share_url =
-          GetShareUrlFromAlternateUrl(GURL(*properties_->alternate_url));
-    }
-    if (metadata->image_metadata) {
-      if (metadata->image_metadata->height) {
-        properties_->image_height =
-            std::make_unique<int32_t>(metadata->image_metadata->height);
-      }
-      if (metadata->image_metadata->width) {
-        properties_->image_width =
-            std::make_unique<int32_t>(metadata->image_metadata->width);
-      }
-      if (metadata->image_metadata->rotation) {
-        properties_->image_rotation =
-            std::make_unique<int32_t>(metadata->image_metadata->rotation);
-      }
-    }
-
-    properties_->can_delete =
-        std::make_unique<bool>(metadata->capabilities->can_delete);
-    properties_->can_rename =
-        std::make_unique<bool>(metadata->capabilities->can_rename);
-    properties_->can_add_children =
-        std::make_unique<bool>(metadata->capabilities->can_add_children);
-
-    // Only set the |can_copy| capability for hosted documents; for other files,
-    // we must have read access, so |can_copy| is implicitly true.
-    properties_->can_copy = std::make_unique<bool>(
-        !*properties_->hosted || metadata->capabilities->can_copy);
-    properties_->can_share =
-        std::make_unique<bool>(metadata->capabilities->can_share);
-
-    if (drivefs::IsAFile(metadata->type)) {
-      properties_->thumbnail_url = std::make_unique<std::string>(
-          base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));
-      properties_->cropped_thumbnail_url =
-          std::make_unique<std::string>(*properties_->thumbnail_url);
-    }
-
-    if (metadata->folder_feature) {
-      properties_->is_machine_root =
-          std::make_unique<bool>(metadata->folder_feature->is_machine_root);
-      properties_->is_external_media =
-          std::make_unique<bool>(metadata->folder_feature->is_external_media);
-      properties_->is_arbitrary_sync_folder = std::make_unique<bool>(
-          metadata->folder_feature->is_arbitrary_sync_folder);
-    }
-
-    CompleteGetEntryProperties(drive::FILE_ERROR_OK);
-  }
-
-  void CompleteGetEntryProperties(drive::FileError error) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(callback_);
-
-    std::move(callback_).Run(std::move(properties_),
-                             drive::FileErrorToBaseFileError(error));
-    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
-  }
-
-  // Given parameters.
-  ResultCallback callback_;
-  const storage::FileSystemURL file_system_url_;
-  Profile* const running_profile_;
-
-  // Values used in the process.
-  std::unique_ptr<EntryProperties> properties_;
-
-  base::WeakPtrFactory<SingleEntryPropertiesGetterForDriveFs> weak_ptr_factory_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleEntryPropertiesGetterForDriveFs);
-};
 
 class SingleEntryPropertiesGetterForDocumentsProvider {
  public:
@@ -645,7 +451,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
                 this, i, file_system_url));
         break;
       case storage::kFileSystemTypeDriveFs:
-        SingleEntryPropertiesGetterForDriveFs::Start(
+        file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
             file_system_url, chrome_details.GetProfile(),
             base::BindOnce(
                 &FileManagerPrivateInternalGetEntryPropertiesFunction::

@@ -40,18 +40,25 @@ void SharesheetService::ShowBubble(views::View* bubble_anchor_view,
       std::make_unique<SharesheetServiceDelegate>(
           delegate_counter_++, std::move(bubble_anchor_view), this);
   ShowBubbleWithDelegate(std::move(sharesheet_service_delegate),
-                         std::move(intent));
+                         std::move(intent), /*contains_hosted_document=*/false);
 }
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent) {
+  ShowBubble(web_contents, std::move(intent),
+             /*contains_hosted_document=*/false);
+}
+
+void SharesheetService::ShowBubble(content::WebContents* web_contents,
+                                   apps::mojom::IntentPtr intent,
+                                   bool contains_hosted_document) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
   auto sharesheet_service_delegate =
       std::make_unique<SharesheetServiceDelegate>(delegate_counter_++,
                                                   web_contents, this);
   ShowBubbleWithDelegate(std::move(sharesheet_service_delegate),
-                         std::move(intent));
+                         std::move(intent), contains_hosted_document);
 }
 
 // Cleanup delegate when bubble closes.
@@ -117,12 +124,14 @@ SharesheetServiceDelegate* SharesheetService::GetDelegate(
   return nullptr;
 }
 
-bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent) {
-  auto& actions = sharesheet_action_cache_->GetShareActions();
+bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent,
+                                        bool contains_hosted_document) {
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
       app_service_proxy_->GetAppsForIntent(intent);
 
-  return !actions.empty() || !intent_launch_info.empty();
+  return sharesheet_action_cache_->HasVisibleActions(
+             intent, contains_hosted_document) ||
+         (!contains_hosted_document && !intent_launch_info.empty());
 }
 
 Profile* SharesheetService::GetProfile() {
@@ -185,19 +194,23 @@ void SharesheetService::OnAppIconsLoaded(
 
 void SharesheetService::ShowBubbleWithDelegate(
     std::unique_ptr<SharesheetServiceDelegate> delegate,
-    apps::mojom::IntentPtr intent) {
+    apps::mojom::IntentPtr intent,
+    bool contains_hosted_document) {
   std::vector<TargetInfo> targets;
   auto& actions = sharesheet_action_cache_->GetShareActions();
   auto iter = actions.begin();
   while (iter != actions.end()) {
-    targets.emplace_back(TargetType::kAction, (*iter)->GetActionIcon(),
-                         (*iter)->GetActionName(), (*iter)->GetActionName(),
-                         base::nullopt, base::nullopt);
+    if ((*iter)->ShouldShowAction(intent, contains_hosted_document)) {
+      targets.emplace_back(TargetType::kAction, (*iter)->GetActionIcon(),
+                           (*iter)->GetActionName(), (*iter)->GetActionName(),
+                           base::nullopt, base::nullopt);
+    }
     ++iter;
   }
 
   std::vector<apps::IntentLaunchInfo> intent_launch_info =
-      app_service_proxy_->GetAppsForIntent(intent);
+      contains_hosted_document ? std::vector<apps::IntentLaunchInfo>()
+                               : app_service_proxy_->GetAppsForIntent(intent);
   sharesheet::SharesheetMetrics::RecordSharesheetAppCount(
       intent_launch_info.size());
   LoadAppIcons(std::move(intent_launch_info), std::move(targets), 0,

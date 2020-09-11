@@ -45,6 +45,12 @@ class ShareAction {
   // shutdown when OnClosing is called, and not use |root_view| or |controller|
   // once the method completes as they will be destroyed.
   virtual void OnClosing(SharesheetController* controller) = 0;
+
+  // Return true if the action should be shown on the sharesheet. By default,
+  // the actions are only visible if the files don't contain a Google Drive
+  // hosted document.
+  virtual bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+                                bool contains_hosted_document);
 };
 
 }  // namespace sharesheet

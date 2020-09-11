@@ -325,6 +325,10 @@ struct Intent {
   string? mime_type; // MIME type. e.g. text/plain, image/*.
   array<url.mojom.Url>? file_urls; // The URLs of the files to share.
   string? activity_name; // The activity for the app to launch.
+
+  // The Drive share URL, this is only filled if the intent contains a file
+  // from Google Drive.
+  url.mojom.Url? drive_share_url;
 };
 
 // Represents a group of |app_ids| that is no longer preferred app of their

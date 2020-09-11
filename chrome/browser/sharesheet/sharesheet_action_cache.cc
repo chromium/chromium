@@ -10,6 +10,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_action.h"
+#include "chrome/browser/sharesheet/drive_share_action.h"
 #endif
 
 namespace sharesheet {
@@ -20,6 +21,7 @@ SharesheetActionCache::SharesheetActionCache() {
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     AddShareAction(std::make_unique<NearbyShareAction>());
   }
+  AddShareAction(std::make_unique<DriveShareAction>());
 #endif
 }
 
@@ -41,6 +43,17 @@ ShareAction* SharesheetActionCache::GetActionFromName(
     }
   }
   return nullptr;
+}
+
+bool SharesheetActionCache::HasVisibleActions(
+    const apps::mojom::IntentPtr& intent,
+    bool contains_google_document) {
+  for (auto& action : share_actions_) {
+    if (action->ShouldShowAction(intent, contains_google_document)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void SharesheetActionCache::AddShareAction(

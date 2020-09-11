@@ -7,15 +7,23 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_UTIL_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_UTIL_H_
 
+#include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/chromeos/file_system_provider/icon_set.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "components/drive/file_errors.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
 class Profile;
 
 namespace base {
+class File;
 class FilePath;
 }
 
@@ -30,6 +38,7 @@ class EventLogger;
 namespace extensions {
 namespace api {
 namespace file_manager_private {
+struct EntryProperties;
 struct IconSet;
 struct VolumeMetadata;
 }
@@ -45,6 +54,47 @@ namespace file_manager {
 class Volume;
 
 namespace util {
+
+class SingleEntryPropertiesGetterForDriveFs {
+ public:
+  using ResultCallback = base::OnceCallback<void(
+      std::unique_ptr<extensions::api::file_manager_private::EntryProperties>
+          properties,
+      base::File::Error error)>;
+
+  // Creates an instance and starts the process.
+  static void Start(const storage::FileSystemURL& file_system_url,
+                    Profile* const profile,
+                    ResultCallback callback);
+  ~SingleEntryPropertiesGetterForDriveFs();
+
+  SingleEntryPropertiesGetterForDriveFs(
+      const SingleEntryPropertiesGetterForDriveFs&) = delete;
+  SingleEntryPropertiesGetterForDriveFs& operator=(
+      const SingleEntryPropertiesGetterForDriveFs&) = delete;
+
+ private:
+  SingleEntryPropertiesGetterForDriveFs(
+      const storage::FileSystemURL& file_system_url,
+      Profile* const profile,
+      ResultCallback callback);
+  void StartProcess();
+  void OnGetFileInfo(drive::FileError error,
+                     drivefs::mojom::FileMetadataPtr metadata);
+  void CompleteGetEntryProperties(drive::FileError error);
+
+  // Given parameters.
+  ResultCallback callback_;
+  const storage::FileSystemURL file_system_url_;
+  Profile* const running_profile_;
+
+  // Values used in the process.
+  std::unique_ptr<extensions::api::file_manager_private::EntryProperties>
+      properties_;
+
+  base::WeakPtrFactory<SingleEntryPropertiesGetterForDriveFs> weak_ptr_factory_{
+      this};
+};
 
 // Fills out IDL IconSet struct with the provided icon set.
 void FillIconSet(extensions::api::file_manager_private::IconSet* output,
