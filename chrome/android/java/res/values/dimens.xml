@@ -268,16 +268,8 @@
     <dimen name="tablet_toolbar_end_padding">6dp</dimen>
     <dimen name="toolbar_optional_button_animation_translation">10dp</dimen>
 
-    <!-- Bottom toolbar dimensions -->
-    <dimen name="bottom_toolbar_height">@dimen/min_touch_target_size</dimen>
-    <dimen name="bottom_toolbar_height_with_shadow">56dp</dimen>
-    <dimen name="labeled_bottom_toolbar_height">68dp</dimen>
-    <dimen name="labeled_bottom_toolbar_height_with_shadow">76dp</dimen>
-    <dimen name="bottom_toolbar_padding">12dp</dimen>
-    <dimen name="search_accelerator_width">64dp</dimen>
-    <dimen name="search_accelerator_height">36dp</dimen>
-    <dimen name="search_accelerator_height_padding">6dp</dimen>
-    <dimen name="search_accelerator_width_margin">4dp</dimen>
+    <!-- Bottom controls dimensions -->
+    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
 
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>

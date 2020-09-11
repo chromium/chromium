@@ -171,13 +171,6 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * @param isVisible Whether the bottom toolbar is visible.
-     */
-    void onBottomToolbarVisibilityChanged(boolean isVisible) {
-        mToolbarMediator.onBottomToolbarVisibilityChanged(isVisible);
-    }
-
-    /**
      * @param overviewModeBehavior The {@link OverviewModeBehavior} to observe overview state
      *         changes.
      */

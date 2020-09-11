@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -34,7 +33,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Test for {@link HomepageSettings}.
@@ -73,8 +71,7 @@ public class HomepageSettingsFragmentTest {
     private static final String ASSERT_HOMEPAGE_MANAGER_SETTINGS =
             "HomepageManager#getHomepageUri is different than test homepage settings.";
 
-    private static final String ASSERT_MESSAGE_DUET_SWITCH_INVISIBLE =
-            "Switch should not be visible when duet is enabled.";
+    private static final String ASSERT_MESSAGE_SWITCH_INVISIBLE = "Switch should not be visible.";
 
     private static final String ASSERT_HOMEPAGE_LOCATION_HISTOGRAM_COUNT =
             "Count for user action <Settings.Homepage.LocationChanged_V2> is different.";
@@ -187,36 +184,6 @@ public class HomepageSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"Homepage"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testStartUp_ChromeNTP_BottomToolbar() {
-        mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
-        mHomepageTestRule.useChromeNTPForTest();
-
-        HomepageSettings.setIsHomeButtonOnBottomToolbar(true);
-
-        launchSettingsActivity();
-
-        Assert.assertFalse(ASSERT_MESSAGE_DUET_SWITCH_INVISIBLE, mSwitch.isVisible());
-
-        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mChromeNtpRadioButton.isEnabled());
-        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_ENABLED, mCustomUriRadioButton.isEnabled());
-        Assert.assertTrue(ASSERT_MESSAGE_TITLE_ENABLED, mTitleTextView.isEnabled());
-
-        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mChromeNtpRadioButton.isChecked());
-        Assert.assertFalse(
-                ASSERT_MESSAGE_RADIO_BUTTON_CUSTOMIZED_CHECK, mCustomUriRadioButton.isChecked());
-        Assert.assertEquals(ASSERT_MESSAGE_EDIT_TEXT, TEST_URL_BAR,
-                mCustomUriRadioButton.getPrimaryText().toString());
-        Assert.assertEquals(ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
-                HomepageLocationType.USER_CUSTOMIZED_NTP,
-                HomepageManager.getInstance().getHomepageLocationType());
-
-        HomepageSettings.setIsHomeButtonOnBottomToolbar(false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Homepage"})
     public void testStartUp_Customized() {
         mHomepageTestRule.useCustomizedHomepageForTest(TEST_URL_BAR);
 
@@ -300,44 +267,6 @@ public class HomepageSettingsFragmentTest {
                 mManagedText.isVisible());
         Assert.assertEquals(ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH, HomepageLocationType.POLICY_NTP,
                 HomepageManager.getInstance().getHomepageLocationType());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Homepage"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @Features.EnableFeatures(ChromeFeatureList.HOMEPAGE_LOCATION_POLICY)
-    public void testStartUp_Policies_Customized_BottomToolbar() {
-        // Set mock policies
-        mHomepageTestRule.setHomepagePolicyForTest(TEST_URL_BAR);
-
-        HomepageSettings.setIsHomeButtonOnBottomToolbar(true);
-
-        launchSettingsActivity();
-
-        Assert.assertFalse(ASSERT_MESSAGE_DUET_SWITCH_INVISIBLE, mSwitch.isVisible());
-
-        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mChromeNtpRadioButton.isEnabled());
-        Assert.assertFalse(ASSERT_MESSAGE_RADIO_BUTTON_DISABLED, mCustomUriRadioButton.isEnabled());
-        Assert.assertFalse(ASSERT_MESSAGE_TITLE_DISABLED, mTitleTextView.isEnabled());
-
-        Assert.assertTrue(ASSERT_MESSAGE_RADIO_BUTTON_NTP_CHECK, mCustomUriRadioButton.isChecked());
-
-        // Additional verification - managed text should be visible
-        Assert.assertEquals("NTP Button should not be visible.", View.GONE,
-                mChromeNtpRadioButton.getVisibility());
-        Assert.assertEquals("Customized Button should not be visible.", View.VISIBLE,
-                mCustomUriRadioButton.getVisibility());
-        Assert.assertTrue("Managed text message preference should be visible when duet enabled.",
-                mManagedText.isVisible());
-        Assert.assertFalse(
-                "Managed text message preference should be disabled.", mManagedText.isEnabled());
-        Assert.assertEquals(ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH,
-                HomepageLocationType.POLICY_OTHER,
-                HomepageManager.getInstance().getHomepageLocationType());
-
-        // Reset policy
-        HomepageSettings.setIsHomeButtonOnBottomToolbar(false);
     }
 
     @Test

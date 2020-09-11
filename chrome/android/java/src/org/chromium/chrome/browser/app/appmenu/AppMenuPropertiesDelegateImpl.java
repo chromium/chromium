@@ -618,8 +618,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 || mDecorView.getWidth()
                         < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext);
 
-        final boolean isMenuButtonOnTop =
-                mToolbarManager != null && !mToolbarManager.isMenuFromBottom();
+        final boolean isMenuButtonOnTop = mToolbarManager != null;
         shouldShowIconRow &= isMenuButtonOnTop;
         return shouldShowIconRow;
     }

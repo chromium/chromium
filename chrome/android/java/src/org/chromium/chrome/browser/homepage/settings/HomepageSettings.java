@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePre
 import org.chromium.chrome.browser.homepage.settings.RadioButtonGroupHomepagePreference.PreferenceValues;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -51,8 +50,6 @@ public class HomepageSettings extends PreferenceFragmentCompat {
         }
     }
 
-    private static boolean sIsHomeButtonOnBottomToolbar;
-
     private HomepageManager mHomepageManager;
     private Preference mHomepageEdit;
     private RadioButtonGroupHomepagePreference mRadioButtons;
@@ -80,16 +77,12 @@ public class HomepageSettings extends PreferenceFragmentCompat {
         setupPreferenceVisibility();
 
         // Set up listeners and update the page.
-        if (isHomeButtonOnBottomToolbar()) {
-            homepageSwitch.setVisible(false);
-        } else {
-            boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
-            homepageSwitch.setChecked(isHomepageEnabled);
-            homepageSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
-                onSwitchPreferenceChange((boolean) newValue);
-                return true;
-            });
-        }
+        boolean isHomepageEnabled = HomepageManager.isHomepageEnabled();
+        homepageSwitch.setChecked(isHomepageEnabled);
+        homepageSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            onSwitchPreferenceChange((boolean) newValue);
+            return true;
+        });
 
         RecordUserAction.record("Settings.Homepage.Opened");
 
@@ -116,7 +109,7 @@ public class HomepageSettings extends PreferenceFragmentCompat {
      */
     private void updatePreferenceState() {
         boolean isManagedByPolicy = HomepagePolicyManager.isHomepageManagedByPolicy();
-        mTextManaged.setVisible(isManagedByPolicy && isHomeButtonOnBottomToolbar());
+        mTextManaged.setVisible(false);
 
         if (isHomepageSettingsUIConversionEnabled()) {
             if (mRadioButtons != null) {
@@ -130,15 +123,6 @@ public class HomepageSettings extends PreferenceFragmentCompat {
 
     private boolean isHomepageSettingsUIConversionEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.HOMEPAGE_SETTINGS_UI_CONVERSION);
-    }
-
-    private boolean isHomeButtonOnBottomToolbar() {
-        return sIsHomeButtonOnBottomToolbar || BottomToolbarVariationManager.isHomeButtonOnBottom();
-    }
-
-    @VisibleForTesting
-    public static void setIsHomeButtonOnBottomToolbar(boolean isOnBottom) {
-        sIsHomeButtonOnBottomToolbar = isOnBottom;
     }
 
     @Override

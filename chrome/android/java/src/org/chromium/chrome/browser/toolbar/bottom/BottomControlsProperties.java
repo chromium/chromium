@@ -16,9 +16,6 @@ class BottomControlsProperties {
     static final WritableIntPropertyKey BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX =
             new WritableIntPropertyKey();
 
-    /** The height of the bottom toolbar view in px. */
-    static final WritableIntPropertyKey BOTTOM_CONTROLS_HEIGHT_PX = new WritableIntPropertyKey();
-
     /** The Y offset of the view in px. */
     static final WritableIntPropertyKey Y_OFFSET = new WritableIntPropertyKey();
 
@@ -37,7 +34,7 @@ class BottomControlsProperties {
     static final WritableObjectPropertyKey<ResourceManager> RESOURCE_MANAGER =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX,
-            BOTTOM_CONTROLS_HEIGHT_PX, Y_OFFSET, ANDROID_VIEW_VISIBLE, COMPOSITED_VIEW_VISIBLE,
-            LAYOUT_MANAGER, RESOURCE_MANAGER};
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {BOTTOM_CONTROLS_CONTAINER_HEIGHT_PX, Y_OFFSET, ANDROID_VIEW_VISIBLE,
+                    COMPOSITED_VIEW_VISIBLE, LAYOUT_MANAGER, RESOURCE_MANAGER};
 }

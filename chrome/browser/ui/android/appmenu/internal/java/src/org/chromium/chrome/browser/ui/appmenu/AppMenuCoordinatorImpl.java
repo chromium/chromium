@@ -86,8 +86,7 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                 ? sHasPermanentMenuKeyForTesting.booleanValue()
                 : ViewConfiguration.get(mContext).hasPermanentMenuKey();
         mAppMenuHandler.showAppMenu(
-                hasPermanentMenuKey ? null : mButtonDelegate.getMenuButtonView(), false,
-                mButtonDelegate.isMenuFromBottom());
+                hasPermanentMenuKey ? null : mButtonDelegate.getMenuButtonView(), false);
     }
 
     @Override

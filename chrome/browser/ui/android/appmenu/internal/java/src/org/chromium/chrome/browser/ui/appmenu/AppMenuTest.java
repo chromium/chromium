@@ -148,30 +148,6 @@ public class AppMenuTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    public void testShowAppMenu_AnchorBottom() throws TimeoutException {
-        AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
-        mTestMenuButtonDelegate.useBottomAnchor = true;
-        showMenuAndAssert();
-
-        View bottomAnchor = getActivity().findViewById(R.id.bottom_button);
-        Rect viewRect = getViewLocationRect(bottomAnchor);
-        Rect popupRect = getPopupLocationRect();
-
-        // Check that bottom right corner of app menu aligns with bottom right corner of the anchor.
-        int alignmentSlop = viewRect.bottom - viewRect.top;
-        Assert.assertEquals("Popup should be overlap bottom anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
-                viewRect.bottom, popupRect.bottom, alignmentSlop);
-        Assert.assertTrue("Popup should overlap bottom anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
-                viewRect.bottom >= popupRect.bottom);
-        Assert.assertEquals("Popup should be aligned with right of anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
-                viewRect.right, popupRect.right);
-    }
-
-    @Test
-    @MediumTest
     public void testShowAppMenu_PermanentButton() throws TimeoutException {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(true);
         showMenuAndAssert();
@@ -792,18 +768,10 @@ public class AppMenuTest extends DummyUiActivityTestCase {
     }
 
     private class TestMenuButtonDelegate implements MenuButtonDelegate {
-        public boolean useBottomAnchor;
-
         @Nullable
         @Override
         public View getMenuButtonView() {
-            return getActivity().findViewById(
-                    useBottomAnchor ? R.id.bottom_button : R.id.top_button);
-        }
-
-        @Override
-        public boolean isMenuFromBottom() {
-            return useBottomAnchor;
+            return getActivity().findViewById(R.id.top_button);
         }
     }
 

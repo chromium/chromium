@@ -68,20 +68,18 @@ public class AppMenuPopupPositionTest {
         int expectedX = (mAppWidth - mPopupWidth) / 2;
         int expectedY = mAnchorY - mBgPadding;
 
-        int[] results =
-                getPopupPosition(true, Surface.ROTATION_0, false, View.LAYOUT_DIRECTION_LTR);
+        int[] results = getPopupPosition(true, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR);
         Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
 
-        results = getPopupPosition(true, Surface.ROTATION_180, false, View.LAYOUT_DIRECTION_LTR);
+        results = getPopupPosition(true, Surface.ROTATION_180, View.LAYOUT_DIRECTION_LTR);
         Assert.assertEquals("Incorrect popup x for rotation 180", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y for rotation 180", expectedY, results[1]);
     }
 
     @Test
     public void testPermanentButton_Landscape() {
-        int[] results =
-                getPopupPosition(true, Surface.ROTATION_90, false, View.LAYOUT_DIRECTION_LTR);
+        int[] results = getPopupPosition(true, Surface.ROTATION_90, View.LAYOUT_DIRECTION_LTR);
 
         // Popup should be positioned toward the right edge of the screen, anchored near the anchor
         // view.
@@ -93,15 +91,14 @@ public class AppMenuPopupPositionTest {
         // Popup should be positioned toward the left edge of the screen, anchored near the anchor
         // view.
         expectedX = 0;
-        results = getPopupPosition(true, Surface.ROTATION_270, false, View.LAYOUT_DIRECTION_LTR);
+        results = getPopupPosition(true, Surface.ROTATION_270, View.LAYOUT_DIRECTION_LTR);
         Assert.assertEquals("Incorrect popup x for rotation 180", expectedX, results[0]);
         Assert.assertEquals("Incorrect popup y for rotation 180", expectedY, results[1]);
     }
 
     @Test
     public void testTopButton_LTR() {
-        int[] results =
-                getPopupPosition(false, Surface.ROTATION_0, false, View.LAYOUT_DIRECTION_LTR);
+        int[] results = getPopupPosition(false, Surface.ROTATION_0, View.LAYOUT_DIRECTION_LTR);
 
         // The top right edge of the popup should be aligned with the top right edge of the button.
         int expectedX = mAnchorX + mAnchorWidth - mPopupWidth;
@@ -112,8 +109,7 @@ public class AppMenuPopupPositionTest {
 
     @Test
     public void testTopButton_RTL() {
-        int[] results =
-                getPopupPosition(false, Surface.ROTATION_0, false, View.LAYOUT_DIRECTION_RTL);
+        int[] results = getPopupPosition(false, Surface.ROTATION_0, View.LAYOUT_DIRECTION_RTL);
 
         // The top left edge of the popup should be aligned with the top left edge of the button.
         int expectedX = mAnchorX;
@@ -122,39 +118,10 @@ public class AppMenuPopupPositionTest {
         Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
     }
 
-    @Test
-    public void testBottomButton_LTR() {
-        int[] results =
-                getPopupPosition(false, Surface.ROTATION_0, true, View.LAYOUT_DIRECTION_LTR);
-
-        // The bottom popup menu positioning assumes the anchor is at the bottom of the screen. It
-        // aligns the popup based on the bottom of the screen plus offsets.
-        int expectedX = mAnchorX + mAnchorWidth - mPopupWidth;
-        int expectedY = mAppHeight - mPopupHeight - mNegativeSoftwareVerticalOffset
-                - mNegativeSoftwareVerticalOffsetNotTopAnchored + mBgPadding;
-        Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
-        Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
-    }
-
-    @Test
-    public void testBottomButton_RTL() {
-        int[] results =
-                getPopupPosition(false, Surface.ROTATION_0, true, View.LAYOUT_DIRECTION_RTL);
-
-        // The bottom popup menu positioning assumes the anchor is at the bottom of the screen. It
-        // aligns the popup based on the bottom of the screen plus offsets.
-        int expectedX = mAnchorX;
-        int expectedY = mAppHeight - mPopupHeight - mNegativeSoftwareVerticalOffset
-                - mNegativeSoftwareVerticalOffsetNotTopAnchored + mBgPadding;
-        Assert.assertEquals("Incorrect popup x", expectedX, results[0]);
-        Assert.assertEquals("Incorrect popup y", expectedY, results[1]);
-    }
-
-    private int[] getPopupPosition(boolean isByPermanentButton, int rotation,
-            boolean isAnchorAtBottom, int layoutDirection) {
+    private int[] getPopupPosition(boolean isByPermanentButton, int rotation, int layoutDirection) {
         return AppMenu.getPopupPosition(mTempLocation, isByPermanentButton,
                 mNegativeSoftwareVerticalOffset, mNegativeSoftwareVerticalOffsetNotTopAnchored,
                 rotation, mAppRect, mBgPaddingRect, mAnchorView, mPopupWidth, mPopupHeight,
-                isAnchorAtBottom, layoutDirection);
+                layoutDirection);
     }
 }

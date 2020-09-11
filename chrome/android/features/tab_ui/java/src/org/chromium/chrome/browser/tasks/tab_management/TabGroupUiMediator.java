@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils.ReasonToShow;
 import org.chromium.chrome.browser.tasks.tab_groups.EmptyTabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -468,11 +467,6 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
                 ConditionalTabStripUtils.updateLastShownTimeStamp();
             }
         }
-        boolean isDuetTabStripIntegrationEnabled =
-                TabUiFeatureUtilities.isDuetTabStripIntegrationAndroidEnabled()
-                && BottomToolbarConfiguration.isBottomToolbarEnabled();
-        assert (mVisibilityController == null) == isDuetTabStripIntegrationEnabled;
-        if (isDuetTabStripIntegrationEnabled) return;
         if (mIsTabGroupUiVisible) {
             // Post to make sure that the recyclerView already knows how many visible items it has.
             // This is to make sure that we can scroll to a state where the selected tab is in the

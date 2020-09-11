@@ -27,7 +27,6 @@ import org.chromium.ui.base.PageTransition;
  */
 public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<Tab> mTabSupplier;
-    private final Supplier<Boolean> mBottomToolbarVisibilityPredicate;
     private final Supplier<Boolean> mOverrideHomePageSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
@@ -36,8 +35,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     /**
      *
      * @param tabSupplier Supplier for the currently active tab.
-     * @param bottomToolbarVisibilityPredicate Predicate that tells us if the bottom toolbar is
-     *         visible.
      * @param overrideHomePageSupplier Supplier that returns true if it overrides the default
      *         homepage behavior.
      * @param profileSupplier Supplier for the current profile.
@@ -46,12 +43,10 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      *         perform the action or for openHompage.
      */
     public ToolbarTabControllerImpl(Supplier<Tab> tabSupplier,
-            Supplier<Boolean> bottomToolbarVisibilityPredicate,
             Supplier<Boolean> overrideHomePageSupplier, Supplier<Profile> profileSupplier,
             Supplier<BottomControlsCoordinator> bottomControlsCoordinatorSupplier,
             Runnable onSuccessRunnable) {
         mTabSupplier = tabSupplier;
-        mBottomToolbarVisibilityPredicate = bottomToolbarVisibilityPredicate;
         mOverrideHomePageSupplier = overrideHomePageSupplier;
         mProfileSupplier = profileSupplier;
         mBottomControlsCoordinatorSupplier = bottomControlsCoordinatorSupplier;
@@ -103,16 +98,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
-
-        if (mBottomToolbarVisibilityPredicate.get()) {
-            RecordUserAction.record("MobileBottomToolbarHomeButton");
-        } else {
-            RecordUserAction.record("MobileTopToolbarHomeButton");
-        }
-
-        if (mOverrideHomePageSupplier.get()) {
-            return;
-        }
+        if (mOverrideHomePageSupplier.get()) return;
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return;
         String homePageUrl = HomepageManager.getHomepageUri();

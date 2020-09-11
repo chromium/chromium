@@ -202,11 +202,6 @@ public abstract class ToolbarLayout
     }
 
     /**
-     * @param isVisible Whether the bottom toolbar is visible.
-     */
-    void onBottomToolbarVisibilityChanged(boolean isVisible) {}
-
-    /**
      * TODO comment
      */
     @CallSuper

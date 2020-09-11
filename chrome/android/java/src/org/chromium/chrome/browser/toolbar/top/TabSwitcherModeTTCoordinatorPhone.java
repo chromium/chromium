@@ -41,7 +41,6 @@ class TabSwitcherModeTTCoordinatorPhone {
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
     private boolean mAccessibilityEnabled;
-    private boolean mIsBottomToolbarVisible;
 
     private TabSwitcherModeTTPhone mTabSwitcherModeToolbar;
 
@@ -184,16 +183,6 @@ class TabSwitcherModeTTCoordinatorPhone {
     /**
      * @param isVisible Whether the bottom toolbar is visible.
      */
-    void onBottomToolbarVisibilityChanged(boolean isVisible) {
-        if (mIsBottomToolbarVisible == isVisible) {
-            return;
-        }
-        mIsBottomToolbarVisible = isVisible;
-        if (mTabSwitcherModeToolbar != null) {
-            mTabSwitcherModeToolbar.onBottomToolbarVisibilityChanged(isVisible);
-        }
-    }
-
     private void initializeTabSwitcherToolbar() {
         mTabSwitcherModeToolbar = (TabSwitcherModeTTPhone) mTabSwitcherToolbarStub.inflate();
 
@@ -248,7 +237,6 @@ class TabSwitcherModeTTCoordinatorPhone {
         if (mAccessibilityEnabled) {
             mTabSwitcherModeToolbar.onAccessibilityStatusChanged(mAccessibilityEnabled);
         }
-        mTabSwitcherModeToolbar.onBottomToolbarVisibilityChanged(mIsBottomToolbarVisible);
     }
 
     private boolean isNewTabVariationEnabled() {

@@ -11,7 +11,6 @@ import android.os.Message;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -171,12 +170,6 @@ public class TabStateBrowserControlsVisibilityDelegate
     }
 
     private boolean enableHidingBrowserControls() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DONT_AUTO_HIDE_BROWSER_CONTROLS)
-                && mTab.getActivity() != null && mTab.getActivity().getToolbarManager() != null
-                && mTab.getActivity().getToolbarManager().getBottomToolbarCoordinator() != null) {
-            return false;
-        }
-
         WebContents webContents = mTab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
 

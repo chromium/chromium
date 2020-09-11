@@ -159,8 +159,6 @@ class StartSurfaceToolbarMediator {
         updateNewTabButtonVisibility();
     }
 
-    void onBottomToolbarVisibilityChanged(boolean isVisible) {}
-
     void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
         assert overviewModeBehavior != null;
         assert mOverviewModeBehavior

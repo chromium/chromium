@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -247,7 +246,7 @@ public class HomeButton extends ChromeImageButton
     }
 
     private void updateContextMenuListener() {
-        if (!BottomToolbarConfiguration.isBottomToolbarEnabled() && !isManagedByPolicy()) {
+        if (!isManagedByPolicy()) {
             setOnCreateContextMenuListener(this);
         } else {
             setOnCreateContextMenuListener(null);

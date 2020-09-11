@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -222,13 +221,6 @@ public class TabListCoordinator implements Destroyable {
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-        if (mMode == TabListMode.STRIP
-                && TabUiFeatureUtilities.isDuetTabStripIntegrationAndroidEnabled()
-                && BottomToolbarConfiguration.isBottomToolbarEnabled()) {
-            // TODO(crbug.com/1045944): Disable item animation for now for Duet-TabStrip Integration
-            //  to avoid crash.
-            mRecyclerView.setItemAnimator(null);
-        }
         if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
 
         // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or

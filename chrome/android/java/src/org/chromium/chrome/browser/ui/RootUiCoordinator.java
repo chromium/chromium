@@ -492,27 +492,20 @@ public class RootUiCoordinator
                 mOmniboxFocusStateSupplier.set(hasFocus);
             };
 
-            ObservableSupplierImpl<Boolean> bottomToolbarVisibilitySupplier =
-                    new ObservableSupplierImpl<>();
-            bottomToolbarVisibilitySupplier.set(false);
-
-            mIdentityDiscController =
-                    new IdentityDiscController(mActivity, mActivity.getLifecycleDispatcher(),
-                            bottomToolbarVisibilitySupplier, mProfileSupplier);
+            mIdentityDiscController = new IdentityDiscController(
+                    mActivity, mActivity.getLifecycleDispatcher(), mProfileSupplier);
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     mActivityTabProvider, mShareDelegateSupplier, new ShareUtils(),
-                    bottomToolbarVisibilitySupplier, mActivity.getLifecycleDispatcher(),
-                    mActivity.getModalDialogManager());
+                    mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager());
             mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController);
             mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder().getInvalidator(), urlFocusChangedCallback,
                     mTabThemeColorProvider, mTabObscuringHandler, mShareDelegateSupplier,
-                    bottomToolbarVisibilitySupplier, mIdentityDiscController, mButtonDataProviders,
-                    mActivityTabProvider, mScrimCoordinator, mActionModeControllerCallback,
-                    mFindToolbarManager, mProfileSupplier, mBookmarkBridgeSupplier,
-                    mCanAnimateBrowserControls, mOverviewModeBehaviorSupplier, mAppMenuSupplier,
-                    shouldShowMenuUpdateBadge());
+                    mIdentityDiscController, mButtonDataProviders, mActivityTabProvider,
+                    mScrimCoordinator, mActionModeControllerCallback, mFindToolbarManager,
+                    mProfileSupplier, mBookmarkBridgeSupplier, mCanAnimateBrowserControls,
+                    mOverviewModeBehaviorSupplier, mAppMenuSupplier, shouldShowMenuUpdateBadge());
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

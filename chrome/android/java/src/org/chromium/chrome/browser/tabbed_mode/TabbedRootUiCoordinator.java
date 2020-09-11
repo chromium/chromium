@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -248,10 +247,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
     protected void initializeToolbar() {
         super.initializeToolbar();
         if (!mActivity.isTablet()
-                && (BottomToolbarConfiguration.isBottomToolbarEnabled()
-                        || TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                && (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
                         || TabUiFeatureUtilities.isConditionalTabStripEnabled())) {
-            getToolbarManager().enableBottomToolbar();
+            getToolbarManager().enableBottomControls();
         }
     }
 

@@ -26,7 +26,6 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     private final AppMenuHandlerImpl mMenuHandler;
     private Runnable mOnAppMenuShownListener;
     private boolean mIsTouchEventsBeingProcessed;
-    private boolean mMenuShowsFromBottom;
     private Runnable mOnClickRunnable;
 
     /**
@@ -37,11 +36,6 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     }
 
     // AppMenuButtonHelper implementation.
-
-    @Override
-    public void setMenuShowsFromBottom(boolean showsFromBottom) {
-        mMenuShowsFromBottom = showsFromBottom;
-    }
 
     @Override
     public void setOnAppMenuShownListener(Runnable onAppMenuShownListener) {
@@ -125,8 +119,7 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
      * @return Whether or not if the app menu is successfully shown.
      */
     private boolean showAppMenu(View view, boolean startDragging) {
-        if (!mMenuHandler.isAppMenuShowing()
-                && mMenuHandler.showAppMenu(view, startDragging, mMenuShowsFromBottom)) {
+        if (!mMenuHandler.isAppMenuShowing() && mMenuHandler.showAppMenu(view, startDragging)) {
             // Initial start dragging can be canceled in case if it was just single tap.
             // So we only record non-dragging here, and will deal with those dragging cases in
             // AppMenuDragHelper class.

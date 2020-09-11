@@ -609,15 +609,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     return;
                 }
 
-                if (getToolbarManager().isBottomToolbarVisible()) {
-                    RecordUserAction.record("MobileBottomToolbarTabSwitcherButtonInBrowsingView");
-                } else {
-                    Layout activeLayout = mLayoutManager.getActiveLayout();
-                    if (activeLayout instanceof StackLayout && !activeLayout.isHiding()) {
-                        RecordUserAction.record("MobileToolbarStackViewButtonInStackView");
-                    } else if (!isInOverviewMode()) {
-                        RecordUserAction.record("MobileToolbarStackViewButtonInBrowsingView");
-                    }
+                Layout activeLayout = mLayoutManager.getActiveLayout();
+                if (activeLayout instanceof StackLayout && !activeLayout.isHiding()) {
+                    RecordUserAction.record("MobileToolbarStackViewButtonInStackView");
+                } else if (!isInOverviewMode()) {
+                    RecordUserAction.record("MobileToolbarStackViewButtonInBrowsingView");
                 }
 
                 if (isInOverviewMode() && !StartSurfaceConfiguration.isStartSurfaceEnabled()) {
@@ -637,11 +633,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 } else {
                     RecordUserAction.record("MobileToolbarStackViewNewTab");
                 }
-                if (getToolbarManager().isBottomToolbarVisible()) {
-                    RecordUserAction.record("MobileBottomToolbarNewTabButton");
-                } else {
-                    RecordUserAction.record("MobileTopToolbarNewTabButton");
-                }
+                RecordUserAction.record("MobileTopToolbarNewTabButton");
 
                 RecordUserAction.record("MobileNewTabOpened");
             };
@@ -1474,11 +1466,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
             dialogVisibilitySupplier = () -> {
                 assert mStartSurface != null;
-                assert getToolbarManager().getBottomToolbarCoordinator() != null;
+                assert getToolbarManager().getBottomControlsCoordinator() != null;
                 // Return true if dialog from either tab switcher or tab strip is visible.
                 Supplier<Boolean> tabGroupUiDialogVisibilitySupplier =
                         getToolbarManager()
-                                .getBottomToolbarCoordinator()
+                                .getBottomControlsCoordinator()
                                 .getTabGridDialogVisibilitySupplier();
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
                         mStartSurface.getTabGridDialogVisibilitySupplier();

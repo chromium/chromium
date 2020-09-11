@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -62,7 +60,6 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     private ColorStateList mDarkIconTint;
 
     private boolean mIsIncognito;
-    private boolean mShouldShowNewTabButton;
     private boolean mShouldShowNewTabVariation;
 
     private ObjectAnimator mVisiblityAnimator;
@@ -89,6 +86,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         mNewTabViewButton.setOnClickListener(this);
 
         updateTabSwitchingElements(shouldShowIncognitoToggle());
+        updateNewTabButtonVisibility();
     }
 
     @Override
@@ -276,31 +274,15 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
         // Show new tab variation when there are no incognito tabs.
         assert mIncognitoToggleTabLayout != null;
         mIncognitoToggleTabLayout.setVisibility(mShouldShowNewTabVariation ? GONE : VISIBLE);
-        setNewTabButtonVisibility(mShouldShowNewTabButton);
+        updateNewTabButtonVisibility();
     }
 
-    /**
-     * @param isVisible Whether the bottom toolbar is visible.
-     */
-    void onBottomToolbarVisibilityChanged(boolean isVisible) {
-        mShouldShowNewTabButton = !isVisible
-                || (BottomToolbarConfiguration.isBottomToolbarEnabled()
-                        && !BottomToolbarVariationManager.isNewTabButtonOnBottom());
-        setNewTabButtonVisibility(mShouldShowNewTabButton);
-        // show tab switcher button on the top in landscape mode.
-        if (BottomToolbarVariationManager.isTabSwitcherOnBottom() && !shouldShowIncognitoToggle()) {
-            mToggleTabStackButton.setVisibility(isVisible ? GONE : VISIBLE);
-        }
-    }
-
-    private void setNewTabButtonVisibility(boolean isButtonVisible) {
+    private void updateNewTabButtonVisibility() {
         if (mNewTabViewButton != null) {
-            mNewTabViewButton.setVisibility(
-                    mShouldShowNewTabVariation && isButtonVisible ? VISIBLE : GONE);
+            mNewTabViewButton.setVisibility(mShouldShowNewTabVariation ? VISIBLE : GONE);
         }
         if (mNewTabImageButton != null) {
-            mNewTabImageButton.setVisibility(
-                    !mShouldShowNewTabVariation && isButtonVisible ? VISIBLE : GONE);
+            mNewTabImageButton.setVisibility(!mShouldShowNewTabVariation ? VISIBLE : GONE);
         }
     }
 

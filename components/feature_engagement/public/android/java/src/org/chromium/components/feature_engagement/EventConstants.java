@@ -133,9 +133,6 @@ public final class EventConstants {
     public static final String PARTNER_HOME_PAGE_BUTTON_PRESSED =
             "partner_home_page_button_pressed";
 
-    /** The user used a button in the bottom toolbar. */
-    public static final String CHROME_DUET_USED_BOTTOM_TOOLBAR = "chrome_duet_used_bottom_toolbar";
-
     /** The homepage button in the toolbar was clicked. */
     public static final String HOMEPAGE_BUTTON_CLICKED = "homepage_button_clicked";
 

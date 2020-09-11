@@ -44,10 +44,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         mAppMenuDelegate = appMenuDelegate;
     }
 
-    private boolean isMenuButtonInBottomToolbar() {
-        return mToolbarManager != null && mToolbarManager.isMenuFromBottom();
-    }
-
     private boolean shouldShowDataSaverMenuItem() {
         return (mOverviewModeBehavior == null || !mOverviewModeBehavior.overviewVisible())
                 && DataReductionProxySettings.getInstance().shouldUseDataReductionMainMenuItem();
@@ -55,9 +51,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     public int getFooterResourceId() {
-        if (isMenuButtonInBottomToolbar()) {
-            return this.shouldShowPageMenu() ? R.layout.icon_row_menu_footer : 0;
-        }
         return shouldShowDataSaverMenuItem() ? R.layout.data_reduction_main_menu_item : 0;
     }
 
@@ -72,9 +65,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     public int getHeaderResourceId() {
-        if (isMenuButtonInBottomToolbar()) {
-            return shouldShowDataSaverMenuItem() ? R.layout.data_reduction_main_menu_item : 0;
-        }
         return 0;
     }
 
@@ -87,24 +77,10 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @Override
     public boolean shouldShowFooter(int maxMenuHeight) {
-        if (isMenuButtonInBottomToolbar()) return true;
         if (shouldShowDataSaverMenuItem()) {
             return canShowDataReductionItem(maxMenuHeight);
         }
         return super.shouldShowFooter(maxMenuHeight);
-    }
-
-    @Override
-    public boolean shouldShowHeader(int maxMenuHeight) {
-        if (!isMenuButtonInBottomToolbar()) {
-            return super.shouldShowHeader(maxMenuHeight);
-        }
-
-        if (DataReductionProxySettings.getInstance().shouldUseDataReductionMainMenuItem()) {
-            return canShowDataReductionItem(maxMenuHeight);
-        }
-
-        return super.shouldShowHeader(maxMenuHeight);
     }
 
     @Override

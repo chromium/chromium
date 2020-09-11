@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -58,7 +57,6 @@ public class BottomControlsCoordinator {
     private final BottomControlsMediator mMediator;
 
     /** The coordinator for the split toolbar's bottom toolbar component. */
-    private @Nullable BottomToolbarCoordinator mBottomToolbarCoordinator;
     private @Nullable TabGroupUi mTabGroupUi;
 
     /**
@@ -68,7 +66,6 @@ public class BottomControlsCoordinator {
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
      * @param stub The bottom controls {@link ViewStub} to inflate.
      * @param tabProvider
-     * @param tabSwitcherLongclickListener
      * @param themeColorProvider The {@link ThemeColorProvider} for the bottom toolbar.
      * @param shareDelegateSupplier The supplier for the {@link ShareDelegate} the bottom controls
      *         should use to share content.
@@ -83,7 +80,7 @@ public class BottomControlsCoordinator {
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
     public BottomControlsCoordinator(BrowserControlsSizer controlsSizer,
             FullscreenManager fullscreenManager, ViewStub stub, ActivityTabProvider tabProvider,
-            OnLongClickListener tabSwitcherLongclickListener, ThemeColorProvider themeColorProvider,
+            ThemeColorProvider themeColorProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             ObservableSupplier<AppMenuButtonHelper> menuButtonHelperSupplier,
             Supplier<Boolean> showStartSurfaceCallable, Runnable openHomepageAction,
@@ -98,39 +95,22 @@ public class BottomControlsCoordinator {
         PropertyModelChangeProcessor.create(
                 model, new ViewHolder(root), BottomControlsViewBinder::bind);
 
-        int bottomToolbarHeightId;
+        int bottomControlsHeightId = R.dimen.bottom_controls_height;
 
-        if (BottomToolbarConfiguration.isLabeledBottomToolbarEnabled()) {
-            bottomToolbarHeightId = R.dimen.labeled_bottom_toolbar_height;
-        } else {
-            bottomToolbarHeightId = R.dimen.bottom_toolbar_height;
-        }
-
-        View toolbar = root.findViewById(R.id.bottom_container_slot);
-        ViewGroup.LayoutParams params = toolbar.getLayoutParams();
-        params.height = root.getResources().getDimensionPixelOffset(bottomToolbarHeightId);
+        View container = root.findViewById(R.id.bottom_container_slot);
+        ViewGroup.LayoutParams params = container.getLayoutParams();
+        params.height = root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
         mMediator = new BottomControlsMediator(model, controlsSizer, fullscreenManager,
-                root.getResources().getDimensionPixelOffset(bottomToolbarHeightId));
+                root.getResources().getDimensionPixelOffset(bottomControlsHeightId));
 
-        if ((TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
-                    && !(TabUiFeatureUtilities.isDuetTabStripIntegrationAndroidEnabled()
-                            && BottomToolbarConfiguration.isBottomToolbarEnabled()))
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
                 || TabUiFeatureUtilities.isConditionalTabStripEnabled()) {
             mTabGroupUi = TabManagementModuleProvider.getDelegate().createTabGroupUi(
                     root.findViewById(R.id.bottom_container_slot), themeColorProvider,
                     scrimCoordinator);
-        } else {
-            mBottomToolbarCoordinator = new BottomToolbarCoordinator(
-                    root.findViewById(R.id.bottom_toolbar_stub), tabProvider,
-                    tabSwitcherLongclickListener, themeColorProvider, shareDelegateSupplier,
-                    showStartSurfaceCallable, openHomepageAction, setUrlBarFocusAction,
-                    overviewModeBehaviorSupplier, menuButtonHelperSupplier);
         }
-
-        Toast.setGlobalExtraYOffset(root.getResources().getDimensionPixelSize(
-                BottomToolbarConfiguration.isLabeledBottomToolbarEnabled()
-                        ? R.dimen.labeled_bottom_toolbar_height
-                        : R.dimen.bottom_toolbar_height));
+        Toast.setGlobalExtraYOffset(
+                root.getResources().getDimensionPixelSize(bottomControlsHeightId));
     }
 
     /**
@@ -161,11 +141,6 @@ public class BottomControlsCoordinator {
         mMediator.setResourceManager(resourceManager);
         mMediator.setWindowAndroid(windowAndroid);
 
-        if (mBottomToolbarCoordinator != null) {
-            mBottomToolbarCoordinator.initializeWithNative(tabSwitcherListener, newTabClickListener,
-                    tabCountProvider, incognitoStateProvider, topToolbarRoot, closeAllTabsAction);
-        }
-
         if (mTabGroupUi != null) {
             mTabGroupUi.initializeWithNative(chromeActivity, mMediator::setBottomControlsVisible);
         }
@@ -176,9 +151,6 @@ public class BottomControlsCoordinator {
      */
     public void setBottomControlsVisible(boolean isVisible) {
         mMediator.setBottomControlsVisible(isVisible);
-        if (mBottomToolbarCoordinator != null) {
-            mBottomToolbarCoordinator.setBottomToolbarVisible(isVisible);
-        }
     }
 
     /**
@@ -193,7 +165,6 @@ public class BottomControlsCoordinator {
      * Clean up any state when the bottom controls component is destroyed.
      */
     public void destroy() {
-        if (mBottomToolbarCoordinator != null) mBottomToolbarCoordinator.destroy();
         if (mTabGroupUi != null) mTabGroupUi.destroy();
         mMediator.destroy();
     }

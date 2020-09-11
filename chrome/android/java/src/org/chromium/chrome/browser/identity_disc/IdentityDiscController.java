@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarVariationManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -67,11 +65,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final ObservableSupplier<Boolean> mBottomToolbarVisibilitySupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
-
-    private @Nullable Callback<Boolean> mBottomToolbarVisibilityObserver;
 
     // We observe IdentityManager to receive primary account state change notifications.
     private IdentityManager mIdentityManager;
@@ -95,16 +90,12 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      * @param context The Context for retrieving resources, launching preference activiy, etc.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g. native
      *         initialization completing.
-     * @param bottomToolbarVisibilitySupplier Supplier that queries and updates the visibility of
-     *         the bottom toolbar.
      */
     public IdentityDiscController(Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier,
             ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
-        mBottomToolbarVisibilitySupplier = bottomToolbarVisibilitySupplier;
         mProfileSupplier = profileSupplier;
         mActivityLifecycleDispatcher.register(this);
 
@@ -133,10 +124,6 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mNativeIsInitialized = true;
 
         mProfileSupplier.addObserver(mProfileSupplierObserver);
-
-        mBottomToolbarVisibilityObserver =
-                (bottomToolbarIsVisible) -> notifyObservers(getSyncAccountInfo() != null);
-        mBottomToolbarVisibilitySupplier.addObserver(mBottomToolbarVisibilityObserver);
     }
 
     @Override
@@ -157,7 +144,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             return mButtonData;
         }
 
-        calculateButtonData(mBottomToolbarVisibilitySupplier.get());
+        calculateButtonData();
         return mButtonData;
     }
 
@@ -167,11 +154,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             return mButtonData;
         }
 
-        calculateButtonData(false);
+        calculateButtonData();
         return mButtonData;
     }
 
-    private void calculateButtonData(boolean bottomToolbarVisible) {
+    private void calculateButtonData() {
         if (!mNativeIsInitialized) {
             assert !mButtonData.canShow;
             return;
@@ -179,12 +166,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
         String email = CoreAccountInfo.getEmailFrom(getSyncAccountInfo());
         boolean canShowIdentityDisc = email != null;
-        boolean menuBottomOnBottom =
-                bottomToolbarVisible && BottomToolbarVariationManager.isMenuButtonOnBottom();
 
-        mState = !canShowIdentityDisc
-                ? IdentityDiscState.NONE
-                : menuBottomOnBottom ? IdentityDiscState.LARGE : IdentityDiscState.SMALL;
+        mState = !canShowIdentityDisc ? IdentityDiscState.NONE : IdentityDiscState.SMALL;
         ensureProfileDataCache(email, mState);
 
         if (mState != IdentityDiscState.NONE) {
@@ -286,11 +269,6 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         if (mIdentityManager != null) {
             mIdentityManager.removeObserver(this);
             mIdentityManager = null;
-        }
-
-        if (mBottomToolbarVisibilityObserver != null) {
-            mBottomToolbarVisibilitySupplier.removeObserver(mBottomToolbarVisibilityObserver);
-            mBottomToolbarVisibilityObserver = null;
         }
 
         if (mNativeIsInitialized) {

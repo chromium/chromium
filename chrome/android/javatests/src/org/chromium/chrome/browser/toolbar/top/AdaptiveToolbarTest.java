@@ -64,8 +64,7 @@ public class AdaptiveToolbarTest {
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
-    private void setupFlagsAndLaunchActivity(
-            boolean isBottomToolbarEnabled, boolean isGridTabSwitcherEnabled) {
+    private void setupFlagsAndLaunchActivity(boolean isGridTabSwitcherEnabled) {
         CachedFeatureFlags.setForTesting(
                 ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, isGridTabSwitcherEnabled);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -78,9 +77,9 @@ public class AdaptiveToolbarTest {
     // clang-format off
     @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID +
             "<Study", "force-fieldtrials=Study/Group", NO_NEW_TAB_VARIATION_PARAMS})
-    public void testTopToolbar_WithGTS_WithoutBottomToolbar() throws InterruptedException {
+    public void testTopToolbar_WithGTS() throws InterruptedException {
         // clang-format on
-        setupFlagsAndLaunchActivity(false, true);
+        setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof StartSurfaceLayout);
@@ -96,7 +95,6 @@ public class AdaptiveToolbarTest {
         checkToolbarButtonVisibility(TAB_SWITCHER_TOOLBAR, TAB_SWITCHER_TOOLBAR_NEW_TAB, true);
     }
 
-
     @Test
     @MediumTest
     // clang-format off
@@ -104,7 +102,7 @@ public class AdaptiveToolbarTest {
             "<Study", "force-fieldtrials=Study/Group", NEW_TAB_VARIATION_PARAMS})
     public void testTopToolbar_NewTabVariation() {
         // clang-format on
-        setupFlagsAndLaunchActivity(false, true);
+        setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof StartSurfaceLayout);
@@ -132,7 +130,7 @@ public class AdaptiveToolbarTest {
     public void testTopToolbar_NewTabVariation_IncognitoDisabled() {
         // clang-format on
         IncognitoUtils.setEnabledForTesting(false);
-        setupFlagsAndLaunchActivity(false, true);
+        setupFlagsAndLaunchActivity(true);
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Layout layout = cta.getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof StartSurfaceLayout);

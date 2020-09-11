@@ -27,17 +27,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/bottom_container_slot" >
-
-            <ViewStub
-                android:id="@+id/bottom_toolbar_stub"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="start|bottom"
-                android:inflatedId="@+id/bottom_toolbar"
-                android:layout="@layout/bottom_toolbar" />
-
-        </FrameLayout>
+            android:id="@+id/bottom_container_slot" />
 
     </LinearLayout>
 

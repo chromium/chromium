@@ -13091,6 +13091,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileBottomToolbarHomeButton">
+  <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-android-apps@chromium.org</owner>
   <description>
@@ -15445,6 +15446,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileTopToolbarHomeButton">
+  <obsolete>Removed as of 2020/09/09.</obsolete>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-android-apps@chromium.org</owner>
   <description>The user tapped on the top toolbar's home button.</description>

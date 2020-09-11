@@ -132,13 +132,6 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether the tab strip and duet integration feature is enabled and available for use.
-     */
-    public static boolean isDuetTabStripIntegrationAndroidEnabled() {
-        return false;
-    }
-
-    /**
      * @return Whether the tab group continuation feature is enabled and available for use.
      */
     public static boolean isTabGroupsAndroidContinuationEnabled() {

@@ -57,8 +57,6 @@ public class ToolbarTabControllerImplTest {
     @Mock
     private Tab mTab;
     @Mock
-    private Supplier<Boolean> mBottomToolbarVisibilitySupplier;
-    @Mock
     private Supplier<Boolean> mOverrideHomePageSupplier;
     @Mock
     private Supplier<Profile> mProfileSupplier;
@@ -77,12 +75,11 @@ public class ToolbarTabControllerImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mTab).when(mTabSupplier).get();
-        doReturn(false).when(mBottomToolbarVisibilitySupplier).get();
         doReturn(false).when(mOverrideHomePageSupplier).get();
         TrackerFactory.setTrackerForTests(mTracker);
-        mToolbarTabController = new ToolbarTabControllerImpl(mTabSupplier,
-                mBottomToolbarVisibilitySupplier, mOverrideHomePageSupplier, mProfileSupplier,
-                mBottomControlsCoordinatorSupplier, mRunnable);
+        mToolbarTabController =
+                new ToolbarTabControllerImpl(mTabSupplier, mOverrideHomePageSupplier,
+                        mProfileSupplier, mBottomControlsCoordinatorSupplier, mRunnable);
     }
 
     @Test

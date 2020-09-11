@@ -605,19 +605,6 @@ public class TopToolbarCoordinator implements Toolbar {
         return mToolbarLayout.getLocationBar();
     }
 
-    /**
-     * @param isVisible Whether the bottom toolbar is visible.
-     */
-    public void onBottomToolbarVisibilityChanged(boolean isVisible) {
-        mToolbarLayout.onBottomToolbarVisibilityChanged(isVisible);
-        if (mTabSwitcherModeCoordinatorPhone != null) {
-            mTabSwitcherModeCoordinatorPhone.onBottomToolbarVisibilityChanged(isVisible);
-        } else if (mStartSurfaceToolbarCoordinator != null) {
-            mStartSurfaceToolbarCoordinator.onBottomToolbarVisibilityChanged(isVisible);
-        }
-        mOptionalButtonController.updateButtonVisibility();
-    }
-
     @Override
     public int getHeight() {
         return mToolbarLayout.getHeight();

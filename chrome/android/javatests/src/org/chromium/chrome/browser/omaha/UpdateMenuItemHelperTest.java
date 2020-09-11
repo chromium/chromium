@@ -288,8 +288,7 @@ public class UpdateMenuItemHelperTest {
     private void showAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(
-                    mActivityTestRule.getAppMenuCoordinator(), null, false, false);
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
         mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
     }
@@ -324,4 +323,3 @@ public class UpdateMenuItemHelperTest {
         });
     }
 }
-

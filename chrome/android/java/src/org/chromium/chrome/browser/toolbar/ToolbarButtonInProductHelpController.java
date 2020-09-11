@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -191,8 +190,7 @@ public class ToolbarButtonInProductHelpController
 
     // Private methods.
     private static int getDataReductionMenuItemHighlight() {
-        return BottomToolbarConfiguration.isBottomToolbarEnabled() ? R.id.data_reduction_menu_item
-                                                                   : R.id.app_menu_footer;
+        return R.id.app_menu_footer;
     }
 
     // Attempts to show an IPH text bubble for data saver detail.

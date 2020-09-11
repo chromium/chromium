@@ -363,11 +363,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED = "adaptive_toolbar_enabled";
 
     /**
-     * Whether or not the bottom toolbar is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_BOTTOM_TOOLBAR_ENABLED = "bottom_toolbar_enabled";
-    /**
      * Whether or not command line on non-rooted devices is enabled.
      * Default value is false.
      */
@@ -390,12 +385,6 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_IMMERSIVE_UI_MODE_ENABLED = "immersive_ui_mode_enabled";
     public static final String FLAGS_CACHED_INTEREST_FEED_CONTENT_SUGGESTIONS =
             "interest_feed_content_suggestions";
-    /**
-     * Whether or not the labeled bottom toolbar is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_LABELED_BOTTOM_TOOLBAR_ENABLED =
-            "labeled_bottom_toolbar_enabled";
     /**
      * Whether warming up network service is enabled.
      * Default value is false.
@@ -539,11 +528,6 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix PROMO_IS_DISMISSED =
             new KeyPrefix("Chrome.PromoCard.IsDismissed.*");
     public static final KeyPrefix PROMO_TIMES_SEEN = new KeyPrefix("Chrome.PromoCard.TimesSeen.*");
-
-    /**
-     * Key to cache the enabled bottom toolbar parameter.
-     */
-    public static final String VARIATION_CACHED_BOTTOM_TOOLBAR = "bottom_toolbar_variation";
 
     /**
      * Whether the promotion for data reduction has been skipped on first invocation.

@@ -15,9 +15,4 @@ public interface MenuButtonDelegate {
      */
     @Nullable
     View getMenuButtonView();
-
-    /**
-     * @return Whether the menu is shown from the bottom of the screen.
-     */
-    boolean isMenuFromBottom();
 }

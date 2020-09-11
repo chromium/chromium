@@ -373,7 +373,7 @@ public class TabbedAppMenuTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 ()
                         -> AppMenuTestSupport.showAppMenu(
-                                mActivityTestRule.getAppMenuCoordinator(), null, false, false));
+                                mActivityTestRule.getAppMenuCoordinator(), null, false));
         CriteriaHelper.pollInstrumentationThread(
                 () -> mAppMenuHandler.isAppMenuShowing(), "AppMenu did not show");
     }
