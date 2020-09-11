@@ -10,7 +10,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "ui/display/display_list.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/public/platform_screen.h"
 
@@ -65,6 +67,9 @@ class WaylandScreen : public PlatformScreen {
   display::DisplayList display_list_;
 
   base::ObserverList<display::DisplayObserver> observers_;
+
+  base::Optional<gfx::BufferFormat> image_format_alpha_;
+  base::Optional<gfx::BufferFormat> image_format_no_alpha_;
 
   base::WeakPtrFactory<WaylandScreen> weak_factory_;
 };
