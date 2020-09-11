@@ -31,12 +31,6 @@ namespace password_manager {
 
 namespace {
 
-// Controls whether we should delete the sync metadata when they aren't
-// readable.
-const base::Feature kDeletePasswordSyncMetadataWhenNoReadable{
-    "DeletePasswordSyncMetadataWhenNoReadable",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Error values for reading sync metadata.
 // Used in metrics: "PasswordManager.SyncMetadataReadError". These values
 // are persisted to logs. Entries should not be renumbered and numeric values
@@ -256,17 +250,10 @@ PasswordSyncBridge::PasswordSyncBridge(
   } else {
     batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
     if (!batch) {
-      if (base::FeatureList::IsEnabled(
-              kDeletePasswordSyncMetadataWhenNoReadable)) {
-        // If the metadata cannot be read, it's mostly a persistent error, and
-        // hence we should drop the metadata to go throw the initial sync flow.
-        password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
-        batch = std::make_unique<syncer::MetadataBatch>();
-      } else {
-        this->change_processor()->ReportError(
-            {FROM_HERE,
-             "Failed reading passwords metadata from password store."});
-      }
+      // If the metadata cannot be read, it's mostly a persistent error, and
+      // hence we should drop the metadata to go throw the initial sync flow.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
     }
   }
