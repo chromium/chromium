@@ -258,6 +258,13 @@ UNTRUSTED_TEST('UntrustedDiagnosticsRequestRunFPAccuracyRoutine', async () => {
   assertDeepEquals(response, {id: 123456789, status: 'ready'});
 });
 
+// Tests that runNVMEWearLevelRoutine returns the correct Object.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine', async () => {
+      const response = await chromeos.diagnostics.runNvmeWearLevelRoutine(25);
+      assertDeepEquals(response, {id: 123456789, status: 'ready'});
+    });
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {

@@ -420,6 +420,19 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService()
         .runFloatingPointAccuracyRoutine(request.duration);
   };
+
+  /**
+   * Runs NVMe wear level routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunNvmeWearLevelRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest} */
+        (message);
+    return await getOrCreateDiagnosticsService().runNvmeWearLevelRoutine(
+        request.wearLevelThreshold);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -740,6 +753,12 @@ untrustedMessagePipe.registerHandler(
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) =>
             diagnosticsProxy.handleRunFloatingPointAccuracyRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunNvmeWearLevelRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

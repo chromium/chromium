@@ -162,4 +162,18 @@ void DiagnosticsService::RunFloatingPointAccuracyRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunNvmeWearLevelRoutine(
+    uint32_t wear_level_threshold,
+    RunNvmeWearLevelRoutineCallback callback) {
+  GetService()->RunNvmeWearLevelRoutine(
+      wear_level_threshold,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunNvmeWearLevelRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

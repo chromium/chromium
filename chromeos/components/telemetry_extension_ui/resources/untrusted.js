@@ -222,6 +222,28 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests NVME wear level routine to be run.
+     * @param { !number } wearLevelThreshold
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runNvmeWearLevelRoutine(wearLevelThreshold) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest}
+           */
+          ({wearLevelThreshold: wearLevelThreshold});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

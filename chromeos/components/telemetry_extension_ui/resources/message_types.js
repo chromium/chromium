@@ -31,6 +31,8 @@ dpsl_internal.Message = {
   DIAGNOSTICS_RUN_CPU_STRESS_ROUTINE: 'DiagnosticsService.RunCpuStressRoutine',
   DIAGNOSTICS_RUN_FP_ACCURACY_ROUTINE:
       'DiagnosticsService.RunFloatingPointAccuraryRoutine',
+  DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE:
+      'DiagnosticsService.RunNvmeWearLevelRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -119,6 +121,13 @@ dpsl_internal.DiagnosticsRunCpuStressRoutineRequest;
  * @typedef {{ duration: !number }}
  */
 dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run NVME wear level routine.
+ * @typedef {{ wearLevelThreshold: !number }}
+ */
+dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine
