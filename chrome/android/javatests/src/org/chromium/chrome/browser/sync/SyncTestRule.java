@@ -214,8 +214,10 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      * @return the test account that is signed in.
      */
     public Account setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
-        Account account = addTestAccount();
-        signinAndEnableSyncInternal(account, false);
+        Account account =
+                mAccountManagerTestRule.addAndSignInTestAccount(/* profileSyncService= */ null);
+        enableUKM();
+        SyncTestUtil.waitForSyncTransportActive();
         return account;
     }
 
@@ -412,6 +414,10 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
         return null;
     }
 
+    /**
+     * TODO(https://crbug.com/1126814): Remove this method once all its usages are migrated.
+     */
+    @Deprecated
     private void signinAndEnableSyncInternal(final Account account, boolean setFirstSetupComplete) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             IdentityServicesProvider.get()
