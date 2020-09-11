@@ -689,12 +689,6 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   test::UDPSocketTestHelper helper(&socket_remote);
 
   mojom::UDPSocketOptionsPtr options = mojom::UDPSocketOptions::New();
-#if defined(OS_FUCHSIA)
-  // Fuchsia currently doesn't support automatic interface selection for
-  // multicast, so interface index needs to be set explicitly.
-  // See https://fuchsia.atlassian.net/browse/NET-195 .
-  options->multicast_interface = 1;
-#endif  // defined(OS_FUCHSIA)
   options->allow_address_sharing_for_multicast = true;
 
   net::IPAddress bind_ip_address;
