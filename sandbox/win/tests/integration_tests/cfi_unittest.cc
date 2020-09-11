@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -48,6 +49,30 @@ DWORD CALLBACK CopyProgressRoutine(LARGE_INTEGER total_file_size,
 }
 
 }  // namespace
+
+static jmp_buf buf;
+
+__declspec(noinline) void PerformLongJump() {
+  // Inlining is explicitly disabled for this function because it
+  // would eliminate CFG protections.
+  longjmp(buf, 1);
+}
+
+// Windows on Arm is affected by an LLD code-generation defect around longjmp.
+// This regression test checks that using setjmp/longjmp with CFG doesn't
+// crash the browser (libjpeg-turbo uses this pattern for error reporting).
+TEST(CFGSupportTests, LongJmp) {
+  // Initially, setjmp returns zero indicating that the PC etc has been saved in
+  // buf.
+  if (setjmp(buf)) {
+    // Test passes if execution flow reaches here.
+    EXPECT_TRUE(true);
+    return;
+  }
+  // Call another function to perform the longjmp.
+  PerformLongJump();
+  NOTREACHED();
+}
 
 // Make sure Microsoft binaries compiled with CFG cannot call indirect pointers
 // not listed in the loader config for this test binary.
