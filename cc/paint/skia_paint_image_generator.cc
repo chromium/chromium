@@ -36,13 +36,8 @@ bool SkiaPaintImageGenerator::onGetPixels(const SkImageInfo& info,
 bool SkiaPaintImageGenerator::onQueryYUVAInfo(
     const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
     SkYUVAPixmapInfo* yuva_pixmap_info) const {
-  if (!paint_image_generator_->QueryYUVA(supported_data_types,
-                                         yuva_pixmap_info)) {
-    return false;
-  }
-  // TODO(skbug.com/10632): Enable other bit depths now that they are supported
-  //  by SkImageGenerator. There's no known reason that this should not work.
-  return yuva_pixmap_info->dataType() == SkYUVAPixmapInfo::DataType::kUnorm8;
+  return paint_image_generator_->QueryYUVA(supported_data_types,
+                                           yuva_pixmap_info);
 }
 
 bool SkiaPaintImageGenerator::onGetYUVAPlanes(const SkYUVAPixmaps& planes) {
