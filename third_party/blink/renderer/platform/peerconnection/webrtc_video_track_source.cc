@@ -109,6 +109,11 @@ void WebRtcVideoTrackSource::SetCustomFrameAdaptationParamsForTesting(
   custom_frame_adaptation_params_for_testing_ = params;
 }
 
+void WebRtcVideoTrackSource::SetSinkWantsForTesting(
+    const rtc::VideoSinkWants& sink_wants) {
+  video_adapter()->OnSinkWants(sink_wants);
+}
+
 WebRtcVideoTrackSource::SourceState WebRtcVideoTrackSource::state() const {
   // TODO(nisse): What's supposed to change this state?
   return MediaSourceInterface::SourceState::kLive;
@@ -124,6 +129,13 @@ bool WebRtcVideoTrackSource::is_screencast() const {
 
 absl::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
   return needs_denoising_;
+}
+
+void WebRtcVideoTrackSource::SetFrameFeedback(
+    scoped_refptr<media::VideoFrame> frame) {
+  media::VideoFrameFeedback* feedback = frame->feedback();
+  feedback->max_pixels = video_adapter()->GetTargetPixels();
+  feedback->max_framerate_fps = video_adapter()->GetMaxFramerate();
 }
 
 void WebRtcVideoTrackSource::OnFrameCaptured(
@@ -143,6 +155,8 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     NOTREACHED();
     return;
   }
+
+  SetFrameFeedback(frame);
 
   // Compute what rectangular region has changed since the last frame
   // that we successfully delivered to the base class method

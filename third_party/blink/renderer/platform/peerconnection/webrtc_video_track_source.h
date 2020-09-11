@@ -41,6 +41,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   void SetCustomFrameAdaptationParamsForTesting(
       const FrameAdaptationParams& params);
 
+  void SetSinkWantsForTesting(const rtc::VideoSinkWants& sink_wants);
+
   SourceState state() const override;
 
   bool remote() const override;
@@ -52,6 +54,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   using webrtc::VideoTrackSourceInterface::RemoveSink;
 
  private:
+  void SetFrameFeedback(scoped_refptr<media::VideoFrame> frame);
+
   FrameAdaptationParams ComputeAdaptationParams(int width,
                                                 int height,
                                                 int64_t time_us);
