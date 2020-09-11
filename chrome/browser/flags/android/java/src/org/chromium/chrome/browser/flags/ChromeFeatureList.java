@@ -288,6 +288,7 @@ public abstract class ChromeFeatureList {
             "UseDownloadOfflineContentProvider";
     public static final String DOWNLOADS_LOCATION_CHANGE = "DownloadsLocationChange";
     public static final String DOWNLOAD_LATER = "DownloadLater";
+    public static final String EDIT_PASSWORDS_IN_SETTINGS = "EditPasswordsInSettings";
     public static final String EPHEMERAL_TAB_USING_BOTTOM_SHEET = "EphemeralTabUsingBottomSheet";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
     public static final String EXPLORE_SITES = "ExploreSites";
@@ -353,7 +354,6 @@ public abstract class ChromeFeatureList {
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
     public static final String PASSWORD_CHANGE_IN_SETTINGS = "PasswordChangeInSettings";
     public static final String PASSWORD_CHECK = "PasswordCheck";
-    public static final String PASSWORD_EDITING_ANDROID = "PasswordEditingAndroid";
     public static final String PASSWORD_MANAGER_ONBOARDING_ANDROID =
             "PasswordManagerOnboardingAndroid";
     public static final String PAY_WITH_GOOGLE_V1 = "PayWithGoogleV1";

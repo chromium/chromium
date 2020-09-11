@@ -271,7 +271,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "editPasswordsInSettings",
       base::FeatureList::IsEnabled(
-          password_manager::features::kEditPasswordsInDesktopSettings));
+          password_manager::features::kEditPasswordsInSettings));
 
   html_source->AddBoolean("showImportPasswords",
                           base::FeatureList::IsEnabled(

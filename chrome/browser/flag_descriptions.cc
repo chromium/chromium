@@ -93,6 +93,10 @@ const char kConversionMeasurementDebugModeDescription[] =
     "reporting delays and noise. Only works if the Conversion Measurement API "
     "is already enabled.";
 
+const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
+const char kEditPasswordsInSettingsDescription[] =
+    "Enables password editing in settings.";
+
 const char kEnableBloomName[] = "Enable Bloom Integration";
 const char kEnableBloomDescription[] =
     "Enables native support for bloom, an experimental vertical knowledge "
@@ -1861,10 +1865,6 @@ const char kPasswordChangeName[] = "Rework password change flow";
 const char kPasswordChangeDescription[] =
     "Change password when password leak is detected.";
 
-const char kPasswordEditingAndroidName[] = "Password editing for Android";
-const char kPasswordEditingAndroidDescription[] =
-    "Adds the editing option for saved passwords.";
-
 const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
@@ -3255,10 +3255,6 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[] =
     "When enabled, allows all websites to request to initiate tab mirroring "
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
-
-const char kEditPasswordsInDesktopSettingsName[] = "Edit passwords in settings";
-const char kEditPasswordsInDesktopSettingsDescription[] =
-    "Enables password editing in settings.";
 
 const char kEnableAccessibilityLiveCaptionsName[] = "Live Captions";
 const char kEnableAccessibilityLiveCaptionsDescription[] =

@@ -3329,11 +3329,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"PasswordImport", flag_descriptions::kPasswordImportName,
      flag_descriptions::kPasswordImportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordImport)},
-#if defined(OS_ANDROID)
-    {"password-editing-android", flag_descriptions::kPasswordEditingAndroidName,
-     flag_descriptions::kPasswordEditingAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordEditingAndroid)},
-#endif  // OS_ANDROID
 #if !defined(OS_CHROMEOS)
     // TODO(https://crbug.com/1011696): Investigate crash reports and re-enable
     // for ChromeOS.
@@ -6293,13 +6288,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLiteVideoForceOverrideDecisionDescription, kOsAll,
      SINGLE_VALUE_TYPE(lite_video::switches::kLiteVideoForceOverrideDecision)},
 
-#if !defined(OS_ANDROID)
     {"edit-passwords-in-settings",
-     flag_descriptions::kEditPasswordsInDesktopSettingsName,
-     flag_descriptions::kEditPasswordsInDesktopSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kEditPasswordsInDesktopSettings)},
-#endif  // !defined(OS_ANDROID)
+     flag_descriptions::kEditPasswordsInSettingsName,
+     flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
 
     {"mixed-forms-disable-autofill",
      flag_descriptions::kMixedFormsDisableAutofillName,

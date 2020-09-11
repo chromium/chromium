@@ -848,7 +848,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     public void testSelectedStoredPasswordIndexIsSameAsInShowPasswordEntryEditingView() {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
@@ -872,7 +872,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     public void testPasswordDataDisplayedInEditingActivity() {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
@@ -894,7 +894,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     @DisabledTest(message = "crbug.com/1122310")
     public void testPasswordEditingMethodWasCalled() throws Exception {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
@@ -924,7 +924,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     public void testChangeOfStoredPasswordDataIsPropagated() throws Exception {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
@@ -957,7 +957,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     public void testStoredPasswordCanBeUnmaskedAndMaskedAgain() {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
@@ -1818,7 +1818,7 @@ public class PasswordSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @EnableFeatures(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)
     public void testEditSavedPasswordIconVisibleInActionBarWithFeature() {
         setPasswordSource( // Initialize preferences
                 new SavedPasswordEntry("https://example.com", "test user", "test password"));

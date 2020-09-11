@@ -87,6 +87,9 @@ extern const char kConversionMeasurementApiDescription[];
 extern const char kConversionMeasurementDebugModeName[];
 extern const char kConversionMeasurementDebugModeDescription[];
 
+extern const char kEditPasswordsInSettingsName[];
+extern const char kEditPasswordsInSettingsDescription[];
+
 extern const char kEnableBloomName[];
 extern const char kEnableBloomDescription[];
 
@@ -1055,9 +1058,6 @@ extern const char kPasswordChangeInSettingsDescription[];
 extern const char kPasswordChangeName[];
 extern const char kPasswordChangeDescription[];
 
-extern const char kPasswordEditingAndroidName[];
-extern const char kPasswordEditingAndroidDescription[];
-
 extern const char kPassiveEventListenerDefaultName[];
 extern const char kPassiveEventListenerDefaultDescription[];
 extern const char kPassiveEventListenerTrue[];
@@ -1863,9 +1863,6 @@ extern const char kTabbedAppOverflowMenuRegroupDescription[];
 
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
-
-extern const char kEditPasswordsInDesktopSettingsName[];
-extern const char kEditPasswordsInDesktopSettingsDescription[];
 
 extern const char kEnableAccessibilityLiveCaptionsName[];
 extern const char kEnableAccessibilityLiveCaptionsDescription[];

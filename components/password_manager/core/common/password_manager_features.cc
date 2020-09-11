@@ -27,10 +27,9 @@ const base::Feature kChangePasswordAffiliationInfo = {
 const base::Feature kCompromisedPasswordsReengagement = {
     "CompromisedPasswordsReengagement", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the editing of passwords in chrome://settings/passwords, i.e. the
-// Desktop passwords settings page.
-const base::Feature kEditPasswordsInDesktopSettings = {
-    "EditPasswordsInDesktopSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the editing of passwords in Chrome settings.
+const base::Feature kEditPasswordsInSettings = {
+    "EditPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
@@ -73,10 +72,6 @@ const base::Feature kPasswordCheck = {"PasswordCheck",
                                       base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 };
-
-// Enables editing saved passwords for Android.
-const base::Feature kPasswordEditingAndroid = {
-    "PasswordEditingAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls the ability to import passwords from Chrome's settings page.
 const base::Feature kPasswordImport = {"PasswordImport",

@@ -1015,7 +1015,7 @@
   },
   {
     "name": "edit-passwords-in-settings",
-    "owners": [ "irfedorova", "jdoerrie" ],
+    "owners": [ "fhorschig", "jdoerrie" ],
     "expiry_milestone": 88
   },
   {
@@ -3634,11 +3634,6 @@
   {
     "name": "password-check",
     "owners": [ "jdoerrie", "vasilii" ],
-    "expiry_milestone": 87
-  },
-  {
-    "name": "password-editing-android",
-    "owners": [ "fhorschig" ],
     "expiry_milestone": 87
   },
   {
