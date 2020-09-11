@@ -31,12 +31,12 @@ constexpr char kAshAcceleratorsHash[] = "8c10cc51d4e84e4b94310bc91d15a0a8";
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 97;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "a5d5a245352c94b17618c6d9425a0a9b";
+constexpr char kChromeAcceleratorsHash[] = "efe4c88a2b35238274820158dd46fc0a";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 96;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "1c6a632c57e6e1033e482fc6ffc2184e";
+constexpr char kChromeAcceleratorsHash[] = "9a9ca7beaf63ecdbfdb94aad12ed2c68";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char* BooleanToString(bool value) {
@@ -162,11 +162,13 @@ TEST_F(KeyboardShortcutViewerMetadataTest, CheckAcceleratorIdHasAccelerator) {
     if (shortcut_item.description_message_id ==
             IDS_KSV_DESCRIPTION_DESKS_NEW_DESK ||
         shortcut_item.description_message_id ==
-            IDS_KSV_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK) {
+            IDS_KSV_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK ||
+        shortcut_item.description_message_id ==
+            IDS_KSV_DESCRIPTION_CARET_BROWSING_TOGGLE) {
       // Ignore these for now until https://crbug.com/976487 is fixed.
       // These two accelerators have to be listed differently in the keyboard
       // shortcut viewer than how they are actually defined in the accelerator
-      // table due to the SEARCH + "=" and "-" remapping to F11 and F12
+      // table due to the SEARCH + "1","2"..."0","=","-" remapping to F1...F12
       // respectively.
       continue;
     }
