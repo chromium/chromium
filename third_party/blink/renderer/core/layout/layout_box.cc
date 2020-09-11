@@ -5361,7 +5361,12 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
   DCHECK(width_size_type == kMinSize ||
          width_size_type == kMainOrPreferredSize || !logical_width.IsAuto());
   if (width_size_type == kMinSize && logical_width.IsAuto()) {
+    // TODO(cbiesinger): Implement for aspect-ratio.
     logical_width_value = LayoutUnit();
+  } else if (width_size_type == kMainOrPreferredSize &&
+             logical_width.IsAuto() &&
+             ComputeLogicalWidthFromAspectRatio(&logical_width_value)) {
+    // We're good.
   } else if (logical_width.IsIntrinsic()) {
     logical_width_value = ComputeIntrinsicLogicalWidthUsing(
                               logical_width, container_logical_width) -
@@ -5385,7 +5390,9 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
   const LayoutUnit container_relative_logical_width =
       ContainingBlockLogicalWidthForPositioned(container_block, false);
 
-  bool logical_width_is_auto = logical_width.IsAuto();
+  // If we are using aspect-ratio, the width is effectively not auto.
+  bool logical_width_is_auto =
+      logical_width.IsAuto() && !ShouldComputeLogicalWidthFromAspectRatio();
   bool logical_left_is_auto = logical_left.IsAuto();
   bool logical_right_is_auto = logical_right.IsAuto();
   LayoutUnit& margin_logical_left_value = StyleRef().IsLeftToRightDirection()
@@ -5787,8 +5794,10 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
   DCHECK(height_size_type == kMinSize ||
          height_size_type == kMainOrPreferredSize ||
          !logical_height_length.IsAuto());
-  if (height_size_type == kMinSize && logical_height_length.IsAuto())
+  if (height_size_type == kMinSize && logical_height_length.IsAuto()) {
+    // TODO(cbiesinger): Implement for aspect-ratio.
     logical_height_length = Length::Fixed(0);
+  }
 
   // 'top' and 'bottom' cannot both be 'auto' because 'top would of been
   // converted to the static position in computePositionedLogicalHeight()
@@ -5802,7 +5811,9 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
 
   LayoutUnit logical_top_value;
 
-  bool logical_height_is_auto = logical_height_length.IsAuto();
+  bool from_aspect_ratio = ShouldComputeLogicalHeightFromAspectRatio();
+  bool logical_height_is_auto =
+      logical_height_length.IsAuto() && !from_aspect_ratio;
   bool logical_top_is_auto = logical_top.IsAuto();
   bool logical_bottom_is_auto = logical_bottom.IsAuto();
 
@@ -5812,12 +5823,21 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
     resolved_logical_height = content_logical_height;
     logical_height_is_auto = false;
   } else {
-    if (logical_height_length.IsIntrinsic())
+    if (logical_height_length.IsIntrinsic()) {
       resolved_logical_height = ComputeIntrinsicLogicalContentHeightUsing(
           logical_height_length, content_logical_height, borders_plus_padding);
-    else
+    } else if (from_aspect_ratio) {
+      NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                                BorderEnd() + ComputedCSSPaddingEnd(),
+                                BorderBefore() + ComputedCSSPaddingBefore(),
+                                BorderAfter() + ComputedCSSPaddingAfter());
+      resolved_logical_height = BlockSizeFromAspectRatio(
+          border_padding, *StyleRef().LogicalAspectRatio(),
+          StyleRef().BoxSizing(), LogicalWidth());
+    } else {
       resolved_logical_height = AdjustContentBoxLogicalHeightForBoxSizing(
           ValueForLength(logical_height_length, container_logical_height));
+    }
   }
 
   if (!logical_top_is_auto && !logical_height_is_auto &&
