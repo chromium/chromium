@@ -159,10 +159,10 @@ bool FormField::ParseField(AutofillScanner* scanner,
   return ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, match, logging);
 }
 
-// static
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
                                     const base::string16& pattern,
-                                    int match_type,
+                                    int match_field_attributes,
+                                    int match_field_input_types,
                                     AutofillField** match,
                                     const RegExLogging& logging) {
   if (scanner->IsEnd())
@@ -170,10 +170,25 @@ bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
 
   const AutofillField* field = scanner->Cursor();
 
-  if (!MatchesFormControlType(field->form_control_type, match_type))
+  if (!MatchesFormControlType(field->form_control_type,
+                              match_field_input_types))
     return false;
 
-  return MatchAndAdvance(scanner, pattern, match_type, match, logging);
+  return MatchAndAdvance(scanner, pattern, match_field_attributes,
+                         match_field_input_types, match, logging);
+}
+
+// static
+bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
+                                    const base::string16& pattern,
+                                    int match_type,
+                                    AutofillField** match,
+                                    const RegExLogging& logging) {
+  int match_field_attributes = match_type & 0b11;
+  int match_field_types = match_type & ~0b11;
+
+  return ParseFieldSpecifics(scanner, pattern, match_field_attributes,
+                             match_field_types, match, logging);
 }
 
 // static
@@ -196,14 +211,15 @@ void FormField::AddClassification(const AutofillField* field,
   candidates.AddFieldCandidate(type, score);
 }
 
-// static.
 bool FormField::MatchAndAdvance(AutofillScanner* scanner,
                                 const base::string16& pattern,
-                                int match_type,
+                                int match_field_attributes,
+                                int match_field_input_types,
                                 AutofillField** match,
                                 const RegExLogging& logging) {
   AutofillField* field = scanner->Cursor();
-  if (FormField::Match(field, pattern, match_type, logging)) {
+  if (FormField::Match(field, pattern, match_field_attributes,
+                       match_field_input_types, logging)) {
     if (match)
       *match = field;
     scanner->Advance();
@@ -213,22 +229,35 @@ bool FormField::MatchAndAdvance(AutofillScanner* scanner,
   return false;
 }
 
-// static
+// static.
+bool FormField::MatchAndAdvance(AutofillScanner* scanner,
+                                const base::string16& pattern,
+                                int match_type,
+                                AutofillField** match,
+                                const RegExLogging& logging) {
+  int match_field_attributes = match_type & 0b11;
+  int match_field_types = match_type & ~0b11;
+
+  return MatchAndAdvance(scanner, pattern, match_field_attributes,
+                         match_field_types, match, logging);
+}
+
 bool FormField::Match(const AutofillField* field,
                       const base::string16& pattern,
-                      int match_type,
+                      int match_field_attributes,
+                      int match_field_input_types,
                       const RegExLogging& logging) {
   bool found_match = false;
   base::StringPiece match_type_string;
   base::StringPiece16 value;
   base::string16 match;
 
-  if ((match_type & FormField::MATCH_LABEL) &&
+  if ((match_field_attributes & MATCH_LABEL) &&
       MatchesPattern(field->label, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in label";
     value = field->label;
-  } else if ((match_type & FormField::MATCH_NAME) &&
+  } else if ((match_field_attributes & MATCH_NAME) &&
              MatchesPattern(field->parseable_name(), pattern, &match)) {
     found_match = true;
     match_type_string = "Match in name";
@@ -249,6 +278,18 @@ bool FormField::Match(const AutofillField* field,
   }
 
   return found_match;
+}
+
+// static
+bool FormField::Match(const AutofillField* field,
+                      const base::string16& pattern,
+                      int match_type,
+                      const RegExLogging& logging) {
+  int match_field_attributes = match_type & 0b11;
+  int match_field_types = match_type & ~0b11;
+
+  return Match(field, pattern, match_field_attributes, match_field_types,
+               logging);
 }
 
 // static
