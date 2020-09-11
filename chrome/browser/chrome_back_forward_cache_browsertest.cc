@@ -250,10 +250,6 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   GURL url_a(https_server.GetURL("a.com", "/title1.html"));
   GURL url_b(https_server.GetURL("b.com", "/title1.html"));
 
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                 ContentSetting::CONTENT_SETTING_ASK);
-
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(web_contents(), url_a));
   content::RenderFrameHost* rfh_a = current_frame_host();
