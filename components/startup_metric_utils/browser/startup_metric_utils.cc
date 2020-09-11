@@ -376,8 +376,12 @@ void SetBackgroundModeEnabled() {
 }
 
 void RecordStartupProcessCreationTime(base::Time time) {
+  RecordStartupProcessCreationTime(StartupTimeToTimeTicks(time));
+}
+
+void RecordStartupProcessCreationTime(base::TimeTicks ticks) {
   DCHECK(g_process_creation_ticks.is_null());
-  g_process_creation_ticks = StartupTimeToTimeTicks(time);
+  g_process_creation_ticks = ticks;
   DCHECK(!g_process_creation_ticks.is_null());
 }
 

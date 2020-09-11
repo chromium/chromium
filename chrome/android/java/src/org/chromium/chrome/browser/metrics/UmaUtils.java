@@ -89,11 +89,16 @@ public class UmaUtils {
     }
 
     @CalledByNative
-    public static long getApplicationStartTime(boolean useProcessStartTime) {
-        if (useProcessStartTime && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return ApiHelperForN.getStartUptimeMillis();
-        }
+    public static long getApplicationStartTime() {
         return sApplicationStartTimeMs;
+    }
+
+    @CalledByNative
+    public static long getProcessStartTime() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return 0;
+        }
+        return ApiHelperForN.getStartUptimeMillis();
     }
 
     public static long getForegroundStartTicks() {
