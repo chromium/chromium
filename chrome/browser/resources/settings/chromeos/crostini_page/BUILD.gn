@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
 js_library("crostini_arc_adb") {
   deps = [
     ":crostini_browser_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "../localized_link:localized_link",
@@ -38,6 +39,7 @@ js_library("crostini_browser_proxy") {
 js_library("crostini_export_import") {
   deps = [
     ":crostini_browser_proxy",
+    "..:deep_linking_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
@@ -53,6 +55,7 @@ js_library("crostini_disk_resize_dialog") {
 js_library("crostini_page") {
   deps = [
     ":crostini_browser_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
@@ -104,6 +107,7 @@ js_library("crostini_port_forwarding_add_port_dialog") {
 js_library("crostini_subpage") {
   deps = [
     ":crostini_browser_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
     "..:route_origin_behavior",

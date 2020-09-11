@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
@@ -55,7 +56,8 @@
                 disabled$="[[disableCrostiniInstall_]]"
                 on-click="onEnableTap_"
                 aria-label="$i18n{crostiniPageTitle}"
-                aria-describedby="secondaryText">
+                aria-describedby="secondaryText"
+                deep-link-focus-id$="[[Setting.kSetUpCrostini]]">
               $i18n{crostiniEnable}
             </cr-button>
           </template>

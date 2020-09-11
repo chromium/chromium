@@ -5,6 +5,9 @@
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="crostini_browser_proxy.html">
 <link rel="import" href="crostini_import_confirmation_dialog.html">
+<link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../settings_shared_css.html">
 
@@ -16,7 +19,8 @@
         $i18n{crostiniExportLabel}
       </div>
       <cr-button on-click="onExportClick_" disabled="[[!enableButtons_]]"
-        aria-labelledby="exportCrostiniLabel">
+        aria-labelledby="exportCrostiniLabel"
+        deep-link-focus-id$="[[Setting.kBackupLinuxAppsAndFiles]]">
         $i18n{crostiniExport}
       </cr-button>
     </div>
@@ -25,7 +29,8 @@
         $i18n{crostiniImportLabel}
       </div>
       <cr-button on-click="onImportClick_" disabled="[[!enableButtons_]]"
-        aria-labelledby="importCrostiniLabel">
+        aria-labelledby="importCrostiniLabel"
+        deep-link-focus-id$="[[Setting.kRestoreLinuxAppsAndFiles]]">
         $i18n{crostiniImport}
       </cr-button>
     </div>

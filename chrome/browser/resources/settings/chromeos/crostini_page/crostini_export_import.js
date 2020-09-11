@@ -11,7 +11,11 @@
 Polymer({
   is: 'settings-crostini-export-import',
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @private */
@@ -42,6 +46,17 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kBackupLinuxAppsAndFiles,
+        chromeos.settings.mojom.Setting.kRestoreLinuxAppsAndFiles,
+      ]),
+    },
   },
 
   attached() {
@@ -58,6 +73,19 @@ Polymer({
         .requestCrostiniExportImportOperationStatus();
     settings.CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniInstallerStatus();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.CROSTINI_EXPORT_IMPORT) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /** @private */

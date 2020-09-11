@@ -13,9 +13,13 @@ function setCrostiniPrefs(enabled, optional = {}) {
     sharedPaths = {},
     sharedUsbDevices = [],
     forwardedPorts = [],
-    crostiniMicSharingEnabled = false
+    crostiniMicSharingEnabled = false,
+    arcEnabled = false,
   } = optional;
   crostiniPage.prefs = {
+    arc: {
+      enabled: {value: arcEnabled},
+    },
     crostini: {
       enabled: {value: enabled},
       port_forwarding: {ports: {value: forwardedPorts}},
@@ -88,6 +92,22 @@ suite('CrostiniPageTests', function() {
       await test_util.flushTasks();
       assertFalse(button.disabled);
     });
+
+    test('Deep link to setup Crostini', async () => {
+      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+      const params = new URLSearchParams;
+      params.append('settingId', '800');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.CROSTINI, params);
+
+      const deepLinkElement = crostiniPage.$$('#enable');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Enable Crostini button should be focused for settingId=800.');
+    });
   });
 
   suite('SubPageDetails', function() {
@@ -95,12 +115,13 @@ suite('CrostiniPageTests', function() {
     let subpage;
 
     setup(async function() {
-      setCrostiniPrefs(true);
+      setCrostiniPrefs(true, {arcEnabled: true});
       loadTimeData.overrideValues({
         showCrostiniExportImport: true,
         showCrostiniContainerUpgrade: true,
         showCrostiniPortForwarding: true,
         showCrostiniDiskResize: true,
+        arcAdbSideloadingSupported: true,
       });
 
       settings.Router.getInstance().navigateTo(settings.routes.CROSTINI);
@@ -116,6 +137,7 @@ suite('CrostiniPageTests', function() {
         assertTrue(!!subpage.$$('#crostini-shared-paths'));
         assertTrue(!!subpage.$$('#crostini-shared-usb-devices'));
         assertTrue(!!subpage.$$('#crostini-export-import'));
+        assertTrue(!!subpage.$$('#crostini-enable-arc-adb'));
         assertTrue(!!subpage.$$('#remove'));
         assertTrue(!!subpage.$$('#container-upgrade'));
         assertTrue(!!subpage.$$('#crostini-port-forwarding'));
@@ -191,6 +213,25 @@ suite('CrostiniPageTests', function() {
         subpage.$$('#export cr-button').click();
         assertEquals(
             1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
+      });
+
+      test('Deep link to backup linux', async () => {
+        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+        const params = new URLSearchParams;
+        params.append('settingId', '802');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.CROSTINI_EXPORT_IMPORT, params);
+
+        Polymer.dom.flush();
+        subpage = crostiniPage.$$('settings-crostini-export-import');
+
+        const deepLinkElement = subpage.$$('#export cr-button');
+        await test_util.waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'Export button should be focused for settingId=802.');
       });
 
       test('Import', async function() {
@@ -374,6 +415,26 @@ suite('CrostiniPageTests', function() {
         await test_util.flushTasks();
         const dialog = subpage.$$('settings-crostini-disk-resize-dialog');
         assertTrue(!!dialog);
+      });
+
+      test('Deep link to resize disk', async () => {
+        loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+        assertTrue(!!subpage.$$('#showDiskResizeButton'));
+        await crostiniBrowserProxy.resolvePromises(
+            'getCrostiniDiskInfo',
+            {succeeded: true, canResize: true, isUserChosenSize: true});
+
+        const params = new URLSearchParams;
+        params.append('settingId', '805');
+        settings.Router.getInstance().navigateTo(
+            settings.routes.CROSTINI_DETAILS, params);
+
+        const deepLinkElement = subpage.$$('#showDiskResizeButton');
+        await test_util.waitAfterNextRender(deepLinkElement);
+        assertEquals(
+            deepLinkElement, getDeepActiveElement(),
+            'Resize disk button should be focused for settingId=805.');
       });
     });
 
@@ -1037,6 +1098,43 @@ suite('CrostiniPageTests', function() {
       ]);
       Polymer.dom.flush();
       assertEquals(1, subpage.shadowRoot.querySelectorAll('.toggle').length);
+    });
+  });
+
+  suite('SubPageArcAdb', function() {
+    let subpage;
+
+    setup(async function() {
+      setCrostiniPrefs(true, {arcEnabled: true});
+      loadTimeData.overrideValues({
+        arcAdbSideloadingSupported: true,
+      });
+
+      await test_util.flushTasks();
+      settings.Router.getInstance().navigateTo(
+          settings.routes.CROSTINI_ANDROID_ADB);
+
+      await test_util.flushTasks();
+      subpage = crostiniPage.$$('settings-crostini-arc-adb');
+      assertTrue(!!subpage);
+    });
+
+    test('Deep link to enable adb debugging', async () => {
+      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+      const params = new URLSearchParams;
+      params.append('settingId', '804');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.CROSTINI_ANDROID_ADB, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement = subpage.$$('#arcAdbEnabledButton');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Enable adb debugging button should be focused for settingId=804.');
     });
   });
 });

@@ -10,7 +10,12 @@
 Polymer({
   is: 'settings-crostini-arc-adb',
 
-  behaviors: [I18nBehavior, WebUIListenerBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @private {boolean} */
@@ -57,6 +62,16 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () =>
+          new Set([chromeos.settings.mojom.Setting.kCrostiniAdbDebugging]),
+    },
   },
 
   attached() {
@@ -78,6 +93,19 @@ Polymer({
 
     settings.CrostiniBrowserProxyImpl.getInstance()
         .getCanChangeArcAdbSideloading();
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.CROSTINI_ANDROID_ADB) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**
