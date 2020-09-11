@@ -6397,6 +6397,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(messages::kMessagesForAndroidPasswords)},
 #endif
 
+#if defined(OS_ANDROID)
+    {"android-detailed-language-settings",
+     flag_descriptions::kAndroidDetailedLanguageSettingsName,
+     flag_descriptions::kAndroidDetailedLanguageSettingsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(language::kDetailedLanguageSettings)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

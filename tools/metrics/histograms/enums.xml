@@ -42818,6 +42818,7 @@ from previous Chrome versions.
   <int value="299792415" label="OmniboxSuggestionTransparencyOptions:enabled"/>
   <int value="300095239" label="FCMInvalidations:enabled"/>
   <int value="300870732" label="ShelfDimming:disabled"/>
+  <int value="301536977" label="DetailedLanguageSettings:enabled"/>
   <int value="301630312" label="ForcedColors:disabled"/>
   <int value="301869874" label="NTPPhysicalWebPageSuggestions:disabled"/>
   <int value="303058039" label="AccountConsistency:disabled"/>
@@ -44313,6 +44314,7 @@ from previous Chrome versions.
   <int value="1852630189" label="NTPBookmarkSuggestions:disabled"/>
   <int value="1854048611" label="OmniboxSuggestionsRecyclerView:disabled"/>
   <int value="1854226565" label="AutofillNoLocalSaveOnUnmaskSuccess:enabled"/>
+  <int value="1854646491" label="DetailedLanguageSettings:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858919054" label="SplitSettingsSync:disabled"/>
