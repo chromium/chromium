@@ -479,16 +479,17 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
 
 TEST_F(RequiredFieldsFallbackHandlerTest, UsesSelectOptionForDropdowns) {
   Selector expected_selector({"#year"});
+  const ElementFinder::Result& expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_web_controller_, OnGetFieldValue(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), ""));
-  EXPECT_CALL(mock_action_delegate_, GetElementTag(expected_selector, _))
+  EXPECT_CALL(mock_action_delegate_,
+              GetElementTag(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "SELECT"));
   Expectation select_option =
-      EXPECT_CALL(
-          mock_action_delegate_,
-          SelectOption(EqualsElement(test_util::MockFindElement(
-                           mock_action_delegate_, expected_selector)),
-                       "2050", DropdownSelectStrategy::LABEL_STARTS_WITH, _))
+      EXPECT_CALL(mock_action_delegate_,
+                  SelectOption(EqualsElement(expected_element), "2050",
+                               DropdownSelectStrategy::LABEL_STARTS_WITH, _))
           .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_web_controller_, OnGetFieldValue(expected_selector, _))
       .After(select_option)

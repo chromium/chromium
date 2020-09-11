@@ -258,9 +258,10 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 
-  // Return the tag of the element given by |selector|.
+  // Return the tag of the |element|. In case of an error, returns an empty
+  // string.
   virtual void GetElementTag(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
 

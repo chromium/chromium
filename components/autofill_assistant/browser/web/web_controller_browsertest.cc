@@ -329,20 +329,42 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                              std::string* element_tag_output) {
     base::RunLoop run_loop;
     ClientStatus result;
-    web_controller_->GetElementTag(
-        selector, base::BindOnce(&WebControllerBrowserTest::OnGetElementTag,
-                                 base::Unretained(this), run_loop.QuitClosure(),
-                                 &result, element_tag_output));
+
+    web_controller_->FindElement(
+        selector, /* strict= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindGetElementTagElementCallback,
+            base::Unretained(this), run_loop.QuitClosure(), &result,
+            element_tag_output));
+
     run_loop.Run();
     return result;
+  }
+
+  void FindGetElementTagElementCallback(
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      std::string* element_tag_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->GetElementTag(
+        *element_result,
+        base::BindOnce(&WebControllerBrowserTest::OnGetElementTag,
+                       base::Unretained(this), std::move(done_callback),
+                       result_output, element_tag_output,
+                       std::move(element_result)));
   }
 
   void OnGetElementTag(base::OnceClosure done_callback,
                        ClientStatus* successful_output,
                        std::string* element_tag_output,
+                       std::unique_ptr<ElementFinder::Result> element,
                        const ClientStatus& status,
                        const std::string& element_tag) {
     EXPECT_EQ(ACTION_APPLIED, status.proto_status());
+    ASSERT_TRUE(element != nullptr);
     *successful_output = status;
     *element_tag_output = element_tag;
     std::move(done_callback).Run();

@@ -185,9 +185,10 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
-  // Return the tag of |selector|.
+  // Return the tag of the |element|. In case of an error, will return an empty
+  // string.
   virtual void GetElementTag(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
@@ -459,11 +460,6 @@ class WebController {
                                               const std::string&)> callback,
                       const DevtoolsClient::ReplyStatus& reply_status,
                       std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnFindElementForGetElementTag(
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
   void OnGetElementTag(base::OnceCallback<void(const ClientStatus&,
                                                const std::string&)> callback,
                        const DevtoolsClient::ReplyStatus& reply_status,

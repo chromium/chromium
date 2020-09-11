@@ -613,10 +613,10 @@ void ScriptExecutor::GetOuterHtml(
 }
 
 void ScriptExecutor::GetElementTag(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
-  delegate_->GetWebController()->GetElementTag(selector, std::move(callback));
+  delegate_->GetWebController()->GetElementTag(element, std::move(callback));
 }
 
 void ScriptExecutor::ExpectNavigation() {

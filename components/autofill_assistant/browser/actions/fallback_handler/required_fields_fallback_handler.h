@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_field.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 class ClientStatus;
@@ -64,11 +65,20 @@ class RequiredFieldsFallbackHandler {
   // Sets fallback field values for empty fields.
   void SetFallbackFieldValuesSequentially(size_t required_fields_index);
 
+  // Called after attempting to find one of the elements to execute a fallback
+  // action on.
+  void OnFindElement(const std::string& value,
+                     size_t required_fields_index,
+                     const ClientStatus& element_status,
+                     std::unique_ptr<ElementFinder::Result> element_result);
+
   // Called after retrieving tag name from a field.
-  void OnGetFallbackFieldTag(const std::string& value,
-                             size_t required_fields_index,
-                             const ClientStatus& element_tag_status,
-                             const std::string& element_tag);
+  void OnGetFallbackFieldElementTag(
+      const std::string& value,
+      size_t required_fields_index,
+      std::unique_ptr<ElementFinder::Result> element,
+      const ClientStatus& element_tag_status,
+      const std::string& element_tag);
 
   // Called after clicking a fallback element.
   void OnClickOrTapFallbackElement(const std::string& value,
@@ -82,6 +92,7 @@ class RequiredFieldsFallbackHandler {
   // Called after trying to set form values without Autofill in case of
   // fallback after failed validation.
   void OnSetFallbackFieldValue(size_t required_fields_index,
+                               std::unique_ptr<ElementFinder::Result> element,
                                const ClientStatus& status);
 
   ClientStatus client_status_;

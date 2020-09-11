@@ -229,7 +229,7 @@ class MockActionDelegate : public ActionDelegate {
                                             const std::string&)> callback));
 
   MOCK_METHOD2(GetElementTag,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
 
