@@ -361,7 +361,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // The URL representing the first-party site for this context.
   // For service worker execution contexts, top_frame_origin() always
-  // returns the origin of the service worker script URL.
+  // returns the origin of the service worker scope's URL.
   // For shared worker it is the origin of the document that created the worker.
   // For dedicated worker it is the top-frame origin of the document that owns
   // the worker.

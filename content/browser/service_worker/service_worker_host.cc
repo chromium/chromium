@@ -62,8 +62,7 @@ ServiceWorkerHost::ServiceWorkerHost(
   container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
-      net::SiteForCookies::FromUrl(version_->script_url()),
-      version_->script_origin());
+      net::SiteForCookies::FromUrl(version_->script_url()), version_->origin());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() {
@@ -96,7 +95,7 @@ void ServiceWorkerHost::CreateQuicTransportConnector(
   RunOrPostTaskOnThread(
       FROM_HERE, BrowserThread::UI,
       base::BindOnce(&CreateQuicTransportConnectorImpl, worker_process_id_,
-                     version_->script_origin(), std::move(receiver)));
+                     version_->origin(), std::move(receiver)));
 }
 
 void ServiceWorkerHost::BindCacheStorage(

@@ -46,6 +46,9 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
     int64_t registration_id,
     base::WeakPtr<ServiceWorkerContextCore> context)
     : scope_(options.scope),
+      // Safe to convert GURL to Origin because service workers are restricted
+      // to secure contexts.
+      origin_(url::Origin::Create(options.scope)),
       update_via_cache_(options.update_via_cache),
       registration_id_(registration_id),
       status_(Status::kIntact),

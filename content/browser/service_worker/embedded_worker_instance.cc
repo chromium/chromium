@@ -1525,7 +1525,7 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
     RunOrPostTaskOnThread(
         FROM_HERE, BrowserThread::UI,
         base::BindOnce(content::BindCacheStorageOnUIThread, process_id(),
-                       owner_version_->script_origin(), coep,
+                       owner_version_->origin(), coep,
                        std::move(coep_reporter_remote), std::move(receiver)));
   }
   pending_cache_storage_receivers_.clear();

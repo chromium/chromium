@@ -697,13 +697,13 @@ void ContentIndexDatabase::DeliverMessageToWorker(
 
   // Don't allow DB operations while the `contentdelete` event is firing.
   // This is to prevent re-registering the deleted content within the event.
-  BlockOrigin(service_worker->script_origin());
+  BlockOrigin(service_worker->origin());
 
   int request_id = service_worker->StartRequest(
       ServiceWorkerMetrics::EventType::CONTENT_DELETE,
       base::BindOnce(&ContentIndexDatabase::DidDispatchEvent,
                      weak_ptr_factory_core_.GetWeakPtr(),
-                     service_worker->script_origin()));
+                     service_worker->origin()));
 
   service_worker->endpoint()->DispatchContentDeleteEvent(
       description_id, service_worker->CreateSimpleEventCallback(request_id));

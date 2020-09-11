@@ -76,6 +76,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
 
   int64_t id() const { return registration_id_; }
   const GURL& scope() const { return scope_; }
+  const url::Origin& origin() const { return origin_; }
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache() const {
     return update_via_cache_;
   }
@@ -255,6 +256,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   };
 
   const GURL scope_;
+  const url::Origin origin_;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const int64_t registration_id_;
   Status status_;

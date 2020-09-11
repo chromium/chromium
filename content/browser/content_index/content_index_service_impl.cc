@@ -52,7 +52,7 @@ void ContentIndexServiceImpl::CreateForWorker(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ContentIndexServiceImpl>(
-          info.script_origin, storage_partition->GetContentIndexContext()),
+          info.origin, storage_partition->GetContentIndexContext()),
       std::move(receiver));
 }
 

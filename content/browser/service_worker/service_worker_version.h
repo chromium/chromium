@@ -205,7 +205,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   int64_t version_id() const { return version_id_; }
   int64_t registration_id() const { return registration_id_; }
   const GURL& script_url() const { return script_url_; }
-  const url::Origin& script_origin() const { return script_origin_; }
+  const url::Origin& origin() const { return origin_; }
   const GURL& scope() const { return scope_; }
   blink::mojom::ScriptType script_type() const { return script_type_; }
   EmbeddedWorkerStatus running_status() const {
@@ -886,7 +886,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   const int64_t version_id_;
   const int64_t registration_id_;
   const GURL script_url_;
-  const url::Origin script_origin_;
+  // |origin_| is computed from |scope_|. Warning: The |script_url_|'s origin
+  // and |origin_| may be different in some scenarios e.g.
+  // --disable-web-security.
+  const url::Origin origin_;
   const GURL scope_;
   // A service worker has an associated type which is either
   // "classic" or "module". Unless stated otherwise, it is "classic".
