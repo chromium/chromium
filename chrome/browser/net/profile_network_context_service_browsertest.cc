@@ -196,8 +196,7 @@ class ProfileNetworkContextServiceCacheSameBrowsertest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {}, {net::features::kSplitCacheByNetworkIsolationKey,
-             net::features::kAppendFrameOriginToNetworkIsolationKey,
-             net::features::kUseRegistrableDomainInNetworkIsolationKey});
+             net::features::kAppendFrameOriginToNetworkIsolationKey});
     ProfileNetworkContextServiceBrowsertest::SetUp();
   }
 
@@ -241,8 +240,7 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
   ProfileNetworkContextServiceCacheChangeBrowsertest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{net::features::kAppendFrameOriginToNetworkIsolationKey, {}}},
-        {net::features::kSplitCacheByNetworkIsolationKey,
-         net::features::kUseRegistrableDomainInNetworkIsolationKey});
+        {net::features::kSplitCacheByNetworkIsolationKey});
   }
   ~ProfileNetworkContextServiceCacheChangeBrowsertest() override = default;
 

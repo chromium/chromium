@@ -6518,8 +6518,7 @@
                     "name": "Enabled_Stable",
                     "enable_features": [
                         "AppendFrameOriginToNetworkIsolationKey",
-                        "SplitCacheByNetworkIsolationKey",
-                        "UseRegistrableDomainInNetworkIsolationKey"
+                        "SplitCacheByNetworkIsolationKey"
                     ]
                 }
             ]

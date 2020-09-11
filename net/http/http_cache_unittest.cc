@@ -10752,12 +10752,10 @@ TEST_F(HttpCacheTest, SplitCache) {
   EXPECT_FALSE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, SplitCacheWithRegistrableDomain) {
+TEST_F(HttpCacheTest, SplitCacheUsesRegistrableDomain) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {net::features::kSplitCacheByNetworkIsolationKey,
-       net::features::kUseRegistrableDomainInNetworkIsolationKey},
-      {});
+  feature_list.InitAndEnableFeature(
+      net::features::kSplitCacheByNetworkIsolationKey);
 
   base::HistogramTester histograms;
   MockHttpCache cache;

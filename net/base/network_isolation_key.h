@@ -150,8 +150,6 @@ class NET_EXPORT NetworkIsolationKey {
                       const url::Origin& frame_origin,
                       bool opaque_and_non_transient);
 
-  void ReplaceOriginsWithRegistrableDomains();
-
   bool IsOpaque() const;
 
   // Whether opaque origins cause the key to be transient. Always false, unless

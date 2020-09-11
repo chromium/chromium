@@ -293,9 +293,8 @@ TEST(NetworkIsolationKeyTest, FromValueBadData) {
 
 TEST(NetworkIsolationKeyTest, UseRegistrableDomain) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kUseRegistrableDomainInNetworkIsolationKey},
-      {features::kAppendFrameOriginToNetworkIsolationKey});
+  feature_list.InitAndDisableFeature(
+      features::kAppendFrameOriginToNetworkIsolationKey);
 
   // Both origins are non-opaque.
   url::Origin origin_a = url::Origin::Create(GURL("http://a.foo.test:80"));
@@ -497,10 +496,8 @@ TEST_F(NetworkIsolationKeyWithFrameOriginTest, OpaqueOriginKeyBoth) {
 
 TEST_F(NetworkIsolationKeyWithFrameOriginTest, UseRegistrableDomain) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAppendFrameOriginToNetworkIsolationKey,
-       features::kUseRegistrableDomainInNetworkIsolationKey},
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kAppendFrameOriginToNetworkIsolationKey);
 
   // Both origins are non-opaque.
   url::Origin origin_a = url::Origin::Create(GURL("http://a.foo.test:80"));
@@ -588,15 +585,12 @@ TEST_F(NetworkIsolationKeyWithFrameOriginTest, UseRegistrableDomain) {
   EXPECT_EQ(key_copied, key_bar);
 }
 
-// Make sure that kUseRegistrableDomainInNetworkIsolationKey does not affect the
-// host when using a non-standard scheme.
-TEST(NetworkIsolationKeyTest, UseRegistrableDomainWithNonStandardScheme) {
+// Make sure that the logic to extract the registerable domain from an origin
+// does not affect the host when using a non-standard scheme.
+TEST(NetworkIsolationKeyTest, NonStandardScheme) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kUseRegistrableDomainInNetworkIsolationKey},
-      // disabled_features
-      {features::kAppendFrameOriginToNetworkIsolationKey});
+  feature_list.InitAndDisableFeature(
+      features::kAppendFrameOriginToNetworkIsolationKey);
 
   // Have to register the scheme, or url::Origin::Create() will return an opaque
   // origin.

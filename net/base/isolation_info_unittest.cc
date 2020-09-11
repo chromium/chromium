@@ -30,19 +30,10 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
 
 class IsolationInfoTest : public testing::Test {
  public:
-  IsolationInfoTest() {
-    // Only test the case where NIK modifies the top frame origins, since
-    // IsolationInfo doesn't enforce the flag itself.
-    feature_list_.InitAndEnableFeature(
-        features::kUseRegistrableDomainInNetworkIsolationKey);
-  }
-
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.foo.test"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.bar.test"));
   const url::Origin kOrigin3 = url::Origin::Create(GURL("https://c.baz.test"));
   const url::Origin kOpaqueOrigin;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(IsolationInfoTest, UpdateTopFrame) {

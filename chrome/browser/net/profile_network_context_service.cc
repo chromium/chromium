@@ -605,11 +605,11 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   field_trial = base::FeatureList::GetFieldTrial(
       net::features::kAppendFrameOriginToNetworkIsolationKey);
   current_field_trial_status +=
-      (field_trial ? field_trial->group_name() : "None") + " ";
-  field_trial = base::FeatureList::GetFieldTrial(
-      net::features::kUseRegistrableDomainInNetworkIsolationKey);
-  current_field_trial_status +=
       (field_trial ? field_trial->group_name() : "None");
+  // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
+  // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
+  // to avoid resetting the disk cache.
+  current_field_trial_status += " None";
 
   std::string previous_field_trial_status =
       local_state->GetString(kHttpCacheFinchExperimentGroups);

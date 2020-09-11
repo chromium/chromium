@@ -60,24 +60,10 @@ TEST_F(NetworkIsolationKeyMojomTraitsWithFrameOriginTest,
     EXPECT_EQ(original.GetFrameOrigin(), copied.GetFrameOrigin());
     EXPECT_EQ(original.IsTransient(), copied.IsTransient());
   }
-}
 
-class NetworkIsolationKeyMojomTraitsWithRegistrableDomain
-    : public testing::Test {
- public:
-  NetworkIsolationKeyMojomTraitsWithRegistrableDomain() {
-    feature_list_.InitWithFeatures(
-        {net::features::kUseRegistrableDomainInNetworkIsolationKey,
-         net::features::kAppendFrameOriginToNetworkIsolationKey},
-        {});
-  }
+  // Test case where registerable domain does not match origin passed in to
+  // NetworkIsolationKey's constructor.
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(NetworkIsolationKeyMojomTraitsWithRegistrableDomain,
-       SerializeAndDeserialize) {
   url::Origin origin_a = url::Origin::Create(GURL("http://a.foo.test/"));
   url::Origin origin_b = url::Origin::Create(GURL("http://b.foo.test/"));
   url::Origin domain = url::Origin::Create(GURL("http://foo.test/"));

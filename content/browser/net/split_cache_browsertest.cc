@@ -397,9 +397,10 @@ class SplitCacheRegistrableDomainContentBrowserTest
  public:
   SplitCacheRegistrableDomainContentBrowserTest() {
     feature_list.InitWithFeatures(
+        // enabled_features
         {net::features::kSplitCacheByNetworkIsolationKey,
-         net::features::kUseRegistrableDomainInNetworkIsolationKey,
          net::features::kAppendFrameOriginToNetworkIsolationKey},
+        // disabled_features
         {});
   }
 

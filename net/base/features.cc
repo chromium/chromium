@@ -145,10 +145,6 @@ const base::Feature kCertVerifierBuiltinFeature{
 const base::Feature kAppendFrameOriginToNetworkIsolationKey{
     "AppendFrameOriginToNetworkIsolationKey", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kUseRegistrableDomainInNetworkIsolationKey{
-    "UseRegistrableDomainInNetworkIsolationKey",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kTurnOffStreamingMediaCachingOnBattery{
     "TurnOffStreamingMediaCachingOnBattery", base::FEATURE_DISABLED_BY_DEFAULT};
 
