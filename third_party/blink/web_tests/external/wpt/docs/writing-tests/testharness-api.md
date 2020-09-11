@@ -866,6 +866,8 @@ asserts that `expected` is an Array, and `actual` is equal to one of the
 members i.e. `expected.indexOf(actual) != -1`
 
 ### `assert_object_equals(actual, expected, description)`
+**DEPRECATED**: see [issue #2033](https://github.com/web-platform-tests/wpt/issues/2033).
+
 asserts that `actual` is an object and not null and that all enumerable
 properties on `actual` are own properties on `expected` with the same values,
 recursing if the value is an object and not null.

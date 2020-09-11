@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 80 tests; 6 PASS, 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 82 tests; 6 PASS, 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface XRInputSource: original interface defined
@@ -79,6 +79,8 @@ FAIL XRJointPose interface: existence and properties of interface prototype obje
 FAIL XRJointPose interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
 FAIL XRJointPose interface: attribute radius assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
 FAIL XRFrame interface: operation getJointPose(XRJointSpace, XRSpace) assert_own_property: interface prototype object missing non-static operation expected property "getJointPose" missing
+FAIL XRFrame interface: operation fillJointRadii(sequence<XRJointSpace>, Float32Array) assert_own_property: interface prototype object missing non-static operation expected property "fillJointRadii" missing
+FAIL XRFrame interface: operation fillPoses(sequence<XRSpace>, XRSpace, Float32Array) assert_own_property: interface prototype object missing non-static operation expected property "fillPoses" missing
 FAIL XRInputSource interface: attribute hand assert_true: The prototype object must have a property "hand" expected true got false
 Harness: the test ran to completion.
 

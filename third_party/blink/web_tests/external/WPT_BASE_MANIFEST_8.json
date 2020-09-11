@@ -200043,7 +200043,7 @@
       []
      ],
      "testharness-api.md": [
-      "b603080f096e24129a1070a2e4f742f8db0776d3",
+      "fb0af83c9a92409207e380dd17717f8a026f2d95",
       []
      ],
      "testharness-tutorial.md": [
@@ -220422,7 +220422,7 @@
      []
     ],
     "sanitizer-api.tentative.idl": [
-     "433ad968a869b07407b14b7c726f2f194a8c6ecb",
+     "25cba22ecfc4ee194cf4f21aa2c0d24c7c16de05",
      []
     ],
     "savedata.idl": [
@@ -220618,7 +220618,7 @@
      []
     ],
     "webxr-hand-input.idl": [
-     "e6de98e93ddbd84f52f6c08a51f03194da1fbf37",
+     "260c00365ac0d225e87eb01cd31f0bbd00eafd5c",
      []
     ],
     "webxr.idl": [
@@ -241300,7 +241300,7 @@
      []
     ],
     "RTCPeerConnection-helper.js": [
-     "54aaa010d809019a4a3c5d6f7435d982f6ad9cd5",
+     "5aef0a8e21e42fafe58719c0fb246a919d1b15d1",
      []
     ],
     "RTCPeerConnection-mandatory-getStats.https-expected.txt": [
@@ -244099,7 +244099,7 @@
     },
     "hand-input": {
      "idlharness.https.window-expected.txt": [
-      "7b709e946e53b78848baa6d171fa11983aa6a384",
+      "6a95e7bbac0f13d1f3be1bca8e84f0cf9ee32ce6",
       []
      ]
     },
@@ -365449,6 +365449,39 @@
       }
      ]
     ],
+    "trustworthy_origin_failure.tentative.http.any.js": [
+     "ae01ac420158ef1f9633f8ef8f6c5f4e15d9cb0a",
+     [
+      "native-io/trustworthy_origin_failure.tentative.http.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Interface is not exposed in untrustworthy origin."
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "native-io/trustworthy_origin_failure.tentative.http.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Interface is not exposed in untrustworthy origin."
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ]
+       ]
+      }
+     ]
+    ],
     "write_getLength_async_basic.tentative.https.any.js": [
      "bf886cca3973087527ef6eb747794d7dba72c28b",
      [
@@ -381937,7 +381970,7 @@
    },
    "sanitizer-api": {
     "idlharness.tentative.window.js": [
-     "f32a0ab349cf3a08847449fa2a65f0fbbb5d4901",
+     "384317b8e55bd318464c68e20ca737bfb5b2c966",
      [
       "sanitizer-api/idlharness.tentative.window.html",
       {
@@ -381954,15 +381987,22 @@
       }
      ]
     ],
+    "sanitizer-config.tentative.html": [
+     "c780bbe21b74fc96c491b29181a05decb3e5fea5",
+     [
+      null,
+      {}
+     ]
+    ],
     "sanitizer-sanitize.tentative.html": [
-     "431eb836b2787180ef970813133bc99ec4fd5cb9",
+     "219eff418918484a2b8f42062ea7bf8cb60dbad8",
      [
       null,
       {}
      ]
     ],
     "sanitizer-sanitizeToString.tentative.html": [
-     "e2c76d3c35df22b83c5cc1f662627e7165b981c4",
+     "98bb4a4601863d2ee50ef18333f88cfbe43e40fe",
      [
       null,
       {}
