@@ -14,7 +14,7 @@ const uint32_t kPipeElementMaxSize = 0x1000u;
 const uint32_t kPipeCapacityMaxSize = 0x100000u;
 const uint32_t kPipeActionMaxSize = 0x100000u;
 
-Context::Context() : message_(0, 0, 0, 0, nullptr) {}
+Context::Context() = default;
 
 Context::~Context() = default;
 

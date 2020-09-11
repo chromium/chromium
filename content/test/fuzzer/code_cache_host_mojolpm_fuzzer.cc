@@ -156,6 +156,11 @@ class CodeCacheHostTestcase {
   // Apply a reasonable upper-bound on testcase complexity to avoid timeouts.
   const int max_action_count_ = 512;
 
+  // Apply a reasonable upper-bound on maximum size of action that we will
+  // deserialize. (This is deliberately slightly larger than max mojo message
+  // size)
+  const size_t max_action_size_ = 300 * 1024 * 1024;
+
   // Count of total actions performed in this testcase.
   int action_count_ = 0;
 
@@ -246,6 +251,9 @@ void CodeCacheHostTestcase::NextAction() {
       }
       const auto& action =
           testcase_.actions(action_idx % testcase_.actions_size());
+      if (action.ByteSizeLong() > max_action_size_) {
+        return;
+      }
       switch (action.action_case()) {
         case Action::kNewCodeCacheHost: {
           AddCodeCacheHost(action.new_code_cache_host().id(),

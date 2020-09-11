@@ -147,8 +147,6 @@ class Context {
   void StartTestcase();
   void EndTestcase();
 
-  mojo::Message& message() { return message_; }
-
  private:
   // Lookup the previously stored instance of type T using a fuzzy-match on
   // the provided id, and remove that instance from the object storage.
@@ -255,8 +253,6 @@ class Context {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::set<TypeId> interface_type_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<std::pair<TypeId, uint32_t>> rollback_;
-
-  mojo::Message message_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

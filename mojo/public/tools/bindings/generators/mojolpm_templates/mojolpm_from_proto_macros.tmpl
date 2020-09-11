@@ -247,12 +247,12 @@ bool FromProto(
 {%-     set dataview_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
   ::mojo::internal::SerializationContext mojolpm_serialization_context;
-  auto mojolpm_buffer = mojolpm::GetContext()->message().payload_buffer();
+  ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
   {{data_type}}::BufferWriter mojolpm_writer;
   bool result = false;
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{struct_type}}>::Serialize(
-    input, mojolpm_buffer, &mojolpm_writer, &mojolpm_serialization_context);
+    input, mojolpm_message.payload_buffer(), &mojolpm_writer, &mojolpm_serialization_context);
   result = ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
     mojolpm_writer.data(), &output, &mojolpm_serialization_context);
 
@@ -325,11 +325,11 @@ bool FromProto(
 {%-     set dataview_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True)) ~ "DataView" %}
 {%-     set data_type = (union|get_qualified_name_for_kind(flatten_nested_kind=True, internal=True)) %}
   ::mojo::internal::SerializationContext mojolpm_serialization_context;
-  auto mojolpm_buffer = mojolpm::GetContext()->message().payload_buffer();
+  ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
   {{data_type}}::BufferWriter mojolpm_writer;
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{union_type}}>::Serialize(
-    input, mojolpm_buffer, &mojolpm_writer, false, &mojolpm_serialization_context);
+    input, mojolpm_message.payload_buffer(), &mojolpm_writer, false, &mojolpm_serialization_context);
   return ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
     mojolpm_writer.data(), &output, &mojolpm_serialization_context);
 {%-   else %}
