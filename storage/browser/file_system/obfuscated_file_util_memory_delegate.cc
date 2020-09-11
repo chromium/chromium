@@ -456,8 +456,13 @@ int ObfuscatedFileUtilMemoryDelegate::ReadFile(const base::FilePath& path,
     return net::ERR_FILE_NOT_FOUND;
 
   int64_t remaining = dp->entry->file_content.size() - offset;
-  if (offset < 0 || remaining < 0)
-    return net::ERR_REQUEST_RANGE_NOT_SATISFIABLE;
+  if (offset < 0)
+    return net::ERR_INVALID_ARGUMENT;
+
+  // Seeking past the end of the file is ok, but returns nothing.
+  // This matches FileStream::Context behavior.
+  if (remaining < 0)
+    return 0;
 
   if (buf_len > remaining)
     buf_len = static_cast<int>(remaining);

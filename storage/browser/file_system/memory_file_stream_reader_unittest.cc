@@ -235,7 +235,8 @@ TEST_F(MemoryFileStreamReaderTest, ReadWithNegativeOffset) {
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, 1, &result);
-  ASSERT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE, result);
+  ASSERT_EQ(net::ERR_INVALID_ARGUMENT, result);
+  ASSERT_EQ(data.size(), 0u);
 }
 
 TEST_F(MemoryFileStreamReaderTest, ReadWithOffsetLargerThanFile) {
@@ -244,7 +245,8 @@ TEST_F(MemoryFileStreamReaderTest, ReadWithOffsetLargerThanFile) {
   int result = 0;
   std::string data;
   ReadFromReader(reader.get(), &data, 1, &result);
-  ASSERT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE, result);
+  ASSERT_EQ(net::OK, result);
+  ASSERT_EQ(data.size(), 0u);
 }
 
 }  // namespace storage
