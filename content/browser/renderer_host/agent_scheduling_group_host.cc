@@ -99,4 +99,14 @@ void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
   process_.GetRendererInterface()->CreateFrame(std::move(params));
 }
 
+void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
+  // TODO(crbug.com/1111231): Ensure that the mojo endpoints are still connected
+  // (once crrev.com/c/2397057 is submitted).
+  process_.GetRendererInterface()->CreateView(std::move(params));
+}
+
+void AgentSchedulingGroupHost::DestroyView(int32_t routing_id) {
+  process_.GetRendererInterface()->DestroyView(routing_id);
+}
+
 }  // namespace content

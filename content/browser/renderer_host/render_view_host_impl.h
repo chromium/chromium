@@ -49,6 +49,7 @@ struct WebPreferences;
 
 namespace content {
 
+class AgentSchedulingGroupHost;
 class TimeoutMonitor;
 
 // A callback which will be called immediately before EnterBackForwardCache
@@ -340,6 +341,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   void ClosePageTimeout();
 
   void OnPageClosed();
+
+  // Returns the `AgentSchedulingGroupHost` this view is associated with (via
+  // the widget).
+  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
   // TODO(creis): Move to a private namespace on RenderFrameHostImpl.
   // Delay to wait on closing the WebContents for a beforeunload/unload handler

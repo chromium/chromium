@@ -38,6 +38,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
@@ -263,7 +264,7 @@ RenderViewHostImpl::RenderViewHostImpl(
       g_routing_id_view_map.Get().emplace(
           RenderViewHostID(GetProcess()->GetID(), routing_id_), this);
   CHECK(result.second) << "Inserting a duplicate item!";
-  GetProcess()->AddRoute(routing_id_, this);
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
 
   GetProcess()->AddObserver(this);
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
@@ -272,6 +273,8 @@ RenderViewHostImpl::RenderViewHostImpl(
   // brief window where the internal ChannelProxy is null. This ensures that the
   // ChannelProxy is re-initialized in such cases so that subsequent messages
   // make their way to the new renderer once its restarted.
+  // TODO(crbug.com/1111231): Should this go via ASGH? Is it even needed after
+  // the migration?
   GetProcess()->EnableSendQueue();
 
   if (!is_active())
@@ -294,6 +297,10 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   // We can't release the SessionStorageNamespace until our peer
   // in the renderer has wound down.
+  // TODO(crbug.com/1111231): `ReleaseOnCloseACK()` should probably be called on
+  // the ASGH rather than the RPHI. If that happens, does it still make sense to
+  // test if the process is still alive, or should that be encapsulated in
+  // `ASGH::ReleaseOnCloseAck()`?
   if (GetProcess()->IsInitializedAndNotDead()) {
     RenderProcessHostImpl::ReleaseOnCloseACK(
         GetProcess(), delegate_->GetSessionStorageNamespaceMap(),
@@ -304,13 +311,13 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   GetWidget()->ShutdownAndDestroyWidget(false);
   if (IsRenderViewLive()) {
     // Destroy the RenderView, which will also destroy the RenderWidget.
-    GetProcess()->GetRendererInterface()->DestroyView(GetRoutingID());
+    GetAgentSchedulingGroup().DestroyView(GetRoutingID());
   }
 
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
 
   // Detach the routing ID as the object is going away.
-  GetProcess()->RemoveRoute(GetRoutingID());
+  GetAgentSchedulingGroup().RemoveRoute(GetRoutingID());
   g_routing_id_view_map.Get().erase(
       RenderViewHostID(GetProcess()->GetID(), GetRoutingID()));
 
@@ -440,10 +447,10 @@ bool RenderViewHostImpl::CreateRenderView(
     params->visual_properties = GetWidget()->GetInitialVisualProperties();
   }
 
-  // The RenderView is owned by this process. This call must be accompanied by a
-  // DestroyView [see destructor] or else there will be a leak in the renderer
-  // process.
-  GetProcess()->GetRendererInterface()->CreateView(std::move(params));
+  // The renderer process's `RenderView` is owned by this `RenderViewHost`. This
+  // call must, therefore, be accompanied by a `DestroyView()` [see destructor]
+  // or else there will be a leak in the renderer process.
+  GetAgentSchedulingGroup().CreateView(std::move(params));
 
   // Let our delegate know that we created a RenderView.
   DispatchRenderViewCreated();
@@ -619,8 +626,12 @@ RenderWidgetHostImpl* RenderViewHostImpl::GetWidget() {
   return render_widget_host_.get();
 }
 
+AgentSchedulingGroupHost& RenderViewHostImpl::GetAgentSchedulingGroup() {
+  return render_widget_host_->agent_scheduling_group();
+}
+
 RenderProcessHost* RenderViewHostImpl::GetProcess() {
-  return GetWidget()->GetProcess();
+  return GetAgentSchedulingGroup().GetProcess();
 }
 
 int RenderViewHostImpl::GetRoutingID() {

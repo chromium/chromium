@@ -60,6 +60,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Mojo:
   mojom::RouteProvider* GetRemoteRouteProvider();
   void CreateFrame(mojom::CreateFrameParamsPtr params);
+  void CreateView(mojom::CreateViewParamsPtr params);
+  void DestroyView(int32_t routing_id);
 
  private:
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.

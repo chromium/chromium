@@ -191,6 +191,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
 
+  AgentSchedulingGroupHost& agent_scheduling_group() {
+    return agent_scheduling_group_;
+  }
 
   // RenderWidgetHost implementation.
   const viz::FrameSinkId& GetFrameSinkId() override;
