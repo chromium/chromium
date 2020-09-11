@@ -327,6 +327,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Update |last_frame_had_jelly_|, should be called once per frame.
   void SetLastFrameHadJelly(bool had_jelly);
 
+  // Resets member variables that were used during Aggregate().
+  void ResetAfterAggregate();
+
   SurfaceManager* manager_;
   DisplayResourceProvider* provider_;
 
@@ -370,7 +373,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::flat_set<SurfaceId> valid_surfaces_;
 
   // This is the pass list for the aggregated frame.
-  AggregatedRenderPassList* dest_pass_list_;
+  AggregatedRenderPassList* dest_pass_list_ = nullptr;
 
   // The target display time for the aggregated frame.
   base::TimeTicks expected_display_time_;

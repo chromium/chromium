@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/de_jelly.h"
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -794,10 +795,6 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
 }
 
 void SurfaceAggregator::AddColorConversionPass() {
-  if (dest_pass_list_->empty()) {
-    last_frame_had_color_conversion_pass_ = false;
-    return;
-  }
   auto* root_render_pass = dest_pass_list_->back().get();
   gfx::Rect output_rect = root_render_pass->output_rect;
 
@@ -1697,8 +1694,9 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   if (!surface->HasActiveFrame())
     return {};
 
-  base::AutoReset<int64_t> reset_display_trace_id(&display_trace_id_,
-                                                  display_trace_id);
+  display_trace_id_ = display_trace_id;
+  expected_display_time_ = expected_display_time;
+
   const CompositorFrame& root_surface_frame = surface->GetActiveFrame();
   TRACE_EVENT_WITH_FLOW2(
       "viz,benchmark", "Graphics.Pipeline",
@@ -1711,20 +1709,16 @@ AggregatedFrame SurfaceAggregator::Aggregate(
       root_surface_frame.metadata.top_controls_visible_height;
 
   dest_pass_list_ = &frame.render_pass_list;
-  expected_display_time_ = expected_display_time;
 
   const gfx::Size viewport_bounds =
       root_surface_frame.render_pass_list.back()->output_rect.size();
   root_surface_transform_ = gfx::OverlayTransformToTransform(
       display_transform, gfx::SizeF(viewport_bounds));
 
-  valid_surfaces_.clear();
-  has_cached_render_passes_ = false;
-  has_pixel_moving_backdrop_filter_ = false;
+  // Reset state that couldn't be reset in ResetAfterAggregate().
   damage_ranges_.clear();
-  damage_rects_union_of_surfaces_on_top_ = gfx::Rect();
-  new_surfaces_.clear();
   DCHECK(referenced_surfaces_.empty());
+
   PrewalkResult prewalk_result;
   gfx::Rect surfaces_damage_rect = PrewalkSurface(
       surface, /*in_moved_pixel_rp=*/false,
@@ -1759,6 +1753,12 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   referenced_surfaces_.insert(surface_id);
   CopyPasses(root_surface_frame, surface);
   referenced_surfaces_.erase(surface_id);
+  DCHECK(referenced_surfaces_.empty());
+
+  if (dest_pass_list_->empty()) {
+    ResetAfterAggregate();
+    return {};
+  }
 
   // The root render pass damage might have been expanded by target_damage (the
   // area that might need to be recomposited on the target surface). We restrict
@@ -1777,24 +1777,11 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   AddColorConversionPass();
 
-  moved_pixel_passes_.clear();
-  copy_request_passes_.clear();
-  contributing_content_damaged_passes_.clear();
-  render_pass_dependencies_.clear();
-  pass_id_remapper_.ClearUnusedMappings();
-
-  DCHECK(referenced_surfaces_.empty());
-
-  if (dest_pass_list_->empty())
-    return {};
-
-  dest_pass_list_ = nullptr;
-  expected_display_time_ = base::TimeTicks();
   ProcessAddedAndRemovedSurfaces();
   contained_surfaces_.swap(previous_contained_surfaces_);
-  contained_surfaces_.clear();
   contained_frame_sinks_.swap(previous_contained_frame_sinks_);
-  contained_frame_sinks_.clear();
+
+  ResetAfterAggregate();
 
   for (auto it : previous_contained_surfaces_) {
     Surface* surface = manager_->GetSurfaceForId(it.first);
@@ -1814,6 +1801,24 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     frame_annotator_->AnnotateAggregatedFrame(&frame);
 
   return frame;
+}
+
+void SurfaceAggregator::ResetAfterAggregate() {
+  dest_pass_list_ = nullptr;
+  expected_display_time_ = base::TimeTicks();
+  valid_surfaces_.clear();
+  has_cached_render_passes_ = false;
+  has_pixel_moving_backdrop_filter_ = false;
+  damage_rects_union_of_surfaces_on_top_ = gfx::Rect();
+  new_surfaces_.clear();
+  moved_pixel_passes_.clear();
+  copy_request_passes_.clear();
+  contributing_content_damaged_passes_.clear();
+  render_pass_dependencies_.clear();
+  pass_id_remapper_.ClearUnusedMappings();
+  contained_surfaces_.clear();
+  contained_frame_sinks_.clear();
+  display_trace_id_ = -1;
 }
 
 void SurfaceAggregator::ReleaseResources(const SurfaceId& surface_id) {
@@ -1930,7 +1935,7 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
 void SurfaceAggregator::HandleDeJelly(Surface* surface) {
   TRACE_EVENT0("viz", "SurfaceAggregator::HandleDeJelly");
 
-  if (dest_pass_list_->empty() || !DeJellyActive()) {
+  if (!DeJellyActive()) {
     SetLastFrameHadJelly(false);
     return;
   }
