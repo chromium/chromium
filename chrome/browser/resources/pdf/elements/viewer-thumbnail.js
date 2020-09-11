@@ -19,11 +19,19 @@ export class ViewerThumbnailElement extends PolymerElement {
     return {
       isActive: {
         type: Boolean,
+        observer: 'isActiveChanged_',
         reflectToAttribute: true,
       },
 
       pageNumber: Number,
     };
+  }
+
+  /** @private */
+  isActiveChanged_() {
+    if (this.isActive) {
+      this.scrollIntoView({block: 'nearest'});
+    }
   }
 
   /** @private */
