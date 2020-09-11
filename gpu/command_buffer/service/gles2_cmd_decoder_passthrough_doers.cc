@@ -4909,15 +4909,17 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerInUseQueryCHROMIUM(
     gl::GLImage* image = nullptr;
     GLuint texture_id = textures[i];
     if (texture_id) {
+      // If a |texture_id| is invalid (due to a client error), report that it
+      // is not in use. Failing the GL call can result in compositor hangs.
+      // https://crbug.com/1120795
       scoped_refptr<TexturePassthrough> passthrough_texture;
-      if (!resources_->texture_object_map.GetServiceID(texture_id,
-                                                       &passthrough_texture) ||
-          passthrough_texture == nullptr) {
-        InsertError(GL_INVALID_VALUE, "unknown texture");
-        return error::kNoError;
+      if (resources_->texture_object_map.GetServiceID(texture_id,
+                                                      &passthrough_texture)) {
+        if (passthrough_texture) {
+          image = passthrough_texture->GetLevelImage(
+              passthrough_texture->target(), 0);
+        }
       }
-      image =
-          passthrough_texture->GetLevelImage(passthrough_texture->target(), 0);
     }
     gl::GLSurface::CALayerInUseQuery query;
     query.image = image;

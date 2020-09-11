@@ -13981,16 +13981,15 @@ void GLES2DecoderImpl::DoScheduleCALayerInUseQueryCHROMIUM(
     gl::GLImage* image = nullptr;
     GLuint texture_id = textures[i];
     if (texture_id) {
+      // If a |texture_id| is invalid (due to a client error), report that it
+      // is not in use. Failing the GL call can result in compositor hangs.
+      // https://crbug.com/1120795
       TextureRef* ref = texture_manager()->GetTexture(texture_id);
-      if (!ref) {
-        LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
-                           "glScheduleCALayerInUseQueryCHROMIUM",
-                           "unknown texture");
-        return;
+      if (ref) {
+        Texture::ImageState image_state;
+        image = ref->texture()->GetLevelImage(ref->texture()->target(), 0,
+                                              &image_state);
       }
-      Texture::ImageState image_state;
-      image = ref->texture()->GetLevelImage(ref->texture()->target(), 0,
-                                            &image_state);
     }
     gl::GLSurface::CALayerInUseQuery query;
     query.image = image;
