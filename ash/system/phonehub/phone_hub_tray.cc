@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
+#include "ash/system/phonehub/task_continuation_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -45,31 +46,45 @@ constexpr int kPaddingBetweenTitleAndSeparator = 3;
 // such as phone status, task continuation, etc.
 class PhoneHubView : public views ::View {
  public:
-  explicit PhoneHubView(TrayBubbleView* bubble_view) {
+  explicit PhoneHubView(TrayBubbleView* bubble_view)
+      : bubble_view_(bubble_view) {
     auto setup_layered_view = [](views::View* view) {
       view->SetPaintToLayer();
       view->layer()->SetFillsBoundsOpaquely(false);
     };
 
     setup_layered_view(
-        bubble_view->AddChildView(std::make_unique<PhoneStatusView>()));
+        bubble_view_->AddChildView(std::make_unique<PhoneStatusView>()));
 
-    auto* separator =
-        bubble_view->AddChildView(std::make_unique<views::Separator>());
-    setup_layered_view(separator);
-    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kSeparatorColor));
-    separator->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(kPaddingBetweenTitleAndSeparator, 0,
-                    kMenuSeparatorVerticalPadding, 0)));
+    AddSeparator();
 
     setup_layered_view(
-        bubble_view->AddChildView(std::make_unique<QuickActionsView>()));
+        bubble_view_->AddChildView(std::make_unique<QuickActionsView>()));
+
+    AddSeparator();
+
+    setup_layered_view(
+        bubble_view_->AddChildView(std::make_unique<TaskContinuationView>()));
   }
   ~PhoneHubView() override = default;
 
   // views::View:
   const char* GetClassName() const override { return "PhoneHubView"; }
+
+ private:
+  void AddSeparator() {
+    auto* separator =
+        bubble_view_->AddChildView(std::make_unique<views::Separator>());
+    separator->SetPaintToLayer();
+    separator->layer()->SetFillsBoundsOpaquely(false);
+    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kSeparatorColor));
+    separator->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets(kPaddingBetweenTitleAndSeparator, 0,
+                    kMenuSeparatorVerticalPadding, 0)));
+  }
+
+  TrayBubbleView* bubble_view_ = nullptr;
 };
 
 }  // namespace

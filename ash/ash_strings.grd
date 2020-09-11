@@ -972,6 +972,10 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_QUICK_ACTIONS_ON_STATE" desc="Quick actions state in phone hub bubble." meaning="Quick actions feature is on.">
         On
       </message>
+      <message name="IDS_ASH_PHONE_HUB_TASK_CONTINUATION_TITLE" desc="Title of the task continuation section (where users pick up unfinished task left off from their phone, currently only support web browsing) in phone hub bubble.">
+        Continue browsing
+      </message>
+
 
       <message name="IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_ACTION" desc="Title of the capture region action in the stylus tools (a pop-up panel next to the status tray). This causes a partial screenshot to be taken (the user selects an area of the screen to take a screenshot of).">
         Capture region
