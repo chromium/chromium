@@ -209,7 +209,7 @@ bool SendBeaconCommon(const ScriptState& state,
   params.MutableOptions().initiator_info.name =
       fetch_initiator_type_names::kBeacon;
 
-  frame->Client()->DidDispatchPingLoader(request.Url());
+  frame->Client()->DidDispatchPingLoader(url);
   Resource* resource =
       RawResource::Fetch(params, frame->DomWindow()->Fetcher(), nullptr);
   return resource->GetStatus() != ResourceStatus::kLoadError;
