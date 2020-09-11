@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 
 namespace {
 
@@ -23,6 +24,21 @@ std::string WrapSend(const std::string& expression) {
 bool CheckOobeCondition(content::WebContents* web_contents,
                         const std::string& js_condition) {
   return chromeos::test::JSChecker(web_contents).GetBool(js_condition);
+}
+
+bool IsFocused(content::WebContents* web_contents,
+               const std::initializer_list<base::StringPiece>& path) {
+  if (!web_contents->GetContentNativeView()->HasFocus())
+    return false;
+  auto js_checker = chromeos::test::JSChecker(web_contents);
+  std::string current_active = "document.activeElement";
+  for (const auto& it : path) {
+    if (js_checker.GetString(current_active + ".id") != it) {
+      return false;
+    }
+    current_active += ".shadowRoot.activeElement";
+  }
+  return true;
 }
 
 std::string ElementHasClassCondition(
@@ -193,6 +209,23 @@ void JSChecker::ExpectAttributeNE(
     std::initializer_list<base::StringPiece> element_ids,
     bool result) {
   ExpectNE(GetAttributeExpression(attribute, element_ids), result);
+}
+
+void JSChecker::ExpectFocused(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ASSERT_TRUE(web_contents_->GetContentNativeView()->HasFocus());
+
+  std::string current_active = "document.activeElement";
+  for (const auto& it : element_ids) {
+    ExpectEQ(current_active + ".id", std::string(it));
+    current_active += ".shadowRoot.activeElement";
+  }
+}
+
+std::unique_ptr<TestConditionWaiter> JSChecker::CreateFocusWaiter(
+    const std::initializer_list<base::StringPiece>& path) {
+  return std::make_unique<TestPredicateWaiter>(
+      base::BindRepeating(&IsFocused, base::Unretained(web_contents_), path));
 }
 
 std::unique_ptr<TestConditionWaiter> JSChecker::CreateWaiter(

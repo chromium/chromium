@@ -90,6 +90,10 @@ class JSChecker {
                          std::initializer_list<base::StringPiece> element_id,
                          bool result);
 
+  void ExpectFocused(std::initializer_list<base::StringPiece> element_id);
+  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateFocusWaiter(
+      const std::initializer_list<base::StringPiece>& path);
+
   // Checks test waiter that would await until |js_condition| evaluates
   // to true.
   WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateWaiter(
