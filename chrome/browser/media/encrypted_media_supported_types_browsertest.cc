@@ -96,11 +96,11 @@ const char kUnexpectedResult[] = "unexpected result";
 
 // Expectations for Widevine.
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-#define EXPECT_WV_SUCCESS EXPECT_SUCCESS
+#define EXPECT_WV EXPECT_SUCCESS
 #define EXPECT_WV_AV1 EXPECT_AV1
 #define EXPECT_WV_PROPRIETARY EXPECT_PROPRIETARY
 #else
-#define EXPECT_WV_SUCCESS EXPECT_UNSUPPORTED
+#define EXPECT_WV EXPECT_UNSUPPORTED
 #define EXPECT_WV_AV1 EXPECT_UNSUPPORTED
 #define EXPECT_WV_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
@@ -970,19 +970,19 @@ IN_PROC_BROWSER_TEST_F(
 //
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Basic) {
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                           video_webm_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
-                                           audio_webm_codecs()));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                   video_webm_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
+                                   audio_webm_codecs()));
+  EXPECT_WV(
       IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType, opus_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
-                                           audio_mp4_flac_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
+                                   audio_mp4_flac_codecs()));
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, video_mp4_codecs()));
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, audio_mp4_codecs()));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, opus_codecs()));
 }
 
@@ -1028,12 +1028,12 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, NoCodecs) {
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_WebM) {
   // Valid video types.
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                           video_webm_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                           vp9_profile0_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
-                                           vp9_profile2_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                   video_webm_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                   vp9_profile0_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                   vp9_profile2_codecs()));
   EXPECT_WV_AV1(
       IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType, av1_codecs()));
 
@@ -1056,9 +1056,9 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_WebM) {
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
   // Valid audio types.
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
-                                           audio_webm_codecs()));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType,
+                                   audio_webm_codecs()));
+  EXPECT_WV(
       IsSupportedByKeySystem(kWidevine, kAudioWebMMimeType, opus_codecs()));
 
   // Non-audio WebM codecs.
@@ -1080,10 +1080,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
   // Valid video types.
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, video_mp4_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
-                                           vp9_profile0_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
-                                           vp9_profile2_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                   vp9_profile0_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                   vp9_profile2_codecs()));
   EXPECT_WV_AV1(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, av1_codecs()));
 
@@ -1112,10 +1112,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
   // Valid audio types.
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, audio_mp4_codecs()));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, opus_codecs()));
-  EXPECT_WV_SUCCESS(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
-                                           audio_mp4_flac_codecs()));
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
+                                   audio_mp4_flac_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   // Temporary session always supported.
-  EXPECT_WV_SUCCESS(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
 
   // Persistent license session support varies by platform.
   auto result =
@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
   // Mac. On ChromeOS, it is supported when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
   // used above.
-  EXPECT_WV_SUCCESS(result);
+  EXPECT_WV(result);
 #else
   EXPECT_UNSUPPORTED(result);
 #endif
@@ -1155,35 +1155,35 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, SessionType) {
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
   // Robustness is recommended but not required.
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, nullptr));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, ""));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
 
   EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "Invalid String"));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
 #if defined(OS_CHROMEOS)
   // "HW_SECURE_ALL" supported on ChromeOS when the protected media identifier
   // permission is allowed. See kUnsafelyAllowProtectedMediaIdentifierForDomain
   // used above.
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #endif
 
   // Robustness is recommended but not required.
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, nullptr));
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, ""));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, nullptr));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, ""));
 
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "Invalid String"));
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
 
 #if defined(OS_CHROMEOS)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
@@ -1192,14 +1192,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Robustness) {
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
                        EncryptionScheme) {
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, nullptr));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, nullptr));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cenc"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, nullptr));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, nullptr));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cenc"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
 
   // Invalid encryption schemes will be rejected.
   EXPECT_UNSUPPORTED(IsAudioEncryptionSchemeSupported(kWidevine, "Invalid"));
@@ -1222,24 +1222,24 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                        Robustness) {
   // Robustness is recommended but not required.
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, nullptr));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, ""));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, nullptr));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, ""));
 
   // Video robustness.
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_WV(IsVideoRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 
   // Audio robustness.
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_CRYPTO"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_CRYPTO"));
 #if defined(OS_CHROMEOS)
   // "SW_SECURE_DECODE" and "HW_SECURE_ALL" supported on ChromeOS when the
   // protected media identifier permission is allowed. See
   // kUnsafelyAllowProtectedMediaIdentifierForDomain used above.
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
+  EXPECT_WV(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "SW_SECURE_DECODE"));
   EXPECT_UNSUPPORTED(IsAudioRobustnessSupported(kWidevine, "HW_SECURE_ALL"));
@@ -1291,42 +1291,42 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                        EncryptionScheme) {
   // Both encryption schemes are supported when no robustness is specified.
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cenc"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cenc"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9"));
 
   // Both encryption schemes are supported when SW_SECURE* robustness is
   // specified.
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cenc", "SW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cbcs", "SW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
-                                                     "SW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
+                                             "SW_SECURE_CRYPTO"));
+  EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cenc", "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs", "SW_SECURE_DECODE"));
-  EXPECT_WV_SUCCESS(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
-                                                     "SW_SECURE_DECODE"));
+  EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
+                                             "SW_SECURE_DECODE"));
 
   // For HW_SECURE* robustness levels. 'cenc' is always supported. 'cbcs' is
   // supported on ChromeOS, but not on other platforms.
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_ALL"));
 #if defined(OS_CHROMEOS)
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cbcs", "HW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
-                                                     "HW_SECURE_CRYPTO"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
+                                             "HW_SECURE_CRYPTO"));
+  EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs", "HW_SECURE_ALL"));
-  EXPECT_WV_SUCCESS(
+  EXPECT_WV(
       IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9", "HW_SECURE_ALL"));
 #else
   EXPECT_UNSUPPORTED(
