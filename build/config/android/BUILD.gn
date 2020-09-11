@@ -80,13 +80,6 @@ config("compiler") {
   cflags += [ "--target=$abi_target$compile_api_level" ]
   ldflags += [ "--target=$abi_target$compile_api_level" ]
 
-  # TODO(crbug.com/771171): Remove this define once code that uses it has been
-  # updated to no longer need it. This is leftover from older Android NDK
-  # versions.
-  if (compile_api_level < 21) {
-    cflags += [ "-DHAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC=1" ]
-  }
-
   # Assign any flags set for the C compiler to asmflags so that they are sent
   # to the assembler.
   asmflags = cflags

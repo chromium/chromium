@@ -15,6 +15,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+#if defined(OS_ANDROID) && __ANDROID_API__ < 21
+#define HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC 1
+#endif
+
 namespace base {
 
 ConditionVariable::ConditionVariable(Lock* user_lock)
@@ -31,7 +35,7 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
   // versions have pthread_condattr_setclock.
   // Mac can use relative time deadlines.
 #if !defined(OS_APPLE) && !defined(OS_NACL) && \
-    !(defined(OS_ANDROID) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC))
+    !defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
   pthread_condattr_t attrs;
   rv = pthread_condattr_init(&attrs);
   DCHECK_EQ(0, rv);
@@ -120,12 +124,12 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   absolute_time.tv_nsec %= Time::kNanosecondsPerSecond;
   DCHECK_GE(absolute_time.tv_sec, now.tv_sec);  // Overflow paranoia
 
-#if defined(OS_ANDROID) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
+#if defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
   int rv = pthread_cond_timedwait_monotonic_np(
       &condition_, user_mutex_, &absolute_time);
 #else
   int rv = pthread_cond_timedwait(&condition_, user_mutex_, &absolute_time);
-#endif  // OS_ANDROID && HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC
+#endif  // HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC
 #endif  // OS_APPLE
 
   // On failure, we only expect the CV to timeout. Any other error value means
