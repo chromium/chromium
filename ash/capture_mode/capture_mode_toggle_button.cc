@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -21,6 +22,9 @@ CaptureModeToggleButton::CaptureModeToggleButton(
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
+
+  // TODO(afakhry): Fix this.
+  SetTooltipText(base::UTF8ToUTF16(GetClassName()));
 
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();

@@ -22,6 +22,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   ~HoldingSpaceClientImpl() override;
 
   // HoldingSpaceClient:
+  void AddScreenshot(const base::FilePath& file_path) override;
   void CopyToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
   void OpenItem(const HoldingSpaceItem&, SuccessCallback) override;
   void OpenItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;

@@ -8,6 +8,10 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace ash {
 
 class HoldingSpaceItem;
@@ -16,6 +20,9 @@ class HoldingSpaceItem;
 class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
+
+  // Adds a screenshot item backed by the provided `file_path`.
+  virtual void AddScreenshot(const base::FilePath& file_path) = 0;
 
   // Attempts to copy the specified holding space `item` to the clipboard.
   // Success is returned via the supplied `callback`.

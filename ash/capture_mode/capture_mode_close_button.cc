@@ -25,6 +25,9 @@ CaptureModeCloseButton::CaptureModeCloseButton(views::ButtonListener* listener)
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   GetViewAccessibility().OverrideIsLeaf(true);
 
+  // TODO(afakhry): Fix this.
+  GetViewAccessibility().OverrideName(GetClassName());
+
   SetInstallFocusRingOnFocus(true);
   SetFocusForPlatform();
   focus_ring()->SetColor(color_provider->GetControlsLayerColor(

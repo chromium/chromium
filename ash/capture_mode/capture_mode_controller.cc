@@ -9,7 +9,10 @@
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -351,6 +354,9 @@ void CaptureModeController::OnImageFileSaved(
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
   ShowPreviewNotification(path, image);
+
+  if (features::IsTemporaryHoldingSpaceEnabled())
+    HoldingSpaceController::Get()->client()->AddScreenshot(path);
 }
 
 void CaptureModeController::ShowPreviewNotification(

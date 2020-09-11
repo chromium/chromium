@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/test/bind_test_util.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/test/event_generator.h"
@@ -29,6 +34,28 @@ void MouseDrag(const views::View* from, const views::View* to) {
   event_generator.MoveMouseTo(to->GetBoundsInScreen().CenterPoint());
   event_generator.ReleaseLeftButton();
 }
+
+// Performs a press and release of the specified `key_code` with `flags`.
+void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.PressKey(key_code, flags);
+  event_generator.ReleaseKey(key_code, flags);
+}
+
+// Mocks -----------------------------------------------------------------------
+
+class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
+ public:
+  MOCK_METHOD(void,
+              OnHoldingSpaceItemAdded,
+              (const HoldingSpaceItem* item),
+              (override));
+  MOCK_METHOD(void,
+              OnHoldingSpaceItemRemoved,
+              (const HoldingSpaceItem* item),
+              (override));
+};
 
 // DropTargetView --------------------------------------------------------------
 
@@ -121,5 +148,61 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
 
   drop_target_view->GetWidget()->Close();
 }
+
+// Base class for holding space UI browser tests that take screenshots.
+// Parameterized by whether or not `features::CaptureMode` is enabled.
+class HoldingSpaceUiScreenshotBrowserTest
+    : public HoldingSpaceUiBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HoldingSpaceUiScreenshotBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kCaptureMode,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that taking a screenshot adds a screenshot holding space item.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
+  // Verify that no screenshots exist in holding space UI.
+  Show();
+  ASSERT_TRUE(IsShowing());
+  EXPECT_TRUE(GetScreenshotViews().empty());
+
+  Close();
+  ASSERT_FALSE(IsShowing());
+
+  // Take a screenshot using the keyboard. If `features::kCaptureMode` is
+  // enabled, the screenshot will be taken using the `CaptureModeController`.
+  // Otherwise the screenshot will be taken using the `ChromeScreenshotGrabber`.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+
+  // Bind an observer to watch for updates to the holding space model.
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> observer{&mock};
+  observer.Add(HoldingSpaceController::Get()->model());
+
+  // Expect and wait for a screenshot item to be added to holding space.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock, OnHoldingSpaceItemAdded)
+      .WillOnce([&](const HoldingSpaceItem* item) {
+        if (item->type() == HoldingSpaceItem::Type::kScreenshot)
+          run_loop.Quit();
+      });
+  run_loop.Run();
+
+  // Verify that the screenshot appears in holding space UI.
+  Show();
+  ASSERT_TRUE(IsShowing());
+  EXPECT_EQ(1u, GetScreenshotViews().size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceUiScreenshotBrowserTest,
+                         testing::Bool());
 
 }  // namespace ash

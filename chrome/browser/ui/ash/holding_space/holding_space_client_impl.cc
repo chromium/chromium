@@ -57,6 +57,10 @@ HoldingSpaceClientImpl::HoldingSpaceClientImpl(Profile* profile)
 
 HoldingSpaceClientImpl::~HoldingSpaceClientImpl() = default;
 
+void HoldingSpaceClientImpl::AddScreenshot(const base::FilePath& file_path) {
+  GetHoldingSpaceKeyedService(profile_)->AddScreenshot(file_path);
+}
+
 // TODO(crbug/1126274): Implement.
 void HoldingSpaceClientImpl::CopyToClipboard(const HoldingSpaceItem& item,
                                              SuccessCallback callback) {
