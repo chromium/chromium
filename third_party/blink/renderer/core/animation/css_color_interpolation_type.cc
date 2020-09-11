@@ -79,8 +79,8 @@ CSSColorInterpolationType::CreateInterpolableColor(CSSValueID keyword) {
 
 std::unique_ptr<InterpolableValue>
 CSSColorInterpolationType::CreateInterpolableColor(const StyleColor& color) {
-  if (color.IsCurrentColor())
-    return CreateInterpolableColorForIndex(kCurrentcolor);
+  if (!color.IsNumeric())
+    return CreateInterpolableColor(color.GetColorKeyword());
   return CreateInterpolableColor(color.GetColor());
 }
 

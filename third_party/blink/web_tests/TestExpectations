@@ -5745,8 +5745,6 @@ crbug.com/970285 [ Win ] virtual/forced-high-contrast-colors/* [ Pass ]
 crbug.com/970285 [ Linux ] virtual/forced-high-contrast-colors/* [ Pass ]
 crbug.com/970285 [ Android ] virtual/forced-high-contrast-colors/* [ Pass ]
 
-crbug.com/1081945 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-13.html [ Crash ]
-
 # Expected failures for dark mode tests when the corresponding flags
 # are not enabled.
 crbug.com/1090660 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/svg-as-image.html [ Skip ]

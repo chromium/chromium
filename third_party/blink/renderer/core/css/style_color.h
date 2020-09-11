@@ -66,6 +66,10 @@ class CORE_EXPORT StyleColor {
     DCHECK(IsNumeric());
     return color_;
   }
+  CSSValueID GetColorKeyword() const {
+    DCHECK(!IsNumeric());
+    return color_keyword_;
+  }
 
   Color Resolve(Color current_color, WebColorScheme color_scheme) const;
 
