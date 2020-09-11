@@ -646,9 +646,15 @@ void FillResponseWhenNoErrors(RequestType request_type) {
   std::string http_text_response;
   ASSERT_TRUE(TestEnv::GetServerResponseForQuery(
       cache_replayer, request_response_pairs[0].first, &http_text_response));
-  AutofillQueryResponseContents response_from_cache;
-  ASSERT_TRUE(response_from_cache.ParseFromString(
-      SplitHTTP(http_text_response).second));
+  std::string body = SplitHTTP(http_text_response).second;
+  if (std::is_same<TestEnv, ApiTestEnv>::value) {
+    // The Api Environment expects the response to be base64 encoded.
+    std::string tmp;
+    ASSERT_TRUE(base::Base64Decode(body, &tmp));
+    body = tmp;
+  }
+  typename TestEnv::Env::Response response_from_cache;
+  ASSERT_TRUE(response_from_cache.ParseFromString(body));
 }
 
 TEST_P(AutofillCacheReplayerGetResponseForQueryTest,
@@ -658,7 +664,7 @@ TEST_P(AutofillCacheReplayerGetResponseForQueryTest,
 
 TEST_P(AutofillCacheReplayerGetResponseForQueryTest,
        Api_FillsResponseWhenNoErrors) {
-  FillResponseWhenNoErrors<LegacyTestEnv>(GetParam());
+  FillResponseWhenNoErrors<ApiTestEnv>(GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(GetResponseForQueryParameterizeTest,
