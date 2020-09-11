@@ -203,8 +203,8 @@ void X11CursorFactory::UnrefImageCursor(PlatformCursor cursor) {
 
 void X11CursorFactory::ObserveThemeChanges() {
   auto* cursor_theme_manager = CursorThemeManager::GetInstance();
-  if (cursor_theme_manager)
-    cursor_theme_observer_.Add(cursor_theme_manager);
+  DCHECK(cursor_theme_manager);
+  cursor_theme_observer_.Add(cursor_theme_manager);
 }
 
 void X11CursorFactory::OnCursorThemeNameChanged(

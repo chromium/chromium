@@ -7,7 +7,6 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/theme_profile_key.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
@@ -23,6 +22,7 @@
 #if defined(USE_X11)
 #include "ui/gfx/x/connection.h"  // nogncheck
 #if BUILDFLAG(USE_GTK)
+#include "ui/base/ui_base_features.h"
 #include "ui/gtk/x/gtk_ui_delegate_x11.h"  // nogncheck
 #endif  // BUILDFLAG(USE_GTK)
 #endif  // defined(USE_X11)
@@ -86,10 +86,9 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
   views::LinuxUI::SetInstance(linux_ui);
   linux_ui->Initialize();
 
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    ui::CursorFactory::GetInstance()->ObserveThemeChanges();
-#endif
+  // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
+  // implementation). Start observing them once it's initialized.
+  ui::CursorFactory::GetInstance()->ObserveThemeChanges();
 
   DCHECK(ui::LinuxInputMethodContextFactory::instance())
       << "LinuxUI must set LinuxInputMethodContextFactory instance.";
