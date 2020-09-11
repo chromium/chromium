@@ -449,7 +449,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   blink::ServiceWorkerStatusCode StoreUserData(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
     base::RunLoop loop;
     base::Optional<blink::ServiceWorkerStatusCode> result;
@@ -686,6 +686,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
 TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const GURL kScope("http://www.example.com/scope/");
+  const url::Origin kOrigin = url::Origin::Create(kScope);
   const GURL kScript("http://www.example.com/script.js");
   const GURL kDocumentUrl("http://www.example.com/scope/document.html");
   const int64_t kRegistrationId = 0;
@@ -752,8 +753,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
             GetUserDataByKeyPrefix(kRegistrationId, "prefix", &user_data_out));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
-            StoreUserData(kRegistrationId, kScope.GetOrigin(),
-                          {{kUserDataKey, "foo"}}));
+            StoreUserData(kRegistrationId, kOrigin, {{kUserDataKey, "foo"}}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
             ClearUserData(kRegistrationId, {kUserDataKey}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -1104,6 +1104,7 @@ TEST_F(ServiceWorkerStorageTest, InstallingRegistrationsAreFindable) {
 
 TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   const GURL kScope("http://www.test.not/scope/");
+  const url::Origin kOrigin = url::Origin::Create(kScope);
   const GURL kScript("http://www.test.not/script.js");
   LazyInitialize();
 
@@ -1118,9 +1119,8 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 
   // Store user data associated with the registration.
   std::vector<std::string> data_out;
-  EXPECT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      StoreUserData(kRegistrationId, kScope.GetOrigin(), {{"key", "data"}}));
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             GetUserData(kRegistrationId, {"key"}, &data_out));
   ASSERT_EQ(1u, data_out.size());
@@ -1145,7 +1145,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   // Write/overwrite multiple user data keys.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StoreUserData(
-                kRegistrationId, kScope.GetOrigin(),
+                kRegistrationId, kOrigin,
                 {{"key", "overwrite"}, {"key3", "data3"}, {"key4", "data4"}}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
             GetUserData(kRegistrationId, {"key2"}, &data_out));
@@ -1177,7 +1177,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 
   // Get/delete multiple user data keys by prefixes.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
-            StoreUserData(kRegistrationId, kScope.GetOrigin(),
+            StoreUserData(kRegistrationId, kOrigin,
                           {{"prefixA", "data1"},
                            {"prefixA2", "data2"},
                            {"prefixB", "data3"},
@@ -1204,9 +1204,8 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   EXPECT_TRUE(data_out.empty());
 
   // User data should be deleted when the associated registration is deleted.
-  ASSERT_EQ(
-      blink::ServiceWorkerStatusCode::kOk,
-      StoreUserData(kRegistrationId, kScope.GetOrigin(), {{"key", "data"}}));
+  ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+            StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}));
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             GetUserData(kRegistrationId, {"key"}, &data_out));
   ASSERT_EQ(1u, data_out.size());
@@ -1224,7 +1223,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   // Data access with an invalid registration id should be failed.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
             StoreUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                          kScope.GetOrigin(), {{"key", "data"}}));
+                          kOrigin, {{"key", "data"}}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
             GetUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
                         {"key"}, &data_out));
@@ -1241,13 +1240,12 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 
   // Data access with an empty key should be failed.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kScope.GetOrigin(),
+            StoreUserData(kRegistrationId, kOrigin,
                           std::vector<std::pair<std::string, std::string>>()));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kScope.GetOrigin(),
-                          {{std::string(), "data"}}));
+            StoreUserData(kRegistrationId, kOrigin, {{std::string(), "data"}}));
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorFailed,
-            StoreUserData(kRegistrationId, kScope.GetOrigin(),
+            StoreUserData(kRegistrationId, kOrigin,
                           {{std::string(), "data"}, {"key", "data"}}));
   EXPECT_EQ(
       blink::ServiceWorkerStatusCode::kErrorFailed,
@@ -1280,7 +1278,8 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 TEST_F(ServiceWorkerStorageTest, StoreUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorNotFound,
-            StoreUserData(kRegistrationId, GURL("https://example.com"),
+            StoreUserData(kRegistrationId,
+                          url::Origin::Create(GURL("https://example.com")),
                           {{"key", "data"}}));
 }
 

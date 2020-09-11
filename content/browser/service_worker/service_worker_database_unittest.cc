@@ -1066,13 +1066,13 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
 
 TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
-  data.scope = URL(kOrigin, "/foo");
-  data.script = URL(kOrigin, "/script.js");
+  data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources;
@@ -1186,13 +1186,13 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
 TEST(ServiceWorkerDatabaseTest,
      UserData_ReadUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
-  data1.scope = URL(kOrigin, "/foo");
-  data1.script = URL(kOrigin, "/script1.js");
+  data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -1201,8 +1201,8 @@ TEST(ServiceWorkerDatabaseTest,
   // Add registration 2.
   RegistrationData data2;
   data2.registration_id = 101;
-  data2.scope = URL(kOrigin, "/bar");
-  data2.script = URL(kOrigin, "/script2.js");
+  data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -1279,13 +1279,13 @@ TEST(ServiceWorkerDatabaseTest,
 
 TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
-  data.scope = URL(kOrigin, "/foo");
-  data.script = URL(kOrigin, "/script.js");
+  data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources;
@@ -1325,13 +1325,13 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
 
 TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add a registration.
   RegistrationData data;
   data.registration_id = 100;
-  data.scope = URL(kOrigin, "/foo");
-  data.script = URL(kOrigin, "/script.js");
+  data.scope = URL(kOrigin.GetURL(), "/foo");
+  data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources;
@@ -1375,13 +1375,13 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
 
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
-  data1.scope = URL(kOrigin, "/foo");
-  data1.script = URL(kOrigin, "/script1.js");
+  data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -1390,8 +1390,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   // Add registration 2.
   RegistrationData data2;
   data2.registration_id = 101;
-  data2.scope = URL(kOrigin, "/bar");
-  data2.script = URL(kOrigin, "/script2.js");
+  data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -1483,13 +1483,13 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
 TEST(ServiceWorkerDatabaseTest,
      UserData_DeleteUserDataForAllRegistrationsByKeyPrefix) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
-  data1.scope = URL(kOrigin, "/foo");
-  data1.script = URL(kOrigin, "/script1.js");
+  data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -1498,8 +1498,8 @@ TEST(ServiceWorkerDatabaseTest,
   // Add registration 2.
   RegistrationData data2;
   data2.registration_id = 101;
-  data2.scope = URL(kOrigin, "/bar");
-  data2.script = URL(kOrigin, "/script2.js");
+  data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -1570,13 +1570,13 @@ TEST(ServiceWorkerDatabaseTest,
 
 TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
-  data1.scope = URL(kOrigin, "/foo");
-  data1.script = URL(kOrigin, "/script1.js");
+  data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -1585,8 +1585,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   // Add registration 2.
   RegistrationData data2;
   data2.registration_id = 101;
-  data2.scope = URL(kOrigin, "/bar");
-  data2.script = URL(kOrigin, "/script2.js");
+  data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kImports;
@@ -1668,13 +1668,13 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
 
 TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Add registration 1.
   RegistrationData data1;
   data1.registration_id = 100;
-  data1.scope = URL(kOrigin, "/foo");
-  data1.script = URL(kOrigin, "/script1.js");
+  data1.scope = URL(kOrigin.GetURL(), "/foo");
+  data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -1683,8 +1683,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Add registration 2.
   RegistrationData data2;
   data2.registration_id = 101;
-  data2.scope = URL(kOrigin, "/bar");
-  data2.script = URL(kOrigin, "/script2.js");
+  data2.scope = URL(kOrigin.GetURL(), "/bar");
+  data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -1731,8 +1731,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   // Delete all data associated with the registration1. This shouldn't delete
   // the data associated with registration2.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data1.registration_id, kOrigin,
-                                         &deleted_version));
+            database->DeleteRegistration(data1.registration_id,
+                                         kOrigin.GetURL(), &deleted_version));
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kErrorNotFound,
       database->ReadUserData(data1.registration_id, {"key1"}, &user_data_out));
@@ -1748,7 +1748,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
 
 TEST(ServiceWorkerDatabaseTest, UserData_UninitializedDatabase) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
-  const GURL kOrigin("https://example.com");
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
 
   // Should be failed because the database does not exist.
   std::vector<std::string> user_data_out;
@@ -1950,20 +1950,22 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
   // Data associated with |origin1| will be removed.
-  GURL origin1("https://example.com");
-  GURL origin2("https://example.org");
+  GURL url1("https://example.com");
+  GURL url2("https://example.org");
+  url::Origin origin1 = url::Origin::Create(url1);
+  url::Origin origin2 = url::Origin::Create(url2);
 
   // |origin1| has two registrations (registration1 and registration2).
   RegistrationData data1;
   data1.registration_id = 10;
-  data1.scope = URL(origin1, "/foo");
-  data1.script = URL(origin1, "/resource1");
+  data1.scope = URL(url1, "/foo");
+  data1.script = URL(url1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 2013 + 512;
 
   std::vector<ResourceRecordPtr> resources1;
-  resources1.push_back(CreateResource(1, URL(origin1, "/resource1"), 2013));
-  resources1.push_back(CreateResource(2, URL(origin1, "/resource2"), 512));
+  resources1.push_back(CreateResource(1, URL(url1, "/resource1"), 2013));
+  resources1.push_back(CreateResource(2, URL(url1, "/resource2"), 512));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources1, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -1977,14 +1979,14 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
 
   RegistrationData data2;
   data2.registration_id = 11;
-  data2.scope = URL(origin1, "/bar");
-  data2.script = URL(origin1, "/resource3");
+  data2.scope = URL(url1, "/bar");
+  data2.script = URL(url1, "/resource3");
   data2.version_id = 101;
   data2.resources_total_size_bytes = 4 + 5;
 
   std::vector<ResourceRecordPtr> resources2;
-  resources2.push_back(CreateResource(3, URL(origin1, "/resource3"), 4));
-  resources2.push_back(CreateResource(4, URL(origin1, "/resource4"), 5));
+  resources2.push_back(CreateResource(3, URL(url1, "/resource3"), 4));
+  resources2.push_back(CreateResource(4, URL(url1, "/resource4"), 5));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data2, resources2, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -1999,14 +2001,14 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   // |origin2| has one registration (registration3).
   RegistrationData data3;
   data3.registration_id = 12;
-  data3.scope = URL(origin2, "/hoge");
-  data3.script = URL(origin2, "/resource5");
+  data3.scope = URL(url2, "/hoge");
+  data3.script = URL(url2, "/resource5");
   data3.version_id = 102;
   data3.resources_total_size_bytes = 6 + 7;
 
   std::vector<ResourceRecordPtr> resources3;
-  resources3.push_back(CreateResource(5, URL(origin2, "/resource5"), 6));
-  resources3.push_back(CreateResource(6, URL(origin2, "/resource6"), 7));
+  resources3.push_back(CreateResource(5, URL(url2, "/resource5"), 6));
+  resources3.push_back(CreateResource(6, URL(url2, "/resource6"), 7));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data3, resources3, &deleted_version));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2020,7 +2022,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
 
   std::set<GURL> origins_to_delete;
   std::vector<int64_t> newly_purgeable_resources;
-  origins_to_delete.insert(origin1);
+  origins_to_delete.insert(url1);
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->DeleteAllDataForOrigins(origins_to_delete,
                                               &newly_purgeable_resources));
@@ -2030,13 +2032,13 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetOriginsWithRegistrations(&unique_origins));
   EXPECT_EQ(1u, unique_origins.size());
-  EXPECT_TRUE(base::Contains(unique_origins, origin2));
+  EXPECT_TRUE(base::Contains(unique_origins, url2));
 
   // The registrations for |origin1| should be removed.
   std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
-  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->GetRegistrationsForOrigin(url::Origin::Create(origin1),
-                                                &registrations, nullptr));
+  EXPECT_EQ(
+      ServiceWorkerDatabase::Status::kOk,
+      database->GetRegistrationsForOrigin(origin1, &registrations, nullptr));
   EXPECT_TRUE(registrations.empty());
   GURL origin_out;
   EXPECT_EQ(
@@ -2047,14 +2049,14 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   RegistrationDataPtr data_out;
   std::vector<ResourceRecordPtr> resources_out;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->ReadRegistration(data3.registration_id, origin2,
-                                       &data_out, &resources_out));
+            database->ReadRegistration(data3.registration_id, url2, &data_out,
+                                       &resources_out));
   VerifyRegistrationData(data3, *data_out);
   VerifyResourceRecords(resources3, resources_out);
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
       database->ReadRegistrationOrigin(data3.registration_id, &origin_out));
-  EXPECT_EQ(origin2, origin_out);
+  EXPECT_EQ(url2, origin_out);
 
   // The resources associated with |origin1| should be purgeable.
   std::vector<int64_t> purgeable_ids_out;

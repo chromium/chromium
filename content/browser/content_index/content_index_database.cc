@@ -225,7 +225,7 @@ void ContentIndexDatabase::DidSerializeIcons(
                           std::move(description), launch_url, entry_time);
 
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, origin.GetURL(),
+      service_worker_registration_id, origin,
       {{std::move(entry_key), std::move(entry_value)},
        {std::move(icon_key), std::move(icons_value)}},
       base::BindOnce(&ContentIndexDatabase::DidAddEntry,

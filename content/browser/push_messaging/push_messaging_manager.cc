@@ -563,7 +563,7 @@ void PushMessagingManager::PersistRegistrationOnSW(
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GURL requesting_origin = data.requesting_origin;
+  url::Origin requesting_origin = url::Origin::Create(data.requesting_origin);
   int64_t registration_id = data.service_worker_registration_id;
   std::string application_server_key(
       std::string(data.options->application_server_key.begin(),

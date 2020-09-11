@@ -278,7 +278,7 @@ void DevToolsBackgroundServicesContextImpl::
                                          event_metadata.end());
 
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, origin.GetURL(),
+      service_worker_registration_id, origin,
       {{CreateEntryKey(event.background_service()), event.SerializeAsString()}},
       base::BindOnce(&DidLogServiceEvent));
 

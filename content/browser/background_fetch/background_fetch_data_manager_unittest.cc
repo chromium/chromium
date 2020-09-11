@@ -453,7 +453,7 @@ class BackgroundFetchDataManagerTest
 
     base::RunLoop run_loop;
     embedded_worker_test_helper()->context_wrapper()->StoreRegistrationUserData(
-        service_worker_registration_id, origin().GetURL(), {{key, value}},
+        service_worker_registration_id, origin(), {{key, value}},
         base::BindOnce(&DidStoreUserData, run_loop.QuitClosure()));
     run_loop.Run();
   }

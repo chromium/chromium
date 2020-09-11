@@ -194,7 +194,7 @@ class CONTENT_EXPORT ServiceWorkerDatabase {
   // registration specified by |registration_id| does not exist in the database.
   Status WriteUserData(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       const std::vector<storage::mojom::ServiceWorkerUserDataPtr>& user_data);
 
   // Deletes user data for |registration_id| and |user_data_names| from the

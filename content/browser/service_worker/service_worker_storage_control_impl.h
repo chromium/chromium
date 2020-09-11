@@ -120,7 +120,7 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
                    GetUserDataCallback callback) override;
   void StoreUserData(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
       StoreUserDataCallback callback) override;
   void ClearUserData(int64_t registration_id,

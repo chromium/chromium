@@ -348,7 +348,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->scope().GetOrigin(),
+      registration->id(), registration->origin(),
       {{CreatePaymentAppKey(registration->scope().spec()),
         serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidUpdatePaymentApp,
@@ -472,7 +472,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, pattern.GetOrigin(),
+      registration_id, url::Origin::Create(pattern),
       {{CreatePaymentAppKey(pattern.spec()), serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidEnablePaymentAppDelegations,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -525,7 +525,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, pattern.GetOrigin(),
+      registration_id, url::Origin::Create(pattern),
       {{CreatePaymentAppKey(pattern.spec()), serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidSetPaymentAppUserHint,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -596,7 +596,7 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
   // Constructing registration_id, registration_origin and storage_key before
   // moving registration.
   int64_t registration_id = registration->id();
-  GURL registration_origin = registration->scope().GetOrigin();
+  url::Origin registration_origin = registration->origin();
   std::string storage_key = CreatePaymentAppKey(registration->scope().spec());
   service_worker_context_->StoreRegistrationUserData(
       registration_id, registration_origin,
@@ -639,7 +639,7 @@ void PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->scope().GetOrigin(),
+      registration->id(), registration->origin(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},
@@ -920,7 +920,7 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
   DCHECK(success);
 
   service_worker_context_->StoreRegistrationUserData(
-      registration->id(), registration->scope().GetOrigin(),
+      registration->id(), registration->origin(),
       {{CreatePaymentInstrumentKey(instrument_key), serialized_instrument},
        {CreatePaymentInstrumentKeyInfoKey(instrument_key),
         serialized_key_info}},

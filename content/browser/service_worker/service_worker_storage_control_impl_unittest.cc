@@ -449,7 +449,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
 
   DatabaseStatus StoreUserData(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data) {
     DatabaseStatus return_value;
     base::RunLoop loop;
@@ -1164,7 +1164,7 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndGetUserData) {
     user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
         registration_id, "key2", "value2"));
 
-    status = StoreUserData(registration_id, kScope.GetOrigin(),
+    status = StoreUserData(registration_id, url::Origin::Create(kScope),
                            std::move(user_data));
     ASSERT_EQ(status, DatabaseStatus::kOk);
   }
@@ -1257,8 +1257,8 @@ TEST_F(ServiceWorkerStorageControlImplTest, StoreAndGetUserDataByKeyPrefix) {
       registration_id, "prefixB", "value3"));
   user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
       registration_id, "prefixC", "value4"));
-  status =
-      StoreUserData(registration_id, kScope.GetOrigin(), std::move(user_data));
+  status = StoreUserData(registration_id, url::Origin::Create(kScope),
+                         std::move(user_data));
   ASSERT_EQ(status, DatabaseStatus::kOk);
 
   {
@@ -1342,7 +1342,7 @@ TEST_F(ServiceWorkerStorageControlImplTest,
         registration_id1, "key2", "registration1_value2"));
     user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
         registration_id1, "prefix1", "registration1_prefix_value1"));
-    status = StoreUserData(registration_id1, kScope1.GetOrigin(),
+    status = StoreUserData(registration_id1, url::Origin::Create(kScope1),
                            std::move(user_data));
     ASSERT_EQ(status, DatabaseStatus::kOk);
   }
@@ -1354,7 +1354,7 @@ TEST_F(ServiceWorkerStorageControlImplTest,
         registration_id1, "key3", "registration2_value3"));
     user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
         registration_id1, "prefix2", "registration2_prefix_value2"));
-    status = StoreUserData(registration_id2, kScope2.GetOrigin(),
+    status = StoreUserData(registration_id2, url::Origin::Create(kScope2),
                            std::move(user_data));
     ASSERT_EQ(status, DatabaseStatus::kOk);
   }

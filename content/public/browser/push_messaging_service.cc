@@ -64,7 +64,7 @@ void UpdatePushSubscriptionIdOnIO(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   service_worker_context->StoreRegistrationUserData(
-      service_worker_registration_id, origin,
+      service_worker_registration_id, url::Origin::Create(origin),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));
 }
@@ -79,7 +79,7 @@ void StorePushSubscriptionOnIOForTesting(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   service_worker_context->StoreRegistrationUserData(
-      service_worker_registration_id, origin,
+      service_worker_registration_id, url::Origin::Create(origin),
       {{kPushRegistrationIdServiceWorkerKey, subscription_id},
        {kPushSenderIdServiceWorkerKey, sender_id}},
       base::BindOnce(&CallClosureFromIO, std::move(callback)));

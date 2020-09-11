@@ -596,7 +596,7 @@ void ServiceWorkerStorage::DoomUncommittedResources(
 
 void ServiceWorkerStorage::StoreUserData(
     int64_t registration_id,
-    const GURL& origin,
+    const url::Origin& origin,
     std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -1197,9 +1197,9 @@ void ServiceWorkerStorage::DidDoomUncommittedResourceIds(
 
 void ServiceWorkerStorage::DidStoreUserData(
     DatabaseStatusCallback callback,
-    const GURL& origin,
+    const url::Origin& origin,
     ServiceWorkerDatabase::Status status) {
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
+  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin.GetURL());
   std::move(callback).Run(status);
 }
 

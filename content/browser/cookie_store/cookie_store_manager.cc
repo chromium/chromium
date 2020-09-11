@@ -412,7 +412,8 @@ void CookieStoreManager::StoreSubscriptions(
       << "Failed to create cookie change subscriptions protobuf";
 
   service_worker_context_->StoreRegistrationUserData(
-      service_worker_registration_id, service_worker_origin,
+      service_worker_registration_id,
+      url::Origin::Create(service_worker_origin),
       std::vector<std::pair<std::string, std::string>>(
           {{registration_user_data_key_, subscriptions_data}}),
       base::BindOnce(

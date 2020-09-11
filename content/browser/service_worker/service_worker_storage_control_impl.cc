@@ -302,7 +302,7 @@ void ServiceWorkerStorageControlImpl::GetUserData(
 
 void ServiceWorkerStorageControlImpl::StoreUserData(
     int64_t registration_id,
-    const GURL& origin,
+    const url::Origin& origin,
     std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
     StoreUserDataCallback callback) {
   storage_->StoreUserData(registration_id, origin, std::move(user_data),

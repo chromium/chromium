@@ -57,7 +57,7 @@ void NotificationStorage::WriteNotificationData(
   }
 
   service_worker_context_->StoreRegistrationUserData(
-      data.service_worker_registration_id, data.origin,
+      data.service_worker_registration_id, url::Origin::Create(data.origin),
       {{CreateDataKey(data.notification_id), std::move(serialized_data)}},
       base::BindOnce(&NotificationStorage::OnWriteComplete,
                      weak_ptr_factory_.GetWeakPtr(), data,
@@ -133,7 +133,7 @@ void NotificationStorage::OnReadCompleteUpdateInteraction(
     return;
   }
 
-  GURL origin = data->origin;
+  url::Origin origin = url::Origin::Create(data->origin);
   std::string notification_id = data->notification_id;
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id, origin,

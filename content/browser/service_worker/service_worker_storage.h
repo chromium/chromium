@@ -229,7 +229,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // Stored data is deleted when the associated registraton is deleted.
   void StoreUserData(
       int64_t registration_id,
-      const GURL& origin,
+      const url::Origin& origin,
       std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
       DatabaseStatusCallback callback);
   // Responds OK if all are successfully deleted or not found in the database.
@@ -398,7 +398,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
                                      DatabaseStatusCallback callback,
                                      ServiceWorkerDatabase::Status status);
   void DidStoreUserData(DatabaseStatusCallback callback,
-                        const GURL& origin,
+                        const url::Origin& origin,
                         ServiceWorkerDatabase::Status status);
 
   // Lazy disk_cache getter.

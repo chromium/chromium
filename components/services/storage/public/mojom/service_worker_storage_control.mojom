@@ -220,7 +220,7 @@ interface ServiceWorkerStorageControl {
       (ServiceWorkerDatabaseStatus status, array<string> values);
   // Stores |user_data| on persistent storage.
   StoreUserData(int64 registration_id,
-                url.mojom.Url origin,
+                url.mojom.Origin origin,
                 array<ServiceWorkerUserData> user_data) =>
       (ServiceWorkerDatabaseStatus status);
   // Clears user data specified by |registration_id| and |keys|.
