@@ -2518,7 +2518,12 @@ void AutofillManager::TriggerRefill(const FormData& form) {
 
   auto itr =
       filling_contexts_map_.find(form_structure->GetIdentifierForRefill());
-  DCHECK(itr != filling_contexts_map_.end());
+
+  // Since GetIdentifierForRefill() is not stable across dynamic changes,
+  // |filling_contexts_map_| may not contain the element anymore.
+  if (itr == filling_contexts_map_.end())
+    return;
+
   FillingContext* filling_context = itr->second.get();
 
   // The refill attempt can happen from different paths, some of which happen
