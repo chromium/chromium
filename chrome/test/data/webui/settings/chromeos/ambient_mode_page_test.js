@@ -147,6 +147,16 @@ suite('AmbientModeHandler', function() {
     assertEquals(2, topicSourceItems.length);
   });
 
+  test('topicSourceItemHasCorrectRowHeight', function() {
+    const topicSourceListElement = ambientModePage.$$('topic-source-list');
+    const ironList = topicSourceListElement.$$('iron-list');
+    const topicSourceItems = ironList.querySelectorAll('topic-source-item');
+
+    topicSourceItems.forEach((row) => {
+      assertEquals(64, row.offsetHeight);
+    });
+  });
+
   test('Deep link to topic sources', async () => {
     loadTimeData.overrideValues({isDeepLinkingEnabled: true});
     assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
