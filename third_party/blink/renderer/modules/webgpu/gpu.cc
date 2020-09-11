@@ -53,12 +53,9 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProviderOnMainThread(
   return created_context_provider;
 }
 
-}  // anonymous namespace
-
-// static
-GPU* GPU::Create(ExecutionContext& execution_context) {
+std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
+    ExecutionContext& execution_context) {
   const KURL& url = execution_context.Url();
-
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
   if (IsMainThread()) {
     context_provider =
@@ -74,22 +71,18 @@ GPU* GPU::Create(ExecutionContext& execution_context) {
     // error.
     return nullptr;
   }
-
-  if (!context_provider) {
-    // TODO(crbug.com/973017): Collect GPU info and surface context creation
-    // error.
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<GPU>(execution_context,
-                                   std::move(context_provider));
+  return context_provider;
 }
 
-GPU::GPU(ExecutionContext& execution_context,
-         std::unique_ptr<WebGraphicsContext3DProvider> context_provider)
-    : ExecutionContextLifecycleObserver(&execution_context),
-      dawn_control_client_(base::MakeRefCounted<DawnControlClientHolder>(
-          std::move(context_provider))) {}
+}  // anonymous namespace
+
+// static
+GPU* GPU::Create(ExecutionContext& execution_context) {
+  return MakeGarbageCollected<GPU>(execution_context);
+}
+
+GPU::GPU(ExecutionContext& execution_context)
+    : ExecutionContextLifecycleObserver(&execution_context) {}
 
 GPU::~GPU() = default;
 
@@ -99,6 +92,9 @@ void GPU::Trace(Visitor* visitor) const {
 }
 
 void GPU::ContextDestroyed() {
+  if (!dawn_control_client_) {
+    return;
+  }
   dawn_control_client_->Destroy();
 }
 
@@ -117,6 +113,29 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
                                   const GPURequestAdapterOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    // TODO(natlee@microsoft.com): if GPU process is lost, wait for the GPU
+    // process to come back instead of rejecting right away
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
+        CreateContextProvider(*execution_context);
+
+    if (!context_provider) {
+      // Failed to create context provider, won't be able to request adapter
+      // TODO(crbug.com/973017): Collect GPU info and surface context creation
+      // error.
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "Fail to request GPUAdapter"));
+      return promise;
+    } else {
+      // Make a new DawnControlClientHolder with the context provider we just
+      // made and set the lost context callback
+      dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
+          std::move(context_provider));
+      dawn_control_client_->SetLostContextCallback();
+    }
+  }
 
   // For now we choose kHighPerformance by default.
   gpu::webgpu::PowerPreference power_preference =

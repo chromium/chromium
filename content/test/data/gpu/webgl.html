@@ -155,9 +155,9 @@ function onLoad() {
   if (!testHorizontalBands())
     return;
 
-  var query = /query=(.*)/.exec(window.location.href);
-  if (query)
-    contextLostTest(query[1]);
+  const query = new URLSearchParams(window.location.search).get('query');
+    if (query)
+      contextLostTest(query);
 }
 </script>
 </head>

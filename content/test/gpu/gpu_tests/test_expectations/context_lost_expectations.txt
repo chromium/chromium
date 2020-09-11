@@ -73,3 +73,8 @@ crbug.com/1105308 [ fuchsia ] ContextLost_WebGLContextLostFromGPUProcessExit [ S
 crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
 crbug.com/1105308 [ fuchsia ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
+
+# Webgpu not fully supported on Linux, Android, and Fuchsia
+[ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ fuchsia ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ android ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]

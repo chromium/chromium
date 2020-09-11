@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -13,6 +14,11 @@ DawnControlClientHolder::DawnControlClientHolder(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider)
     : context_provider_(std::move(context_provider)),
       interface_(context_provider_->WebGPUInterface()) {}
+
+void DawnControlClientHolder::SetLostContextCallback() {
+  context_provider_->SetLostContextCallback(WTF::BindRepeating(
+      &DawnControlClientHolder::SetContextLost, base::WrapRefCounted(this)));
+}
 
 void DawnControlClientHolder::Destroy() {
   interface_ = nullptr;
@@ -36,6 +42,14 @@ gpu::webgpu::WebGPUInterface* DawnControlClientHolder::GetInterface() const {
 const DawnProcTable& DawnControlClientHolder::GetProcs() const {
   DCHECK(interface_);
   return interface_->GetProcs();
+}
+
+void DawnControlClientHolder::SetContextLost() {
+  lost_ = true;
+}
+
+bool DawnControlClientHolder::IsContextLost() const {
+  return lost_;
 }
 
 }  // namespace blink

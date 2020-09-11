@@ -94,6 +94,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls._is_asan = options.is_asan
     tests = (('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
+             ('ContextLost_WebGPUContextLostFromGPUProcessExit',
+              'webgpu-context-lost.html?query=kill_after_notification'),
              ('ContextLost_WebGLContextLostFromGPUProcessExit',
               'webgl.html?query=kill_after_notification'),
              ('ContextLost_WebGLContextLostFromLoseContextExtension',
@@ -245,6 +247,14 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _ContextLost_WebGLContextLostFromGPUProcessExit(self, test_path):
     self.RestartBrowserIfNecessaryWithArgs(
         [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
+    self._NavigateAndWaitForLoad(test_path)
+    self._KillGPUProcess(1, False)
+    self._RestartBrowser('must restart after tests that kill the GPU process')
+
+  def _ContextLost_WebGPUContextLostFromGPUProcessExit(self, test_path):
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--enable-unsafe-webgpu',
+    ])
     self._NavigateAndWaitForLoad(test_path)
     self._KillGPUProcess(1, False)
     self._RestartBrowser('must restart after tests that kill the GPU process')

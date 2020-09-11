@@ -37,6 +37,9 @@ class PLATFORM_EXPORT DawnControlClientHolder
   WebGraphicsContext3DProvider* GetContextProvider() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;
   const DawnProcTable& GetProcs() const;
+  void SetContextLost();
+  bool IsContextLost() const;
+  void SetLostContextCallback();
 
  private:
   friend class RefCounted<DawnControlClientHolder>;
@@ -44,6 +47,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
 
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider_;
   gpu::webgpu::WebGPUInterface* interface_;
+  bool lost_ = false;
 };
 
 }  // namespace blink

@@ -18,7 +18,6 @@ namespace blink {
 class GPURequestAdapterOptions;
 class ScriptPromiseResolver;
 class ScriptState;
-class WebGraphicsContext3DProvider;
 class DawnControlClientHolder;
 
 class GPU final : public ScriptWrappable,
@@ -27,8 +26,7 @@ class GPU final : public ScriptWrappable,
 
  public:
   static GPU* Create(ExecutionContext& execution_context);
-  explicit GPU(ExecutionContext& execution_context,
-               std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
+  explicit GPU(ExecutionContext& execution_context);
   ~GPU() override;
 
   // ScriptWrappable overrides
