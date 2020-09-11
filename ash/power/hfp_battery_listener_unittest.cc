@@ -43,6 +43,10 @@ class HfpBatteryListenerTest : public AshTestBase {
     ON_CALL(*mock_adapter_, GetDevice(kAddress))
         .WillByDefault(Return(mock_device_.get()));
 
+    // Check that HfpBatteryListener subscribes to be adapter observer.
+    EXPECT_CALL(*mock_adapter_, AddObserver(_))
+        .WillOnce(testing::SaveArg<0>(&adapter_observer_));
+
     listener_ = std::make_unique<HfpBatteryListener>(mock_adapter_);
   }
 
@@ -60,6 +64,7 @@ class HfpBatteryListenerTest : public AshTestBase {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_;
   std::unique_ptr<HfpBatteryListener> listener_;
+  device::BluetoothAdapter::Observer* adapter_observer_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HfpBatteryListenerTest);

@@ -4,7 +4,6 @@
 
 #include "ash/power/hfp_battery_listener.h"
 
-#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
@@ -14,10 +13,17 @@ HfpBatteryListener::HfpBatteryListener(
     : adapter_(adapter) {
   DCHECK(adapter);
   chromeos::CrasAudioHandler::Get()->AddAudioObserver(this);
+  adapter_->AddObserver(this);
+
+  // We may be late for DeviceAdded notifications. So for the already added
+  // devices, simulate DeviceAdded events.
+  for (auto* const device : adapter_->GetDevices())
+    DeviceAdded(adapter_.get(), device);
 }
 
 HfpBatteryListener::~HfpBatteryListener() {
   chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  adapter_->RemoveObserver(this);
 }
 
 void HfpBatteryListener::OnBluetoothBatteryChanged(const std::string& address,
@@ -30,6 +36,11 @@ void HfpBatteryListener::OnBluetoothBatteryChanged(const std::string& address,
     device->SetBatteryPercentage(base::nullopt);
   else
     device->SetBatteryPercentage(level);
+}
+
+void HfpBatteryListener::DeviceAdded(device::BluetoothAdapter* adapter,
+                                     device::BluetoothDevice* device) {
+  chromeos::CrasAudioHandler::Get()->ResendBluetoothBattery();
 }
 
 }  // namespace ash
