@@ -100,7 +100,7 @@ class InstanceID {
   // automatically. Thus you should not store tokens for long periods yourself,
   // instead call this function each time it's needed.
   //
-  // To receive messages, register an |AppIdHandler| on a |GCMDriver|.
+  // To receive messages, register an |AppIdHandler| on |gcm_driver()|.
   //
   // |authorized_entity|: identifies the entity that is authorized to access
   //                      resources associated with this Instance ID. It can be
@@ -152,6 +152,8 @@ class InstanceID {
 
   std::string app_id() const { return app_id_; }
 
+  gcm::GCMDriver* gcm_driver() { return gcm_driver_; }
+
  protected:
   InstanceID(const std::string& app_id, gcm::GCMDriver* gcm_driver);
 
@@ -162,8 +164,6 @@ class InstanceID {
   virtual void DeleteIDImpl(DeleteIDCallback callback) = 0;
 
   void NotifyTokenRefresh(bool update_id);
-
-  gcm::GCMDriver* gcm_driver() { return gcm_driver_; }
 
  private:
   void DidDelete(const std::string& authorized_entity,
