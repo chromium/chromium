@@ -6098,28 +6098,6 @@
             ]
         }
     ],
-    "SafeBrowsingDelayedWarnings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "mouse": "true"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingDelayedWarnings"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingEnhancedProtectionAndroid": [
         {
             "platforms": [
@@ -6497,6 +6475,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SignedExchangeSubresourcePrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SimplifiedUrlDisplay": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "AllDisplayExperimentsEnabled",
+                    "enable_features": [
+                        "OmniboxUIExperimentElideToRegistrableDomain",
+                        "OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction",
+                        "OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover",
+                        "SafeBrowsingDelayedWarnings"
                     ]
                 }
             ]
