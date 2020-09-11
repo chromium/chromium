@@ -13,6 +13,7 @@ goog.provide('SimpleKeyEvent');
 
 goog.require('Msgs');
 goog.require('ChromeVox');
+goog.require('KeyCode');
 goog.require('KeySequence');
 
 /**
@@ -111,34 +112,31 @@ KeyUtil = class {
    * @return {string} A string representation of the key event.
    */
   static keyCodeToString(keyCode) {
-    if (keyCode == 17) {
+    if (keyCode == KeyCode.CONTROL) {
       return 'Ctrl';
     }
-    if (keyCode == 18) {
+    if (keyCode == KeyCode.ALT) {
       return 'Alt';
     }
-    if (keyCode == 16) {
+    if (keyCode == KeyCode.SHIFT) {
       return 'Shift';
     }
-    if ((keyCode == 91) || (keyCode == 93)) {
+    if ((keyCode == KeyCode.SEARCH) || (keyCode == KeyCode.APPS)) {
       return 'Search';
     }
     // TODO(rshearer): This is a hack to work around the special casing of the
     // sticky mode string that used to happen in keyEventToString. We won't need
     // it once we move away from strings completely.
-    if (keyCode == 45) {
+    if (keyCode == KeyCode.INSERT) {
       return 'Insert';
     }
-    if (keyCode >= 65 && keyCode <= 90) {
-      // A - Z
+    if ((keyCode >= KeyCode.A && keyCode <= KeyCode.Z) ||
+        (keyCode >= KeyCode.ZERO && keyCode <= KeyCode.NINE)) {
+      // A - Z, 0 - 9
       return String.fromCharCode(keyCode);
-    } else if (keyCode >= 48 && keyCode <= 57) {
-      // 0 - 9
-      return String.fromCharCode(keyCode);
-    } else {
-      // Anything else
-      return '#' + keyCode;
     }
+    // Anything else
+    return '#' + keyCode;
   }
 
   /**
@@ -150,14 +148,14 @@ KeyUtil = class {
   static modStringToKeyCode(keyString) {
     switch (keyString) {
       case 'Ctrl':
-        return 17;
+        return KeyCode.CONTROL;
       case 'Alt':
-        return 18;
+        return KeyCode.ALT;
       case 'Shift':
-        return 16;
+        return KeyCode.SHIFT;
       case 'Cmd':
       case 'Win':
-        return 91;
+        return KeyCode.SEARCH;
     }
     return -1;
   }
@@ -202,93 +200,96 @@ KeyUtil = class {
    */
   static getReadableNameForKeyCode(keyCode) {
     const msg = Msgs.getMsg.bind(Msgs);
-    if (keyCode == 0) {
-      return 'Power button';
-    } else if (keyCode == 17) {
-      return 'Control';
-    } else if (keyCode == 18) {
-      return 'Alt';
-    } else if (keyCode == 16) {
-      return 'Shift';
-    } else if (keyCode == 9) {
-      return 'Tab';
-    } else if ((keyCode == 91) || (keyCode == 93)) {
-      return 'Search';
-    } else if (keyCode == 8) {
-      return 'Backspace';
-    } else if (keyCode == 32) {
-      return 'Space';
-    } else if (keyCode == 35) {
-      return 'end';
-    } else if (keyCode == 36) {
-      return 'home';
-    } else if (keyCode == 37) {
-      return 'Left arrow';
-    } else if (keyCode == 38) {
-      return 'Up arrow';
-    } else if (keyCode == 39) {
-      return 'Right arrow';
-    } else if (keyCode == 40) {
-      return 'Down arrow';
-    } else if (keyCode == 45) {
-      return 'Insert';
-    } else if (keyCode == 13) {
-      return 'Enter';
-    } else if (keyCode == 27) {
-      return 'Escape';
-    } else if (keyCode == 166) {
-      return msg('back_key');
-    } else if (keyCode == 167) {
-      return msg('forward_key');
-    } else if (keyCode == 168) {
-      return msg('refresh_key');
-    } else if (keyCode == 183) {
-      return msg('toggle_full_screen_key');
-    } else if (keyCode == 182) {
-      return msg('window_overview_key');
-    } else if (keyCode == 216) {
-      return msg('brightness_down_key');
-    } else if (keyCode == 217) {
-      return msg('brightness_up_key');
-    } else if (keyCode == 173) {
-      return msg('volume_mute_key');
-    } else if (keyCode == 174) {
-      return msg('volume_down_key');
-    } else if (keyCode == 175) {
-      return msg('volume_up_key');
-    } else if (keyCode == 122) {
-      return 'F11';
-    } else if (keyCode == 123) {
-      return 'F12';
-    } else if (keyCode == 153) {
-      return msg('assistant_key');
-    } else if (keyCode == 179) {
-      return msg('media_play_pause');
-    } else if (keyCode == 186) {
-      return 'Semicolon';
-    } else if (keyCode == 187) {
-      return 'Equal sign';
-    } else if (keyCode == 188) {
-      return 'Comma';
-    } else if (keyCode == 189) {
-      return 'Dash';
-    } else if (keyCode == 190) {
-      return 'Period';
-    } else if (keyCode == 191) {
-      return 'Forward slash';
-    } else if (keyCode == 192) {
-      return 'Grave accent';
-    } else if (keyCode == 219) {
-      return 'Open bracket';
-    } else if (keyCode == 220) {
-      return 'Back slash';
-    } else if (keyCode == 221) {
-      return 'Close bracket';
-    } else if (keyCode == 222) {
-      return 'Single quote';
-    } else if (keyCode == 115) {
-      return 'Toggle full screen';
-    } else if (keyCode >= 48 && keyCode <= 90) {
+    switch (keyCode) {
+      case 0:
+        return 'Power button';
+      case KeyCode.CONTROL:
+        return 'Control';
+      case KeyCode.ALT:
+        return 'Alt';
+      case KeyCode.SHIFT:
+        return 'Shift';
+      case KeyCode.TAB:
+        return 'Tab';
+      case KeyCode.SEARCH:
+      case KeyCode.APPS:
+        return 'Search';
+      case KeyCode.BACK:
+        return 'Backspace';
+      case KeyCode.SPACE:
+        return 'Space';
+      case KeyCode.END:
+        return 'end';
+      case KeyCode.HOME:
+        return 'home';
+      case KeyCode.LEFT:
+        return 'Left arrow';
+      case KeyCode.UP:
+        return 'Up arrow';
+      case KeyCode.RIGHT:
+        return 'Right arrow';
+      case KeyCode.DOWN:
+        return 'Down arrow';
+      case KeyCode.INSERT:
+        return 'Insert';
+      case KeyCode.RETURN:
+        return 'Enter';
+      case KeyCode.ESCAPE:
+        return 'Escape';
+      case KeyCode.BROWSER_BACK:
+        return msg('back_key');
+      case KeyCode.BROWSER_FORWARD:
+        return msg('forward_key');
+      case KeyCode.BROWSER_REFRESH:
+        return msg('refresh_key');
+      case KeyCode.MEDIA_LAUNCH_APP2:
+        return msg('toggle_full_screen_key');
+      case KeyCode.MEDIA_LAUNCH_APP1:
+        return msg('window_overview_key');
+      case KeyCode.BRIGHTNESS_DOWN:
+        return msg('brightness_down_key');
+      case KeyCode.BRIGHTNESS_UP:
+        return msg('brightness_up_key');
+      case KeyCode.VOLUME_MUTE:
+        return msg('volume_mute_key');
+      case KeyCode.VOLUME_DOWN:
+        return msg('volume_down_key');
+      case KeyCode.VOLUME_UP:
+        return msg('volume_up_key');
+      case KeyCode.F11:
+        return 'F11';
+      case KeyCode.F12:
+        return 'F12';
+      case KeyCode.ASSISTANT:
+        return msg('assistant_key');
+      case KeyCode.MEDIA_PLAY_PAUSE:
+        return msg('media_play_pause');
+      case KeyCode.OEM_1:
+        return 'Semicolon';
+      case KeyCode.OEM_PLUS:
+        return 'Equal sign';
+      case KeyCode.OEM_COMMA:
+        return 'Comma';
+      case KeyCode.OEM_MINUS:
+        return 'Dash';
+      case KeyCode.OEM_PERIOD:
+        return 'Period';
+      case KeyCode.OEM_2:
+        return 'Forward slash';
+      case KeyCode.OEM_3:
+        return 'Grave accent';
+      case KeyCode.OEM_4:
+        return 'Open bracket';
+      case KeyCode.OEM_5:
+        return 'Back slash';
+      case KeyCode.OEM_6:
+        return 'Close bracket';
+      case KeyCode.OEM_7:
+        return 'Single quote';
+      case KeyCode.F4:
+        return 'Toggle full screen';
+    }
+    if (keyCode >= KeyCode.ZERO && keyCode <= KeyCode.Z) {
       return String.fromCharCode(keyCode);
     }
     return '';
@@ -300,7 +301,7 @@ KeyUtil = class {
    * @return {number} The platform specific sticky key keycode.
    */
   static getStickyKeyCode() {
-    return 91;  // Search.
+    return KeyCode.SEARCH;  // Search.
   }
 
   /**
@@ -377,7 +378,7 @@ KeyUtil = class {
             modifier = 'Ctrl';
             break;
           case 'searchKeyHeld':
-            const searchKey = KeyUtil.getReadableNameForKeyCode(91);
+            const searchKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
             modifier = searchKey;
             break;
           case 'altKey':
@@ -390,7 +391,7 @@ KeyUtil = class {
             modifier = 'Shift';
             break;
           case 'metaKey':
-            const metaKey = KeyUtil.getReadableNameForKeyCode(91);
+            const metaKey = KeyUtil.getReadableNameForKeyCode(KeyCode.SEARCH);
             modifier = metaKey;
             break;
           case 'keyCode':

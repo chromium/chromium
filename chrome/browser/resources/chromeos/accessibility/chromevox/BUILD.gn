@@ -404,6 +404,8 @@ if (is_chromeos) {
     extra_js_files = [
       "../common/testing/assert_additions.js",
       "../common/testing/callback_helper.js",
+      "../common/closure_shim.js",
+      "../common/key_code.js",
       "braille/expanding_braille_translator.js",
       "braille/nav_braille.js",
       "braille/pan_strategy.js",

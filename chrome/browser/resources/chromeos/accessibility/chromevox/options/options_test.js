@@ -68,9 +68,9 @@ TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
           assertEquals('asWords', localStorage['numberReadingStyle']);
         })
 
-        .call(press(40 /* ArrowDown */))
+        .call(press(KeyCode.DOWN))
         .expectSpeech('Digits', 'List item', ' 2 of 2 ')
-        .call(press(13 /* enter */))
+        .call(press(KeyCode.RETURN))
 
         // TODO: The underlying select behavior here is unexpected because we
         // never get a new focus event for the select (moving us away from the
@@ -106,9 +106,9 @@ TEST_F('ChromeVoxOptionsTest', 'punctuationEchoSelect', function() {
               localStorage[AbstractTts.PUNCTUATION_ECHO]);
         })
 
-        .call(press(40 /* ArrowDown */))
+        .call(press(KeyCode.DOWN))
         .expectSpeech('Some', 'List item', ' 2 of 3 ')
-        .call(press(13 /* enter */))
+        .call(press(KeyCode.RETURN))
 
         // TODO(josiahk): The underlying select behavior here is unexpected
         // because we never get a new focus event for the select (moving us
@@ -120,7 +120,7 @@ TEST_F('ChromeVoxOptionsTest', 'punctuationEchoSelect', function() {
               localStorage[AbstractTts.PUNCTUATION_ECHO]);
         })
 
-        .call(press(40 /* ArrowDown */))
+        .call(press(KeyCode.DOWN))
         .expectSpeech('All', ' 3 of 3 ')
         .call(() => {
           assertEquals(

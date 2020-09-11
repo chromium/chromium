@@ -8,8 +8,10 @@
 SelectToSpeakUnitTest = class extends testing.Test {};
 
 /** @override */
-SelectToSpeakUnitTest.prototype.extraLibraries =
-    ['test_support.js', 'select_to_speak.js'];
+SelectToSpeakUnitTest.prototype.extraLibraries = [
+  '../common/closure_shim.js', '../common/key_code.js', 'test_support.js',
+  'select_to_speak.js'
+];
 
 
 TEST_F('SelectToSpeakUnitTest', 'getGSuiteAppRoot', function() {

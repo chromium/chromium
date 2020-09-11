@@ -1063,13 +1063,13 @@ class SelectToSpeak {
 }
 
 /** @const {number} */
-SelectToSpeak.SEARCH_KEY_CODE = 91;
+SelectToSpeak.SEARCH_KEY_CODE = KeyCode.SEARCH;
 
 /** @const {number} */
-SelectToSpeak.CONTROL_KEY_CODE = 17;
+SelectToSpeak.CONTROL_KEY_CODE = KeyCode.CONTROL;
 
 /** @const {number} */
-SelectToSpeak.READ_SELECTION_KEY_CODE = 83;
+SelectToSpeak.READ_SELECTION_KEY_CODE = KeyCode.S;
 
 /**
  * How often (in ms) to check that the currently spoken node is

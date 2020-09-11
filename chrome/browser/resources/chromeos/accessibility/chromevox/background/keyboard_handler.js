@@ -10,6 +10,7 @@ goog.provide('BackgroundKeyboardHandler');
 
 goog.require('ChromeVoxState');
 goog.require('EventSourceState');
+goog.require('KeyCode');
 goog.require('MathHandler');
 goog.require('Output');
 goog.require('ChromeVoxKbHandler');
@@ -86,7 +87,7 @@ BackgroundKeyboardHandler = class {
         // ARC++ with TalkBack never get it. We only want to re-inject when
         // ChromeVox has no range.
         (ChromeVoxState.instance.currentRange &&
-         (evt.metaKey || evt.keyCode == 91))) {
+         (evt.metaKey || evt.keyCode == KeyCode.SEARCH))) {
       if (ChromeVox.passThroughMode) {
         this.passThroughState_ =
             KeyboardPassThroughState_.PENDING_PASS_THROUGH_SHORTCUT_KEYUPS;

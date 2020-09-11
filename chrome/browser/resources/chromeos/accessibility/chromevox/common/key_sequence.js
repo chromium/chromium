@@ -11,6 +11,7 @@
 goog.provide('KeySequence');
 
 goog.require('ChromeVox');
+goog.require('KeyCode');
 
 
 /**
@@ -298,8 +299,9 @@ KeySequence = class {
    */
   isModifierKey(keyCode) {
     // Shift, Ctrl, Alt, Search/LWin
-    return keyCode == 16 || keyCode == 17 || keyCode == 18 || keyCode == 91 ||
-        keyCode == 93;
+    return keyCode == KeyCode.SHIFT || keyCode == KeyCode.CONTROL ||
+        keyCode == KeyCode.ALT || keyCode == KeyCode.SEARCH ||
+        keyCode == KeyCode.APPS;
   }
 
   /**
@@ -355,19 +357,19 @@ KeySequence = class {
     // This bug filed as crbug.com/74044
     switch (modifier) {
       case 'ctrlKey':
-        return (keyEvent.ctrlKey || keyEvent.keyCode == 17);
+        return (keyEvent.ctrlKey || keyEvent.keyCode == KeyCode.CONTROL);
         break;
       case 'altKey':
-        return (keyEvent.altKey || (keyEvent.keyCode == 18));
+        return (keyEvent.altKey || (keyEvent.keyCode == KeyCode.ALT));
         break;
       case 'shiftKey':
-        return (keyEvent.shiftKey || (keyEvent.keyCode == 16));
+        return (keyEvent.shiftKey || (keyEvent.keyCode == KeyCode.SHIFT));
         break;
       case 'metaKey':
-        return (keyEvent.metaKey || (keyEvent.keyCode == 91));
+        return (keyEvent.metaKey || (keyEvent.keyCode == KeyCode.SEARCH));
         break;
       case 'searchKeyHeld':
-        return keyEvent.keyCode == 91 || keyEvent['searchKeyHeld'];
+        return keyEvent.keyCode == KeyCode.SEARCH || keyEvent['searchKeyHeld'];
         break;
     }
     return false;
@@ -508,24 +510,24 @@ KeySequence = class {
   static setModifiersOnEvent_(keyName, seqEvent) {
     if (keyName == 'Ctrl') {
       seqEvent['ctrlKey'] = true;
-      seqEvent['keyCode'] = 17;
+      seqEvent['keyCode'] = KeyCode.CONTROL;
     } else if (keyName == 'Alt') {
       seqEvent['altKey'] = true;
-      seqEvent['keyCode'] = 18;
+      seqEvent['keyCode'] = KeyCode.ALT;
     } else if (keyName == 'Shift') {
       seqEvent['shiftKey'] = true;
-      seqEvent['keyCode'] = 16;
+      seqEvent['keyCode'] = KeyCode.SHIFT;
     } else if (keyName == 'Search') {
       seqEvent['searchKeyHeld'] = true;
-      seqEvent['keyCode'] = 91;
+      seqEvent['keyCode'] = KeyCode.SEARCH;
     } else if (keyName == 'Cmd') {
       seqEvent['metaKey'] = true;
-      seqEvent['keyCode'] = 91;
+      seqEvent['keyCode'] = KeyCode.SEARCH;
     } else if (keyName == 'Win') {
       seqEvent['metaKey'] = true;
-      seqEvent['keyCode'] = 91;
+      seqEvent['keyCode'] = KeyCode.SEARCH;
     } else if (keyName == 'Insert') {
-      seqEvent['keyCode'] = 45;
+      seqEvent['keyCode'] = KeyCode.INSERT;
     }
   }
 };

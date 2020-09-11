@@ -279,10 +279,10 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectSingleBasic', function() {
   this.runWithLoadedTree(this.formsDoc, function() {
     mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
         .expectBraille('apple btn +popup +')
-        .call(press(40 /* ArrowDown */))
+        .call(press(KeyCode.DOWN))
         .expectSpeech('grape', /2 of 3/)
         .expectBraille('grape 2/3')
-        .call(press(40 /* ArrowDown */))
+        .call(press(KeyCode.DOWN))
         .expectSpeech('banana', /3 of 3/)
         .expectBraille('banana 3/3');
     mockFeedback.replay();
@@ -1351,12 +1351,12 @@ TEST_F('ChromeVoxBackgroundTest', 'DISABLED_NativeFind', function() {
     <a href="#">pineapple</a>
   `,
       function(root) {
-        mockFeedback.call(press(70, {ctrl: true}))
+        mockFeedback.call(press(KeyCode.F, {ctrl: true}))
             .expectSpeech('Find', 'Edit text')
-            .call(press(71))
+            .call(press(KeyCode.G))
             .expectSpeech('grape', 'Link')
-            .call(press(8))
-            .call(press(76))
+            .call(press(KeyCode.Back))
+            .call(press(KeyCode.L))
             .expectSpeech('pineapple', 'Link')
             .replay();
       });
@@ -1559,17 +1559,17 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', function() {
           mockFeedback.call(assertBeginning.bind(this, true))
               .call(assertEnd.bind(this, false))
 
-              .call(press(40 /* ArrowDown */))
+              .call(press(KeyCode.DOWN))
               .expectSpeech('is')
               .call(assertBeginning.bind(this, false))
               .call(assertEnd.bind(this, false))
 
-              .call(press(40 /* ArrowDown */))
+              .call(press(KeyCode.DOWN))
               .expectSpeech('a')
               .call(assertBeginning.bind(this, false))
               .call(assertEnd.bind(this, false))
 
-              .call(press(40 /* ArrowDown */))
+              .call(press(KeyCode.DOWN))
               .expectSpeech('test')
               .call(assertBeginning.bind(this, false))
               .call(assertEnd.bind(this, true))
@@ -1845,13 +1845,13 @@ TEST_F('ChromeVoxBackgroundTest', 'TabSwitchAndRefreshRecovery', function() {
             function(root2) {
               mockFeedback.expectSpeech('tab2')
                   .clearPendingOutput()
-                  .call(press(9 /* tab */, {shift: true, ctrl: true}))
+                  .call(press(KeyCode.TAB, {shift: true, ctrl: true}))
                   .expectSpeech('tab1')
                   .clearPendingOutput()
-                  .call(press(9 /* tab */, {ctrl: true}))
+                  .call(press(KeyCode.TAB, {ctrl: true}))
                   .expectSpeech('tab2')
                   .clearPendingOutput()
-                  .call(press(82 /* R */, {ctrl: true}))
+                  .call(press(KeyCode.R, {ctrl: true}))
 
                   // ChromeVox stays on the same node due to tree path recovery.
                   .call(() => {
@@ -2058,7 +2058,7 @@ TEST_F('ChromeVoxBackgroundTest', 'DISABLED_EventFromUser', function() {
               assertEquals('cancel', evt.target.name);
             }));
 
-        press(9 /* tab */)();
+        press(KeyCode.TAB)();
       });
 });
 

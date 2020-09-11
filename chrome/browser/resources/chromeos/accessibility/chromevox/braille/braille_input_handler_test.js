@@ -702,7 +702,7 @@ TEST_F('ChromeVoxBrailleInputHandlerWebUITest', 'Backspace', function() {
   // Now, backspace should be handled as usual, synthetizing key events.
   assertEquals(0, this.keyEvents.length);
   this.sendKeyEvent('Backspace');
-  assertEqualsJSON([{keyCode: 8}], this.keyEvents);
+  assertEqualsJSON([{keyCode: KeyCode.BACK}], this.keyEvents);
 });
 
 
@@ -710,5 +710,6 @@ TEST_F('ChromeVoxBrailleInputHandlerWebUITest', 'KeysImeNotActive', function() {
   const editor = this.createEditor();
   this.sendKeyEvent('Enter');
   this.sendKeyEvent('ArrowUp');
-  assertEqualsJSON([{keyCode: 13}, {keyCode: 38}], this.keyEvents);
+  assertEqualsJSON(
+      [{keyCode: KeyCode.RETURN}, {keyCode: KeyCode.UP}], this.keyEvents);
 });

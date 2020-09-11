@@ -117,6 +117,7 @@ js_type_check("closure_compile") {
     "../common:automation_util",
     "../common:closure_shim",
     "../common:constants",
+    "../common:key_code",
     "../common:rect_util",
     "../common:tree_walker",
   ]
