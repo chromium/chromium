@@ -1276,8 +1276,7 @@ bool QuicChromiumClientSession::GetRemoteEndpoint(IPEndPoint* endpoint) {
 // we learn about SSL info (sync vs async vs cached).
 bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->Reset();
-  if (!cert_verify_result_ || (connection()->version().UsesTls() &&
-                               !crypto_stream_->one_rtt_keys_available())) {
+  if (!cert_verify_result_) {
     return false;
   }
 
