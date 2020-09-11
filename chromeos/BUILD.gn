@@ -24,11 +24,6 @@ declare_args() {
   is_printing_ppd_provider_v3 = false
 }
 
-buildflag_header("chromeos_buildflags") {
-  header = "chromeos_buildflags.h"
-  flags = [ "IS_CHROMEOS_DEVICE=$is_chromeos_device" ]
-}
-
 component("chromeos") {
   configs += [
     ":chromeos_implementation",
@@ -161,7 +156,6 @@ test("chromeos_unittests") {
   ]
 
   deps = [
-    ":chromeos_buildflags",
     ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
