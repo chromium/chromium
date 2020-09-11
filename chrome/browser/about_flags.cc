@@ -210,7 +210,6 @@
 #endif  // OS_CHROMEOS
 
 #if defined(OS_MAC)
-#include "base/mac/mac_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #endif  // OS_MAC
 
@@ -6529,15 +6528,6 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 #endif  // OS_ANDROID
-
-#if defined(OS_MAC)
-  // The Eye Dropper relies on the NSColorSampler API, which is available
-  // starting with macOS 10.15.
-  if (!strcmp("color-picker-eye-dropper", entry.internal_name) &&
-      !base::mac::IsAtLeastOS10_15()) {
-    return true;
-  }
-#endif  // OS_MAC
 
   if (flags::IsFlagExpired(storage, entry.internal_name))
     return true;
