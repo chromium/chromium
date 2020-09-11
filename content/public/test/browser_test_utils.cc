@@ -3158,7 +3158,8 @@ void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = false;
   params->user_gesture = true;
-  static_cast<content::RenderFrameHostImpl*>(render_frame_host)
+  static_cast<mojom::FrameHost*>(
+      static_cast<content::RenderFrameHostImpl*>(render_frame_host))
       ->OpenURL(std::move(params));
 }
 

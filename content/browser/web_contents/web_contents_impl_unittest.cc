@@ -29,6 +29,7 @@
 #include "content/browser/webui/content_web_ui_controller_factory.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/common/page_messages.h"
 #include "content/common/view_messages.h"
@@ -2240,7 +2241,7 @@ TEST_F(WebContentsImplTestWithSiteIsolation, IsLoadingToDifferentDocument) {
                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME);
   EXPECT_TRUE(contents()->IsLoading());
   EXPECT_FALSE(contents()->IsLoadingToDifferentDocument());
-  subframe->DidStopLoading();
+  static_cast<mojom::FrameHost*>(subframe)->DidStopLoading();
   EXPECT_FALSE(contents()->IsLoading());
 }
 
@@ -2279,7 +2280,7 @@ TEST_F(WebContentsImplTest, DISABLED_NoEarlyStop) {
   // navigation in the current RenderFrameHost. There should still be a pending
   // RenderFrameHost and the WebContents should still be loading.
   same_process_navigation->Commit();
-  current_rfh->DidStopLoading();
+  static_cast<mojom::FrameHost*>(current_rfh)->DidStopLoading();
   EXPECT_EQ(contents()->GetPendingMainFrame(), pending_rfh);
   EXPECT_TRUE(contents()->IsLoading());
 
@@ -2299,7 +2300,7 @@ TEST_F(WebContentsImplTest, DISABLED_NoEarlyStop) {
 
   // Simulate the new current RenderFrameHost DidStopLoading. The WebContents
   // should now have stopped loading.
-  new_current_rfh->DidStopLoading();
+  static_cast<mojom::FrameHost*>(new_current_rfh)->DidStopLoading();
   EXPECT_EQ(main_test_rfh(), new_current_rfh);
   EXPECT_FALSE(contents()->IsLoading());
 }

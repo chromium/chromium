@@ -1766,10 +1766,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnCookiesAccessed(
       network::mojom::CookieAccessDetailsPtr details) override;
 
-  // mojom::FrameHost:
-  void OpenURL(mojom::OpenURLParamsPtr params) override;
-  void DidStopLoading() override;
-
   void GetSavableResourceLinksFromRenderer();
 
   // Helper for checking if a navigation to an error page should be excluded
@@ -2049,6 +2045,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                          const gfx::Rect& initial_rect,
                          bool user_gesture) override;
   void UpdateState(const PageState& state) override;
+  void OpenURL(mojom::OpenURLParamsPtr params) override;
+  void DidStopLoading() override;
+
 #if defined(OS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override;
 #endif

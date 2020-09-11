@@ -9,6 +9,7 @@
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_switches.h"
@@ -404,14 +405,14 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                             ->GetFrameTree()
                             ->root();
   EXPECT_EQ(1U, root->child_count());
-  RenderFrameHost* child = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   EXPECT_EQ("about:blank", child->GetLastCommittedURL());
 
   // Simulate an IPC message to navigate the subframe to a chrome:// URL.
   // This bypasses the renderer-side check that would have stopped the
   // navigation.
   TestNavigationObserver observer(shell()->web_contents());
-  static_cast<content::RenderFrameHostImpl*>(child)->OpenURL(
+  static_cast<mojom::FrameHost*>(child)->OpenURL(
       CreateOpenURLParams(GetWebUIURL("web-ui/title1.html?noxfo=true")));
   observer.Wait();
 
@@ -442,15 +443,14 @@ IN_PROC_BROWSER_TEST_F(
                             ->GetFrameTree()
                             ->root();
   EXPECT_EQ(1U, root->child_count());
-  RenderFrameHost* child = root->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   EXPECT_EQ("about:blank", child->GetLastCommittedURL());
 
   // Simulate a Mojo message to navigate the subframe to a chrome-untrusted://
   // URL.
   TestNavigationObserver observer(shell()->web_contents());
-  static_cast<content::RenderFrameHostImpl*>(child)->OpenURL(
-      CreateOpenURLParams(
-          GetChromeUntrustedUIURL("test-iframe-host/title1.html")));
+  static_cast<mojom::FrameHost*>(child)->OpenURL(CreateOpenURLParams(
+      GetChromeUntrustedUIURL("test-iframe-host/title1.html")));
   observer.Wait();
 
   child = root->child_at(0)->current_frame_host();
