@@ -165645,14 +165645,14 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>The time to decode an image for Remote Copy. Desktop only.</summary>
 </histogram>
 
 <histogram name="Sharing.RemoteCopyHandleMessageResult"
-    enum="SharingRemoteCopyHandleMessageResult" expires_after="M87">
+    enum="SharingRemoteCopyHandleMessageResult" expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165663,7 +165663,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyLoadImageStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M87">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165674,14 +165674,14 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyLoadImageTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>The time to load an image for Remote Copy. Desktop only.</summary>
 </histogram>
 
 <histogram name="Sharing.RemoteCopyReceivedImageSizeAfterDecode" units="bytes"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165691,7 +165691,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyReceivedImageSizeBeforeDecode" units="bytes"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165701,7 +165701,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyReceivedTextSize" units="bytes"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165711,14 +165711,14 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyResizeImageTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>The time to resize an image for Remote Copy. Desktop only.</summary>
 </histogram>
 
 <histogram name="Sharing.RemoteCopyWriteImageDetectionTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165728,7 +165728,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyWriteImageTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165738,7 +165738,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyWriteTextDetectionTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -165748,7 +165748,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Sharing.RemoteCopyWriteTextTime" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
