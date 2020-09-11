@@ -1068,6 +1068,18 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
     LayoutUnit available_width,
     const LayoutBlock* cb) const {
   const ComputedStyle& style_to_use = StyleRef();
+
+  // This implements the transferred min/max sizes per
+  // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
+  Length h = style_to_use.LogicalHeight();
+  if (style_to_use.AspectRatio() &&
+      (h.IsAuto() || (h.IsPercentOrCalc() &&
+                      ComputePercentageLogicalHeight(h) == kIndefiniteSize))) {
+    MinMaxSizes transferred_min_max =
+        ComputeMinMaxLogicalWidthFromAspectRatio();
+    logical_width = transferred_min_max.ClampSizeToMinAndMax(logical_width);
+  }
+
   if (!style_to_use.LogicalMaxWidth().IsNone())
     logical_width = std::min(
         logical_width,
@@ -1257,6 +1269,44 @@ bool LayoutBox::CanResize() const {
   // we want to allow resizing them also.
   return (HasNonVisibleOverflow() || IsLayoutIFrame()) &&
          StyleRef().HasResize();
+}
+
+MinMaxSizes LayoutBox::ComputeMinMaxLogicalWidthFromAspectRatio() const {
+  DCHECK(StyleRef().LogicalAspectRatio());
+
+  // The spec requires us to clamp these by the specified size (it calls it the
+  // preferred size). However, we actually don't need to worry about that,
+  // because we only use this if the width is indefinite.
+
+  // We do not need to compute the min/max inline sizes; as long as we always
+  // apply the transferred min/max size before the explicit min/max size, the
+  // result will be identical.
+
+  LogicalSize ratio = *StyleRef().LogicalAspectRatio();
+  MinMaxSizes block_min_max{
+      ConstrainLogicalHeightByMinMax(LayoutUnit(), kIndefiniteSize),
+      ConstrainLogicalHeightByMinMax(LayoutUnit::Max(), kIndefiniteSize)};
+  if (block_min_max.max_size == kIndefiniteSize)
+    block_min_max.max_size = LayoutUnit::Max();
+
+  NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                            BorderEnd() + ComputedCSSPaddingEnd(),
+                            BorderBefore() + ComputedCSSPaddingBefore(),
+                            BorderAfter() + ComputedCSSPaddingAfter());
+
+  MinMaxSizes transferred_min_max = {LayoutUnit(), LayoutUnit::Max()};
+  if (block_min_max.min_size > LayoutUnit()) {
+    transferred_min_max.min_size = InlineSizeFromAspectRatio(
+        border_padding, ratio, StyleRef().BoxSizing(), block_min_max.min_size);
+  }
+  if (block_min_max.max_size != LayoutUnit::Max()) {
+    transferred_min_max.max_size = InlineSizeFromAspectRatio(
+        border_padding, ratio, StyleRef().BoxSizing(), block_min_max.max_size);
+  }
+  // Minimum size wins over maximum size.
+  transferred_min_max.max_size =
+      std::max(transferred_min_max.max_size, transferred_min_max.min_size);
+  return transferred_min_max;
 }
 
 bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
@@ -3564,9 +3614,10 @@ bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
   LayoutUnit container_width_in_inline_direction =
       ContainerWidthInInlineDirection();
 
-  NGBoxStrut border_padding(
-      BorderStart() + PaddingStart(), BorderEnd() + PaddingEnd(),
-      BorderBefore() + PaddingBefore(), BorderAfter() + PaddingAfter());
+  NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                            BorderEnd() + ComputedCSSPaddingEnd(),
+                            BorderBefore() + ComputedCSSPaddingBefore(),
+                            BorderAfter() + ComputedCSSPaddingAfter());
   LayoutUnit logical_width = InlineSizeFromAspectRatio(
       border_padding, *StyleRef().LogicalAspectRatio(), StyleRef().BoxSizing(),
       logical_height_for_ar);
@@ -4149,9 +4200,10 @@ void LayoutBox::ComputeLogicalHeight(
       if (StyleRef().AspectRatio() &&
           (h.IsAuto() || (h.IsPercentOrCalc() && ComputePercentageLogicalHeight(
                                                      h) == kIndefiniteSize))) {
-        NGBoxStrut border_padding(
-            BorderStart() + PaddingStart(), BorderEnd() + PaddingEnd(),
-            BorderBefore() + PaddingBefore(), BorderAfter() + PaddingAfter());
+        NGBoxStrut border_padding(BorderStart() + ComputedCSSPaddingStart(),
+                                  BorderEnd() + ComputedCSSPaddingEnd(),
+                                  BorderBefore() + ComputedCSSPaddingBefore(),
+                                  BorderAfter() + ComputedCSSPaddingAfter());
         height_result = BlockSizeFromAspectRatio(
             border_padding, *StyleRef().LogicalAspectRatio(),
             StyleRef().BoxSizing(), LogicalWidth());
