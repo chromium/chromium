@@ -9,9 +9,13 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
+
+const char kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag[] =
+    "isolated-prerender-max-subresource-per-prerender";
 
 const char kIsolatedPrerenderEnableNSPCmdLineFlag[] =
     "isolated-prerender-nsp-enabled";
@@ -137,4 +141,18 @@ bool IsolatedPrerenderMustHTTPProbeInsteadOfTLS() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kIsolatePrerendersMustProbeOrigin, "replace_tls_with_http",
       false);
+}
+
+size_t IsolatedPrerenderMaxSubresourcesPerPrerender() {
+  std::string cmd_line_value =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag);
+  size_t cmd_line_parsed;
+  if (!cmd_line_value.empty() &&
+      base::StringToSizeT(cmd_line_value, &cmd_line_parsed)) {
+    return cmd_line_parsed;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerenders, "max_subresource_count_per_prerender", 50);
 }

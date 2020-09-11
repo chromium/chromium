@@ -29,6 +29,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_features.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_origin_prober.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_proxy_configurator.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_service_factory.h"
@@ -2814,6 +2815,60 @@ IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
   // There should not have been any additional requests.
   EXPECT_EQ(origin_requests_before_prerender.size(),
             origin_requests_after_prerender.size());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedPrerenderWithNSPBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(LimitSubresourceCount)) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "isolated-prerender-unlimited-prefetches");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag, "1");
+
+  SetDataSaverEnabled(true);
+  GURL starting_page = GetOriginServerURL("/simple.html");
+  ui_test_utils::NavigateToURL(browser(), starting_page);
+  WaitForUpdatedCustomProxyConfig();
+
+  IsolatedPrerenderTabHelper* tab_helper =
+      IsolatedPrerenderTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link =
+      GetOriginServerURL("/prerender/isolated/prefetch_page.html");
+
+  TestTabHelperObserver tab_helper_observer(tab_helper);
+  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
+
+  base::RunLoop prefetch_run_loop;
+  base::RunLoop nsp_run_loop;
+  tab_helper_observer.SetOnPrefetchSuccessfulClosure(
+      prefetch_run_loop.QuitClosure());
+
+  tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
+
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {eligible_link});
+
+  // This run loop will quit when a NSP finishes.
+  nsp_run_loop.Run();
+
+  base::HistogramTester histogram_tester;
+
+  // Navigate to the predicted site.
+  ui_test_utils::NavigateToURL(browser(), eligible_link);
+
+  // Checks that only one resource was used from cache.
+  histogram_tester.ExpectUniqueSample(
+      "IsolatedPrerender.AfterClick.Subresources.UsedCache", true, 1);
+
+  // Navigate again to trigger UKM recording.
+  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+
+  // 16 = |PrefetchStatus::kPrefetchUsedNoProbeWithNSP|.
+  EXPECT_EQ(base::Optional<int64_t>(16),
+            GetUKMMetric(eligible_link,
+                         ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
+                         ukm::builders::PrefetchProxy_AfterSRPClick::
+                             kSRPClickPrefetchStatusName));
 }
 
 class ProbingAndNSPEnabledIsolatedPrerenderBrowserTest
