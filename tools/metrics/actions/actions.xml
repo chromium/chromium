@@ -13434,6 +13434,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileDefaultBrowserViewIntent">
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    Records when an iOS user opens the app from the default browser URL open.
+  </description>
+</action>
+
 <action name="MobileDownloadFileUIInstallGoogleDrive">
   <obsolete>
     Removed in 12/2019 after adds of IOSDownloadFileUIGoogleDrive's histogram.
@@ -13513,6 +13520,13 @@ should be able to be added at any place in this file.
   <obsolete>Deprecated as of 12/2015</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileFirstPartyViewIntent">
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    Records when an iOS user opens the app from a Google first party app.
+  </description>
 </action>
 
 <action name="MobileFocusedFakeboxOnNtp">
