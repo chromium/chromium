@@ -17,6 +17,11 @@ export class ViewerThumbnailElement extends PolymerElement {
 
   static get properties() {
     return {
+      isActive: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       pageNumber: Number,
     };
   }

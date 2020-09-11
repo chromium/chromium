@@ -17,6 +17,8 @@ export class ViewerThumbnailBarElement extends PolymerElement {
 
   static get properties() {
     return {
+      activePage: Number,
+
       docLength: Number,
 
       /** @private {Array<number>} */
@@ -33,6 +35,15 @@ export class ViewerThumbnailBarElement extends PolymerElement {
    */
   computePageNumbers_() {
     return Array.from({length: this.docLength}, (_, i) => i + 1);
+  }
+
+  /**
+   * @param {number} page
+   * @return {boolean} Whether the page is the current page.
+   * @private
+   */
+  isActivePage_(page) {
+    return this.activePage === page;
   }
 }
 

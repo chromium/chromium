@@ -9,6 +9,8 @@
 </style>
 <div id="thumbnails">
   <template is="dom-repeat" items="[[pageNumbers_]]">
-    <viewer-thumbnail page-number="[[item]]"></viewer-thumbnail>
+    <viewer-thumbnail is-active="[[isActivePage_(item, activePage)]]"
+        page-number="[[item]]">
+    </viewer-thumbnail>
   </template>
 </div>

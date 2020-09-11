@@ -174,8 +174,8 @@
     <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
         hidden$="[[!toolbarEnabled_]]">
       <viewer-pdf-sidenav id="sidenav"
-          bookmarks="[[bookmarks_]]" doc-length="[[docLength_]]"
-          on-change-page="onChangePage_"
+          active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
+          doc-length="[[docLength_]]" on-change-page="onChangePage_"
           on-change-page-and-xy="onChangePageAndXy_"
           on-navigate="onNavigate_">
       </viewer-pdf-sidenav>

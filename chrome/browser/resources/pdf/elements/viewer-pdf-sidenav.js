@@ -25,6 +25,8 @@ export class ViewerPdfSidenavElement extends PolymerElement {
 
   static get properties() {
     return {
+      activePage: Number,
+
       /** @type {!Array<!Bookmark>} */
       bookmarks: {
         type: Array,
