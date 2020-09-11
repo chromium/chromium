@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 
 #if defined(ARCH_CPU_BIG_ENDIAN)
 #error Blink assumes a little-endian target.
@@ -425,30 +424,25 @@ void WEBPImageDecoder::DecodeToYUV() {
   }
 }
 
-IntSize WEBPImageDecoder::DecodedYUVSize(int component) const {
-  DCHECK_GE(component, 0);
-  // TODO(crbug.com/910276): Change after alpha support.
-  DCHECK_LE(component, 2);
+IntSize WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
-  switch (component) {
-    case SkYUVAIndex::kY_Index:
+  switch (index) {
+    case cc::YUVIndex::kY:
       return Size();
-    case SkYUVAIndex::kU_Index:
-    case SkYUVAIndex::kV_Index:
+    case cc::YUVIndex::kU:
+    case cc::YUVIndex::kV:
       return IntSize((Size().Width() + 1) / 2, (Size().Height() + 1) / 2);
   }
   NOTREACHED();
   return IntSize(0, 0);
 }
 
-size_t WEBPImageDecoder::DecodedYUVWidthBytes(int component) const {
-  DCHECK_GE(component, 0);
-  DCHECK_LE(component, 2);
-  switch (component) {
-    case SkYUVAIndex::kY_Index:
+size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+  switch (index) {
+    case cc::YUVIndex::kY:
       return base::checked_cast<size_t>(Size().Width());
-    case SkYUVAIndex::kU_Index:
-    case SkYUVAIndex::kV_Index:
+    case cc::YUVIndex::kU:
+    case cc::YUVIndex::kV:
       return base::checked_cast<size_t>((Size().Width() + 1) / 2);
   }
   NOTREACHED();
@@ -692,29 +686,23 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // Even if |decoder_| already exists, we must get most up-to-date pointers
   // because memory location might change e.g. upon tab resume.
   decoder_buffer_.u.YUVA.y =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kY_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kY));
   decoder_buffer_.u.YUVA.u =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kU_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kU));
   decoder_buffer_.u.YUVA.v =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kV_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kV));
 
   if (!decoder_) {
     // libwebp only supports YUV 420 subsampling
-    decoder_buffer_.u.YUVA.y_stride =
-        image_planes->RowBytes(SkYUVAIndex::kY_Index);
-    decoder_buffer_.u.YUVA.y_size =
-        decoder_buffer_.u.YUVA.y_stride *
-        DecodedYUVSize(SkYUVAIndex::kY_Index).Height();
-    decoder_buffer_.u.YUVA.u_stride =
-        image_planes->RowBytes(SkYUVAIndex::kU_Index);
-    decoder_buffer_.u.YUVA.u_size =
-        decoder_buffer_.u.YUVA.u_stride *
-        DecodedYUVSize(SkYUVAIndex::kU_Index).Height();
-    decoder_buffer_.u.YUVA.v_stride =
-        image_planes->RowBytes(SkYUVAIndex::kV_Index);
-    decoder_buffer_.u.YUVA.v_size =
-        decoder_buffer_.u.YUVA.v_stride *
-        DecodedYUVSize(SkYUVAIndex::kV_Index).Height();
+    decoder_buffer_.u.YUVA.y_stride = image_planes->RowBytes(cc::YUVIndex::kY);
+    decoder_buffer_.u.YUVA.y_size = decoder_buffer_.u.YUVA.y_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kY).Height();
+    decoder_buffer_.u.YUVA.u_stride = image_planes->RowBytes(cc::YUVIndex::kU);
+    decoder_buffer_.u.YUVA.u_size = decoder_buffer_.u.YUVA.u_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kU).Height();
+    decoder_buffer_.u.YUVA.v_stride = image_planes->RowBytes(cc::YUVIndex::kV);
+    decoder_buffer_.u.YUVA.v_size = decoder_buffer_.u.YUVA.v_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kV).Height();
 
     decoder_buffer_.is_external_memory = 1;
     decoder_ = WebPINewDecoder(&decoder_buffer_);

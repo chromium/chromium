@@ -44,7 +44,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkTypes.h"
-#include "third_party/skia/include/core/SkYUVASizeInfo.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace blink {
 
@@ -90,16 +91,16 @@ class PLATFORM_EXPORT ImageFrameGenerator final
                       cc::PaintImage::GeneratorClientId);
 
   // Decodes YUV components directly into the provided memory planes. Must not
-  // be called unless GetYUVComponentSizes has been called and returned true.
+  // be called unless GetYUVAInfo has been called and returned true.
   // TODO(crbug.com/943519): In order to support incremental YUV decoding,
   // ImageDecoder needs something analogous to its ImageFrame cache to hold
   // partial planes, and the GPU code needs to handle them.
   bool DecodeToYUV(SegmentReader*,
                    size_t index,
                    SkColorType color_type,
-                   const SkISize component_sizes[3],
-                   void* planes[3],
-                   const size_t row_bytes[3]);
+                   const SkISize component_sizes[cc::kNumYUVPlanes],
+                   void* planes[cc::kNumYUVPlanes],
+                   const size_t row_bytes[cc::kNumYUVPlanes]);
 
   const SkISize& GetFullSize() const { return full_size_; }
 
@@ -114,10 +115,10 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   bool HasAlpha(size_t index);
 
   // TODO(crbug.com/943519): Do not call unless the SkROBuffer has all the data.
-  bool GetYUVComponentSizes(SegmentReader*,
-                            SkYUVASizeInfo*,
-                            SkYUVColorSpace*,
-                            uint8_t* bit_depth);
+  bool GetYUVAInfo(
+      SegmentReader*,
+      const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+      SkYUVAPixmapInfo* info);
 
  private:
   class ClientMutexLocker {

@@ -35,8 +35,9 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   String FilenameExtension() const override { return "avif"; }
   bool ImageIsHighBitDepth() override;
   void OnSetData(SegmentReader* data) override;
-  IntSize DecodedYUVSize(int component) const override;
-  size_t DecodedYUVWidthBytes(int component) const override;
+  cc::YUVSubsampling GetYUVSubsampling() const override;
+  IntSize DecodedYUVSize(cc::YUVIndex) const override;
+  size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;
   void DecodeToYUV() override;
@@ -57,7 +58,6 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   void InitializeNewFrame(size_t) override;
   void Decode(size_t) override;
   bool CanReusePreviousFrameBuffer(size_t) const override;
-  cc::YUVSubsampling GetYUVSubsampling() const override;
 
   // Creates |decoder_| and decodes the size and frame count.
   bool MaybeCreateDemuxer();

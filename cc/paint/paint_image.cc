@@ -212,19 +212,14 @@ bool PaintImage::Decode(void* memory,
                            client_id);
 }
 
-bool PaintImage::DecodeYuv(
-    void* planes[SkYUVASizeInfo::kMaxCount],
-    size_t frame_index,
-    GeneratorClientId client_id,
-    const SkYUVASizeInfo& yuva_size_info,
-    SkColorType color_type,
-    SkYUVAIndex plane_indices[SkYUVAIndex::kIndexCount]) const {
-  DCHECK(plane_indices != nullptr);
+bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
+                           size_t frame_index,
+                           GeneratorClientId client_id) const {
+  DCHECK(pixmaps.isValid());
   DCHECK(paint_image_generator_);
   const uint32_t lazy_pixel_ref = unique_id();
-  return paint_image_generator_->GetYUVAPlanes(yuva_size_info, color_type,
-                                               plane_indices, planes,
-                                               frame_index, lazy_pixel_ref);
+  return paint_image_generator_->GetYUVAPlanes(pixmaps, frame_index,
+                                               lazy_pixel_ref);
 }
 
 bool PaintImage::DecodeFromGenerator(void* memory,
@@ -347,31 +342,16 @@ const ImageHeaderMetadata* PaintImage::GetImageHeaderMetadata() const {
   return nullptr;
 }
 
-bool PaintImage::IsYuv(SkYUVASizeInfo* yuva_size_info,
-                       SkYUVAIndex* plane_indices,
-                       SkYUVColorSpace* yuv_color_space,
-                       uint8_t* bit_depth) const {
-  SkYUVASizeInfo temp_yuva_size_info;
-  SkYUVAIndex temp_plane_indices[SkYUVAIndex::kIndexCount];
-  SkYUVColorSpace temp_yuv_color_space;
-  uint8_t temp_bit_depth;
-  if (!yuva_size_info) {
-    yuva_size_info = &temp_yuva_size_info;
-  }
-  if (!plane_indices) {
-    plane_indices = temp_plane_indices;
-  }
-  if (!yuv_color_space) {
-    yuv_color_space = &temp_yuv_color_space;
-  }
-  if (!bit_depth) {
-    bit_depth = &temp_bit_depth;
-  }
-  // ImageDecoder will fill out the value of |yuv_color_space| depending on
-  // the codec's specification.
+bool PaintImage::IsYuv(
+    const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+    SkYUVAPixmapInfo* info) const {
+  SkYUVAPixmapInfo temp_info;
+  if (!info)
+    info = &temp_info;
+  // ImageDecoder will fill out the SkYUVColorSpace in |info| depending on the
+  // codec's specification.
   return paint_image_generator_ &&
-         paint_image_generator_->QueryYUVA(yuva_size_info, plane_indices,
-                                           yuv_color_space, bit_depth);
+         paint_image_generator_->QueryYUVA(supported_data_types, info);
 }
 
 const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {
@@ -421,7 +401,8 @@ std::string PaintImage::ToString() const {
       << " id_: " << id_
       << " animation_type_: " << static_cast<int>(animation_type_)
       << " completion_state_: " << static_cast<int>(completion_state_)
-      << " is_multipart_: " << is_multipart_ << " is YUV: " << IsYuv();
+      << " is_multipart_: " << is_multipart_
+      << " is YUV: " << IsYuv(SkYUVAPixmapInfo::SupportedDataTypes::All());
   return str.str();
 }
 

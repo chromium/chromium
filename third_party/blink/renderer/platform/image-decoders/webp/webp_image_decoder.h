@@ -49,6 +49,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override { return "webp"; }
   void OnSetData(SegmentReader* data) override;
+  cc::YUVSubsampling GetYUVSubsampling() const override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(size_t) const override;
   base::TimeDelta FrameDurationAtIndex(size_t) const override;
@@ -61,7 +62,6 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   void Decode(size_t) override;
   void DecodeToYUV() override;
   SkYUVColorSpace GetYUVColorSpace() const override;
-  cc::YUVSubsampling GetYUVSubsampling() const override;
   cc::ImageHeaderMetadata MakeMetadataForDecodeAcceleration() const override;
 
   WEBP_CSP_MODE RGBOutputMode();
@@ -100,10 +100,10 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   bool frame_background_has_alpha_;
 
   // Provides the size of each component.
-  IntSize DecodedYUVSize(int component) const override;
+  IntSize DecodedYUVSize(cc::YUVIndex) const override;
 
   // Returns the width of each row of the memory allocation.
-  size_t DecodedYUVWidthBytes(int component) const override;
+  size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
 
   void ReadColorProfile();
   bool UpdateDemuxer();

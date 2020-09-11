@@ -726,32 +726,28 @@ size_t ImageDecoder::FindRequiredPreviousFrame(size_t frame_index,
 
 ImagePlanes::ImagePlanes() {
   color_type_ = kUnknown_SkColorType;
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
     planes_[i] = nullptr;
     row_bytes_[i] = 0;
   }
 }
 
-ImagePlanes::ImagePlanes(void* planes[3],
-                         const size_t row_bytes[3],
+ImagePlanes::ImagePlanes(void* planes[cc::kNumYUVPlanes],
+                         const size_t row_bytes[cc::kNumYUVPlanes],
                          SkColorType color_type)
     : color_type_(color_type) {
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < cc::kNumYUVPlanes; ++i) {
     planes_[i] = planes[i];
     row_bytes_[i] = row_bytes[i];
   }
 }
 
-void* ImagePlanes::Plane(int i) {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, 3);
-  return planes_[i];
+void* ImagePlanes::Plane(cc::YUVIndex index) {
+  return planes_[static_cast<size_t>(index)];
 }
 
-size_t ImagePlanes::RowBytes(int i) const {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, 3);
-  return row_bytes_[i];
+size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
+  return row_bytes_[static_cast<size_t>(index)];
 }
 
 ColorProfile::ColorProfile(const skcms_ICCProfile& profile,

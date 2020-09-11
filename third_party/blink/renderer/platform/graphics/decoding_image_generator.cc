@@ -218,30 +218,19 @@ bool DecodingImageGenerator::GetPixels(const SkImageInfo& dst_info,
 }
 
 bool DecodingImageGenerator::QueryYUVA(
-    SkYUVASizeInfo* size_info,
-    SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-    SkYUVColorSpace* color_space,
-    uint8_t* bit_depth) const {
+    const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+    SkYUVAPixmapInfo* yuva_pixmap_info) const {
   if (!can_yuv_decode_)
     return false;
 
-  TRACE_EVENT0("blink", "DecodingImageGenerator::queryYUVA");
-
-  // Indicate that we have three separate planes
-  indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-  indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-  indices[SkYUVAIndex::kV_Index] = {2, SkColorChannel::kR};
-  indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kR};
+  TRACE_EVENT0("blink", "DecodingImageGenerator::QueryYUVAInfo");
 
   DCHECK(all_data_received_);
-  return frame_generator_->GetYUVComponentSizes(data_.get(), size_info,
-                                                color_space, bit_depth);
+  return frame_generator_->GetYUVAInfo(data_.get(), supported_data_types,
+                                       yuva_pixmap_info);
 }
 
-bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVASizeInfo& size_info,
-                                           SkColorType color_type,
-                                           const SkYUVAIndex indices[4],
-                                           void* planes[3],
+bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                                            size_t frame_index,
                                            uint32_t lazy_pixel_ref) {
   // TODO(crbug.com/943519): YUV decoding does not currently support incremental
@@ -249,27 +238,32 @@ bool DecodingImageGenerator::GetYUVAPlanes(const SkYUVASizeInfo& size_info,
   DCHECK(can_yuv_decode_);
   DCHECK(all_data_received_);
 
-  TRACE_EVENT0("blink", "DecodingImageGenerator::getYUVAPlanes");
+  TRACE_EVENT0("blink", "DecodingImageGenerator::GetYUVAPlanes");
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                "Decode LazyPixelRef", "LazyPixelRef", lazy_pixel_ref);
 
-  // Verify sizes and indices
+  SkISize plane_sizes[3];
+  size_t plane_row_bytes[3];
+  void* plane_addrs[3];
+
+  // Verify sizes and extract DecodeToYUV parameters
   for (int i = 0; i < 3; ++i) {
-    if (size_info.fSizes[i].isEmpty() || !size_info.fWidthBytes[i]) {
+    const SkPixmap& plane = pixmaps.plane(i);
+    if (plane.dimensions().isEmpty() || !plane.rowBytes())
       return false;
-    }
+    if (plane.colorType() != pixmaps.plane(0).colorType())
+      return false;
+    plane_sizes[i] = plane.dimensions();
+    plane_row_bytes[i] = plane.rowBytes();
+    plane_addrs[i] = plane.writable_addr();
   }
-  if (!size_info.fSizes[3].isEmpty() || size_info.fWidthBytes[3]) {
-    return false;
-  }
-  int numPlanes;
-  if (!SkYUVAIndex::AreValidIndices(indices, &numPlanes) || numPlanes != 3) {
+  if (!pixmaps.plane(3).dimensions().isEmpty()) {
     return false;
   }
 
-  return frame_generator_->DecodeToYUV(data_.get(), frame_index, color_type,
-                                       size_info.fSizes, planes,
-                                       size_info.fWidthBytes);
+  return frame_generator_->DecodeToYUV(
+      data_.get(), frame_index, pixmaps.plane(0).colorType(), plane_sizes,
+      plane_addrs, plane_row_bytes);
 }
 
 SkISize DecodingImageGenerator::GetSupportedDecodeSize(

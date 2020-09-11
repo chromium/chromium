@@ -72,17 +72,17 @@ class PLATFORM_EXPORT ImagePlanes final {
   //
   // TODO(crbug/910276): To support YUVA, ImagePlanes needs to support a
   // variable number of planes.
-  ImagePlanes(void* planes[3],
-              const size_t row_bytes[3],
+  ImagePlanes(void* planes[cc::kNumYUVPlanes],
+              const size_t row_bytes[cc::kNumYUVPlanes],
               SkColorType color_type);
 
-  void* Plane(int);
-  size_t RowBytes(int) const;
+  void* Plane(cc::YUVIndex);
+  size_t RowBytes(cc::YUVIndex) const;
   SkColorType color_type() const { return color_type_; }
 
  private:
-  void* planes_[3];
-  size_t row_bytes_[3];
+  void* planes_[cc::kNumYUVPlanes];
+  size_t row_bytes_[cc::kNumYUVPlanes];
   SkColorType color_type_;
 
   DISALLOW_COPY_AND_ASSIGN(ImagePlanes);
@@ -266,16 +266,21 @@ class PLATFORM_EXPORT ImageDecoder {
   // return the actual decoded size.
   virtual IntSize DecodedSize() const { return Size(); }
 
+  // The YUV subsampling of the image.
+  virtual cc::YUVSubsampling GetYUVSubsampling() const {
+    return cc::YUVSubsampling::kUnknown;
+  }
+
   // Image decoders that support YUV decoding must override this to
   // provide the size of each component.
-  virtual IntSize DecodedYUVSize(int component) const {
+  virtual IntSize DecodedYUVSize(cc::YUVIndex) const {
     NOTREACHED();
     return IntSize();
   }
 
   // Image decoders that support YUV decoding must override this to
   // return the width of each row of the memory allocation.
-  virtual size_t DecodedYUVWidthBytes(int component) const {
+  virtual size_t DecodedYUVWidthBytes(cc::YUVIndex) const {
     NOTREACHED();
     return 0;
   }
@@ -569,11 +574,6 @@ class PLATFORM_EXPORT ImageDecoder {
   std::unique_ptr<ImagePlanes> image_planes_;
 
  private:
-  // The YUV subsampling of the image.
-  virtual cc::YUVSubsampling GetYUVSubsampling() const {
-    return cc::YUVSubsampling::kUnknown;
-  }
-
   // Some code paths compute the size of the image as "width * height * 4 or 8"
   // and return it as a (signed) int.  Avoid overflow.
   inline bool SizeCalculationMayOverflow(unsigned width,

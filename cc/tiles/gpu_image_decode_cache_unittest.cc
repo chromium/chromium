@@ -418,7 +418,7 @@ class GpuImageDecodeCacheTest
     if (do_yuv_decode_) {
       return CreateDiscardablePaintImage(
           size, color_space, allocate_encoded_memory, id, color_type_,
-          yuv_format_, yuv_bytes_per_pixel_);
+          yuv_format_, yuv_data_type_);
     }
     return CreateDiscardablePaintImage(
         size, color_space, allocate_encoded_memory, id, color_type_);
@@ -436,10 +436,9 @@ class GpuImageDecodeCacheTest
         kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
     sk_sp<FakePaintImageGenerator> generator;
     if (do_yuv_decode_) {
-      generator = sk_make_sp<FakePaintImageGenerator>(
-          info,
-          GetYUVASizeInfo(test_image_size, yuv_format_, yuv_bytes_per_pixel_),
-          yuv_bytes_per_pixel_ * 8);
+      SkYUVAPixmapInfo yuva_pixmap_info =
+          GetYUVAPixmapInfo(test_image_size, yuv_format_, yuv_data_type_);
+      generator = sk_make_sp<FakePaintImageGenerator>(info, yuva_pixmap_info);
       generator->SetExpectFallbackToRGB();
     } else {
       generator = sk_make_sp<FakePaintImageGenerator>(info);
@@ -491,9 +490,10 @@ class GpuImageDecodeCacheTest
 
   size_t GetBytesNeededForSingleImage(gfx::Size image_dimensions) {
     if (do_yuv_decode_) {
-      return GetYUVASizeInfo(image_dimensions, yuv_format_,
-                             yuv_bytes_per_pixel_)
-          .computeTotalBytes();
+      SkYUVAPixmapInfo yuva_pixmap_info =
+          GetYUVAPixmapInfo(image_dimensions, yuv_format_, yuv_data_type_);
+
+      return yuva_pixmap_info.computeTotalBytes();
     }
     const size_t test_image_area_bytes =
         base::checked_cast<size_t>(image_dimensions.GetArea());
@@ -544,28 +544,24 @@ class GpuImageDecodeCacheTest
       const DrawImage& draw_image,
       const base::Optional<uint32_t> transfer_cache_id,
       bool should_have_mips) {
-    for (size_t i = 0; i < SkYUVASizeInfo::kMaxCount; ++i) {
-      // TODO(crbug.com/910276): Skip alpha plane until supported in cache.
-      if (i != SkYUVAIndex::kA_Index) {
-        sk_sp<SkImage> original_uploaded_plane;
-        if (use_transfer_cache_) {
-          DCHECK(transfer_cache_id.has_value());
-          const uint32_t id = transfer_cache_id.value();
-          auto* image_entry =
-              transfer_cache_helper_.GetEntryAs<ServiceImageTransferCacheEntry>(
-                  id);
-          original_uploaded_plane = image_entry->GetPlaneImage(i);
-        } else {
-          original_uploaded_plane =
-              cache->GetUploadedPlaneForTesting(draw_image, i);
-        }
-
-        ASSERT_TRUE(original_uploaded_plane);
-        auto plane_with_mips = original_uploaded_plane->makeTextureImage(
-            context_provider()->GrContext(), GrMipMapped::kYes);
-        ASSERT_TRUE(plane_with_mips);
-        EXPECT_EQ(should_have_mips, original_uploaded_plane == plane_with_mips);
+    for (size_t i = 0; i < kNumYUVPlanes; ++i) {
+      sk_sp<SkImage> original_uploaded_plane;
+      if (use_transfer_cache_) {
+        DCHECK(transfer_cache_id.has_value());
+        const uint32_t id = transfer_cache_id.value();
+        auto* image_entry =
+            transfer_cache_helper_.GetEntryAs<ServiceImageTransferCacheEntry>(
+                id);
+        original_uploaded_plane = image_entry->GetPlaneImage(i);
+      } else {
+        original_uploaded_plane = cache->GetUploadedPlaneForTesting(
+            draw_image, static_cast<YUVIndex>(i));
       }
+      ASSERT_TRUE(original_uploaded_plane);
+      auto plane_with_mips = original_uploaded_plane->makeTextureImage(
+          context_provider()->GrContext(), GrMipMapped::kYes);
+      ASSERT_TRUE(plane_with_mips);
+      EXPECT_EQ(should_have_mips, original_uploaded_plane == plane_with_mips);
     }
   }
 
@@ -573,32 +569,33 @@ class GpuImageDecodeCacheTest
       GpuImageDecodeCache* cache,
       const DrawImage& draw_image,
       const base::Optional<uint32_t> transfer_cache_id,
-      const SkISize plane_sizes[SkYUVASizeInfo::kMaxCount],
-      SkColorType expected_type = kGray_8_SkColorType,
+      const SkISize plane_sizes[SkYUVAInfo::kMaxPlanes],
+      SkYUVAPixmapInfo::DataType expected_type =
+          SkYUVAPixmapInfo::DataType::kUnorm8,
       const SkColorSpace* expected_cs = nullptr) {
-    for (size_t i = 0; i < SkYUVASizeInfo::kMaxCount; ++i) {
-      // TODO(crbug.com/910276): Skip alpha plane until supported in cache.
-      if (i != SkYUVAIndex::kA_Index) {
-        sk_sp<SkImage> uploaded_plane;
-        if (use_transfer_cache_) {
-          DCHECK(transfer_cache_id.has_value());
-          const uint32_t id = transfer_cache_id.value();
-          auto* image_entry =
-              transfer_cache_helper_.GetEntryAs<ServiceImageTransferCacheEntry>(
-                  id);
-          uploaded_plane = image_entry->GetPlaneImage(i);
-        } else {
-          uploaded_plane = cache->GetUploadedPlaneForTesting(draw_image, i);
-        }
-        ASSERT_TRUE(uploaded_plane);
-        EXPECT_EQ(plane_sizes[i], uploaded_plane->dimensions());
-        EXPECT_EQ(expected_type, uploaded_plane->colorType());
-        if (expected_cs && use_transfer_cache_) {
-          EXPECT_TRUE(
-              SkColorSpace::Equals(expected_cs, uploaded_plane->colorSpace()));
-        } else if (expected_cs) {
-          // In-process raster sets the ColorSpace on the composite SkImage.
-        }
+    SkColorType expected_color_type =
+        SkYUVAPixmapInfo::DefaultColorTypeForDataType(expected_type, 1);
+    for (size_t i = 0; i < kNumYUVPlanes; ++i) {
+      sk_sp<SkImage> uploaded_plane;
+      if (use_transfer_cache_) {
+        DCHECK(transfer_cache_id.has_value());
+        const uint32_t id = transfer_cache_id.value();
+        auto* image_entry =
+            transfer_cache_helper_.GetEntryAs<ServiceImageTransferCacheEntry>(
+                id);
+        uploaded_plane = image_entry->GetPlaneImage(i);
+      } else {
+        uploaded_plane = cache->GetUploadedPlaneForTesting(
+            draw_image, static_cast<YUVIndex>(i));
+      }
+      ASSERT_TRUE(uploaded_plane);
+      EXPECT_EQ(plane_sizes[i], uploaded_plane->dimensions());
+      EXPECT_EQ(expected_color_type, uploaded_plane->colorType());
+      if (expected_cs && use_transfer_cache_) {
+        EXPECT_TRUE(
+            SkColorSpace::Equals(expected_cs, uploaded_plane->colorSpace()));
+      } else if (expected_cs) {
+        // In-process raster sets the ColorSpace on the composite SkImage.
       }
     }
   }
@@ -613,7 +610,8 @@ class GpuImageDecodeCacheTest
   scoped_refptr<GPUImageDecodeTestMockContextProvider> context_provider_;
 
   // Only used when |do_yuv_decode_| is true.
-  uint8_t yuv_bytes_per_pixel_ = 1;
+  SkYUVAPixmapInfo::DataType yuv_data_type_ =
+      SkYUVAPixmapInfo::DataType::kUnorm8;
   YUVSubsampling yuv_format_ = YUVSubsampling::k420;
 
   bool use_transfer_cache_;
@@ -2067,13 +2065,15 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   SkImageInfo info =
       SkImageInfo::Make(test_image_size.width(), test_image_size.height(),
                         color_type_, kPremul_SkAlphaType);
-  sk_sp<FakePaintImageGenerator> generator =
-      do_yuv_decode_ ? sk_make_sp<FakePaintImageGenerator>(
-                           info,
-                           GetYUVASizeInfo(test_image_size, yuv_format_,
-                                           yuv_bytes_per_pixel_),
-                           yuv_bytes_per_pixel_ * 8, frames)
-                     : sk_make_sp<FakePaintImageGenerator>(info, frames);
+  sk_sp<FakePaintImageGenerator> generator;
+  if (do_yuv_decode_) {
+    SkYUVAPixmapInfo yuva_pixmap_info =
+        GetYUVAPixmapInfo(test_image_size, yuv_format_, yuv_data_type_);
+    generator =
+        sk_make_sp<FakePaintImageGenerator>(info, yuva_pixmap_info, frames);
+  } else {
+    generator = sk_make_sp<FakePaintImageGenerator>(info, frames);
+  }
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
@@ -2886,15 +2886,13 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
       if (!use_transfer_cache_) {
         if (do_yuv_decode_) {
           DrawImage draw_image = draw_and_decoded_draw_image.image;
-          for (size_t i = 0; i < SkYUVASizeInfo::kMaxCount; ++i) {
-            // TODO(crbug.com/910276): Skip alpha plane until supported in
-            // cache.
-            if (i != SkYUVAIndex::kA_Index) {
-              SkImage* plane_image =
-                  cache->GetUploadedPlaneForTesting(draw_image, i).get();
-              discardable_manager_.ExpectLocked(
-                  GpuImageDecodeCache::GlIdFromSkImage(plane_image));
-            }
+          for (size_t i = 0; i < kNumYUVPlanes; ++i) {
+            SkImage* plane_image = cache
+                                       ->GetUploadedPlaneForTesting(
+                                           draw_image, static_cast<YUVIndex>(i))
+                                       .get();
+            discardable_manager_.ExpectLocked(
+                GpuImageDecodeCache::GlIdFromSkImage(plane_image));
           }
         } else {
           discardable_manager_.ExpectLocked(
@@ -2958,10 +2956,12 @@ TEST_P(GpuImageDecodeCacheTest,
     // uploaded planes.
     CompareAllPlanesToMippedVersions(cache, draw_image, transfer_cache_entry_id,
                                      true /* should_have_mips */);
-    SkYUVASizeInfo yuv_size_info = GetYUVASizeInfo(
-        GetNormalImageSize(), yuv_format_, yuv_bytes_per_pixel_);
+    SkYUVAPixmapInfo yuva_pixmap_info =
+        GetYUVAPixmapInfo(GetNormalImageSize(), yuv_format_, yuv_data_type_);
+    SkISize plane_sizes[SkYUVAInfo::kMaxPlanes];
+    yuva_pixmap_info.yuvaInfo().planeDimensions(plane_sizes);
     VerifyUploadedPlaneSizes(cache, draw_image, transfer_cache_entry_id,
-                             yuv_size_info.fSizes);
+                             plane_sizes);
 
     cache->DrawWithImageFinished(draw_image, decoded_draw_image);
     cache->UnrefImage(draw_image);
@@ -2989,9 +2989,14 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     return;
   }
 
-  auto decode_and_check_plane_sizes = [this](GpuImageDecodeCache* cache,
-                                             SkColorType yuv_color_type,
-                                             gfx::ColorSpace target_cs) {
+  auto decode_and_check_plane_sizes = [this](
+                                          GpuImageDecodeCache* cache,
+                                          bool decodes_to_yuv,
+                                          SkYUVAPixmapInfo::DataType
+                                              yuv_data_type = SkYUVAPixmapInfo::
+                                                  DataType::kUnorm8,
+                                          gfx::ColorSpace target_cs =
+                                              gfx::ColorSpace::CreateSRGB()) {
     SkFilterQuality filter_quality = kMedium_SkFilterQuality;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
@@ -3003,10 +3008,9 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
 
     // An unknown SkColorType means we expect fallback to RGB.
     PaintImage image =
-        yuv_color_type == kUnknown_SkColorType
-            ? CreatePaintImageForFallbackToRGB(GetNormalImageSize())
-            : CreatePaintImageInternal(GetNormalImageSize(),
-                                       decoded_cs.ToSkColorSpace());
+        decodes_to_yuv ? CreatePaintImageInternal(GetNormalImageSize(),
+                                                  decoded_cs.ToSkColorSpace())
+                       : CreatePaintImageForFallbackToRGB(GetNormalImageSize());
 
     float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
     if (target_cs.IsHDR())
@@ -3038,15 +3042,15 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-    if (yuv_color_type != kUnknown_SkColorType) {
+    if (decodes_to_yuv) {
       // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus, we
       // must separately request mips for each plane and compare to the original
       // uploaded planes.
       CompareAllPlanesToMippedVersions(cache, draw_image,
                                        transfer_cache_entry_id,
                                        true /* should_have_mips */);
-      SkYUVASizeInfo yuv_size_info = GetYUVASizeInfo(
-          GetNormalImageSize(), yuv_format_, yuv_bytes_per_pixel_);
+      SkYUVAPixmapInfo yuva_pixmap_info =
+          GetYUVAPixmapInfo(GetNormalImageSize(), yuv_format_, yuv_data_type_);
 
       // Decoded HDR images should have their SDR white level adjusted to match
       // the display so we avoid scaling them by variable SDR brightness levels.
@@ -3054,8 +3058,10 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                              ? decoded_cs.GetWithSDRWhiteLevel(sdr_white_level)
                              : decoded_cs;
 
+      SkISize plane_sizes[SkYUVAInfo::kMaxPlanes];
+      yuva_pixmap_info.yuvaInfo().planeDimensions(plane_sizes);
       VerifyUploadedPlaneSizes(cache, draw_image, transfer_cache_entry_id,
-                               yuv_size_info.fSizes, yuv_color_type,
+                               plane_sizes, yuv_data_type,
                                expected_cs.ToSkColorSpace().get());
 
       if (expected_cs.IsValid()) {
@@ -3070,17 +3076,15 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                              *transfer_cache_entry_id)
                          ->is_yuv());
       } else {
-        for (size_t plane = 0; plane < SkYUVASizeInfo::kMaxCount; ++plane)
-          EXPECT_FALSE(cache->GetUploadedPlaneForTesting(draw_image, plane));
+        for (size_t plane = 0; plane < kNumYUVPlanes; ++plane)
+          EXPECT_FALSE(cache->GetUploadedPlaneForTesting(
+              draw_image, static_cast<YUVIndex>(plane)));
       }
     }
 
     cache->DrawWithImageFinished(draw_image, decoded_draw_image);
     cache->UnrefImage(draw_image);
   };
-
-  // Setup paint images and associated YUV info structs to be uint16_t based.
-  yuv_bytes_per_pixel_ = 2;
 
   gpu::Capabilities original_caps;
   {
@@ -3100,30 +3104,35 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     context_provider_->SetContextCapabilitiesOverride(r16_caps);
     auto r16_cache = CreateCache();
 
+    yuv_data_type_ = SkYUVAPixmapInfo::DataType::kUnorm16;
+
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16,
                                  DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16,
                                  DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16,
                                  DefaultColorSpace());
 
     // Verify HDR decoding has white level adjustment.
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16, hdr_cs);
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16, hdr_cs);
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(r16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kUnorm16, hdr_cs);
   }
 
   // Verify that half-float is used when R16 is not available.
@@ -3134,30 +3143,35 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     context_provider_->SetContextCapabilitiesOverride(f16_caps);
     auto f16_cache = CreateCache();
 
+    yuv_data_type_ = SkYUVAPixmapInfo::DataType::kFloat16;
+
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16,
                                  DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16,
                                  DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16,
                                  DefaultColorSpace());
 
     // Verify HDR decoding has white level adjustment.
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16, hdr_cs);
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16, hdr_cs);
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
-                                 hdr_cs);
+    decode_and_check_plane_sizes(f16_cache.get(), true,
+                                 SkYUVAPixmapInfo::DataType::kFloat16, hdr_cs);
   }
 
   // Verify YUV16 is unsupported when neither R16 or half-float are available.
@@ -3168,17 +3182,16 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     context_provider_->SetContextCapabilitiesOverride(no_yuv16_caps);
     auto no_yuv16_cache = CreateCache();
 
+    yuv_data_type_ = SkYUVAPixmapInfo::DataType::kUnorm16;
+
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
-                                 DefaultColorSpace());
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
-                                 DefaultColorSpace());
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
-                                 DefaultColorSpace());
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
   }
 }
 
@@ -3197,7 +3210,7 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
   auto decode_and_check_plane_sizes =
       [this, cache = owned_cache.get()](
           SkSize scaled_size,
-          const SkISize mipped_plane_sizes[SkYUVASizeInfo::kMaxCount]) {
+          const SkISize mipped_plane_sizes[SkYUVAInfo::kMaxPlanes]) {
         SkFilterQuality filter_quality = kMedium_SkFilterQuality;
 
         gfx::Size image_size = GetNormalImageSize();
@@ -3243,18 +3256,18 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
       };
 
   gfx::Size image_size = GetNormalImageSize();
-  SkISize mipped_plane_sizes[SkYUVASizeInfo::kMaxCount];
+  SkISize mipped_plane_sizes[kNumYUVPlanes];
 
   SkSize less_than_half_scale = SkSize::Make(0.45f, 0.45f);
 
   // Because we intend to draw this image at 0.45 x 0.45 scale, we will upload
   // the Y plane at mip level 1 (corresponding to 1/2 the original size).
-  mipped_plane_sizes[SkYUVAIndex::kY_Index] = SkISize::Make(
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)] = SkISize::Make(
       (image_size.width() + 1) / 2, (image_size.height() + 1) / 2);
-  mipped_plane_sizes[SkYUVAIndex::kU_Index] =
-      mipped_plane_sizes[SkYUVAIndex::kY_Index];
-  mipped_plane_sizes[SkYUVAIndex::kV_Index] =
-      mipped_plane_sizes[SkYUVAIndex::kY_Index];
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kU)] =
+      mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)];
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kV)] =
+      mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)];
 
   // For 4:2:0, the chroma planes (U and V) should be uploaded at the same size
   // as the Y plane since they get promoted to 4:4:4 to avoid blurriness from
@@ -3275,12 +3288,12 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
 
   // Because we intend to draw this image at 0.20 x 0.20 scale, we will upload
   // the Y plane at mip level 2 (corresponding to 1/4 the original size).
-  mipped_plane_sizes[SkYUVAIndex::kY_Index] = SkISize::Make(
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)] = SkISize::Make(
       (image_size.width() + 1) / 4, (image_size.height() + 1) / 4);
-  mipped_plane_sizes[SkYUVAIndex::kU_Index] =
-      mipped_plane_sizes[SkYUVAIndex::kY_Index];
-  mipped_plane_sizes[SkYUVAIndex::kV_Index] =
-      mipped_plane_sizes[SkYUVAIndex::kY_Index];
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kU)] =
+      mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)];
+  mipped_plane_sizes[static_cast<size_t>(YUVIndex::kV)] =
+      mipped_plane_sizes[static_cast<size_t>(YUVIndex::kY)];
 
   // For 4:2:0, the chroma planes (U and V) should be uploaded at the same size
   // as the Y plane since they get promoted to 4:4:4 to avoid blurriness from
@@ -3392,11 +3405,9 @@ class GpuImageDecodeCacheWithAcceleratedDecodesTest
         color_type_, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
     sk_sp<FakePaintImageGenerator> generator;
     if (do_yuv_decode_) {
-      generator = sk_make_sp<FakePaintImageGenerator>(
-          info,
-          GetYUVASizeInfo(image_data.image_size, yuv_format_,
-                          yuv_bytes_per_pixel_),
-          yuv_bytes_per_pixel_ * 8);
+      SkYUVAPixmapInfo yuva_pixmap_info =
+          GetYUVAPixmapInfo(image_data.image_size, yuv_format_, yuv_data_type_);
+      generator = sk_make_sp<FakePaintImageGenerator>(info, yuva_pixmap_info);
     } else {
       generator = sk_make_sp<FakePaintImageGenerator>(info);
     }

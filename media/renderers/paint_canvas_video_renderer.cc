@@ -611,6 +611,34 @@ bool ValidFormatForDirectUploading(GrGLenum format, unsigned int type) {
   }
 }
 
+bool VideoPixelFormatAsSkYUVAInfoPlanarConfig(
+    VideoPixelFormat format,
+    SkYUVAInfo::PlanarConfig* config) {
+  // TODO(skbug.com/10632): Add more formats, e.g. I420A, NV12, NV21 when Skia
+  // equivalents are added.
+  // The 9, 10, and 12 bit formats could be added here if GetYUVAPlanes() were
+  // updated to convert data to unorm16/float16.
+  switch (format) {
+    case PIXEL_FORMAT_I420:
+      if (config) {
+        *config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
+      }
+      return true;
+    case PIXEL_FORMAT_I422:
+      if (config) {
+        *config = SkYUVAInfo::PlanarConfig::kY_U_V_422;
+      }
+      return true;
+    case PIXEL_FORMAT_I444:
+      if (config) {
+        *config = SkYUVAInfo::PlanarConfig::kY_U_V_444;
+      }
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // anonymous namespace
 
 // Generates an RGB image from a VideoFrame. Convert YUV to RGB plain on GPU.
@@ -641,75 +669,51 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     return true;
   }
 
-  bool QueryYUVA(SkYUVASizeInfo* sizeInfo,
-                 SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-                 SkYUVColorSpace* color_space,
-                 uint8_t* bit_depth) const override {
+  bool QueryYUVA(const SkYUVAPixmapInfo::SupportedDataTypes&,
+                 SkYUVAPixmapInfo* info) const override {
     // Temporarily disabling this path to avoid creating YUV ImageData in
     // GpuImageDecodeCache.
     // TODO(crbug.com/921636): Restore the code below once YUV rendering support
     // is added for VideoImageGenerator.
     return false;
 #if 0
-    if (!media::IsYuvPlanar(frame_->format()) ||
-        // TODO(rileya): Skia currently doesn't support YUVA conversion. Remove
-        // this case once it does. As-is we will fall back on the pure-software
-        // path in this case.
-        frame_->format() == PIXEL_FORMAT_I420A) {
+    SkYUVAInfo::PlanarConfig planar_config;
+    if (!VideoPixelFormatAsSkYUVAInfoPlanarConfig(frame_->format(),
+                                                  &planar_config)) {
       return false;
     }
-
-    if (color_space) {
-      if (!frame_->ColorSpace().ToSkYUVColorSpace(color_space)) {
+    if (info) {
+      SkYUVColorSpace yuv_color_space;
+      if (!frame_->ColorSpace().ToSkYUVColorSpace(&yuv_color_space)) {
         // TODO(hubbe): This really should default to rec709
         // https://crbug.com/828599
-        *color_space = kRec601_SkYUVColorSpace;
+        yuv_color_space = kRec601_SkYUVColorSpace;
       }
-    }
-
-    for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
-         ++plane) {
-      const gfx::Size size =
-          VideoFrame::PlaneSize(frame_->format(), plane,
+      // We use the Y plane size because it may get rounded up to an even size.
+      // Our implementation of GetYUVAPlanes expects this.
+      gfx::Size y_size =
+          VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
                                 gfx::Size(frame_->visible_rect().width(),
                                           frame_->visible_rect().height()));
-      sizeInfo->fSizes[plane].set(size.width(), size.height());
-      sizeInfo->fWidthBytes[plane] = size.width();
+      SkYUVAInfo yuva_info = SkYUVAInfo({y_size.width(), y_size.height()},
+                                        planar_config, yuv_color_space);
+      *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
+                               /* row bytes */ nullptr);
     }
-    sizeInfo->fSizes[VideoFrame::kAPlane] = SkISize::MakeEmpty();
-    sizeInfo->fWidthBytes[VideoFrame::kAPlane] = 0;
-
-    indices[SkYUVAIndex::kY_Index] = {VideoFrame::kYPlane, SkColorChannel::kR};
-    indices[SkYUVAIndex::kU_Index] = {VideoFrame::kUPlane, SkColorChannel::kR};
-    indices[SkYUVAIndex::kV_Index] = {VideoFrame::kVPlane, SkColorChannel::kR};
-    indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kR};
-
     return true;
 #endif
   }
 
-  bool GetYUVAPlanes(const SkYUVASizeInfo& sizeInfo,
-                     SkColorType color_type,
-                     const SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-                     void* planes[4],
+  bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                      size_t frame_index,
                      uint32_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
 
-    media::VideoPixelFormat format = frame_->format();
-    DCHECK(media::IsYuvPlanar(format) && format != PIXEL_FORMAT_I420A);
-
-    for (int i = 0; i <= VideoFrame::kVPlane; ++i) {
-      if (sizeInfo.fSizes[i].isEmpty() || !sizeInfo.fWidthBytes[i]) {
-        return false;
-      }
-    }
-    if (!sizeInfo.fSizes[VideoFrame::kAPlane].isEmpty() ||
-        sizeInfo.fWidthBytes[VideoFrame::kAPlane]) {
+    if (!VideoPixelFormatAsSkYUVAInfoPlanarConfig(frame_->format(), nullptr)) {
       return false;
     }
-    int numPlanes;
-    if (!SkYUVAIndex::AreValidIndices(indices, &numPlanes) || numPlanes != 3) {
+
+    if (!pixmaps.plane(3).dimensions().isEmpty()) {
       return false;
     }
 
@@ -719,8 +723,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
           VideoFrame::PlaneSize(frame_->format(), plane,
                                 gfx::Size(frame_->visible_rect().width(),
                                           frame_->visible_rect().height()));
-      if (size.width() != sizeInfo.fSizes[plane].width() ||
-          size.height() != sizeInfo.fSizes[plane].height()) {
+      if (size.width() != pixmaps.plane(plane).width() ||
+          size.height() != pixmaps.plane(plane).height()) {
         return false;
       }
 
@@ -739,11 +743,12 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
       // Copy the frame to the supplied memory.
       // TODO: Find a way (API change?) to avoid this copy.
-      uint8_t* out_line = static_cast<uint8_t*>(planes[plane]);
-      int out_line_stride = sizeInfo.fWidthBytes[plane];
+      uint8_t* out_line =
+          static_cast<uint8_t*>(pixmaps.plane(plane).writable_addr());
+      int out_line_stride = static_cast<int>(pixmaps.plane(plane).rowBytes());
       uint8_t* in_line = frame_->data(plane) + offset;
       int in_line_stride = frame_->stride(plane);
-      int plane_height = sizeInfo.fSizes[plane].height();
+      int plane_height = pixmaps.plane(plane).height();
       int bytes_to_copy_per_line = std::min(out_line_stride, in_line_stride);
       libyuv::CopyPlane(in_line, in_line_stride, out_line, out_line_stride,
                         bytes_to_copy_per_line, plane_height);

@@ -22,19 +22,18 @@ FakePaintImageGenerator::FakePaintImageGenerator(
 
 FakePaintImageGenerator::FakePaintImageGenerator(
     const SkImageInfo& info,
-    const SkYUVASizeInfo& yuva_size_info,
-    uint8_t yuva_bit_depth,
+    const SkYUVAPixmapInfo& yuva_pixmap_info,
     std::vector<FrameMetadata> frames,
     bool allocate_discardable_memory,
     std::vector<SkISize> supported_sizes)
     : PaintImageGenerator(info, std::move(frames)),
-      image_backing_memory_(
-          allocate_discardable_memory ? yuva_size_info.computeTotalBytes() : 0,
-          0),
+      image_backing_memory_(allocate_discardable_memory
+                                ? yuva_pixmap_info.computeTotalBytes()
+                                : 0,
+                            0),
       supported_sizes_(std::move(supported_sizes)),
       is_yuv_(true),
-      yuva_size_info_(yuva_size_info),
-      yuva_bit_depth_(yuva_bit_depth) {}
+      yuva_pixmap_info_(yuva_pixmap_info) {}
 
 FakePaintImageGenerator::~FakePaintImageGenerator() = default;
 
@@ -66,35 +65,30 @@ bool FakePaintImageGenerator::GetPixels(const SkImageInfo& info,
   return true;
 }
 
-bool FakePaintImageGenerator::QueryYUVA(SkYUVASizeInfo* yuv_info,
-                                        SkYUVAIndex indices[],
-                                        SkYUVColorSpace* color_space,
-                                        uint8_t* bit_depth) const {
+bool FakePaintImageGenerator::QueryYUVA(
+    const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+    SkYUVAPixmapInfo* yuva_pixmap_info) const {
   if (!is_yuv_)
     return false;
-  *yuv_info = yuva_size_info_;
-  *bit_depth = yuva_bit_depth_;
-  return true;
+
+  *yuva_pixmap_info = yuva_pixmap_info_;
+  return yuva_pixmap_info->isSupported(supported_data_types);
 }
 
-bool FakePaintImageGenerator::GetYUVAPlanes(const SkYUVASizeInfo& yuv_info,
-                                            SkColorType color_type,
-                                            const SkYUVAIndex indices[],
-                                            void* planes[4],
+bool FakePaintImageGenerator::GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                                             size_t frame_index,
                                             uint32_t lazy_pixel_ref) {
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);
   if (image_backing_memory_.empty())
     return false;
-  int numPlanes = SkYUVASizeInfo::kMaxCount;
-  void* src_planes[numPlanes];
-  yuv_info.computePlanes(image_backing_memory_.data(), src_planes);
-  for (int i = 0; i < numPlanes; ++i) {
-    size_t bytes_for_plane_i =
-        yuv_info.fWidthBytes[i] *
-        base::checked_cast<size_t>(yuv_info.fSizes[i].height());
-    memcpy(planes[i], src_planes[i], bytes_for_plane_i);
+  size_t plane_sizes[SkYUVAInfo::kMaxPlanes];
+  yuva_pixmap_info_.computeTotalBytes(plane_sizes);
+  uint8_t* src_plane_memory = image_backing_memory_.data();
+  int num_planes = pixmaps.numPlanes();
+  for (int i = 0; i < num_planes; ++i) {
+    memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory, plane_sizes[i]);
+    src_plane_memory += plane_sizes[i];
   }
   if (frames_decoded_count_.find(frame_index) == frames_decoded_count_.end())
     frames_decoded_count_[frame_index] = 1;

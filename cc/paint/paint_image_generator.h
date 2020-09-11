@@ -13,8 +13,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSize.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
-#include "third_party/skia/include/core/SkYUVASizeInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace cc {
 
@@ -45,29 +44,24 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
                          PaintImage::GeneratorClientId client_id,
                          uint32_t lazy_pixel_ref) = 0;
 
-  // Returns true if the generator supports YUV decoding, providing the output
-  // information in |info| and |color_space|.
-  virtual bool QueryYUVA(SkYUVASizeInfo* info,
-                         SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-                         SkYUVColorSpace* color_space,
-                         uint8_t* bit_depth) const = 0;
+  // Returns true if the generator supports YUV decoding, providing the details
+  // about planar configuration and conversion to RGB in |info|.
+  // |supported_data_types| indicates the allowed bit depth and types allowed
+  // for Y, U, V, and A values.
+  virtual bool QueryYUVA(
+      const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+      SkYUVAPixmapInfo* info) const = 0;
 
-  // Decodes to YUV into the provided |planes| for each of the Y, U, and V
-  // planes, and returns true on success. The method should only be used if
-  // QueryYUVA returns true.
-  // |info| and |indices| need to exactly match the values returned by the
-  // query, except the info.fWidthBytes may be larger than the recommendation
-  // (but not smaller).
+  // Decodes to YUV, storing planar data in the SkPixmaps in the provided
+  // |pixmaps|. The method should only be used if QueryYUVA returns true.
+  // SkPixmaps owned by |pixmaps| have been configured as indicated by
+  // QueryYUVA.
   //
   // TODO(khushalsagar): |lazy_pixel_ref| is only present for
   // DecodingImageGenerator tracing needs. Remove it.
-  virtual bool GetYUVAPlanes(
-      const SkYUVASizeInfo& info,
-      SkColorType color_type,
-      const SkYUVAIndex indices[SkYUVAIndex::kIndexCount],
-      void* planes[3],
-      size_t frame_index,
-      uint32_t lazy_pixel_ref) = 0;
+  virtual bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
+                             size_t frame_index,
+                             uint32_t lazy_pixel_ref) = 0;
 
   // Returns the smallest size that is at least as big as the requested size,
   // such that we can decode to exactly that scale.

@@ -30,7 +30,6 @@
 #include "third_party/libavif/src/include/avif/avif.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/half_float.h"
@@ -279,23 +278,32 @@ void AVIFImageDecoder::OnSetData(SegmentReader* data) {
     SetFailed();
 }
 
-IntSize AVIFImageDecoder::DecodedYUVSize(int component) const {
-  DCHECK_GE(component, 0);
-  // TODO(crbug.com/910276): Change after alpha support.
-  DCHECK_LE(component, 2);
+cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
+  switch (decoder_->image->yuvFormat) {
+    case AVIF_PIXEL_FORMAT_YUV420:
+      return cc::YUVSubsampling::k420;
+    case AVIF_PIXEL_FORMAT_YUV422:
+      return cc::YUVSubsampling::k422;
+    case AVIF_PIXEL_FORMAT_YUV444:
+      return cc::YUVSubsampling::k444;
+    case AVIF_PIXEL_FORMAT_YUV400:
+      return cc::YUVSubsampling::kUnknown;
+    case AVIF_PIXEL_FORMAT_NONE:
+      NOTREACHED();
+      return cc::YUVSubsampling::kUnknown;
+  }
+}
+
+IntSize AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
-  if (component == SkYUVAIndex::kU_Index ||
-      component == SkYUVAIndex::kV_Index) {
+  if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
     return IntSize(UVSize(Size().Width(), chroma_shift_x_),
                    UVSize(Size().Height(), chroma_shift_y_));
   }
   return Size();
 }
 
-size_t AVIFImageDecoder::DecodedYUVWidthBytes(int component) const {
-  DCHECK_GE(component, 0);
-  // TODO(crbug.com/910276): Change after alpha support.
-  DCHECK_LE(component, 2);
+size_t AVIFImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
   // Try to return the same width bytes as used by the dav1d library. This will
   // allow DecodeToYUV() to copy each plane with a single memcpy() call.
@@ -303,8 +311,7 @@ size_t AVIFImageDecoder::DecodedYUVWidthBytes(int component) const {
   // The comments for Dav1dPicAllocator in dav1d/picture.h require the pixel
   // width be padded to a multiple of 128 pixels.
   int aligned_width = base::bits::Align(Size().Width(), 128);
-  if (component == SkYUVAIndex::kU_Index ||
-      component == SkYUVAIndex::kV_Index) {
+  if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
     aligned_width >>= chroma_shift_x_;
   }
   // When the stride is a multiple of 1024, dav1d_default_picture_alloc()
@@ -373,9 +380,9 @@ void AVIFImageDecoder::DecodeToYUV() {
     return;
   }
   DCHECK(!image->alphaPlane);
-  static_assert(SkYUVAIndex::kY_Index == static_cast<int>(AVIF_CHAN_Y), "");
-  static_assert(SkYUVAIndex::kU_Index == static_cast<int>(AVIF_CHAN_U), "");
-  static_assert(SkYUVAIndex::kV_Index == static_cast<int>(AVIF_CHAN_V), "");
+  static_assert(cc::YUVIndex::kY == static_cast<cc::YUVIndex>(AVIF_CHAN_Y), "");
+  static_assert(cc::YUVIndex::kU == static_cast<cc::YUVIndex>(AVIF_CHAN_U), "");
+  static_assert(cc::YUVIndex::kV == static_cast<cc::YUVIndex>(AVIF_CHAN_V), "");
 
   // Disable subnormal floats which can occur when converting to half float.
   std::unique_ptr<cc::ScopedSubnormalFloatDisabler> disable_subnormals;
@@ -393,21 +400,22 @@ void AVIFImageDecoder::DecodeToYUV() {
   // max_frame_height_minus_1 and frame_height_minus_1, respectively, as n-bit
   // unsigned integers for some n.
   DCHECK_GT(height, 0u);
-  for (int plane = 0; plane < 3; ++plane) {
+  for (size_t plane_index = 0; plane_index < cc::kNumYUVPlanes; ++plane_index) {
+    const cc::YUVIndex plane = static_cast<cc::YUVIndex>(plane_index);
     const size_t src_row_bytes =
-        base::strict_cast<size_t>(image->yuvRowBytes[plane]);
+        base::strict_cast<size_t>(image->yuvRowBytes[plane_index]);
     const size_t dst_row_bytes = image_planes_->RowBytes(plane);
 
     if (bit_depth_ == 8) {
       DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
-      const uint8_t* src = image->yuvPlanes[plane];
+      const uint8_t* src = image->yuvPlanes[plane_index];
       uint8_t* dst = static_cast<uint8_t*>(image_planes_->Plane(plane));
       libyuv::CopyPlane(src, src_row_bytes, dst, dst_row_bytes, width, height);
     } else {
       DCHECK_GT(bit_depth_, 8u);
       DCHECK_LE(bit_depth_, 16u);
       const uint16_t* src =
-          reinterpret_cast<uint16_t*>(image->yuvPlanes[plane]);
+          reinterpret_cast<uint16_t*>(image->yuvPlanes[plane_index]);
       uint16_t* dst = static_cast<uint16_t*>(image_planes_->Plane(plane));
       if (image_planes_->color_type() == kA16_unorm_SkColorType) {
         const size_t src_stride = src_row_bytes / 2;
@@ -427,7 +435,7 @@ void AVIFImageDecoder::DecodeToYUV() {
                      << static_cast<int>(image_planes_->color_type());
       }
     }
-    if (plane == 0) {
+    if (plane == cc::YUVIndex::kY) {
       // Having processed the luma plane, change |width| and |height| to the
       // width and height of the chroma planes.
       width = UVSize(width, chroma_shift_x_);
@@ -567,22 +575,6 @@ bool AVIFImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
   // will not currently be called, this is really more for the reader than any
   // functional purpose.
   return true;
-}
-
-cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
-  switch (decoder_->image->yuvFormat) {
-    case AVIF_PIXEL_FORMAT_YUV420:
-      return cc::YUVSubsampling::k420;
-    case AVIF_PIXEL_FORMAT_YUV422:
-      return cc::YUVSubsampling::k422;
-    case AVIF_PIXEL_FORMAT_YUV444:
-      return cc::YUVSubsampling::k444;
-    case AVIF_PIXEL_FORMAT_YUV400:
-      return cc::YUVSubsampling::kUnknown;
-    case AVIF_PIXEL_FORMAT_NONE:
-      NOTREACHED();
-      return cc::YUVSubsampling::kUnknown;
-  }
 }
 
 bool AVIFImageDecoder::MaybeCreateDemuxer() {

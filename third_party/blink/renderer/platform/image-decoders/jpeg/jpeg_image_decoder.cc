@@ -1038,24 +1038,27 @@ void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
   decoded_size_ = IntSize(width, height);
 }
 
-IntSize JPEGImageDecoder::DecodedYUVSize(int component) const {
-  DCHECK_GE(component, 0);
-  DCHECK_LE(component, 2);
-  DCHECK(reader_);
-  const jpeg_decompress_struct* info = reader_->Info();
-
-  DCHECK_EQ(info->out_color_space, JCS_YCbCr);
-  return ComputeYUVSize(info, component);
+cc::YUVSubsampling JPEGImageDecoder::GetYUVSubsampling() const {
+  DCHECK(reader_->Info());
+  // reader_->Info() should have gone through a jpeg_read_header() call.
+  DCHECK(IsDecodedSizeAvailable());
+  return YuvSubsampling(*reader_->Info());
 }
 
-size_t JPEGImageDecoder::DecodedYUVWidthBytes(int component) const {
-  DCHECK_GE(component, 0);
-  DCHECK_LE(component, 2);
+IntSize JPEGImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(reader_);
   const jpeg_decompress_struct* info = reader_->Info();
 
   DCHECK_EQ(info->out_color_space, JCS_YCbCr);
-  return ComputeYUVWidthBytes(info, component);
+  return ComputeYUVSize(info, static_cast<int>(index));
+}
+
+size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+  DCHECK(reader_);
+  const jpeg_decompress_struct* info = reader_->Info();
+
+  DCHECK_EQ(info->out_color_space, JCS_YCbCr);
+  return ComputeYUVWidthBytes(info, static_cast<int>(index));
 }
 
 unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
@@ -1220,12 +1223,15 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   int v = info->comp_info[0].v_samp_factor;
   IntSize uv_size = reader->UvSize();
   int uv_height = uv_size.Height();
-  JSAMPROW output_y = static_cast<JSAMPROW>(image_planes->Plane(0));
-  JSAMPROW output_u = static_cast<JSAMPROW>(image_planes->Plane(1));
-  JSAMPROW output_v = static_cast<JSAMPROW>(image_planes->Plane(2));
-  size_t row_bytes_y = image_planes->RowBytes(0);
-  size_t row_bytes_u = image_planes->RowBytes(1);
-  size_t row_bytes_v = image_planes->RowBytes(2);
+  JSAMPROW output_y =
+      static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kY));
+  JSAMPROW output_u =
+      static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kU));
+  JSAMPROW output_v =
+      static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kV));
+  size_t row_bytes_y = image_planes->RowBytes(cc::YUVIndex::kY);
+  size_t row_bytes_u = image_planes->RowBytes(cc::YUVIndex::kU);
+  size_t row_bytes_v = image_planes->RowBytes(cc::YUVIndex::kV);
 
   // Request 8 or 16 scanlines: returns 0 or more scanlines.
   int y_scanlines_to_read = DCTSIZE * v;
@@ -1343,13 +1349,6 @@ inline bool IsComplete(const JPEGImageDecoder* decoder, bool only_size) {
     return true;
 
   return decoder->FrameIsDecodedAtIndex(0);
-}
-
-cc::YUVSubsampling JPEGImageDecoder::GetYUVSubsampling() const {
-  DCHECK(reader_->Info());
-  // reader_->Info() should have gone through a jpeg_read_header() call.
-  DCHECK(IsDecodedSizeAvailable());
-  return YuvSubsampling(*reader_->Info());
 }
 
 void JPEGImageDecoder::Decode(bool only_size) {

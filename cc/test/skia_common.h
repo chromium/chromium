@@ -43,10 +43,10 @@ sk_sp<PaintImageGenerator> CreatePaintImageGenerator(const gfx::Size& size);
 
 PaintImage CreatePaintWorkletPaintImage(scoped_refptr<PaintWorkletInput> input);
 
-SkYUVASizeInfo GetYUVASizeInfo(const gfx::Size& image_size,
-                               YUVSubsampling yuv_format,
-                               uint8_t bytes_per_pixel,
-                               bool has_alpha = false);
+SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
+                                   YUVSubsampling yuv_format,
+                                   SkYUVAPixmapInfo::DataType yuv_data_type,
+                                   bool has_alpha = false);
 
 PaintImage CreateDiscardablePaintImage(
     const gfx::Size& size,
@@ -55,7 +55,8 @@ PaintImage CreateDiscardablePaintImage(
     PaintImage::Id id = PaintImage::kInvalidId,
     SkColorType color_type = kN32_SkColorType,
     base::Optional<YUVSubsampling> yuv_format = base::nullopt,
-    uint8_t yuv_bytes_per_pixel = 1);
+    SkYUVAPixmapInfo::DataType yuv_data_type =
+        SkYUVAPixmapInfo::DataType::kUnorm8);
 
 DrawImage CreateDiscardableDrawImage(const gfx::Size& size,
                                      sk_sp<SkColorSpace> color_space,

@@ -94,9 +94,9 @@ void ReadYUV(size_t max_decoded_bytes,
   ASSERT_TRUE(decoder->CanDecodeToYUV());
 
   IntSize size = decoder->DecodedSize();
-  IntSize y_size = decoder->DecodedYUVSize(0);
-  IntSize u_size = decoder->DecodedYUVSize(1);
-  IntSize v_size = decoder->DecodedYUVSize(2);
+  IntSize y_size = decoder->DecodedYUVSize(cc::YUVIndex::kY);
+  IntSize u_size = decoder->DecodedYUVSize(cc::YUVIndex::kU);
+  IntSize v_size = decoder->DecodedYUVSize(cc::YUVIndex::kV);
 
   EXPECT_EQ(size, y_size);
   EXPECT_EQ(u_size, v_size);
@@ -105,9 +105,9 @@ void ReadYUV(size_t max_decoded_bytes,
   EXPECT_EQ(expected_uv_size, u_size);
 
   size_t row_bytes[3];
-  row_bytes[0] = decoder->DecodedYUVWidthBytes(0);
-  row_bytes[1] = decoder->DecodedYUVWidthBytes(1);
-  row_bytes[2] = decoder->DecodedYUVWidthBytes(2);
+  row_bytes[0] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kY);
+  row_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
+  row_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
 
   size_t planes_data_size = row_bytes[0] * y_size.Height() +
                             row_bytes[1] * u_size.Height() +
