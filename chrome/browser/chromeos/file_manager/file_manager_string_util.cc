@@ -392,6 +392,10 @@ void AddStringsForZipArchiver(base::DictionaryValue* dict) {
   SET_STRING("ZIP_ARCHIVER_TOO_MANY_OPENED", IDS_ZIP_ARCHIVER_TOO_MANY_OPENED);
 }
 
+void AddStringsForSharesheet(base::DictionaryValue* dict) {
+  SET_STRING("SHARESHEET_BUTTON_LABEL", IDS_SHARESHEET_TITLE_LABEL);
+}
+
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
@@ -408,6 +412,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
   AddStringsForCrUiMenuItemShortcuts(dict.get());
   AddStringsForFileErrors(dict.get());
   AddStringsForZipArchiver(dict.get());
+  AddStringsForSharesheet(dict.get());
 
   SET_STRING("ADD_NEW_SERVICES_BUTTON_LABEL",
              IDS_FILE_BROWSER_ADD_NEW_SERVICES_BUTTON_LABEL);
