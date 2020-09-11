@@ -1336,11 +1336,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
   ASSERT_TRUE(guest_contents);
   WebContents* web_contents = GetActiveWebContents();
 
-  // The PDF viewer always starts at default zoom, which for tests is 100% or
-  // zoom level 0.0. Here we look at the presets to find the next zoom level
-  // above 0. Ideally we should look at the zoom levels from the PDF viewer
-  // javascript, but we assume they'll always match the browser presets, which
-  // are easier to access.
+  // The PDF viewer, when the update is disabled, always starts at default zoom,
+  // which for tests is 100% or zoom level 0.0. Here we look at the presets to
+  // find the next zoom level above 0. Ideally we should look at the zoom levels
+  // from the PDF viewer javascript, but we assume they'll always match the
+  // browser presets, which are easier to access. When the update is enabled,
+  // the presence of the sidenav causes the default zoom to be just under 90%.
+  // In this case, we add 2 additional zoom calls to match the final result.
   std::vector<double> preset_zoom_levels = zoom::PageZoom::PresetZoomLevels(0);
   auto it = std::find(preset_zoom_levels.begin(), preset_zoom_levels.end(), 0);
   ASSERT_TRUE(it != preset_zoom_levels.end());
@@ -1362,6 +1364,17 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #endif
   ASSERT_TRUE(
       content::ExecuteScript(guest_contents, "viewer.viewport.zoomIn();"));
+
+  // Two extra calls - the first zoomIn() takes zoom to 90%, the second to 100%,
+  // and the third goes to the next zoom level above 100%, which is the desired
+  // result for this test.
+  ASSERT_TRUE(
+      content::ExecuteScript(guest_contents,
+                             "if (document.documentElement.hasAttribute("
+                             "        'pdf-viewer-update-enabled')) {"
+                             "  viewer.viewport.zoomIn();"
+                             "  viewer.viewport.zoomIn();"
+                             "}"));
 
   watcher.Wait();
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
@@ -2560,7 +2573,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
 // icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithParam,
                        ContextMenuOpensFromTouchSelectionMenu) {
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   WebContents* const guest_contents = LoadPdfGetGuestContents(url);
@@ -2568,7 +2581,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TouchSelectionMenuViews");
-  gfx::Point text_selection_position(10, 10);
+  gfx::Point text_selection_position(12, 12);
   ConvertPageCoordToScreenCoord(guest_contents, &text_selection_position);
   content::SimulateTouchEventAt(GetActiveWebContents(), ui::ET_TOUCH_PRESSED,
                                 text_selection_position);
