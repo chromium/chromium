@@ -393,7 +393,6 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
       static_cast<RenderViewHostImpl*>(RenderViewHostFactory::Create(
           site_instance, render_view_delegate_, render_widget_delegate_,
           main_frame_routing_id, swapped_out));
-  RegisterRenderViewHost(rvh);
   return base::WrapRefCounted(rvh);
 }
 

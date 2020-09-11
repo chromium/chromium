@@ -292,6 +292,7 @@ RenderViewHostImpl::RenderViewHostImpl(
                               : blink::mojom::PageVisibilityState::kHidden);
 
   GetWidget()->set_owner_delegate(this);
+  GetDelegate()->GetFrameTree()->RegisterRenderViewHost(this);
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -324,14 +325,10 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   delegate_->RenderViewDeleted(this);
   GetProcess()->RemoveObserver(this);
 
-  // This can be called inside the FrameTree destructor. When the delegate is
-  // the InterstialPageImpl, the |frame_tree| is set to null before deleting it.
-  if (FrameTree* frame_tree = GetDelegate()->GetFrameTree()) {
-    // If |this| is in the BackForwardCache, then it was already removed from
-    // the FrameTree at the time it entered the BackForwardCache.
-    if (!is_in_back_forward_cache_)
-      frame_tree->UnregisterRenderViewHost(this);
-  }
+  // If |this| is in the BackForwardCache, then it was already removed from
+  // the FrameTree at the time it entered the BackForwardCache.
+  if (!is_in_back_forward_cache_)
+    GetDelegate()->GetFrameTree()->UnregisterRenderViewHost(this);
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
@@ -475,8 +472,7 @@ void RenderViewHostImpl::EnterBackForwardCache() {
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
   TRACE_EVENT0("navigation", "RenderViewHostImpl::EnterBackForwardCache");
-  FrameTree* frame_tree = GetDelegate()->GetFrameTree();
-  frame_tree->UnregisterRenderViewHost(this);
+  GetDelegate()->GetFrameTree()->UnregisterRenderViewHost(this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
@@ -485,10 +481,9 @@ void RenderViewHostImpl::EnterBackForwardCache() {
 void RenderViewHostImpl::LeaveBackForwardCache(
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT0("navigation", "RenderViewHostImpl::LeaveBackForwardCache");
-  FrameTree* frame_tree = GetDelegate()->GetFrameTree();
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
-  frame_tree->RegisterRenderViewHost(this);
+  GetDelegate()->GetFrameTree()->RegisterRenderViewHost(this);
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
