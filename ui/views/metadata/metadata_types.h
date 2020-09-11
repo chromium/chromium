@@ -128,7 +128,9 @@ class VIEWS_EXPORT ClassMetaData {
 // accessors to get/set the value of the member on an object.
 class VIEWS_EXPORT MemberMetaDataBase {
  public:
-  MemberMetaDataBase() = default;
+  MemberMetaDataBase(const std::string& member_name,
+                     const std::string& member_type)
+      : member_name_(member_name), member_type_(member_type) {}
   virtual ~MemberMetaDataBase() = default;
 
   // Access the value of this member and return it as a string.
@@ -144,8 +146,6 @@ class VIEWS_EXPORT MemberMetaDataBase {
   // Return various information flags about the property.
   virtual PropertyFlags GetPropertyFlags() const = 0;
 
-  void SetMemberName(const char* name) { member_name_ = name; }
-  void SetMemberType(const char* type) { member_type_ = type; }
   const std::string& member_name() const { return member_name_; }
   const std::string& member_type() const { return member_type_; }
 
