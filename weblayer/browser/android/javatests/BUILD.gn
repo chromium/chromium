@@ -30,7 +30,6 @@ android_library("weblayer_java_tests") {
     "src/org/chromium/weblayer/test/OnTabRemovedTabListCallbackImpl.java",
     "src/org/chromium/weblayer/test/ProfileTest.java",
     "src/org/chromium/weblayer/test/RenderingTest.java",
-    "src/org/chromium/weblayer/test/SiteSettingsTest.java",
     "src/org/chromium/weblayer/test/SmokeTest.java",
     "src/org/chromium/weblayer/test/TabCallbackTest.java",
     "src/org/chromium/weblayer/test/TabListCallbackTest.java",
@@ -76,6 +75,7 @@ android_library("weblayer_private_java_tests") {
     "src/org/chromium/weblayer/test/PageInfoTest.java",
     "src/org/chromium/weblayer/test/PopupTest.java",
     "src/org/chromium/weblayer/test/ResourceLoadingTest.java",
+    "src/org/chromium/weblayer/test/SiteSettingsTest.java",
     "src/org/chromium/weblayer/test/TranslateTest.java",
     "src/org/chromium/weblayer/test/UrlBarControllerTest.java",
   ]
@@ -112,7 +112,6 @@ android_library("weblayer_java_test_support") {
     "src/org/chromium/weblayer/test/NavigationWaiter.java",
     "src/org/chromium/weblayer/test/NewTabCallbackImpl.java",
     "src/org/chromium/weblayer/test/ResourceUtil.java",
-    "src/org/chromium/weblayer/test/SiteSettingsActivityTestRule.java",
     "src/org/chromium/weblayer/test/WebLayerActivityTestRule.java",
     "src/org/chromium/weblayer/test/WebLayerJUnit4ClassRunner.java",
   ]
@@ -134,12 +133,16 @@ android_library("weblayer_java_test_support") {
 
 android_library("weblayer_java_private_test_support") {
   testonly = true
-  sources = [ "src/org/chromium/weblayer/test/BrowserControlsHelper.java" ]
+  sources = [
+    "src/org/chromium/weblayer/test/BrowserControlsHelper.java",
+    "src/org/chromium/weblayer/test/SiteSettingsActivityTestRule.java",
+  ]
   deps = [
     ":weblayer_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
     "//weblayer/public/java",
