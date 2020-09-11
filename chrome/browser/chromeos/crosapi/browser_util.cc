@@ -4,8 +4,12 @@
 
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 
+#include <utility>
+
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/channel_info.h"
@@ -15,6 +19,8 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 
 using user_manager::User;
 using version_info::Channel;
@@ -87,6 +93,29 @@ bool IsLacrosAllowed(Channel channel) {
     case Channel::STABLE:
       return false;
   }
+}
+
+mojo::Remote<crosapi::mojom::LacrosChromeService>
+SendMojoInvitationToLacrosChrome(
+    mojo::PlatformChannelEndpoint local_endpoint,
+    base::OnceClosure mojo_disconnected_callback,
+    base::OnceCallback<
+        void(mojo::PendingReceiver<crosapi::mojom::AshChromeService>)>
+        ash_chrome_service_callback) {
+  mojo::OutgoingInvitation invitation;
+  mojo::Remote<crosapi::mojom::LacrosChromeService> lacros_chrome_service;
+  lacros_chrome_service.Bind(
+      mojo::PendingRemote<crosapi::mojom::LacrosChromeService>(
+          invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
+  lacros_chrome_service.set_disconnect_handler(
+      std::move(mojo_disconnected_callback));
+  lacros_chrome_service->Init(crosapi::mojom::LacrosInitParams::New());
+  lacros_chrome_service->RequestAshChromeServiceReceiver(
+      std::move(ash_chrome_service_callback));
+  mojo::OutgoingInvitation::Send(std::move(invitation),
+                                 base::kNullProcessHandle,
+                                 std::move(local_endpoint));
+  return lacros_chrome_service;
 }
 
 }  // namespace browser_util

@@ -431,6 +431,15 @@ const char kLacrosChromeAdditionalArgs[] = "lacros-chrome-additional-args";
 // path should be to a directory that contains a binary named 'chrome'.
 const char kLacrosChromePath[] = "lacros-chrome-path";
 
+// If set, ash-chrome will drop a Unix domain socket to wait for a process to
+// connect to it, and the connection will be used to request file descriptors
+// from ash-chrome, and when the process forks to start a lacros-chrome, the
+// obtained file descriptor will be used by lacros-chrome to set up the mojo
+// connection with ash-chrome. There are mainly two use cases:
+// 1. Test launcher to run browser tests in testing environment.
+// 2. A terminal to start lacros-chrome with a debugger.
+const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
+
 // Enables Chrome-as-a-login-manager behavior.
 const char kLoginManager[] = "login-manager";
 
