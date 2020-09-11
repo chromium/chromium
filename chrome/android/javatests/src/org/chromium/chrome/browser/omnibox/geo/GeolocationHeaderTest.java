@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -152,7 +153,7 @@ public class GeolocationHeaderTest {
             final long locationTime, final boolean shouldBeNull) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo infoHttps =
-                    new PermissionInfo(PermissionInfo.Type.GEOLOCATION, SEARCH_URL_1, null, false);
+                    new PermissionInfo(ContentSettingsType.GEOLOCATION, SEARCH_URL_1, null, false);
             infoHttps.setContentSetting(Profile.getLastUsedRegularProfile(), httpsPermission);
             String header = GeolocationHeader.getGeoHeader(
                     SEARCH_URL_1, mActivityTestRule.getActivity().getActivityTab());

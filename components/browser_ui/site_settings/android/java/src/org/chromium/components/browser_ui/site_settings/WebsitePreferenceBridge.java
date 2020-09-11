@@ -34,38 +34,38 @@ public class WebsitePreferenceBridge {
      */
     @SuppressWarnings("unchecked")
     public List<PermissionInfo> getPermissionInfo(
-            BrowserContextHandle browserContextHandle, @PermissionInfo.Type int type) {
+            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
         ArrayList<PermissionInfo> list = new ArrayList<PermissionInfo>();
         // Camera, Location & Microphone can be managed by the custodian
         // of a supervised account or by enterprise policy.
-        if (type == PermissionInfo.Type.AUGMENTED_REALITY) {
+        if (type == ContentSettingsType.AR) {
             WebsitePreferenceBridgeJni.get().getArOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.CAMERA) {
+        } else if (type == ContentSettingsType.MEDIASTREAM_CAMERA) {
             boolean managedOnly = !isCameraUserModifiable(browserContextHandle);
             WebsitePreferenceBridgeJni.get().getCameraOrigins(
                     browserContextHandle, list, managedOnly);
-        } else if (type == PermissionInfo.Type.CLIPBOARD) {
+        } else if (type == ContentSettingsType.CLIPBOARD_READ_WRITE) {
             WebsitePreferenceBridgeJni.get().getClipboardOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.GEOLOCATION) {
+        } else if (type == ContentSettingsType.GEOLOCATION) {
             boolean managedOnly = !isAllowLocationUserModifiable(browserContextHandle);
             WebsitePreferenceBridgeJni.get().getGeolocationOrigins(
                     browserContextHandle, list, managedOnly);
-        } else if (type == PermissionInfo.Type.MICROPHONE) {
+        } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
             boolean managedOnly = !isMicUserModifiable(browserContextHandle);
             WebsitePreferenceBridgeJni.get().getMicrophoneOrigins(
                     browserContextHandle, list, managedOnly);
-        } else if (type == PermissionInfo.Type.MIDI) {
+        } else if (type == ContentSettingsType.MIDI_SYSEX) {
             WebsitePreferenceBridgeJni.get().getMidiOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.NFC) {
+        } else if (type == ContentSettingsType.NFC) {
             WebsitePreferenceBridgeJni.get().getNfcOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.NOTIFICATION) {
+        } else if (type == ContentSettingsType.NOTIFICATIONS) {
             WebsitePreferenceBridgeJni.get().getNotificationOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.PROTECTED_MEDIA_IDENTIFIER) {
+        } else if (type == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
             WebsitePreferenceBridgeJni.get().getProtectedMediaIdentifierOrigins(
                     browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.SENSORS) {
+        } else if (type == ContentSettingsType.SENSORS) {
             WebsitePreferenceBridgeJni.get().getSensorsOrigins(browserContextHandle, list);
-        } else if (type == PermissionInfo.Type.VIRTUAL_REALITY) {
+        } else if (type == ContentSettingsType.VR) {
             WebsitePreferenceBridgeJni.get().getVrOrigins(browserContextHandle, list);
         } else {
             assert false;
@@ -73,9 +73,10 @@ public class WebsitePreferenceBridge {
         return list;
     }
 
-    private static void insertInfoIntoList(@PermissionInfo.Type int type,
+    private static void insertInfoIntoList(@ContentSettingsType int type,
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        if (type == PermissionInfo.Type.CAMERA || type == PermissionInfo.Type.MICROPHONE) {
+        if (type == ContentSettingsType.MEDIASTREAM_CAMERA
+                || type == ContentSettingsType.MEDIASTREAM_MIC) {
             for (PermissionInfo info : list) {
                 if (info.getOrigin().equals(origin) && info.getEmbedder().equals(embedder)) {
                     return;
@@ -88,63 +89,65 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void insertArInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(
-                PermissionInfo.Type.AUGMENTED_REALITY, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.AR, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertCameraInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.CAMERA, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(
+                ContentSettingsType.MEDIASTREAM_CAMERA, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertClipboardInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.CLIPBOARD, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(
+                ContentSettingsType.CLIPBOARD_READ_WRITE, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertGeolocationInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.GEOLOCATION, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.GEOLOCATION, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertMicrophoneInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.MICROPHONE, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(
+                ContentSettingsType.MEDIASTREAM_MIC, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertMidiInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.MIDI, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.MIDI_SYSEX, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertNfcInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.NFC, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.NFC, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertNotificationIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.NOTIFICATION, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.NOTIFICATIONS, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
     private static void insertProtectedMediaIdentifierInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.PROTECTED_MEDIA_IDENTIFIER, list, origin, embedder,
+        insertInfoIntoList(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, list, origin, embedder,
                 isEmbargoed);
     }
 
     @CalledByNative
     private static void insertSensorsInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(PermissionInfo.Type.SENSORS, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.SENSORS, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
@@ -156,8 +159,7 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void insertVrInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
-        insertInfoIntoList(
-                PermissionInfo.Type.VIRTUAL_REALITY, list, origin, embedder, isEmbargoed);
+        insertInfoIntoList(ContentSettingsType.VR, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative

@@ -200,13 +200,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             if (contentSettingPermission != null) {
                 return ContentSettingValues.BLOCK == contentSettingPermission;
             }
-            for (@PermissionInfo.Type int j = 0; j < PermissionInfo.Type.NUM_ENTRIES; j++) {
-                if (PermissionInfo.getContentSettingsType(j)
-                        == SiteSettingsCategory.contentSettingsType(i)) {
-                    return j != PermissionInfo.Type.MIDI
-                            && ContentSettingValues.BLOCK
-                            == website.site().getPermission(browserContextHandle, j);
-                }
+
+            PermissionInfo permissionInfo =
+                    website.site().getPermissionInfo(SiteSettingsCategory.contentSettingsType(i));
+            if (permissionInfo != null) {
+                return permissionInfo.getContentSettingsType() != ContentSettingsType.MIDI_SYSEX
+                        && ContentSettingValues.BLOCK
+                        == permissionInfo.getContentSetting(browserContextHandle);
             }
         }
         return false;

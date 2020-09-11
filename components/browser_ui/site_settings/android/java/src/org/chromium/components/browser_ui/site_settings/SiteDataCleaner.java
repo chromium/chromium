@@ -28,8 +28,9 @@ public class SiteDataCleaner {
             site.setContentSettingPermission(browserContextHandle,
                     exception.getContentSettingType(), ContentSettingValues.DEFAULT);
         }
-        for (@PermissionInfo.Type int type = 0; type < PermissionInfo.Type.NUM_ENTRIES; type++) {
-            site.setPermission(browserContextHandle, type, ContentSettingValues.DEFAULT);
+        for (PermissionInfo info : site.getPermissionInfos()) {
+            site.setPermission(browserContextHandle, info.getContentSettingsType(),
+                    ContentSettingValues.DEFAULT);
         }
 
         for (ChosenObjectInfo info : site.getChosenObjectInfo()) {

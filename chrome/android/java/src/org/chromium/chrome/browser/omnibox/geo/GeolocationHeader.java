@@ -418,7 +418,7 @@ public class GeolocationHeader {
     static @ContentSettingValues @Nullable Integer locationContentSettingForUrl(
             Profile profile, Uri uri) {
         PermissionInfo locationSettings = new PermissionInfo(
-                PermissionInfo.Type.GEOLOCATION, uri.toString(), null, profile.isOffTheRecord());
+                ContentSettingsType.GEOLOCATION, uri.toString(), null, profile.isOffTheRecord());
         return locationSettings.getContentSetting(profile);
     }
 

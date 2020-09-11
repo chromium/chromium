@@ -36,6 +36,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -196,7 +197,7 @@ public class SiteChannelsManagerTest {
     @SmallTest
     public void testBlockingPermissionInIncognitoCreatesNoChannels() {
         PermissionInfo info = new PermissionInfo(
-                PermissionInfo.Type.NOTIFICATION, "https://example-incognito.com", null, true);
+                ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> info.setContentSetting(

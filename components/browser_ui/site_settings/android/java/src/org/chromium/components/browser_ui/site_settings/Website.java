@@ -35,9 +35,9 @@ public final class Website implements Serializable {
     private Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
 
     /**
-     * Indexed by PermissionInfo.Type.
+     * Indexed by ContentSettingsType.
      */
-    private PermissionInfo[] mPermissionInfo;
+    private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     private LocalStorageInfo mLocalStorageInfo;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
@@ -50,7 +50,6 @@ public final class Website implements Serializable {
     public Website(WebsiteAddress origin, WebsiteAddress embedder) {
         mOrigin = origin;
         mEmbedder = embedder;
-        mPermissionInfo = new PermissionInfo[PermissionInfo.Type.NUM_ENTRIES];
     }
 
     public WebsiteAddress getAddress() {
@@ -120,11 +119,18 @@ public final class Website implements Serializable {
     }
 
     /**
+     * @return Collection of PermissionInfos stored for the site.
+     */
+    public Collection<PermissionInfo> getPermissionInfos() {
+        return mPermissionInfos.values();
+    }
+
+    /**
      * @return PermissionInfo with permission details of specified type
      *         (Camera, Clipboard, etc.).
      */
-    public PermissionInfo getPermissionInfo(@PermissionInfo.Type int type) {
-        return mPermissionInfo[type];
+    public PermissionInfo getPermissionInfo(@ContentSettingsType int type) {
+        return mPermissionInfos.get(type);
     }
 
     /**
@@ -132,7 +138,7 @@ public final class Website implements Serializable {
      * (Camera, Clipboard, etc.).
      */
     public void setPermissionInfo(PermissionInfo info) {
-        mPermissionInfo[info.getType()] = info;
+        mPermissionInfos.put(info.getContentSettingsType(), info);
     }
 
     /**
@@ -140,7 +146,7 @@ public final class Website implements Serializable {
      *         (Camera, Clipboard, etc.).
      */
     public @ContentSettingValues @Nullable Integer getPermission(
-            BrowserContextHandle browserContextHandle, @PermissionInfo.Type int type) {
+            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
         return getPermissionInfo(type) != null
                 ? getPermissionInfo(type).getContentSetting(browserContextHandle)
                 : null;
@@ -151,7 +157,7 @@ public final class Website implements Serializable {
      * (Camera, Clipboard, etc.).
      */
     public void setPermission(BrowserContextHandle browserContextHandle,
-            @PermissionInfo.Type int type, @ContentSettingValues int value) {
+            @ContentSettingsType int type, @ContentSettingValues int value) {
         if (getPermissionInfo(type) != null) {
             getPermissionInfo(type).setContentSetting(browserContextHandle, value);
         }

@@ -87,13 +87,9 @@ class WebsitePreference extends ChromeImageViewPreference {
         setTitle(mSite.getTitle());
 
         if (mSite.getEmbedder() == null) {
-            @PermissionInfo.Type
-            Integer permissionInfoType =
-                    PermissionInfo.getPermissionInfoType(mCategory.getContentSettingsType());
-            PermissionInfo permissionInfo = null;
-            if (permissionInfoType != null
-                    && (permissionInfo = mSite.getPermissionInfo(permissionInfoType)) != null
-                    && permissionInfo.isEmbargoed()) {
+            PermissionInfo permissionInfo =
+                    mSite.getPermissionInfo(mCategory.getContentSettingsType());
+            if (permissionInfo != null && permissionInfo.isEmbargoed()) {
                 setSummary(getContext().getString(R.string.automatically_blocked));
             }
             return;

@@ -216,7 +216,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/signin/SigninUtilsStartActivityTest.java",
   "junit/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerDelegateTest.java",
   "junit/src/org/chromium/chrome/browser/signin/account_picker/AccountPickerMediatorTest.java",
-  "junit/src/org/chromium/chrome/browser/site_settings/SingleWebsiteSettingsTest.java",
   "junit/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsImageFetcherTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",

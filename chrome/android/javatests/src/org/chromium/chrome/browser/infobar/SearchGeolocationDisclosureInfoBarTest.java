@@ -29,6 +29,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -52,7 +53,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         // Simulate the DSE being granted location (the test server isn't set to be the DSE).
         PermissionInfo locationSettings = new PermissionInfo(
-                PermissionInfo.Type.GEOLOCATION, mTestServer.getURL(SEARCH_PAGE), null, false);
+                ContentSettingsType.GEOLOCATION, mTestServer.getURL(SEARCH_PAGE), null, false);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 ()
                         -> locationSettings.setContentSetting(

@@ -502,13 +502,13 @@ public class SearchEngineAdapter extends BaseAdapter
 
         Profile profile = Profile.getLastUsedRegularProfile();
         PermissionInfo settings =
-                new PermissionInfo(PermissionInfo.Type.NOTIFICATION, url, null, false);
+                new PermissionInfo(ContentSettingsType.NOTIFICATIONS, url, null, false);
         boolean notificationsAllowed =
                 settings.getContentSetting(profile) == ContentSettingValues.ALLOW
                 && WebsitePreferenceBridge.isPermissionControlledByDSE(
                         profile, ContentSettingsType.NOTIFICATIONS, url);
 
-        settings = new PermissionInfo(PermissionInfo.Type.GEOLOCATION, url, null, false);
+        settings = new PermissionInfo(ContentSettingsType.GEOLOCATION, url, null, false);
         boolean locationAllowed = settings.getContentSetting(profile) == ContentSettingValues.ALLOW
                 && WebsitePreferenceBridge.isPermissionControlledByDSE(
                         profile, ContentSettingsType.GEOLOCATION, url);
@@ -565,7 +565,7 @@ public class SearchEngineAdapter extends BaseAdapter
         if (url.isEmpty()) return false;
 
         PermissionInfo locationSettings =
-                new PermissionInfo(PermissionInfo.Type.GEOLOCATION, url, null, false);
+                new PermissionInfo(ContentSettingsType.GEOLOCATION, url, null, false);
         return locationSettings.getContentSetting(Profile.getLastUsedRegularProfile())
                 == ContentSettingValues.ALLOW;
     }
