@@ -78,10 +78,11 @@ On Windows, use `content_shell.exe`.
 #### Running HTTP Tests in Content Shell
 
 HTTP tests reside under [web_tests/http/tests](../../third_party/blink/web_tests/http/tests).
-You need to start a web server first:
+You need to start a web server first. By default it serves generated files from
+out/Release:
 
 ```bash
-python third_party/blink/tools/run_blink_httpd.py
+python third_party/blink/tools/run_blink_httpd.py -t <build directory>
 ```
 Then run the test with a localhost URL:
 
