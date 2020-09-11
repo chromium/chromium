@@ -54,36 +54,6 @@ class SafariImporterTest : public PlatformTest {
   }
 };
 
-TEST_F(SafariImporterTest, HistoryImport) {
-  scoped_refptr<SafariImporter> importer(GetSafariImporter());
-
-  std::vector<ImporterURLRow> history_items;
-  importer->ParseHistoryItems(&history_items);
-
-  // Should be 2 history items.
-  ASSERT_EQ(history_items.size(), 2U);
-
-  ImporterURLRow& it1 = history_items[0];
-  EXPECT_EQ(it1.url, GURL("http://www.firsthistoryitem.com/"));
-  EXPECT_EQ(it1.title, base::UTF8ToUTF16("First History Item Title"));
-  EXPECT_EQ(it1.visit_count, 1);
-  EXPECT_EQ(it1.hidden, 0);
-  EXPECT_EQ(it1.typed_count, 0);
-  EXPECT_EQ(it1.last_visit.ToDoubleT(),
-      importer->HistoryTimeToEpochTime(@"270598264.4"));
-
-  ImporterURLRow& it2 = history_items[1];
-  std::string second_item_title("http://www.secondhistoryitem.com/");
-  EXPECT_EQ(it2.url, GURL(second_item_title));
-  // The second item lacks a title so we expect the URL to be substituted.
-  EXPECT_EQ(base::UTF16ToUTF8(it2.title), second_item_title.c_str());
-  EXPECT_EQ(it2.visit_count, 55);
-  EXPECT_EQ(it2.hidden, 0);
-  EXPECT_EQ(it2.typed_count, 0);
-  EXPECT_EQ(it2.last_visit.ToDoubleT(),
-      importer->HistoryTimeToEpochTime(@"270598231.4"));
-}
-
 TEST_F(SafariImporterTest, BookmarkImport) {
   // Expected results
   const struct {
@@ -264,11 +234,7 @@ TEST_F(SafariImporterTest, CanImport) {
   uint16_t items = importer::NONE;
   EXPECT_TRUE(SafariImporterCanImport(
       GetTestSafariLibraryPath("default"), &items));
-  EXPECT_EQ(items, importer::HISTORY | importer::FAVORITES);
-  EXPECT_EQ(items & importer::COOKIES, importer::NONE);
-  EXPECT_EQ(items & importer::PASSWORDS, importer::NONE);
-  EXPECT_EQ(items & importer::SEARCH_ENGINES, importer::NONE);
-  EXPECT_EQ(items & importer::HOME_PAGE, importer::NONE);
+  EXPECT_EQ(items, importer::FAVORITES);
 
   // Check that we don't import anything from a bogus library directory.
   base::ScopedTempDir fake_library_dir;

@@ -915,6 +915,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   FilePath file_name =
       temp_dir_.GetPath().Append(FPL("Test Readable File.txt"));
   EXPECT_FALSE(PathExists(file_name));
+  EXPECT_FALSE(PathIsReadable(file_name));
 
   static constexpr char kData[] = "hello";
   static constexpr int kDataSize = sizeof(kData) - 1;
@@ -928,11 +929,13 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   int32_t mode = 0;
   EXPECT_TRUE(GetPosixFilePermissions(file_name, &mode));
   EXPECT_TRUE(mode & FILE_PERMISSION_READ_BY_USER);
+  EXPECT_TRUE(PathIsReadable(file_name));
 
   // Get rid of the read permission.
   EXPECT_TRUE(SetPosixFilePermissions(file_name, 0u));
   EXPECT_TRUE(GetPosixFilePermissions(file_name, &mode));
   EXPECT_FALSE(mode & FILE_PERMISSION_READ_BY_USER);
+  EXPECT_FALSE(PathIsReadable(file_name));
   // Make sure the file can't be read.
   EXPECT_EQ(-1, ReadFile(file_name, buffer, kDataSize));
 
@@ -940,6 +943,7 @@ TEST_F(FileUtilTest, ChangeFilePermissionsAndRead) {
   EXPECT_TRUE(SetPosixFilePermissions(file_name, FILE_PERMISSION_READ_BY_USER));
   EXPECT_TRUE(GetPosixFilePermissions(file_name, &mode));
   EXPECT_TRUE(mode & FILE_PERMISSION_READ_BY_USER);
+  EXPECT_TRUE(PathIsReadable(file_name));
   // Make sure the file can be read.
   EXPECT_EQ(kDataSize, ReadFile(file_name, buffer, kDataSize));
 

@@ -471,6 +471,13 @@ bool PathExists(const FilePath& path) {
 }
 
 #if !defined(OS_NACL_NONSFI)
+bool PathIsReadable(const FilePath& path) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  return access(path.value().c_str(), R_OK) == 0;
+}
+#endif  // !defined(OS_NACL_NONSFI)
+
+#if !defined(OS_NACL_NONSFI)
 bool PathIsWritable(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return access(path.value().c_str(), W_OK) == 0;

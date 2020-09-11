@@ -13,17 +13,21 @@ bool SafariImporterCanImport(const base::FilePath& library_dir,
   DCHECK(services_supported);
   *services_supported = importer::NONE;
 
-  // Import features are toggled by the following:
-  // bookmarks import: existence of ~/Library/Safari/Bookmarks.plist file.
-  // history import: existence of ~/Library/Safari/History.plist file.
+  // Only support the importing of bookmarks from Safari, if there is access to
+  // the bookmarks storage file.
+
+  // As for history import, this code used to support that, dependent on the
+  // existence of the "History.plist" file. Long before macOS 10.10, Safari
+  // switched to a database for the history file, and no one noticed that the
+  // history importing broke. Given the file access restrictions in macOS 10.14
+  // (https://crbug.com/850225) it's probably not worth fixing it, and so it was
+  // removed.
+
   base::FilePath safari_dir = library_dir.Append("Safari");
   base::FilePath bookmarks_path = safari_dir.Append("Bookmarks.plist");
-  base::FilePath history_path = safari_dir.Append("History.plist");
 
-  if (base::PathExists(bookmarks_path))
+  if (base::PathIsReadable(bookmarks_path))
     *services_supported |= importer::FAVORITES;
-  if (base::PathExists(history_path))
-    *services_supported |= importer::HISTORY;
 
   return *services_supported != importer::NONE;
 }

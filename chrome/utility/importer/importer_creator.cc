@@ -16,8 +16,6 @@
 #endif
 
 #if defined(OS_MAC)
-#include <CoreFoundation/CoreFoundation.h>
-
 #include "base/mac/foundation_util.h"
 #include "chrome/utility/importer/safari_importer.h"
 #endif

@@ -161,6 +161,9 @@ BASE_EXPORT bool CopyDirectoryExcl(const FilePath& from_path,
 // false otherwise.
 BASE_EXPORT bool PathExists(const FilePath& path);
 
+// Returns true if the given path is readable by the user, false otherwise.
+BASE_EXPORT bool PathIsReadable(const FilePath& path);
+
 // Returns true if the given path is writable by the user, false otherwise.
 BASE_EXPORT bool PathIsWritable(const FilePath& path);
 

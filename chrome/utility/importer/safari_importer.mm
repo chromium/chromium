@@ -25,22 +25,6 @@
 #include "sql/statement.h"
 #include "url/gurl.h"
 
-namespace {
-
-// A function like this is used by other importers in order to filter out
-// URLS we don't want to import.
-// For now it's pretty basic, but I've split it out so it's easy to slot
-// in necessary logic for filtering URLS, should we need it.
-bool CanImportSafariURL(const GURL& url) {
-  // The URL is not valid.
-  if (!url.is_valid())
-    return false;
-
-  return true;
-}
-
-}  // namespace
-
 SafariImporter::SafariImporter(const base::FilePath& library_dir)
     : library_dir_(library_dir) {
 }
@@ -58,21 +42,12 @@ void SafariImporter::StartImport(const importer::SourceProfile& source_profile,
   // In keeping with import on other platforms (and for other browsers), we
   // don't import the home page (since it may lead to a useless homepage); see
   // crbug.com/25603.
-  if ((items & importer::HISTORY) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::HISTORY);
-    ImportHistory();
-    bridge_->NotifyItemEnded(importer::HISTORY);
-  }
   if ((items & importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::FAVORITES);
     ImportBookmarks();
     bridge_->NotifyItemEnded(importer::FAVORITES);
   }
-  if ((items & importer::PASSWORDS) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::PASSWORDS);
-    ImportPasswords();
-    bridge_->NotifyItemEnded(importer::PASSWORDS);
-  }
+
   bridge_->NotifyEnded();
 }
 
@@ -105,7 +80,7 @@ void SafariImporter::ImportBookmarks() {
 }
 
 bool SafariImporter::OpenDatabase(sql::Database* db) {
-  // Construct ~/Library/Safari/WebIcons.db path.
+  // Construct ~/Library/Safari/WebpageIcons.db path.
   NSString* library_dir = [NSString
       stringWithUTF8String:library_dir_.value().c_str()];
   NSString* safari_dir = [library_dir
@@ -288,94 +263,4 @@ void SafariImporter::ParseBookmarks(
   std::vector<base::string16> parent_path_elements;
   RecursiveReadBookmarksFolder(bookmarks_dict, parent_path_elements, false,
                                toolbar_name, bookmarks);
-}
-
-void SafariImporter::ImportPasswords() {
-  // Safari stores it's passwords in the Keychain, same as us so we don't need
-  // to import them.
-  // Note: that we don't automatically pick them up, there is some logic around
-  // the user needing to explicitly input their username in a page and blurring
-  // the field before we pick it up, but the details of that are beyond the
-  // scope of this comment.
-}
-
-void SafariImporter::ImportHistory() {
-  std::vector<ImporterURLRow> rows;
-  ParseHistoryItems(&rows);
-
-  if (!rows.empty() && !cancelled()) {
-    bridge_->SetHistoryItems(rows, importer::VISIT_SOURCE_SAFARI_IMPORTED);
-  }
-}
-
-double SafariImporter::HistoryTimeToEpochTime(NSString* history_time) {
-  DCHECK(history_time);
-  // Add Difference between Unix epoch and CFAbsoluteTime epoch in seconds.
-  // Unix epoch is 1970-01-01 00:00:00.0 UTC,
-  // CF epoch is 2001-01-01 00:00:00.0 UTC.
-  return CFStringGetDoubleValue(base::mac::NSToCFCast(history_time)) +
-      kCFAbsoluteTimeIntervalSince1970;
-}
-
-void SafariImporter::ParseHistoryItems(
-    std::vector<ImporterURLRow>* history_items) {
-  DCHECK(history_items);
-
-  // Construct ~/Library/Safari/History.plist path
-  NSString* library_dir = [NSString
-      stringWithUTF8String:library_dir_.value().c_str()];
-  NSString* safari_dir = [library_dir
-      stringByAppendingPathComponent:@"Safari"];
-  NSString* history_plist = [safari_dir
-      stringByAppendingPathComponent:@"History.plist"];
-
-  // Load the plist file.
-  NSDictionary* history_dict = [NSDictionary
-      dictionaryWithContentsOfFile:history_plist];
-  if (!history_dict)
-    return;
-
-  NSArray* safari_history_items = [history_dict
-      objectForKey:@"WebHistoryDates"];
-
-  for (NSDictionary* history_item in safari_history_items) {
-    NSString* url_ns = [history_item objectForKey:@""];
-    if (!url_ns)
-      continue;
-
-    GURL url(base::SysNSStringToUTF8(url_ns));
-
-    if (!CanImportSafariURL(url))
-      continue;
-
-    ImporterURLRow row(url);
-    NSString* title_ns = [history_item objectForKey:@"title"];
-
-    // Sometimes items don't have a title, in which case we just substitue
-    // the url.
-    if (!title_ns)
-      title_ns = url_ns;
-
-    row.title = base::SysNSStringToUTF16(title_ns);
-    int visit_count = [[history_item objectForKey:@"visitCount"]
-                          intValue];
-    row.visit_count = visit_count;
-    // Include imported URLs in autocompletion - don't hide them.
-    row.hidden = 0;
-    // Item was never typed before in the omnibox.
-    row.typed_count = 0;
-
-    NSString* last_visit_str = [history_item objectForKey:@"lastVisitedDate"];
-    // The last visit time should always be in the history item, but if not
-    /// just continue without this item.
-    DCHECK(last_visit_str);
-    if (!last_visit_str)
-      continue;
-
-    // Convert Safari's last visit time to Unix Epoch time.
-    double seconds_since_unix_epoch = HistoryTimeToEpochTime(last_visit_str);
-    row.last_visit = base::Time::FromDoubleT(seconds_since_unix_epoch);
-
-    history_items->push_back(row);
-  }
 }
