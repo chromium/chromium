@@ -18,8 +18,9 @@ constexpr int kMediaListMaxHeight = 478;
 // Thickness of separator border.
 constexpr int kMediaListSeparatorThickness = 2;
 
-std::unique_ptr<views::Border> CreateMediaListSeparatorBorder(SkColor color) {
-  return views::CreateSolidSidedBorder(/*top=*/kMediaListSeparatorThickness,
+std::unique_ptr<views::Border> CreateMediaListSeparatorBorder(SkColor color,
+                                                              int thickness) {
+  return views::CreateSolidSidedBorder(/*top=*/thickness,
                                        /*left=*/0,
                                        /*bottom=*/0,
                                        /*right=*/0, color);
@@ -27,7 +28,18 @@ std::unique_ptr<views::Border> CreateMediaListSeparatorBorder(SkColor color) {
 
 }  // anonymous namespace
 
-MediaNotificationListView::MediaNotificationListView() {
+MediaNotificationListView::SeparatorStyle::SeparatorStyle(
+    SkColor separator_color,
+    int separator_thickness)
+    : separator_color(separator_color),
+      separator_thickness(separator_thickness) {}
+
+MediaNotificationListView::MediaNotificationListView()
+    : MediaNotificationListView(base::nullopt) {}
+
+MediaNotificationListView::MediaNotificationListView(
+    const base::Optional<SeparatorStyle>& separator_style)
+    : separator_style_(separator_style) {
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -50,9 +62,16 @@ void MediaNotificationListView::ShowNotification(
   // If this isn't the first notification, then create a top-sided separator
   // border.
   if (!notifications_.empty()) {
-    SkColor separator_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_MenuSeparatorColor);
-    notification->SetBorder(CreateMediaListSeparatorBorder(separator_color));
+    if (separator_style_.has_value()) {
+      notification->SetBorder(CreateMediaListSeparatorBorder(
+          separator_style_->separator_color,
+          separator_style_->separator_thickness));
+    } else {
+      notification->SetBorder(CreateMediaListSeparatorBorder(
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_MenuSeparatorColor),
+          kMediaListSeparatorThickness));
+    }
   }
 
   notifications_[id] = contents()->AddChildView(std::move(notification));

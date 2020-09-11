@@ -15,6 +15,7 @@ class ImageView;
 namespace ash {
 
 class Shelf;
+class TrayBubbleWrapper;
 
 class MediaTray : public MediaNotificationProviderObserver,
                   public TrayBackgroundView {
@@ -30,11 +31,21 @@ class MediaTray : public MediaNotificationProviderObserver,
   base::string16 GetAccessibleNameForTray() override;
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
-  void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble() override {}
+  bool PerformAction(const ui::Event& event) override;
+  void ShowBubble(bool show_by_click) override;
+  void CloseBubble() override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void ClickedOutsideBubble() override;
+
+  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
 
  private:
+  friend class MediaTrayTest;
+
+  // Show/hide media tray.
   void UpdateDisplayState();
+
+  std::unique_ptr<TrayBubbleWrapper> bubble_;
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;

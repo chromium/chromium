@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/optional.h"
 #include "ui/views/controls/scroll_view.h"
 
 class MediaNotificationContainerImplView;
@@ -17,6 +18,15 @@ class OverlayMediaNotification;
 // sessions.
 class MediaNotificationListView : public views::ScrollView {
  public:
+  struct SeparatorStyle {
+    SeparatorStyle(SkColor separator_color, int separator_thickness);
+
+    const SkColor separator_color;
+    const int separator_thickness;
+  };
+
+  explicit MediaNotificationListView(
+      const base::Optional<SeparatorStyle>& separator_style);
   MediaNotificationListView();
   ~MediaNotificationListView() override;
 
@@ -46,6 +56,8 @@ class MediaNotificationListView : public views::ScrollView {
 
   std::map<const std::string, MediaNotificationContainerImplView*>
       notifications_;
+
+  base::Optional<SeparatorStyle> separator_style_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationListView);
 };

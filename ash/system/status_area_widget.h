@@ -112,6 +112,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   DictationButtonTray* dictation_button_tray() {
     return dictation_button_tray_.get();
   }
+  MediaTray* media_tray() { return media_tray_.get(); }
   StatusAreaOverflowButtonTray* overflow_button_tray() {
     return overflow_button_tray_.get();
   }

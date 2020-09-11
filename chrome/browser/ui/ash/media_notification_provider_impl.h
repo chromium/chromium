@@ -7,14 +7,20 @@
 
 #include "ash/public/cpp/media_notification_provider.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class MediaNotificationService;
+class MediaNotificationListView;
+class MediaNotificationContainerImplView;
 
 class MediaNotificationProviderImpl
     : public ash::MediaNotificationProvider,
+      public MediaDialogDelegate,
       public MediaNotificationServiceObserver,
+      public MediaNotificationContainerObserver,
       public session_manager::SessionManagerObserver {
  public:
   MediaNotificationProviderImpl();
@@ -26,21 +32,51 @@ class MediaNotificationProviderImpl
       ash::MediaNotificationProviderObserver* observer) override;
   bool HasActiveNotifications() override;
   bool HasFrozenNotifications() override;
-  std::unique_ptr<views::View> GetMediaNotificationListView() override;
+  std::unique_ptr<views::View> GetMediaNotificationListView(
+      SkColor separator_color,
+      int separator_thickness) override;
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override;
+  void OnBubbleClosing() override;
+
+  // MediaDialogDelegate implementations.
+  MediaNotificationContainerImpl* ShowMediaSession(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
+  void HideMediaSession(const std::string& id) override;
+  std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
+                                                   gfx::Rect bounds) override;
 
   // MediaNotificationServiceObserver implementations.
   void OnNotificationListChanged() override;
   void OnMediaDialogOpened() override {}
   void OnMediaDialogClosed() override {}
 
+  // MediaNotificationContainerObserver implementations.
+  void OnContainerSizeChanged() override;
+  void OnContainerMetadataChanged() override {}
+  void OnContainerActionsChanged() override {}
+  void OnContainerClicked(const std::string& id) override {}
+  void OnContainerDismissed(const std::string& id) override {}
+  void OnContainerDestroyed(const std::string& id) override;
+  void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) override {
+  }
+  void OnAudioSinkChosen(const std::string& id,
+                         const std::string& sink_id) override {}
+
   // SessionManagerobserver implementation.
   void OnUserProfileLoaded(const AccountId& account_id) override;
+
+  MediaNotificationService* service_for_testing() { return service_; }
 
  private:
   base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
 
+  MediaNotificationListView* active_session_view_ = nullptr;
+
   MediaNotificationService* service_ = nullptr;
+
+  std::map<const std::string, MediaNotificationContainerImplView*>
+      observed_containers_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_

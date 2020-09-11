@@ -2045,6 +2045,7 @@ test("ash_unittests") {
     "system/ime_menu/ime_menu_tray_unittest.cc",
     "system/locale/locale_feature_pod_controller_unittest.cc",
     "system/machine_learning/user_settings_event_logger_unittest.cc",
+    "system/media/media_tray_unittest.cc",
     "system/message_center/ash_message_popup_collection_unittest.cc",
     "system/message_center/inactive_user_notification_blocker_unittest.cc",
     "system/message_center/message_center_ui_controller_unittest.cc",
