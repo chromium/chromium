@@ -35,6 +35,9 @@ class BackForwardCacheCanStoreDocumentResult {
   void NoDueToFeatures(uint64_t features);
   void NoDueToRelatedActiveContents(base::Optional<ShouldSwapBrowsingInstance>
                                         browsing_instance_not_swapped_reason);
+
+  // TODO(hajimehoshi): Replace the arbitrary strings with base::Location /
+  // FROM_HERE for privacy reasons.
   void NoDueToDisableForRenderFrameHostCalled(
       const std::set<std::string>& reasons);
 

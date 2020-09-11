@@ -5807,6 +5807,31 @@ Unknown properties are collapsed to zero. -->
       label="password_manager::ContentPasswordManagerDriver"/>
 </enum>
 
+<enum name="BackForwardCacheDisabledForRenderFrameHostReasonShort">
+  <int value="4520" label="PopupBlockerTabHelper"/>
+  <int value="8169" label="SafeBrowsingTriggeredPopupBlocker"/>
+  <int value="12795" label="banners::AppBannerManager"/>
+  <int value="14149" label="OfflinePage"/>
+  <int value="15533" label="WebAuthenticationAPI"/>
+  <int value="17667" label="PermissionServiceContext"/>
+  <int value="25206" label="Serial"/>
+  <int value="26854" label="OomInterventionTabHelper"/>
+  <int value="29532" label="MediaSessionImpl::OnServiceCreated"/>
+  <int value="30041" label="NativeFileSystem"/>
+  <int value="31177" label="safe_browsing::ThreatDetails"/>
+  <int value="31230" label="autofill::ContentAutofillDriver"/>
+  <int value="36734" label="RenderFrameDevToolsAgentHost"/>
+  <int value="36798" label="WebBluetooth"/>
+  <int value="37928" label="content::protocol::SecurityHandler"/>
+  <int value="41719"
+      label="ChromePasswordManagerClient::BindCredentialManager"/>
+  <int value="44443" label="PermissionRequestManager"/>
+  <int value="49166" label="password_manager::ContentPasswordManagerDriver"/>
+  <int value="51814" label="MixedContentSettingsTabHelper"/>
+  <int value="55334" label="WebUSB"/>
+  <int value="58230" label="MediaWebContentsObserver::OnMediaPlaying"/>
+</enum>
+
 <enum name="BackForwardCacheEvictedAfterDocumentRestoredReason">
   <int value="0" label="Restored"/>
   <int value="1" label="By JavaScript"/>
