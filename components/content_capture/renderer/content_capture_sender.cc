@@ -62,11 +62,22 @@ void ContentCaptureSender::DidRemoveContent(blink::WebVector<int64_t> data) {
 }
 
 void ContentCaptureSender::StartCapture() {
-  render_frame()->GetWebFrame()->SetContentCaptureClient(this);
+  // The render_frame() is invalid after RenderFrameObserver::RenderFrameGone()
+  // called.
+  // Refer to crbug.com/1127082.
+  if (auto* rf = render_frame()) {
+    if (auto* web_frame = rf->GetWebFrame()) {
+      web_frame->SetContentCaptureClient(this);
+    }
+  }
 }
 
 void ContentCaptureSender::StopCapture() {
-  render_frame()->GetWebFrame()->SetContentCaptureClient(nullptr);
+  if (auto* rf = render_frame()) {
+    if (auto* web_frame = rf->GetWebFrame()) {
+      web_frame->SetContentCaptureClient(nullptr);
+    }
+  }
 }
 
 void ContentCaptureSender::OnDestruct() {
