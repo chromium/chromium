@@ -10,6 +10,7 @@ luci.list_view(
         "try/android-lollipop-arm-rel",
         "try/android-marshmallow-arm64-rel",
         "try/android-marshmallow-x86-rel",
+        "try/android-marshmallow-x86-rel-non-cq",
         # TODO(crbug.com/1111436) Added it back once all Pixel 1s are flashed
         # back to NJH47F
         # "try/android-nougat-arm64-rel",

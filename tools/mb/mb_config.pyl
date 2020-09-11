@@ -105,6 +105,7 @@
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild',
 
       'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google',
       'android-nougat-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google',
       'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
@@ -113,7 +114,6 @@
 
     'chromium.android.fyi': {
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
-      'android-marshmallow-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
     },
@@ -728,8 +728,8 @@
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-lollipop-arm-rel': 'android_release_trybot_webview_google',
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_whitelisting_fastbuild_java_coverage',
-      'android-marshmallow-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
       'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
       'android-nougat-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_google_native_coverage',

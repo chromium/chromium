@@ -766,7 +766,7 @@ luci.console_view(
             short_name = "dbg",
         ),
         luci.console_view_entry(
-            builder = "ci/android-marshmallow-x86-fyi-rel",
+            builder = "ci/android-marshmallow-x86-rel-non-cq",
             category = "week16b",
             short_name = "marsh",
         ),

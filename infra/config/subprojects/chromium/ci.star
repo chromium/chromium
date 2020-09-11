@@ -826,6 +826,14 @@ ci.android_builder(
 )
 
 ci.android_builder(
+    name = "android-marshmallow-x86-rel-non-cq",
+    console_view_entry = ci.console_view_entry(
+        category = "builder_tester|x86",
+        short_name = "M_non-cq",
+    ),
+)
+
+ci.android_builder(
     name = "android-nougat-arm64-rel",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -890,15 +898,6 @@ ci.android_fyi_builder(
         category = "webview",
         short_name = "p-rel",
     ),
-)
-
-ci.android_fyi_builder(
-    name = "android-marshmallow-x86-fyi-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "emulator|M|x86",
-        short_name = "rel",
-    ),
-    goma_jobs = goma.jobs.J150,
 )
 
 # TODO(hypan): remove this once there is no associated disabled tests
