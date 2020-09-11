@@ -476,6 +476,12 @@ const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
 const char kPluginsDeprecationInfobarLastShown[] =
     "plugins.deprecation_infobar_last_shown";
 
+const char kPasswordManagerOnboardingState[] =
+    "profile.password_manager_onboarding_state";
+
+const char kWasOnboardingFeatureCheckedBefore[] =
+    "profile.was_pwm_onboarding_feature_checked_before";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -536,6 +542,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
 
   registry->RegisterTimePref(kPluginsDeprecationInfobarLastShown, base::Time());
+
+  registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
+  registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
 }
 
 }  // namespace
@@ -1117,4 +1126,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 9/2020
   profile_prefs->ClearPref(kPluginsDeprecationInfobarLastShown);
+  profile_prefs->ClearPref(kPasswordManagerOnboardingState);
+  profile_prefs->ClearPref(kWasOnboardingFeatureCheckedBefore);
 }

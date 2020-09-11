@@ -738,8 +738,6 @@ static_library("ui") {
       "android/passwords/credential_leak_dialog_view_android.h",
       "android/passwords/manual_filling_view_android.cc",
       "android/passwords/manual_filling_view_android.h",
-      "android/passwords/onboarding_dialog_view.cc",
-      "android/passwords/onboarding_dialog_view.h",
       "android/passwords/password_generation_dialog_view_android.cc",
       "android/passwords/password_generation_dialog_view_android.h",
       "android/passwords/password_generation_editing_popup_view_android.cc",

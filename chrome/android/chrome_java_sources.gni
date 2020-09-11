@@ -1210,7 +1210,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/password_manager/Credential.java",
   "java/src/org/chromium/chrome/browser/password_manager/CredentialLeakDialogBridge.java",
   "java/src/org/chromium/chrome/browser/password_manager/GooglePasswordManagerUIProvider.java",
-  "java/src/org/chromium/chrome/browser/password_manager/OnboardingDialogBridge.java",
   "java/src/org/chromium/chrome/browser/password_manager/PasswordChangeLauncher.java",
   "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupLauncher.java",
   "java/src/org/chromium/chrome/browser/password_manager/PasswordGenerationDialogBridge.java",

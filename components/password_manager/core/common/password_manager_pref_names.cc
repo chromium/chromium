@@ -56,14 +56,8 @@ const char kLastTimePasswordCheckCompleted[] =
 
 const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 
-const char kPasswordManagerOnboardingState[] =
-    "profile.password_manager_onboarding_state";
-
 const char kPasswordLeakDetectionEnabled[] =
     "profile.password_manager_leak_detection";
-
-const char kWasOnboardingFeatureCheckedBefore[] =
-    "profile.was_pwm_onboarding_feature_checked_before";
 
 const char kProfileStoreDateLastUsedForFilling[] =
     "password_manager.profile_store_date_last_used_for_filling";

@@ -23,8 +23,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Mediator class responsible for the logic of showing the password manager dialog (e.g. onboarding
- * dialog).
+ * Mediator class responsible for the logic of showing the password manager dialog.
  */
 class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     private final ModalDialogManager mDialogManager;

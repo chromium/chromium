@@ -1720,9 +1720,6 @@ extern const char kPageInfoV2Description[];
 extern const char kPasswordCheckName[];
 extern const char kPasswordCheckDescription[];
 
-extern const char kPasswordManagerOnboardingAndroidName[];
-extern const char kPasswordManagerOnboardingAndroidDescription[];
-
 extern const char kPhotoPickerVideoSupportName[];
 extern const char kPhotoPickerVideoSupportDescription[];
 

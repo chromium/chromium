@@ -3637,11 +3637,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "password-manager-onboarding-android",
-    "owners": [ "ioanap" ],
-    "expiry_milestone": 82
-  },
-  {
     "name": "PasswordImport",
     "owners": [ "vasilii" ],
     "expiry_milestone": 88

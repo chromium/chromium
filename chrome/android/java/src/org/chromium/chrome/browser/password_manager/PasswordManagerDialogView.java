@@ -17,8 +17,8 @@ import org.chromium.chrome.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
- * The dialog content view for illustration dialogs used by the password manager (e.g. onboarding,
- * leak warning).
+ * The dialog content view for illustration dialogs used by the password manager (e.g. leak
+ * warning).
  */
 public class PasswordManagerDialogView extends ScrollView {
     private @Nullable ChromeImageButton mHelpButtonView;

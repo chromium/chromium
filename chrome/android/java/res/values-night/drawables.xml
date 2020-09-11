@@ -10,8 +10,5 @@
         @drawable/ic_play_circle_filled_24dp_on_dark_bg
     </drawable>
     <drawable name="password_check_warning"> @drawable/password_check_warning_dark_mode</drawable>
-    <drawable name="password_manager_onboarding_illustration01">@drawable/password_manager_onboarding_illustration01_dark_mode</drawable>
-    <drawable name="password_manager_onboarding_illustration02">@drawable/password_manager_onboarding_illustration02_dark_mode</drawable>
-    <drawable name="password_manager_onboarding_illustration03">@drawable/password_manager_onboarding_illustration03_dark_mode</drawable>
     <drawable name="shared_clipboard_zero_state">@drawable/shared_clipboard_zero_state_dark</drawable>
 </resources>

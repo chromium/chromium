@@ -77,11 +77,6 @@ const base::Feature kPasswordCheck = {"PasswordCheck",
 const base::Feature kPasswordImport = {"PasswordImport",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether the password manager onboarding experience is shown
-// on Android.
-const base::Feature kPasswordManagerOnboardingAndroid = {
-    "PasswordManagerOnboardingAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables checking credentials for weakness in Password Check.
 const base::Feature kPasswordsWeaknessCheck = {
     "PasswordsWeaknessCheck", base::FEATURE_DISABLED_BY_DEFAULT};

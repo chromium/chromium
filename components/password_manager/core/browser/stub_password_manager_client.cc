@@ -26,11 +26,6 @@ bool StubPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 void StubPasswordManagerClient::PromptUserToMovePasswordToAccount(
     std::unique_ptr<PasswordFormManagerForUI> form_to_move) {}
 
-bool StubPasswordManagerClient::ShowOnboarding(
-    std::unique_ptr<PasswordFormManagerForUI> form_to_save) {
-  return false;
-}
-
 void StubPasswordManagerClient::ShowManualFallbackForSaving(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool has_generated_password,

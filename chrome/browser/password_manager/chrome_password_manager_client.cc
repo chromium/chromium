@@ -126,7 +126,6 @@
 #include "chrome/browser/password_manager/android/update_password_infobar_delegate_android.h"
 #include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
-#include "chrome/browser/ui/android/passwords/onboarding_dialog_view.h"
 #include "components/infobars/core/infobar.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "ui/base/ui_base_features.h"
@@ -346,21 +345,6 @@ void ChromePasswordManagerClient::PromptUserToMovePasswordToAccount(
   PasswordsClientUIDelegateFromWebContents(web_contents())
       ->OnShowMoveToAccountBubble(std::move(form_to_move));
 #endif  // !defined(OS_ANDROID)
-}
-
-bool ChromePasswordManagerClient::ShowOnboarding(
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save) {
-  // The save password infobar and the password bubble prompt in case of
-  // "webby" URLs and do not prompt in case of "non-webby" URLS (e.g. file://).
-  if (!CanShowBubbleOnURL(web_contents()->GetLastCommittedURL()))
-    return false;
-#if defined(OS_ANDROID)
-  // This class will delete itself after the dialog is dismissed.
-  (new OnboardingDialogView(this, std::move(form_to_save)))->Show();
-  return true;
-#else
-  return false;
-#endif  // defined(OS_ANDROID)
 }
 
 void ChromePasswordManagerClient::ShowManualFallbackForSaving(
@@ -1052,10 +1036,6 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
 }
 
 #if defined(OS_ANDROID)
-void ChromePasswordManagerClient::OnOnboardingSuccessful(
-    std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save) {
-  SavePasswordInfoBarDelegate::Create(web_contents(), std::move(form_to_save));
-}
 void ChromePasswordManagerClient::OnImeTextCommittedEvent(
     const base::string16& text_str) {
 #if defined(PASSWORD_REUSE_DETECTION_ENABLED)

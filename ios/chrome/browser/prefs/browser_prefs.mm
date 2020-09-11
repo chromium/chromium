@@ -91,6 +91,13 @@ const char kGCMChannelLastCheckTime[] = "gcm.check_time";
 const char kInvalidatorClientId[] = "invalidator.client_id";
 const char kInvalidatorInvalidationState[] = "invalidator.invalidation_state";
 const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
+
+// Deprecated 9/2020
+const char kPasswordManagerOnboardingState[] =
+    "profile.password_manager_onboarding_state";
+
+const char kWasOnboardingFeatureCheckedBefore[] =
+    "profile.was_pwm_onboarding_feature_checked_before";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -227,6 +234,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kInvalidatorClientId, std::string());
 
   registry->RegisterBooleanPref(prefs::kPrintingEnabled, true);
+
+  registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
+  registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -274,4 +284,8 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kInvalidatorSavedInvalidations);
   prefs->ClearPref(kInvalidatorInvalidationState);
   prefs->ClearPref(kInvalidatorClientId);
+
+  // Added 9/2020.
+  prefs->ClearPref(kPasswordManagerOnboardingState);
+  prefs->ClearPref(kWasOnboardingFeatureCheckedBefore);
 }

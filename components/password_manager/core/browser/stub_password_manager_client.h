@@ -32,8 +32,6 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       bool update_password) override;
   void PromptUserToMovePasswordToAccount(
       std::unique_ptr<PasswordFormManagerForUI> form_to_move) override;
-  bool ShowOnboarding(
-      std::unique_ptr<PasswordFormManagerForUI> form_to_save) override;
   void ShowManualFallbackForSaving(
       std::unique_ptr<PasswordFormManagerForUI> form_to_save,
       bool has_generated_password,

@@ -35,7 +35,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_onboarding.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -223,10 +222,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterDoublePref(prefs::kLastTimeObsoleteHttpCredentialsRemoved,
                                0.0);
   registry->RegisterDoublePref(prefs::kLastTimePasswordCheckCompleted, 0.0);
-  registry->RegisterIntegerPref(prefs::kPasswordManagerOnboardingState,
-                                static_cast<int>(OnboardingState::kDoNotShow));
-  registry->RegisterBooleanPref(prefs::kWasOnboardingFeatureCheckedBefore,
-                                false);
 
   registry->RegisterDictionaryPref(prefs::kAccountStoragePerAccountSettings);
 
@@ -956,17 +951,8 @@ void PasswordManager::OnLoginSuccessful() {
     if (logger)
       logger->LogMessage(Logger::STRING_DECISION_ASK);
     bool update_password = submitted_manager->IsPasswordUpdate();
-    bool is_blacklisted = submitted_manager->IsBlacklisted();
-    SyncState password_sync_state = client_->GetPasswordSyncState();
-    if (ShouldShowOnboarding(
-            client_->GetPrefs(), PasswordUpdateBool(update_password),
-            BlacklistedBool(is_blacklisted), password_sync_state)) {
-      if (client_->ShowOnboarding(MoveOwnedSubmittedManager())) {
-        if (logger)
-          logger->LogMessage(Logger::STRING_SHOW_ONBOARDING);
-      }
-    } else if (client_->PromptUserToSaveOrUpdatePassword(
-                   MoveOwnedSubmittedManager(), update_password)) {
+    if (client_->PromptUserToSaveOrUpdatePassword(MoveOwnedSubmittedManager(),
+                                                  update_password)) {
       if (logger)
         logger->LogMessage(Logger::STRING_SHOW_PASSWORD_PROMPT);
     }

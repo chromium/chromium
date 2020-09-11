@@ -5538,15 +5538,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTurnOffStreamingMediaCachingAlwaysDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kTurnOffStreamingMediaCachingAlways)},
 
-#if defined(OS_ANDROID)
-    {"password-manager-onboarding-android",
-     flag_descriptions::kPasswordManagerOnboardingAndroidName,
-     flag_descriptions::kPasswordManagerOnboardingAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordManagerOnboardingAndroid)},
-#endif  // defined(OS_ANDROID)
-
     {"enable-cooperative-scheduling",
      flag_descriptions::kCooperativeSchedulingName,
      flag_descriptions::kCooperativeSchedulingDescription, kOsAll,

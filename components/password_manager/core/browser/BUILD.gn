@@ -175,8 +175,6 @@ static_library("browser") {
     "password_manager_metrics_recorder.h",
     "password_manager_metrics_util.cc",
     "password_manager_metrics_util.h",
-    "password_manager_onboarding.cc",
-    "password_manager_onboarding.h",
     "password_manager_util.cc",
     "password_manager_util.h",
     "password_requirements_service.cc",
@@ -414,7 +412,6 @@ if (is_android) {
     sources = [
       "biometric_authenticator.h",
       "manage_passwords_referrer.h",
-      "password_manager_onboarding.h",
     ]
   }
 }
@@ -611,7 +608,6 @@ source_set("unit_tests") {
     "password_manager_client_helper_unittest.cc",
     "password_manager_features_util_unittest.cc",
     "password_manager_metrics_recorder_unittest.cc",
-    "password_manager_onboarding_unittest.cc",
     "password_manager_unittest.cc",
     "password_manager_util_unittest.cc",
     "password_requirements_service_unittest.cc",

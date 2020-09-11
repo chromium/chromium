@@ -28,7 +28,6 @@
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_onboarding.h"
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
@@ -88,9 +87,6 @@ class ChromePasswordManagerClient
       bool is_update) override;
   void PromptUserToMovePasswordToAccount(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move)
-      override;
-  bool ShowOnboarding(
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save)
       override;
   void ShowManualFallbackForSaving(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
@@ -229,11 +225,6 @@ class ChromePasswordManagerClient
   void GenerationElementLostFocus() override;
 
 #if defined(OS_ANDROID)
-  // This is called when the onboarding experience was shown successfully,
-  // which means that the user should now be prompted to save their password.
-  void OnOnboardingSuccessful(
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
-
   void OnImeTextCommittedEvent(const base::string16& text_str) override;
   void OnImeSetComposingTextEvent(const base::string16& text_str) override;
   void OnImeFinishComposingTextEvent() override;

@@ -2985,11 +2985,6 @@ const char kPasswordCheckName[] = "Bulk Password Check";
 const char kPasswordCheckDescription[] =
     "Enables the Bulk Password Check feature for signed-in users.";
 
-const char kPasswordManagerOnboardingAndroidName[] =
-    "Password manager onboarding experience";
-const char kPasswordManagerOnboardingAndroidDescription[] =
-    "This flag enables showing the password manager onboarding experience.";
-
 const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
 const char kPhotoPickerVideoSupportDescription[] =
     "Enables video files to be shown in the Photo Picker dialog";

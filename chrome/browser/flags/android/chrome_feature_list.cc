@@ -249,7 +249,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &password_manager::features::kEditPasswordsInSettings,
     &password_manager::features::kPasswordChangeInSettings,
     &password_manager::features::kPasswordCheck,
-    &password_manager::features::kPasswordManagerOnboardingAndroid,
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &performance_hints::features::kContextMenuPerformanceInfo,
     &performance_hints::features::kPageInfoPerformanceHints,
