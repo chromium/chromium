@@ -246,7 +246,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     private void onIsDeviceOwnedDetected(EnterpriseInfo.OwnedState ownedState) {
-        mIsDeviceOwned = ownedState.mDeviceOwned;
+        // If unable to determine the owned state then fail closed, no skipping.
+        mIsDeviceOwned = ownedState != null && ownedState.mDeviceOwned;
         maybeHideSpinner();
 
         RecordHistogram.recordTimesHistogram(mViewCreated
