@@ -6,11 +6,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="weblayer">
 
-    <!-- Due to b/164116603 fusing is false for now. Once that bug is fixed,
-         the WebLayer module should be fused. -->
-    <dist:module
-        dist:onDemand="false">
-        <dist:fusing dist:include="false" />
+    <dist:module dist:onDemand="false">
+        <dist:fusing dist:include="true" />
     </dist:module>
 
     <application />
