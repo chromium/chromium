@@ -1366,11 +1366,11 @@ void SplitViewController::OnOverviewModeEnding(
   if (state_ == State::kBothSnapped)
     overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);
 
-  // If clamshell split view mode is active, end it and bail out.
-  if (split_view_type_ == SplitViewType::kClamshellType) {
-    EndSplitView();
+  // If clamshell split view mode is active, bail out. |OnOverviewModeEnded|
+  // will end split view. We do not end split view here, because that would mess
+  // up histograms of overview exit animation smoothness.
+  if (split_view_type_ == SplitViewType::kClamshellType)
     return;
-  }
 
   // Tablet split view mode is active. If it still only has one snapped window,
   // snap the first snappable window in the overview grid on the other side.
@@ -1404,6 +1404,12 @@ void SplitViewController::OnOverviewModeEnding(
     return;
   EndSplitView();
   ShowAppCannotSnapToast();
+}
+
+void SplitViewController::OnOverviewModeEnded() {
+  DCHECK(InSplitViewMode());
+  if (split_view_type_ == SplitViewType::kClamshellType)
+    EndSplitView();
 }
 
 void SplitViewController::OnDisplayRemoved(

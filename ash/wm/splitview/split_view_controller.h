@@ -247,6 +247,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // OverviewObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
+  void OnOverviewModeEnded() override;
 
   // display::DisplayObserver:
   void OnDisplayRemoved(const display::Display& old_display) override;
