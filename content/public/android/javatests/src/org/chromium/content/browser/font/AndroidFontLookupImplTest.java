@@ -5,12 +5,13 @@
 package org.chromium.content.browser.font;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,8 +43,10 @@ import org.mockito.stubbing.OngoingStubbing;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.blink.mojom.AndroidFontLookup;
+import org.chromium.blink.mojom.AndroidFontLookup.MatchLocalFontByUniqueNameResponse;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.mojo.MojoTestRule;
-import org.chromium.mojo_base.mojom.File;
 
 /**
  * Tests the {@link AndroidFontLookup} implementation.
@@ -55,6 +58,7 @@ public final class AndroidFontLookupImplTest {
     private static final String AUTHORITY = "com.google.android.gms.fonts";
     private static final Uri URI = Uri.parse("content://com.google.android.gms.fonts/123");
     private static final int FD = 42;
+    private static final long RUN_LOOP_TIMEOUT_MS = 50;
 
     @Rule
     public MojoTestRule mMojoTestRule = new MojoTestRule(MojoTestRule.MojoCore.INITIALIZE);
@@ -65,11 +69,16 @@ public final class AndroidFontLookupImplTest {
     private ParcelFileDescriptor mMockFileDescriptor;
     private Context mMockContext;
 
+    @Mock
+    private MatchLocalFontByUniqueNameResponse mMatchLocalFontByUniqueNameCallback;
+
     private AndroidFontLookupImpl mAndroidFontLookup;
 
     @Before
     public void setUp() {
         initMocks(this);
+
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         MockContentResolver resolver = new MockContentResolver();
         MockContext mockContext = new MockContext();
@@ -92,8 +101,12 @@ public final class AndroidFontLookupImplTest {
     @SmallTest
     @Test
     public void testMatchLocalFontByUniqueName_UnsupportedFontName() {
-        mAndroidFontLookup.matchLocalFontByUniqueName(
-                "Bar", (File handle) -> { assertNull(handle); });
+        mAndroidFontLookup.matchLocalFontByUniqueName("Bar", mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
     }
 
     @SmallTest
@@ -104,7 +117,12 @@ public final class AndroidFontLookupImplTest {
         whenFetchFontsWith(FONT_QUERY).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, (File handle) -> { assertNull(handle); });
+                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
     }
 
     @SmallTest
@@ -114,7 +132,12 @@ public final class AndroidFontLookupImplTest {
         whenFetchFontsWith(FONT_QUERY).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, (File handle) -> { assertNull(handle); });
+                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
     }
 
     @SmallTest
@@ -126,22 +149,29 @@ public final class AndroidFontLookupImplTest {
         whenFetchFontsWith(FONT_QUERY).thenReturn(result);
 
         mAndroidFontLookup.matchLocalFontByUniqueName(
-                FULL_FONT_NAME, (File handle) -> { assertNull(handle); });
+                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(isNull());
     }
 
     @SmallTest
     @Test
     public void testMatchLocalFontByUniqueName_Success() throws NameNotFoundException {
-        int expectedHandle = 1;
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
         FontFamilyResult result =
                 new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
         whenFetchFontsWith(FONT_QUERY).thenReturn(result);
 
-        mAndroidFontLookup.matchLocalFontByUniqueName(FULL_FONT_NAME, (File handle) -> {
-            assertNotNull(handle);
-            assertEquals(expectedHandle, handle.fd.releaseNativeHandle());
-        });
+        mAndroidFontLookup.matchLocalFontByUniqueName(
+                FULL_FONT_NAME, mMatchLocalFontByUniqueNameCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mMatchLocalFontByUniqueNameCallback,
+                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(notNull());
     }
 
     private OngoingStubbing<FontFamilyResult> whenFetchFontsWith(String query)
