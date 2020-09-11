@@ -860,7 +860,7 @@ ci.android_builder(
     tree_closing = True,
 )
 
-ci.android_builder(
+ci.android_fyi_builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
     console_view_entry = ci.console_view_entry(
         category = "builder_tester|arm64",

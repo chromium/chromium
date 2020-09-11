@@ -41298,38 +41298,6 @@
       }
     ]
   },
-  "android-pie-arm64-wpt-rel-non-cq": {
-    "isolated_scripts": [
-      {
-        "isolate_name": "weblayer_shell_wpt",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "weblayer_shell_wpt",
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
-          "expiration": 18000,
-          "hard_timeout": 14400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
-      }
-    ]
-  },
   "android-pie-x86-rel": {
     "gtest_tests": [
       {
