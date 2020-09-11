@@ -376,6 +376,42 @@ suite('InternetDetailPage', function() {
           deepLinkElement, getDeepActiveElement(),
           'Disconnect network button should be focused for settingId=17.');
     });
+
+    test('Deep link to sim lock toggle', async () => {
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setDeviceStateForTest({
+        type: mojom.NetworkType.kCellular,
+        deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+        simLockStatus: {
+          lockEnabled: false,
+        },
+      });
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = false;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      const params = new URLSearchParams;
+      params.append('guid', 'cellular_guid');
+      params.append('type', 'Cellular');
+      params.append('name', 'cellular');
+      params.append('settingId', '14');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.NETWORK_DETAIL, params);
+
+      Polymer.dom.flush();
+
+      const deepLinkElement =
+          internetDetailPage.$$('network-siminfo').$$('#simLockButton');
+
+      // In this rare case, wait after next render twice due to focus behavior
+      // of the siminfo component.
+      await test_util.waitAfterNextRender(deepLinkElement);
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Sim lock toggle should be focused for settingId=14.');
+    });
   });
 
   suite('DetailsPageEthernet', function() {

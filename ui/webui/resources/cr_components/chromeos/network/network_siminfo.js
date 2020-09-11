@@ -134,6 +134,14 @@ Polymer({
     this.closeDialogs_();
   },
 
+  /*
+   * Returns the sim lock CrToggleElement.
+   * @return {?CrToggleElement}
+   */
+  getSimLockToggle() {
+    return /** @type {?CrToggleElement} */ (this.$$('#simLockButton'));
+  },
+
   /** @private */
   closeDialogs_() {
     if (this.$.enterPinDialog.open) {

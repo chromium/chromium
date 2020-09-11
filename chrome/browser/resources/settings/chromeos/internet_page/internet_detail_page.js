@@ -221,6 +221,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kWifiDns,
         chromeos.settings.mojom.Setting.kWifiProxy,
         chromeos.settings.mojom.Setting.kWifiAutoConnectToNetwork,
+        chromeos.settings.mojom.Setting.kCellularSimLock,
         chromeos.settings.mojom.Setting.kCellularRoaming,
         chromeos.settings.mojom.Setting.kCellularApn,
         chromeos.settings.mojom.Setting.kDisconnectCellularNetwork,
@@ -386,6 +387,18 @@ Polymer({
         }
         // If forget button is hidden, show disconnect button instead.
         return this.$$('#connectDisconnect');
+      });
+      return false;
+    }
+
+    if (settingId === chromeos.settings.mojom.Setting.kCellularSimLock) {
+      // In this rare case, toggle not focusable until after a second wait.
+      // This is slightly preferable to requestAnimationFrame used within
+      // network-siminfo to focus elements since it can be reproduced in
+      // testing.
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        this.afterRenderShowDeepLink(
+            settingId, () => this.$$('network-siminfo').getSimLockToggle());
       });
       return false;
     }
