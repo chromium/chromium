@@ -61,7 +61,7 @@ const base::Feature kAppActivityReporting{"AppActivityReporting",
 #if !defined(OS_ANDROID)
 // App Service related flags. See components/services/app_service/README.md.
 const base::Feature kAppServiceAdaptiveIcon{"AppServiceAdaptiveIcon",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAppServiceIntentHandling{"AppServiceIntentHandling",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
