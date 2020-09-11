@@ -176,6 +176,11 @@ Try tapping the mic to ask me anything.
         This <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>. Administrators may remotely configure the device.
       </message>
 
+      <!-- Pop-up secondary login screen. -->
+      <message name="IDS_ASH_LOGIN_USER_ADDING_BANNER" desc="Text shown on a banner in user adding screen.">
+        Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.
+      </message>
+
       <!-- Status tray enterprise management. -->
       <message name="IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY" desc="Text for notifications showing that this device is enterpise managed. Used when the organization's domain name is available.">
         This device is managed by <ph name="DOMAIN">$1<ex>acmecorp.com</ex></ph>.
