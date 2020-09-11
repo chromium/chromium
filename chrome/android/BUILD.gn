@@ -2816,6 +2816,15 @@ monochrome_or_trichrome_public_bundle_tmpl("trichrome_chrome_bundle") {
   }
 }
 
+# Convenient target to build all Trichrome APK / bundles for testing.
+group("trichrome") {
+  deps = [
+    ":trichrome_chrome_bundle",
+    ":trichrome_library_apk",
+    "//android_webview:trichrome_webview_bundle",
+  ]
+}
+
 if (is_official_build) {
   _trichrome_library_basename = "TrichromeLibrary.apk"
   _trichrome_chrome_basename = "TrichromeChrome.minimal.apks"
@@ -2834,16 +2843,20 @@ if (is_official_build) {
     bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"
   }
 
+  group("trichrome_minimal_apks") {
+    deps = [
+      ":trichrome_chrome_minimal_apks",
+      ":trichrome_library_apk",
+      "//android_webview:trichrome_webview_minimal_apks",
+    ]
+  }
+
   android_resource_sizes_test("resource_sizes_trichrome") {
     apk_name = "Trichrome"
     trichrome_library_path = "$root_build_dir/apks/$_trichrome_library_basename"
     trichrome_chrome_path = "$root_build_dir/apks/$_trichrome_chrome_basename"
     trichrome_webview_path = "$root_build_dir/apks/$_trichrome_webview_basename"
-    data_deps = [
-      ":trichrome_chrome_minimal_apks",
-      ":trichrome_library_apk",
-      "//android_webview:trichrome_webview_minimal_apks",
-    ]
+    data_deps = [ ":trichrome_minimal_apks" ]
   }
 }
 
