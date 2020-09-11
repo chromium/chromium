@@ -3159,7 +3159,8 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   EXPECT_TRUE(clip_mask0->DrawsContent());
   EXPECT_TRUE(clip_mask0->HitTestable());
   EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
-  EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
+  // c1 should be applied in the clip mask layer.
+  EXPECT_EQ(c0_id, clip_mask0->clip_tree_index());
   int mask_effect_0_id = clip_mask0->effect_tree_index();
   const cc::EffectNode& mask_effect_0 =
       *GetPropertyTrees().effect_tree.Node(mask_effect_0_id);
@@ -4806,7 +4807,8 @@ TEST_P(PaintArtifactCompositorTest, Non2dAxisAlignedRoundedRectClip) {
   const auto* cc_effect = GetPropertyTrees().effect_tree.Node(effect_id);
   EXPECT_OPACITY(effect_id, 1.f, kHasRenderSurface);
   EXPECT_OPACITY(cc_effect->parent_id, 0.5f, kNoRenderSurface);
-  EXPECT_EQ(cc_effect->clip_id, cc_clip->id);
+  // cc_clip should be applied in the clip mask layer.
+  EXPECT_EQ(cc_effect->clip_id, cc_clip->parent_id);
 }
 
 TEST_P(PaintArtifactCompositorTest,
