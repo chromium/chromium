@@ -4454,6 +4454,8 @@ static_library("browser") {
       "notifications/alert_dispatcher_mac.h",
       "notifications/notification_platform_bridge_mac.h",
       "notifications/notification_platform_bridge_mac.mm",
+      "notifications/notification_platform_bridge_mac_unnotification.h",
+      "notifications/notification_platform_bridge_mac_unnotification.mm",
       "obsolete_system/obsolete_system_mac.cc",
       "password_manager/password_manager_util_mac.h",
       "password_manager/password_manager_util_mac.mm",

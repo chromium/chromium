@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
 
 #include <memory>
 #include <utility>
@@ -11,6 +12,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
@@ -24,6 +26,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -222,6 +225,9 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
+  if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {
+    return std::make_unique<NotificationPlatformBridgeMacUNNotification>();
+  }
   base::scoped_nsobject<AlertDispatcherImpl> alert_dispatcher(
       [[AlertDispatcherImpl alloc] init]);
   return std::make_unique<NotificationPlatformBridgeMac>(

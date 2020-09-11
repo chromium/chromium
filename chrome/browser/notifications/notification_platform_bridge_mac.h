@@ -19,9 +19,9 @@
 @class NSUserNotificationCenter;
 @class NSXPCConnection;
 
-namespace message_cener {
+namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
 // This class is an implementation of NotificationPlatformBridge that will
 // send platform notifications to the the MacOSX notification center.
