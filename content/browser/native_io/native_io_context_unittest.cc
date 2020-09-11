@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "content/browser/native_io/native_io_context.h"
+#include "content/test/fake_mojo_message_dispatch_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -379,6 +380,18 @@ TEST_F(NativeIOContextTest, OriginIsolation) {
   EXPECT_TRUE(same_file.IsValid());
   char read_buffer[kTestData.size()];
   EXPECT_EQ(0, same_file.Read(0, read_buffer, kTestData.size()));
+}
+
+TEST_F(NativeIOContextTest, BindReceiver_UntrustworthyOrigin) {
+  mojo::Remote<blink::mojom::NativeIOHost> insecure_host_remote_;
+
+  // Create a fake dispatch context to trigger a bad message in.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  context_->BindReceiver(url::Origin::Create(GURL("http://insecure.com")),
+                         insecure_host_remote_.BindNewPipeAndPassReceiver());
+  EXPECT_EQ("Called NativeIO from an insecure context",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace

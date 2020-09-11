@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "content/browser/native_io/native_io_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "url/origin.h"
@@ -44,6 +45,15 @@ void NativeIOContext::BindReceiver(
 
   auto it = hosts_.find(origin);
   if (it == hosts_.end()) {
+    // This feature should only be exposed to potentially trustworthy origins
+    // (https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy).
+    // Notably this includes the https and chrome-extension schemes, among
+    // others.
+    if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+      mojo::ReportBadMessage("Called NativeIO from an insecure context");
+      return;
+    }
+
     base::FilePath origin_root_path = RootPathForOrigin(origin);
     if (origin_root_path.empty()) {
       // NativeIO is not supported for the origin.
@@ -78,15 +88,6 @@ base::FilePath NativeIOContext::RootPathForOrigin(const url::Origin& origin) {
   // TODO(pwnall): Implement in-memory files instead of bouncing in incognito.
   if (root_path_.empty())
     return root_path_;
-
-  // This feature is only exposed to secure origins. This typically means https.
-  // The most notable exception is http://localhost. Command-line flags may
-  // cause other http origins to be considered secure.
-  //
-  // TODO(pwnall): Get consensus on the schemes we want to support. For example,
-  //               maybe chrome-extension:// should get access as well?
-  if (!origin.GetURL().SchemeIsHTTPOrHTTPS())
-    return base::FilePath();
 
   std::string origin_identifier = storage::GetIdentifierFromOrigin(origin);
   base::FilePath origin_path = root_path_.AppendASCII(origin_identifier);
