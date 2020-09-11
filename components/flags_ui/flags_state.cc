@@ -927,10 +927,25 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
             AddFeatureMapping(entry.NameForOption(j), std::string(), false,
                               name_to_switch_map);
           } else {
-            AddFeatureMapping(entry.NameForOption(j),
-                              entry.feature.feature->name,
-                              state == FeatureEntry::FeatureState::ENABLED,
-                              name_to_switch_map);
+            const FeatureEntry::FeatureVariation* variation =
+                entry.VariationForOption(j);
+            std::string feature_name(entry.feature.feature->name);
+            std::vector<std::string> params_value;
+
+            if (variation) {
+              feature_name.append(":");
+              for (int i = 0; i < variation->num_params; ++i) {
+                params_value.push_back(
+                    std::string(variation->params[i].param_name)
+                        .append("/")
+                        .append(variation->params[i].param_value));
+              }
+            }
+            AddFeatureMapping(
+                entry.NameForOption(j),
+                feature_name.append(base::JoinString(params_value, "/")),
+                state == FeatureEntry::FeatureState::ENABLED,
+                name_to_switch_map);
           }
         }
         break;
