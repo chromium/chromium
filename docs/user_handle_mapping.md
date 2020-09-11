@@ -25,6 +25,7 @@ For Chromium contributors that have different nicks on other domains.
 | darin, fishd      | fishd           | darin           |
 | dbeam             | danbeam         | dbeam           |
 | dmurph            | dmurph          | dmurph          |
+| dom               | domfarolino     | domfarolino     |
 | dougt             | dougt           | dft             |
 | eaugusti          | eriq            | eaugustine      |
 | erg               | eglaysher       | erg             |
