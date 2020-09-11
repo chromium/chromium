@@ -1807,6 +1807,26 @@
             ]
         }
     ],
+    "ConversionMeasurement": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ConversionMeasurement",
+                    "enable_features": [
+                        "ConversionMeasurement"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMinFilelistKB": [
         {
             "platforms": [
