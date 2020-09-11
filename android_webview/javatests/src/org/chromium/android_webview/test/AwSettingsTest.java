@@ -74,6 +74,7 @@ import java.util.regex.Pattern;
 @RunWith(AwJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 @Batch(Batch.PER_CLASS)
+@DisabledTest(message = "http://crbug.com/1126917")
 public class AwSettingsTest {
     @Rule
     public AwActivityTestRule mActivityTestRule =
