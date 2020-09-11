@@ -96,6 +96,7 @@
 #include "content/browser/frame_host/render_frame_message_filter.h"
 #include "content/browser/gpu/browser_gpu_client_delegate.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/histogram_controller.h"
@@ -236,8 +237,6 @@
 #include "content/public/browser/android/java_interfaces.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/audio/android/audio_manager_android.h"
-#else
-#include "content/browser/gpu/gpu_data_manager_impl.h"
 #endif
 
 #if defined(OS_LINUX)
@@ -2397,6 +2396,9 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
     registry->AddInterface(base::BindRepeating(
         &viz::GpuClient::Add, base::Unretained(gpu_client_.get())));
   }
+
+  registry->AddInterface(
+      base::BindRepeating(&GpuDataManagerImpl::BindReceiver));
 
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();

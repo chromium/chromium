@@ -1446,8 +1446,6 @@ void GpuDataManagerImplPrivate::BlockDomainFrom3DAPIs(const GURL& url,
 }
 
 bool GpuDataManagerImplPrivate::Are3DAPIsBlocked(const GURL& top_origin_url,
-                                                 int render_process_id,
-                                                 int render_frame_id,
                                                  ThreeDAPIType requester) {
   return Are3DAPIsBlockedAtTime(top_origin_url, base::Time::Now()) !=
          DomainBlockStatus::kNotBlocked;
