@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -167,6 +168,12 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   virtual void RunService(
       const std::string& service_name,
       mojo::PendingReceiver<service_manager::mojom::Service> receiver) = 0;
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+  // Write out the accumulated code profiling profile to the configured file.
+  // The callback is invoked once the profile has been flushed to disk.
+  virtual void DumpProfilingData(base::OnceClosure callback) = 0;
+#endif
 };
 
 }  // namespace content

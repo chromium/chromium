@@ -105,6 +105,10 @@ class CONTENT_EXPORT ChildProcessHostImpl
   // non-null.
   bool InitChannel();
 
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+  void DumpProfilingData(base::OnceClosure callback) override;
+#endif
+
   // The outgoing Mojo invitation which must be consumed to bootstrap Mojo IPC
   // to the child process.
   base::Optional<mojo::OutgoingInvitation> mojo_invitation_{base::in_place};

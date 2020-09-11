@@ -332,4 +332,10 @@ void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
   delegate_->OnBadMessageReceived(message);
 }
 
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+void ChildProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
+  child_process_->WriteClangProfilingProfile(std::move(callback));
+}
+#endif
+
 }  // namespace content

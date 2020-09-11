@@ -89,6 +89,7 @@
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include <stdio.h>
+#include "base/test/clang_profiling.h"
 #if defined(OS_WIN)
 #include <io.h>
 #endif
@@ -389,6 +390,12 @@ class ChildThreadImpl::IOThreadState
     FILE* f = _fdopen(fd, "r+b");
     __llvm_profile_set_file_object(f, 1);
 #endif
+  }
+
+  void WriteClangProfilingProfile(
+      WriteClangProfilingProfileCallback callback) override {
+    base::WriteClangProfilingProfile();
+    std::move(callback).Run();
   }
 #endif
 

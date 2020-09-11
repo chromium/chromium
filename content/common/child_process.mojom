@@ -95,4 +95,9 @@ interface ChildProcess {
   // Used for the coverage builds.
   [EnableIf=clang_profiling_inside_sandbox]
   SetProfilingFile(mojo_base.mojom.File file);
+
+  // Write out the accumulated code profiling profile to the configured file.
+  // The callback is invoked once the profile has been flushed to disk.
+  [EnableIf=clang_profiling_inside_sandbox]
+  WriteClangProfilingProfile() => ();
 };
