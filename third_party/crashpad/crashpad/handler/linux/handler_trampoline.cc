@@ -16,8 +16,6 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 
-#include "util/misc/no_cfi_icall.h"
-
 // The first argument passed to the trampoline is the name of the native library
 // exporting the symbol `CrashpadHandlerMain`. The remaining arguments are the
 // same as for `HandlerMain()`.
@@ -36,8 +34,8 @@ int main(int argc, char* argv[]) {
   }
 
   using MainType = int (*)(int, char*[]);
-  const crashpad::NoCfiIcall<MainType> crashpad_main(
-      dlsym(handle, "CrashpadHandlerMain"));
+  MainType crashpad_main =
+      reinterpret_cast<MainType>(dlsym(handle, "CrashpadHandlerMain"));
   if (!crashpad_main) {
     __android_log_print(ANDROID_LOG_FATAL, kTag, "dlsym: %s", dlerror());
     return EXIT_FAILURE;
