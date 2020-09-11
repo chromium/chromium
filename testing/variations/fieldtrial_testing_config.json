@@ -2959,7 +2959,7 @@
             ]
         }
     ],
-    "FullscreenBrowserScope": [
+    "FullscreenController": [
         {
             "platforms": [
                 "ios"
