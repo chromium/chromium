@@ -358,11 +358,6 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
 
   GraphicsLayerPaintingPhase PaintingPhaseForPrimaryLayer() const;
 
-  // Result is transform origin in pixels.
-  FloatPoint3D ComputeTransformOrigin(const IntRect& border_box) const;
-
-  void UpdateTransform(const ComputedStyle&);
-
   bool PaintsChildren() const;
 
   // Returns true if this layer has content that needs to be displayed by

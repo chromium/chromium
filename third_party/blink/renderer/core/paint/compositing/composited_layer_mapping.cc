@@ -1414,20 +1414,6 @@ void CompositedLayerMapping::ContentChanged(ContentChangeType change_type) {
   }
 }
 
-FloatPoint3D CompositedLayerMapping::ComputeTransformOrigin(
-    const IntRect& border_box) const {
-  const ComputedStyle& style = GetLayoutObject().StyleRef();
-
-  FloatPoint3D origin;
-  origin.SetX(
-      FloatValueForLength(style.TransformOriginX(), border_box.Width()));
-  origin.SetY(
-      FloatValueForLength(style.TransformOriginY(), border_box.Height()));
-  origin.SetZ(style.TransformOriginZ());
-
-  return origin;
-}
-
 // Return the offset from the top-left of this compositing layer at which the
 // LayoutObject's contents are painted.
 PhysicalOffset CompositedLayerMapping::ContentOffsetInCompositingLayer() const {
