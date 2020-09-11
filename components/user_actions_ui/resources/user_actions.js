@@ -34,3 +34,7 @@ cr.define('userActions', function() {
 
   return {observeUserAction: observeUserAction};
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  chrome.send('pageLoaded');
+});
