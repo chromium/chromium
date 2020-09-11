@@ -4,4 +4,3 @@
 
 # Following tests are flaky.
 -All/WebContentsVideoCaptureDeviceBrowserTestP.CapturesContentChanges*
--PDFExtensionTestWithTestGuestViewManager*
