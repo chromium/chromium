@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.ADD_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.ANIMATION_SOURCE_VIEW;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.CONTENT_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_BACKGROUND_RESOURCE_ID;
@@ -138,6 +139,11 @@ class TabGridPanelViewBinder {
             // Don't explicitly show keyboard since it should happen automatically.
             if (!model.get(IS_KEYBOARD_VISIBLE)) {
                 viewHolder.toolbarView.hideKeyboard();
+            }
+        } else if (COLLAPSE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                viewHolder.toolbarView.setLeftButtonContentDescription(
+                        model.get(COLLAPSE_BUTTON_CONTENT_DESCRIPTION));
             }
         }
     }

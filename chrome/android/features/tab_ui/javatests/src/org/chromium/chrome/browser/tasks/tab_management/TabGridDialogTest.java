@@ -9,6 +9,7 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -109,6 +110,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
@@ -129,6 +131,8 @@ public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
     private static final String START_SURFACE_BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:start_surface_variation";
+    private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
 
     private boolean mHasReceivedSourceRect;
     private TabSelectionEditorTestingRobot mSelectionEditorRobot =
@@ -600,7 +604,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2,
                 cta.getResources().getQuantityString(
                         R.plurals.bottom_tab_grid_title_placeholder, 2, 2));
-        editDialogTitle(CUSTOMIZED_TITLE1);
+        editDialogTitle(cta, CUSTOMIZED_TITLE1);
 
         // Verify the title is updated in both tab switcher and dialog.
         clickScrimToExitDialog(cta);
@@ -611,7 +615,7 @@ public class TabGridDialogTest {
         // Modify title in dialog from tab strip.
         clickFirstTabInDialog(cta);
         openDialogFromStripAndVerify(cta, 2, CUSTOMIZED_TITLE1);
-        editDialogTitle(CUSTOMIZED_TITLE2);
+        editDialogTitle(cta, CUSTOMIZED_TITLE2);
 
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimation(cta);
@@ -760,8 +764,12 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_POLISH_PARAMS})
     public void testAccessibilityString() throws ExecutionException {
+        // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
@@ -769,34 +777,56 @@ public class TabGridDialogTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
-        // Verify the initial content description.
+        // Verify the initial group card content description.
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
         View firstItem = recyclerView.findViewHolderForAdapterPosition(0).itemView;
-        String targetString = "Expand tab group with 3 tabs.";
-        assertEquals(targetString, firstItem.getContentDescription());
+        String expandTargetString = "Expand tab group with 3 tabs.";
+        assertEquals(expandTargetString, firstItem.getContentDescription());
 
-        // Content description should update with group title.
+        // Back button content description should update with group title.
+        String collapseTargetString = "Collapse tab group with 3 tabs.";
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
-        editDialogTitle(CUSTOMIZED_TITLE1);
+        verifyDialogBackButtonContentDescription(cta, collapseTargetString);
+        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+        collapseTargetString =
+                String.format("Collapse %s tab group with 3 tabs.", CUSTOMIZED_TITLE1);
+        verifyDialogBackButtonContentDescription(cta, collapseTargetString);
+
+        // Group card content description should update with group title.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        targetString = String.format("Expand %s tab group with 3 tabs.", CUSTOMIZED_TITLE1);
-        assertEquals(targetString, firstItem.getContentDescription());
+        expandTargetString = String.format("Expand %s tab group with 3 tabs.", CUSTOMIZED_TITLE1);
+        assertEquals(expandTargetString, firstItem.getContentDescription());
 
-        // Content description should update with group count change.
+        // Back button content description should update with group count change.
         openDialogFromTabSwitcherAndVerify(cta, 3, CUSTOMIZED_TITLE1);
         closeFirstTabInDialog();
         verifyShowingDialog(cta, 2, CUSTOMIZED_TITLE1);
+        collapseTargetString =
+                String.format("Collapse %s tab group with 2 tabs.", CUSTOMIZED_TITLE1);
+        verifyDialogBackButtonContentDescription(cta, collapseTargetString);
+
+        // Group card content description should update with group count change.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        targetString = String.format("Expand %s tab group with 2 tabs.", CUSTOMIZED_TITLE1);
-        assertEquals(targetString, firstItem.getContentDescription());
+        expandTargetString = String.format("Expand %s tab group with 2 tabs.", CUSTOMIZED_TITLE1);
+        assertEquals(expandTargetString, firstItem.getContentDescription());
 
-        // Content description should restore when the group becomes a single tab.
+        // Back button content description should restore when the group loses customized title.
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
+        editDialogTitle(cta, "");
+        verifyShowingDialog(cta, 2, null);
+        collapseTargetString = "Collapse tab group with 2 tabs.";
+        verifyDialogBackButtonContentDescription(cta, collapseTargetString);
+
+        // Back button content description should update when the group becomes a single tab.
         closeFirstTabInDialog();
         verifyShowingDialog(cta, 1, "1 tab");
+        collapseTargetString = "Collapse 1 tab.";
+        verifyDialogBackButtonContentDescription(cta, collapseTargetString);
+
+        // Group card content description should restore when the group becomes a single tab.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         assertEquals(null, firstItem.getContentDescription());
@@ -1097,7 +1127,7 @@ public class TabGridDialogTest {
                 });
     }
 
-    private void editDialogTitle(String title) {
+    private void editDialogTitle(ChromeTabbedActivity cta, String title) {
         onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title)))
                 .perform(click())
                 .check((v, e) -> {
@@ -1106,7 +1136,12 @@ public class TabGridDialogTest {
                     assertEquals(titleView.getText().length(),
                             titleView.getSelectionEnd() - titleView.getSelectionStart());
                 })
-                .perform(replaceText(title));
+                .perform(replaceText(title))
+                .perform(pressImeActionButton());
+        // Wait until the keyboard is hidden to make sure the edit has taken effect.
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        CriteriaHelper.pollUiThread(
+                () -> !delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder()));
     }
 
     private void verifyFirstCardTitle(String title) {
@@ -1161,5 +1196,12 @@ public class TabGridDialogTest {
                        isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
                        isDisplayed()))
                 .perform(click());
+    }
+
+    private void verifyDialogBackButtonContentDescription(ChromeTabbedActivity cta, String s) {
+        assertTrue(isDialogShowing(cta));
+        onView(allOf(withId(R.id.toolbar_left_button),
+                       isDescendantOfA(withId(R.id.dialog_container_view))))
+                .check((v, e) -> assertEquals(s, v.getContentDescription()));
     }
 }
