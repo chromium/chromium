@@ -6,7 +6,9 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy} from './browser_proxy.js';
+import {ImgElement} from './img.js';
 import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 
 // Element that requests and renders the middle-slot promo. The element is
@@ -37,10 +39,8 @@ class MiddleSlotPromoElement extends PolymerElement {
       promo.middleSlotParts.forEach(({image, link, text}) => {
         let el;
         if (image) {
-          el = document.createElement('img');
-          el.src = image.imageUrl.url.startsWith('data:') ?
-              image.imageUrl.url :
-              `chrome://image?${image.imageUrl.url}`;
+          el = new ImgElement();
+          el.autoSrc = image.imageUrl.url;
           if (image.target) {
             const anchor = this.createAnchor_(image.target);
             if (anchor) {

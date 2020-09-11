@@ -16,23 +16,30 @@ suite('NewTabPageImgTest', () => {
     document.body.appendChild(img);
   });
 
-  test('setting externalSrc sets src', () => {
-    // Act.
-    img.externalSrc = 'foo.com/img.png';
+  [['https://foo.com/img.png', 'chrome://image/?https://foo.com/img.png'],
+   ['chrome://foo/img.png', 'chrome://foo/img.png'],
+   ['data:imge/png;base64,abc', 'data:imge/png;base64,abc'],
+   ['', ''],
+   ['chrome-untrusted://foo/img.png', ''],
+  ].forEach(([autoSrc, src]) => {
+    test(`setting autoSrc to '${autoSrc}' sets src to '${src}'`, () => {
+      // Act.
+      img.autoSrc = autoSrc;
 
-    // Assert.
-    assertEquals('foo.com/img.png', img.externalSrc);
-    assertEquals('foo.com/img.png', img.getAttribute('external-src'));
-    assertEquals('chrome://image/?foo.com/img.png', img.src);
-  });
+      // Assert.
+      assertEquals(autoSrc, img.autoSrc);
+      assertEquals(autoSrc, img.getAttribute('auto-src'));
+      assertEquals(src, img.src);
+    });
 
-  test('setting external-src sets src', () => {
-    // Act.
-    img.setAttribute('external-src', 'foo.com/img.png');
+    test(`setting auto-src to '${autoSrc}' sets src to '${src}'`, () => {
+      // Act.
+      img.setAttribute('auto-src', autoSrc);
 
-    // Assert.
-    assertEquals('foo.com/img.png', img.externalSrc);
-    assertEquals('foo.com/img.png', img.getAttribute('external-src'));
-    assertEquals('chrome://image/?foo.com/img.png', img.src);
+      // Assert.
+      assertEquals(autoSrc, img.autoSrc);
+      assertEquals(autoSrc, img.getAttribute('auto-src'));
+      assertEquals(src, img.src);
+    });
   });
 });

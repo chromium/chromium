@@ -67,15 +67,13 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     assertEquals(6, parts.length);
     const [image, imageWithLink, imageWithCommand, text, link, command] = parts;
 
-    assertEquals('chrome://image/?https://image', image.src);
+    assertEquals('https://image', image.autoSrc);
 
     assertEquals('https://link/', imageWithLink.href);
-    assertEquals(
-        'chrome://image/?https://image', imageWithLink.children[0].src);
+    assertEquals('https://image', imageWithLink.children[0].autoSrc);
 
     assertEquals('', imageWithCommand.href);
-    assertEquals(
-        'chrome://image/?https://image', imageWithCommand.children[0].src);
+    assertEquals('https://image', imageWithCommand.children[0].autoSrc);
 
     assertEquals('text', text.innerText);
     assertEquals('red', text.style.color);

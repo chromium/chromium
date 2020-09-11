@@ -28,6 +28,6 @@ suite('NewTabPageModulesDummyModuleTest', () => {
             '4IP40Q18w6aDF4oS4WRnUj0MlCCKPK-vLHqSd4r-RfS6Jx' +
             'gblG5WJuRYpkJkoTzLMS0qv3Sxhf9wdaKkn3vHnyy6oe7Ah' +
             '5y0=w170-h85-p-k-no-nd-mv',
-        tiles[2].querySelector('img').externalSrc);
+        tiles[2].querySelector('img').autoSrc);
   });
 });

@@ -3,42 +3,62 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview <ntp-img> is specialized <img> that lets you embed external
- * images via its external-src attribute. Usage:
+ * @fileoverview <ntp-img> is a specialized <img> that facilitates embedding
+ * images into WebUIs via its auto-src attribute. <ntp-img> automatically
+ * determines if the image is local (e.g. data: or chrome://) or external (e.g.
+ * https://), and embeds the image directly or via the chrome://image data
+ * source accordingly. Usage:
  *
  *   1. In C++ register |SanitizedImageSource| for your WebUI.
  *
  *   2. In HTML instantiate
  *
- *      <img is="ntp-img" external-src="https://foo.com/bar.png"></img>
+ *      <img is="ntp-img" auto-src="https://foo.com/bar.png"></img>
  *
- * NOTE: Internally, <ntp-img> uses the chrome://image data source. This means
- * the external image will be transcoded to PNG.
+ * NOTE: Since <ntp-img> may use the chrome://image data source some images may
+ * be transcoded to PNG.
  */
 
 /** @type {string} */
-const EXTERNAL_SRC = 'external-src';
+const AUTO_SRC = 'auto-src';
 
 export class ImgElement extends HTMLImageElement {
   static get observedAttributes() {
-    return [EXTERNAL_SRC];
+    return [AUTO_SRC];
   }
 
   /** @override */
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === EXTERNAL_SRC) {
-      this.src = newValue ? 'chrome://image?' + newValue : '';
+    if (name !== AUTO_SRC) {
+      return;
+    }
+
+    let url = null;
+    try {
+      url = new URL(newValue || '');
+    } catch (_) {
+    }
+
+    if (!url || url.protocol === 'chrome-untrusted:') {
+      // Loading chrome-untrusted:// directly kills the renderer process.
+      // Loading chrome-untrusted:// via the chrome://image data source
+      // results in a broken image.
+      this.removeAttribute('src');
+    } else if (url.protocol === 'data:' || url.protocol === 'chrome:') {
+      this.src = url.href;
+    } else {
+      this.src = 'chrome://image?' + url.href;
     }
   }
 
   /** @param {string} src */
-  set externalSrc(src) {
-    this.setAttribute(EXTERNAL_SRC, src);
+  set autoSrc(src) {
+    this.setAttribute(AUTO_SRC, src);
   }
 
   /** @return {string} */
-  get externalSrc() {
-    return this.getAttribute(EXTERNAL_SRC);
+  get autoSrc() {
+    return this.getAttribute(AUTO_SRC);
   }
 }
 

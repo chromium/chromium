@@ -16,7 +16,7 @@
 <cr-grid id="tiles" columns="3">
   <template id="tileList" is="dom-repeat" items="[[tiles]]">
     <div class="tile-item" title="[[item.label]]">
-      <img is="ntp-img" external-src="[[item.imageUrl]]"></img>
+      <img is="ntp-img" auto-src="[[item.imageUrl]]"></img>
       <span>[[item.value]]</span>
     </div>
   </template>
