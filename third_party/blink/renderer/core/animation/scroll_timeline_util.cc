@@ -36,11 +36,8 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
   CompositorScrollTimeline::ScrollDirection orientation = ConvertOrientation(
       scroll_timeline->GetOrientation(), box ? box->Style() : nullptr);
 
-  auto start_scroll_offset = scroll_timeline->GetResolvedStartScrollOffset();
-  auto end_scroll_offset = scroll_timeline->GetResolvedEndScrollOffset();
-
   return CompositorScrollTimeline::Create(
-      element_id, orientation, start_scroll_offset, end_scroll_offset,
+      element_id, orientation, scroll_timeline->GetResolvedScrollOffsets(),
       time_range.GetAsDouble());
 }
 
@@ -103,6 +100,12 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // does not matter.
   return is_ltr_direction ? CompositorScrollTimeline::ScrollDown
                           : CompositorScrollTimeline::ScrollUp;
+}
+
+double ComputeProgress(double current_offset,
+                       const WTF::Vector<double>& resolved_offsets) {
+  return cc::ComputeProgress<WTF::Vector<double>>(current_offset,
+                                                  resolved_offsets);
 }
 
 }  // namespace scroll_timeline_util

@@ -4,7 +4,9 @@
 
 #include "cc/animation/worklet_animation.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/keyframe_effect.h"
@@ -57,8 +59,7 @@ class MockScrollTimeline : public ScrollTimeline {
   MockScrollTimeline()
       : ScrollTimeline(ElementId(),
                        ScrollTimeline::ScrollDown,
-                       base::nullopt,
-                       base::nullopt,
+                       std::vector<double>(),
                        0,
                        AnimationIdProvider::NextTimelineId()) {}
   MOCK_CONST_METHOD2(CurrentTime,

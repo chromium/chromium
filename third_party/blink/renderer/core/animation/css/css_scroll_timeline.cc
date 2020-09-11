@@ -80,8 +80,15 @@ HeapVector<Member<ScrollTimelineOffset>>* ComputeScrollOffsets(
     const CSSValue* end) {
   auto* offsets =
       MakeGarbageCollected<HeapVector<Member<ScrollTimelineOffset>>>();
-  offsets->push_back(ComputeScrollOffset(start));
-  offsets->push_back(ComputeScrollOffset(end));
+
+  // TODO(crbug.com/1094014): scroll_offsets will replace start and end
+  // offsets once spec decision on multiple scroll offsets is finalized.
+  // https://github.com/w3c/csswg-drafts/issues/4912
+  if (!IsAuto(start))
+    offsets->push_back(ComputeScrollOffset(start));
+  if (!IsAuto(end) || !IsAuto(start))
+    offsets->push_back(ComputeScrollOffset(end));
+
   return offsets;
 }
 

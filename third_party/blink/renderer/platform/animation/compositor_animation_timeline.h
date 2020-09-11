@@ -31,8 +31,7 @@ class PLATFORM_EXPORT CompositorAnimationTimeline {
 
   cc::AnimationTimeline* GetAnimationTimeline() const;
   void UpdateCompositorTimeline(base::Optional<CompositorElementId> pending_id,
-                                base::Optional<double> start_scroll_offset,
-                                base::Optional<double> end_scroll_offset);
+                                const std::vector<double> scroll_offsets);
 
   void AnimationAttached(const CompositorAnimationClient&);
   void AnimationDestroyed(const CompositorAnimationClient&);

@@ -40,6 +40,9 @@ GetCompositorScrollElementId(const Node*);
 CompositorScrollTimeline::ScrollDirection CORE_EXPORT
 ConvertOrientation(ScrollTimeline::ScrollDirection, const ComputedStyle*);
 
+double ComputeProgress(double current_offset,
+                       const WTF::Vector<double>& resolved_offsets);
+
 }  // namespace scroll_timeline_util
 
 }  // namespace blink

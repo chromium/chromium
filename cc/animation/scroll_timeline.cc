@@ -4,14 +4,15 @@
 
 #include "cc/animation/scroll_timeline.h"
 
+#include <memory>
+#include <vector>
+
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/worklet_animation.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
-
-#include <memory>
 
 namespace cc {
 
@@ -25,42 +26,53 @@ bool IsReverse(ScrollTimeline::ScrollDirection direction) {
   return direction == ScrollTimeline::ScrollUp ||
          direction == ScrollTimeline::ScrollLeft;
 }
+
+bool ValidateScrollOffsets(const std::vector<double>& scroll_offsets) {
+  return scroll_offsets.empty() || scroll_offsets.size() >= 2.0;
+}
+
 }  // namespace
+
+template double ComputeProgress<std::vector<double>>(
+    double,
+    const std::vector<double>&);
 
 ScrollTimeline::ScrollTimeline(base::Optional<ElementId> scroller_id,
                                ScrollDirection direction,
-                               base::Optional<double> start_scroll_offset,
-                               base::Optional<double> end_scroll_offset,
+                               const std::vector<double> scroll_offsets,
                                double time_range,
                                int animation_timeline_id)
     : AnimationTimeline(animation_timeline_id),
       pending_id_(scroller_id),
       direction_(direction),
-      start_scroll_offset_(start_scroll_offset),
-      end_scroll_offset_(end_scroll_offset),
-      time_range_(time_range) {}
+      scroll_offsets_(scroll_offsets),
+      time_range_(time_range) {
+  DCHECK(ValidateScrollOffsets(scroll_offsets_));
+}
 
 ScrollTimeline::~ScrollTimeline() = default;
 
 scoped_refptr<ScrollTimeline> ScrollTimeline::Create(
     base::Optional<ElementId> scroller_id,
     ScrollTimeline::ScrollDirection direction,
-    base::Optional<double> start_scroll_offset,
-    base::Optional<double> end_scroll_offset,
+    const std::vector<double> scroll_offsets,
     double time_range) {
-  return base::WrapRefCounted(new ScrollTimeline(
-      scroller_id, direction, start_scroll_offset, end_scroll_offset,
-      time_range, AnimationIdProvider::NextTimelineId()));
+  return base::WrapRefCounted(
+      new ScrollTimeline(scroller_id, direction, scroll_offsets, time_range,
+                         AnimationIdProvider::NextTimelineId()));
 }
 
 scoped_refptr<AnimationTimeline> ScrollTimeline::CreateImplInstance() const {
-  return base::WrapRefCounted(
-      new ScrollTimeline(pending_id_, direction_, start_scroll_offset_,
-                         end_scroll_offset_, time_range_, id()));
+  return base::WrapRefCounted(new ScrollTimeline(
+      pending_id_, direction_, scroll_offsets_, time_range_, id()));
 }
 
 bool ScrollTimeline::IsActive(const ScrollTree& scroll_tree,
                               bool is_active_tree) const {
+  // Blink passes empty scroll offsets when the timeline is inactive.
+  if (scroll_offsets_.empty()) {
+    return false;
+  }
   // If pending tree with our scroller hasn't been activated, or the scroller
   // has been removed (e.g. if it is no longer composited).
   if ((is_active_tree && !active_id_) || (!is_active_tree && !pending_id_))
@@ -105,8 +117,10 @@ base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   DCHECK_GE(max_offset, 0);
   DCHECK_GE(current_offset, 0);
 
-  double resolved_start_scroll_offset = start_scroll_offset_.value_or(0);
-  double resolved_end_scroll_offset = end_scroll_offset_.value_or(max_offset);
+  DCHECK_GE(scroll_offsets_.size(), 2u);
+  double resolved_start_scroll_offset = scroll_offsets_[0];
+  double resolved_end_scroll_offset =
+      scroll_offsets_[scroll_offsets_.size() - 1];
 
   // TODO(crbug.com/1060384): Once the spec has been updated to state what the
   // expected result is when startScrollOffset >= endScrollOffset, we might need
@@ -126,11 +140,10 @@ base::Optional<base::TimeTicks> ScrollTimeline::CurrentTime(
   // 5. Return the result of evaluating the following expression:
   //   ((current scroll offset - startScrollOffset) /
   //      (endScrollOffset - startScrollOffset)) * effective time range
-  return base::TimeTicks() +
-         base::TimeDelta::FromMillisecondsD(
-             ((current_offset - resolved_start_scroll_offset) /
-              (resolved_end_scroll_offset - resolved_start_scroll_offset)) *
-             time_range_);
+  return base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
+                                 ComputeProgress<std::vector<double>>(
+                                     current_offset, scroll_offsets_) *
+                                 time_range_);
 }
 
 void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
@@ -142,8 +155,8 @@ void ScrollTimeline::PushPropertiesTo(AnimationTimeline* impl_timeline) {
   // because we end up using the pending start/end scroll offset for the active
   // tree too. Instead we need to either split these (like pending_id_ and
   // active_id_) or have a ScrollTimeline per tree.
-  scroll_timeline->start_scroll_offset_ = start_scroll_offset_;
-  scroll_timeline->end_scroll_offset_ = end_scroll_offset_;
+  scroll_timeline->scroll_offsets_ = scroll_offsets_;
+  DCHECK(ValidateScrollOffsets(scroll_timeline->scroll_offsets_));
 }
 
 void ScrollTimeline::ActivateTimeline() {
@@ -189,11 +202,8 @@ bool ScrollTimeline::TickScrollLinkedAnimations(
 
 void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
     base::Optional<ElementId> pending_id,
-    base::Optional<double> start_scroll_offset,
-    base::Optional<double> end_scroll_offset) {
-  if (pending_id_ == pending_id &&
-      start_scroll_offset_ == start_scroll_offset &&
-      end_scroll_offset_ == end_scroll_offset) {
+    const std::vector<double> scroll_offsets) {
+  if (pending_id_ == pending_id && scroll_offsets_ == scroll_offsets) {
     return;
   }
 
@@ -201,8 +211,8 @@ void ScrollTimeline::UpdateScrollerIdAndScrollOffsets(
   // Then later (when the pending tree is promoted to active)
   // |ActivateTimeline| will be called and will set the |active_id_|.
   pending_id_ = pending_id;
-  start_scroll_offset_ = start_scroll_offset;
-  end_scroll_offset_ = end_scroll_offset;
+  scroll_offsets_ = scroll_offsets;
+  DCHECK(ValidateScrollOffsets(scroll_offsets_));
 
   SetNeedsPushProperties();
 }

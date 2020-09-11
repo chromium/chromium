@@ -36,16 +36,14 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
 
   ScrollTimeline(base::Optional<ElementId> scroller_id,
                  ScrollDirection direction,
-                 base::Optional<double> start_scroll_offset,
-                 base::Optional<double> end_scroll_offset,
+                 const std::vector<double> scroll_offsets,
                  double time_range,
                  int animation_timeline_id);
 
   static scoped_refptr<ScrollTimeline> Create(
       base::Optional<ElementId> scroller_id,
       ScrollDirection direction,
-      base::Optional<double> start_scroll_offset,
-      base::Optional<double> end_scroll_offset,
+      const std::vector<double> scroll_offsets,
       double time_range);
 
   // Create a copy of this ScrollTimeline intended for the impl thread in the
@@ -67,8 +65,7 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
 
   void UpdateScrollerIdAndScrollOffsets(
       base::Optional<ElementId> scroller_id,
-      base::Optional<double> start_scroll_offset,
-      base::Optional<double> end_scroll_offset);
+      const std::vector<double> scroll_offsets);
 
   void PushPropertiesTo(AnimationTimeline* impl_timeline) override;
   void ActivateTimeline() override;
@@ -82,10 +79,14 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   base::Optional<ElementId> GetPendingIdForTest() const { return pending_id_; }
   ScrollDirection GetDirectionForTest() const { return direction_; }
   base::Optional<double> GetStartScrollOffsetForTest() const {
-    return start_scroll_offset_;
+    if (scroll_offsets_.empty())
+      return base::nullopt;
+    return scroll_offsets_[0];
   }
   base::Optional<double> GetEndScrollOffsetForTest() const {
-    return end_scroll_offset_;
+    if (scroll_offsets_.empty())
+      return base::nullopt;
+    return scroll_offsets_[1];
   }
   double GetTimeRangeForTest() const { return time_range_; }
 
@@ -105,11 +106,9 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   // it should base its current time on, and where the origin point is.
   ScrollDirection direction_;
 
-  // These define the total range of the scroller that the ScrollTimeline is
-  // active within. If not set they default to the beginning/end of the scroller
-  // respectively, respecting the current |direction_|.
-  base::Optional<double> start_scroll_offset_;
-  base::Optional<double> end_scroll_offset_;
+  // This defines scroll ranges of the scroller that the ScrollTimeline is
+  // active within. If no ranges are defined the timeline is inactive.
+  std::vector<double> scroll_offsets_;
 
   // A ScrollTimeline maps from the scroll offset in the scroller to a time
   // value based on a 'time range'. See the implementation of CurrentTime or the
@@ -120,6 +119,25 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
 inline ScrollTimeline* ToScrollTimeline(AnimationTimeline* timeline) {
   DCHECK(timeline->IsScrollTimeline());
   return static_cast<ScrollTimeline*>(timeline);
+}
+
+template <typename T>
+double ComputeProgress(double current_offset, const T& resolved_offsets) {
+  DCHECK_GE(resolved_offsets.size(), 2u);
+  DCHECK(current_offset < resolved_offsets[resolved_offsets.size() - 1]);
+  // Look for scroll offset that contains the current offset.
+  unsigned int offset_id;
+  for (offset_id = 1; offset_id < resolved_offsets.size() &&
+                      resolved_offsets[offset_id] <= current_offset;
+       offset_id++) {
+  }
+  DCHECK(offset_id < resolved_offsets.size());
+  // Weight of each offset within time range is distributed equally.
+  double offset_distance = 1.0 / (resolved_offsets.size() - 1);
+  // Progress of the current offset within its offset range.
+  double p = (current_offset - resolved_offsets[offset_id - 1]) /
+             (resolved_offsets[offset_id] - resolved_offsets[offset_id - 1]);
+  return (offset_id - 1 + p) * offset_distance;
 }
 
 }  // namespace cc

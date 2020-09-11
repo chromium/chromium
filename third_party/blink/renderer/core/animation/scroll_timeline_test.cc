@@ -21,6 +21,14 @@ namespace blink {
 
 namespace {
 
+// Only expect precision up to 1 microsecond with an additional epsilon to
+// account for float conversion error (mainly due to timeline time getting
+// converted between float and base::TimeDelta).
+static constexpr double time_error_ms = 0.001 + 1e-13;
+
+#define EXPECT_TIME_NEAR(expected, value) \
+  EXPECT_NEAR(expected, value, time_error_ms)
+
 StringOrScrollTimelineElementBasedOffset OffsetFromString(const String& value) {
   StringOrScrollTimelineElementBasedOffset result;
   result.SetString(value);
@@ -775,6 +783,98 @@ TEST_F(ScrollTimelineTest,
   SimulateFrame();
   // Verify animation finished event is fired only once in finished state.
   EXPECT_FALSE(event_listener->EventReceived());
+}
+
+TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { height: 1000px; }
+    </style>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  LayoutBoxModelObject* scroller =
+      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  ASSERT_TRUE(scroller);
+  ASSERT_TRUE(scroller->HasNonVisibleOverflow());
+  PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+  double time_range = 100.0;
+  ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
+  options->setTimeRange(
+      DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+  options->setScrollSource(GetElementById("scroller"));
+  HeapVector<StringOrScrollTimelineElementBasedOffset> scroll_offsets;
+  scroll_offsets.push_back(OffsetFromString("10px"));
+  scroll_offsets.push_back(OffsetFromString("20px"));
+  scroll_offsets.push_back(OffsetFromString("40px"));
+  scroll_offsets.push_back(OffsetFromString("90px"));
+  options->setScrollOffsets(scroll_offsets);
+
+  ScrollTimeline* scroll_timeline =
+      ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(scroll_timeline->currentTime(), 0);
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 10),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  // Simulate a new animation frame  which allows the timeline to compute new
+  // current phase and time.
+  SimulateFrame();
+  EXPECT_EQ(0, scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 12),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+
+  unsigned int offset = 0;
+  double w = 1.0 / 3.0;                      // offset weight
+  double p = (12.0 - 10.0) / (20.0 - 10.0);  // progress within the offset
+  EXPECT_TIME_NEAR((offset + p) * w * time_range,
+                   scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  offset = 1;
+  p = 0;
+  EXPECT_TIME_NEAR((offset + p) * w * time_range,
+                   scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 30),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  p = (30.0 - 20.0) / (40.0 - 20.0);
+  EXPECT_TIME_NEAR((offset + p) * w * time_range,
+                   scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 40),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  offset = 2;
+  p = 0;
+  EXPECT_TIME_NEAR((offset + p) * w * time_range,
+                   scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 80),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  p = (80.0 - 40.0) / (90.0 - 40.0);
+  EXPECT_TIME_NEAR((offset + p) * w * time_range,
+                   scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 90),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_EQ(100, scroll_timeline->currentTime().value());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
+                                   mojom::blink::ScrollType::kProgrammatic);
+  SimulateFrame();
+  EXPECT_EQ(100, scroll_timeline->currentTime().value());
 }
 
 }  //  namespace blink
