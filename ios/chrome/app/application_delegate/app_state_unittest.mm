@@ -568,6 +568,11 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
                              startupInformation:startupInformation
                             applicationDelegate:applicationDelegate];
 
+  // Create a scene state so that full shutdown will run.
+  if (!IsSceneStartupSupported()) {
+    appState.mainSceneState = [[SceneState alloc] initWithAppState:appState];
+  }
+
   id application = [OCMockObject mockForClass:[UIApplication class]];
 
   // Action.

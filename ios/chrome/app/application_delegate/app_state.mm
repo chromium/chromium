@@ -456,8 +456,14 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
-  if ([_browserLauncher browserInitializationStage] >=
-      INITIALIZATION_STAGE_FOREGROUND) {
+  // Don't do this if there are no scenes, since there's no defined interface
+  // provider (and no tabs)
+  // TODO(crbug.com/1113097): Factor out this check by not having app layer
+  // logic use interface providers.
+  BOOL scenesAreAvailable = [self connectedScenes].count > 0;
+
+  if (scenesAreAvailable && [_browserLauncher browserInitializationStage] >=
+                                INITIALIZATION_STAGE_FOREGROUND) {
     _browserLauncher.interfaceProvider.currentInterface.userInteractionEnabled =
         NO;
   }
@@ -566,8 +572,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
       NSSet* connectedScenes =
           [UIApplication sharedApplication].connectedScenes;
       for (UIWindowScene* scene in connectedScenes) {
-        if (!scene.delegate) {
+        if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
           // This might happen in tests.
+          // TODO(crbug.com/1113097): This shouldn't be needed.
+          [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
           continue;
         }
 
@@ -577,11 +585,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
       }
       return sceneStates;
     }
-    NOTREACHED();
-    return @[];
-  } else {
+  } else if (self.mainSceneState) {
     return @[ self.mainSceneState ];
   }
+  // This can happen if the app is terminating before any scenes are set up.
+  return @[];
 }
 
 - (void)setLastTappedWindow:(UIWindow*)window {
