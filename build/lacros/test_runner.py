@@ -130,6 +130,28 @@ def _remove_unused_ash_chrome_versions(version_to_skip):
           'past %d days', p, days)
       shutil.rmtree(p)
 
+def _GsutilCopyWithRetry(gs_path, local_name, retry_times=3):
+  """Gsutil copy with retry.
+
+  Args:
+    gs_path: The gs path for remote location.
+    local_name: The local file name.
+    retry_times: The total try times if the gsutil call fails.
+
+  Raises:
+    RuntimeError: If failed to download the specified version, for example,
+        if the version is not present on gcs.
+  """
+  import download_from_google_storage
+  gsutil = download_from_google_storage.Gsutil(
+      download_from_google_storage.GSUTIL_DEFAULT_PATH)
+  exit_code = 1
+  retry = 0
+  while exit_code and retry < retry_times:
+    retry += 1
+    exit_code = gsutil.call('cp', gs_path, local_name)
+  if exit_code:
+    raise RuntimeError('Failed to download: "%s"' % gs_path)
 
 def _DownloadAshChromeIfNecessary(version, is_download_for_bots=False):
   """Download a given version of ash-chrome if not already exists.
@@ -172,16 +194,11 @@ def _DownloadAshChromeIfNecessary(version, is_download_for_bots=False):
   shutil.rmtree(ash_chrome_dir, ignore_errors=True)
   os.makedirs(ash_chrome_dir)
   with tempfile.NamedTemporaryFile() as tmp:
-    import download_from_google_storage
-    gsutil = download_from_google_storage.Gsutil(
-        download_from_google_storage.GSUTIL_DEFAULT_PATH)
     gs_version = (_GetLatestVersionOfAshChrome()
                   if is_download_for_bots else version)
     logging.info('Ash-chrome version: %s', gs_version)
     gs_path = _GS_URL_BASE + '/' + gs_version + '/' + _GS_ASH_CHROME_PATH
-    exit_code = gsutil.call('cp', gs_path, tmp.name)
-    if exit_code:
-      raise RuntimeError('Failed to download: "%s"' % gs_path)
+    _GsutilCopyWithRetry(gs_path, tmp.name)
 
     # https://bugs.python.org/issue15795. ZipFile doesn't preserve permissions.
     # And in order to workaround the issue, this function is created and used
@@ -204,12 +221,8 @@ def _DownloadAshChromeIfNecessary(version, is_download_for_bots=False):
 
 def _GetLatestVersionOfAshChrome():
   """Returns the latest version of uploaded ash-chrome."""
-  import download_from_google_storage
-  gsutil = download_from_google_storage.Gsutil(
-      download_from_google_storage.GSUTIL_DEFAULT_PATH)
-
   with tempfile.NamedTemporaryFile() as tmp:
-    gsutil.check_call('cp', _GS_URL_LATEST_FILE, tmp.name)
+    _GsutilCopyWithRetry(_GS_URL_LATEST_FILE, tmp.name)
     with open(tmp.name, 'r') as f:
       return f.read().strip()
 
