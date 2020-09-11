@@ -273,6 +273,11 @@ ScriptPromise CookieStore::get(ScriptState* script_state,
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
+  if (!options->hasName() && !options->hasUrl()) {
+    exception_state.ThrowTypeError("CookieStoreGetOptions must not be empty");
+    return ScriptPromise();
+  }
+
   return DoRead(script_state, options, &CookieStore::GetAllForUrlToGetResult,
                 exception_state);
 }

@@ -9,25 +9,8 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
 
-  const cookie = await cookieStore.get();
-  assert_equals(cookie.name, 'cookie-name');
-  assert_equals(cookie.value, 'cookie-value');
-}, 'cookieStore.get with no arguments');
-
-promise_test(async testCase => {
-  await cookieStore.set('cookie-name-1', 'cookie-value-1');
-  testCase.add_cleanup(async () => {
-    await cookieStore.delete('cookie-name-1');
-  });
-  await cookieStore.set('cookie-name-2', 'cookie-value-2');
-  testCase.add_cleanup(async () => {
-    await cookieStore.delete('cookie-name-2');
-  });
-
-  const cookie = await cookieStore.get();
-  assert_equals(cookie.name, 'cookie-name-1');
-  assert_equals(cookie.value, 'cookie-value-1');
-},'cookieStore.get with no args and multiple matches');
+  await promise_rejects_js(testCase, TypeError, cookieStore.get());
+}, 'cookieStore.get with no arguments returns TypeError');
 
 promise_test(async testCase => {
   await cookieStore.set('cookie-name', 'cookie-value');
@@ -35,25 +18,8 @@ promise_test(async testCase => {
     await cookieStore.delete('cookie-name');
   });
 
-  const cookie = await cookieStore.get({});
-  assert_equals(cookie.name, 'cookie-name');
-  assert_equals(cookie.value, 'cookie-value');
-}, 'cookieStore.get with empty options');
-
-promise_test(async testCase => {
-  await cookieStore.set('cookie-name-1', 'cookie-value-1');
-  testCase.add_cleanup(async () => {
-    await cookieStore.delete('cookie-name-1');
-  });
-  await cookieStore.set('cookie-name-2', 'cookie-value-2');
-  testCase.add_cleanup(async () => {
-    await cookieStore.delete('cookie-name-2');
-  });
-
-  const cookie = await cookieStore.get({});
-  assert_equals(cookie.name, 'cookie-name-1');
-  assert_equals(cookie.value, 'cookie-value-1');
-},'cookieStore.get with empty options and multiple matches');
+  await promise_rejects_js(testCase, TypeError, cookieStore.get({}));
+},'cookieStore.get with empty options returns TypeError');
 
 promise_test(async testCase => {
   await cookieStore.set('cookie-name', 'cookie-value');
