@@ -6,18 +6,36 @@ package org.chromium.chrome.browser.compositor.overlays;
 
 import android.graphics.RectF;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
  * An interface which positions the actual tabs and adds additional UI to the them.
  */
 public interface SceneOverlay {
+    /** Positioning information for when overlays are added to the tree. */
+    @IntDef({Position.FRONT, Position.DEFAULT, Position.BACK})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Position {
+        /** The overlay will be one the of front-most layers. */
+        int FRONT = 0;
+
+        /** The overlay will be between the front and back layers in the order it was added. */
+        int DEFAULT = 1;
+
+        /** The overlay will be one of the back-most layers. */
+        int BACK = 2;
+    }
+
     /**
      * Updates and gets a {@link SceneOverlayLayer} that represents an scene overlay.
      *
@@ -81,4 +99,10 @@ public interface SceneOverlay {
      * @return True if this overlay handles tab creation.
      */
     boolean handlesTabCreating();
+
+    /**
+     * @return Where this overlay should be positioned relative to the other overlays.
+     */
+    @Position
+    int getPosition();
 }

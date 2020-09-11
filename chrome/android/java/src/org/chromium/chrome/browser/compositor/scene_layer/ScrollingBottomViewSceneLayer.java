@@ -158,6 +158,11 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     public void getVirtualViews(List<VirtualView> views) {}
 
+    @Override
+    public int getPosition() {
+        return Position.DEFAULT;
+    }
+
     @NativeMethods
     interface Natives {
         long init(ScrollingBottomViewSceneLayer caller);

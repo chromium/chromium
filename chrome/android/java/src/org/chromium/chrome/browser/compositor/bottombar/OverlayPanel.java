@@ -961,4 +961,9 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
         closePanel(StateChangeReason.BACK_PRESS, true);
         return true;
     }
+
+    @Override
+    public int getPosition() {
+        return Position.FRONT;
+    }
 }

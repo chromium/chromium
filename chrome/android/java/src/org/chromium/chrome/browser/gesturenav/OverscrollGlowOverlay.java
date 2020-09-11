@@ -117,4 +117,9 @@ class OverscrollGlowOverlay extends NavigationGlow implements SceneOverlay {
     public boolean handlesTabCreating() {
         return false;
     }
+
+    @Override
+    public int getPosition() {
+        return Position.BACK;
+    }
 }
