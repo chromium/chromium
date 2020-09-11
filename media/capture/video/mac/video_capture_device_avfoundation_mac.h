@@ -16,6 +16,27 @@
 
 namespace media {
 class VideoCaptureDeviceMac;
+
+class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
+ public:
+  virtual ~VideoCaptureDeviceAVFoundationFrameReceiver() = default;
+
+  virtual void ReceiveFrame(const uint8_t* video_frame,
+                            int video_frame_length,
+                            const VideoCaptureFormat& frame_format,
+                            const gfx::ColorSpace color_space,
+                            int aspect_numerator,
+                            int aspect_denominator,
+                            base::TimeDelta timestamp) = 0;
+  virtual void OnPhotoTaken(const uint8_t* image_data,
+                            size_t image_length,
+                            const std::string& mime_type) = 0;
+  virtual void OnPhotoError() = 0;
+  virtual void ReceiveError(VideoCaptureError error,
+                            const base::Location& from_here,
+                            const std::string& reason) = 0;
+};
+
 }  // namespace media
 
 // Class used by VideoCaptureDeviceMac (VCDM) for video and image capture using
@@ -47,6 +68,7 @@ class VideoCaptureDeviceMac;
 //    the VideoCaptureDeviceAVFoundation object.
 //
 //
+CAPTURE_EXPORT
 @interface VideoCaptureDeviceAVFoundation
     : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate> {
  @private
@@ -59,7 +81,7 @@ class VideoCaptureDeviceMac;
   base::scoped_nsobject<AVCaptureDeviceFormat> _bestCaptureFormat;
 
   base::Lock _lock;  // Protects concurrent setting and using |frameReceiver_|.
-  media::VideoCaptureDeviceMac* _frameReceiver;  // weak.
+  media::VideoCaptureDeviceAVFoundationFrameReceiver* _frameReceiver;  // weak.
 
   base::scoped_nsobject<AVCaptureSession> _captureSession;
 
@@ -71,16 +93,27 @@ class VideoCaptureDeviceMac;
 
   // An AVDataOutput specialized for taking pictures out of |captureSession_|.
   base::scoped_nsobject<AVCaptureStillImageOutput> _stillImageOutput;
+  size_t _takePhotoStartedCount;
+  size_t _takePhotoPendingCount;
+  size_t _takePhotoCompletedCount;
+  bool _stillImageOutputWarmupCompleted;
+  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
+      _weakPtrFactoryForTakePhoto;
 
-  base::ThreadChecker _main_thread_checker;
+  // For testing.
+  base::RepeatingCallback<void()> _onStillImageOutputStopped;
+
+  scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
 
 // Initializes the instance and the underlying capture session and registers the
 // frame receiver.
-- (id)initWithFrameReceiver:(media::VideoCaptureDeviceMac*)frameReceiver;
+- (id)initWithFrameReceiver:
+    (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
 
 // Sets the frame receiver.
-- (void)setFrameReceiver:(media::VideoCaptureDeviceMac*)frameReceiver;
+- (void)setFrameReceiver:
+    (media::VideoCaptureDeviceAVFoundationFrameReceiver*)frameReceiver;
 
 // Sets which capture device to use by name, retrieved via |deviceNames|. Once
 // the deviceId is known, the library objects are created if needed and
@@ -110,6 +143,9 @@ class VideoCaptureDeviceMac;
 // Takes a photo. This method should only be called between -startCapture and
 // -stopCapture.
 - (void)takePhoto;
+
+- (void)setOnStillImageOutputStoppedForTesting:
+    (base::RepeatingCallback<void()>)onStillImageOutputStopped;
 
 @end
 
