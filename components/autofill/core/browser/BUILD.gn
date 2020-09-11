@@ -428,6 +428,8 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "autofill_form_test_utils.cc",
+    "autofill_form_test_utils.h",
     "autofill_test_utils.cc",
     "autofill_test_utils.h",
     "data_driven_test.cc",

@@ -403,12 +403,12 @@ class FormStructure {
 
  private:
   friend class AutofillMergeTest;
-  friend class FormStructureTest;
+  friend class FormStructureTestImpl;
   FRIEND_TEST_ALL_PREFIXES(AutofillDownloadTest, QueryAndUploadTest);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTest, FindLongestCommonPrefix);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTest, FindLongestCommonAffixLength);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTest, IsValidParseableName);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTest,
+  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonPrefix);
+  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonAffixLength);
+  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, IsValidParseableName);
+  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl,
                            RationalizePhoneNumber_RunsOncePerSection);
 
   class SectionedFieldsIndexes {
@@ -559,7 +559,7 @@ class FormStructure {
 
   // Tries to set |parseable_name| fields by stripping the given offsets from
   // both sides of the |name| fields.
-  // Sets |parseable_name| to |name| if the sum of offsets is bigger than 
+  // Sets |parseable_name| to |name| if the sum of offsets is bigger than
   // |name|.
   // Sets all |parseable_name| to |name| without modification and returns
   // false if a name fails the |IsValidParseableName()| check after stripping.
