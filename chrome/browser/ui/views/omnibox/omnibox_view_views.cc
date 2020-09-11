@@ -1480,11 +1480,13 @@ const char* OmniboxViewViews::GetClassName() const {
 }
 
 bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
-  if (model()->popup_model()) {  // Can be null in tests.
+  // Clear focus of buttons, but do not clear keyword mode.
+  if (model()->popup_model() && model()->popup_model()->selected_line_state() !=
+                                    OmniboxPopupModel::KEYWORD_MODE) {
     model()->popup_model()->SetSelectedLineState(OmniboxPopupModel::NORMAL);
   }
-  is_mouse_pressed_ = true;
 
+  is_mouse_pressed_ = true;
   select_all_on_mouse_release_ =
       (event.IsOnlyLeftMouseButton() || event.IsOnlyRightMouseButton()) &&
       (!HasFocus() || (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE));
