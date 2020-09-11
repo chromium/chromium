@@ -283,12 +283,12 @@ gfx::Rect SurfaceAggregator::CalculateOccludingSurfaceDamageRect(
 // before this.
 void SurfaceAggregator::UnionSurfaceDamageRectsOnTop(
     const gfx::Rect& surface_rect,
-    const gfx::Transform& quad_to_root_target_transform) {
+    const gfx::Transform& parent_quad_to_root_target_transform) {
   DCHECK(!surface_rect.IsEmpty());
 
   gfx::Rect damage_rect_in_root_target_space =
-      cc::MathUtil::MapEnclosingClippedRect(quad_to_root_target_transform,
-                                            surface_rect);
+      cc::MathUtil::MapEnclosingClippedRect(
+          parent_quad_to_root_target_transform, surface_rect);
   damage_rects_union_of_surfaces_on_top_.Union(
       damage_rect_in_root_target_space);
 }
@@ -303,61 +303,34 @@ void SurfaceAggregator::UnionSurfaceDamageRectsOnTop(
 // surface to which the optimization can be applied, this function returns
 // that quad and sets the occluding_damage_rect out parameter to the
 // appropriate rectangle.
-DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
-    const Surface* surface,
-    const CompositorRenderPassList& render_pass_list,
-    const gfx::Transform& parent_target_transform,
-    const CompositorRenderPass* render_pass,
-    gfx::Rect* occluding_damage_rect) {
-  auto aggregated_id =
-      pass_id_remapper_.Remap(render_pass->id, surface->surface_id());
-  return ProcessSurfaceOccludingDamageInternal(
-      surface, render_pass_list, parent_target_transform,
-      render_pass->transform_to_root_target, aggregated_id,
-      render_pass->cache_render_pass, occluding_damage_rect);
-}
 
-DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
-    const Surface* surface,
-    const CompositorRenderPassList& render_pass_list,
+const DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
+    const CompositorRenderPass& source_pass,
+    AggregatedRenderPass* dest_pass,
     const gfx::Transform& parent_target_transform,
-    const AggregatedRenderPass* render_pass,
+    Surface* surface,
+    bool is_last_pass_in_src_surface,
     gfx::Rect* occluding_damage_rect) {
-  return ProcessSurfaceOccludingDamageInternal(
-      surface, render_pass_list, parent_target_transform,
-      render_pass->transform_to_root_target, render_pass->id,
-      render_pass->cache_render_pass, occluding_damage_rect);
-}
-
-DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamageInternal(
-    const Surface* surface,
-    const CompositorRenderPassList& render_pass_list,
-    const gfx::Transform& parent_target_transform,
-    const gfx::Transform& dest_transform_to_root_target,
-    const AggregatedRenderPassId& dest_pass_id,
-    bool dest_pass_cached,
-    gfx::Rect* occluding_damage_rect) {
-  if (!needs_surface_occluding_damage_rect_)
+  if (!needs_surface_occluding_damage_rect_ || !is_last_pass_in_src_surface)
     return nullptr;
 
-  CompositorRenderPass* last_render_pass = render_pass_list.back().get();
-  gfx::Transform quad_to_root_target_transform =
-      gfx::Transform(dest_transform_to_root_target, parent_target_transform);
+  gfx::Transform parent_quad_to_root_target_transform = gfx::Transform(
+      dest_pass->transform_to_root_target, parent_target_transform);
 
   // The occluding damage optimization currently relies on two things - there
   // can't be any damage above the quad within the surface, and the quad needs
   // its own SQS for the occluding_damage_rect metadata.
-  DrawQuad* target_quad = nullptr;
-  if (last_render_pass->quad_list.size() == 1) {
+  const DrawQuad* target_quad = nullptr;
+  if (source_pass.quad_list.size() == 1) {
     // If there's only one quad in the root render pass, then the conditions
     // are clearly satisfied.
-    target_quad = last_render_pass->quad_list.back();
+    target_quad = source_pass.quad_list.back();
   } else {
     // If there are multiple quads in the surface, if exactly one quad is
     // marked as having damage, then we know that quad doesn't have damage
     // above it, and we know that it has its own SQS (because its
     // sqs->no_damage is unique).
-    for (auto* quad : last_render_pass->quad_list) {
+    for (auto* quad : source_pass.quad_list) {
       if (quad->shared_quad_state->no_damage) {
         continue;
       }
@@ -373,15 +346,15 @@ DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamageInternal(
 
   if (target_quad) {
     *occluding_damage_rect = CalculateOccludingSurfaceDamageRect(
-        target_quad, quad_to_root_target_transform);
+        target_quad, parent_quad_to_root_target_transform);
   }
 
   gfx::Rect surface_damage_rect;
-  if (RenderPassNeedsFullDamage(dest_pass_id, dest_pass_cached)) {
-    surface_damage_rect = last_render_pass->output_rect;
+  if (RenderPassNeedsFullDamage(dest_pass->id, dest_pass->cache_render_pass)) {
+    surface_damage_rect = source_pass.output_rect;
   } else {
-    surface_damage_rect = DamageRectForSurface(surface, *last_render_pass,
-                                               last_render_pass->output_rect);
+    surface_damage_rect =
+        DamageRectForSurface(surface, source_pass, source_pass.output_rect);
   }
 
   // Add the current surface to the damage rect union if there is any damage.
@@ -389,7 +362,7 @@ DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamageInternal(
   // on top should not include its own surface.
   if (!surface_damage_rect.IsEmpty()) {
     UnionSurfaceDamageRectsOnTop(surface_damage_rect,
-                                 quad_to_root_target_transform);
+                                 parent_quad_to_root_target_transform);
   }
   return target_quad;
 }
@@ -579,11 +552,6 @@ void SurfaceAggregator::EmitSurfaceContent(
         frame.metadata.delegated_ink_metadata.get());
   }
 
-  gfx::Rect occluding_damage_rect;
-  DrawQuad* quad_with_occluding_damage_rect = ProcessSurfaceOccludingDamage(
-      surface, render_pass_list, combined_transform, dest_pass,
-      &occluding_damage_rect);
-
   const CompositorRenderPassList& referenced_passes = render_pass_list;
   // TODO(fsamuel): Move this to a separate helper function.
   size_t passes_to_copy =
@@ -623,11 +591,10 @@ void SurfaceAggregator::EmitSurfaceContent(
     copy_pass->transform_to_root_target.ConcatTransform(
         dest_pass->transform_to_root_target);
 
-    CopyQuadsToPass(source.quad_list, source.shared_quad_state_list,
-                    surface->GetActiveFrame().device_scale_factor(),
-                    child_to_parent_map, gfx::Transform(), {}, copy_pass.get(),
-                    surface_id, RoundedCornerInfo(), occluding_damage_rect,
-                    quad_with_occluding_damage_rect);
+    CopyQuadsToPass(source, copy_pass.get(), frame.device_scale_factor(),
+                    child_to_parent_map, gfx::Transform(), {}, surface_id,
+                    RoundedCornerInfo(), surface,
+                    /*is_last_pass*/ j == (render_pass_list.size() - 1));
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the
@@ -659,9 +626,6 @@ void SurfaceAggregator::EmitSurfaceContent(
            .IsEmpty();
 
   if (merge_pass) {
-    // TODO(jamesr): Clean up last pass special casing.
-    const QuadList& quads = last_pass.quad_list;
-
     // Intersect the transformed visible rect and the clip rect to create a
     // smaller cliprect for the quad.
     ClipData surface_quad_clip_rect = {
@@ -674,11 +638,10 @@ void SurfaceAggregator::EmitSurfaceContent(
     ClipData quads_clip =
         CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
 
-    CopyQuadsToPass(quads, last_pass.shared_quad_state_list,
-                    surface->GetActiveFrame().device_scale_factor(),
+    CopyQuadsToPass(last_pass, dest_pass, frame.device_scale_factor(),
                     child_to_parent_map, combined_transform, quads_clip,
-                    dest_pass, surface_id, rounded_corner_info,
-                    occluding_damage_rect, quad_with_occluding_damage_rect);
+                    surface_id, rounded_corner_info, surface,
+                    /*is_last_pass*/ true);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
         source_sqs, scaled_quad_to_target_transform, target_transform,
@@ -688,8 +651,8 @@ void SurfaceAggregator::EmitSurfaceContent(
         gfx::ScaleToEnclosingRect(source_sqs->visible_quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
-        clip_rect, dest_pass, rounded_corner_info, occluding_damage_rect,
-        /* occluding_damage_rect_valid */ false);
+        clip_rect, dest_pass, rounded_corner_info, /*occluding_damage_rect*/
+        gfx::Rect(), /* occluding_damage_rect_valid */ false);
 
     // At this point, we need to calculate three values in order to construct
     // the CompositorRenderPassDrawQuad:
@@ -1005,18 +968,19 @@ SharedQuadState* SurfaceAggregator::CopyAndScaleSharedQuadState(
 }
 
 void SurfaceAggregator::CopyQuadsToPass(
-    const QuadList& source_quad_list,
-    const SharedQuadStateList& source_shared_quad_state_list,
+    const CompositorRenderPass& source_pass,
+    AggregatedRenderPass* dest_pass,
     float parent_device_scale_factor,
     const std::unordered_map<ResourceId, ResourceId>& child_to_parent_map,
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
-    AggregatedRenderPass* dest_pass,
     const SurfaceId& surface_id,
     const RoundedCornerInfo& parent_rounded_corner_info,
-    const gfx::Rect& occluding_damage_rect,
-    DrawQuad* quad_with_occluding_damage_rect) {
+    Surface* surface,
+    bool is_last_pass) {
+  const QuadList& source_quad_list = source_pass.quad_list;
   const SharedQuadState* last_copied_source_shared_quad_state = nullptr;
+
   // If the current frame has copy requests or cached render passes, then
   // aggregate the entire thing, as otherwise parts of the copy requests may be
   // ignored and we could cache partially drawn render pass.
@@ -1034,6 +998,8 @@ void SurfaceAggregator::CopyQuadsToPass(
   bool damage_rect_in_quad_space_valid = false;
 
 #if DCHECK_IS_ON()
+  const SharedQuadStateList& source_shared_quad_state_list =
+      source_pass.shared_quad_state_list;
   // If quads have come in with SharedQuadState out of order, or when quads have
   // invalid SharedQuadState pointer, it should DCHECK.
   auto sqs_iter = source_shared_quad_state_list.cbegin();
@@ -1045,6 +1011,12 @@ void SurfaceAggregator::CopyQuadsToPass(
     DCHECK(sqs_iter != source_shared_quad_state_list.cend());
   }
 #endif
+
+  gfx::Rect occluding_damage_rect;
+  const DrawQuad* quad_with_occluding_damage_rect =
+      ProcessSurfaceOccludingDamage(source_pass, dest_pass, target_transform,
+                                    surface, is_last_pass,
+                                    &occluding_damage_rect);
 
   RoundedCornerInfo new_rounded_corner_info = parent_rounded_corner_info;
   for (auto* quad : source_quad_list) {
@@ -1184,11 +1156,6 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
         frame.metadata.delegated_ink_metadata.get());
   }
 
-  gfx::Rect occluding_damage_rect;
-  DrawQuad* quad_with_occluding_damage_rect = ProcessSurfaceOccludingDamage(
-      surface, source_pass_list, surface_transform,
-      source_pass_list.back().get(), &occluding_damage_rect);
-
   bool apply_surface_transform_to_root_pass = true;
   for (size_t i = 0; i < source_pass_list.size(); ++i) {
     const auto& source = *source_pass_list[i];
@@ -1232,13 +1199,12 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
         source.cache_render_pass, source.has_damage_from_contributing_content,
         source.generate_mipmap);
 
-    CopyQuadsToPass(source.quad_list, source.shared_quad_state_list,
-                    frame.device_scale_factor(), child_to_parent_map,
+    CopyQuadsToPass(source, copy_pass.get(), frame.device_scale_factor(),
+                    child_to_parent_map,
                     apply_surface_transform_to_root_pass ? surface_transform
                                                          : gfx::Transform(),
-                    {}, copy_pass.get(), surface->surface_id(),
-                    RoundedCornerInfo(), occluding_damage_rect,
-                    quad_with_occluding_damage_rect);
+                    {}, surface->surface_id(), RoundedCornerInfo(), surface,
+                    is_root_pass);
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the

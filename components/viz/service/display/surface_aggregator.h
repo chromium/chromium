@@ -171,17 +171,16 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       bool occluding_damage_rect_valid);
 
   void CopyQuadsToPass(
-      const QuadList& source_quad_list,
-      const SharedQuadStateList& source_shared_quad_state_list,
+      const CompositorRenderPass& source_pass,
+      AggregatedRenderPass* dest_pass,
       float parent_device_scale_factor,
       const std::unordered_map<ResourceId, ResourceId>& resource_to_child_map,
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
-      AggregatedRenderPass* dest_pass,
       const SurfaceId& surface_id,
       const RoundedCornerInfo& rounded_corner_info,
-      const gfx::Rect& occluding_damage_rect,
-      DrawQuad* quad_with_occluding_damage_rect);
+      Surface* surface,
+      bool is_last_pass);
 
   // Recursively walks through the render pass and updates the
   // |can_use_backdrop_filter_cache| flag on all RenderPassDrawQuads(RPDQ).
@@ -261,23 +260,12 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void UnionSurfaceDamageRectsOnTop(const gfx::Rect& surface_rect,
                                     const gfx::Transform& target_transform);
 
-  // Determines occluding damage. Note that there is two version of the
-  // function, differing on what type of RenderPass is given (aggregated or from
-  // the compositor). If the compositor pass is given, it is assumed that it
-  // will be transformed into an aggregated pass later, so the values (with the
-  // exception of the id) will be the same. The id is remapped to an aggregated
-  // id.
-  DrawQuad* ProcessSurfaceOccludingDamage(
-      const Surface* surface,
-      const CompositorRenderPassList& render_pass_list,
-      const gfx::Transform& target_transform,
-      const CompositorRenderPass* dest_pass,
-      gfx::Rect* occluding_damage_rect);
-  DrawQuad* ProcessSurfaceOccludingDamage(
-      const Surface* surface,
-      const CompositorRenderPassList& render_pass_list,
-      const gfx::Transform& target_transform,
-      const AggregatedRenderPass* dest_pass,
+  const DrawQuad* ProcessSurfaceOccludingDamage(
+      const CompositorRenderPass& source_pass,
+      AggregatedRenderPass* dest_pass,
+      const gfx::Transform& parent_target_transform,
+      Surface* surface,
+      bool is_last_pass_in_src_surface,
       gfx::Rect* occluding_damage_rect);
 
   // Returns true if the render pass with the given id and cache_render_pass
@@ -338,16 +326,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const SharedQuadState* state);
   // Update |last_frame_had_jelly_|, should be called once per frame.
   void SetLastFrameHadJelly(bool had_jelly);
-
-  // An internal helper for the `ProcessSurfaceOccludingDamage()` functions.
-  DrawQuad* ProcessSurfaceOccludingDamageInternal(
-      const Surface* surface,
-      const CompositorRenderPassList& render_pass_list,
-      const gfx::Transform& parent_target_transform,
-      const gfx::Transform& dest_transform_to_root_target,
-      const AggregatedRenderPassId& dest_pass_id,
-      bool dest_pass_cached,
-      gfx::Rect* occluding_damage_rect);
 
   SurfaceManager* manager_;
   DisplayResourceProvider* provider_;
