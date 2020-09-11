@@ -117,6 +117,8 @@ luci.realm(
     ],
 )
 
+exec("//swarming.star")
+
 exec("//recipes.star")
 
 exec("//notifiers.star")

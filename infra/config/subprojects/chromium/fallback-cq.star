@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//project.star", "ACTIVE_BRANCH_NUMBERS")
+load("//project.star", "ACTIVE_BRANCHES")
 
 def _trailing_digit_regex(n):
     if n == 0:
@@ -88,9 +88,9 @@ def _get_fallback_branch_number_regexes():
     # Check that they're int first since we're relying on numeric qualities to
     # create the regexes
     branch_strs = []
-    for b in sorted(ACTIVE_BRANCH_NUMBERS):
+    for b in sorted([b for _, b in ACTIVE_BRANCHES]):
         if type(b) != type(0):
-            fail("The elements of ACTIVE_BRANCH_NUMBERS are expected to be ints," +
+            fail("Branch numbers in ACTIVE_BRANCHES are expected to be ints," +
                  " got {} ({})".format(type(b), b))
         branch_strs.append(str(b))
 
