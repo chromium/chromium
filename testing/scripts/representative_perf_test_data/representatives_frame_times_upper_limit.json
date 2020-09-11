@@ -115,7 +115,9 @@
     "animometer_webgl_attrib_arrays": {
       "ci_095": 0.44,
       "avg": 16.747,
-      "cpu_wall_time_ratio": 0.375
+      "cpu_wall_time_ratio": 0.375,
+      "experimental": true,
+      "_comment": "crbug.com/1122394"
     },
     "canvas_05000_pixels_per_second": {
       "ci_095": 0.177,
