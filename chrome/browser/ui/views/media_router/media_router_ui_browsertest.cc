@@ -39,8 +39,8 @@
 
 namespace media_router {
 
-// Base class containing setup code and test cases shared between WebUI and
-// Views dialog tests.
+// Base class containing setup code and test cases shared between Views dialog
+// tests.
 class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
@@ -78,6 +78,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
     GetCastIcon()->OnMousePressed(
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    base::RunLoop().RunUntilIdle();
   }
 
   bool ToolbarIconExists() {
