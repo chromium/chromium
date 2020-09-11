@@ -15,7 +15,6 @@
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "media/base/hdr_metadata.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
@@ -26,6 +25,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/hdr_metadata.h"
 #include "ui/gl/scoped_binders.h"
 
 namespace media {
@@ -57,7 +57,7 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
                                 MailboxHolderArray* mailbox_dest_out,
                                 gfx::ColorSpace* output_color_space) = 0;
 
-  virtual void SetStreamHDRMetadata(const HDRMetadata& stream_metadata) = 0;
+  virtual void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) = 0;
   virtual void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) = 0;
 };
@@ -85,7 +85,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                         MailboxHolderArray* mailbox_dest,
                         gfx::ColorSpace* output_color_space) override;
 
-  void SetStreamHDRMetadata(const HDRMetadata& stream_metadata) override;
+  void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
 

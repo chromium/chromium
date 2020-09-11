@@ -62,7 +62,7 @@ struct StructTraits<media::mojom::VideoFrameDataView,
     return input->ColorSpace();
   }
 
-  static const base::Optional<media::HDRMetadata>& hdr_metadata(
+  static const base::Optional<gl::HDRMetadata>& hdr_metadata(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->hdr_metadata();
   }

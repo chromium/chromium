@@ -7,9 +7,9 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "media/base/hdr_metadata.h"
 #include "media/base/video_color_space.h"
 #include "media/formats/webm/webm_parser.h"
+#include "ui/gl/hdr_metadata.h"
 
 namespace media {
 
@@ -26,7 +26,7 @@ struct MEDIA_EXPORT WebMColorMetadata {
 
   VideoColorSpace color_space;
 
-  base::Optional<HDRMetadata> hdr_metadata;
+  base::Optional<gl::HDRMetadata> hdr_metadata;
 
   WebMColorMetadata();
   WebMColorMetadata(const WebMColorMetadata& rhs);
@@ -39,13 +39,15 @@ class WebMMasteringMetadataParser : public WebMParserClient {
   WebMMasteringMetadataParser();
   ~WebMMasteringMetadataParser() override;
 
-  MasteringMetadata GetMasteringMetadata() const { return mastering_metadata_; }
+  gl::MasteringMetadata GetMasteringMetadata() const {
+    return mastering_metadata_;
+  }
 
  private:
   // WebMParserClient implementation.
   bool OnFloat(int id, double val) override;
 
-  MasteringMetadata mastering_metadata_;
+  gl::MasteringMetadata mastering_metadata_;
   DISALLOW_COPY_AND_ASSIGN(WebMMasteringMetadataParser);
 };
 

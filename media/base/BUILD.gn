@@ -161,7 +161,6 @@ source_set("base") {
     "format_utils.h",
     "frame_rate_estimator.cc",
     "frame_rate_estimator.h",
-    "hdr_metadata.h",
     "key_system_names.cc",
     "key_system_names.h",
     "key_system_properties.cc",

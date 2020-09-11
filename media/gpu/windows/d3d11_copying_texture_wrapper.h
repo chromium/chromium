@@ -40,7 +40,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
               GetCommandBufferHelperCB get_helper_cb) override;
 
-  void SetStreamHDRMetadata(const HDRMetadata& stream_metadata) override;
+  void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
 

@@ -648,7 +648,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       if (side_data.type != AV_PKT_DATA_MASTERING_DISPLAY_METADATA)
         continue;
 
-      HDRMetadata hdr_metadata{};
+      gl::HDRMetadata hdr_metadata{};
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {

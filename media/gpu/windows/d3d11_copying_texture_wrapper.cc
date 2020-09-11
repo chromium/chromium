@@ -101,7 +101,7 @@ Status CopyingTexture2DWrapper::Init(
 }
 
 void CopyingTexture2DWrapper::SetStreamHDRMetadata(
-    const HDRMetadata& stream_metadata) {
+    const gl::HDRMetadata& stream_metadata) {
   auto dxgi_stream_metadata =
       gl::HDRMetadataHelperWin::HDRMetadataToDXGI(stream_metadata);
   video_processor_->SetStreamHDRMetadata(dxgi_stream_metadata);

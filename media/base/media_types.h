@@ -33,7 +33,7 @@ struct MEDIA_EXPORT VideoType {
   VideoCodecProfile profile;
   int level;
   VideoColorSpace color_space;
-  HdrMetadataType hdr_metadata_type;
+  gl::HdrMetadataType hdr_metadata_type;
 };
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);

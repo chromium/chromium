@@ -56,9 +56,8 @@ base::span<const uint8_t> GetNestedDataValue(CFDictionaryRef dict,
 
 base::ScopedCFTypeRef<CVImageBufferRef> CreateCVImageBuffer(
     media::VideoColorSpace cs) {
-  base::ScopedCFTypeRef<CFDictionaryRef> fmt(
-      CreateFormatExtensions(kCMVideoCodecType_H264, media::H264PROFILE_MAIN,
-                             cs, media::HDRMetadata()));
+  base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
+      kCMVideoCodecType_H264, media::H264PROFILE_MAIN, cs, gl::HDRMetadata()));
 
   base::ScopedCFTypeRef<CVImageBufferRef> image_buffer;
   OSStatus err =
@@ -137,7 +136,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_PQ) {
                       VideoColorSpace::TransferID::SMPTEST2084,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      HDRMetadata()));
+      gl::HDRMetadata()));
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
 
@@ -161,7 +160,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
                       VideoColorSpace::TransferID::ARIB_STD_B67,
                       VideoColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL),
-      HDRMetadata()));
+      gl::HDRMetadata()));
   EXPECT_EQ("avc1", GetStrValue(fmt, kCMFormatDescriptionExtension_FormatName));
   EXPECT_EQ(24, GetIntValue(fmt, kCMFormatDescriptionExtension_Depth));
 
@@ -180,7 +179,7 @@ TEST(VTConfigUtil, CreateFormatExtensions_H264_BT2020_HLG) {
 
 TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   // Values from real YouTube HDR content.
-  HDRMetadata hdr_meta;
+  gl::HDRMetadata hdr_meta;
   hdr_meta.max_content_light_level = 1000;
   hdr_meta.max_frame_average_light_level = 600;
   auto& mastering = hdr_meta.mastering_metadata;

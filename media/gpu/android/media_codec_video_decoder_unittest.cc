@@ -963,7 +963,7 @@ TEST_P(MediaCodecVideoDecoderVp9Test, ColorSpaceIsIncludedInCodecConfig) {
 
 TEST_P(MediaCodecVideoDecoderVp9Test, HdrMetadataIsIncludedInCodecConfig) {
   VideoDecoderConfig config = TestVideoConfig::Normal(kCodecVP9);
-  HDRMetadata hdr_metadata;
+  gl::HDRMetadata hdr_metadata;
   hdr_metadata.max_frame_average_light_level = 123;
   hdr_metadata.max_content_light_level = 456;
   hdr_metadata.mastering_metadata.primary_r.set_x(0.1f);

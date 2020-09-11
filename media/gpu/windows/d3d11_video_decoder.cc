@@ -688,7 +688,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   DCHECK(texture_selector_);
   gfx::Size size = accelerated_video_decoder_->GetPicSize();
 
-  HDRMetadata stream_metadata;
+  gl::HDRMetadata stream_metadata;
   if (config_.hdr_metadata())
     stream_metadata = *config_.hdr_metadata();
   // else leave |stream_metadata| default-initialized.  We might use it anyway.

@@ -60,18 +60,18 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
   return EncryptionScheme::kUnencrypted;
 }
 
-MasteringMetadata ConvertMdcvToMasteringMetadata(
+gl::MasteringMetadata ConvertMdcvToMasteringMetadata(
     const MasteringDisplayColorVolume& mdcv) {
-  MasteringMetadata mastering_metadata;
+  gl::MasteringMetadata mastering_metadata;
 
-  mastering_metadata.primary_r = MasteringMetadata::Chromaticity(
+  mastering_metadata.primary_r = gl::MasteringMetadata::Chromaticity(
       mdcv.display_primaries_rx, mdcv.display_primaries_ry);
-  mastering_metadata.primary_g = MasteringMetadata::Chromaticity(
+  mastering_metadata.primary_g = gl::MasteringMetadata::Chromaticity(
       mdcv.display_primaries_gx, mdcv.display_primaries_gy);
-  mastering_metadata.primary_b = MasteringMetadata::Chromaticity(
+  mastering_metadata.primary_b = gl::MasteringMetadata::Chromaticity(
       mdcv.display_primaries_bx, mdcv.display_primaries_by);
-  mastering_metadata.white_point =
-      MasteringMetadata::Chromaticity(mdcv.white_point_x, mdcv.white_point_y);
+  mastering_metadata.white_point = gl::MasteringMetadata::Chromaticity(
+      mdcv.white_point_x, mdcv.white_point_y);
 
   mastering_metadata.luminance_max = mdcv.max_display_mastering_luminance;
   mastering_metadata.luminance_min = mdcv.min_display_mastering_luminance;
@@ -544,7 +544,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 
       if (entry.mastering_display_color_volume ||
           entry.content_light_level_information) {
-        HDRMetadata hdr_metadata;
+        gl::HDRMetadata hdr_metadata;
         if (entry.mastering_display_color_volume) {
           hdr_metadata.mastering_metadata = ConvertMdcvToMasteringMetadata(
               *entry.mastering_display_color_volume);

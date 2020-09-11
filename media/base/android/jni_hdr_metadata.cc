@@ -5,13 +5,13 @@
 #include "media/base/android/jni_hdr_metadata.h"
 
 #include "media/base/android/media_jni_headers/HdrMetadata_jni.h"
-#include "media/base/hdr_metadata.h"
 #include "media/base/video_color_space.h"
+#include "ui/gl/hdr_metadata.h"
 
 namespace media {
 
 JniHdrMetadata::JniHdrMetadata(const VideoColorSpace& color_space,
-                               const HDRMetadata& hdr_metadata)
+                               const gl::HDRMetadata& hdr_metadata)
     : color_space_(color_space), hdr_metadata_(hdr_metadata) {
   JNIEnv* env = base::android::AttachCurrentThread();
   jobject_ = Java_HdrMetadata_create(env, reinterpret_cast<jlong>(this));

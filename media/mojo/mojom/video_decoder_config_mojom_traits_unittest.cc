@@ -88,7 +88,7 @@ TEST(VideoDecoderConfigStructTraitsTest,
       kCodecVP8, VP8PROFILE_ANY, VideoDecoderConfig::AlphaMode::kIsOpaque,
       VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
       kNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
-  HDRMetadata hdr_metadata;
+  gl::HDRMetadata hdr_metadata;
   hdr_metadata.max_frame_average_light_level = 123;
   hdr_metadata.max_content_light_level = 456;
   hdr_metadata.mastering_metadata.primary_r.set_x(0.1f);

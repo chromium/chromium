@@ -14,6 +14,7 @@ include_rules = [
   "+mojo/public/cpp/bindings",
   "+ui/gfx/geometry",
   "+ui/gfx/overlay_transform.h",
+  "+ui/gl/hdr_metadata.h",
   "+services/service_manager/public",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/platform/audio/web_audio_device_source_type.h",

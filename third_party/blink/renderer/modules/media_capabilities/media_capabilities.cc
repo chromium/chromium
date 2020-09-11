@@ -398,7 +398,7 @@ bool CheckMseSupport(const String& mime_type, const String& codec) {
 void ParseDynamicRangeConfigurations(
     const blink::VideoConfiguration* video_config,
     media::VideoColorSpace* color_space,
-    media::HdrMetadataType* hdr_metadata) {
+    gl::HdrMetadataType* hdr_metadata) {
   DCHECK(color_space);
   DCHECK(hdr_metadata);
 
@@ -410,16 +410,16 @@ void ParseDynamicRangeConfigurations(
     const auto& hdr_metadata_type = video_config->hdrMetadataType();
     // TODO(crbug.com/1092328): Switch by V8HdrMetadataType::Enum.
     if (hdr_metadata_type == kSmpteSt2086HdrMetadataType) {
-      *hdr_metadata = media::HdrMetadataType::kSmpteSt2086;
+      *hdr_metadata = gl::HdrMetadataType::kSmpteSt2086;
     } else if (hdr_metadata_type == kSmpteSt209410HdrMetadataType) {
-      *hdr_metadata = media::HdrMetadataType::kSmpteSt2094_10;
+      *hdr_metadata = gl::HdrMetadataType::kSmpteSt2094_10;
     } else if (hdr_metadata_type == kSmpteSt209440HdrMetadataType) {
-      *hdr_metadata = media::HdrMetadataType::kSmpteSt2094_40;
+      *hdr_metadata = gl::HdrMetadataType::kSmpteSt2094_40;
     } else {
       NOTREACHED();
     }
   } else {
-    *hdr_metadata = media::HdrMetadataType::kNone;
+    *hdr_metadata = gl::HdrMetadataType::kNone;
   }
 
   if (video_config->hasColorGamut()) {
@@ -544,7 +544,7 @@ bool IsAudioConfigurationSupported(
 bool IsVideoConfigurationSupported(const String& mime_type,
                                    const String& codec,
                                    media::VideoColorSpace video_color_space,
-                                   media::HdrMetadataType hdr_metadata_type) {
+                                   gl::HdrMetadataType hdr_metadata_type) {
   media::VideoCodec video_codec = media::kUnknownVideoCodec;
   media::VideoCodecProfile video_profile;
   uint8_t video_level = 0;
@@ -720,7 +720,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
   DCHECK(message.IsEmpty());
 
   media::VideoColorSpace video_color_space;
-  media::HdrMetadataType hdr_metadata_type = media::HdrMetadataType::kNone;
+  gl::HdrMetadataType hdr_metadata_type = gl::HdrMetadataType::kNone;
   if (config->hasVideo()) {
     ParseDynamicRangeConfigurations(config->video(), &video_color_space,
                                     &hdr_metadata_type);

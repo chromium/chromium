@@ -313,10 +313,10 @@ bool CastContentRendererClient::IsSupportedVideoType(
 // TODO(servolk): make use of eotf.
 
   // TODO(1066567): Check attached screen for support of type.hdr_metadata_type.
-  if (type.hdr_metadata_type != ::media::HdrMetadataType::kNone) {
-    NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
-    return false;
-  }
+if (type.hdr_metadata_type != ::gl::HdrMetadataType::kNone) {
+  NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
+  return false;
+}
 
 #if defined(OS_ANDROID)
   return supported_profiles_->IsSupportedVideoConfig(

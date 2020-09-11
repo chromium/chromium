@@ -105,7 +105,8 @@ class MockTexture2DWrapper : public Texture2DWrapper {
 
   MOCK_METHOD0(MockInit, Status());
   MOCK_METHOD0(MockProcessTexture, Status());
-  MOCK_METHOD1(SetStreamHDRMetadata, void(const HDRMetadata& stream_metadata));
+  MOCK_METHOD1(SetStreamHDRMetadata,
+               void(const gl::HDRMetadata& stream_metadata));
   MOCK_METHOD1(SetDisplayHDRMetadata,
                void(const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata));
 
@@ -252,15 +253,15 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
 }
 
 TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
-  HDRMetadata metadata;
+  gl::HDRMetadata metadata;
   metadata.mastering_metadata.primary_r =
-      MasteringMetadata::Chromaticity(0.1, 0.2);
+      gl::MasteringMetadata::Chromaticity(0.1, 0.2);
   metadata.mastering_metadata.primary_g =
-      MasteringMetadata::Chromaticity(0.3, 0.4);
+      gl::MasteringMetadata::Chromaticity(0.3, 0.4);
   metadata.mastering_metadata.primary_b =
-      MasteringMetadata::Chromaticity(0.5, 0.6);
+      gl::MasteringMetadata::Chromaticity(0.5, 0.6);
   metadata.mastering_metadata.white_point =
-      MasteringMetadata::Chromaticity(0.7, 0.8);
+      gl::MasteringMetadata::Chromaticity(0.7, 0.8);
   metadata.mastering_metadata.luminance_max = 0.9;
   metadata.mastering_metadata.luminance_min = 0.05;
   metadata.max_content_light_level = 1000;

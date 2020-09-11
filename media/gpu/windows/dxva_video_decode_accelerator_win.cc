@@ -2953,7 +2953,7 @@ void DXVAVideoDecodeAccelerator::SetDX11ProcessorHDRMetadataIfNeeded() {
   // stream metadata.  For the Radeon 5700, at least, this seems to do
   // something sane.  Not setting the metadata crashes intermittently.
   if (config_.hdr_metadata || use_empty_video_hdr_metadata_) {
-    HDRMetadata stream_metadata;
+    gl::HDRMetadata stream_metadata;
     if (config_.hdr_metadata)
       stream_metadata = *config_.hdr_metadata;
 
