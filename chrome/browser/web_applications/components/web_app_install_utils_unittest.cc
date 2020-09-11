@@ -638,4 +638,87 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   }
 }
 
+TEST(WebAppInstallUtils, UpdateShareTargetFromManifest) {
+  const base::string16 kTitle = base::ASCIIToUTF16("kTitle");
+  const base::string16 kText = base::ASCIIToUTF16("kText");
+  const base::string16 kUrl = base::ASCIIToUTF16("kUrl");
+  const base::string16 kImages = base::ASCIIToUTF16("kImages");
+  const base::string16 kExtension = base::ASCIIToUTF16(".png");
+  const base::string16 kContentType = base::ASCIIToUTF16("image/png");
+
+  WebApplicationInfo web_app_info;
+
+  blink::Manifest manifest;
+  manifest.start_url = AppUrl();
+  manifest.scope = AppUrl().GetWithoutFilename();
+  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
+
+  {
+    blink::Manifest::ShareTarget share_target;
+    share_target.action = GURL("http://example.com/share1");
+    share_target.method = blink::Manifest::ShareTarget::Method::kPost;
+    share_target.enctype =
+        blink::Manifest::ShareTarget::Enctype::kMultipartFormData;
+    share_target.params.title = kTitle;
+    share_target.params.text = kText;
+
+    blink::Manifest::FileFilter file_filter;
+    file_filter.name = kImages;
+    file_filter.accept.push_back(kExtension);
+    file_filter.accept.push_back(kContentType);
+    share_target.params.files.push_back(std::move(file_filter));
+
+    manifest.share_target = std::move(share_target);
+  }
+
+  UpdateWebAppInfoFromManifest(manifest, &web_app_info);
+
+  {
+    EXPECT_TRUE(web_app_info.share_target.has_value());
+    auto share_target = *web_app_info.share_target;
+    EXPECT_EQ(share_target.action, GURL("http://example.com/share1"));
+    EXPECT_EQ(share_target.method, blink::Manifest::ShareTarget::Method::kPost);
+    EXPECT_EQ(share_target.enctype,
+              blink::Manifest::ShareTarget::Enctype::kMultipartFormData);
+    EXPECT_EQ(share_target.params.title, kTitle);
+    EXPECT_EQ(share_target.params.text, kText);
+    EXPECT_FALSE(share_target.params.url.has_value());
+    EXPECT_EQ(share_target.params.files.size(), 1U);
+    EXPECT_EQ(share_target.params.files[0].name, kImages);
+    EXPECT_EQ(share_target.params.files[0].accept.size(), 2U);
+    EXPECT_EQ(share_target.params.files[0].accept[0], kExtension);
+    EXPECT_EQ(share_target.params.files[0].accept[1], kContentType);
+  }
+
+  {
+    blink::Manifest::ShareTarget share_target;
+    share_target.action = GURL("http://example.com/share2");
+    share_target.method = blink::Manifest::ShareTarget::Method::kGet;
+    share_target.enctype =
+        blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded;
+    share_target.params.text = kText;
+    share_target.params.url = kUrl;
+    manifest.share_target = std::move(share_target);
+  }
+
+  UpdateWebAppInfoFromManifest(manifest, &web_app_info);
+
+  {
+    EXPECT_TRUE(web_app_info.share_target.has_value());
+    auto share_target = *web_app_info.share_target;
+    EXPECT_EQ(share_target.action, GURL("http://example.com/share2"));
+    EXPECT_EQ(share_target.method, blink::Manifest::ShareTarget::Method::kGet);
+    EXPECT_EQ(share_target.enctype,
+              blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded);
+    EXPECT_FALSE(share_target.params.title.has_value());
+    EXPECT_EQ(share_target.params.text, kText);
+    EXPECT_EQ(share_target.params.url, kUrl);
+    EXPECT_TRUE(share_target.params.files.empty());
+  }
+
+  manifest.share_target = base::nullopt;
+  UpdateWebAppInfoFromManifest(manifest, &web_app_info);
+  EXPECT_FALSE(web_app_info.share_target.has_value());
+}
+
 }  // namespace web_app

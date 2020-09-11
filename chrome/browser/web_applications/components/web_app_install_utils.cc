@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -209,6 +210,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->icon_infos = std::move(web_app_icons);
 
   web_app_info->file_handlers = manifest.file_handlers;
+
+  web_app_info->share_target = manifest.share_target;
 
   web_app_info->protocol_handlers = manifest.protocol_handlers;
 

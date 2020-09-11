@@ -152,6 +152,9 @@ struct WebApplicationInfo {
   // The extensions and mime types the app can handle.
   std::vector<blink::Manifest::FileHandler> file_handlers;
 
+  // File types the app accepts as a Web Share Target.
+  base::Optional<blink::Manifest::ShareTarget> share_target;
+
   // Additional search terms that users can use to find the app.
   std::vector<std::string> additional_search_terms;
 
