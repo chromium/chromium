@@ -469,7 +469,7 @@ bool WKBasedNavigationManagerImpl::CanTrustLastCommittedItem(
   if (web_view_url.SchemeIs(url::kAboutScheme) ||
       last_committed_url.SchemeIs(url::kAboutScheme) ||
       web_view_url.SchemeIs(url::kFileScheme) ||
-      last_committed_url.SchemeIs(url::kAboutScheme) ||
+      last_committed_url.SchemeIs(url::kFileScheme) ||
       web::GetWebClient()->IsAppSpecificURL(web_view_url) ||
       web::GetWebClient()->IsAppSpecificURL(last_committed_url)) {
     return true;
