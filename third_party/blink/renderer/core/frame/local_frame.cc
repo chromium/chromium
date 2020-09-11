@@ -707,6 +707,17 @@ bool LocalFrame::CanAccessEvent(
   }
 }
 
+void LocalFrame::SetOptimizationGuideHints(
+    mojom::blink::BlinkOptimizationGuideHintsPtr hints) {
+  DCHECK(hints);
+  optimization_guide_hints_ = std::move(hints);
+  if (optimization_guide_hints_->delay_competing_low_priority_requests_hints) {
+    GetDocument()->Fetcher()->SetOptimizationGuideHints(
+        std::move(optimization_guide_hints_
+                      ->delay_competing_low_priority_requests_hints));
+  }
+}
+
 void LocalFrame::Reload(WebFrameLoadType load_type) {
   DCHECK(IsReloadLoadType(load_type));
   if (!loader_.GetDocumentLoader()->GetHistoryItem())

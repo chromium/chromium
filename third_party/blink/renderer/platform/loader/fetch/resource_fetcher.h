@@ -291,6 +291,12 @@ class PLATFORM_EXPORT ResourceFetcher
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
   }
 
+  void SetOptimizationGuideHints(
+      mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr
+          optimization_hints) {
+    scheduler_->SetOptimizationGuideHints(std::move(optimization_hints));
+  }
+
   void AddSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
   void RemoveSubresourceWebBundle(SubresourceWebBundle& subresource_web_bundle);
 

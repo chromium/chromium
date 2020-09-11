@@ -96,6 +96,7 @@ class ResourceLoadSchedulerTestBase : public testing::Test {
         ResourceLoadScheduler::ThrottleOptionOverride::kNone,
         properties->MakeDetachable(), frame_scheduler.get(),
         *MakeGarbageCollected<DetachableConsoleLogger>(console_logger_));
+    scheduler_->SetOptimizationGuideHints(std::move(optimization_hints_));
     Scheduler()->SetOutstandingLimitForTesting(1);
   }
   void TearDown() override { Scheduler()->Shutdown(); }
@@ -118,6 +119,7 @@ class ResourceLoadSchedulerTestBase : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   Persistent<MockConsoleLogger> console_logger_;
   Persistent<ResourceLoadScheduler> scheduler_;
+  mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr optimization_hints_;
 };
 
 class ResourceLoadSchedulerTest
@@ -803,58 +805,106 @@ TEST_P(ResourceLoadSchedulerTest, ConsoleMessage) {
   EXPECT_TRUE(Release(id2));
 }
 
+mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr
+CreateOptimizationGuideHints(
+    features::DelayCompetingLowPriorityRequestsDelayType delay_milestone,
+    features::DelayCompetingLowPriorityRequestsThreshold priority_threshold) {
+  auto optimization_hints =
+      mojom::blink::DelayCompetingLowPriorityRequestsHints::New();
+
+  switch (delay_milestone) {
+    case features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint:
+      optimization_hints->delay_type =
+          mojom::blink::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint;
+      break;
+    case features::DelayCompetingLowPriorityRequestsDelayType::
+        kFirstContentfulPaint:
+      optimization_hints->delay_type = mojom::blink::
+          DelayCompetingLowPriorityRequestsDelayType::kFirstContentfulPaint;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  switch (priority_threshold) {
+    case features::DelayCompetingLowPriorityRequestsThreshold::kMedium:
+      optimization_hints->priority_threshold = mojom::blink::
+          DelayCompetingLowPriorityRequestsPriorityThreshold::kMedium;
+      break;
+    case features::DelayCompetingLowPriorityRequestsThreshold::kHigh:
+      optimization_hints->priority_threshold = mojom::blink::
+          DelayCompetingLowPriorityRequestsPriorityThreshold::kHigh;
+      break;
+  }
+
+  return optimization_hints;
+}
+
 class ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests
     : public ResourceLoadSchedulerTestBase,
       public testing::WithParamInterface<
-          std::tuple<features::DelayCompetingLowPriorityRequestsDelayType,
+          std::tuple<bool /* use_optimization_guide */,
+                     features::DelayCompetingLowPriorityRequestsDelayType,
                      features::DelayCompetingLowPriorityRequestsThreshold>> {
  public:
   void SetUp() override {
     std::map<std::string, std::string> parameters;
-    until_ = std::get<0>(GetParam());
-    priority_threshold_ = std::get<1>(GetParam());
+    bool use_optimization_guide = std::get<0>(GetParam());
+    until_ = std::get<1>(GetParam());
+    priority_threshold_ = std::get<2>(GetParam());
 
-    switch (until_) {
-      case features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint:
-        parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
-                       .name] = "first_paint";
-        break;
-      case features::DelayCompetingLowPriorityRequestsDelayType::
-          kFirstContentfulPaint:
-        parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
-                       .name] = "first_contentful_paint";
-        break;
-      // This value is only included for manual testing.
-      case features::DelayCompetingLowPriorityRequestsDelayType::kAlways:
-        NOTREACHED();
-        break;
-      case features::DelayCompetingLowPriorityRequestsDelayType::
-          kUseOptimizationGuide:
-        // TODO(https://crbug.com/1112515): Plumb the optimization hints into
-        // the scheduler and add tests.
-        NOTREACHED();
-        break;
-    }
-
-    switch (priority_threshold_) {
-      case features::DelayCompetingLowPriorityRequestsThreshold::kMedium:
-        parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
-                       .name] = "medium";
-        break;
-      case features::DelayCompetingLowPriorityRequestsThreshold::kHigh:
-        parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
-                       .name] = "high";
-        break;
+    if (use_optimization_guide) {
+      parameters[features::kDelayCompetingLowPriorityRequestsDelayParam.name] =
+          "use_optimization_guide";
+      optimization_hints_ =
+          CreateOptimizationGuideHints(until_, priority_threshold_);
+    } else {
+      switch (until_) {
+        case features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint:
+          parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
+                         .name] = "first_paint";
+          break;
+        case features::DelayCompetingLowPriorityRequestsDelayType::
+            kFirstContentfulPaint:
+          parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
+                         .name] = "first_contentful_paint";
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
+      switch (priority_threshold_) {
+        case features::DelayCompetingLowPriorityRequestsThreshold::kMedium:
+          parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
+                         .name] = "medium";
+          break;
+        case features::DelayCompetingLowPriorityRequestsThreshold::kHigh:
+          parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
+                         .name] = "high";
+          break;
+      }
     }
 
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kDelayCompetingLowPriorityRequests, parameters}}, {});
     ASSERT_TRUE(base::FeatureList::IsEnabled(
         features::kDelayCompetingLowPriorityRequests));
-    ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsDelayParam.Get(),
-              until_);
-    ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsThresholdParam.Get(),
-              priority_threshold_);
+    if (use_optimization_guide) {
+      ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsDelayParam.Get(),
+                features::DelayCompetingLowPriorityRequestsDelayType::
+                    kUseOptimizationGuide);
+      ASSERT_EQ(
+          features::kDelayCompetingLowPriorityRequestsThresholdParam.Get(),
+          features::kDelayCompetingLowPriorityRequestsThresholdParam
+              .default_value);
+    } else {
+      ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsDelayParam.Get(),
+                until_);
+      ASSERT_EQ(
+          features::kDelayCompetingLowPriorityRequestsThresholdParam.Get(),
+          priority_threshold_);
+    }
     ResourceLoadSchedulerTestBase::SetUp();
   }
 
@@ -884,7 +934,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests,
     testing::Combine(
-        // Delay "until" parameter:
+        // True when use optimization guide:
+        testing::Bool(),
+        // Delay type parameter:
         testing::Values(
             features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint,
             features::DelayCompetingLowPriorityRequestsDelayType::

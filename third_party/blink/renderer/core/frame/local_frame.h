@@ -675,9 +675,7 @@ class CORE_EXPORT LocalFrame final
   bool CanAccessEvent(const WebInputEventAttribution&) const;
 
   void SetOptimizationGuideHints(
-      mojom::blink::BlinkOptimizationGuideHintsPtr hints) {
-    optimization_guide_hints_ = std::move(hints);
-  }
+      mojom::blink::BlinkOptimizationGuideHintsPtr hints);
   mojom::blink::BlinkOptimizationGuideHints* GetOptimizationGuideHints() {
     return optimization_guide_hints_.get();
   }

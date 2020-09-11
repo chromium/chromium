@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -230,6 +231,12 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
     throttle_option_override_ = throttle_option_override;
   }
 
+  void SetOptimizationGuideHints(
+      mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr
+          optimization_hints) {
+    optimization_hints_ = std::move(optimization_hints);
+  }
+
   // Indicates that some loading milestones have been reached.
   void MarkFirstPaint();
   void MarkFirstContentfulPaint();
@@ -311,6 +318,17 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   void ShowConsoleMessageIfNeeded();
 
+  // Returns the threshold for which a request is considered "important" based
+  // on the field trial parameter or the optimization guide hints. This is used
+  // for the experiment on delaying competing low priority requests.
+  // See https://crbug.com/1112515 for details.
+  ResourceLoadPriority PriorityImportanceThreshold();
+
+  // Compute the milestone at which competing low priority requests can be
+  // delayed until. Returns kUnknown when it's not possible to compute it.
+  mojom::blink::DelayCompetingLowPriorityRequestsDelayType
+  ComputeDelayMilestone();
+
   const Member<const DetachableResourceFetcherProperties>
       resource_fetcher_properties_;
 
@@ -373,6 +391,10 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   bool delay_milestone_reached_ = false;
 
   ThrottleOptionOverride throttle_option_override_;
+
+  // Hints for the DelayCompetingLowPriorityRequests optimization. See
+  // https://crbug.com/1112515 for details.
+  mojom::blink::DelayCompetingLowPriorityRequestsHintsPtr optimization_hints_;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceLoadScheduler);
 };
