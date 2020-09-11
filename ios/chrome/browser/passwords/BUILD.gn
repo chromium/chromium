@@ -7,8 +7,6 @@ import("//ios/web/js_compile.gni")
 source_set("passwords") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "credential_manager.h",
-    "credential_manager.mm",
     "ios_chrome_bulk_leak_check_service_factory.cc",
     "ios_chrome_bulk_leak_check_service_factory.h",
     "ios_chrome_change_password_url_service_factory.cc",
@@ -29,8 +27,6 @@ source_set("passwords") {
     "ios_password_infobar_controller.mm",
     "ios_password_requirements_service_factory.cc",
     "ios_password_requirements_service_factory.h",
-    "js_credential_manager.h",
-    "js_credential_manager.mm",
     "notify_auto_signin_view_controller.h",
     "notify_auto_signin_view_controller.mm",
     "password_check_observer_bridge.h",
@@ -110,10 +106,7 @@ source_set("passwords") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [
-    ":feature_flags",
-    ":passwords_generation_utils",
-  ]
+  public_deps = [ ":passwords_generation_utils" ]
 
   allow_circular_includes_from = [ ":passwords_generation_utils" ]
 }
@@ -144,15 +137,6 @@ source_set("public") {
   sources = [
     "ios_chrome_password_infobar_metrics_recorder.h",
     "ios_chrome_password_infobar_metrics_recorder.mm",
-  ]
-  deps = [ "//base" ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "password_manager_features.cc",
-    "password_manager_features.h",
   ]
   deps = [ "//base" ]
 }

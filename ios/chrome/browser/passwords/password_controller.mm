@@ -35,6 +35,7 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -52,12 +53,10 @@
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/passwords/credential_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/ios_chrome_update_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/ios_password_infobar_controller.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
-#include "ios/chrome/browser/passwords/password_manager_features.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -149,7 +148,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   std::unique_ptr<PasswordManager> _passwordManager;
   std::unique_ptr<PasswordManagerClient> _passwordManagerClient;
   std::unique_ptr<PasswordManagerDriver> _passwordManagerDriver;
-  std::unique_ptr<CredentialManager> _credentialManager;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
@@ -199,11 +197,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     _sharedPasswordController.delegate = self;
     _passwordManagerDriver.reset(new IOSChromePasswordManagerDriver(
         _sharedPasswordController, _passwordManager.get()));
-
-    if (base::FeatureList::IsEnabled(features::kCredentialManager)) {
-      _credentialManager = std::make_unique<CredentialManager>(
-          _passwordManagerClient.get(), _webState);
-    }
   }
   return self;
 }
@@ -257,7 +250,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   _passwordManagerDriver.reset();
   _passwordManager.reset();
   _passwordManagerClient.reset();
-  _credentialManager.reset();
 }
 
 #pragma mark - FormSuggestionProvider

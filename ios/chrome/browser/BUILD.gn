@@ -151,7 +151,6 @@ source_set("utils") {
     "//components/password_manager/core/common",
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
-    "//ios/chrome/browser/passwords:feature_flags",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/infobars:feature_flags",
   ]
