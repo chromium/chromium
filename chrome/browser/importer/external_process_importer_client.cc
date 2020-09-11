@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/child_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExternalProcessImporterClient::ExternalProcessImporterClient(
@@ -42,6 +43,12 @@ void ExternalProcessImporterClient::Start() {
       profile_import_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_PROFILE_IMPORTER_NAME)
+#if defined(OS_MAC)
+          // Importing from Firefox involves loading a Firefox dylib into the
+          // importer service process. Use the child process that doesn't
+          // enforce library validation so that this will work.
+          .WithChildFlags(content::ChildProcessHost::CHILD_PLUGIN)
+#endif
           .Pass());
   profile_import_.set_disconnect_handler(
       base::BindOnce(&ExternalProcessImporterClient::OnProcessCrashed, this));
