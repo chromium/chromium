@@ -108,14 +108,29 @@ VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
                                   &default_variation_ids_set_)) {
     return ForceIdsResult::INVALID_SWITCH_ENTRY;
   }
+  if (variation_ids_cache_initialized_) {
+    // Update the cached variation ids header value after cache initialization,
+    // otherwise the change won't be in the cache.
+    base::AutoLock scoped_lock(lock_);
+    UpdateVariationIDsHeaderValue();
+  }
   return ForceIdsResult::SUCCESS;
 }
 
 bool VariationsIdsProvider::ForceDisableVariationIds(
     const std::string& command_line_variation_ids) {
   force_disabled_ids_set_.clear();
-  return ParseVariationIdsParameter(command_line_variation_ids,
-                                    &force_disabled_ids_set_);
+  if (!ParseVariationIdsParameter(command_line_variation_ids,
+                                  &force_disabled_ids_set_)) {
+    return false;
+  }
+  if (variation_ids_cache_initialized_) {
+    // Update the cached variation ids header value after cache initialization,
+    // otherwise the change won't be in the cache.
+    base::AutoLock scoped_lock(lock_);
+    UpdateVariationIDsHeaderValue();
+  }
+  return true;
 }
 
 void VariationsIdsProvider::AddObserver(Observer* observer) {

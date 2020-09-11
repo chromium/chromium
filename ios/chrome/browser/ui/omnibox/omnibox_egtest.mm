@@ -164,10 +164,6 @@ id<GREYMatcher> SearchCopiedTextButton() {
   }
 #endif
 
-  // TODO(crbug.com/1121305): Test is failing due to clearing the variations on
-  // first run, causing tests to fail flakily on the bots.
-  EARL_GREY_TEST_SKIPPED(@"testXClientData fails on first simulator run.");
-
   // TODO(crbug.com/1120723) This test is flakily because of a DCHECK in
   // ios/web.  Clearing browser history first works around the problem, but
   // shouldn't be necessary otherwise.  Remove once the bug is fixed.
