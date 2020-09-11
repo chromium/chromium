@@ -854,48 +854,29 @@ void WebController::OnGetFormAndFieldDataForRetrieving(
 }
 
 void WebController::SelectOption(
-    const Selector& selector,
+    const ElementFinder::Result& element,
     const std::string& value,
     DropdownSelectStrategy select_strategy,
     base::OnceCallback<void(const ClientStatus&)> callback) {
 #ifdef NDEBUG
-  VLOG(3) << __func__ << " " << selector << ", value=(redacted)"
+  VLOG(3) << __func__ << " value=(redacted)"
           << ", strategy=" << select_strategy;
 #else
-  DVLOG(3) << __func__ << " " << selector << ", value=" << value
+  DVLOG(3) << __func__ << " value=" << value
            << ", strategy=" << select_strategy;
 #endif
-
-  FindElement(selector,
-              /* strict_mode= */ true,
-              base::BindOnce(&WebController::OnFindElementForSelectOption,
-                             weak_ptr_factory_.GetWeakPtr(), value,
-                             select_strategy, std::move(callback)));
-}
-
-void WebController::OnFindElementForSelectOption(
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to find the element to select an option.";
-    std::move(callback).Run(status);
-    return;
-  }
 
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
   AddRuntimeCallArgument(value, &arguments);
   AddRuntimeCallArgument(static_cast<int>(select_strategy), &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element_result->object_id)
+          .SetObjectId(element.object_id)
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kSelectOptionScript))
           .SetReturnByValue(true)
           .Build(),
-      element_result->node_frame_id,
+      element.node_frame_id,
       base::BindOnce(&WebController::OnSelectOption,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

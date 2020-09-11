@@ -192,10 +192,9 @@ class ActionDelegate {
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback) = 0;
 
-  // Select the option given by |selector| and the value of the option to be
-  // picked.
+  // Select the option to be picked given by the |value| in the |element|.
   virtual void SelectOption(
-      const Selector& selector,
+      const ElementFinder::Result& element,
       const std::string& value,
       DropdownSelectStrategy select_strategy,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;

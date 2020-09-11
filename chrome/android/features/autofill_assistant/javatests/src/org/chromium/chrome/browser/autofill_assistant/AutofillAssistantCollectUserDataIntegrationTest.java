@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResul
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DateTimeRangeProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.DropdownSelectStrategy;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementAreaProto.Rectangle;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
@@ -166,6 +167,15 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                         "#fallback_entry")))
                         .setFillStrategy(KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
                         .build();
+        RequiredField fallbackDropdownField =
+                (RequiredField) RequiredField.newBuilder()
+                        .setForced(true) // Make sure we do actual work.
+                        .setValueExpression("${-2}")
+                        .setElement(SelectorProto.newBuilder().addFilters(
+                                SelectorProto.Filter.newBuilder().setCssSelector(
+                                        "#fallback_dropdown")))
+                        .setSelectStrategy(DropdownSelectStrategy.VALUE_MATCH)
+                        .build();
         RequiredField fallbackJsDropdownField =
                 (RequiredField) RequiredField.newBuilder()
                         .setValueExpression("${55}")
@@ -184,6 +194,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                  SelectorProto.Filter.newBuilder().setCssSelector(
                                                          "#card_number")))
                                          .addRequiredFields(fallbackTextField)
+                                         .addRequiredFields(fallbackDropdownField)
                                          .addRequiredFields(fallbackJsDropdownField))
                          .build());
         list.add((ActionProto) ActionProto.newBuilder()
@@ -220,6 +231,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         assertThat(getElementValue(getWebContents(), "exp_month"), is("12"));
         assertThat(getElementValue(getWebContents(), "exp_year"), is("2050"));
         assertThat(getElementValue(getWebContents(), "fallback_entry"), is("12/2050"));
+        assertThat(getElementValue(getWebContents(), "fallback_dropdown"), is("visa"));
         assertThat(getElementValue(getWebContents(), "js_dropdown_value"), is("2050"));
     }
 

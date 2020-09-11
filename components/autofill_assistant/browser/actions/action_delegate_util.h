@@ -31,6 +31,12 @@ void SetFieldValue(ActionDelegate* delegate,
                    int key_press_delay_in_millisecond,
                    base::OnceCallback<void(const ClientStatus&)> callback);
 
+void SelectOption(ActionDelegate* delegate,
+                  const Selector& selector,
+                  const std::string& value,
+                  DropdownSelectStrategy select_strategy,
+                  base::OnceCallback<void(const ClientStatus&)> callback);
+
 }  // namespace ActionDelegateUtil
 }  // namespace autofill_assistant
 

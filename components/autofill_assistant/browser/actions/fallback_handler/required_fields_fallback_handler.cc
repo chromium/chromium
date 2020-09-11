@@ -287,8 +287,8 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldTag(
       select_strategy = LABEL_STARTS_WITH;
     }
 
-    action_delegate_->SelectOption(
-        required_field.selector, value, select_strategy,
+    ActionDelegateUtil::SelectOption(
+        action_delegate_, required_field.selector, value, select_strategy,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
                        weak_ptr_factory_.GetWeakPtr(), required_fields_index));
     return;

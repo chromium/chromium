@@ -154,6 +154,25 @@ void OnFindElementForSetFieldValue(
                      std::move(callback)));
 }
 
+void OnFindElementForSelectOption(
+    ActionDelegate* delegate,
+    const std::string& value,
+    DropdownSelectStrategy select_strategy,
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& element_status,
+    std::unique_ptr<ElementFinder::Result> element) {
+  if (!element_status.ok()) {
+    VLOG(1) << __func__ << " Failed to find element to select option.";
+    std::move(callback).Run(element_status);
+    return;
+  }
+
+  delegate->SelectOption(
+      *element, value, select_strategy,
+      base::BindOnce(&RetainElementAndExecuteCallback, std::move(element),
+                     std::move(callback)));
+}
+
 }  // namespace
 
 void ClickOrTapElement(ActionDelegate* delegate,
@@ -192,6 +211,18 @@ void SetFieldValue(ActionDelegate* delegate,
       selector, base::BindOnce(&OnFindElementForSetFieldValue, delegate, value,
                                fill_strategy, key_press_delay_in_millisecond,
                                std::move(callback)));
+}
+
+void SelectOption(ActionDelegate* delegate,
+                  const Selector& selector,
+                  const std::string& value,
+                  DropdownSelectStrategy select_strategy,
+                  base::OnceCallback<void(const ClientStatus&)> callback) {
+  VLOG(3) << __func__ << " " << selector;
+  DCHECK(!selector.empty());
+  delegate->FindElement(
+      selector, base::BindOnce(&OnFindElementForSelectOption, delegate, value,
+                               select_strategy, std::move(callback)));
 }
 
 }  // namespace ActionDelegateUtil
