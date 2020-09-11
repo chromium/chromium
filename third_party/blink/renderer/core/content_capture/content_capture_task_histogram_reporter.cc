@@ -29,12 +29,16 @@ ContentCaptureTaskHistogramReporter::~ContentCaptureTaskHistogramReporter() =
     default;
 
 void ContentCaptureTaskHistogramReporter::OnContentChanged() {
-  // Always save the latest schedule time.
-  task_scheduled_time_ = base::TimeTicks::Now();
-
   if (content_change_time_)
     return;
   content_change_time_ = base::TimeTicks::Now();
+}
+
+void ContentCaptureTaskHistogramReporter::OnTaskScheduled(
+    bool record_task_delay) {
+  // Always save the latest schedule time.
+  task_scheduled_time_ =
+      record_task_delay ? base::TimeTicks::Now() : base::TimeTicks();
 }
 
 void ContentCaptureTaskHistogramReporter::OnTaskRun() {

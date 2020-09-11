@@ -278,6 +278,10 @@ void ContentCaptureTask::ScheduleInternal(ScheduleReason reason) {
   delay_task_->StartOneShot(delay, FROM_HERE);
   TRACE_EVENT_INSTANT1("content_capture", "ScheduleTask",
                        TRACE_EVENT_SCOPE_THREAD, "reason", reason);
+  if (histogram_reporter_) {
+    histogram_reporter_->OnTaskScheduled(/* record_task_delay = */ reason !=
+                                         ScheduleReason::kRetryTask);
+  }
 }
 
 void ContentCaptureTask::Schedule(ScheduleReason reason) {
