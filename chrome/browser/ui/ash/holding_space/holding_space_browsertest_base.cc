@@ -17,6 +17,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
@@ -29,11 +30,12 @@ namespace {
 
 // Adds and returns a holding space item of the specified `type` backed by the
 // file at the specified `file_path`.
-HoldingSpaceItem* AddItem(HoldingSpaceItem::Type type,
+HoldingSpaceItem* AddItem(Profile* profile,
+                          HoldingSpaceItem::Type type,
                           const base::FilePath& file_path) {
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       type, file_path,
-      /*file_system_url=*/GURL(),
+      holding_space_util::ResolveFileSystemUrl(profile, file_path),
       /*image=*/
       std::make_unique<HoldingSpaceImage>(
           /*placeholder=*/gfx::ImageSkia(),
@@ -120,17 +122,17 @@ bool HoldingSpaceBrowserTestBase::IsShowing() {
 }
 
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddDownloadFile() {
-  return AddItem(HoldingSpaceItem::Type::kDownload,
+  return AddItem(GetProfile(), HoldingSpaceItem::Type::kDownload,
                  /*file_path=*/CreateTextFile(GetProfile()));
 }
 
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddPinnedFile() {
-  return AddItem(HoldingSpaceItem::Type::kPinnedFile,
+  return AddItem(GetProfile(), HoldingSpaceItem::Type::kPinnedFile,
                  /*file_path=*/CreateTextFile(GetProfile()));
 }
 
 HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddScreenshotFile() {
-  return AddItem(HoldingSpaceItem::Type::kScreenshot,
+  return AddItem(GetProfile(), HoldingSpaceItem::Type::kScreenshot,
                  /*file_path=*/CreateImageFile(GetProfile()));
 }
 
@@ -141,6 +143,7 @@ std::vector<views::View*> HoldingSpaceBrowserTestBase::GetDownloadChips() {
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetPinnedFileChips() {
   return test_api_->GetPinnedFileChips();
 }
+
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenshotViews() {
   return test_api_->GetScreenshotViews();
 }

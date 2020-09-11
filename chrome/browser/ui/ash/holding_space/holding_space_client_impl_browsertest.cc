@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -116,6 +117,47 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItemInFolder) {
         }));
     run_loop.Run();
   }
+}
+
+// Verifies that `HoldingSpaceClient::PinItem()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, PinItem) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  auto* holding_space_model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(holding_space_client && holding_space_model);
+
+  // Create a download holding space item.
+  HoldingSpaceItem* download_item = AddDownloadFile();
+  ASSERT_EQ(1u, holding_space_model->items().size());
+
+  // Attempt to pin the download holding space item.
+  holding_space_client->PinItem(*download_item);
+  ASSERT_EQ(2u, holding_space_model->items().size());
+
+  // The pinned holding space item should have type `kPinnedFile` but share the
+  // same text and file path as the original download holding space item.
+  HoldingSpaceItem* pinned_file_item = holding_space_model->items()[1].get();
+  EXPECT_EQ(pinned_file_item->type(), HoldingSpaceItem::Type::kPinnedFile);
+  EXPECT_EQ(download_item->text(), pinned_file_item->text());
+  EXPECT_EQ(download_item->file_path(), pinned_file_item->file_path());
+}
+
+// Verifies that `HoldingSpaceClient::UnpinItem()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, UnpinItem) {
+  ASSERT_TRUE(HoldingSpaceController::Get());
+
+  auto* holding_space_client = HoldingSpaceController::Get()->client();
+  auto* holding_space_model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(holding_space_client && holding_space_model);
+
+  // Create a pinned file holding space item.
+  HoldingSpaceItem* pinned_file_item = AddPinnedFile();
+  ASSERT_EQ(1u, holding_space_model->items().size());
+
+  // Attempt to unpin the pinned file holding space item.
+  holding_space_client->UnpinItem(*pinned_file_item);
+  ASSERT_EQ(0u, holding_space_model->items().size());
 }
 
 }  // namespace ash

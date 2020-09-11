@@ -46,6 +46,7 @@ source_set("test_support") {
     "//chrome/browser",
     "//chrome/browser/chromeos",
     "//chrome/browser/extensions",
+    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//ui/views",
   ]

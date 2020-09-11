@@ -7,7 +7,12 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace ash {
 
@@ -16,6 +21,11 @@ namespace {
 using SuccessCallback = HoldingSpaceClient::SuccessCallback;
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the `HoldingSpaceKeyedService` associated with the given `profile`.
+HoldingSpaceKeyedService* GetHoldingSpaceKeyedService(Profile* profile) {
+  return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+}
 
 // Attempts to open the file or folder at the specified `file_path`.
 // Success is returned via the supplied `callback`.
@@ -66,14 +76,22 @@ void HoldingSpaceClientImpl::OpenItemInFolder(const HoldingSpaceItem& item,
                    platform_util::OPEN_FOLDER, std::move(callback));
 }
 
-// TODO(crbug/1126274): Implement.
 void HoldingSpaceClientImpl::PinItem(const HoldingSpaceItem& item) {
-  NOTIMPLEMENTED();
+  DCHECK_NE(item.type(), HoldingSpaceItem::Type::kPinnedFile);
+  const storage::FileSystemURL& file_system_url =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile_, file_manager::kFileManagerAppId)
+          ->CrackURL(item.file_system_url());
+  GetHoldingSpaceKeyedService(profile_)->AddPinnedFile(file_system_url);
 }
 
-// TODO(crbug/1126274): Implement.
 void HoldingSpaceClientImpl::UnpinItem(const HoldingSpaceItem& item) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(item.type(), HoldingSpaceItem::Type::kPinnedFile);
+  const storage::FileSystemURL& file_system_url =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile_, file_manager::kFileManagerAppId)
+          ->CrackURL(item.file_system_url());
+  GetHoldingSpaceKeyedService(profile_)->RemovePinnedFile(file_system_url);
 }
 
 }  // namespace ash
