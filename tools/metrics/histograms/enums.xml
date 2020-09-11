@@ -67931,6 +67931,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="The connection negotiated token binding, which is incompatible
              with 0-RTT."/>
   <int value="12" label="The client and server ticket age were too far apart."/>
+  <int value="13"
+      label="QUIC parameters differ between this connection and the original."/>
 </enum>
 
 <enum name="SSLHashAlgorithm">

@@ -1644,16 +1644,17 @@ void QuicChromiumClientSession::LogZeroRttStats() {
 
   ZeroRttState state;
 
-  if (attempted_zero_rtt_) {
-    if (crypto_stream_->EarlyDataAccepted()) {
-      state = ZeroRttState::kAttemptedAndSucceeded;
-    } else {
-      state = ZeroRttState::kAttemptedAndRejected;
-    }
-  } else {
+  ssl_early_data_reason_t early_data_reason = crypto_stream_->EarlyDataReason();
+  if (early_data_reason == ssl_early_data_disabled) {
     state = ZeroRttState::kNotAttempted;
+  } else if (early_data_reason == ssl_early_data_accepted) {
+    state = ZeroRttState::kAttemptedAndSucceeded;
+  } else {
+    state = ZeroRttState::kAttemptedAndRejected;
   }
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttState", state);
+  UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttReason", early_data_reason,
+                            ssl_early_data_reason_max_value + 1);
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(
