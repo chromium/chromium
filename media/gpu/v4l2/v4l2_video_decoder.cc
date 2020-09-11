@@ -298,7 +298,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 
     gfx::Size adjusted_size(format->fmt.pix_mp.width,
                             format->fmt.pix_mp.height);
-    candidates.push_back(std::make_pair(*candidate, adjusted_size));
+    candidates.emplace_back(*candidate, adjusted_size);
   }
 
   // Ask the pipeline to pick the output format.
