@@ -104,10 +104,15 @@ class AllPasswordsBottomSheetViewBinder {
                 passwordView.setOnClickListener(
                         src -> model.get(ON_CLICK_LISTENER).onResult(credential));
                 usernameView.setOnClickListener(null);
+                usernameView.setClickable(false);
             } else {
-                usernameView.setOnClickListener(
-                        src -> model.get(ON_CLICK_LISTENER).onResult(credential));
+                String username = credential.getUsername();
+                usernameView.setOnClickListener(username.isEmpty()
+                                ? null
+                                : src -> model.get(ON_CLICK_LISTENER).onResult(credential));
+                usernameView.setClickable(!username.isEmpty());
                 passwordView.setOnClickListener(null);
+                passwordView.setClickable(false);
             }
         } else if (propertyKey == IS_PASSWORD_FIELD) {
             boolean isPasswordField = model.get(IS_PASSWORD_FIELD);
