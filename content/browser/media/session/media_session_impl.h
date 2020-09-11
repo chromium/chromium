@@ -84,6 +84,9 @@ class MediaSessionImpl : public MediaSession,
 
   ~MediaSessionImpl() override;
 
+  CONTENT_EXPORT void SetDelegateForTests(
+      std::unique_ptr<AudioFocusDelegate> delegate);
+
 #if defined(OS_ANDROID)
   void ClearMediaSessionAndroid();
   MediaSessionAndroid* GetMediaSessionAndroid();
@@ -297,8 +300,6 @@ class MediaSessionImpl : public MediaSession,
   friend class MediaSessionImplTest;
   friend class MediaInternalsAudioFocusTest;
 
-  CONTENT_EXPORT void SetDelegateForTests(
-      std::unique_ptr<AudioFocusDelegate> delegate);
   CONTENT_EXPORT void RemoveAllPlayersForTest();
   CONTENT_EXPORT MediaSessionUmaHelper* uma_helper_for_test();
 

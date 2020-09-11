@@ -18,11 +18,15 @@
 
 namespace content {
 
+int MediaSessionController::player_count_ = 0;
+
 MediaSessionController::MediaSessionController(const MediaPlayerId& id,
                                                WebContents* web_contents)
     : id_(id),
       web_contents_(web_contents),
-      media_session_(MediaSessionImpl::Get(web_contents)) {}
+      media_session_(MediaSessionImpl::Get(web_contents)) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 MediaSessionController::~MediaSessionController() {
   media_session_->RemovePlayer(this, player_id_);
@@ -180,20 +184,10 @@ bool MediaSessionController::AddOrRemovePlayer() {
   const bool needs_session = IsMediaSessionNeeded();
 
   if (needs_session) {
-    // Don't generate a new id if one has already been set.
-    if (!has_session_) {
-      // These objects are only created on the UI thread, so this is safe.
-      DCHECK_CURRENTLY_ON(BrowserThread::UI);
-      static uint32_t player_id = 0;
-      player_id_ = static_cast<int>(player_id++);
-    }
-
     // Attempt to add a session even if we already have one.  MediaSession
     // expects AddPlayer() to be called after OnPlaybackPaused() to reactivate
     // the session.
-    has_session_ =
-        media_session_->AddPlayer(this, player_id_, media_content_type_);
-    if (!has_session_) {
+    if (!media_session_->AddPlayer(this, player_id_, media_content_type_)) {
       // If a session can't be created, force a pause immediately.
       OnSuspend(player_id_);
       return false;
@@ -201,11 +195,7 @@ bool MediaSessionController::AddOrRemovePlayer() {
     return true;
   }
 
-  if (has_session_) {
-    has_session_ = false;
-    media_session_->RemovePlayer(this, player_id_);
-  }
-
+  media_session_->RemovePlayer(this, player_id_);
   return true;
 }
 

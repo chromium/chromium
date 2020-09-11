@@ -98,8 +98,10 @@ class CONTENT_EXPORT MediaSessionController
 
   base::Optional<media_session::MediaPosition> position_;
 
-  int player_id_ = 0;
-  bool has_session_ = false;
+  // These objects are only created on the UI thread, so this is safe.
+  static int player_count_;
+  const int player_id_ = player_count_++;
+
   // Playing or paused, but not ended.
   bool is_playback_in_progress_ = false;
   bool has_audio_ = false;

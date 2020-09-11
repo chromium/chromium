@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "content/browser/media/media_web_contents_observer.h"
+#include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/common/media/media_player_delegate_messages.h"
@@ -16,6 +17,34 @@
 
 namespace content {
 
+class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
+ public:
+  void set_audio_focus_result(AudioFocusResult result) {
+    audio_focus_result_ = result;
+  }
+
+  // content::AudioFocusDelegate:
+  AudioFocusResult RequestAudioFocus(
+      media_session::mojom::AudioFocusType audio_focus_type) override {
+    audio_focus_type_ = audio_focus_type;
+    return audio_focus_result_;
+  }
+  void AbandonAudioFocus() override { audio_focus_type_.reset(); }
+  base::Optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+      const override {
+    return audio_focus_type_;
+  }
+  void MediaSessionInfoChanged(
+      media_session::mojom::MediaSessionInfoPtr) override {}
+  const base::UnguessableToken& request_id() const override {
+    return base::UnguessableToken::Null();
+  }
+
+ private:
+  base::Optional<media_session::mojom::AudioFocusType> audio_focus_type_;
+  AudioFocusResult audio_focus_result_ = AudioFocusResult::kSuccess;
+};
+
 class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
@@ -23,6 +52,10 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
 
     id_ = MediaPlayerId(contents()->GetMainFrame(), 0);
     controller_ = CreateController();
+
+    auto delegate = std::make_unique<FakeAudioFocusDelegate>();
+    audio_focus_delegate_ = delegate.get();
+    media_session()->SetDelegateForTests(std::move(delegate));
   }
 
   void TearDown() override {
@@ -142,6 +175,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
 
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
+  FakeAudioFocusDelegate* audio_focus_delegate_ = nullptr;
 };
 
 TEST_F(MediaSessionControllerTest, NoAudioNoSession) {
@@ -426,6 +460,47 @@ TEST_F(MediaSessionControllerTest, HasVideo_False) {
       /* has_audio = */ false, /* has_video = */ false,
       media::MediaContentType::Persistent);
   EXPECT_FALSE(controller_->HasVideo(controller_->get_player_id_for_testing()));
+}
+
+TEST_F(MediaSessionControllerTest, AudioFocusRequestFailure) {
+  // Start playback with the audio track only.
+  controller_->SetMetadata(
+      /* has_audio = */ true, /* has_video = */ false,
+      media::MediaContentType::Persistent);
+  ASSERT_TRUE(controller_->OnPlaybackStarted());
+  ASSERT_TRUE(media_session()->IsActive());
+
+  // Add a video track while audio focus cannot be obtained.
+  audio_focus_delegate_->set_audio_focus_result(
+      AudioFocusDelegate::AudioFocusResult::kFailed);
+  media_session()->Suspend(MediaSession::SuspendType::kSystem);
+  controller_->SetMetadata(
+      /* has_audio = */ true, /* has_video = */ true,
+      media::MediaContentType::Persistent);
+  EXPECT_FALSE(media_session()->IsActive());
+
+  // Have a one-shot player re-activate the session, then discard it.
+  audio_focus_delegate_->set_audio_focus_result(
+      AudioFocusDelegate::AudioFocusResult::kSuccess);
+  auto transient_controller = CreateController();
+  transient_controller->SetMetadata(
+      /* has_audio = */ true, /* has_video = */ true,
+      media::MediaContentType::OneShot);
+  ASSERT_TRUE(transient_controller->OnPlaybackStarted());
+  EXPECT_TRUE(media_session()->IsActive());
+  transient_controller->OnPlaybackPaused(false);
+
+  // Activate the first player.
+  controller_->SetMetadata(
+      /* has_audio = */ true, /* has_video = */ true,
+      media::MediaContentType::Persistent);
+  EXPECT_TRUE(media_session()->IsActive());
+
+  // Remove the controller's session and make sure position updates are simply
+  // ignored (no active player).
+  controller_.reset();
+  EXPECT_FALSE(media_session()->IsActive());
+  media_session()->RebuildAndNotifyMediaPositionChanged();
 }
 
 }  // namespace content
