@@ -46,14 +46,14 @@ class ClipboardImageReader final : public ClipboardReader {
     }
 
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardImageReader::EncodeImageOnBackgroundThread,
-                       std::move(image), WrapCrossThreadPersistent(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardImageReader::EncodeOnBackgroundThread,
+                            std::move(image), WrapCrossThreadPersistent(this),
+                            std::move(clipboard_task_runner_)));
   }
 
  private:
-  static void EncodeImageOnBackgroundThread(
+  static void EncodeOnBackgroundThread(
       sk_sp<SkImage> image,
       ClipboardImageReader* reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
@@ -111,13 +111,13 @@ class ClipboardTextReader final : public ClipboardReader {
 
     worker_pool::PostTask(
         FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardTextReader::EncodeTextOnBackgroundThread,
+                       &ClipboardTextReader::EncodeOnBackgroundThread,
                        std::move(plain_text), WrapCrossThreadPersistent(this),
                        std::move(clipboard_task_runner_)));
   }
 
  private:
-  static void EncodeTextOnBackgroundThread(
+  static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardTextReader* reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
@@ -146,6 +146,7 @@ class ClipboardTextReader final : public ClipboardReader {
   }
 };
 
+// Reads HTML from the System Clipboard as a blob with text/html content.
 class ClipboardHtmlReader final : public ClipboardReader {
  public:
   explicit ClipboardHtmlReader(SystemClipboard* system_clipboard,
@@ -182,14 +183,14 @@ class ClipboardHtmlReader final : public ClipboardReader {
     }
     worker_pool::PostTask(
         FROM_HERE,
-        CrossThreadBindOnce(&ClipboardHtmlReader::EncodeHTMLOnBackgroundThread,
+        CrossThreadBindOnce(&ClipboardHtmlReader::EncodeOnBackgroundThread,
                             std::move(sanitized_html),
                             WrapCrossThreadPersistent(this),
                             std::move(clipboard_task_runner_)));
   }
 
  private:
-  static void EncodeHTMLOnBackgroundThread(
+  static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardHtmlReader* reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
@@ -218,6 +219,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
   }
 };
 
+// Reads SVG from the System Clipboard as a blob with image/svg content.
 class ClipboardSvgReader final : public ClipboardReader {
  public:
   ClipboardSvgReader(SystemClipboard* system_clipboard,
@@ -258,13 +260,13 @@ class ClipboardSvgReader final : public ClipboardReader {
     }
     worker_pool::PostTask(
         FROM_HERE,
-        CrossThreadBindOnce(&ClipboardSvgReader::EncodeSvgOnBackgroundThread,
+        CrossThreadBindOnce(&ClipboardSvgReader::EncodeOnBackgroundThread,
                             std::move(sanitized_svg),
                             WrapCrossThreadPersistent(this),
                             std::move(clipboard_task_runner_)));
   }
 
-  static void EncodeSvgOnBackgroundThread(
+  static void EncodeOnBackgroundThread(
       String plain_text,
       ClipboardSvgReader* reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
