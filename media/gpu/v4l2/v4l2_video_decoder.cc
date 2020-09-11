@@ -500,7 +500,6 @@ void V4L2VideoDecoder::ContinueChangeResolution(
     const size_t num_output_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
-  DCHECK_EQ(output_queue_->QueuedBuffersCount(), 0u);
 
   // If we already reset, then skip it.
   if (state_ == State::kDecoding)
