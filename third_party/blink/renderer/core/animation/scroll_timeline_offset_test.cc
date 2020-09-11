@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_scroll_timeline_element_based_offset.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -16,9 +17,8 @@ namespace blink {
 class ScrollTimelineOffsetTest : public PageTestBase {
  public:
   ScrollTimelineOffset* ScrollBasedOffsetFrom(String string) {
-    StringOrScrollTimelineElementBasedOffset param;
-    param.SetString(string);
-    return ScrollTimelineOffset::Create(param, *CreateCSSParserContext());
+    return ScrollTimelineOffset::Create(
+        animation_test_helpers::OffsetFromString(GetDocument(), string));
   }
 
   ScrollTimelineOffset* ElementBasedOffsetFrom(Element* target,
@@ -27,16 +27,12 @@ class ScrollTimelineOffsetTest : public PageTestBase {
     auto* inner = CreateElementBasedOffset(target, edge, threshold);
     if (!inner)
       return nullptr;
-    StringOrScrollTimelineElementBasedOffset param;
+    ScrollTimelineOffsetValue param;
     param.SetScrollTimelineElementBasedOffset(inner);
-    return ScrollTimelineOffset::Create(param, *CreateCSSParserContext());
+    return ScrollTimelineOffset::Create(param);
   }
 
  private:
-  const CSSParserContext* CreateCSSParserContext() {
-    return MakeGarbageCollected<CSSParserContext>(GetDocument());
-  }
-
   ScrollTimelineElementBasedOffset* CreateElementBasedOffset(Element* target,
                                                              String edge,
                                                              double threshold) {

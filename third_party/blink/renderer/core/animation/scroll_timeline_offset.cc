@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_scroll_timeline_element_based_offset.h"
+#include "third_party/blink/renderer/bindings/core/v8/css_numeric_value_or_string_or_css_keyword_value_or_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -20,21 +20,6 @@
 namespace blink {
 
 namespace {
-
-bool StringToScrollOffset(String scroll_offset,
-                          const CSSParserContext& context,
-                          CSSPrimitiveValue** result) {
-  CSSTokenizer tokenizer(scroll_offset);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  CSSValue* value = css_parsing_utils::ConsumeScrollOffset(range, context);
-  if (!value)
-    return false;
-
-  // We support 'auto', but for simplicity just store it as nullptr.
-  *result = DynamicTo<CSSPrimitiveValue>(value);
-  return true;
-}
 
 bool ValidateElementBasedOffset(ScrollTimelineElementBasedOffset* offset) {
   if (!offset->hasTarget())
@@ -77,29 +62,46 @@ bool ElementBasedOffsetsEqual(ScrollTimelineElementBasedOffset* o1,
          (o1->threshold() == o2->threshold());
 }
 
+CSSKeywordValue* GetCSSKeywordValue(const ScrollTimelineOffsetValue& offset) {
+  if (offset.IsCSSKeywordValue())
+    return offset.GetAsCSSKeywordValue();
+  // CSSKeywordish:
+  if (offset.IsString() && !offset.GetAsString().IsEmpty())
+    return CSSKeywordValue::Create(offset.GetAsString());
+  return nullptr;
+}
+
 }  // namespace
 
 // static
 ScrollTimelineOffset* ScrollTimelineOffset::Create(
-    const StringOrScrollTimelineElementBasedOffset& input_offset,
-    const CSSParserContext& context) {
-  if (input_offset.IsString()) {
-    CSSPrimitiveValue* offset = nullptr;
-    if (!StringToScrollOffset(input_offset.GetAsString(), context, &offset)) {
+    const ScrollTimelineOffsetValue& input_offset) {
+  if (input_offset.IsCSSNumericValue()) {
+    auto* numeric = input_offset.GetAsCSSNumericValue();
+    const auto& offset = To<CSSPrimitiveValue>(*numeric->ToCSSValue());
+    bool matches_length_percentage = offset.IsLength() ||
+                                     offset.IsPercentage() ||
+                                     offset.IsCalculatedPercentageWithLength();
+    if (!matches_length_percentage)
       return nullptr;
-    }
+    return MakeGarbageCollected<ScrollTimelineOffset>(&offset);
+  }
 
-    return MakeGarbageCollected<ScrollTimelineOffset>(offset);
-  } else if (input_offset.IsScrollTimelineElementBasedOffset()) {
+  if (input_offset.IsScrollTimelineElementBasedOffset()) {
     auto* offset = input_offset.GetAsScrollTimelineElementBasedOffset();
     if (!ValidateElementBasedOffset(offset))
       return nullptr;
 
     return MakeGarbageCollected<ScrollTimelineOffset>(offset);
-  } else {
-    // The default case is "auto" which we initialized with null
+  }
+
+  if (auto* keyword = GetCSSKeywordValue(input_offset)) {
+    if (keyword->KeywordValueID() != CSSValueID::kAuto)
+      return nullptr;
     return MakeGarbageCollected<ScrollTimelineOffset>();
   }
+
+  return nullptr;
 }
 
 base::Optional<double> ScrollTimelineOffset::ResolveOffset(
@@ -211,16 +213,17 @@ base::Optional<double> ScrollTimelineOffset::ResolveOffset(
   }
 }
 
-StringOrScrollTimelineElementBasedOffset
-ScrollTimelineOffset::ToStringOrScrollTimelineElementBasedOffset() const {
-  StringOrScrollTimelineElementBasedOffset result;
+ScrollTimelineOffsetValue ScrollTimelineOffset::ToScrollTimelineOffsetValue()
+    const {
+  ScrollTimelineOffsetValue result;
   if (length_based_offset_) {
-    result.SetString(length_based_offset_->CssText());
+    result.SetCSSNumericValue(
+        CSSNumericValue::FromCSSValue(*length_based_offset_.Get()));
   } else if (element_based_offset_) {
     result.SetScrollTimelineElementBasedOffset(element_based_offset_);
   } else {
     // This is the default value (i.e., 'auto' value)
-    result.SetString("auto");
+    result.SetCSSKeywordValue(CSSKeywordValue::Create("auto"));
   }
 
   return result;

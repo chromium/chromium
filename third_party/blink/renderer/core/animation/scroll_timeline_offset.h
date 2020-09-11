@@ -6,21 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SCROLL_TIMELINE_OFFSET_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 
 namespace blink {
 
-class StringOrScrollTimelineElementBasedOffset;
+class
+    CSSNumericValueOrStringOrCSSKeywordValueOrScrollTimelineElementBasedOffset;
+
+using ScrollTimelineOffsetValue =
+    CSSNumericValueOrStringOrCSSKeywordValueOrScrollTimelineElementBasedOffset;
 
 // Represent a scroll timeline start/end offset which can be an
 // scroll offset or an element based offset
 class CORE_EXPORT ScrollTimelineOffset final
     : public GarbageCollected<ScrollTimelineOffset> {
  public:
-  static ScrollTimelineOffset* Create(
-      const StringOrScrollTimelineElementBasedOffset& offset,
-      const CSSParserContext& context);
+  static ScrollTimelineOffset* Create(const ScrollTimelineOffsetValue& offset);
 
   // Create a default offset representing 'auto'.
   ScrollTimelineOffset() = default;
@@ -49,8 +52,7 @@ class CORE_EXPORT ScrollTimelineOffset final
                                        double max_offset,
                                        double default_offset);
 
-  StringOrScrollTimelineElementBasedOffset
-  ToStringOrScrollTimelineElementBasedOffset() const;
+  ScrollTimelineOffsetValue ToScrollTimelineOffsetValue() const;
   bool IsDefaultValue() const {
     return !length_based_offset_ && !element_based_offset_;
   }

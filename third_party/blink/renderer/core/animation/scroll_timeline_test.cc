@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -28,12 +29,6 @@ static constexpr double time_error_ms = 0.001 + 1e-13;
 
 #define EXPECT_TIME_NEAR(expected, value) \
   EXPECT_NEAR(expected, value, time_error_ms)
-
-StringOrScrollTimelineElementBasedOffset OffsetFromString(const String& value) {
-  StringOrScrollTimelineElementBasedOffset result;
-  result.SetString(value);
-  return result;
-}
 
 HeapVector<Member<ScrollTimelineOffset>>* CreateScrollOffsets(
     ScrollTimelineOffset* start_scroll_offset =
@@ -76,6 +71,10 @@ class ScrollTimelineTest : public RenderingTest {
       count += timeline->GetAnimations().size();
     }
     return count;
+  }
+
+  ScrollTimelineOffsetValue OffsetFromString(const String& value) {
+    return animation_test_helpers::OffsetFromString(GetDocument(), value);
   }
 };
 
@@ -807,7 +806,7 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
   options->setTimeRange(
       DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
   options->setScrollSource(GetElementById("scroller"));
-  HeapVector<StringOrScrollTimelineElementBasedOffset> scroll_offsets;
+  HeapVector<ScrollTimelineOffsetValue> scroll_offsets;
   scroll_offsets.push_back(OffsetFromString("10px"));
   scroll_offsets.push_back(OffsetFromString("20px"));
   scroll_offsets.push_back(OffsetFromString("40px"));

@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TEST_HELPERS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/css_numeric_value_or_string_or_css_keyword_value_or_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -41,6 +43,14 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element*,
 // All members of the ActiveInterpolations must be instances of
 // InvalidatableInterpolation.
 void EnsureInterpolatedValueCached(ActiveInterpolations*, Document&, Element*);
+
+// Returns one of the following:
+//
+// - A CSSNumericValue, if the incoming string can be parsed as a
+//   <length-percentage>.
+// - A CSSKeywordValue. if the incoming string can be parsed as 'auto'.
+// - Otherwise, the incoming string.
+ScrollTimelineOffsetValue OffsetFromString(Document&, const String&);
 
 }  // namespace animation_test_helpers
 }  // namespace blink

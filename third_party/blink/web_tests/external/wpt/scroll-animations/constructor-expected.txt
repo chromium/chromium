@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 tests; 59 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 67 tests; 65 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS A ScrollTimeline can be created with a scrollSource
 PASS A ScrollTimeline can be created with a non-scrolling scrollSource
 PASS A ScrollTimeline created with a null scrollSource should have no scrollSource
@@ -10,11 +10,12 @@ PASS 'inline' is a valid orientation value
 PASS 'horizontal' is a valid orientation value
 PASS 'vertical' is a valid orientation value
 PASS Creating a ScrollTimeline with an invalid orientation value should throw
-PASS A ScrollTimeline created with the default startScrollOffset should default to 'auto'
-PASS A ScrollTimeline created with the default endScrollOffset should default to 'auto'
+PASS A ScrollTimeline created with the default startScrollOffset should default to CSSKeywordValue(auto)
+PASS A ScrollTimeline created with the default endScrollOffset should default to CSSKeywordValue(auto)
+PASS CSSKeywordValue(auto) is a valid scroll offset value
+PASS CSSUnitValue(0px) is a valid scroll offset value
+PASS CSSMathSum(calc(100% + -80px)) is a valid scroll offset value
 PASS 'auto' is a valid scroll offset value
-PASS '0' is a valid scroll offset value
-PASS 'calc(100% - 80px)' is a valid scroll offset value
 PASS 'em' is a valid scroll offset unit
 PASS 'ex' is a valid scroll offset unit
 PASS 'ch' is a valid scroll offset unit
@@ -38,7 +39,12 @@ PASS '#ff0000' is an invalid scroll offset value
 PASS 'rgb(0, 128, 0)' is an invalid scroll offset value
 PASS 'url("http://www.example.com/pinkish.gif")' is an invalid scroll offset value
 PASS 'this_is_garbage' is an invalid scroll offset value
+PASS CSSUnitValue(0) is an invalid scroll offset value
 PASS '100px 5%' is an invalid scroll offset value
+PASS '0' is an invalid scroll offset value
+PASS '10px' is an invalid scroll offset value
+PASS '10%' is an invalid scroll offset value
+PASS 'calc(100% - 80px)' is an invalid scroll offset value
 PASS 'deg' is an invalid scroll offset unit
 PASS 's' is an invalid scroll offset unit
 PASS 'Hz' is an invalid scroll offset unit

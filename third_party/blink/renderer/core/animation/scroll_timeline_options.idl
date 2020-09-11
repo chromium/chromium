@@ -16,8 +16,8 @@ enum ScrollTimelineAutoKeyword { "auto" };
 dictionary ScrollTimelineOptions {
         Element? scrollSource;
         ScrollDirection orientation = "block";
-        (DOMString or ScrollTimelineElementBasedOffset) startScrollOffset = "auto";
-        (DOMString or ScrollTimelineElementBasedOffset)  endScrollOffset = "auto";
-        sequence<(DOMString or ScrollTimelineElementBasedOffset)> scrollOffsets = [];
+        ScrollTimelineOffset startScrollOffset = "auto";
+        ScrollTimelineOffset endScrollOffset = "auto";
+        sequence<ScrollTimelineOffset> scrollOffsets = [];
         (double or ScrollTimelineAutoKeyword) timeRange = "auto";
 };

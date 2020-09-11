@@ -8,6 +8,9 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -79,6 +82,23 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   StyleCascade cascade(state);
   cascade.AddInterpolations(&map, CascadeOrigin::kAnimation);
   cascade.Apply();
+}
+
+ScrollTimelineOffsetValue OffsetFromString(Document& document,
+                                           const String& string) {
+  ScrollTimelineOffsetValue result;
+
+  const CSSValue* value = css_test_helpers::ParseValue(
+      document, "<length-percentage> | auto", string);
+
+  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value))
+    result.SetCSSNumericValue(CSSNumericValue::FromCSSValue(*primitive));
+  else if (DynamicTo<CSSIdentifierValue>(value))
+    result.SetCSSKeywordValue(CSSKeywordValue::Create("auto"));
+  else
+    result.SetString(string);
+
+  return result;
 }
 
 }  // namespace animation_test_helpers

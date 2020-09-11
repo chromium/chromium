@@ -99,10 +99,6 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
                                ? options->scrollSource()
                                : document.scrollingElement();
 
-  // TODO(xiaochengh): Try reusing an existing context in document.
-  const CSSParserContext* context =
-      MakeGarbageCollected<CSSParserContext>(document);
-
   ScrollDirection orientation;
   if (!StringToScrollDirection(options->orientation(), orientation)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -111,14 +107,14 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   }
 
   ScrollTimelineOffset* start_scroll_offset =
-      ScrollTimelineOffset::Create(options->startScrollOffset(), *context);
+      ScrollTimelineOffset::Create(options->startScrollOffset());
   if (!start_scroll_offset) {
     exception_state.ThrowTypeError("Invalid start offset.");
     return nullptr;
   }
 
   ScrollTimelineOffset* end_scroll_offset =
-      ScrollTimelineOffset::Create(options->endScrollOffset(), *context);
+      ScrollTimelineOffset::Create(options->endScrollOffset());
   if (!end_scroll_offset) {
     exception_state.ThrowTypeError("Invalid end offset");
     return nullptr;
@@ -148,7 +144,7 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   } else {
     for (auto& offset : options->scrollOffsets()) {
       ScrollTimelineOffset* scroll_offset =
-          ScrollTimelineOffset::Create(offset, *context);
+          ScrollTimelineOffset::Create(offset);
       if (!scroll_offset) {
         exception_state.ThrowTypeError("Invalid scroll offset");
         return nullptr;
@@ -408,36 +404,33 @@ String ScrollTimeline::orientation() {
 // TODO(crbug.com/1094014): scrollOffsets will replace start and end
 // offsets once spec decision on multiple scroll offsets is finalized.
 // https://github.com/w3c/csswg-drafts/issues/4912
-void ScrollTimeline::startScrollOffset(
-    StringOrScrollTimelineElementBasedOffset& out) const {
+void ScrollTimeline::startScrollOffset(ScrollTimelineOffsetValue& out) const {
   if (StartScrollOffset()) {
-    out = StartScrollOffset()->ToStringOrScrollTimelineElementBasedOffset();
+    out = StartScrollOffset()->ToScrollTimelineOffsetValue();
   } else {
     ScrollTimelineOffset scrollOffset;
-    out = scrollOffset.ToStringOrScrollTimelineElementBasedOffset();
+    out = scrollOffset.ToScrollTimelineOffsetValue();
   }
 }
 
-void ScrollTimeline::endScrollOffset(
-    StringOrScrollTimelineElementBasedOffset& out) const {
+void ScrollTimeline::endScrollOffset(ScrollTimelineOffsetValue& out) const {
   if (EndScrollOffset()) {
-    out = EndScrollOffset()->ToStringOrScrollTimelineElementBasedOffset();
+    out = EndScrollOffset()->ToScrollTimelineOffsetValue();
   } else {
     ScrollTimelineOffset scrollOffset;
-    out = scrollOffset.ToStringOrScrollTimelineElementBasedOffset();
+    out = scrollOffset.ToScrollTimelineOffsetValue();
   }
 }
 
-const HeapVector<StringOrScrollTimelineElementBasedOffset>
-ScrollTimeline::scrollOffsets() const {
-  HeapVector<StringOrScrollTimelineElementBasedOffset> scroll_offsets;
+const HeapVector<ScrollTimelineOffsetValue> ScrollTimeline::scrollOffsets()
+    const {
+  HeapVector<ScrollTimelineOffsetValue> scroll_offsets;
 
   if (!scroll_offsets_)
     return scroll_offsets;
 
   for (auto& offset : *scroll_offsets_) {
-    scroll_offsets.push_back(
-        offset->ToStringOrScrollTimelineElementBasedOffset());
+    scroll_offsets.push_back(offset->ToScrollTimelineOffsetValue());
     // 'auto' can only be the end offset.
     DCHECK(!offset->IsDefaultValue() || scroll_offsets.size() == 2);
   }

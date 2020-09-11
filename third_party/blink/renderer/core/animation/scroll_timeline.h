@@ -65,11 +65,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // TODO(crbug.com/1094014): scrollOffsets will replace start and end
   // offsets once spec decision on multiple scroll offsets is finalized.
   // https://github.com/w3c/csswg-drafts/issues/4912
-  void startScrollOffset(
-      StringOrScrollTimelineElementBasedOffset& result) const;
-  void endScrollOffset(StringOrScrollTimelineElementBasedOffset& result) const;
-  const HeapVector<StringOrScrollTimelineElementBasedOffset> scrollOffsets()
-      const;
+  void startScrollOffset(ScrollTimelineOffsetValue& result) const;
+  void endScrollOffset(ScrollTimelineOffsetValue& result) const;
+  const HeapVector<ScrollTimelineOffsetValue> scrollOffsets() const;
 
   void timeRange(DoubleOrScrollTimelineAutoKeyword&);
 

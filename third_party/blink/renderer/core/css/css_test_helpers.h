@@ -68,6 +68,10 @@ const CSSPropertyValueSet* ParseDeclarationBlock(
     CSSParserMode mode = kHTMLStandardMode);
 StyleRuleBase* ParseRule(Document& document, String text);
 
+// Parse a value according to syntax defined by:
+// https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
+const CSSValue* ParseValue(Document&, String syntax, String value);
+
 }  // namespace css_test_helpers
 }  // namespace blink
 
