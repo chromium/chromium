@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -97,7 +98,9 @@ void UpdateFromSystemSettings(blink::mojom::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
   if (profile->IsOffTheRecord()) {
-    prefs->accept_languages = g_browser_process->GetApplicationLocale();
+    // In incognito mode return only the first language.
+    prefs->accept_languages = language::GetFirstLanguage(
+        pref_service->GetString(language::prefs::kAcceptLanguages));
   } else {
     prefs->accept_languages =
         pref_service->GetString(language::prefs::kAcceptLanguages);

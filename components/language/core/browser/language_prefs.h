@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_PREFS_H_
 #define COMPONENTS_LANGUAGE_CORE_BROWSER_LANGUAGE_PREFS_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 
@@ -56,6 +58,9 @@ class LanguagePrefs {
 };
 
 void ResetLanguagePrefs(PrefService* prefs);
+
+// Given a comma separated list of locales, return the first.
+std::string GetFirstLanguage(base::StringPiece language_list);
 
 }  // namespace language
 
