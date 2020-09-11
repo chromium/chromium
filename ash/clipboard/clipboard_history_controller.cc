@@ -175,7 +175,8 @@ gfx::Rect ClipboardHistoryController::GetMenuBoundsInScreenForTest() const {
 }
 
 bool ClipboardHistoryController::CanShowMenu() const {
-  return !clipboard_history_->IsEmpty();
+  return !clipboard_history_->IsEmpty() &&
+         clipboard_history_->IsEnabledInCurrentMode();
 }
 
 void ClipboardHistoryController::ExecuteSelectedMenuItem(int event_flags) {

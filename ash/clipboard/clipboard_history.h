@@ -73,6 +73,9 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // ClipboardMonitor:
   void OnClipboardDataChanged() override;
 
+  // Returns whether the clipboard history is enabled for the current user mode.
+  bool IsEnabledInCurrentMode() const;
+
  private:
   // Adds `data` to the `history_list_` if it's supported. If `data` is not
   // supported by clipboard history, this method no-ops.

@@ -9,6 +9,8 @@
 
 #include "ash/clipboard/clipboard_history_controller.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +21,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -294,6 +297,134 @@ TEST_F(ClipboardHistoryTest, BasicFileSystemData) {
       input_data;
 
   WriteAndEnsureCustomDataHistory(input_data, expected_data);
+}
+
+// Verifies the features related to the menu view.
+class ClipboardHistoryControllerTest : public ClipboardHistoryTest {
+ public:
+  ClipboardHistoryControllerTest() = default;
+  ClipboardHistoryControllerTest(const ClipboardHistoryControllerTest&) =
+      delete;
+  ClipboardHistoryControllerTest& operator=(
+      const ClipboardHistoryControllerTest&) = delete;
+  ~ClipboardHistoryControllerTest() override = default;
+
+  // ClipboardHistoryTest:
+  void SetUp() override {
+    ClipboardHistoryTest::SetUp();
+    image_model_factory_ = std::make_unique<FakeClipboardImageModelFactory>();
+  }
+
+  void ShowClipboardHistoryMenuByAccelerator() {
+    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V,
+                                  ui::EF_COMMAND_DOWN);
+    GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_V,
+                                    ui::EF_COMMAND_DOWN);
+  }
+
+  void HideClipboardHistoryMenuByAccelerator() {
+    GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+    GetEventGenerator()->ReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+  }
+
+ private:
+  class FakeClipboardImageModelFactory : public ClipboardImageModelFactory {
+   public:
+    FakeClipboardImageModelFactory() = default;
+    FakeClipboardImageModelFactory(const FakeClipboardImageModelFactory&) =
+        delete;
+    FakeClipboardImageModelFactory& operator=(
+        const FakeClipboardImageModelFactory&) = delete;
+    ~FakeClipboardImageModelFactory() override = default;
+
+    // ClipboardImageModelFactory:
+    void Render(const base::UnguessableToken&,
+                const std::string&,
+                ImageModelCallback) override {}
+    void CancelRequest(const base::UnguessableToken&) override {}
+    void Activate() override {}
+    void Deactivate() override {}
+    void OnShutdown() override {}
+  };
+
+  std::unique_ptr<FakeClipboardImageModelFactory> image_model_factory_;
+};
+
+// Verifies that the clipboard history is disabled in some user modes, which
+// means that the clipboard history should not be recorded and meanwhile the
+// menu view should not show (https://crbug.com/1100739).
+TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
+  // Write one item into the clipboard history.
+  const base::string16 input(base::UTF8ToUTF16("text"));
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(input);
+  }
+  base::RunLoop().RunUntilIdle();
+  EnsureTextHistory({input});
+  const base::UnguessableToken& original_first_item_id =
+      GetClipboardHistoryItems().begin()->id();
+
+  constexpr struct {
+    user_manager::UserType user_type;
+    bool is_enabled;
+  } kTestCases[] = {{user_manager::USER_TYPE_REGULAR, true},
+                    {user_manager::USER_TYPE_GUEST, true},
+                    {user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
+                    {user_manager::USER_TYPE_SUPERVISED, true},
+                    {user_manager::USER_TYPE_KIOSK_APP, false},
+                    {user_manager::USER_TYPE_CHILD, true},
+                    {user_manager::USER_TYPE_ARC_KIOSK_APP, false},
+                    {user_manager::USER_TYPE_WEB_KIOSK_APP, false}};
+
+  UserSession session;
+  session.session_id = 1u;
+  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
+  session.user_info.display_name = "User 1";
+  session.user_info.display_email = "user1@test.com";
+
+  for (const auto& test_case : kTestCases) {
+    // Switch to the target user mode.
+    session.user_info.type = test_case.user_type;
+    Shell::Get()->session_controller()->UpdateUserSession(session);
+
+    // Write a new item into the clipboard buffer.
+    {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteText(input);
+    }
+    base::RunLoop().RunUntilIdle();
+
+    if (test_case.is_enabled) {
+      // Verify that the new item should be included in the clipboard history
+      // and the menu should be able to show.
+
+      EXPECT_EQ(2u, GetClipboardHistoryItems().size());
+      EXPECT_NE(original_first_item_id,
+                GetClipboardHistoryItems().begin()->id());
+      ShowClipboardHistoryMenuByAccelerator();
+      EXPECT_TRUE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+      HideClipboardHistoryMenuByAccelerator();
+      EXPECT_FALSE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+
+      // Restore the clipboard history by removing the new item.
+      clipboard_history()->RemoveItemForId(
+          GetClipboardHistoryItems().begin()->id());
+    } else {
+      // Verify that the new item should not be written into the clipboard
+      // history. The menu cannot show although the clipboard history is
+      // non-empty.
+
+      EXPECT_EQ(1u, GetClipboardHistoryItems().size());
+      EXPECT_EQ(original_first_item_id,
+                GetClipboardHistoryItems().begin()->id());
+      ShowClipboardHistoryMenuByAccelerator();
+      EXPECT_FALSE(
+          Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+    }
+  }
 }
 
 }  // namespace ash

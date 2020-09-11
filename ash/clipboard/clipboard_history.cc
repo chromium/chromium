@@ -4,7 +4,6 @@
 
 #include "ash/clipboard/clipboard_history.h"
 
-#include "ash/clipboard/clipboard_history_controller.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -78,6 +77,9 @@ void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
 }
 
 void ClipboardHistory::OnClipboardDataChanged() {
+  if (!IsEnabledInCurrentMode())
+    return;
+
   // TODO(newcomer): Prevent Clipboard from recording metrics when pausing
   // observation.
   if (num_pause_ > 0)
@@ -103,6 +105,20 @@ void ClipboardHistory::OnClipboardDataChanged() {
       FROM_HERE,
       base::BindOnce(&ClipboardHistory::MaybeCommitData,
                      commit_data_weak_factory_.GetWeakPtr(), *clipboard_data));
+}
+
+bool ClipboardHistory::IsEnabledInCurrentMode() const {
+  switch (Shell::Get()->session_controller()->login_status()) {
+    case LoginStatus::NOT_LOGGED_IN:
+    case LoginStatus::LOCKED:
+    case LoginStatus::KIOSK_APP:
+    case LoginStatus::PUBLIC:
+      return false;
+    case LoginStatus::USER:
+    case LoginStatus::GUEST:
+    case LoginStatus::SUPERVISED:
+      return true;
+  }
 }
 
 void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
