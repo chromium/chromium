@@ -56,7 +56,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   icon_->set_tooltip_text(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE));
 
-  icon_->SetImage(CreateVectorIcon(kSystemMenuArrowBackIcon,
+  icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
                                    ShelfConfig::Get()->shelf_icon_color()));
 
   tray_container()->SetMargin(kTrayIconMainAxisInset, 0);

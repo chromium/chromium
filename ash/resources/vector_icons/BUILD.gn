@@ -48,6 +48,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "dictation_on_newui.icon",
     "dogfood.icon",
     "global_media_controls.icon",
+    "holding_space.icon",
     "hollow_check_circle.icon",
     "ime_menu_emoticon.icon",
     "ime_menu_microphone.icon",
