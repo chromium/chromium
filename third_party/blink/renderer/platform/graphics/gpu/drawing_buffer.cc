@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -73,6 +74,20 @@ namespace {
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
+
+void FlipVertically(base::span<uint8_t> framebuffer,
+                    size_t num_rows,
+                    size_t row_bytes) {
+  DCHECK_EQ(framebuffer.size(), num_rows * row_bytes);
+  std::vector<uint8_t> scanline(row_bytes);
+  for (size_t i = 0; i < num_rows / 2; i++) {
+    uint8_t* row_a = framebuffer.data() + i * row_bytes;
+    uint8_t* row_b = framebuffer.data() + (num_rows - i - 1) * row_bytes;
+    memcpy(scanline.data(), row_b, row_bytes);
+    memcpy(row_b, row_a, row_bytes);
+    memcpy(row_a, scanline.data(), row_bytes);
+  }
+}
 
 }  // namespace
 
@@ -296,8 +311,7 @@ bool DrawingBuffer::DefaultBufferRequiresAlphaChannelToBePreserved() {
 DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   // When searching for a hit in SharedBitmap, we don't consider the bitmap
-  // format (RGBA 8888 vs F16). We expect to always have the same bitmap format,
-  // matching the back storage of the drawing buffer.
+  // format (RGBA 8888 vs F16) since the allocated bitmap is always RGBA_8888.
   auto* it = std::remove_if(recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
                             [this](const RegisteredBitmap& registered) {
                               return registered.bitmap->size() !=
@@ -312,20 +326,10 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
     return recycled;
   }
 
-  viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-
-  // TODO(sunnyps): Software compositor only supports RGBA_8888 format, and
-  // AllocateSharedBitmap has a DCHECK for that, but we still allocate an F16
-  // buffer (of twice the size) so that there's no invalid memory access at
-  // runtime in ReadBackFramebuffer in release mode. Fixing this is non-trivial,
-  // so it will be done in a follow-up CL.
-  viz::ResourceFormat format = viz::RGBA_8888;
-  if (use_half_float_storage_)
-    format = viz::RGBA_F16;
-
+  const viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
+  const viz::ResourceFormat format = viz::RGBA_8888;
   base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
       static_cast<gfx::Size>(size_), format);
-
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
       id, std::move(shm), static_cast<gfx::Size>(size_), format);
   RegisteredBitmap registered = {
@@ -394,8 +398,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
 
   // Read the framebuffer into |bitmap|.
   {
-    unsigned char* pixels =
-        static_cast<unsigned char*>(registered.bitmap->memory());
+    uint8_t* pixels = static_cast<uint8_t*>(registered.bitmap->memory());
     DCHECK(pixels);
     bool need_premultiply = want_alpha_channel_ && !premultiplied_alpha_;
     WebGLImageConversion::AlphaOp op =
@@ -403,21 +406,16 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
                          : WebGLImageConversion::kAlphaDoNothing;
     state_restorer_->SetFramebufferBindingDirty();
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
-    ReadBackFramebuffer(pixels, Size().Width(), Size().Height(), kReadbackSkia,
-                        op);
+
+    // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
+    const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
+        static_cast<gfx::Size>(size_), viz::RGBA_8888);
+    ReadBackFramebuffer(base::span<uint8_t>(pixels, buffer_size),
+                        kN32_SkColorType, op);
   }
 
-  // TODO(sunnyps): Software compositor only supports RGBA_8888 format, and
-  // AllocateSharedBitmap has a DCHECK for that, but we still allocate an F16
-  // buffer (of twice the size) so that there's no invalid memory access at
-  // runtime in ReadBackFramebuffer in release mode. Fixing this is non-trivial,
-  // so it will be done in a follow-up CL.
-  viz::ResourceFormat format = viz::RGBA_8888;
-  if (use_half_float_storage_)
-    format = viz::RGBA_F16;
-
   *out_resource = viz::TransferableResource::MakeSoftware(
-      registered.bitmap->id(), static_cast<gfx::Size>(size_), format);
+      registered.bitmap->id(), static_cast<gfx::Size>(size_), viz::RGBA_8888);
   out_resource->color_space = storage_color_space_;
 
   // This holds a ref on the DrawingBuffer that will keep it alive until the
@@ -1436,21 +1434,22 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     SourceDrawingBuffer source_buffer) {
   ScopedStateRestorer scoped_state_restorer(this);
 
-  int width = Size().Width();
-  int height = Size().Height();
-
-  base::CheckedNumeric<int> data_size = 4;
-  data_size *= width;
-  data_size *= height;
+  // Readback in native GL byte order (RGBA).
+  SkColorType color_type = kRGBA_8888_SkColorType;
+  base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::CanvasColorManagementEnabled() &&
-      use_half_float_storage_) {
-    data_size *= 2;
+      back_color_buffer_->format == viz::RGBA_F16) {
+    color_type = kRGBA_F16_SkColorType;
+    row_bytes *= 2;
   }
+  row_bytes *= Size().Width();
+
+  base::CheckedNumeric<size_t> num_rows = Size().Height();
+  base::CheckedNumeric<size_t> data_size = num_rows * row_bytes;
   if (!data_size.IsValid())
     return nullptr;
 
-  unsigned byte_length = data_size.ValueOrDie<unsigned>();
-  sk_sp<SkData> dst_buffer = TryAllocateSkData(byte_length);
+  sk_sp<SkData> dst_buffer = TryAllocateSkData(data_size.ValueOrDie());
   if (!dst_buffer)
     return nullptr;
 
@@ -1466,10 +1465,11 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
   }
 
-  auto* writable_data = static_cast<uint8_t*>(dst_buffer->writable_data());
-  ReadBackFramebuffer(writable_data, width, height, kReadbackRGBA,
+  auto pixels = base::span<uint8_t>(
+      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
+  ReadBackFramebuffer(pixels, color_type,
                       WebGLImageConversion::kAlphaDoNothing);
-  FlipVertically(writable_data, width, height);
+  FlipVertically(pixels, num_rows.ValueOrDie(), row_bytes.ValueOrDie());
 
   if (fbo) {
     gl_->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
@@ -1480,10 +1480,8 @@ sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
   return dst_buffer;
 }
 
-void DrawingBuffer::ReadBackFramebuffer(unsigned char* pixels,
-                                        int width,
-                                        int height,
-                                        ReadbackOrder readback_order,
+void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
+                                        SkColorType color_type,
                                         WebGLImageConversion::AlphaOp op) {
   DCHECK(state_restorer_);
   state_restorer_->SetPixelPackParametersDirty();
@@ -1498,60 +1496,39 @@ void DrawingBuffer::ReadBackFramebuffer(unsigned char* pixels,
   }
 
   GLenum data_type = GL_UNSIGNED_BYTE;
-  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled() &&
-      use_half_float_storage_) {
-    if (webgl_version_ > kWebGL1)
-      data_type = GL_HALF_FLOAT;
-    else
-      data_type = GL_HALF_FLOAT_OES;
-  }
-  gl_->ReadPixels(0, 0, width, height, GL_RGBA, data_type, pixels);
 
-  size_t buffer_size = 4 * width * height;
-  if (data_type != GL_UNSIGNED_BYTE)
-    buffer_size *= 2;
+  base::CheckedNumeric<size_t> expected_data_size = 4;
+  expected_data_size *= Size().Width();
+  expected_data_size *= Size().Height();
+
+  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled() &&
+      color_type == kRGBA_F16_SkColorType) {
+    data_type = (webgl_version_ > kWebGL1) ? GL_HALF_FLOAT : GL_HALF_FLOAT_OES;
+    expected_data_size *= 2;
+  }
+
+  DCHECK_EQ(expected_data_size.ValueOrDie(), pixels.size());
+
+  gl_->ReadPixels(0, 0, Size().Width(), Size().Height(), GL_RGBA, data_type,
+                  pixels.data());
+
   // For half float storage Skia order is RGBA, hence no swizzling is needed.
-  if (readback_order == kReadbackSkia && data_type == GL_UNSIGNED_BYTE) {
-#if (SK_R32_SHIFT == 16) && !SK_B32_SHIFT
+  if (color_type == kBGRA_8888_SkColorType) {
     // Swizzle red and blue channels to match SkBitmap's byte ordering.
     // TODO(kbr): expose GL_BGRA as extension.
-    for (size_t i = 0; i < buffer_size; i += 4) {
+    for (size_t i = 0; i < pixels.size(); i += 4) {
       std::swap(pixels[i], pixels[i + 2]);
     }
-#endif
   }
 
   if (op == WebGLImageConversion::kAlphaDoPremultiply) {
-    auto color_type = kRGBA_8888_SkColorType;
-    if (data_type != GL_UNSIGNED_BYTE)
-      color_type = kRGBA_F16_SkColorType;
-    const auto src =
-        SkImageInfo::Make(width, height, color_type, kUnpremul_SkAlphaType);
-    const auto dst =
-        SkImageInfo::Make(width, height, color_type, kPremul_SkAlphaType);
-    SkPixmap{src, pixels, src.minRowBytes()}.readPixels(
-        SkPixmap{dst, pixels, dst.minRowBytes()});
+    for (size_t i = 0; i < pixels.size(); i += 4) {
+      uint8_t alpha = pixels[i + 3];
+      for (size_t j = 0; j < 3; j++)
+        pixels[i + j] = (pixels[i + j] * alpha + 127) / 255;
+    }
   } else if (op != WebGLImageConversion::kAlphaDoNothing) {
     NOTREACHED();
-  }
-}
-
-void DrawingBuffer::FlipVertically(uint8_t* framebuffer,
-                                   int width,
-                                   int height) {
-  unsigned row_bytes = width * 4;
-  if (RuntimeEnabledFeatures::CanvasColorManagementEnabled() &&
-      use_half_float_storage_) {
-    row_bytes *= 2;
-  }
-  Vector<uint8_t> scanline(row_bytes);
-  unsigned count = height / 2;
-  for (unsigned i = 0; i < count; i++) {
-    uint8_t* row_a = framebuffer + i * row_bytes;
-    uint8_t* row_b = framebuffer + (height - i - 1) * row_bytes;
-    memcpy(scanline.data(), row_b, row_bytes);
-    memcpy(row_b, row_a, row_bytes);
-    memcpy(row_a, scanline.data(), row_bytes);
   }
 }
 
