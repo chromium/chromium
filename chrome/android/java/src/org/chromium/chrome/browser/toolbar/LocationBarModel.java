@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.chrome.browser.incognito.IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid;
+
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -276,12 +278,18 @@ public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPrope
     public Profile getProfile() {
         Profile lastUsedRegularProfile = Profile.getLastUsedRegularProfile();
         if (mIsIncognito) {
+            // If the mTab belongs to a CustomTabActivity then we return the non-primary OTR profile
+            // which is associated with it. For all other cases we return the primary OTR profile.
+            Profile nonPrimaryOTRProfile =
+                    getNonPrimaryOTRProfileFromWindowAndroid(mTab.getWindowAndroid());
+            if (nonPrimaryOTRProfile != null) return nonPrimaryOTRProfile;
+
             // When in overview mode with no open tabs, there has not been created an
-            // OffTheRecordProfile yet. #getOffTheRecordProfile will create a profile if none
+            // OTR profile yet. #getOffTheRecordProfile will create a profile if none
             // exists.
-            assert lastUsedRegularProfile.hasOffTheRecordProfile()
-                    || isInOverviewAndShowingOmnibox();
-            return lastUsedRegularProfile.getOffTheRecordProfile();
+            assert lastUsedRegularProfile.hasPrimaryOTRProfile() || isInOverviewAndShowingOmnibox();
+            // Return the primary OTR profile.
+            return lastUsedRegularProfile.getPrimaryOTRProfile();
         }
         return lastUsedRegularProfile;
     }

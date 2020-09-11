@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -20,12 +21,14 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
 import java.util.HashSet;
@@ -159,6 +162,26 @@ public class IncognitoUtils {
                         intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
                 || IntentUtils.safeGetBooleanExtra(
                         intent, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+    }
+
+    /**
+     * Returns the non primary OTR profile if any that is associated with a |windowAndroid|
+     * instance, otherwise null.
+     * <p>
+     * A non primary OTR profile is associated only for the case of incognito CustomTabActivity.
+     * <p>
+     * @param windowAndroid The {@link WindowAndroid} instance for which the non primary OTR
+     *         profile is queried.
+     */
+    public static @Nullable Profile getNonPrimaryOTRProfileFromWindowAndroid(
+            @Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return null;
+
+        CustomTabIncognitoManager customTabIncognitoManager =
+                CustomTabIncognitoManager.from(windowAndroid);
+
+        if (customTabIncognitoManager == null) return null;
+        return customTabIncognitoManager.getProfile();
     }
 
     @VisibleForTesting

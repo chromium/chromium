@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Named;
 
@@ -101,6 +102,11 @@ public class ChromeActivityCommonsModule {
         // Ideally providing Context or Activity should be enough, but currently a lot of code is
         // coupled specifically to ChromeActivity.
         return mActivity;
+    }
+
+    @Provides
+    public WindowAndroid provideWindowAndroid() {
+        return mActivity.getWindowAndroid();
     }
 
     @Provides
