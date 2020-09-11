@@ -642,6 +642,7 @@ crbug.com/1056830 [ android qualcomm-adreno-(tm)-420 ] conformance/extensions/we
 crbug.com/1083320 [ android qualcomm-adreno-(tm)-430 ] conformance/misc/uninitialized-test.html [ Skip ]
 crbug.com/1056830 [ android qualcomm-adreno-(tm)-430 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1122644 [ android qualcomm-adreno-(tm)-420 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
+crbug.com/1127140 [ android qualcomm-adreno-(tm)-420 ] conformance/extensions/webgl-draw-buffers-framebuffer-unsupported.html [ Skip ]
 
 # This test is skipped because running it causes a future test to fail.
 # The list of tests which may be that future test is very long. It is
