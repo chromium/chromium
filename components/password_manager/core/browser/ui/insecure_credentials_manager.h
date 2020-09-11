@@ -59,6 +59,14 @@ constexpr InsecureCredentialTypeFlags& operator|=(
   return lhs;
 }
 
+// Unsets the bit responsible for the weak credential in the |flag|.
+constexpr InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
+    InsecureCredentialTypeFlags flag) {
+  return static_cast<InsecureCredentialTypeFlags>(
+      static_cast<int>(flag) &
+      ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
+}
+
 // Checks that |flag| contains at least one of compromised types.
 constexpr bool IsCompromised(const InsecureCredentialTypeFlags& flag) {
   return (flag & (InsecureCredentialTypeFlags::kCredentialLeaked |

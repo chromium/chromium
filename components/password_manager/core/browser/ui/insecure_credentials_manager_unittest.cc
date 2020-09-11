@@ -78,14 +78,24 @@ LeakCheckCredential MakeLeakCredential(base::StringPiece username,
 }
 
 CredentialWithPassword MakeCompromisedCredential(
-    PasswordForm form,
-    CompromisedCredentials credential) {
+    const PasswordForm& form,
+    const CompromisedCredentials& credential) {
   CredentialWithPassword credential_with_password((CredentialView(form)));
   credential_with_password.create_time = credential.create_time;
   credential_with_password.insecure_type =
       credential.compromise_type == CompromiseType::kLeaked
           ? InsecureCredentialTypeFlags::kCredentialLeaked
           : InsecureCredentialTypeFlags::kCredentialPhished;
+  return credential_with_password;
+}
+
+CredentialWithPassword MakeWeakAndCompromisedCredential(
+    const PasswordForm& form,
+    const CompromisedCredentials& credential) {
+  CredentialWithPassword credential_with_password =
+      MakeCompromisedCredential(form, credential);
+  credential_with_password.insecure_type |=
+      InsecureCredentialTypeFlags::kWeakCredential;
   return credential_with_password;
 }
 
@@ -102,6 +112,22 @@ class InsecureCredentialsManagerTest : public ::testing::Test {
   InsecureCredentialsManager& provider() { return provider_; }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
+
+  // Returns saved password if it matches with |signon_realm| and |username|.
+  // Otherwise, returns an empty string, because the saved password should never
+  // be empty, unless it's a federated credential or "Never save" entry.
+  std::string GetSavedPasswordForUsername(const std::string& signon_realm,
+                                          const std::string& username) {
+    SavedPasswordsPresenter::SavedPasswordsView saved_passwords =
+        presenter_.GetSavedPasswords();
+    for (const auto& form : saved_passwords) {
+      if (form.signon_realm == signon_realm &&
+          form.username_value == base::UTF8ToUTF16(username)) {
+        return base::UTF16ToUTF8(form.password_value);
+      }
+    }
+    return std::string();
+  }
 
  private:
   base::test::TaskEnvironment task_env_{
@@ -647,11 +673,57 @@ TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
   CredentialWithPassword expected =
       MakeCompromisedCredential(password_form, credential);
 
-  provider().UpdateCredential(expected, kPassword2);
+  EXPECT_TRUE(provider().UpdateCredential(expected, kPassword2));
   RunUntilIdle();
   expected.password = base::UTF8ToUTF16(kPassword2);
 
   EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected));
+}
+
+// Test verifies that editing weak credential via provider has affect on weak
+// credentials and updates password in the store.
+TEST_F(InsecureCredentialsManagerTest, UpdateWeakPassword) {
+  PasswordForm password_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+
+  store().AddLogin(password_form);
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  EXPECT_EQ(provider().GetWeakCredentials().size(), 1u);
+  EXPECT_TRUE(provider().UpdateCredential(CredentialView(password_form),
+                                          kStrongPassword1));
+  RunUntilIdle();
+
+  EXPECT_THAT(provider().GetWeakCredentials(), IsEmpty());
+  EXPECT_EQ(GetSavedPasswordForUsername(kExampleCom, kUsername1),
+            kStrongPassword1);
+}
+
+// Test verifies that editing credential that is weak and compromised via
+// provider change the saved password.
+TEST_F(InsecureCredentialsManagerTest, UpdateInsecurePassword) {
+  PasswordForm password_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+  CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
+
+  store().AddLogin(password_form);
+  store().AddCompromisedCredentials(credential);
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  CredentialWithPassword expected =
+      MakeWeakAndCompromisedCredential(password_form, credential);
+  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
+  EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected));
+
+  EXPECT_TRUE(provider().UpdateCredential(expected, kStrongPassword1));
+  RunUntilIdle();
+
+  EXPECT_EQ(GetSavedPasswordForUsername(kExampleCom, kUsername1),
+            kStrongPassword1);
 }
 
 TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
@@ -672,6 +744,42 @@ TEST_F(InsecureCredentialsManagerTest, RemoveCompromisedCredential) {
   EXPECT_TRUE(provider().RemoveCredential(expected));
   RunUntilIdle();
   EXPECT_THAT(provider().GetCompromisedCredentials(), IsEmpty());
+}
+
+TEST_F(InsecureCredentialsManagerTest, RemoveWeakCredential) {
+  PasswordForm password =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+
+  store().AddLogin(password);
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  EXPECT_EQ(provider().GetWeakCredentials().size(), 1u);
+  EXPECT_TRUE(provider().RemoveCredential(CredentialView(password)));
+  RunUntilIdle();
+  EXPECT_THAT(GetSavedPasswordForUsername(kExampleCom, kUsername1), IsEmpty());
+}
+
+TEST_F(InsecureCredentialsManagerTest, RemoveInsecureCredential) {
+  PasswordForm password_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1);
+  CompromisedCredentials credential = MakeCompromised(kExampleCom, kUsername1);
+
+  store().AddLogin(password_form);
+  store().AddCompromisedCredentials(credential);
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  CredentialWithPassword expected =
+      MakeWeakAndCompromisedCredential(password_form, credential);
+  EXPECT_THAT(provider().GetWeakCredentials(), ElementsAre(expected));
+  EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected));
+
+  EXPECT_TRUE(provider().RemoveCredential(expected));
+  RunUntilIdle();
+  EXPECT_THAT(GetSavedPasswordForUsername(kExampleCom, kUsername1), IsEmpty());
 }
 
 namespace {
@@ -695,7 +803,7 @@ class InsecureCredentialsManagerWithTwoStoresTest : public ::testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::TaskEnvironment task_env_;
   scoped_refptr<TestPasswordStore> profile_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
@@ -820,6 +928,27 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
   // It should have been removed from both stores.
   EXPECT_TRUE(profile_store().stored_passwords().at(kExampleCom).empty());
   EXPECT_TRUE(account_store().stored_passwords().at(kExampleCom).empty());
+}
+
+TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
+  // Add `kUsername1`,`kPassword1` to both stores.
+  profile_store().AddLogin(
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  account_store().AddLogin(
+      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+  RunUntilIdle();
+  provider().StartWeakCheck();
+  RunUntilIdle();
+
+  // Now remove the weak credential
+  EXPECT_TRUE(provider().RemoveCredential(
+      CredentialView(kExampleCom, GURL(), base::ASCIIToUTF16(kUsername1),
+                     base::ASCIIToUTF16(kWeakPassword1))));
+  RunUntilIdle();
+
+  // It should have been removed from both stores.
+  EXPECT_THAT(profile_store().stored_passwords().at(kExampleCom), IsEmpty());
+  EXPECT_THAT(account_store().stored_passwords().at(kExampleCom), IsEmpty());
 }
 
 }  // namespace password_manager

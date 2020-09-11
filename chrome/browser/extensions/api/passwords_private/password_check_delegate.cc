@@ -73,14 +73,6 @@ std::unique_ptr<std::string> GetChangePasswordUrl(const GURL& url) {
       password_manager::CreateChangePasswordUrl(url).spec());
 }
 
-// Unsets the bit responsible for the weak credential in the |flag|.
-InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
-    InsecureCredentialTypeFlags flag) {
-  return static_cast<InsecureCredentialTypeFlags>(
-      static_cast<int>(flag) &
-      ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
-}
-
 }  // namespace
 
 // Key used to attach UserData to a LeakCheckCredential.
