@@ -180,10 +180,6 @@ base::string16 MessageBoxDialog::GetWindowTitle() const {
   return window_title_;
 }
 
-ui::ModalType MessageBoxDialog::GetModalType() const {
-  return is_system_modal_ ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_WINDOW;
-}
-
 views::View* MessageBoxDialog::GetContentsView() {
   return message_box_view_;
 }
@@ -210,8 +206,13 @@ MessageBoxDialog::MessageBoxDialog(const base::string16& title,
                                    bool is_system_modal)
     : window_title_(title),
       type_(type),
-      message_box_view_(new views::MessageBoxView(message)),
-      is_system_modal_(is_system_modal) {
+      message_box_view_(new views::MessageBoxView(message)) {
+#if defined(OS_CHROMEOS)
+  SetModalType(is_system_modal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_WINDOW);
+#else
+  DCHECK(!is_system_modal);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+#endif
   SetButtons(type_ == chrome::MESSAGE_BOX_TYPE_QUESTION
                  ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
                  : ui::DIALOG_BUTTON_OK);

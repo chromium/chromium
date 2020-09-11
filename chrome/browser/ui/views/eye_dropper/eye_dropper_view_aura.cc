@@ -140,6 +140,7 @@ EyeDropperViewAura::EyeDropperViewAura(content::RenderFrameHost* frame,
       listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>()) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetOwnedByWidget(false);
   SetPreferredSize(gfx::Size(100, 100));
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -247,10 +248,6 @@ void EyeDropperViewAura::WindowClosing() {
   aura::client::GetCursorClient(GetWidget()->GetNativeWindow()->GetRootWindow())
       ->UnlockCursor();
   pre_dispatch_handler_.reset();
-}
-
-ui::ModalType EyeDropperViewAura::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
 }
 
 void EyeDropperViewAura::OnWidgetMove() {

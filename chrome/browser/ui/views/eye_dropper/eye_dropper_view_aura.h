@@ -28,7 +28,6 @@ class EyeDropperViewAura : public content::EyeDropper,
   // views::WidgetDelegateView:
   void OnPaint(gfx::Canvas* canvas) override;
   void WindowClosing() override;
-  ui::ModalType GetModalType() const override;
   void OnWidgetMove() override;
 
  private:

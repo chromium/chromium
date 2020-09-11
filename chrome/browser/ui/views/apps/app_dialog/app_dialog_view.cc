@@ -15,6 +15,7 @@
 AppDialogView::AppDialogView(const gfx::ImageSkia& image)
     : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {
   SetIcon(image);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);
   SetShowIcon(true);
 }
@@ -26,10 +27,6 @@ gfx::Size AppDialogView::CalculatePreferredSize() const {
                                 DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
                             margins().width();
   return gfx::Size(default_width, GetHeightForWidth(default_width));
-}
-
-ui::ModalType AppDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
 }
 
 void AppDialogView::InitializeView(const base::string16& heading_text) {

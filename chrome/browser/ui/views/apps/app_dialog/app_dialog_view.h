@@ -21,7 +21,6 @@ class AppDialogView : public views::BubbleDialogDelegateView {
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
 
  protected:
   void InitializeView(const base::string16& heading_text);
