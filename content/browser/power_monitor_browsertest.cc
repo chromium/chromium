@@ -261,8 +261,13 @@ IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestUtilityProcess) {
   // Verify utility process on_battery_power changed to false.
   VerifyPowerStateInChildProcess(power_monitor_utility.get(), false);
 }
-
-IN_PROC_BROWSER_TEST_F(PowerMonitorTest, TestGpuProcess) {
+// This flakes on Linux TSan: http://crbug.com/1127374
+#if defined(THREAD_SANITIZER)
+#define MAYBE_TestGpuProcess DISABLED_TestGpuProcess
+#else
+#define MAYBE_TestGpuProcess TestGpuProcess
+#endif
+IN_PROC_BROWSER_TEST_F(PowerMonitorTest, MAYBE_TestGpuProcess) {
   // As gpu process is started automatically during the setup period of browser
   // test suite, it may have already started and bound PowerMonitor interface to
   // Device Service before execution of this TestGpuProcess test. So here we
