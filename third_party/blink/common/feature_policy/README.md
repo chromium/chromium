@@ -1,18 +1,19 @@
-## Feature Policy Guide
-### How to add a new feature to feature policy
+## Permissions Policy Guide (Previously Feature Policy)
+Permissions policy is the new name for feature policy with a new HTTP header which uses [structured header](https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html) syntax. Code currently under feature_policy directory in chromium repository has not been renamed yet.
 
-Feature policy (see [spec](https://wicg.github.io/feature-policy/)) is a
+### How to add a new feature to permissions poy
+
+Permissions policy (see [spec](https://w3c.github.io/webappsec-permissions-policy/)) is a
 mechanism that allows developers to selectively enable and disable various
-[browser features and
+[browser features an
 APIs](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/feature_policy/feature_policy.mojom)
-(e.g, "vibrate", "fullscreen", "usb", etc.). A feature policy can be defined
+(e.g, "vibrate", "fullscreen", "usb", etc.). A permissions policy can be defined
 via a HTTP header and/or an iframe "allow" attribute.
 
 Below is an example of a header policy (note that the header should be kept in
 one line, split into multiple for clarity reasons):
 
-    Feature-Policy: vibrate 'none'; geolocation 'self' https://example.com; camera *
-
+    Permissions-Policy: vibrate=(), geolocation=(self https://example.com), camera=*
 
 - `vibrate` is disabled for all browsing contexts;
 - `geolocation` is disabled for all browsing contexts except for its own
@@ -34,12 +35,12 @@ OR
   iframe's `src` attribute.
 
 Combined with a header policy and a container policy, [inherited
-policy](https://wicg.github.io/feature-policy/#inherited-policy) defines the
+policy](https://w3c.github.io/webappsec-permissions-policy/#inherited-policy) defines the
 availability of a feature.
 See more details for how to [define an inherited policy for
-feature](https://wicg.github.io/feature-policy/#define-inherited-policy)
+feature](https://w3c.github.io/webappsec-permissions-policy/#define-inherited-policy)
 
-#### Adding a new feature to feature policy
+#### Adding a new feature to permissions policy
 A step-to-step guide with examples.
 
 ##### Shipping features behind a flag
@@ -47,7 +48,7 @@ If the additional feature is unshipped, or if the correct behaviour with feature
 policy is undetermined, consider shipping the feature behind a runtime-enabled feature.
 
 ##### Define new feature
-1. Feature policy features are defined in
+1. Permissions policy features are defined in
 `third_party/blink/renderer/core/feature_policy/feature_policy_features.json5`. Add the new feature,
 placing any runtime-enabled feature or origin trial dependencies in its "depends_on" field as
 described in the file's comments.
@@ -55,7 +56,7 @@ described in the file's comments.
 2. Append the new feature enum with a brief description as well in
 `third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom`
 
-##### Integrate the feature behaviour with feature policy
+##### Integrate the feature behaviour with permissions policy
 1. The most common way to check if features are enabled is `ExecutionContext::IsFeatureEnabled`.
 
 2. Examples:
@@ -64,14 +65,15 @@ described in the file's comments.
 - `usb`: `USB::getDevices()`
 
 ##### Write web-platform-tests
-To test the new feature with feature policy, refer to
+To test the new feature with permissions policy, refer to
 `third_party/blink/web_tests/external/wpt/feature-policy/README.md` for
-instructions on how to use the feature policy test framework.
+instructions on how to use the permissions policy test framework.
 
 ## Document Policy Guide
 ### How to add a new feature to document policy
 
 Document Policy (see [spec](https://w3c.github.io/webappsec-permissions-policy/document-policy.html)) is a similar mechanism to Feature Policy. It is intended
+
 to cover those kinds of features which don't involve delegation of permission to trusted origins; features which are more about configuring a document, or removing features (sandboxing) from a document or a frame. Document Policy can only be set through HTTP header, and will not inherit to subframes.
 
 Example HTTP header: `Document-Policy: force-load-at-top=?0, lossy-images-max-bpp=1.0`
