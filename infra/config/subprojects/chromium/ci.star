@@ -1478,6 +1478,7 @@ ci.clang_builder(
 
 ci.clang_builder(
     name = "ToTiOS",
+    builderless = False,
     caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
@@ -1493,6 +1494,7 @@ ci.clang_builder(
 
 ci.clang_builder(
     name = "ToTiOSDevice",
+    builderless = False,
     caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
