@@ -3532,6 +3532,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestBlobURL) {
   TestHelper("testBlobURL", "web_view/shim", NEEDS_TEST_SERVER);
 }
 
+// Tests that no error page is shown when WebRequest blocks a navigation.
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestWebRequestBlockedNavigation) {
+  TestHelper("testWebRequestBlockedNavigation", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
 // Tests that a WebView accessible resource can actually be loaded from a
 // webpage in a WebView.
 IN_PROC_BROWSER_TEST_F(WebViewTest, LoadWebviewAccessibleResource) {

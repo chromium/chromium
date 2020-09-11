@@ -700,6 +700,12 @@ class CONTENT_EXPORT NavigationRequest
     return response_body_;
   }
 
+  // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
+  // cancelled by the user and do not commit an error page.
+  void SetSilentlyIgnoreBlockedByClient() {
+    silently_ignore_blocked_by_client_ = true;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1060,6 +1066,14 @@ class CONTENT_EXPORT NavigationRequest
   // valid.
   void SetState(NavigationState state);
 
+  // When a navigation fails, one of two things can happen:
+  // 1) An error page commits and replaces the old document.
+  // 2) The navigation is canceled, and the previous document is kept.
+  //
+  // If appropriate, this applies (2), deletes |this|, and returns true.
+  // In that case, the caller must immediately return.
+  bool MaybeCancelFailedNavigation();
+
   FrameTreeNode* const frame_tree_node_;
 
   // Value of |is_for_commit| supplied to the constructor.
@@ -1407,6 +1421,8 @@ class CONTENT_EXPORT NavigationRequest
   // Whether we're doing a same-site proactive BrowsingInstance swap for this
   // navigation.
   bool did_same_site_proactive_browsing_instance_swap_ = false;
+
+  bool silently_ignore_blocked_by_client_ = false;
 
   // Observers listening to cookie access notifications for the network requests
   // made by this navigation.

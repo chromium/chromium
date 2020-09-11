@@ -92,6 +92,7 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   bool focused() const { return focused_; }
 
   // WebContentsObserver implementation.
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   void RenderProcessGone(base::TerminationStatus status) override;

@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -130,8 +131,6 @@ void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
   // Navigation is disabled in Chrome Apps. We want to make sure guest-initiated
   // navigations still continue to function inside the app.
   renderer_prefs->browser_handles_all_top_level_requests = false;
-  // Disable "client blocked" error page for browser plugin.
-  renderer_prefs->disable_client_blocked_error_page = true;
 
   DCHECK(GetWebContents()->GetRenderViewHost());
 
@@ -252,6 +251,19 @@ void BrowserPluginGuest::SendTextInputTypeChangedToView(
           false, last_text_input_state_->type != ui::TEXT_INPUT_TYPE_NONE);
     }
   }
+}
+
+void BrowserPluginGuest::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  // Originally added to suppress the error page when a navigation is blocked
+  // using the webrequest API in a <webview> guest: https://crbug.com/284741.
+  //
+  // TODO(https://crbug.com/1127132): net::ERR_BLOCKED_BY_CLIENT is used for
+  // many other errors. Figure out what suppression policy is desirable here.
+  //
+  // TODO(mcnee): Investigate moving this out to WebViewGuest.
+  NavigationRequest::From(navigation_handle)
+      ->SetSilentlyIgnoreBlockedByClient();
 }
 
 void BrowserPluginGuest::DidFinishNavigation(

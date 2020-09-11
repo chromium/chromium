@@ -97,10 +97,6 @@ struct RendererPreferences {
   // The accept-languages of the browser, comma-separated.
   string accept_languages;
 
-  // Disables rendering default error page when client choses to block a page.
-  // Corresponds to net::ERR_BLOCKED_BY_CLIENT.
-  bool disable_client_blocked_error_page = false;
-
   // Determines whether plugins are allowed to enter fullscreen mode.
   bool plugin_fullscreen_allowed = true;
 

@@ -6417,12 +6417,6 @@ bool RenderFrameImpl::ShouldDisplayErrorPageForFailedLoad(
   if (error_code == net::ERR_ABORTED)
     CHECK(false);
 
-  // Don't display "client blocked" error page if browser has asked us not to.
-  if (net::IsRequestBlockedError(error_code) &&
-      render_view_->renderer_preferences_.disable_client_blocked_error_page) {
-    return false;
-  }
-
   // Allow the embedder to suppress an error page.
   if (GetContentClient()->renderer()->ShouldSuppressErrorPage(
           this, unreachable_url, error_code)) {

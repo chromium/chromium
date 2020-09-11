@@ -25,6 +25,8 @@ embedder.setUp_ = function(config) {
     return;
   }
   embedder.baseGuestURL = 'http://localhost:' + config.testServer.port;
+  embedder.echoURL = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/echo.html';
   embedder.emptyGuestURL = embedder.baseGuestURL +
       '/extensions/platform_apps/web_view/shim/empty_guest.html';
   embedder.windowOpenGuestURL = embedder.baseGuestURL +
@@ -3277,6 +3279,36 @@ function testSelectPopupPositionInMac() {
   document.body.appendChild(webview);
 }
 
+function testWebRequestBlockedNavigation() {
+  var webview = new WebView();
+  webview.addEventListener('loadcommit', (e) => {
+    // Cancel all subsequent requests.
+    webview.request.onHeadersReceived.addListener(() => {
+      return {cancel: true};
+    }, {urls: ['<all_urls>']}, ['blocking']);
+
+    // TODO(mcnee): Consider testing that a 'loadabort' event is fired as well.
+
+    // When a request is cancelled, it will eventually fire a loadstop event. If
+    // webview hasn't been navigated away from the echo page to an error page,
+    // it will echo MessageEvent.data back.
+    webview.addEventListener('loadstop', () => {
+      // Note: simply checking `src` doesn't work here, since it's set to the
+      // URL of the last attempted navigation (which was blocked).
+      // TODO(https://crbug.com/1126515): Clarify/figure out how the src
+      // attribute should behave.
+      webview.contentWindow.postMessage('moo', '*');
+    });
+    window.addEventListener('message', (e) => {
+      embedder.test.assertEq('moo', e.data);
+      embedder.test.succeed();
+    });
+    webview.src = embedder.emptyGuestURL;
+  });
+  webview.src = embedder.echoURL;
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3401,7 +3433,8 @@ embedder.test.testList = {
        testRendererNavigationRedirectWhileUnattached,
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
-  'testSelectPopupPositionInMac': testSelectPopupPositionInMac
+  'testSelectPopupPositionInMac': testSelectPopupPositionInMac,
+  'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation
 };
 
 onload = function() {
