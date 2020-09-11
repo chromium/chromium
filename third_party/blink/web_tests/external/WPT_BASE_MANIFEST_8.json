@@ -239696,6 +239696,14 @@
       "assertions.js": [
        "b539513adcab7d84e67d65fcf97453e9bc22de43",
        []
+      ],
+      "constructor.any-expected.txt": [
+       "ae32ce6cca10e6508d7166ba651bacc529fe53cf",
+       []
+      ],
+      "constructor.any.worker-expected.txt": [
+       "ae32ce6cca10e6508d7166ba651bacc529fe53cf",
+       []
       ]
      },
      "proto-from-ctor-realm-expected.txt": [
@@ -239712,7 +239720,7 @@
      ],
      "table": {
       "assertions.js": [
-       "b1aeaf1a65dab748c56c8cdf9c1393f97bfdf0e5",
+       "19cc5c3b92d6fa6748c3831f3629c92b62ed757f",
        []
       ],
       "grow-reftypes.tentative.any-expected.txt": [
@@ -400069,8 +400077,31 @@
         }
        ]
       ],
+      "constructor-types.tentative.any.js": [
+       "764aac78670c5d0711345434060801b76eeb2291",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/memory/assertions.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "constructor.any.js": [
-       "6524c8acc49016e10746d686c860eeba6fd3c16d",
+       "30cc8ef9885fe0507bcea15aa88ac57a2bd4c124",
        [
         null,
         {
@@ -400545,8 +400576,31 @@
       ]
      ],
      "table": {
+      "constructor-types.tentative.any.js": [
+       "09ab18a2d8cec7443eb58eee81f0ef7b86aacb41",
+       [
+        null,
+        {
+         "jsshell": true,
+         "script_metadata": [
+          [
+           "global",
+           "jsshell"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/table/assertions.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "constructor.any.js": [
-       "e9e77a132b76a479a2895c18c69b402be71fe3e7",
+       "794976e8266f9ed0ebda0fc49ec9a92ca7c890c4",
        [
         null,
         {
@@ -400559,6 +400613,10 @@
           [
            "script",
            "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/table/assertions.js"
           ]
          ]
         }
@@ -400574,6 +400632,10 @@
           [
            "script",
            "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/table/assertions.js"
           ]
          ]
         }
@@ -400589,6 +400651,10 @@
           [
            "script",
            "/wasm/jsapi/assertions.js"
+          ],
+          [
+           "script",
+           "/wasm/jsapi/table/assertions.js"
           ]
          ]
         }
