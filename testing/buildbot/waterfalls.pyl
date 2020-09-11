@@ -5288,6 +5288,9 @@
           'isolated_scripts': 'client_v8_chromium_isolated_scripts',
         },
       },
+      'Linux V8 API Stability': {
+        'additional_compile_targets': ['all'],
+      },
     },
   },
   {
@@ -5424,6 +5427,7 @@
         'additional_compile_targets': [
           'accessibility_unittests',
           'aura_unittests',
+          'blink_tests',
           'browser_tests',
           'capture_unittests',
           'cast_unittests',
@@ -5442,6 +5446,7 @@
           'extensions_unittests',
           'gcm_unit_tests',
           'gfx_unittests',
+          'gin_unittests',
           'google_apis_unittests',
           'gpu_unittests',
           'interactive_ui_tests',
@@ -5453,6 +5458,8 @@
           'nacl_loader_unittests',
           'net_unittests',
           'pdf_unittests',
+          'pdfium_test',
+          'postmortem-metadata',
           'ppapi_unittests',
           'printing_unittests',
           'remoting_unittests',
