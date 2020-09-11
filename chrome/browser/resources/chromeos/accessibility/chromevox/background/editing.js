@@ -54,13 +54,19 @@ editing.TextEditHandler = class {
     this.editableText_;
 
     chrome.automation.getDesktop(function(desktop) {
+      // ChromeVox handles two general groups of text fields:
       // A rich text field is one where selection gets placed on a DOM
       // descendant to a root text field. This is one of:
       // - content editables (detected via richly editable state)
+      // - text areas (<textarea>) detected via its html tag
       //
-      // The only other editables we expect are all single line (including those
-      // from ARC++).
-      const useRichText = node.state[StateType.RICHLY_EDITABLE];
+      // A non-rich text field is one where accessibility only provides a value,
+      // and a pair of numbers for the selection start and end. ChromeVox places
+      // single-lined text fields, including those from web content, and ARC++
+      // in this group. In addition, multiline ARC++ text fields are treated
+      // this way.
+      const useRichText =
+          node.state[StateType.RICHLY_EDITABLE] || node.htmlTag === 'textarea';
 
       this.editableText_ = useRichText ? new AutomationRichEditableText(node) :
                                          new AutomationEditableText(node);

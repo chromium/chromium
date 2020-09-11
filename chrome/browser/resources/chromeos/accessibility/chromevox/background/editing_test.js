@@ -82,13 +82,13 @@ TEST_F('ChromeVoxEditingTest', 'Multiline', function() {
             {startIndex: 9, endIndex: 9})
         .call(textarea.setSelection.bind(textarea, 1, 1))
         .expectSpeech('i')
-        .expectBraille('Line 1 mled', {startIndex: 1, endIndex: 1})
+        .expectBraille('Line 1\nmled', {startIndex: 1, endIndex: 1})
         .call(textarea.setSelection.bind(textarea, 7, 7))
         .expectSpeech('line 2')
-        .expectBraille('line 2', {startIndex: 0, endIndex: 0})
+        .expectBraille('line 2\n', {startIndex: 0, endIndex: 0})
         .call(textarea.setSelection.bind(textarea, 7, 13))
         .expectSpeech('line 2', 'selected')
-        .expectBraille('line 2', {startIndex: 0, endIndex: 6});
+        .expectBraille('line 2\n', {startIndex: 0, endIndex: 6});
 
     mockFeedback.replay();
   });
@@ -1369,11 +1369,11 @@ TEST_F('ChromeVoxEditingTest', 'TextAreaBrailleEmptyLine', function() {
     this.listenOnce(textarea, 'focus', function() {
       this.listenOnce(textarea, 'valueChanged', function() {
         mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('\n');
-        mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('two');
-        mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('one');
+        mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('two\n');
+        mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('one\n');
         mockFeedback.call(this.press(38 /* up arrow */)).expectBraille('\n');
         mockFeedback.call(this.press(38 /* up arrow */))
-            .expectBraille('test mled')
+            .expectBraille('test\nmled')
             .replay();
       });
     });

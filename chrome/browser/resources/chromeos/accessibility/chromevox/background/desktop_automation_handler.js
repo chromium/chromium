@@ -356,7 +356,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // Document selections only apply to rich editables, text selections to
     // non-rich editables.
     if (evt.type != EventType.DOCUMENT_SELECTION_CHANGED &&
-        evt.target.state[StateType.RICHLY_EDITABLE]) {
+        (evt.target.state[StateType.RICHLY_EDITABLE] ||
+         evt.target.htmlTag === 'textarea')) {
       return;
     }
 

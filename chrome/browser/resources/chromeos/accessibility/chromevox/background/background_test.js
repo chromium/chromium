@@ -1588,6 +1588,21 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', function() {
               .call(textArea.focus.bind(textArea))
               .expectSpeech('Text area')
               .call(assertBeginning.bind(this, true))
+              .call(assertEnd.bind(this, false))
+
+              .call(press(40 /* ArrowDown */))
+              .expectSpeech('is')
+              .call(assertBeginning.bind(this, false))
+              .call(assertEnd.bind(this, false))
+
+              .call(press(40 /* ArrowDown */))
+              .expectSpeech('a')
+              .call(assertBeginning.bind(this, false))
+              .call(assertEnd.bind(this, false))
+
+              .call(press(40 /* ArrowDown */))
+              .expectSpeech('test')
+              .call(assertBeginning.bind(this, false))
               .call(assertEnd.bind(this, true))
 
               .replay();
