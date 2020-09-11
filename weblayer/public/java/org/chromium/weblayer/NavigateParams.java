@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 public class NavigateParams {
     private org.chromium.weblayer_private.interfaces.NavigateParams mInterfaceParams =
             new org.chromium.weblayer_private.interfaces.NavigateParams();
+    private boolean mIntentProcessingDisabled;
 
     /**
      * A Builder class to help create NavigateParams.
@@ -45,9 +46,50 @@ public class NavigateParams {
             mParams.mInterfaceParams.mShouldReplaceCurrentEntry = replace;
             return this;
         }
+
+        /**
+         * Disables lookup and launching of an Intent that matches the uri being navigated to. If
+         * this is not called, WebLayer may look for a matching intent-filter, and if one is found,
+         * create and launch an Intent. The exact heuristics of when Intent matching is performed
+         * depends upon a wide range of state (such as the uri being navigated to, navigation
+         * stack...).
+         *
+         * @since 86
+         */
+        @NonNull
+        public Builder disableIntentProcessing() {
+            if (WebLayer.getSupportedMajorVersionInternal() < 86) {
+                throw new UnsupportedOperationException();
+            }
+            mParams.mIntentProcessingDisabled = true;
+            return this;
+        }
     }
 
     org.chromium.weblayer_private.interfaces.NavigateParams toInterfaceParams() {
         return mInterfaceParams;
+    }
+
+    /**
+     * Returns true if the current navigation will be replaced, false otherwise.
+     *
+     * @since 83
+     */
+    public boolean getShouldReplaceCurrentEntry() {
+        return mInterfaceParams.mShouldReplaceCurrentEntry;
+    }
+
+    /**
+     * Returns true if intent processing is disabled.
+     *
+     * @return Whether intent process is disabled.
+     *
+     * @since 86
+     */
+    public boolean isIntentProcessingDisabled() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
+            throw new UnsupportedOperationException();
+        }
+        return mIntentProcessingDisabled;
     }
 }

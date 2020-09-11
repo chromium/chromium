@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
+import org.chromium.weblayer.NavigateParams;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabListCallback;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -531,5 +532,36 @@ public class ExternalNavigationTest {
         Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
         Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
         Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+    }
+
+    /**
+     * Verifies that disableIntentProcessing() does in fact disable intent processing.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(86)
+    public void testDisableIntentProcessing() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        String url = mActivityTestRule.getTestDataURL(PAGE_THAT_INTENTS_TO_CHROME_ON_LOAD_FILE);
+
+        Tab tab = mActivityTestRule.getActivity().getTab();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+            navigateParamsBuilder.disableIntentProcessing();
+            tab.getNavigationController().navigate(Uri.parse(url), navigateParamsBuilder.build());
+        });
+
+        NavigationWaiter waiter = new NavigationWaiter(
+                INTENT_TO_CHROME_URL, tab, /*expectFailure=*/true, /*waitForPaint=*/false);
+        waiter.waitForNavigation();
+
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // The current URL should not have changed.
+        Assert.assertEquals(url, mActivityTestRule.getCurrentDisplayUrl());
     }
 }
