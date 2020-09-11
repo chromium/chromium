@@ -62,7 +62,7 @@ struct PRINTING_EXPORT AdvancedCapability {
   AdvancedCapability(const AdvancedCapability& other);
   ~AdvancedCapability();
 
-  enum class Type : uint8_t { kNone = 0, kBoolean, kFloat, kInteger, kString };
+  enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
 
   // IPP identifier of the attribute.
   std::string name;
