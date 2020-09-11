@@ -1479,30 +1479,30 @@ ci.clang_builder(
 
 ci.clang_builder(
     name = "ToTiOS",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "sim",
     ),
     cores = None,
-    os = os.MAC_10_14,
+    os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
     ssd = True,
 )
 
 ci.clang_builder(
     name = "ToTiOSDevice",
-    caches = [xcode_cache.x11e146],
+    caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "iOS|public",
         short_name = "dev",
     ),
     cores = None,
-    os = os.MAC_10_14,
+    os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "11e146",
+        "xcode_build_version": "12a8189n",
     },
     ssd = True,
 )
