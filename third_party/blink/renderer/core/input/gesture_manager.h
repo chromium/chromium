@@ -34,12 +34,25 @@ class CORE_EXPORT GestureManager final
   void Trace(Visitor*) const;
 
   void Clear();
+  void ResetLongTapContextMenuStates();
 
   HitTestRequest::HitTestRequestType GetHitTypeForGestureType(
       WebInputEvent::Type);
   WebInputEventResult HandleGestureEventInFrame(
       const GestureEventWithHitTestResults&);
-  bool LongTapShouldInvokeContextMenu() const;
+  bool GestureContextMenuDeferred() const;
+
+  // Dispatches contextmenu event for drag-ends that haven't really dragged
+  // except for a few pixels.
+  //
+  // The reason for handling this in GestureManager is the similarity of the
+  // interaction with long taps.  When a drag ends without a drag offset, it is
+  // effectively a long tap but with one difference: there is no gesture long
+  // tap event.  This is because the drag controller interrupts current gesture
+  // sequence (cancelling the gesture) at the moment a drag begins, and the
+  // gesture recognizer does not know if the drag has ended at the originating
+  // position.
+  void SendContextMenuEventTouchDragEnd(const WebMouseEvent&);
 
  private:
   WebInputEventResult HandleGestureShowPress();
@@ -76,7 +89,9 @@ class CORE_EXPORT GestureManager final
   // firing for the current gesture sequence (i.e. until next GestureTapDown).
   bool suppress_mouse_events_from_gestures_;
 
-  bool long_tap_should_invoke_context_menu_;
+  bool gesture_context_menu_deferred_;
+
+  gfx::PointF long_press_position_in_root_frame_;
 
   const Member<SelectionController> selection_controller_;
 };

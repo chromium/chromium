@@ -2940,6 +2940,84 @@ TEST_F(WebViewTest, TouchCancelOnStartDragging) {
   EXPECT_EQ("touchcancel", web_view->MainFrameImpl()->GetDocument().Title());
 }
 
+// Tests that a touch drag context menu is enabled, a dragend shows a context
+// menu when there is no drag.
+TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  pointer_down.SetPositionInScreen(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(
+      TapElementById(WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+
+  // Simulate the end of a non-moving drag.
+  const gfx::PointF dragend_point(250, 8);
+  web_view->MainFrameWidgetBase()->DragSourceEndedAt(
+      dragend_point, dragend_point, kWebDragOperationNone);
+  EXPECT_TRUE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+}
+
+// Tests that a touch drag context menu is enabled, a dragend does not show a
+// context menu after a drag.
+TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
+  RegisterMockedHttpURLLoad("long_press_draggable_div.html");
+
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_draggable_div.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->SettingsImpl()->SetTouchDragEndContextMenu(true);
+  web_view->MainFrameWidget()->Resize(WebSize(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebPointerEvent pointer_down(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kTouch), 5, 5);
+  pointer_down.SetPositionInWidget(250, 8);
+  pointer_down.SetPositionInScreen(250, 8);
+  web_view->MainFrameWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(pointer_down, ui::LatencyInfo()));
+  web_view->MainFrameWidget()->DispatchBufferedTouchEvents();
+
+  WebString target_id = WebString::FromUTF8("target");
+
+  // Simulate long press to start dragging.
+  EXPECT_TRUE(
+      TapElementById(WebInputEvent::Type::kGestureLongPress, target_id));
+  EXPECT_EQ("dragstart", web_view->MainFrameImpl()->GetDocument().Title());
+
+  // Simulate the end of a drag.
+  const gfx::PointF dragend_point(270, 28);
+  web_view->MainFrameWidgetBase()->DragSourceEndedAt(
+      dragend_point, dragend_point, kWebDragOperationNone);
+  EXPECT_FALSE(
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
+}
+
 TEST_F(WebViewTest, showContextMenuOnLongPressingLinks) {
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 

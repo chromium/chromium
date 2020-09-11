@@ -363,6 +363,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // default value depends on the platform.
   bool touch_drag_drop_enabled;
 
+  // Whether the end of a drag fires a contextmenu event and possibly shows a
+  // context-menu (depends on how the event is handled).  Currently touch-drags
+  // cannot show context menus, see crbug.com/1096189.
+  bool touch_dragend_context_menu = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

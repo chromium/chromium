@@ -1512,7 +1512,7 @@ void EventHandler::ResetMousePositionForPointerUnlock() {
 }
 
 bool EventHandler::LongTapShouldInvokeContextMenu() {
-  return gesture_manager_->LongTapShouldInvokeContextMenu();
+  return gesture_manager_->GestureContextMenuDeferred();
 }
 
 WebInputEventResult EventHandler::DispatchMousePointerEvent(
@@ -2296,6 +2296,12 @@ void EventHandler::DragSourceEndedAt(const WebMouseEvent& event,
   }
 
   mouse_event_manager_->DragSourceEndedAt(event, operation);
+
+  if (frame_->GetSettings() &&
+      frame_->GetSettings()->GetTouchDragDropEnabled() &&
+      frame_->GetSettings()->GetTouchDragEndContextMenu()) {
+    gesture_manager_->SendContextMenuEventTouchDragEnd(event);
+  }
 }
 
 void EventHandler::UpdateDragStateAfterEditDragIfNeeded(

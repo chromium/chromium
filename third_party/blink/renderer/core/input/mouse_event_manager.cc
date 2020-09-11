@@ -770,38 +770,39 @@ void MouseEventManager::UpdateSelectionForMouseDrag() {
 
 bool MouseEventManager::HandleDragDropIfPossible(
     const GestureEventWithHitTestResults& targeted_event) {
-  if (frame_->GetSettings() &&
-      frame_->GetSettings()->GetTouchDragDropEnabled() && frame_->View()) {
-    const WebGestureEvent& gesture_event = targeted_event.Event();
-    unsigned modifiers = gesture_event.GetModifiers();
-
-    // TODO(mustaq): Suppressing long-tap MouseEvents could break
-    // drag-drop. Will do separately because of the risk. crbug.com/606938.
-    WebMouseEvent mouse_down_event(
-        WebInputEvent::Type::kMouseDown, gesture_event,
-        WebPointerProperties::Button::kLeft, 1,
-        modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
-            WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
-        base::TimeTicks::Now());
-    mouse_down_ = mouse_down_event;
-
-    WebMouseEvent mouse_drag_event(
-        WebInputEvent::Type::kMouseMove, gesture_event,
-        WebPointerProperties::Button::kLeft, 1,
-        modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
-            WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
-        base::TimeTicks::Now());
-    HitTestRequest request(HitTestRequest::kReadOnly);
-    MouseEventWithHitTestResults mev =
-        event_handling_util::PerformMouseEventHitTest(frame_, request,
-                                                      mouse_drag_event);
-    mouse_down_may_start_drag_ = true;
-    ResetDragSource();
-    mouse_down_pos_ = frame_->View()->ConvertFromRootFrame(
-        FlooredIntPoint(mouse_drag_event.PositionInRootFrame()));
-    return HandleDrag(mev, DragInitiator::kTouch);
+  if (!frame_->GetSettings() ||
+      !frame_->GetSettings()->GetTouchDragDropEnabled() || !frame_->View()) {
+    return false;
   }
-  return false;
+
+  const WebGestureEvent& gesture_event = targeted_event.Event();
+  unsigned modifiers = gesture_event.GetModifiers();
+
+  // TODO(mustaq): Suppressing long-tap MouseEvents could break
+  // drag-drop. Will do separately because of the risk. crbug.com/606938.
+  WebMouseEvent mouse_down_event(
+      WebInputEvent::Type::kMouseDown, gesture_event,
+      WebPointerProperties::Button::kLeft, 1,
+      modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
+          WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
+      base::TimeTicks::Now());
+  mouse_down_ = mouse_down_event;
+
+  WebMouseEvent mouse_drag_event(
+      WebInputEvent::Type::kMouseMove, gesture_event,
+      WebPointerProperties::Button::kLeft, 1,
+      modifiers | WebInputEvent::Modifiers::kLeftButtonDown |
+          WebInputEvent::Modifiers::kIsCompatibilityEventForTouch,
+      base::TimeTicks::Now());
+  HitTestRequest request(HitTestRequest::kReadOnly);
+  MouseEventWithHitTestResults mev =
+      event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                    mouse_drag_event);
+  mouse_down_may_start_drag_ = true;
+  ResetDragSource();
+  mouse_down_pos_ = frame_->View()->ConvertFromRootFrame(
+      FlooredIntPoint(mouse_drag_event.PositionInRootFrame()));
+  return HandleDrag(mev, DragInitiator::kTouch);
 }
 
 void MouseEventManager::FocusDocumentView() {

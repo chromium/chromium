@@ -470,6 +470,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, LongPressImage);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, LongPressImageAndThenLongTapImage);
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, UpdateTargetURLWithInvalidURL);
+  FRIEND_TEST_ALL_PREFIXES(WebViewTest, TouchDragContextMenu);
 
   friend class frame_test_helpers::WebViewHelper;
   friend class SimCompositor;
