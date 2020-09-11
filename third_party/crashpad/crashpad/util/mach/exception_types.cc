@@ -26,6 +26,7 @@
 #include "base/mac/mach_logging.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/mach_extensions.h"
+#include "util/misc/no_cfi_icall.h"
 #include "util/numeric/in_range_cast.h"
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_9
@@ -84,8 +85,8 @@ namespace {
 int ProcGetWakemonParams(pid_t pid, int* rate_hz, int* flags) {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_9
   // proc_get_wakemon_params() isn’t in the SDK. Look it up dynamically.
-  static ProcGetWakemonParamsType proc_get_wakemon_params =
-      GetProcGetWakemonParams();
+  static crashpad::NoCfiIcall<ProcGetWakemonParamsType> proc_get_wakemon_params(
+      GetProcGetWakemonParams());
 #endif
 
 #if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9

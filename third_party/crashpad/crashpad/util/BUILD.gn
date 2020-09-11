@@ -575,6 +575,7 @@ static_library("util") {
   }
 
   public_deps = [
+    ":no_cfi_icall",
     "../compat",
     "../third_party/zlib",
   ]
@@ -668,6 +669,14 @@ if (!crashpad_is_android && !crashpad_is_ios) {
   }
 }
 
+# This exists as a separate target from util so that compat may depend on it
+# without cycles.
+source_set("no_cfi_icall") {
+  sources = [ "misc/no_cfi_icall.h" ]
+  public_deps = [ "../third_party/mini_chromium:base" ]
+  public_configs = [ "..:crashpad_config" ]
+}
+
 source_set("util_test") {
   testonly = true
 
@@ -685,6 +694,7 @@ source_set("util_test") {
     "misc/from_pointer_cast_test.cc",
     "misc/initialization_state_dcheck_test.cc",
     "misc/initialization_state_test.cc",
+    "misc/no_cfi_icall_test.cc",
     "misc/paths_test.cc",
     "misc/random_string_test.cc",
     "misc/range_set_test.cc",

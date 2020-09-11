@@ -17,6 +17,7 @@
 
 #include "base/logging.h"
 #include "client/crashpad_client.h"
+#include "util/misc/no_cfi_icall.h"
 
 namespace {
 
@@ -45,13 +46,12 @@ __attribute__((visibility("default"))) int pthread_create(
     const pthread_attr_t* attr,
     StartRoutineType start_routine,
     void* arg) {
-  static const auto next_pthread_create = []() {
-    const auto next_pthread_create =
-        reinterpret_cast<decltype(pthread_create)*>(
-            dlsym(RTLD_NEXT, "pthread_create"));
-    CHECK(next_pthread_create) << "dlsym: " << dlerror();
-    return next_pthread_create;
-  }();
+  static const crashpad::NoCfiIcall<decltype(pthread_create)*>
+      next_pthread_create([]() {
+        const auto next_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
+        CHECK(next_pthread_create) << "dlsym: " << dlerror();
+        return next_pthread_create;
+      }());
 
   StartParams* params = new StartParams;
   params->start_routine = start_routine;
