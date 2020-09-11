@@ -60,8 +60,18 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
              : DecoderPriority::kDeprioritized;
 }
 
+template <typename ConfigT, typename DecoderT>
+DecoderPriority SkipNonPlatformDecoders(const ConfigT& /*config*/,
+                                        const DecoderT& decoder) {
+  return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
+                                     : DecoderPriority::kSkipped;
+}
+
 void SetDefaultDecoderPriorityCB(VideoDecoderSelector::DecoderPriorityCB* out) {
-  if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
+  if (base::FeatureList::IsEnabled(kForceHardwareVideoDecoders)) {
+    *out = base::BindRepeating(
+        SkipNonPlatformDecoders<VideoDecoderConfig, VideoDecoder>);
+  } else if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
     *out = base::BindRepeating(ResolutionBasedDecoderPriority);
   } else {
     *out = base::BindRepeating(
@@ -70,9 +80,14 @@ void SetDefaultDecoderPriorityCB(VideoDecoderSelector::DecoderPriorityCB* out) {
 }
 
 void SetDefaultDecoderPriorityCB(AudioDecoderSelector::DecoderPriorityCB* out) {
-  // Platform audio decoders are not currently prioritized or deprioritized
-  *out = base::BindRepeating(
-      NormalDecoderPriority<AudioDecoderConfig, AudioDecoder>);
+  if (base::FeatureList::IsEnabled(kForceHardwareAudioDecoders)) {
+    *out = base::BindRepeating(
+        SkipNonPlatformDecoders<AudioDecoderConfig, AudioDecoder>);
+  } else {
+    // Platform audio decoders are not currently prioritized or deprioritized
+    *out = base::BindRepeating(
+        NormalDecoderPriority<AudioDecoderConfig, AudioDecoder>);
+  }
 }
 
 }  // namespace

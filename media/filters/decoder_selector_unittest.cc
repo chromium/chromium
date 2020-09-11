@@ -107,6 +107,10 @@ class AudioDecoderSelectorTestParam {
     return std::make_unique<StreamTraits>(media_log, CHANNEL_LAYOUT_STEREO);
   }
 
+  static const base::Feature& ForceHardwareDecodersFeature() {
+    return kForceHardwareAudioDecoders;
+  }
+
   static media::DecoderPriority MockDecoderPriorityCB(
       const media::AudioDecoderConfig& config,
       const media::AudioDecoder& decoder) {
@@ -181,6 +185,10 @@ class VideoDecoderSelectorTestParam {
   static constexpr char kDecryptingDecoder[] = "DecryptingVideoDecoder";
   using DecryptingDecoder = DecryptingVideoDecoder;
 #endif  // !defined(OS_ANDROID)
+
+  static const base::Feature& ForceHardwareDecodersFeature() {
+    return kForceHardwareVideoDecoders;
+  }
 
   static std::unique_ptr<StreamTraits> CreateStreamTraits(MediaLog* media_log) {
     return std::make_unique<StreamTraits>(media_log);
@@ -608,6 +616,26 @@ TYPED_TEST(DecoderSelectorTest, ClearStream_SkipAllDecoders) {
   this->SelectDecoder();
 }
 
+TYPED_TEST(DecoderSelectorTest, ClearStream_ForceHardwareDecoders) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(TypeParam::ForceHardwareDecodersFeature());
+
+  this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
+  this->AddMockDecoder(kDecoder2, kClearOnly);
+  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
+  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
+
+  this->UseClearDecoderConfig();
+  this->CreateDecoderSelector();
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1, IsNull()));
+  this->SelectDecoder();
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3, IsNull()));
+  this->SelectDecoder();
+  EXPECT_CALL(*this, OnDecoderSelected(kNoDecoder, IsNull()));
+  this->SelectDecoder();
+}
+
 // Tests the production predicate for `DecoderSelector<DemuxerStream::VIDEO>`
 TEST_F(VideoDecoderSelectorTest, ClearStream_PrioritizeSoftwareDecoders) {
   base::test::ScopedFeatureList features;
@@ -778,6 +806,24 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_SkipAllDecoders) {
   this->decoder_selector_->OverrideDecoderPriorityCBForTesting(
       base::BindRepeating(TypeParam::SkipDecoderPriorityCB));
 
+  EXPECT_CALL(*this, OnDecoderSelected(kNoDecoder, IsNull()));
+  this->SelectDecoder();
+}
+
+TYPED_TEST(DecoderSelectorTest, EncryptedStream_ForceHardwareDecoders) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(TypeParam::ForceHardwareDecodersFeature());
+
+  this->AddMockPlatformDecoder(kDecoder1, kClearOnly);
+  this->AddMockDecoder(kDecoder2, kClearOnly);
+  this->AddMockPlatformDecoder(kDecoder3, kAlwaysSucceed);
+  this->AddMockDecoder(kDecoder4, kAlwaysSucceed);
+
+  this->UseEncryptedDecoderConfig();
+  this->CreateDecoderSelector();
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder3, IsNull()));
+  this->SelectDecoder();
   EXPECT_CALL(*this, OnDecoderSelected(kNoDecoder, IsNull()));
   this->SelectDecoder();
 }

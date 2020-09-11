@@ -506,6 +506,16 @@ const base::Feature kHardwareMediaKeyHandling {
 const base::Feature kResolutionBasedDecoderPriority{
     "ResolutionBasedDecoderPriority", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Forces use of hardware (platform) video decoders in
+// `media::DecoderSelector`.
+const base::Feature kForceHardwareVideoDecoders{
+    "ForceHardwareVideoDecoders", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Forces use of hardware (platform) audio decoders in
+// `media::DecoderSelector`.
+const base::Feature kForceHardwareAudioDecoders{
+    "ForceHardwareAudioDecoders", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables low-delay video rendering in media pipeline on "live" stream.
 const base::Feature kLowDelayVideoRenderingOnLiveStream{
     "low-delay-video-rendering-on-live-stream",
