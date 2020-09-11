@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 
+#include <aura-shell-client-protocol.h>
+
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -342,6 +344,7 @@ bool WaylandToplevelWindow::OnInitialize(
 #endif
   SetWaylandExtension(this, static_cast<WaylandExtension*>(this));
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
+  InitializeAuraShell();
   return true;
 }
 
@@ -413,6 +416,16 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
     SetRestoredBoundsInPixels({});
   } else if (GetRestoredBoundsInPixels().IsEmpty()) {
     SetRestoredBoundsInPixels(GetBounds());
+  }
+}
+
+void WaylandToplevelWindow::InitializeAuraShell() {
+  if (connection()->aura_shell()) {
+    DCHECK(!aura_surface_);
+    aura_surface_.reset(zaura_shell_get_aura_surface(
+        connection()->aura_shell(), root_surface()->surface()));
+    zaura_surface_set_fullscreen_mode(aura_surface_.get(),
+                                      ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE);
   }
 }
 

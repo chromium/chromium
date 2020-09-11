@@ -97,6 +97,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   void SetOrResetRestoredBounds();
 
+  // Initializes the aura-shell EXO extension, if available.
+  void InitializeAuraShell();
+
   // Wrappers around shell surface.
   std::unique_ptr<ShellSurfaceWrapper> shell_surface_;
 
@@ -141,6 +144,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   base::Optional<gfx::Size> max_size_;
 
   base::OnceClosure drag_loop_quit_closure_;
+
+  wl::Object<zaura_surface> aura_surface_;
 
   base::WeakPtrFactory<WaylandToplevelWindow> weak_ptr_factory_{this};
 };
