@@ -1045,6 +1045,23 @@ class ChromeLauncherControllerSplitSettingsSyncTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Tests for Lacros integration. Exists as a separate class because the feature
+// must be initialized before ChromeLauncherControllerTest::SetUp().
+class ChromeLauncherControllerLacrosTest : public ChromeLauncherControllerTest {
+ public:
+  ChromeLauncherControllerLacrosTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  }
+  ChromeLauncherControllerLacrosTest(
+      const ChromeLauncherControllerLacrosTest&) = delete;
+  ChromeLauncherControllerLacrosTest& operator=(
+      const ChromeLauncherControllerLacrosTest&) = delete;
+  ~ChromeLauncherControllerLacrosTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class ChromeLauncherControllerExtendedShelfTest
     : public ChromeLauncherControllerWithArcTest {
  protected:
@@ -1362,6 +1379,19 @@ TEST_P(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
 
   // Default apps are pinned.
   EXPECT_EQ("Chrome, Gmail, Doc, Youtube", GetPinnedAppStatus());
+}
+
+TEST_P(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
+  // Checking to see if Lacros is allowed requires a user.
+  auto user_manager = std::make_unique<chromeos::FakeChromeUserManager>();
+  auto* fake_user_manager = user_manager.get();
+  user_manager::ScopedUserManager scoped_user_manager(std::move(user_manager));
+  AccountId account_id = AccountId::FromUserEmail("user@example.com");
+  fake_user_manager->AddUser(account_id);
+  fake_user_manager->LoginUser(account_id);
+
+  InitLauncherController();
+  EXPECT_EQ("Chrome, Lacros", GetPinnedAppStatus());
 }
 
 TEST_P(ChromeLauncherControllerExtendedShelfTest, ExtendedShefDefault) {
@@ -5033,6 +5063,12 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeLauncherControllerSplitSettingsSyncTest,
+    ::testing::Values(std::make_pair(ProviderType::kBookmarkApps, false),
+                      std::make_pair(ProviderType::kWebApps, false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeLauncherControllerLacrosTest,
     ::testing::Values(std::make_pair(ProviderType::kBookmarkApps, false),
                       std::make_pair(ProviderType::kWebApps, false)));
 

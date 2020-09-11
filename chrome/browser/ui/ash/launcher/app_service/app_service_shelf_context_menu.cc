@@ -530,9 +530,11 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
     }
     case apps::mojom::AppType::kCrostini:
     case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kLacros:
     case apps::mojom::AppType::kWeb:
       return true;
+    case apps::mojom::AppType::kLacros:
+      // Lacros behaves like the Chrome browser icon and cannot be unpinned.
+      return false;
     case apps::mojom::AppType::kUnknown:
       // Type kUnknown is used for "unregistered" Crostini apps, which do not
       // have a .desktop file and can only be closed, not pinned.

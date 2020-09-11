@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -609,6 +610,19 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(
   // their install order differ.
   InsertPinsAfterChromeAndBeforeFirstPinnedApp(
       helper, syncable_service, GetAppsPinnedByPolicy(helper), &pin_infos);
+
+  // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
+  // is pinned.
+  if (chromeos::features::IsLacrosSupportEnabled() &&
+      crosapi::browser_util::IsLacrosAllowed()) {
+    syncer::StringOrdinal lacros_position =
+        syncable_service->GetPinPosition(extension_misc::kLacrosAppId);
+    if (!lacros_position.IsValid()) {
+      // If Lacros isn't already pinned, add it to the right of the Chrome icon.
+      InsertPinsAfterChromeAndBeforeFirstPinnedApp(
+          helper, syncable_service, {extension_misc::kLacrosAppId}, &pin_infos);
+    }
+  }
 
   // Sort pins according their ordinals.
   std::sort(pin_infos.begin(), pin_infos.end(), ComparePinInfo());

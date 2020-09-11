@@ -32,7 +32,7 @@ apps::mojom::AppPtr LacrosApps::GetLacrosApp(bool is_ready) {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kLacros, extension_misc::kLacrosAppId,
       apps::mojom::Readiness::kReady,
-      "LaCrOS",  // TODO(jamescook): Localized name.
+      "Lacros",  // TODO(jamescook): Localized name.
       apps::mojom::InstallSource::kSystem);
   app->icon_key = NewIconKey(is_ready ? State::kReady : State::kLoading);
   app->searchable = apps::mojom::OptionalBool::kTrue;
@@ -71,9 +71,12 @@ apps::mojom::IconKeyPtr LacrosApps::NewIconKey(State state) {
 void LacrosApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
-  bool is_ready = crosapi::BrowserManager::Get()->IsReady();
-  if (!is_ready) {
-    crosapi::BrowserManager::Get()->SetLoadCompleteCallback(base::BindOnce(
+  auto* browser_manager = crosapi::BrowserManager::Get();
+  bool is_ready = true;
+  // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
+  if (browser_manager && !browser_manager->IsReady()) {
+    is_ready = false;
+    browser_manager->SetLoadCompleteCallback(base::BindOnce(
         &LacrosApps::OnLoadComplete, weak_factory_.GetWeakPtr()));
   }
   std::vector<apps::mojom::AppPtr> apps;
