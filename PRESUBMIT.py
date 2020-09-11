@@ -951,7 +951,7 @@ _BANNED_CPP_FUNCTIONS = (
       (
         'Improper use of Microsoft::WRL::ComPtr<T>::GetAddressOf() has been ',
         'implicated in a few leaks. ReleaseAndGetAddressOf() is safe but ',
-        'operator& is generally recommended. So always use operator& instead. '
+        'operator& is generally recommended. So always use operator& instead. ',
         'See http://crbug.com/914910 for more conversion guidance.'
       ),
       True,
