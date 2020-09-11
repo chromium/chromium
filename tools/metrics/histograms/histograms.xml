@@ -46580,6 +46580,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.EstimatedTimeSavedWithParallelDownload" units="ms"
     expires_after="2020-10-18">
+  <obsolete>
+    Removed in 09/2020.
+  </obsolete>
   <owner>qinmin@chromium.org</owner>
   <summary>
     Estimated time saved on a download when parallel downloading is enabled. To

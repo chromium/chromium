@@ -650,7 +650,6 @@ void RecordParallelizableDownloadStats(
   if (!uses_parallel_requests)
     return;
 
-  base::TimeDelta time_saved;
   if (bytes_downloaded_with_parallel_streams > 0) {
     int64_t bandwidth_with_parallel_streams = CalculateBandwidthBytesPerSecond(
         bytes_downloaded_with_parallel_streams, time_with_parallel_streams);
@@ -658,20 +657,6 @@ void RecordParallelizableDownloadStats(
         "Download.ParallelizableDownloadBandwidth."
         "WithParallelRequestsMultipleStreams",
         bandwidth_with_parallel_streams);
-    if (bandwidth_without_parallel_streams > 0) {
-      time_saved = base::TimeDelta::FromMilliseconds(
-                       1000.0 * bytes_downloaded_with_parallel_streams /
-                       bandwidth_without_parallel_streams) -
-                   time_with_parallel_streams;
-    }
-  }
-
-  int kMillisecondsPerHour =
-      base::checked_cast<int>(base::Time::kMillisecondsPerSecond * 60 * 60);
-  if (time_saved >= base::TimeDelta()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Download.EstimatedTimeSavedWithParallelDownload",
-        time_saved.InMilliseconds(), 0, kMillisecondsPerHour, 50);
   }
 }
 
