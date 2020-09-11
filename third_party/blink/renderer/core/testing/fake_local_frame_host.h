@@ -99,6 +99,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void FocusedElementChanged(bool is_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override;
+  void TextSelectionChanged(const WTF::String& text,
+                            uint32_t offset,
+                            const gfx::Range& range) override;
   void ShowPopupMenu(
       mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,

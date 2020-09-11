@@ -1287,6 +1287,12 @@ WebString WebLocalFrameImpl::SelectionAsMarkup() const {
   return GetFrame()->Selection().SelectedHTMLForClipboard();
 }
 
+void WebLocalFrameImpl::TextSelectionChanged(const WebString& selection_text,
+                                             uint32_t offset,
+                                             const gfx::Range& range) {
+  GetFrame()->TextSelectionChanged(selection_text, offset, range);
+}
+
 bool WebLocalFrameImpl::SelectWordAroundCaret() {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::selectWordAroundCaret");
 

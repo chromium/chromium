@@ -1228,6 +1228,12 @@ String LocalFrame::SelectedTextForClipboard() const {
   return Selection().SelectedTextForClipboard();
 }
 
+void LocalFrame::TextSelectionChanged(const WTF::String& selection_text,
+                                      uint32_t offset,
+                                      const gfx::Range& range) const {
+  GetLocalFrameHostRemote().TextSelectionChanged(selection_text, offset, range);
+}
+
 PositionWithAffinity LocalFrame::PositionForPoint(
     const PhysicalOffset& frame_point) {
   HitTestLocation location(frame_point);
@@ -2584,7 +2590,7 @@ void LocalFrame::SetPrescientNetworkingForTesting(
   prescient_networking_ = std::move(prescient_networking);
 }
 
-mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() {
+mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
   return *local_frame_host_remote_.get();
 }
 

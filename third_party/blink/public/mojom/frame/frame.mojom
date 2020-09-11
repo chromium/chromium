@@ -46,6 +46,7 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -367,6 +368,13 @@ interface LocalFrameHost {
   // element.
   FocusedElementChanged(bool is_editable_element,
                         gfx.mojom.Rect bounds_in_frame_widget, blink.mojom.FocusType focus_type);
+
+  // Notification that the text selection has changed.
+  // Note: The second parameter is the character based offset of the
+  // base::string16 text in the document.
+  TextSelectionChanged(mojo_base.mojom.String16 text,
+                       uint32 offset,
+                       gfx.mojom.Range range);
 
   // Show a popup menu using native controls on Mac or Android.
   // The popup menu is hidden when the mojo channel is closed.

@@ -45,6 +45,7 @@
 #include "third_party/blink/public/web/web_optimization_guide_hints.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/gfx/range/range.h"
 #include "v8/include/v8.h"
 
 namespace gfx {
@@ -457,6 +458,10 @@ class WebLocalFrame : public WebFrame {
 
   virtual WebString SelectionAsText() const = 0;
   virtual WebString SelectionAsMarkup() const = 0;
+
+  virtual void TextSelectionChanged(const WebString& selection_text,
+                                    uint32_t offset,
+                                    const gfx::Range& range) = 0;
 
   // Expands the selection to a word around the caret and returns
   // true. Does nothing and returns false if there is no caret or

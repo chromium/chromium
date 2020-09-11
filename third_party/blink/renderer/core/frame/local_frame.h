@@ -76,6 +76,7 @@
 #if defined(OS_MAC)
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
 #endif
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/transform.h"
 
 namespace base {
@@ -320,6 +321,9 @@ class CORE_EXPORT LocalFrame final
 
   String SelectedText() const;
   String SelectedTextForClipboard() const;
+  void TextSelectionChanged(const WTF::String& selection_text,
+                            uint32_t offset,
+                            const gfx::Range& range) const;
 
   PositionWithAffinityTemplate<EditingAlgorithm<NodeTraversal>>
   PositionForPoint(const PhysicalOffset& frame_point);
@@ -488,7 +492,7 @@ class CORE_EXPORT LocalFrame final
 
   // Returns the frame host ptr. The interface returned is backed by an
   // associated interface with the legacy Chrome IPC channel.
-  mojom::blink::LocalFrameHost& GetLocalFrameHostRemote();
+  mojom::blink::LocalFrameHost& GetLocalFrameHostRemote() const;
 
   // Returns the bfcache controller host ptr. The interface returned is backed
   // by an associated interface with the legacy Chrome IPC channel.

@@ -727,6 +727,7 @@ mojom("mojom_core") {
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/service_worker:storage",
     "//ui/gfx/geometry/mojom",
+    "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]

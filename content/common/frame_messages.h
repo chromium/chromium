@@ -74,7 +74,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -621,14 +620,6 @@ IPC_MESSAGE_ROUTED1(FrameHostMsg_UpdateViewportIntersection,
 // user right clicked.
 IPC_MESSAGE_ROUTED1(FrameHostMsg_ContextMenu,
                     content::UntrustworthyContextMenuParams)
-
-// Notification that the text selection has changed.
-// Note: The second parameter is the character based offset of the
-// base::string16 text in the document.
-IPC_MESSAGE_ROUTED3(FrameHostMsg_SelectionChanged,
-                    base::string16 /* text covers the selection range */,
-                    uint32_t /* the offset of the text in the document */,
-                    gfx::Range /* selection range in the document */)
 
 // Adding a new message? Stick to the sort order above: first platform
 // independent FrameMsg, then ifdefs for platform specific FrameMsg, then

@@ -1626,6 +1626,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FocusedElementChanged(bool is_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override;
+  void TextSelectionChanged(const base::string16& text,
+                            uint32_t offset,
+                            const gfx::Range& range) override;
   void ShowPopupMenu(
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,
@@ -1963,9 +1966,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnContextMenu(const UntrustworthyContextMenuParams& params);
   void OnForwardResourceTimingToParent(
       const ResourceTimingInfo& resource_timing);
-  void OnSelectionChanged(const base::string16& text,
-                          uint32_t offset,
-                          const gfx::Range& range);
   void OnSetNeedsOcclusionTracking(bool needs_tracking);
   void OnSaveImageFromDataURL(const std::string& url_str);
 

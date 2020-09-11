@@ -1761,7 +1761,6 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   IPC_BEGIN_MESSAGE_MAP(RenderFrameHostImpl, msg)
     IPC_MESSAGE_HANDLER(FrameHostMsg_Unload_ACK, OnUnloadACK)
     IPC_MESSAGE_HANDLER(FrameHostMsg_ContextMenu, OnContextMenu)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_SelectionChanged, OnSelectionChanged)
   IPC_END_MESSAGE_MAP()
 
   // No further actions here, since we may have been deleted.
@@ -4495,13 +4494,6 @@ void RenderFrameHostImpl::DidFinishDocumentLoad() {
   delegate_->DOMContentLoaded(this);
 }
 
-void RenderFrameHostImpl::OnSelectionChanged(const base::string16& text,
-                                             uint32_t offset,
-                                             const gfx::Range& range) {
-  has_selection_ = !text.empty();
-  GetRenderWidgetHost()->SelectionChanged(text, offset, range);
-}
-
 void RenderFrameHostImpl::FocusedElementChanged(
     bool is_editable_element,
     const gfx::Rect& bounds_in_frame_widget,
@@ -4517,6 +4509,13 @@ void RenderFrameHostImpl::FocusedElementChanged(
                     bounds_in_frame_widget.origin()),
                 bounds_in_frame_widget.size()),
       focus_type);
+}
+
+void RenderFrameHostImpl::TextSelectionChanged(const base::string16& text,
+                                               uint32_t offset,
+                                               const gfx::Range& range) {
+  has_selection_ = !text.empty();
+  GetRenderWidgetHost()->SelectionChanged(text, offset, range);
 }
 
 void RenderFrameHostImpl::DidReceiveFirstUserActivation() {

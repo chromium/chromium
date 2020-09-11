@@ -234,6 +234,42 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
   return params;
 }
 
+template <class MockedLocalFrameHostInterceptor>
+class MockedLocalFrameHostInterceptorTestRenderFrame : public TestRenderFrame {
+ public:
+  static RenderFrameImpl* CreateTestRenderFrame(
+      RenderFrameImpl::CreateParams params) {
+    return new MockedLocalFrameHostInterceptorTestRenderFrame(
+        std::move(params));
+  }
+
+  ~MockedLocalFrameHostInterceptorTestRenderFrame() override = default;
+
+  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
+    blink::AssociatedInterfaceProvider* associated_interface_provider =
+        RenderFrameImpl::GetRemoteAssociatedInterfaces();
+
+    // Attach our fake local frame host at the very first call to
+    // GetRemoteAssociatedInterfaces.
+    if (!local_frame_host_) {
+      local_frame_host_ = std::make_unique<MockedLocalFrameHostInterceptor>(
+          associated_interface_provider);
+    }
+    return associated_interface_provider;
+  }
+
+  MockedLocalFrameHostInterceptor* mock_local_frame_host() {
+    return local_frame_host_.get();
+  }
+
+ private:
+  explicit MockedLocalFrameHostInterceptorTestRenderFrame(
+      RenderFrameImpl::CreateParams params)
+      : TestRenderFrame(std::move(params)) {}
+
+  std::unique_ptr<MockedLocalFrameHostInterceptor> local_frame_host_;
+};
+
 }  // namespace
 
 class RenderViewImplTest : public RenderViewTest {
@@ -838,50 +874,19 @@ class UpdateTitleLocalFrameHost : public LocalFrameHostInterceptor {
                void(const base::Optional<::base::string16>& title,
                     base::i18n::TextDirection title_direction));
 };
-
-class UpdateTitleTestRenderFrame : public TestRenderFrame {
- public:
-  static RenderFrameImpl* CreateTestRenderFrame(
-      RenderFrameImpl::CreateParams params) {
-    return new UpdateTitleTestRenderFrame(std::move(params));
-  }
-
-  ~UpdateTitleTestRenderFrame() override = default;
-
-  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
-    blink::AssociatedInterfaceProvider* associated_interface_provider =
-        RenderFrameImpl::GetRemoteAssociatedInterfaces();
-
-    // Attach our fake local frame host at the very first call to
-    // GetRemoteAssociatedInterfaces.
-    if (!local_frame_host_) {
-      local_frame_host_ = std::make_unique<UpdateTitleLocalFrameHost>(
-          associated_interface_provider);
-    }
-    return associated_interface_provider;
-  }
-
-  UpdateTitleLocalFrameHost* title_mock_frame_host() {
-    return local_frame_host_.get();
-  }
-
- private:
-  explicit UpdateTitleTestRenderFrame(RenderFrameImpl::CreateParams params)
-      : TestRenderFrame(std::move(params)) {}
-
-  std::unique_ptr<UpdateTitleLocalFrameHost> local_frame_host_;
-};
 }  // namespace
 
 class RenderViewImplUpdateTitleTest : public RenderViewImplTest {
  public:
+  using MockedTestRenderFrame =
+      MockedLocalFrameHostInterceptorTestRenderFrame<UpdateTitleLocalFrameHost>;
+
   RenderViewImplUpdateTitleTest()
-      : RenderViewImplTest(&UpdateTitleTestRenderFrame::CreateTestRenderFrame) {
-  }
+      : RenderViewImplTest(&MockedTestRenderFrame::CreateTestRenderFrame) {}
 
   UpdateTitleLocalFrameHost* title_mock_frame_host() {
-    return static_cast<UpdateTitleTestRenderFrame*>(frame())
-        ->title_mock_frame_host();
+    return static_cast<MockedTestRenderFrame*>(frame())
+        ->mock_local_frame_host();
   }
 };
 
@@ -2495,61 +2500,63 @@ TEST_F(RenderViewImplTest, BasicRenderFrame) {
   EXPECT_TRUE(view()->main_render_frame_);
 }
 
-class MessageOrderFakeRenderWidgetHost : public FakeRenderWidgetHost,
-                                         public IPC::Listener {
+namespace {
+class MessageOrderFakeRenderWidgetHost : public FakeRenderWidgetHost {
  public:
-  void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override {
-    message_counter_++;
-    last_input_type_ = message_counter_;
-  }
-
-  ~MessageOrderFakeRenderWidgetHost() override {}
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    if (message.type() == FrameHostMsg_SelectionChanged::ID) {
-      base::RunLoop().RunUntilIdle();
-      message_counter_++;
-      last_selection_ = message_counter_;
-    }
-    return false;
-  }
-
-  uint32_t message_counter_ = 0;
-  uint32_t last_selection_ = 0;
-  uint32_t last_input_type_ = 0;
+  MOCK_METHOD1(TextInputStateChanged, void(ui::mojom::TextInputStatePtr state));
 };
+
+class TextSelectionChangedLocalFrameHost : public LocalFrameHostInterceptor {
+ public:
+  explicit TextSelectionChangedLocalFrameHost(
+      blink::AssociatedInterfaceProvider* provider)
+      : LocalFrameHostInterceptor(provider) {}
+  MOCK_METHOD3(TextSelectionChanged,
+               void(const base::string16& text,
+                    uint32_t offset,
+                    const gfx::Range& range));
+};
+}  // namespace
 
 class RenderViewImplTextInputMessageOrder : public RenderViewImplTest {
  public:
+  using MockedTestRenderFrame = MockedLocalFrameHostInterceptorTestRenderFrame<
+      TextSelectionChangedLocalFrameHost>;
+
+  RenderViewImplTextInputMessageOrder()
+      : RenderViewImplTest(&MockedTestRenderFrame::CreateTestRenderFrame) {}
+
   std::unique_ptr<FakeRenderWidgetHost> CreateRenderWidgetHost() override {
-    auto host = std::make_unique<MessageOrderFakeRenderWidgetHost>();
-    render_thread_->sink().AddFilter(host.get());
-    return host;
+    return std::make_unique<MessageOrderFakeRenderWidgetHost>();
   }
 
   MessageOrderFakeRenderWidgetHost* GetMessageOrderFakeRenderWidgetHost() {
     return static_cast<MessageOrderFakeRenderWidgetHost*>(
         render_widget_host_.get());
   }
+
+  TextSelectionChangedLocalFrameHost* GetMockLocalFrameHost() {
+    return static_cast<MockedTestRenderFrame*>(frame())
+        ->mock_local_frame_host();
+  }
 };
 
 TEST_F(RenderViewImplTextInputMessageOrder, MessageOrderInDidChangeSelection) {
   LoadHTML("<textarea id=\"test\"></textarea>");
 
+  // TextInputStateChanged should be called earlier than TextSelectionChanged.
+  testing::InSequence sequence;
+
+  // TextInputStateChanged and TextSelectionChanged should be called once each.
+  EXPECT_CALL(*GetMessageOrderFakeRenderWidgetHost(),
+              TextInputStateChanged(testing::_))
+      .Times(1);
+  EXPECT_CALL(*GetMockLocalFrameHost(),
+              TextSelectionChanged(testing::_, testing::_, testing::_))
+      .Times(1);
+
   main_widget()->SetHandlingInputEvent(true);
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
-
-  uint32_t last_input_type =
-      GetMessageOrderFakeRenderWidgetHost()->last_input_type_;
-  uint32_t last_selection =
-      GetMessageOrderFakeRenderWidgetHost()->last_selection_;
-
-  EXPECT_NE(0u, last_input_type);
-  EXPECT_NE(0u, last_selection);
-
-  // InputTypeChange shold be called earlier than SelectionChanged.
-  EXPECT_LT(last_input_type, last_selection);
-  render_thread_->sink().RemoveFilter(GetMessageOrderFakeRenderWidgetHost());
 }
 
 class RendererErrorPageTest : public RenderViewImplTest {
@@ -3023,50 +3030,19 @@ class AlertDialogMockLocalFrameHost : public LocalFrameHostInterceptor {
                void(const base::string16& alert_message,
                     RunModalAlertDialogCallback callback));
 };
-
-class AlertDialogTestRenderFrame : public TestRenderFrame {
- public:
-  static RenderFrameImpl* CreateTestRenderFrame(
-      RenderFrameImpl::CreateParams params) {
-    return new AlertDialogTestRenderFrame(std::move(params));
-  }
-
-  ~AlertDialogTestRenderFrame() override = default;
-
-  blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override {
-    blink::AssociatedInterfaceProvider* associated_interface_provider =
-        RenderFrameImpl::GetRemoteAssociatedInterfaces();
-
-    // Attach our fake local frame host at the very first call to
-    // GetRemoteAssociatedInterfaces.
-    if (!local_frame_host_) {
-      local_frame_host_ = std::make_unique<AlertDialogMockLocalFrameHost>(
-          associated_interface_provider);
-    }
-    return associated_interface_provider;
-  }
-
-  AlertDialogMockLocalFrameHost* alert_mock_frame_host() {
-    return local_frame_host_.get();
-  }
-
- private:
-  explicit AlertDialogTestRenderFrame(RenderFrameImpl::CreateParams params)
-      : TestRenderFrame(std::move(params)) {}
-
-  std::unique_ptr<AlertDialogMockLocalFrameHost> local_frame_host_;
-};
 }  // namespace
 
 class RenderViewImplModalDialogTest : public RenderViewImplTest {
  public:
+  using MockedTestRenderFrame = MockedLocalFrameHostInterceptorTestRenderFrame<
+      AlertDialogMockLocalFrameHost>;
+
   RenderViewImplModalDialogTest()
-      : RenderViewImplTest(&AlertDialogTestRenderFrame::CreateTestRenderFrame) {
-  }
+      : RenderViewImplTest(&MockedTestRenderFrame::CreateTestRenderFrame) {}
 
   AlertDialogMockLocalFrameHost* alert_mock_frame_host() {
-    return static_cast<AlertDialogTestRenderFrame*>(frame())
-        ->alert_mock_frame_host();
+    return static_cast<MockedTestRenderFrame*>(frame())
+        ->mock_local_frame_host();
   }
 };
 

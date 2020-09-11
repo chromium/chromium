@@ -205,6 +205,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebRange SelectionRange() const override;
   WebString SelectionAsText() const override;
   WebString SelectionAsMarkup() const override;
+  void TextSelectionChanged(const WebString& selection_text,
+                            uint32_t offset,
+                            const gfx::Range& range) override;
   bool SelectWordAroundCaret() override;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
