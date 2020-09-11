@@ -110,7 +110,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                              bool is_overlay,
                              QuadList::Iterator* new_it,
                              size_t* new_index,
-                             gfx::Rect* this_frame_overlay_rect,
                              gfx::Rect* this_frame_underlay_rect,
                              gfx::Rect* damage_rect,
                              DCLayerOverlayList* dc_layer_overlays);
@@ -129,10 +128,9 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
                           gfx::Rect* this_frame_underlay_rect,
                           DCLayerOverlay* dc_layer);
 
-  void InsertDebugBorderDrawQuad(const gfx::RectF& display_rect,
-                                 const gfx::Rect& overlay_rect,
-                                 SkColor border_color,
+  void InsertDebugBorderDrawQuad(const DCLayerOverlayList* dc_layer_overlays,
                                  AggregatedRenderPass* render_pass,
+                                 const gfx::RectF& display_rect,
                                  gfx::Rect* damage_rect);
 
   bool has_overlay_support_;

@@ -364,24 +364,33 @@ void DCLayerOverlayProcessor::ClearOverlayState() {
 }
 
 void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
-    const gfx::RectF& display_rect,
-    const gfx::Rect& overlay_rect,
-    SkColor border_color,
+    const DCLayerOverlayList* dc_layer_overlays,
     AggregatedRenderPass* render_pass,
+    const gfx::RectF& display_rect,
     gfx::Rect* damage_rect) {
-  if (overlay_rect.IsEmpty())
-    return;
-
   auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
-  auto& quad_list = render_pass->quad_list;
 
-  auto it = quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-      quad_list.begin(), 1u);
-  auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
-  gfx::Rect rect = overlay_rect;
-  rect.Inset(kDCLayerDebugBorderInsets);
-  debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
-                     kDCLayerDebugBorderWidth);
+  for (const auto& dc_layer : *dc_layer_overlays) {
+    gfx::RectF overlay_rect(dc_layer.quad_rect);
+    dc_layer.transform.TransformRect(&overlay_rect);
+    if (dc_layer.is_clipped)
+      overlay_rect.Intersect(gfx::RectF(dc_layer.clip_rect));
+
+    // Overlay:red, Underlay:blue.
+    SkColor border_color = dc_layer.z_order > 0 ? SK_ColorRED : SK_ColorBLUE;
+
+    auto& quad_list = render_pass->quad_list;
+    auto it =
+        quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
+            quad_list.begin(), 1u);
+
+    auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
+    gfx::Rect rect = gfx::ToEnclosingRect(overlay_rect);
+    rect.Inset(kDCLayerDebugBorderInsets);
+    debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
+                       kDCLayerDebugBorderWidth);
+  }
+
   // Mark the entire output as damaged because the border quads might not be
   // inside the current damage rect.  It's far simpler to mark the entire output
   // as damaged instead of accounting for individual border quads which can
@@ -395,7 +404,6 @@ void DCLayerOverlayProcessor::Process(
     AggregatedRenderPassList* render_pass_list,
     gfx::Rect* damage_rect,
     DCLayerOverlayList* dc_layer_overlays) {
-  gfx::Rect this_frame_overlay_rect;
   gfx::Rect this_frame_underlay_rect;
 
   // Which render passes have backdrop filters.
@@ -517,11 +525,10 @@ void DCLayerOverlayProcessor::Process(
       }
     }
 
-    UpdateDCLayerOverlays(display_rect, root_render_pass, it,
-                          quad_rectangle_in_target_space, occluding_damage_rect,
-                          is_overlay, &prev_it, &prev_index,
-                          &this_frame_overlay_rect, &this_frame_underlay_rect,
-                          damage_rect, dc_layer_overlays);
+    UpdateDCLayerOverlays(
+        display_rect, root_render_pass, it, quad_rectangle_in_target_space,
+        occluding_damage_rect, is_overlay, &prev_it, &prev_index,
+        &this_frame_underlay_rect, damage_rect, dc_layer_overlays);
   }
 
   // Update previous frame state after processing root pass. If there is no
@@ -541,11 +548,10 @@ void DCLayerOverlayProcessor::Process(
   previous_display_rect_ = display_rect;
   previous_frame_underlay_rect_ = this_frame_underlay_rect;
 
-  if (debug_settings_->show_dc_layer_debug_borders) {
-    InsertDebugBorderDrawQuad(display_rect, this_frame_overlay_rect,
-                              SK_ColorRED, root_render_pass, damage_rect);
-    InsertDebugBorderDrawQuad(display_rect, this_frame_underlay_rect,
-                              SK_ColorBLUE, root_render_pass, damage_rect);
+  if (debug_settings_->show_dc_layer_debug_borders &&
+      dc_layer_overlays->size() > 0) {
+    InsertDebugBorderDrawQuad(dc_layer_overlays, root_render_pass, display_rect,
+                              damage_rect);
   }
 }
 
@@ -558,7 +564,6 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     bool is_overlay,
     QuadList::Iterator* new_it,
     size_t* new_index,
-    gfx::Rect* this_frame_overlay_rect,
     gfx::Rect* this_frame_underlay_rect,
     gfx::Rect* damage_rect,
     DCLayerOverlayList* dc_layer_overlays) {
@@ -604,7 +609,6 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
         ProcessForOverlay(display_rect, render_pass,
                           quad_rectangle_in_target_space, it, damage_rect);
     (*new_index)++;
-    *this_frame_overlay_rect = quad_rectangle_in_target_space;
   } else {
     ProcessForUnderlay(display_rect, render_pass,
                        quad_rectangle_in_target_space, it, damage_rect,
