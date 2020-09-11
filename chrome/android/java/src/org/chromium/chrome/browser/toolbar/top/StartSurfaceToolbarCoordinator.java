@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonView;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -51,11 +51,12 @@ public class StartSurfaceToolbarCoordinator {
     private OnLongClickListener mTabSwitcherLongClickListener;
     private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
     private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private MenuButtonCoordinator mMenuButtonCoordinator;
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             IdentityDiscController identityDiscController, UserEducationHelper userEducationHelper,
             ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ThemeColorProvider provider) {
+            ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator) {
         mStub = startSurfaceToolbarStub;
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
@@ -88,9 +89,11 @@ public class StartSurfaceToolbarCoordinator {
                             iphCommandBuilder.setAnchorView(mView.getIdentityDiscView()).build());
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
-                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue());
+                StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
+                menuButtonCoordinator);
 
         mThemeColorProvider = provider;
+        mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
     /**
@@ -105,18 +108,16 @@ public class StartSurfaceToolbarCoordinator {
         mToolbarMediator.destroy();
         if (mIncognitoSwitchCoordinator != null) mIncognitoSwitchCoordinator.destroy();
         if (mTabSwitcherButtonCoordinator != null) mTabSwitcherButtonCoordinator.destroy();
+        if (mMenuButtonCoordinator != null) {
+            mMenuButtonCoordinator.destroy();
+            mMenuButtonCoordinator = null;
+        }
         mTabSwitcherButtonCoordinator = null;
         mTabSwitcherButtonView = null;
         mTabCountProvider = null;
         mThemeColorProvider = null;
         mTabSwitcherClickListener = null;
         mTabSwitcherLongClickListener = null;
-    }
-    /**
-     * @param appMenuButtonHelper The helper for managing menu button interactions.
-     */
-    void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mToolbarMediator.setAppMenuButtonHelper(appMenuButtonHelper);
     }
 
     /**
@@ -225,6 +226,10 @@ public class StartSurfaceToolbarCoordinator {
     private void inflate() {
         mStub.setLayoutResource(R.layout.start_top_toolbar);
         mView = (StartSurfaceToolbarView) mStub.inflate();
+        mMenuButtonCoordinator.setMenuButton(mView.findViewById(R.id.menu_button_wrapper));
+        mMenuButtonCoordinator.setVisibility(
+                mPropertyModel.get(StartSurfaceToolbarProperties.MENU_IS_VISIBLE) ? View.VISIBLE
+                                                                                  : View.GONE);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
         if (LibraryLoader.getInstance().isInitialized()) {

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.APP_MENU_BUTTON_HELPER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
@@ -39,7 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -58,13 +57,14 @@ class StartSurfaceToolbarMediator {
     private TabModelSelectorObserver mTabModelSelectorObserver;
     private OverviewModeBehavior mOverviewModeBehavior;
     private OverviewModeObserver mOverviewModeObserver;
+    private MenuButtonCoordinator mMenuButtonCoordinator;
     @OverviewModeState
     private int mOverviewModeState;
     private boolean mIsGoogleSearchEngine;
 
     StartSurfaceToolbarMediator(PropertyModel model, IdentityDiscController identityDiscController,
             Callback<IPHCommandBuilder> showIPHCallback, boolean hideIncognitoSwitchWhenNoTabs,
-            boolean showNewTabAndIdentityDiscAtStart) {
+            boolean showNewTabAndIdentityDiscAtStart, MenuButtonCoordinator menuButtonCoordinator) {
         mPropertyModel = model;
         mOverviewModeState = OverviewModeState.NOT_SHOWN;
         mIdentityDiscController = identityDiscController;
@@ -72,6 +72,7 @@ class StartSurfaceToolbarMediator {
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mShowNewTabAndIdentityDiscAtStart = showNewTabAndIdentityDiscAtStart;
+        mMenuButtonCoordinator = menuButtonCoordinator;
     }
 
     void onNativeLibraryReady() {
@@ -99,10 +100,6 @@ class StartSurfaceToolbarMediator {
         if (mOverviewModeObserver != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
         }
-    }
-
-    void setAppMenuButtonHelper(AppMenuButtonHelper appMenuButtonHelper) {
-        mPropertyModel.set(APP_MENU_BUTTON_HELPER, appMenuButtonHelper);
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {
@@ -192,10 +189,12 @@ class StartSurfaceToolbarMediator {
             @Override
             public void onOverviewModeFinishedShowing() {
                 mPropertyModel.set(BUTTONS_CLICKABLE, true);
+                mMenuButtonCoordinator.setClickable(true);
             }
             @Override
             public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
                 mPropertyModel.set(BUTTONS_CLICKABLE, false);
+                mMenuButtonCoordinator.setClickable(false);
             }
         };
         mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);

@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -54,6 +55,8 @@ public class MenuButtonCoordinatorTest {
     private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock
     private Runnable mRequestRenderRunnable;
+    @Mock
+    ThemeColorProvider mThemeColorProvider;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
     private ObservableSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -75,9 +78,10 @@ public class MenuButtonCoordinatorTest {
                 .when(mActivity)
                 .findViewById(org.chromium.chrome.R.id.menu_button_wrapper);
 
-        mMenuButtonCoordinator =
-                new MenuButtonCoordinator(mAppMenuSupplier, mControlsVisibilityDelegate, mActivity,
-                        mFocusFunction, mRequestRenderRunnable, true, () -> false);
+        mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
+                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
+                true,
+                () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
     }
 
     @Test
@@ -85,6 +89,19 @@ public class MenuButtonCoordinatorTest {
         mAppMenuSupplier.set(mAppMenuCoordinator);
         verify(mAppMenuHandler).addObserver(mMenuButtonCoordinator);
         verify(mAppMenuHandler).createAppMenuButtonHelper();
+    }
+
+    @Test
+    public void testSetMenuButton() {
+        mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
+                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
+                true, () -> false, mThemeColorProvider, org.chromium.chrome.R.id.none);
+
+        mAppMenuSupplier.set(mAppMenuCoordinator);
+        mMenuButtonCoordinator.setMenuButton(mMenuButton);
+
+        verify(mMenuButton, times(2)).setAppMenuButtonHelper(mAppMenuButtonHelper);
+        verify(mMenuButton, times(2)).setThemeColorProvider(mThemeColorProvider);
     }
 
     @Test
@@ -148,9 +165,10 @@ public class MenuButtonCoordinatorTest {
 
     @Test
     public void testAppMenuUpdateBadge_activityShouldNotShow() {
-        MenuButtonCoordinator newCoordinator =
-                new MenuButtonCoordinator(mAppMenuSupplier, mControlsVisibilityDelegate, mActivity,
-                        mFocusFunction, mRequestRenderRunnable, false, () -> false);
+        MenuButtonCoordinator newCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
+                mControlsVisibilityDelegate, mActivity, mFocusFunction, mRequestRenderRunnable,
+                false,
+                () -> false, mThemeColorProvider, org.chromium.chrome.R.id.menu_button_wrapper);
 
         doReturn(true).when(mActivity).isDestroyed();
         newCoordinator.updateStateChanged();

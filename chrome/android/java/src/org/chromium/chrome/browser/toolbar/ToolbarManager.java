@@ -285,21 +285,30 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mBrowserControlsSizer.getBrowserVisibilityDelegate();
         assert controlsVisibilityDelegate != null;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
+        ThemeColorProvider browsingModeThemeColorProvider =
+                mActivity.isTablet() ? mAppThemeColorProvider : mTabThemeColorProvider;
+        ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
                 mControlsVisibilityDelegate, mActivity,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
-                mActivity::isInOverviewMode);
+                mActivity::isInOverviewMode, browsingModeThemeColorProvider,
+                R.id.menu_button_wrapper);
+        MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
+                appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mActivity,
+                (focus, type)
+                        -> setUrlBarFocus(focus, type),
+                mActivity.getCompositorViewHolder()::requestFocus, shouldShowUpdateBadge,
+                mActivity::isInOverviewMode, overviewModeThemeColorProvider, R.id.none);
 
         mToolbar = new TopToolbarCoordinator(controlContainer, mActivity.findViewById(R.id.toolbar),
                 identityDiscController, mLocationBarModel, mToolbarTabController,
                 new UserEducationHelper(mActivity, mHandler), buttonDataProviders,
-                mOverviewModeBehaviorSupplier,
-                mActivity.isTablet() ? mAppThemeColorProvider : mTabThemeColorProvider,
-                mAppThemeColorProvider, mMenuButtonCoordinator,
-                mMenuButtonCoordinator.getMenuButtonHelperSupplier());
+                mOverviewModeBehaviorSupplier, browsingModeThemeColorProvider,
+                mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
+                mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mActivity);
 
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);

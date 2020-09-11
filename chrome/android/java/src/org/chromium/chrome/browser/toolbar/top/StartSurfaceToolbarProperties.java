@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,9 +14,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 class StartSurfaceToolbarProperties {
     private StartSurfaceToolbarProperties() {}
 
-    public static final PropertyModel
-            .WritableObjectPropertyKey<AppMenuButtonHelper> APP_MENU_BUTTON_HELPER =
-            new PropertyModel.WritableObjectPropertyKey<AppMenuButtonHelper>();
     public static final PropertyModel
             .WritableObjectPropertyKey<IncognitoStateProvider> INCOGNITO_STATE_PROVIDER =
             new PropertyModel.WritableObjectPropertyKey<IncognitoStateProvider>();
@@ -68,11 +63,10 @@ class StartSurfaceToolbarProperties {
     public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_BUTTON_AT_START =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {APP_MENU_BUTTON_HELPER, NEW_TAB_CLICK_HANDLER, IS_VISIBLE,
-                    LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER, ACCESSIBILITY_ENABLED,
-                    MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
-                    IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE, NEW_TAB_BUTTON_AT_START,
-                    IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
-                    IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {NEW_TAB_CLICK_HANDLER,
+            IS_VISIBLE, LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER,
+            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
+            IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE, NEW_TAB_BUTTON_AT_START,
+            IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
+            IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE};
 }

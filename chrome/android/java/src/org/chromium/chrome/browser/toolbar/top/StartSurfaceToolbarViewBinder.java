@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.APP_MENU_BUTTON_HELPER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
@@ -32,8 +31,6 @@ class StartSurfaceToolbarViewBinder {
             PropertyModel model, StartSurfaceToolbarView view, PropertyKey propertyKey) {
         if (propertyKey == ACCESSIBILITY_ENABLED) {
             view.onAccessibilityStatusChanged(model.get(ACCESSIBILITY_ENABLED));
-        } else if (propertyKey == APP_MENU_BUTTON_HELPER) {
-            view.setAppMenuButtonHelper(model.get(APP_MENU_BUTTON_HELPER));
         } else if (propertyKey == BUTTONS_CLICKABLE) {
             view.setButtonClickableState(model.get(BUTTONS_CLICKABLE));
         } else if (propertyKey == INCOGNITO_SWITCHER_VISIBLE) {

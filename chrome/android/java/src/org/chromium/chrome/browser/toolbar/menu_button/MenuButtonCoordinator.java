@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -52,11 +54,11 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     private Runnable mUpdateStateChangedListener;
     private final boolean mShouldShowAppUpdateBadge;
     private Supplier<Boolean> mIsInOverviewModeSupplier;
+    private ThemeColorProvider mThemeColorProvider;
     private MenuButton mMenuButton;
 
     /**
-     *
-     * @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
+     *  @param appMenuCoordinatorSupplier Supplier for the AppMenuCoordinator, which owns all other
      *         app menu MVC components.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
      *         controls.
@@ -67,12 +69,15 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * @param shouldShowAppUpdateBadge Whether the app menu update badge should be shown if there is
      *         a pending update.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
+     * @param themeColorProvider Provider of theme color changes.
+     * @param menuButtonId Resource id that should be used to locate the underlying view.
      */
     public MenuButtonCoordinator(ObservableSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             Activity activity, SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
-            Supplier<Boolean> isInOverviewModeSupplier) {
+            Supplier<Boolean> isInOverviewModeSupplier, ThemeColorProvider themeColorProvider,
+            @IdRes int menuButtonId) {
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         mActivity = activity;
         mSetUrlBarFocusFunction = setUrlBarFocusFunction;
@@ -82,8 +87,12 @@ public class MenuButtonCoordinator implements AppMenuObserver {
         mRequestRenderRunnable = requestRenderRunnable;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mMenuButton = mActivity.findViewById(R.id.menu_button_wrapper);
+        mMenuButton = mActivity.findViewById(menuButtonId);
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
+        mThemeColorProvider = themeColorProvider;
+        if (mMenuButton != null) {
+            mMenuButton.setThemeColorProvider(themeColorProvider);
+        }
     }
 
     /**
@@ -110,6 +119,21 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     }
 
     /**
+     * Set the underlying MenuButton view. Use only if the MenuButton instance isn't available at
+     * construction time, e.g. if it's lazily inflated. This should only be called once.
+     * @param menuButton The underlying MenuButton view.
+     */
+    public void setMenuButton(MenuButton menuButton) {
+        assert mMenuButton == null;
+        assert menuButton != null;
+        mMenuButton = menuButton;
+        if (mAppMenuButtonHelper != null) {
+            mMenuButton.setAppMenuButtonHelper(mAppMenuButtonHelper);
+        }
+        mMenuButton.setThemeColorProvider(mThemeColorProvider);
+    }
+
+    /**
      * Get the underlying MenuButton view. Present for legacy reasons only; don't add new usages.
      */
     @Deprecated
@@ -123,8 +147,18 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      */
     @Deprecated
     public void setImageTintList(ColorStateList colorStateList) {
+        // TODO(https://crbug.com/1086676): Remove the need for these null checks and replace with
+        // an assert that the MenuButtonCoordinator isn't destroyed.
         if (mMenuButton == null) return;
         ApiCompatibilityUtils.setImageTintList(mMenuButton.getImageButton(), colorStateList);
+    }
+
+    /**
+     * @param isClickable Whether the underlying MenuButton view should be clickable.
+     */
+    public void setClickable(boolean isClickable) {
+        if (mMenuButton == null) return;
+        mMenuButton.setClickable(isClickable);
     }
 
     public void destroy() {
@@ -213,7 +247,9 @@ public class MenuButtonCoordinator implements AppMenuObserver {
 
     @Override
     public void onMenuHighlightChanged(boolean isHighlighting) {
-        if (mMenuButton != null) mMenuButton.setMenuButtonHighlight(isHighlighting);
+        if (mMenuButton != null) {
+            mMenuButton.setMenuButtonHighlight(isHighlighting);
+        }
 
         if (isHighlighting) {
             mFullscreenHighlightToken =

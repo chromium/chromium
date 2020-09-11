@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -87,6 +88,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     Callback<IPHCommandBuilder> mMockCallback;
     @Mock
     Tab mMockIncognitoTab;
+    @Mock
+    MenuButtonCoordinator mMenuButtonCoordinator;
     @Captor
     private ArgumentCaptor<OverviewModeObserver> mOverviewModeObserverCaptor;
     @Captor
@@ -686,7 +689,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private void createMediator(
             boolean hideIncognitoSwitchWhenNoTabs, boolean showNewTabAndIdentityDiscAtStart) {
         mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mIdentityDiscController,
-                mMockCallback, hideIncognitoSwitchWhenNoTabs, showNewTabAndIdentityDiscAtStart);
+                mMockCallback, hideIncognitoSwitchWhenNoTabs, showNewTabAndIdentityDiscAtStart,
+                mMenuButtonCoordinator);
         mMediator.setOverviewModeBehavior(mOverviewModeBehavior);
         verify(mOverviewModeBehavior)
                 .addOverviewModeObserver(mOverviewModeObserverCaptor.capture());
