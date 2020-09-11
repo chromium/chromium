@@ -100,6 +100,7 @@ class FeatureStatusProviderImplTest : public testing::Test {
         .WillByDefault(
             Invoke(this, &FeatureStatusProviderImplTest::is_adapter_powered));
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
+    fake_device_sync_client_.NotifyReady();
 
     provider_ = std::make_unique<FeatureStatusProviderImpl>(
         &fake_device_sync_client_, &fake_multidevice_setup_client_,

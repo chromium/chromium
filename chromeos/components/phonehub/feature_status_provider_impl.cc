@@ -205,7 +205,11 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub);
 
-  if (!IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
+  // Note: If |device_sync_client_| is not yet ready, it has not initialized
+  // itself with device metadata, so we assume that we are ineligible for the
+  // feature until proven otherwise.
+  if (!device_sync_client_->is_ready() ||
+      !IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
                             device_sync_client_->GetSyncedDevices(),
                             feature_state)) {
     return FeatureStatus::kNotEligibleForFeature;
