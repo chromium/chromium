@@ -2,8 +2,6 @@
 # For example, core/rendering/OWNERS for rendering changes.
 
 # Reviewers (comments indicate areas of expertise):
-# alancutter reviews changes in core/animation, core/css and core/style.
-alancutter@chromium.org
 alexis.menard@intel.com
 # bokan reviews changes around viewport behavior, scrolling, cc/blink interaction, co-ordinate spaces and input events
 bokan@chromium.org
