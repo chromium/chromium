@@ -922,11 +922,22 @@ class NearbySharingServiceImplSendFailureTest
 
 class TestObserver : public NearbySharingService::Observer {
  public:
+  explicit TestObserver(NearbySharingService* service) : service_(service) {
+    service_->AddObserver(this);
+  }
+
   void OnHighVisibilityChanged(bool in_high_visibility) override {
     in_high_visibility_ = in_high_visibility;
   }
 
+  void OnShutdown() override {
+    shutdown_called_ = true;
+    service_->RemoveObserver(this);
+  }
+
   bool in_high_visibility_ = false;
+  bool shutdown_called_ = false;
+  NearbySharingService* service_;
 };
 
 }  // namespace
@@ -3432,14 +3443,13 @@ TEST_F(NearbySharingServiceImplTest, ProfileChangedControlsAdvertising) {
 
 TEST_F(NearbySharingServiceImplTest,
        RegisterForegroundReceiveSurfaceEntersHighVisibility) {
-  TestObserver observer;
+  TestObserver observer(service_.get());
   NiceMock<MockTransferUpdateCallback> callback;
   ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
 
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
   local_device_data_manager()->SetDeviceName(kDeviceName);
-  service_->AddObserver(&observer);
 
   // To start, we should not be in high visibility state.
   EXPECT_FALSE(service_->IsInHighVisibility());
@@ -3460,5 +3470,19 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_FALSE(service_->IsInHighVisibility());
   EXPECT_FALSE(observer.in_high_visibility_);
 
+  // Remove the observer before it goes out of scope.
   service_->RemoveObserver(&observer);
+}
+
+TEST_F(NearbySharingServiceImplTest, ShutdownCallsObservers) {
+  TestObserver observer(service_.get());
+
+  EXPECT_FALSE(observer.shutdown_called_);
+
+  service_->Shutdown();
+
+  EXPECT_TRUE(observer.shutdown_called_);
+
+  // Prevent a double shutdown.
+  service_.reset();
 }

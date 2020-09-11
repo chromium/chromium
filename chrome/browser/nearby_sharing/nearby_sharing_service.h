@@ -65,6 +65,10 @@ class NearbySharingService : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnHighVisibilityChanged(bool in_high_visibility) = 0;
+
+    // Called during the |KeyedService| shutdown, but before everything has been
+    // cleaned up. It is safe to remove any observers on this event.
+    virtual void OnShutdown() = 0;
   };
 
   using StatusCodesCallback =

@@ -252,6 +252,12 @@ NearbySharingServiceImpl::~NearbySharingServiceImpl() {
 }
 
 void NearbySharingServiceImpl::Shutdown() {
+  // Before we clean up, lets give observers a heads up we are shutting down.
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
+  }
+  observers_.Clear();
+
   // Clear in-progress transfers.
   ClearOutgoingShareTargetInfoMap();
   incoming_share_target_info_map_.clear();
