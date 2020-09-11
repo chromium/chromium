@@ -60,6 +60,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
 
+// YES if the default browser fullscreen promo has met the qualifications to be
+// shown after the last cold start.
+@property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
+
 // When multiwindow is unavailable, this is the only scene state. It is created
 // by the app delegate.
 @property(nonatomic, strong) SceneState* mainSceneState;
