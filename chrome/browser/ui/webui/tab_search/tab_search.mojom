@@ -4,6 +4,8 @@
 
 module tab_search.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Collection of WindowTabs of a profile.
 struct ProfileTabs {
   array<WindowTabs> windows;
@@ -27,6 +29,7 @@ struct Tab {
   string? fav_icon_url;
   bool is_default_favicon;
   bool show_icon;
+  mojo_base.mojom.TimeTicks last_active_time_ticks;
 };
 
 // Collection of tab groups.

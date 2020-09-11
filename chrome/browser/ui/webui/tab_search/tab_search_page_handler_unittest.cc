@@ -63,6 +63,7 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_TRUE(tab->fav_icon_url.has_value());
   EXPECT_TRUE(tab->is_default_favicon);
   EXPECT_TRUE(tab->show_icon);
+  EXPECT_GT(tab->last_active_time_ticks, base::TimeTicks());
 }
 
 void ExpectProfileTabs(tab_search::mojom::ProfileTabs* profile_tabs) {
