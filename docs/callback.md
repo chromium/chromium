@@ -108,6 +108,15 @@ LOG(INFO) << lambda_cb.Run();  // Print 4.
 
 base::OnceCallback<int()> lambda_cb2 = base::BindOnce([] { return 3; });
 LOG(INFO) << std::move(lambda_cb2).Run();  // Print 3.
+
+base::OnceCallback<int()> lambda_cb3 = base::BindOnce([] { return 2; });
+base::OnceCallback<int(base::OnceCallback<int()>)> lambda_cb4 =
+    base::BindOnce(
+        [](base::OnceCallback<int()> callback) {
+            return std::move(callback).Run(); },
+        std::move(lambda_cb3));
+LOG(INFO) << std::move(lambda_cb4).Run();  // Print 2.
+
 ```
 
 ### Binding A Capturing Lambda (In Tests)
