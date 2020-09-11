@@ -181,7 +181,11 @@ PDFMetrics.UserAction = {
   ZOOM_CUSTOM_FIRST: 43,
   ZOOM_CUSTOM: 44,
 
-  NUMBER_OF_ACTIONS: 45,
+  // Recorded when a thumbnail is used for navigation.
+  THUMBNAIL_NAVIGATE_FIRST: 45,
+  THUMBNAIL_NAVIGATE: 46,
+
+  NUMBER_OF_ACTIONS: 47,
 };
 
 // Map from UserAction to the 'FIRST' action. These metrics are recorded
@@ -275,5 +279,9 @@ PDFMetrics.firstMap_ = new Map([
   [
     PDFMetrics.UserAction.ZOOM_CUSTOM,
     PDFMetrics.UserAction.ZOOM_CUSTOM_FIRST,
+  ],
+  [
+    PDFMetrics.UserAction.THUMBNAIL_NAVIGATE,
+    PDFMetrics.UserAction.THUMBNAIL_NAVIGATE_FIRST,
   ],
 ]);

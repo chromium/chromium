@@ -177,5 +177,24 @@ chrome.test.runTests(function() {
           chrome.metricsPrivate.actionCounter);
       chrome.test.succeed();
     },
+
+    function testMetricsThumbnail() {
+      PDFMetrics.resetForTesting();
+
+      chrome.metricsPrivate = new MockMetricsPrivate();
+      PDFMetrics.record(PDFMetrics.UserAction.DOCUMENT_OPENED);
+
+      PDFMetrics.record(PDFMetrics.UserAction.THUMBNAIL_NAVIGATE);
+      PDFMetrics.record(PDFMetrics.UserAction.THUMBNAIL_NAVIGATE);
+
+      chrome.test.assertEq(
+          {
+            [PDFMetrics.UserAction.DOCUMENT_OPENED]: 1,
+            [PDFMetrics.UserAction.THUMBNAIL_NAVIGATE_FIRST]: 1,
+            [PDFMetrics.UserAction.THUMBNAIL_NAVIGATE]: 2
+          },
+          chrome.metricsPrivate.actionCounter);
+      chrome.test.succeed();
+    },
   ];
 }());
