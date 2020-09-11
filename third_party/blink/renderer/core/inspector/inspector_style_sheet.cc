@@ -1539,6 +1539,7 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
           .setTitle(style_sheet->title())
           .setFrameId(frame ? IdentifiersFactory::FrameId(frame) : "")
           .setIsInline(style_sheet->IsInline() && !StartsAtZero())
+          .setIsConstructed(style_sheet->IsConstructed())
           .setIsMutable(style_sheet->Contents()->IsMutable())
           .setStartLine(start.line_.ZeroBasedInt())
           .setStartColumn(start.column_.ZeroBasedInt())

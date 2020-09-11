@@ -1076,9 +1076,11 @@ experimental domain CSS
       boolean isInline
       # Whether this stylesheet is mutable. Inline stylesheets become mutable
       # after they have been modified via CSSOM API.
-      # <link> element's stylesheets are never mutable. Constructed stylesheets
-      # (new CSSStyleSheet()) are mutable immediately after creation.
+      # <link> element's stylesheets become mutable only if DevTools modifies them.
+      # Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
       boolean isMutable
+      # Whether this stylesheet is a constructed stylesheet (created using new CSSStyleSheet()).
+      boolean isConstructed
       # Line offset of the stylesheet within the resource (zero based).
       number startLine
       # Column offset of the stylesheet within the resource (zero based).

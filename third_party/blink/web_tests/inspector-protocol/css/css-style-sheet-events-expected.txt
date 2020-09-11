@@ -7,6 +7,7 @@ The test verifies events fire for adding, changing, and removing CSSStyleSheets.
             endColumn : 6
             endLine : 4
             frameId : <string>
+            isConstructed : false
             isInline : false
             isMutable : false
             length : <number>
@@ -36,6 +37,7 @@ The test verifies events fire for adding, changing, and removing CSSStyleSheets.
             endColumn : 6
             endLine : 4
             frameId : <string>
+            isConstructed : false
             isInline : false
             isMutable : true
             length : <number>
