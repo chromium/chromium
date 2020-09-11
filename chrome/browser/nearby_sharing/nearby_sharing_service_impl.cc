@@ -203,7 +203,6 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     NearbyProcessManager* process_manager)
     : profile_(profile),
-      settings_(prefs),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
       process_manager_(process_manager),
       http_client_factory_(std::make_unique<NearbyShareClientFactoryImpl>(
@@ -225,7 +224,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           content::BrowserContext::GetDefaultStoragePartition(profile)
               ->GetProtoDatabaseProvider(),
           profile->GetPath(),
-          http_client_factory_.get())) {
+          http_client_factory_.get())),
+      settings_(prefs, local_device_data_manager_.get()) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
 

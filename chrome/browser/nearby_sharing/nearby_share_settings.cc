@@ -10,8 +10,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-NearbyShareSettings::NearbyShareSettings(PrefService* pref_service)
-    : pref_service_(pref_service) {
+NearbyShareSettings::NearbyShareSettings(
+    PrefService* pref_service,
+    NearbyShareLocalDeviceDataManager* local_device_data_manager)
+    : pref_service_(pref_service),
+      local_device_data_manager_(local_device_data_manager) {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kNearbySharingEnabledPrefName,
@@ -26,31 +29,35 @@ NearbyShareSettings::NearbyShareSettings(PrefService* pref_service)
       base::BindRepeating(&NearbyShareSettings::OnDataUsagePrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kNearbySharingDeviceNamePrefName,
-      base::BindRepeating(&NearbyShareSettings::OnDeviceNamePrefChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kNearbySharingAllowedContactsPrefName,
       base::BindRepeating(&NearbyShareSettings::OnAllowedContactsPrefChanged,
                           base::Unretained(this)));
+
+  local_device_data_manager_->AddObserver(this);
 }
 
-NearbyShareSettings::~NearbyShareSettings() = default;
+NearbyShareSettings::~NearbyShareSettings() {
+  local_device_data_manager_->RemoveObserver(this);
+}
 
 bool NearbyShareSettings::GetEnabled() const {
   return pref_service_->GetBoolean(prefs::kNearbySharingEnabledPrefName);
 }
+
 std::string NearbyShareSettings::GetDeviceName() const {
-  return pref_service_->GetString(prefs::kNearbySharingDeviceNamePrefName);
+  return local_device_data_manager_->GetDeviceName().value_or(std::string());
 }
+
 DataUsage NearbyShareSettings::GetDataUsage() const {
   return static_cast<DataUsage>(
       pref_service_->GetInteger(prefs::kNearbySharingDataUsageName));
 }
+
 Visibility NearbyShareSettings::GetVisibility() const {
   return static_cast<Visibility>(
       pref_service_->GetInteger(prefs::kNearbySharingBackgroundVisibilityName));
 }
+
 const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   std::vector<std::string> allowed_contacts;
   const base::ListValue* list =
@@ -84,8 +91,7 @@ void NearbyShareSettings::GetDeviceName(
 }
 
 void NearbyShareSettings::SetDeviceName(const std::string& device_name) {
-  pref_service_->SetString(prefs::kNearbySharingDeviceNamePrefName,
-                           device_name);
+  local_device_data_manager_->SetDeviceName(device_name);
 }
 
 void NearbyShareSettings::GetDataUsage(
@@ -129,17 +135,22 @@ void NearbyShareSettings::Bind(
   receiver_set_.Add(this, std::move(receiver));
 }
 
+void NearbyShareSettings::OnLocalDeviceDataChanged(bool did_device_name_change,
+                                                   bool did_full_name_change,
+                                                   bool did_icon_url_change) {
+  if (!did_device_name_change)
+    return;
+
+  std::string device_name = GetDeviceName();
+  for (auto& remote : observers_set_) {
+    remote->OnDeviceNameChanged(device_name);
+  }
+}
+
 void NearbyShareSettings::OnEnabledPrefChanged() {
   bool enabled = GetEnabled();
   for (auto& remote : observers_set_) {
     remote->OnEnabledChanged(enabled);
-  }
-}
-
-void NearbyShareSettings::OnDeviceNamePrefChanged() {
-  std::string device_name = GetDeviceName();
-  for (auto& remote : observers_set_) {
-    remote->OnDeviceNameChanged(device_name);
   }
 }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-test-utils.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -75,8 +76,10 @@ class NearbyShareSettingsTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
+  FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
   FakeNearbyShareSettingsObserver observer_;
-  NearbyShareSettings nearby_share_settings_{&pref_service_};
+  NearbyShareSettings nearby_share_settings_{&pref_service_,
+                                             &local_device_data_manager_};
   NearbyShareSettingsAsyncWaiter nearby_share_settings_waiter_{
       &nearby_share_settings_};
 };
@@ -118,6 +121,12 @@ TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   EXPECT_EQ("uncalled", observer_.device_name);
   nearby_share_settings_.SetDeviceName("d");
   EXPECT_EQ("d", nearby_share_settings_.GetDeviceName());
+
+  EXPECT_EQ("uncalled", observer_.device_name);
+  local_device_data_manager_.NotifyLocalDeviceDataChanged(
+      /*did_device_name_change=*/true,
+      /*did_full_name_change=*/false,
+      /*did_icon_url_change=*/false);
   FlushMojoMessages();
   EXPECT_EQ("d", observer_.device_name);
 

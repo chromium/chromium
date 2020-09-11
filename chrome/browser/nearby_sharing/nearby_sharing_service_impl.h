@@ -298,7 +298,6 @@ class NearbySharingServiceImpl
   void SetInHighVisibility(bool in_high_visibility);
 
   Profile* profile_;
-  NearbyShareSettings settings_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
   NearbyProcessManager* process_manager_;
   ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
@@ -311,6 +310,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_;
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
+  NearbyShareSettings settings_;
   NearbyFileHandler file_handler_;
 
   // A list of service observers.

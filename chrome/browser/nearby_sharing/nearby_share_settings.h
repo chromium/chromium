@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -34,9 +35,15 @@ class PrefService;
 // will not synchronously trigger the observer event. Generally this is not a
 // problem because these settings should only be changed by user interaction,
 // but this is necessary to know when writing unit-tests.
-class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings {
+//
+// TODO(nohle): Use the NearbyShareContactManager to implement
+// Get/SetAllowedContacts().
+class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
+                            public NearbyShareLocalDeviceDataManager::Observer {
  public:
-  explicit NearbyShareSettings(PrefService* pref_service_);
+  NearbyShareSettings(
+      PrefService* pref_service_,
+      NearbyShareLocalDeviceDataManager* local_device_data_manager);
   ~NearbyShareSettings() override;
 
   // Synchronous getters for C++ clients, mojo setters can be used as is
@@ -69,9 +76,13 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings {
   void Bind(
       mojo::PendingReceiver<nearby_share::mojom::NearbyShareSettings> receiver);
 
+  // NearbyShareLocalDeviceDataManager::Observer:
+  void OnLocalDeviceDataChanged(bool did_device_name_change,
+                                bool did_full_name_change,
+                                bool did_icon_url_change) override;
+
  private:
   void OnEnabledPrefChanged();
-  void OnDeviceNamePrefChanged();
   void OnDataUsagePrefChanged();
   void OnVisibilityPrefChanged();
   void OnAllowedContactsPrefChanged();
@@ -79,7 +90,8 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings {
   mojo::RemoteSet<nearby_share::mojom::NearbyShareSettingsObserver>
       observers_set_;
   mojo::ReceiverSet<nearby_share::mojom::NearbyShareSettings> receiver_set_;
-  PrefService* pref_service_;
+  PrefService* pref_service_ = nullptr;
+  NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

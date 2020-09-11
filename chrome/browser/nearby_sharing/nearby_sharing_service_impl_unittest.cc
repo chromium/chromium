@@ -413,7 +413,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   }
 
   void SetVisibility(nearby_share::mojom::Visibility visibility) {
-    NearbyShareSettings settings(&prefs_);
+    NearbyShareSettings settings(&prefs_, local_device_data_manager());
     settings.SetVisibility(visibility);
   }
 
