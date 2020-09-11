@@ -92,6 +92,7 @@ compiled_action("character_data") {
 
 executable("character_data_generator") {
   sources = [
+    "text/character_property.h",
     "text/character_property_data.h",
     "text/character_property_data_generator.cc",
   ]
@@ -1571,15 +1572,19 @@ component("platform") {
   public_deps = [
     ":blink_platform_public_deps",
     ":platform_export",
+    "//gpu/command_buffer/client:raster_interface",
+    "//media/capture:capture_lib",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom:mojom_headers",
+    "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_blink",
     "//third_party/blink/renderer/platform/blob",
     "//third_party/blink/renderer/platform/heap",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
+    "//third_party/pffft:pffft",
     "//ui/gfx",
   ]
   deps = [
@@ -1597,6 +1602,7 @@ component("platform") {
     "//media/capture:capture_switches",
     "//media/capture/mojom:video_capture",
     "//mojo/public/cpp/bindings:wtf_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom:mojom_shared",
     "//services/service_manager/public/cpp",
     "//services/viz/public/cpp/gpu",
@@ -1606,7 +1612,6 @@ component("platform") {
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_blink",
     "//third_party/blink/public/strings",
     "//third_party/blink/renderer/platform/wtf",
     "//third_party/ced",
@@ -1695,6 +1700,7 @@ component("platform") {
   if (current_cpu == "x86" || current_cpu == "x64") {
     deps += [ ":blink_x86_avx" ]
     sources += [ "audio/cpu/x86/audio_delay_dsp_kernel_sse2.cc" ]
+    allow_circular_includes_from += [ ":blink_x86_avx" ]
   }
 
   if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
@@ -1729,8 +1735,16 @@ static_library("test_support") {
 
   sources = [
     "graphics/gpu/drawing_buffer_test_helpers.h",
+    "graphics/paint/paint_controller_test.h",
+    "graphics/test/fake_gles2_interface.h",
+    "graphics/test/fake_web_graphics_context_3d_provider.h",
+    "graphics/test/gpu_memory_buffer_test_platform.h",
     "graphics/test/gpu_test_utils.cc",
     "graphics/test/gpu_test_utils.h",
+    "graphics/test/mock_compositor_frame_sink.h",
+    "graphics/test/mock_embedded_frame_sink_provider.h",
+    "graphics/test/mock_image_decoder.h",
+    "graphics/test/mock_paint_canvas.h",
     "testing/code_cache_loader_mock.cc",
     "testing/code_cache_loader_mock.h",
     "testing/compositor_test.cc",
@@ -1807,6 +1821,7 @@ static_library("test_support") {
     "//testing/gtest:gtest",
     "//testing/perf",
     "//third_party/blink/renderer/platform/blob:test_support",
+    "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/loader:test_support",
     "//third_party/blink/renderer/platform/scheduler:test_support",
   ]
@@ -1819,7 +1834,6 @@ static_library("test_support") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/blink/public/common:common",
-    "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/network:test_support",
   ]
   allow_circular_includes_from =
@@ -1949,7 +1963,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/paint/paint_chunk_test.cc",
     "graphics/paint/paint_chunker_test.cc",
     "graphics/paint/paint_controller_test.cc",
-    "graphics/paint/paint_controller_test.h",
     "graphics/paint/paint_property_node_test.cc",
     "graphics/paint/paint_record_builder_test.cc",
     "graphics/paint/raster_invalidator_test.cc",
@@ -2097,12 +2110,15 @@ source_set("blink_platform_unittests_sources") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party:freetype_harfbuzz",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/strings:strings",
     "//third_party/blink/renderer/platform/blob:unit_tests",
     "//third_party/blink/renderer/platform/instrumentation:unit_tests",
     "//third_party/blink/renderer/platform/loader:unit_tests",
     "//third_party/blink/renderer/platform/network:unit_tests",
     "//third_party/blink/renderer/platform/scheduler:unit_tests",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/libavif:libavif",
     "//third_party/libyuv",
     "//third_party/webrtc/api/task_queue:task_queue_test",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -2229,6 +2245,8 @@ if (current_cpu == "x86" || current_cpu == "x64") {
 test("blink_fuzzer_unittests") {
   deps = [
     ":test_support",
+    "//base/test:test_support",
+    "//mojo/core/embedder:embedder",
     "//skia:test_fonts",
     "//third_party/blink/public:test_support",
   ]
@@ -2255,6 +2273,7 @@ source_set("blink_fuzzer_test_support") {
   deps = [
     ":platform",
     ":test_support",
+    "//base/test:test_config",
     "//content/test:test_support",
   ]
 }
@@ -2386,13 +2405,6 @@ source_set("unit_tests") {
     "graphics/image_frame_generator_test.cc",
     "graphics/paint_worklet_paint_dispatcher_test.cc",
     "graphics/test/fake_canvas_resource_host.h",
-    "graphics/test/fake_gles2_interface.h",
-    "graphics/test/fake_web_graphics_context_3d_provider.h",
-    "graphics/test/gpu_memory_buffer_test_platform.h",
-    "graphics/test/mock_compositor_frame_sink.h",
-    "graphics/test/mock_embedded_frame_sink_provider.h",
-    "graphics/test/mock_image_decoder.h",
-    "graphics/test/mock_paint_canvas.h",
     "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.
@@ -2411,5 +2423,7 @@ source_set("unit_tests") {
     ":test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:test_headers",
   ]
+  public_deps = [ "//gpu:raster" ]
 }
