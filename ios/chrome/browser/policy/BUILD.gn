@@ -40,6 +40,7 @@ source_set("policy") {
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/enterprise",
+    "//components/metrics",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -116,8 +117,8 @@ source_set("test_support") {
 
 bundle_data("test_resources") {
   visibility = [
-    ":unit_tests",
     ":eg2_tests",
+    ":unit_tests",
   ]
   testonly = true
   sources = [ "//ios/chrome/test/data/policy/policy_test_cases.json" ]

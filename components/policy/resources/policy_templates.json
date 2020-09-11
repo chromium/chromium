@@ -3042,6 +3042,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-'],
+      'future_on': [ 'ios' ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': False,

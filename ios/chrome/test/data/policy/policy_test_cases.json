@@ -308,6 +308,16 @@
     ]
   },
 
+  "MetricsReportingEnabled": {
+    "os": [ "ios" ],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "MetricsReportingEnabled": false },
+        "prefs": { "user_experience_metrics.reporting_enabled": { "local_state": true } }
+      }
+    ]
+  },
+
   "PasswordManagerEnabled": {
     "os": [ "ios" ],
     "can_be_recommended": true,
@@ -349,7 +359,7 @@
               "prefs":{
                 "printing.enabled":{
                   "value": true
-              } 
+              }
             }
           },
           {
@@ -357,7 +367,7 @@
               "prefs":{
                 "printing.enabled":{
                   "value": false
-              } 
+              }
             }
           }
       ]

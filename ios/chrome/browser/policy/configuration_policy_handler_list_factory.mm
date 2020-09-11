@@ -12,6 +12,7 @@
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -59,6 +60,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kDefaultPopupsSetting,
     prefs::kManagedDefaultPopupsSetting,
     base::Value::Type::INTEGER },
+  { policy::key::kMetricsReportingEnabled,
+    metrics::prefs::kMetricsReportingEnabled,
+    base::Value::Type::BOOLEAN },
   { policy::key::kPopupsAllowedForUrls,
     prefs::kManagedPopupsAllowedForUrls,
     base::Value::Type::LIST },
