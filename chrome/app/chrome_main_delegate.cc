@@ -600,6 +600,11 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   chrome::InitializeCpuAffinityExperiments();
 #endif
 
+#if defined(OS_CHROMEOS)
+  // Threading features.
+  base::PlatformThread::InitThreadPostFieldTrial();
+#endif
+
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   {
     version_info::Channel channel = chrome::GetChannel();

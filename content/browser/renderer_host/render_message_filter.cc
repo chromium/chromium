@@ -134,7 +134,7 @@ void RenderMessageFilter::SetThreadPriorityOnFileThread(
     return;
   }
 
-  base::PlatformThread::SetThreadPriority(peer_tid, priority);
+  base::PlatformThread::SetThreadPriority(peer_pid(), peer_tid, priority);
 }
 #endif
 
