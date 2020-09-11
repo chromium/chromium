@@ -8,10 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
@@ -22,10 +24,6 @@ namespace app_list {
 namespace {
 
 constexpr int kNumChips = 5;
-
-constexpr int kMinApps = 2;
-constexpr int kMinDriveFiles = 1;
-constexpr int kMinLocalFiles = 1;
 
 // Strings used for the ranked types in the RecurrenceRanker.
 constexpr char kApp[] = "app";
@@ -57,10 +55,25 @@ float GetScore(const std::map<std::string, float>& scores,
   return it->second;
 }
 
+int MinDriveChips(const int available_chips) {
+  return available_chips >= 5 ? 2 : 1;
+}
+
+int MinLocalChips(const int available_chips) {
+  return available_chips >= 5 ? 1 : 0;
+}
+
+int MinAppChips(const int available_chips) {
+  return available_chips >= 4 ? 2 : 1;
+}
+
 void InitializeRanker(RecurrenceRanker* ranker) {
   // This initialization starts with two apps, two drive files, and one local
-  // file. Apps are left in a close second place, so the first click of an app
-  // will replace one drive file with one app.
+  // file if there are five available chips. It will start with two apps, one
+  // drive, and one local file if there are only four chips. Apps are left in a
+  // close second place, so the first click of an app will replace one drive
+  // file with one app.
+  ranker->Record(kLocalFile);
   ranker->Record(kApp);
   ranker->Record(kDriveFile);
   ranker->Record(kDriveFile);
@@ -113,14 +126,15 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
   std::vector<Mixer::SortData*> drive_results;
   std::vector<Mixer::SortData*> local_results;
   for (auto& result : *results) {
-    switch (RankingItemTypeFromSearchResult(*result.result)) {
-      case RankingItemType::kApp:
+    switch (result.result->result_type()) {
+      case ash::AppListSearchResultType::kInstalledApp:
+      case ash::AppListSearchResultType::kInternalApp:
         app_results.emplace_back(&result);
         break;
-      case RankingItemType::kZeroStateFileChip:
+      case ash::AppListSearchResultType::kFileChip:
         local_results.emplace_back(&result);
         break;
-      case RankingItemType::kDriveQuickAccessChip:
+      case ash::AppListSearchResultType::kDriveQuickAccessChip:
         drive_results.emplace_back(&result);
         break;
       default:
@@ -142,22 +156,30 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
     InitializeRanker(type_ranker_.get());
   }
 
-  // Allocate as many of the per-type minimum number of chips as possible.
   const int drive_size = static_cast<int>(drive_results.size());
   const int local_size = static_cast<int>(local_results.size());
   const int apps_size = static_cast<int>(app_results.size());
-  int num_drive = std::min(kMinDriveFiles, drive_size);
-  int num_local = std::min(kMinLocalFiles, local_size);
-  int num_apps = std::min(kMinApps, apps_size);
-  const int free_chips = kNumChips - num_drive - num_local - num_apps;
 
-  // Get the per-type scores from the ranker.
+  // Get the per-type scores from the ranker and calculate the score decrement.
   const auto ranks = type_ranker_->Rank();
   float app_score = GetScore(ranks, kApp);
   float drive_score = GetScore(ranks, kDriveFile);
   float local_score = GetScore(ranks, kLocalFile);
+  int free_chips = NumAvailableChips(results);
   const float score_delta =
-      (app_score + drive_score + local_score) / free_chips;
+      (app_score + drive_score + local_score) / std::max(1, free_chips);
+
+  // Allocate as many of the per-type minimum chips as possible.
+  int num_drive = std::min(MinDriveChips(free_chips), drive_size);
+  int num_local = std::min(MinLocalChips(free_chips), local_size);
+  int num_apps = std::min(MinAppChips(free_chips), apps_size);
+
+  // Decrement the scores to reflect the minimum results added previously, and
+  // update the number of free chips accordingly.
+  app_score -= num_apps * score_delta;
+  drive_score -= num_drive * score_delta;
+  local_score -= num_local * score_delta;
+  free_chips = free_chips - num_drive - num_local - num_apps;
 
   // Allocate the remaining 'free' chips. When there aren't results enough of
   // one type to fill the number of chips deserved by that type's score, fall
@@ -178,7 +200,10 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
 
   // Set result scores to make the final list of results. Use the score of the
   // lowest-scoring shown app as the baseline for file results.
-  double current_score = num_apps > 0 ? app_results[num_apps - 1]->score : 1.0;
+  double current_score = 1.0;
+  if (0 < num_apps && num_apps <= apps_size) {
+    current_score = app_results[num_apps - 1]->score;
+  }
 
   // Score the Drive results just below that lowest app. Set unshown results to
   // 0.0 to ensure they don't interfere.
@@ -200,6 +225,30 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
       local_results[i]->score = 0.0;
     }
   }
+
+  // Score unshown apps below the lowest local file result to ensure apps with
+  // identical scores don't crowd out files. We cannot score these as 0.0
+  // because the ranking is used in other views. This preserves order, if not
+  // the scores themselves.
+  for (int i = num_apps; i < apps_size; ++i) {
+    current_score -= kScoreEpsilon;
+    app_results[i]->score = current_score;
+  }
+}
+
+int ChipRanker::NumAvailableChips(Mixer::SortedResults* results) {
+  int num_chips = kNumChips;
+
+  for (const auto& result : *results) {
+    const auto type = result.result->result_type();
+    if (type == ash::AppListSearchResultType::kAssistantChip ||
+        type == ash::AppListSearchResultType::kPlayStoreReinstallApp ||
+        IsSuggestionChip(result.result->id(), profile_)) {
+      --num_chips;
+    }
+  }
+
+  return std::max(0, num_chips);
 }
 
 RecurrenceRanker* ChipRanker::GetRankerForTest() {

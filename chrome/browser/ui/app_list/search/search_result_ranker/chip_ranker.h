@@ -62,6 +62,11 @@ class ChipRanker {
   std::unique_ptr<RecurrenceRanker> type_ranker_;
 
  private:
+  // Returns the number of chips available for ranked results. Accounts for the
+  // release notes, continue reading, help app, assistant, and arc reinstall
+  // chips.
+  int NumAvailableChips(Mixer::SortedResults* results);
+
   Profile* profile_;
 };
 
