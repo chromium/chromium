@@ -52,6 +52,13 @@ bool SpdyHeadersToHttpResponse(const spdy::SpdyHeaderBlock& headers,
   raw_headers.append(status);
   raw_headers.push_back('\0');
   for (it = headers.begin(); it != headers.end(); ++it) {
+    std::string name = it->first.as_string();
+    DCHECK_GT(name.size(), 0u);
+    if (name[0] == ':') {
+      // https://tools.ietf.org/html/rfc7540#section-8.1.2.4
+      // Skip pseudo headers.
+      continue;
+    }
     // For each value, if the server sends a NUL-separated
     // list of values, we separate that back out into
     // individual headers for each value in the list.
@@ -64,17 +71,15 @@ bool SpdyHeadersToHttpResponse(const spdy::SpdyHeaderBlock& headers,
     size_t start = 0;
     size_t end = 0;
     do {
+      raw_headers.append(name);
+      raw_headers.push_back(':');
+
       end = value.find('\0', start);
       std::string tval;
       if (end != value.npos)
         tval = value.substr(start, (end - start));
       else
         tval = value.substr(start);
-      if (it->first[0] == ':')
-        raw_headers.append(it->first.as_string().substr(1));
-      else
-        raw_headers.append(it->first.as_string());
-      raw_headers.push_back(':');
       raw_headers.append(tval);
       raw_headers.push_back('\0');
       start = end + 1;

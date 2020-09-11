@@ -4323,12 +4323,12 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeaders) {
     base::StringPiece expected_headers[8];
   } test_cases[] = {
       // No extra headers.
-      {0, {}, 2, {"status", "200", "hello", "bye"}},
+      {0, {}, 1, {"hello", "bye"}},
       // Comma-separated header value.
       {1,
        {"cookie", "val1, val2"},
-       3,
-       {"status", "200", "hello", "bye", "cookie", "val1, val2"}},
+       2,
+       {"hello", "bye", "cookie", "val1, val2"}},
       // Multiple headers are preserved: they are joined with \0 separator in
       // spdy::SpdyHeaderBlock.AppendValueOrAddHeader(), then split up in
       // HpackEncoder, then joined with \0 separator when
@@ -4337,14 +4337,14 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeaders) {
       // HttpResponseHeaders.
       {2,
        {"content-encoding", "val1", "content-encoding", "val2"},
-       4,
-       {"status", "200", "hello", "bye", "content-encoding", "val1",
-        "content-encoding", "val2"}},
+       3,
+       {"hello", "bye", "content-encoding", "val1", "content-encoding",
+        "val2"}},
       // Cookie header is not split up by HttpResponseHeaders.
       {2,
        {"cookie", "val1", "cookie", "val2"},
-       3,
-       {"status", "200", "hello", "bye", "cookie", "val1; val2"}}};
+       2,
+       {"hello", "bye", "cookie", "val1; val2"}}};
 
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     SpdyTestUtil spdy_test_util;
@@ -4445,14 +4445,11 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeadersVary) {
     };
 
     // Construct the reply.
+    const char** expected_res_extra_headers = test_cases[i].extra_headers[1];
+    int expected_res_num_headers = test_cases[i].num_headers[1];
     spdy::SpdyHeaderBlock reply_headers;
-    AppendToHeaderBlock(test_cases[i].extra_headers[1],
-                        test_cases[i].num_headers[1],
+    AppendToHeaderBlock(expected_res_extra_headers, expected_res_num_headers,
                         &reply_headers);
-    // Construct the expected header reply string before moving |reply_headers|.
-    std::string expected_reply =
-        spdy_test_util.ConstructSpdyReplyString(reply_headers);
-
     spdy::SpdySerializedFrame frame_reply(
         spdy_test_util.ConstructSpdyReply(1, std::move(reply_headers)));
 
@@ -4505,7 +4502,17 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeadersVary) {
       lines.append("\n");
     }
 
-    EXPECT_EQ(expected_reply, lines) << i;
+    // Remove ":status" and ":path" field from HTTP response.
+    // See SpdyHeadersToHttpResponse().
+    ASSERT_EQ(expected_res_extra_headers[0], spdy::kHttp2StatusHeader);
+    ASSERT_EQ(expected_res_extra_headers[2], spdy::kHttp2PathHeader);
+    ASSERT_GT(expected_res_num_headers, 1);
+    spdy::SpdyHeaderBlock http_reply_headers;
+    AppendToHeaderBlock(&expected_res_extra_headers[4],
+                        expected_res_num_headers - 2, &http_reply_headers);
+    std::string expected_http_reply =
+        spdy_test_util.ConstructSpdyReplyString(http_reply_headers);
+    EXPECT_EQ(expected_http_reply, lines) << i;
   }
 }
 
