@@ -352,18 +352,18 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
 TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
-  std::set<GURL> origins;
+  std::set<url::Origin> origins;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetOriginsWithRegistrations(&origins));
   EXPECT_TRUE(origins.empty());
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
 
-  GURL origin1("https://example.com");
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   RegistrationData data1;
   data1.registration_id = 123;
-  data1.scope = URL(origin1, "/foo");
-  data1.script = URL(origin1, "/script1.js");
+  data1.scope = URL(origin1.GetURL(), "/foo");
+  data1.script = URL(origin1.GetURL(), "/script1.js");
   data1.version_id = 456;
   data1.resources_total_size_bytes = 100;
   std::vector<ResourceRecordPtr> resources1;
@@ -371,11 +371,11 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources1, &deleted_version));
 
-  GURL origin2("https://www.example.com");
+  url::Origin origin2 = url::Origin::Create(GURL("https://www.example.com"));
   RegistrationData data2;
   data2.registration_id = 234;
-  data2.scope = URL(origin2, "/bar");
-  data2.script = URL(origin2, "/script2.js");
+  data2.scope = URL(origin2.GetURL(), "/bar");
+  data2.script = URL(origin2.GetURL(), "/script2.js");
   data2.version_id = 567;
   data2.resources_total_size_bytes = 200;
   std::vector<ResourceRecordPtr> resources2;
@@ -383,11 +383,11 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data2, resources2, &deleted_version));
 
-  GURL origin3("https://example.org");
+  url::Origin origin3 = url::Origin::Create(GURL("https://example.org"));
   RegistrationData data3;
   data3.registration_id = 345;
-  data3.scope = URL(origin3, "/hoge");
-  data3.script = URL(origin3, "/script3.js");
+  data3.scope = URL(origin3.GetURL(), "/hoge");
+  data3.script = URL(origin3.GetURL(), "/script3.js");
   data3.version_id = 678;
   data3.resources_total_size_bytes = 300;
   std::vector<ResourceRecordPtr> resources3;
@@ -398,8 +398,8 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   // |origin3| has two registrations.
   RegistrationData data4;
   data4.registration_id = 456;
-  data4.scope = URL(origin3, "/fuga");
-  data4.script = URL(origin3, "/script4.js");
+  data4.scope = URL(origin3.GetURL(), "/fuga");
+  data4.script = URL(origin3.GetURL(), "/script4.js");
   data4.version_id = 789;
   data4.resources_total_size_bytes = 400;
   std::vector<ResourceRecordPtr> resources4;
@@ -418,8 +418,8 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
   // |origin3| has another registration, so should not remove it from the
   // unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data4.registration_id, origin3,
-                                         &deleted_version));
+            database->DeleteRegistration(data4.registration_id,
+                                         origin3.GetURL(), &deleted_version));
   EXPECT_EQ(data4.registration_id, deleted_version.registration_id);
 
   origins.clear();
@@ -432,8 +432,8 @@ TEST(ServiceWorkerDatabaseTest, GetOriginsWithRegistrations) {
 
   // |origin3| should be removed from the unique origin list.
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
-            database->DeleteRegistration(data3.registration_id, origin3,
-                                         &deleted_version));
+            database->DeleteRegistration(data3.registration_id,
+                                         origin3.GetURL(), &deleted_version));
   EXPECT_EQ(data3.registration_id, deleted_version.registration_id);
 
   origins.clear();
@@ -2028,11 +2028,11 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
                                               &newly_purgeable_resources));
 
   // |origin1| should be removed from the unique origin list.
-  std::set<GURL> unique_origins;
+  std::set<url::Origin> unique_origins;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetOriginsWithRegistrations(&unique_origins));
   EXPECT_EQ(1u, unique_origins.size());
-  EXPECT_TRUE(base::Contains(unique_origins, url2));
+  EXPECT_TRUE(base::Contains(unique_origins, origin2));
 
   // The registrations for |origin1| should be removed.
   std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;

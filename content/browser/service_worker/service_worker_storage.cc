@@ -136,7 +136,7 @@ void ServiceWorkerStorage::GetRegisteredOrigins(
 
   std::vector<url::Origin> origins;
   for (const auto& origin : registered_origins_)
-    origins.push_back(url::Origin::Create(origin));
+    origins.push_back(origin);
   std::move(callback).Run(std::move(origins));
 }
 
@@ -165,7 +165,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, client_url.GetOrigin())) {
+  if (!base::Contains(registered_origins_, url::Origin::Create(client_url))) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -199,7 +199,7 @@ void ServiceWorkerStorage::FindRegistrationForScope(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, scope.GetOrigin())) {
+  if (!base::Contains(registered_origins_, url::Origin::Create(scope))) {
     RunSoon(FROM_HERE,
             base::BindOnce(std::move(callback),
                            /*data=*/nullptr, /*resources=*/nullptr,
@@ -235,7 +235,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, origin.GetURL())) {
+  if (!base::Contains(registered_origins_, origin)) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -1124,7 +1124,7 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
                             deleted_version.newly_purgeable_resources);
     return;
   }
-  registered_origins_.insert(origin);
+  registered_origins_.insert(url::Origin::Create(origin));
 
   if (quota_manager_proxy_) {
     // Can be nullptr in tests.
@@ -1170,7 +1170,7 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   }
 
   if (origin_state == OriginState::kDelete)
-    registered_origins_.erase(params->origin);
+    registered_origins_.erase(url::Origin::Create(params->origin));
 
   std::move(params->callback)
       .Run(ServiceWorkerDatabase::Status::kOk, origin_state,

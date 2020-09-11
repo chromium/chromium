@@ -335,7 +335,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetNextAvailableIds(
 }
 
 ServiceWorkerDatabase::Status
-ServiceWorkerDatabase::GetOriginsWithRegistrations(std::set<GURL>* origins) {
+ServiceWorkerDatabase::GetOriginsWithRegistrations(
+    std::set<url::Origin>* origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(origins->empty());
 
@@ -369,7 +370,7 @@ ServiceWorkerDatabase::GetOriginsWithRegistrations(std::set<GURL>* origins) {
         break;
       }
 
-      origins->insert(origin);
+      origins->insert(url::Origin::Create(origin));
     }
   }
 

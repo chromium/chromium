@@ -85,7 +85,7 @@ class CONTENT_EXPORT ServiceWorkerDatabase {
   // Reads origins that have one or more than one registration from the
   // database. Returns OK if they are successfully read or not found.
   // Otherwise, returns an error.
-  Status GetOriginsWithRegistrations(std::set<GURL>* origins);
+  Status GetOriginsWithRegistrations(std::set<url::Origin>* origins);
 
   // Reads registrations for |origin| from the database. Returns OK if they are
   // successfully read or not found. Otherwise, returns an error.

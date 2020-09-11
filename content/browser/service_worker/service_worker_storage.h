@@ -320,7 +320,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
     int64_t next_registration_id;
     int64_t next_version_id;
     int64_t next_resource_id;
-    std::set<GURL> origins;
+    std::set<url::Origin> origins;
 
     InitialData();
     ~InitialData();
@@ -511,7 +511,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   void DidDeleteDiskCache(DatabaseStatusCallback callback, bool result);
 
   // Origins having registations.
-  std::set<GURL> registered_origins_;
+  std::set<url::Origin> registered_origins_;
   // The set of origins whose storage should be cleaned on shutdown.
   std::set<GURL> origins_to_purge_on_shutdown_;
 

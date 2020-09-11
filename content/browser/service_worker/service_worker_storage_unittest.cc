@@ -315,7 +315,7 @@ class ServiceWorkerStorageTest : public testing::Test {
   ServiceWorkerDatabase* database() { return storage()->database_.get(); }
 
  protected:
-  const std::set<GURL>& registered_origins() {
+  const std::set<url::Origin>& registered_origins() {
     return storage()->registered_origins_;
   }
 
