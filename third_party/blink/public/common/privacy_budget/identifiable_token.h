@@ -95,6 +95,9 @@ class IdentifiableToken {
   // Representation type of the sample.
   using TokenType = int64_t;
 
+  // Required for use in certain data structures. Represents no bytes.
+  constexpr IdentifiableToken() : value_(kIdentifiabilityDigestOfNoBytes) {}
+
   // A byte buffer specified as a span.
   //
   // This is essentially the base case. If it were the base case, then

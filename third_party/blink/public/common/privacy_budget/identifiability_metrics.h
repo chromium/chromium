@@ -111,6 +111,10 @@ uint64_t IdentifiabilityDigestHelper(T in, Targs... extra_in) {
       base::make_span(reinterpret_cast<uint8_t*>(digests), sizeof(digests)));
 }
 
+// The zero-length digest, i.e. the digest computed for no bytes.
+static constexpr uint64_t kIdentifiabilityDigestOfNoBytes =
+    0x9ae16a3b2f90404fULL;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABILITY_METRICS_H_
