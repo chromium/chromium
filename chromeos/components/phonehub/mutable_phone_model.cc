@@ -11,6 +11,15 @@ MutablePhoneModel::MutablePhoneModel() = default;
 
 MutablePhoneModel::~MutablePhoneModel() = default;
 
+void MutablePhoneModel::SetPhoneName(
+    const base::Optional<base::string16>& phone_name) {
+  if (phone_name_ == phone_name)
+    return;
+
+  phone_name_ = phone_name;
+  NotifyModelChanged();
+}
+
 void MutablePhoneModel::SetPhoneStatusModel(
     const base::Optional<PhoneStatusModel>& phone_status_model) {
   if (phone_status_model_ == phone_status_model)

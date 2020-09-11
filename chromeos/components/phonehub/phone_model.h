@@ -32,6 +32,10 @@ class PhoneModel {
   PhoneModel& operator=(const PhoneModel&) = delete;
   virtual ~PhoneModel();
 
+  const base::Optional<base::string16>& phone_name() const {
+    return phone_name_;
+  }
+
   const base::Optional<PhoneStatusModel>& phone_status_model() const {
     return phone_status_model_;
   }
@@ -48,6 +52,7 @@ class PhoneModel {
 
   void NotifyModelChanged();
 
+  base::Optional<base::string16> phone_name_;
   base::Optional<PhoneStatusModel> phone_status_model_;
   base::Optional<BrowserTabsModel> browser_tabs_model_;
 
