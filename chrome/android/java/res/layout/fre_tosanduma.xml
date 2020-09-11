@@ -31,7 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/fre_image_height"
                 android:layout_marginHorizontal="@dimen/fre_vertical_spacing"
-                android:layout_marginBottom="@dimen/fre_vertical_spacing"
+                android:layout_marginBottom="@dimen/fre_image_bottom_margin"
                 android:importantForAccessibility="no"
                 android:src="@drawable/fre_product_logo" />
 
@@ -61,14 +61,14 @@
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/fre_vertical_spacing"
                     android:layout_marginEnd="@dimen/fre_content_margin"
-                    android:gravity="bottom"
+                    android:gravity="center_vertical"
                     android:orientation="vertical" >
 
                     <org.chromium.ui.widget.TextViewWithClickableSpans
                         android:id="@+id/tos_and_privacy"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/fre_vertical_spacing"
+                        android:layout_marginBottom="@dimen/fre_tos_bottom_margin"
                         android:lineSpacingMultiplier="1.4"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
@@ -84,7 +84,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- fre_button_bar_height = 62dp = layout_height + layout_marginVertical * 2 -->
     <ImageView
         android:id="@+id/shadow"
         android:layout_width="match_parent"
@@ -107,22 +106,21 @@
             android:id="@+id/terms_accept"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/fre_bottom_vertical_margin"
-            android:layout_marginBottom="@dimen/fre_bottom_vertical_margin"
+            android:layout_marginVertical="@dimen/fre_button_vertical_margin"
             android:layout_gravity="bottom|center_horizontal"
             android:paddingStart="@dimen/fre_button_padding"
             android:paddingEnd="@dimen/fre_button_padding"
             android:text="@string/fre_accept_continue"
             style="@style/FilledButton.Flat" />
 
-        <!-- Same location as the button; marginButtom is adjusted for the different size. -->
+        <!-- Same location as the button; marginBottom is adjusted for the different size. -->
         <ProgressBar
             android:id="@+id/progress_spinner"
             style="@style/Widget.AppCompat.ProgressBar"
-            android:layout_marginBottom="22dp"
+            android:layout_marginBottom="@dimen/fre_bottom_loading_spinner_margin"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_width="24dp"
-            android:layout_height="24dp" />
+            android:layout_width="@dimen/fre_bottom_loading_spinner_size"
+            android:layout_height="@dimen/fre_bottom_loading_spinner_size"/>
     </FrameLayout>
 
     <!-- Place holder for privacy disclosure. -->
