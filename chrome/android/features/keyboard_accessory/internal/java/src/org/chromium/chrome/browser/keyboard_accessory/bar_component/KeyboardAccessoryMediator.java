@@ -143,7 +143,6 @@ class KeyboardAccessoryMediator
             case PopupItemId.ITEM_ID_SCAN_CREDIT_CARD:
             case PopupItemId.ITEM_ID_TITLE:
             case PopupItemId.ITEM_ID_USERNAME_ENTRY:
-            case PopupItemId.ITEM_ID_CREATE_HINT:
             case PopupItemId.ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
             case PopupItemId.ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
                 return true;

@@ -20,10 +20,6 @@ struct Feature;
 
 namespace autofill {
 
-extern const char kAutofillKeyboardAccessoryAnimationDurationKey[];
-extern const char kAutofillKeyboardAccessoryLimitLabelWidthKey[];
-extern const char kAutofillKeyboardAccessoryHintKey[];
-
 // The length of the GUIDs used for local autofill data. It is different than
 // the length used for server autofill data.
 constexpr int kLocalGuidSize = 36;
@@ -40,17 +36,6 @@ bool IsKeyboardAccessoryEnabled();
 
 // Returns whether the Touch To Fill feature is enabled.
 bool IsTouchToFillEnabled();
-
-// Returns animation duration for keyboard accessory. If 0, we do not animate.
-unsigned int GetKeyboardAccessoryAnimationDuration();
-
-// Returns true if we must limit width of keyboard accessory suggestion label to
-// half of device's pixel width.
-bool ShouldLimitKeyboardAccessorySuggestionLabelWidth();
-
-// Returns true if we show a hint in the keyboard accessory suggestions to call
-// attention to the availability of autofill suggestions.
-bool IsHintEnabledInKeyboardAccessory();
 
 // A token is a sequences of contiguous characters separated by any of the
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.

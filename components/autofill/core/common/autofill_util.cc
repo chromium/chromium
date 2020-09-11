@@ -27,13 +27,6 @@ using mojom::FocusedFieldType;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
-const char kAutofillKeyboardAccessoryAnimationDurationKey[] =
-    "animation_duration_millis";
-const char kAutofillKeyboardAccessoryLimitLabelWidthKey[] =
-    "should_limit_label_width";
-const char kAutofillKeyboardAccessoryHintKey[] =
-    "is_hint_shown_before_suggestion";
-
 namespace {
 
 const char kSplitCharacters[] = " .,-_@";
@@ -42,9 +35,9 @@ template <typename Char>
 struct Compare : base::CaseInsensitiveCompareASCII<Char> {
   explicit Compare(bool case_sensitive) : case_sensitive_(case_sensitive) {}
   bool operator()(Char x, Char y) const {
-    return case_sensitive_ ? (x == y)
-                           : base::CaseInsensitiveCompareASCII<Char>::
-                             operator()(x, y);
+    return case_sensitive_
+               ? (x == y)
+               : base::CaseInsensitiveCompareASCII<Char>::operator()(x, y);
   }
 
  private:
@@ -74,38 +67,6 @@ bool IsTouchToFillEnabled() {
 #if defined(OS_ANDROID)
   return base::FeatureList::IsEnabled(features::kAutofillTouchToFill);
 #else  // !defined(OS_ANDROID)
-  return false;
-#endif
-}
-
-unsigned int GetKeyboardAccessoryAnimationDuration() {
-#if defined(OS_ANDROID)
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kAutofillKeyboardAccessory,
-      kAutofillKeyboardAccessoryAnimationDurationKey, 0);
-#else  // !defined(OS_ANDROID)
-  NOTREACHED();
-  return 0;
-#endif
-}
-
-bool ShouldLimitKeyboardAccessorySuggestionLabelWidth() {
-#if defined(OS_ANDROID)
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kAutofillKeyboardAccessory, kAutofillKeyboardAccessoryLimitLabelWidthKey,
-      false);
-#else  // !defined(OS_ANDROID)
-  NOTREACHED();
-  return false;
-#endif
-}
-
-bool IsHintEnabledInKeyboardAccessory() {
-#if defined(OS_ANDROID)
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kAutofillKeyboardAccessory, kAutofillKeyboardAccessoryHintKey, false);
-#else  // !defined(OS_ANDROID)
-  NOTREACHED();
   return false;
 #endif
 }
@@ -143,7 +104,7 @@ size_t GetTextSelectionStart(const base::string16& suggestion,
        (it = std::search(
             it, suggestion.end(), field_contents.begin(), field_contents.end(),
             Compare<base::string16::value_type>(case_sensitive))) !=
-           suggestion.end();
+       suggestion.end();
        ++it) {
     if (it == suggestion.begin() ||
         kSplitChars.find(*(it - 1)) != std::string::npos) {

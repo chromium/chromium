@@ -400,8 +400,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the
-  // popup layout experiment. If we do not include |POPUP_ITEM_ID_CLEAR_FORM|,
-  // include a hint for keyboard accessory.
+  // popup layout experiment.
   suggestions->push_back(Suggestion(GetSettingsSuggestionValue()));
   suggestions->back().frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
   // On Android and Desktop, Google Pay branding is shown along with Settings.
@@ -416,18 +415,6 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
             : "googlePay";
 #endif
   }
-
-#if defined(OS_ANDROID)
-  if (IsKeyboardAccessoryEnabled()) {
-    suggestions->back().icon = "settings";
-    if (IsHintEnabledInKeyboardAccessory() && !query_field_.is_autofilled) {
-      Suggestion create_icon;
-      create_icon.icon = "create";
-      create_icon.frontend_id = POPUP_ITEM_ID_CREATE_HINT;
-      suggestions->push_back(create_icon);
-    }
-  }
-#endif
 }
 
 void AutofillExternalDelegate::InsertDataListValues(

@@ -830,43 +830,6 @@ const FeatureEntry::FeatureVariation
          base::size(kIsolatedPrerenderPrefetchLimitFifteen), nullptr},
 };
 
-#if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam
-    kAutofillKeyboardAccessoryFeatureVariationAnimationDuration[] = {
-        {autofill::kAutofillKeyboardAccessoryAnimationDurationKey, "1000"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillKeyboardAccessoryFeatureVariationLimitLabelWidth[] = {
-        {autofill::kAutofillKeyboardAccessoryLimitLabelWidthKey, "true"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillKeyboardAccessoryFeatureVariationShowHint[] = {
-        {autofill::kAutofillKeyboardAccessoryHintKey, "true"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillKeyboardAccessoryFeatureVariationAnimateWithHint[] = {
-        {autofill::kAutofillKeyboardAccessoryAnimationDurationKey, "1000"},
-        {autofill::kAutofillKeyboardAccessoryHintKey, "true"}};
-
-const FeatureEntry::FeatureVariation
-    kAutofillKeyboardAccessoryFeatureVariations[] = {
-        {"Animate", kAutofillKeyboardAccessoryFeatureVariationAnimationDuration,
-         base::size(
-             kAutofillKeyboardAccessoryFeatureVariationAnimationDuration),
-         nullptr},
-        {"Limit label width",
-         kAutofillKeyboardAccessoryFeatureVariationLimitLabelWidth,
-         base::size(kAutofillKeyboardAccessoryFeatureVariationLimitLabelWidth),
-         nullptr},
-        {"Show hint", kAutofillKeyboardAccessoryFeatureVariationShowHint,
-         base::size(kAutofillKeyboardAccessoryFeatureVariationShowHint),
-         nullptr},
-        {"Animate with hint",
-         kAutofillKeyboardAccessoryFeatureVariationAnimateWithHint,
-         base::size(kAutofillKeyboardAccessoryFeatureVariationAnimateWithHint),
-         nullptr}};
-#endif  // OS_ANDROID
-
 const FeatureEntry::Choice kMemlogModeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDisabled, "", ""},
     {flag_descriptions::kMemlogModeMinimal, heap_profiling::kMemlogMode,
@@ -3122,10 +3085,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-keyboard-accessory-view",
      flag_descriptions::kAutofillAccessoryViewName,
      flag_descriptions::kAutofillAccessoryViewDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillKeyboardAccessory,
-         kAutofillKeyboardAccessoryFeatureVariations,
-         "AutofillKeyboardAccessory")},
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillKeyboardAccessory)},
 #endif  // OS_ANDROID
 #if defined(OS_MAC)
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
