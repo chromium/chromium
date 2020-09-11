@@ -102,6 +102,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // will be adjusted after the animation. If |restack| is true but at least one
   // of |reposition| and |animate| is false, the stacking order will be adjusted
   // immediately.
+  // Note: OverviewSession has versions of the Add/Remove items. Those are
+  // preferred as they update other things like the overview accessibility
+  // annotator.
   void AddItem(aura::Window* window,
                bool reposition,
                bool animate,
@@ -374,7 +377,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   }
 
  private:
-  class AccessibilityFocusAnnotator;
   class TargetWindowObserver;
   friend class OverviewSessionTest;
 
@@ -520,10 +522,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Records the presentation time of scrolling the grid in overview mode.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
-
-  // Updates accessibility with the correct focus order among all overview
-  // widgets.
-  std::unique_ptr<AccessibilityFocusAnnotator> accessibility_focus_annotator_;
 
   // Weak pointer to the window that is being dragged from the top, if there is
   // one.

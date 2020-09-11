@@ -666,10 +666,10 @@ OverviewWindowDragController::CompleteNormalDrag(
     // Get the window and bounds from |item_| before removing it from its grid.
     aura::Window* window = item_->GetWindow();
     const gfx::RectF target_item_bounds = item_->target_bounds();
-    // Remove |item_| from its grid. Leave the repositioning to the
+    // Remove |item_| from overview. Leave the repositioning to the
     // |OverviewItemMoveHelper|.
-    item_overview_grid->RemoveItem(item_, /*item_destroying=*/false,
-                                   /*reposition=*/false);
+    overview_session_->RemoveItem(item_, /*item_destroying=*/false,
+                                  /*reposition=*/false);
     item_ = nullptr;
     // The |OverviewItemMoveHelper| will self destruct when we move |window| to
     // |target_root|.

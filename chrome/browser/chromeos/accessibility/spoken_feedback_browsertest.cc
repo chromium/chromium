@@ -537,8 +537,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern(
       "Chrom* - data:text slash html;charset equal utf-8, less than button "
-      "autofocus greater than Click me less than slash button greater than , "
-      "window");
+      "autofocus greater than Click me less than slash button greater than");
+  sm_.ExpectSpeechPattern("Press Ctrl plus W to close.");
+  sm_.ExpectSpeechPattern(", window");
 
   sm_.Replay();
 }

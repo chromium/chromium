@@ -49,6 +49,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -76,8 +77,6 @@ constexpr int kKeyboardHoldScrollingDp = 15;
 bool EndOverview() {
   return Shell::Get()->overview_controller()->EndOverview();
 }
-
-}  // namespace
 
 // A self-deleting window state observer that runs the given callback when its
 // associated window state has been changed.
@@ -121,6 +120,93 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
   aura::Window* window_;
 
   base::OnceCallback<void(WindowState*)> on_post_window_state_changed_;
+};
+
+// Simple override of views::Button. Allows to use a element of accessibility
+// role button as the overview focus widget's contents.
+class OverviewFocusButton : public views::Button {
+ public:
+  OverviewFocusButton() : views::Button(/*listener=*/nullptr) {
+    // Make this not focusable to avoid accessibility error since this view has
+    // no accessible name.
+    SetFocusBehavior(FocusBehavior::NEVER);
+  }
+  OverviewFocusButton(const OverviewFocusButton&) = delete;
+  OverviewFocusButton& operator=(const OverviewFocusButton&) = delete;
+  ~OverviewFocusButton() override = default;
+};
+
+}  // namespace
+
+// Class that updates the focusable overview widgets so that the point to the
+// correct next and previous widgets for a11y purposes. Needs to be updated when
+// an overview item is added or removed. It is expected that the desk widget
+// does not get altered for the duration of overview.
+class OverviewSession::AccessibilityFocusAnnotator {
+ public:
+  explicit AccessibilityFocusAnnotator(OverviewSession* session)
+      : session_(session) {}
+  AccessibilityFocusAnnotator(const AccessibilityFocusAnnotator&) = delete;
+  AccessibilityFocusAnnotator& operator=(const AccessibilityFocusAnnotator&) =
+      delete;
+  ~AccessibilityFocusAnnotator() = default;
+
+  void UpdateAccessibilityFocus() {
+    if (session_->is_shutting_down())
+      return;
+
+    // Construct the list of accessible widgets, these are the overview focus
+    // widget, desk bar widget, all the item widgets and the no window indicator
+    // widget, if available.
+    std::vector<views::Widget*> a11y_widgets;
+    if (session_->overview_focus_widget_)
+      a11y_widgets.push_back(session_->overview_focus_widget_.get());
+
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      OverviewGrid* grid = session_->GetGridWithRootWindow(root);
+      DCHECK(grid);
+      if (grid->desks_widget())
+        a11y_widgets.push_back(
+            const_cast<views::Widget*>(grid->desks_widget()));
+      for (const auto& item : grid->window_list())
+        a11y_widgets.push_back(item->item_widget());
+    }
+    if (session_->no_windows_widget_.get())
+      a11y_widgets.push_back(session_->no_windows_widget_.get());
+
+    if (a11y_widgets.empty())
+      return;
+
+    auto get_view_a11y =
+        [&a11y_widgets](int index) -> views::ViewAccessibility& {
+      return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+    };
+
+    // If there is only one widget left, clear the focus overrides so that they
+    // do not point to deleted objects.
+    if (a11y_widgets.size() == 1) {
+      get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
+      get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
+      a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+          ax::mojom::Event::kTreeChanged, true);
+      return;
+    }
+
+    int size = a11y_widgets.size();
+    for (int i = 0; i < size; ++i) {
+      int previous_index = (i + size - 1) % size;
+      int next_index = (i + 1) % size;
+      get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
+      get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
+      a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+          ax::mojom::Event::kTreeChanged, true);
+    }
+  }
+
+ private:
+  // The associated overview session. Guaranteed to be non null for the lifetime
+  // of |this|.
+  OverviewSession* session_;
 };
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
@@ -217,7 +303,9 @@ void OverviewSession::Init(const WindowList& windows,
   UpdateNoWindowsWidget();
 
   // Create the widget that will receive focus while in overview mode for
-  // accessibility purposes.
+  // accessibility purposes. Add a button as the contents so that
+  // |accessibility_focus_annotator_| can put it on the accessibility focus
+  // cycler.
   overview_focus_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
@@ -226,10 +314,12 @@ void OverviewSession::Init(const WindowList& windows,
   params.accept_events = false;
   params.bounds = gfx::Rect(0, 0, 2, 2);
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.name = "OverviewModeFocusedWidget";
+  params.name = "OverviewModeFocusWidget";
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.init_properties_container.SetProperty(ash::kExcludeInMruKey, true);
   overview_focus_widget_->Init(std::move(params));
+  overview_focus_widget_->SetContentsView(
+      std::make_unique<OverviewFocusButton>());
 
   UMA_HISTOGRAM_COUNTS_100("Ash.WindowSelector.Items", num_items_);
 
@@ -499,6 +589,12 @@ void OverviewSession::AddItemInMruOrder(aura::Window* window,
 }
 
 void OverviewSession::RemoveItem(OverviewItem* overview_item) {
+  RemoveItem(overview_item, /*item_destroying=*/false, /*reposition=*/false);
+}
+
+void OverviewSession::RemoveItem(OverviewItem* overview_item,
+                                 bool item_destroying,
+                                 bool reposition) {
   if (overview_item->GetWindow()->HasObserver(this)) {
     overview_item->GetWindow()->RemoveObserver(this);
     observed_windows_.erase(overview_item->GetWindow());
@@ -506,11 +602,14 @@ void OverviewSession::RemoveItem(OverviewItem* overview_item) {
       restore_focus_window_ = nullptr;
   }
 
-  overview_item->overview_grid()->RemoveItem(
-      overview_item, /*item_destroying=*/false, /*reposition=*/false);
+  overview_item->overview_grid()->RemoveItem(overview_item, item_destroying,
+                                             reposition);
   --num_items_;
 
   UpdateNoWindowsWidget();
+
+  if (accessibility_focus_annotator_)
+    accessibility_focus_annotator_->UpdateAccessibilityFocus();
 }
 
 void OverviewSession::RemoveDropTargets() {
@@ -709,6 +808,7 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
 
   if (canceled)
     return;
+
   if (overview_focus_widget_) {
     if (should_focus_overview) {
       overview_focus_widget_->Show();
@@ -729,6 +829,11 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
       }
     }
   }
+
+  accessibility_focus_annotator_ =
+      std::make_unique<AccessibilityFocusAnnotator>(this);
+  accessibility_focus_annotator_->UpdateAccessibilityFocus();
+
   Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
 }
 
@@ -1225,6 +1330,9 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   // called before OnStartingAnimationComplete() is called, so use Show()
   // instead of ActivateWindow() to show and activate the widget.
   overview_focus_widget_->Show();
+
+  if (accessibility_focus_annotator_)
+    accessibility_focus_annotator_->UpdateAccessibilityFocus();
 }
 
 }  // namespace ash

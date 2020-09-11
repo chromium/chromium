@@ -1050,8 +1050,16 @@ void OverviewItem::OnWindowDestroying(aura::Window* window) {
     overview_session_->window_drag_controller()->ResetGesture();
   }
 
-  overview_grid_->RemoveItem(this, /*item_destroying=*/true,
-                             /*reposition=*/!animating_to_close_);
+  // Remove the item from the session which will remove it from the grid in
+  // addition to updating accessibility states. If the session is not available
+  // then remove it from the grid directly.
+  if (overview_session_) {
+    overview_session_->RemoveItem(this, /*item_destroying=*/true,
+                                  /*reposition=*/!animating_to_close_);
+  } else {
+    overview_grid()->RemoveItem(this, /*item_destroying=*/true,
+                                /*reposition=*/!animating_to_close_);
+  }
 
   Shell::Get()
       ->accessibility_controller()

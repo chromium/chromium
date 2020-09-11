@@ -436,6 +436,10 @@ bool OverviewItemView::CanAcceptEvent(const ui::Event& event) {
 
 void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   WindowMiniView::GetAccessibleNodeData(node_data);
+
+  // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
+  // to allow |this| as well as the title and close button.
+  node_data->role = ax::mojom::Role::kGenericContainer;
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kDescription,
       l10n_util::GetStringUTF8(
