@@ -72565,6 +72565,19 @@
         {}
        ]
       ],
+      "clip-path-rotated-will-change-transform.html": [
+       "a609e9cc91591b853db9713f7e981ecc4f666abb",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/clip-path-rotated-will-change-transform-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-scroll.html": [
        "880fd8b77a603147cc2a4a3660bcabe74e427bba",
        [
@@ -181813,6 +181826,10 @@
        "b860304f04fe22498eb5b43d9de00d7e261353bb",
        []
       ],
+      "clip-path-rotated-will-change-transform-ref.html": [
+       "ddbf0e9812cf432486f22a22cb2680343d5be298",
+       []
+      ],
       "clip-path-svg-invalidate-ref.html": [
        "20c8085b948f7ce9f3268b1f3cfb653673e335e9",
        []
@@ -238123,7 +238140,7 @@
         []
        ],
        "firefox.py": [
-        "5dc893864e25f9dfc2d932303f5a7c2e6e80aa43",
+        "151530897d9b1f77e9dcd4f1971bed1c4d6ff8b0",
         []
        ],
        "firefox_android.py": [
@@ -238201,7 +238218,7 @@
         []
        ],
        "executormarionette.py": [
-        "dfd543c5cbcd266d10bf6f820a9ac87ea2dd1069",
+        "9c1f4f366d5fe782b772b79d3f6d4978ada010ac",
         []
        ],
        "executoropera.py": [
@@ -268127,7 +268144,7 @@
      ]
     ],
     "cookieStoreManager_getSubscriptions_multiple.tentative.https.any.js": [
-     "cf22e46a1949a680ae3a5d65071f0641e13f5a03",
+     "9e153d03aae798371d4c28649de7126f18aefe76",
      [
       "cookie-store/cookieStoreManager_getSubscriptions_multiple.tentative.https.any.html",
       {
@@ -268168,7 +268185,7 @@
      ]
     ],
     "cookieStoreManager_getSubscriptions_single.tentative.https.any.js": [
-     "fac0f408e0629712bac6fa02e09e17ddd003d26e",
+     "98ec19df3f1881666a48f2f920000c3a11b67f82",
      [
       "cookie-store/cookieStoreManager_getSubscriptions_single.tentative.https.any.html",
       {
@@ -268303,7 +268320,7 @@
      ]
     ],
     "cookieStore_getAll_arguments.tentative.https.any.js": [
-     "ab88ec308045c13b6f391370c9bbeb9602821c80",
+     "5055a42e5d39fea6214baf3e782f5461594a9643",
      [
       "cookie-store/cookieStore_getAll_arguments.tentative.https.any.html",
       {
@@ -268402,7 +268419,7 @@
      ]
     ],
     "cookieStore_get_arguments.tentative.https.any.js": [
-     "4cf596bbec2659856be3710d999c26a7cebbda1d",
+     "1f2356f7c8a75c32b5cd3f0daed3b5d166cbff5a",
      [
       "cookie-store/cookieStore_get_arguments.tentative.https.any.html",
       {
@@ -268628,7 +268645,7 @@
      ]
     ],
     "cookieStore_subscribe_arguments.tentative.https.any.js": [
-     "c86ea871645e1d9a289a4f8acb0f300d104c8418",
+     "ca5f55d645be5188177eeb0b03a51a175a7f9e64",
      [
       "cookie-store/cookieStore_subscribe_arguments.tentative.https.any.html",
       {
@@ -268860,14 +268877,14 @@
      ]
     ],
     "serviceworker_cookieStore_subscriptions_reset.tentative.https.html": [
-     "bff1f04bad061c187b33b56e1760b97b784cb690",
+     "a1124e9220150ea48e016d805ead1f210a247a25",
      [
       null,
       {}
      ]
     ],
     "serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.js": [
-     "b1e412c7997d7251072064996fe7b4b86a13f304",
+     "30d8d70940dae248b3b5cba030056daac78b32a6",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.serviceworker.html",
       {
@@ -268885,7 +268902,7 @@
      ]
     ],
     "serviceworker_cookiechange_eventhandler_multiple_subscriptions.tentative.https.any.js": [
-     "f983f54b44a4c29388543a0bf13e89cedde12264",
+     "cd0657c0bcdf5fc5a2133fb0598778aa237c384c",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_multiple_subscriptions.tentative.https.any.serviceworker.html",
       {
@@ -268903,7 +268920,7 @@
      ]
     ],
     "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.tentative.https.any.js": [
-     "b4089030e6b76f17967b999c56064a362c40ceeb",
+     "1f433aeb9476983cabccead67032ddb88d3ebc32",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.tentative.https.any.serviceworker.html",
       {
@@ -268921,7 +268938,7 @@
      ]
     ],
     "serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.js": [
-     "b38d91a3c6576b9596e4227996a0ac4dc48f672d",
+     "3ccb4b303d90165eed0f7830ac1faed56ee29bba",
      [
       "cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html",
       {
@@ -268939,7 +268956,7 @@
      ]
     ],
     "serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.js": [
-     "1921583e5c520a0d5b23ae6f9f5fa75640ca16bd",
+     "8def2440897b931c2af4402654a92ca89c34ea98",
      [
       "cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html",
       {
@@ -382604,7 +382621,7 @@
      ]
     ],
     "current-time.html": [
-     "ad489d02811b96b2fa8c9d189712fa53c1cada50",
+     "82b6a329cfd0176e02fdcc17ffe2aace2b4a42e1",
      [
       null,
       {}
