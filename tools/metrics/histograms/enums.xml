@@ -37659,6 +37659,23 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Recent Tabs Entry"/>
 </enum>
 
+<enum name="IOSAppState">
+  <int value="0"
+      label="Unknown UTE. This should not happen and presence of this value
+             likely indicates a bug in Chrome or UIKit code."/>
+  <int value="1"
+      label="Unknown XTE. This should not happen and presence of this value
+             likely indicates a bug in Chrome or UIKit code."/>
+  <int value="2" label="App state was UIApplicationStateActive during UTE."/>
+  <int value="3" label="App state was UIApplicationStateActive during XTE."/>
+  <int value="4" label="App state was UIApplicationStateInactive during UTE."/>
+  <int value="5" label="App state was UIApplicationStateInactive during XTE."/>
+  <int value="6"
+      label="App state was UIApplicationStateBackground during UTE."/>
+  <int value="7"
+      label="App state was UIApplicationStateBackground during XTE."/>
+</enum>
+
 <enum name="IOSContentSizeCategory">
   <int value="0" label="Unspecified"/>
   <int value="1" label="ExtraSmall"/>

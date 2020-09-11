@@ -66,6 +66,9 @@ DeviceThermalState GetThermalStateFromNSProcessInfoThermalState(
 NSString* const kLastRanVersion = @"LastRanVersion";
 // - The (string) device language.
 NSString* const kLastRanLanguage = @"LastRanLanguage";
+// - The (Integer) representing UIApplicationState.
+NSString* const kPreviousSessionInfoApplicationState =
+    @"PreviousSessionInfoApplicationState";
 // - The (integer) available device storage, in kilobytes.
 NSString* const kPreviousSessionInfoAvailableDeviceStorage =
     @"PreviousSessionInfoAvailableDeviceStorage";
@@ -127,7 +130,9 @@ NSString* const kPreviousSessionInfoRestoringSession =
 
 @end
 
-@implementation PreviousSessionInfo
+@implementation PreviousSessionInfo {
+  std::unique_ptr<UIApplicationState> _applicationState;
+}
 
 // Singleton PreviousSessionInfo.
 static PreviousSessionInfo* gSharedInstance = nil;
@@ -138,6 +143,14 @@ static PreviousSessionInfo* gSharedInstance = nil;
 
     // Load the persisted information.
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+    gSharedInstance->_applicationState.reset();
+    if ([defaults objectForKey:kPreviousSessionInfoApplicationState]) {
+      gSharedInstance->_applicationState =
+          std::make_unique<UIApplicationState>(static_cast<UIApplicationState>(
+              [defaults integerForKey:kPreviousSessionInfoApplicationState]));
+    }
+
     gSharedInstance.availableDeviceStorage = -1;
     if ([defaults objectForKey:kPreviousSessionInfoAvailableDeviceStorage]) {
       gSharedInstance.availableDeviceStorage =
@@ -234,6 +247,28 @@ static PreviousSessionInfo* gSharedInstance = nil;
       removeObjectForKey:previous_session_info_constants::
                              kDidSeeMemoryWarningShortlyBeforeTerminating];
 
+  [self updateApplicationState];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateApplicationState)
+             name:UIApplicationDidEnterBackgroundNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateApplicationState)
+             name:UIApplicationWillEnterForegroundNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateApplicationState)
+             name:UIApplicationDidBecomeActiveNotification
+           object:nil];
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateApplicationState)
+             name:UIApplicationWillResignActiveNotification
+           object:nil];
+
   [UIDevice currentDevice].batteryMonitoringEnabled = YES;
   [self updateStoredBatteryLevel];
   [[NSNotificationCenter defaultCenter]
@@ -267,6 +302,10 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [defaults synchronize];
 }
 
+- (UIApplicationState*)applicationState {
+  return _applicationState.get();
+}
+
 - (void)updateAvailableDeviceStorage:(NSInteger)availableStorage {
   if (!self.didBeginRecordingCurrentSession)
     return;
@@ -287,6 +326,13 @@ static PreviousSessionInfo* gSharedInstance = nil;
   [[NSUserDefaults standardUserDefaults]
       setFloat:[UIDevice currentDevice].batteryLevel
         forKey:kPreviousSessionInfoBatteryLevel];
+  [self updateSessionEndTime];
+}
+
+- (void)updateApplicationState {
+  [[NSUserDefaults standardUserDefaults]
+      setInteger:UIApplication.sharedApplication.applicationState
+          forKey:kPreviousSessionInfoApplicationState];
 
   [self updateSessionEndTime];
 }

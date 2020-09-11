@@ -328,7 +328,8 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestTimeAfterLastRestore) {
 // Verifies that metrics are recorded correctly when a renderer terminates.
 TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   web::TestWebState* mock_tab_a = InsertTestWebState(kURL, NOT_IN_MEMORY);
-  OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
+  OCMStub([static_cast<UIApplication*>(application_) applicationState])
+      .andReturn(UIApplicationStateActive);
 
   // Add some extra WebStates that are not considered evicted so that
   // TabUsageRecorder count kAliveTabsCountAtRendererTermination tabs
@@ -387,7 +388,8 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
 TEST_F(TabUsageRecorderBrowserAgentTest, SwitchToRendererTerminatedTab) {
   web::TestWebState* mock_tab_a = InsertTestWebState(kURL, IN_MEMORY);
   web::TestWebState* mock_tab_b = InsertTestWebState(kURL, NOT_IN_MEMORY);
-  OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
+  OCMStub([static_cast<UIApplication*>(application_) applicationState])
+      .andReturn(UIApplicationStateActive);
 
   mock_tab_b->OnRenderProcessGone();
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
@@ -402,7 +404,8 @@ TEST_F(TabUsageRecorderBrowserAgentTest, SwitchToRendererTerminatedTab) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationForeground) {
   web::TestWebState* mock_tab_a = InsertTestWebState(kURL, IN_MEMORY);
   web::TestWebState* mock_tab_b = InsertTestWebState(kURL, IN_MEMORY);
-  OCMStub([application_ applicationState]).andReturn(UIApplicationStateActive);
+  OCMStub([static_cast<UIApplication*>(application_) applicationState])
+      .andReturn(UIApplicationStateActive);
 
   mock_tab_a->WasShown();
   mock_tab_a->OnRenderProcessGone();
@@ -421,7 +424,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationForeground) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationBackground) {
   web::TestWebState* mock_tab_a = InsertTestWebState(kURL, IN_MEMORY);
   web::TestWebState* mock_tab_b = InsertTestWebState(kURL, IN_MEMORY);
-  OCMStub([application_ applicationState])
+  OCMStub([static_cast<UIApplication*>(application_) applicationState])
       .andReturn(UIApplicationStateBackground);
 
   mock_tab_a->WasShown();
@@ -441,7 +444,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationBackground) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationInactive) {
   web::TestWebState* mock_tab_a = InsertTestWebState(kURL, IN_MEMORY);
   web::TestWebState* mock_tab_b = InsertTestWebState(kURL, IN_MEMORY);
-  OCMStub([application_ applicationState])
+  OCMStub([static_cast<UIApplication*>(application_) applicationState])
       .andReturn(UIApplicationStateInactive);
 
   mock_tab_a->WasShown();

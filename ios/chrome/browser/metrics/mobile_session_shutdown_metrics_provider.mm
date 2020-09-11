@@ -59,6 +59,38 @@ enum class MobileSessionOomShutdownHint {
   kMaxValue = SessionRestorationXte
 };
 
+// Values of the Stability.iOS.UTE.MobileSessionAppState histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MobileSessionAppState {
+  // This should not happen and presence of this value likely indicates a bug
+  // in Chrome or UIKit code.
+  UnknownUte = 0,
+
+  // This should not happen and presence of this value likely indicates a bug
+  // in Chrome or UIKit code.
+  UnknownXte = 1,
+
+  // App state was UIApplicationStateActive during UTE.
+  ActiveUte = 2,
+
+  // App state was UIApplicationStateActive during XTE.
+  ActiveXte = 3,
+
+  // App state was UIApplicationStateInactive during UTE.
+  InactiveUte = 4,
+
+  // App state was UIApplicationStateInactive during XTE.
+  InactiveXte = 5,
+
+  // App state was UIApplicationStateBackground during UTE.
+  BackgroundUte = 6,
+
+  // App state was UIApplicationStateBackground during XTE.
+  BackgroundXte = 7,
+  kMaxValue = BackgroundXte
+};
+
 // Returns value to log for Stability.iOS.UTE.MobileSessionOOMShutdownHint
 // histogram.
 MobileSessionOomShutdownHint GetMobileSessionOomShutdownHint(
@@ -69,6 +101,28 @@ MobileSessionOomShutdownHint GetMobileSessionOomShutdownHint(
                : MobileSessionOomShutdownHint::SessionRestorationUte;
   }
   return MobileSessionOomShutdownHint::NoInformation;
+}
+
+// Returns value to log for Stability.iOS.UTE.MobileSessionAppState
+// histogram.
+MobileSessionAppState GetMobileSessionAppState(bool has_possible_explanation) {
+  if (!PreviousSessionInfo.sharedInstance.applicationState) {
+    return has_possible_explanation ? MobileSessionAppState::UnknownXte
+                                    : MobileSessionAppState::UnknownUte;
+  }
+
+  switch (*PreviousSessionInfo.sharedInstance.applicationState) {
+    case UIApplicationStateActive:
+      return has_possible_explanation ? MobileSessionAppState::ActiveXte
+                                      : MobileSessionAppState::ActiveUte;
+    case UIApplicationStateInactive:
+      return has_possible_explanation ? MobileSessionAppState::InactiveXte
+                                      : MobileSessionAppState::InactiveUte;
+    case UIApplicationStateBackground:
+      return has_possible_explanation ? MobileSessionAppState::BackgroundXte
+                                      : MobileSessionAppState::BackgroundUte;
+  }
+  NOTREACHED();
 }
 
 // Logs |type| in the shutdown type histogram.
@@ -226,6 +280,12 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
         "Stability.iOS.UTE.MobileSessionOOMShutdownHint",
         GetMobileSessionOomShutdownHint(possible_explanation),
         MobileSessionOomShutdownHint::kMaxValue);
+
+    UMA_STABILITY_HISTOGRAM_ENUMERATION(
+        "Stability.iOS.UTE.MobileSessionAppState",
+        GetMobileSessionAppState(possible_explanation),
+        MobileSessionAppState::kMaxValue);
+
     if (!possible_explanation &&
         base::FeatureList::IsEnabled(kSyntheticCrashReportsForUte) &&
         GetApplicationContext()->GetLocalState()->GetBoolean(

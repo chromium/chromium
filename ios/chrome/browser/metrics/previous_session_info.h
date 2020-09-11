@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_H_
 #define IOS_CHROME_BROWSER_METRICS_PREVIOUS_SESSION_INFO_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include "base/callback_helpers.h"
 
@@ -53,6 +53,10 @@ enum class DeviceBatteryState {
 //   instance.
 // - Persist information about the current session, for use in a next session.
 @interface PreviousSessionInfo : NSObject
+
+// UIApplicationState at the end of the previous session or nil if state is
+// unknown.
+@property(nonatomic, assign, readonly) UIApplicationState* applicationState;
 
 // The battery level of the device at the end of the previous session.
 @property(nonatomic, assign, readonly) float deviceBatteryLevel;
