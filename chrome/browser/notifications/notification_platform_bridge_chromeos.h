@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chrome/browser/notifications/profile_notification.h"
@@ -57,6 +58,12 @@ class NotificationPlatformBridgeChromeOs
   ProfileNotification* GetProfileNotification(
       const std::string& profile_notification_id);
 
+  // Callback after getting displayed notifications from the |impl_| to convert
+  // profile IDs back to the original notification IDs.
+  void OnGetDisplayed(GetDisplayedNotificationsCallback callback,
+                      std::set<std::string> notification_ids,
+                      bool supports_synchronization) const;
+
   // Helper implementation.
   std::unique_ptr<NotificationPlatformBridge> impl_;
 
@@ -65,6 +72,9 @@ class NotificationPlatformBridgeChromeOs
   // the permuted ID.
   std::map<std::string, std::unique_ptr<ProfileNotification>>
       active_notifications_;
+
+  base::WeakPtrFactory<NotificationPlatformBridgeChromeOs> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_CHROMEOS_H_

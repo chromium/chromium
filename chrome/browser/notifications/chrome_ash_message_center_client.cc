@@ -152,10 +152,14 @@ void ChromeAshMessageCenterClient::Close(Profile* profile,
 void ChromeAshMessageCenterClient::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  // Right now, this is only used to get web notifications that were created by
-  // and have outlived a previous browser process. Ash itself doesn't outlive
-  // the browser process, so there's no need to implement.
-  std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetNotifications();
+
+  std::set<std::string> notification_ids;
+  for (message_center::Notification* notification : notifications)
+    notification_ids.insert(notification->id());
+
+  std::move(callback).Run(std::move(notification_ids), /*supports_sync=*/true);
 }
 
 void ChromeAshMessageCenterClient::SetReadyCallback(

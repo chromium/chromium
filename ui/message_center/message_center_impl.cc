@@ -33,15 +33,13 @@ namespace message_center {
 
 MessageCenterImpl::MessageCenterImpl(
     std::unique_ptr<LockScreenController> lock_screen_controller)
-    : MessageCenter(),
-      lock_screen_controller_(std::move(lock_screen_controller)),
+    : lock_screen_controller_(std::move(lock_screen_controller)),
       popup_timers_controller_(std::make_unique<PopupTimersController>(this)),
       stats_collector_(this) {
   notification_list_ = std::make_unique<NotificationList>(this);
 }
 
-MessageCenterImpl::~MessageCenterImpl() {
-}
+MessageCenterImpl::~MessageCenterImpl() = default;
 
 void MessageCenterImpl::AddObserver(MessageCenterObserver* observer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -82,10 +80,10 @@ void MessageCenterImpl::OnBlockingStateChanged(NotificationBlocker* blocker) {
       notification_list_->GetVisibleNotifications(blockers_);
 
   for (const std::string& notification_id : blocked) {
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnNotificationUpdated(notification_id);
   }
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnBlockingStateChanged(blocker);
 }
 
@@ -98,7 +96,7 @@ void MessageCenterImpl::SetVisibility(Visibility visibility) {
     notification_list_->SetNotificationsShown(blockers_, &updated_ids);
 
     for (const auto& id : updated_ids) {
-      for (auto& observer : observer_list_)
+      for (MessageCenterObserver& observer : observer_list_)
         observer.OnNotificationUpdated(id);
     }
 
@@ -106,7 +104,7 @@ void MessageCenterImpl::SetVisibility(Visibility visibility) {
       MarkSinglePopupAsShown(notification->id(), false);
   }
 
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnCenterVisibilityChanged(visibility);
 }
 
@@ -150,7 +148,7 @@ Notification* MessageCenterImpl::FindVisibleNotificationById(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const auto& notifications = GetVisibleNotifications();
-  for (auto* notification : notifications) {
+  for (Notification* notification : notifications) {
     if (notification->id() == id)
       return notification;
   }
@@ -162,6 +160,11 @@ NotificationList::Notifications MessageCenterImpl::FindNotificationsByAppId(
     const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return notification_list_->GetNotificationsByAppId(app_id);
+}
+
+NotificationList::Notifications MessageCenterImpl::GetNotifications() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return notification_list_->GetNotifications();
 }
 
 const NotificationList::Notifications&
@@ -183,13 +186,13 @@ void MessageCenterImpl::AddNotification(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(notification);
   const std::string id = notification->id();
-  for (size_t i = 0; i < blockers_.size(); ++i)
-    blockers_[i]->CheckState();
+  for (NotificationBlocker* blocker : blockers_)
+    blocker->CheckState();
 
   // Sometimes the notification can be added with the same id and the
   // |notification_list| will replace the notification instead of adding new.
   // This is essentially an update rather than addition.
-  bool already_exists = (notification_list_->GetNotificationById(id) != NULL);
+  bool already_exists = notification_list_->GetNotificationById(id) != nullptr;
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
@@ -198,24 +201,23 @@ void MessageCenterImpl::AddNotification(
   notification_list_->AddNotification(std::move(notification));
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (auto& observer : observer_list_) {
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnNotificationAdded(id);
-  }
 }
 
 void MessageCenterImpl::UpdateNotification(
     const std::string& old_id,
     std::unique_ptr<Notification> new_notification) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  for (size_t i = 0; i < blockers_.size(); ++i)
-    blockers_[i]->CheckState();
+  for (NotificationBlocker* blocker : blockers_)
+    blocker->CheckState();
 
   std::string new_id = new_notification->id();
   notification_list_->UpdateNotificationMessage(old_id,
                                                 std::move(new_notification));
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (auto& observer : observer_list_) {
+  for (MessageCenterObserver& observer : observer_list_) {
     if (old_id == new_id) {
       observer.OnNotificationUpdated(new_id);
     } else {
@@ -257,7 +259,7 @@ void MessageCenterImpl::RemoveNotification(const std::string& id,
 
   visible_notifications_ =
       notification_list_->GetVisibleNotifications(blockers_);
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnNotificationRemoved(copied_id, by_user);
 }
 
@@ -266,7 +268,7 @@ void MessageCenterImpl::RemoveNotificationsForNotifierId(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NotificationList::Notifications notifications =
       notification_list_->GetNotificationsByNotifierId(notifier_id);
-  for (auto* notification : notifications)
+  for (Notification* notification : notifications)
     RemoveNotification(notification->id(), false);
   if (!notifications.empty()) {
     visible_notifications_ =
@@ -285,7 +287,7 @@ void MessageCenterImpl::RemoveAllNotifications(bool by_user, RemoveType type) {
   const NotificationList::Notifications notifications =
       notification_list_->GetVisibleNotifications(blockers);
   std::set<std::string> ids;
-  for (auto* notification : notifications) {
+  for (Notification* notification : notifications) {
     if (!remove_pinned && notification->pinned())
       continue;
 
@@ -301,7 +303,7 @@ void MessageCenterImpl::RemoveAllNotifications(bool by_user, RemoveType type) {
         notification_list_->GetVisibleNotifications(blockers_);
   }
   for (const auto& id : ids) {
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnNotificationRemoved(id, by_user);
   }
 }
@@ -311,7 +313,7 @@ void MessageCenterImpl::SetNotificationIcon(const std::string& notification_id,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (notification_list_->SetNotificationIcon(notification_id, image)) {
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnNotificationUpdated(notification_id);
   }
 }
@@ -320,14 +322,14 @@ void MessageCenterImpl::SetNotificationImage(const std::string& notification_id,
                                              const gfx::Image& image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (notification_list_->SetNotificationImage(notification_id, image)) {
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnNotificationUpdated(notification_id);
   }
 }
 
 void MessageCenterImpl::ClickOnNotification(const std::string& id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (FindVisibleNotificationById(id) == NULL)
+  if (!FindVisibleNotificationById(id))
     return;
 
   lock_screen_controller_->DismissLockScreenThenExecute(
@@ -371,13 +373,13 @@ void MessageCenterImpl::ClickOnNotificationUnlocked(
   // This method must be called under unlocked screen.
   DCHECK(!lock_screen_controller_->IsScreenLocked());
 
-  // Ensure the notificaiton is still visible.
-  if (FindVisibleNotificationById(id) == NULL)
+  // Ensure the notification is still visible.
+  if (!FindVisibleNotificationById(id))
     return;
 
   if (HasMessageCenterView() && HasPopupNotifications())
     MarkSinglePopupAsShown(id, true);
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnNotificationClicked(id, button_index, reply);
 
   scoped_refptr<NotificationDelegate> delegate =
@@ -397,7 +399,7 @@ void MessageCenterImpl::ClickOnSettingsButton(const std::string& id) {
   if (handled_by_delegate)
     notification->delegate()->SettingsClick();
 
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnNotificationSettingsClicked(handled_by_delegate);
 }
 
@@ -414,12 +416,12 @@ void MessageCenterImpl::DisableNotification(const std::string& id) {
 void MessageCenterImpl::MarkSinglePopupAsShown(const std::string& id,
                                                bool mark_notification_as_read) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (FindVisibleNotificationById(id) == NULL)
+  if (!FindVisibleNotificationById(id))
     return;
 
   if (HasMessageCenterView()) {
     notification_list_->MarkSinglePopupAsShown(id, mark_notification_as_read);
-    for (auto& observer : observer_list_) {
+    for (MessageCenterObserver& observer : observer_list_) {
       observer.OnNotificationUpdated(id);
       observer.OnNotificationPopupShown(id, mark_notification_as_read);
     }
@@ -436,14 +438,14 @@ void MessageCenterImpl::DisplayedNotification(
   // This method may be called from the handlers, so we shouldn't manipulate
   // notifications in this method.
 
-  if (FindVisibleNotificationById(id) == NULL)
+  if (!FindVisibleNotificationById(id))
     return;
 
   if (HasPopupNotifications())
     notification_list_->MarkSinglePopupAsDisplayed(id);
   scoped_refptr<NotificationDelegate> delegate =
       notification_list_->GetNotificationDelegate(id);
-  for (auto& observer : observer_list_)
+  for (MessageCenterObserver& observer : observer_list_)
     observer.OnNotificationDisplayed(id, source);
 }
 
@@ -451,7 +453,7 @@ void MessageCenterImpl::SetQuietMode(bool in_quiet_mode) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (in_quiet_mode != notification_list_->quiet_mode()) {
     notification_list_->SetQuietMode(in_quiet_mode);
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnQuietModeChanged(in_quiet_mode);
   }
   quiet_mode_timer_.reset();
@@ -470,7 +472,7 @@ void MessageCenterImpl::EnterQuietModeWithExpire(
     quiet_mode_timer_->Reset();
   } else {
     notification_list_->SetQuietMode(true);
-    for (auto& observer : observer_list_)
+    for (MessageCenterObserver& observer : observer_list_)
       observer.OnQuietModeChanged(true);
 
     quiet_mode_timer_ = std::make_unique<base::OneShotTimer>();

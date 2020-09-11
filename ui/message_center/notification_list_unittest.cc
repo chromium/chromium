@@ -450,6 +450,17 @@ TEST_F(NotificationListTest, HasPopupsWithSystemPriority) {
   EXPECT_EQ(0u, GetPopupCounts());
 }
 
+TEST_F(NotificationListTest, GetNotifications) {
+  ASSERT_EQ(0u, notification_list_->NotificationCount(blockers_));
+  EXPECT_EQ(0u, notification_list_->GetNotifications().size());
+
+  AddPriorityNotification(MIN_PRIORITY);
+  AddPriorityNotification(MAX_PRIORITY);
+
+  EXPECT_EQ(1u, GetPopupCounts());
+  EXPECT_EQ(2u, notification_list_->GetNotifications().size());
+}
+
 // Verifies that notification updates will re-show the toast when there is no
 // message center view (i.e. the bubble anchored to the status bar).
 TEST_F(NotificationListTest, UpdateWithoutMessageCenterView) {

@@ -77,7 +77,10 @@ void NotificationPlatformBridgeChromeOs::Close(
 void NotificationPlatformBridgeChromeOs::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
-  impl_->GetDisplayed(profile, std::move(callback));
+  impl_->GetDisplayed(
+      profile,
+      base::BindOnce(&NotificationPlatformBridgeChromeOs::OnGetDisplayed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void NotificationPlatformBridgeChromeOs::SetReadyCallback(
@@ -200,4 +203,18 @@ ProfileNotification* NotificationPlatformBridgeChromeOs::GetProfileNotification(
   if (iter == active_notifications_.end())
     return nullptr;
   return iter->second.get();
+}
+
+void NotificationPlatformBridgeChromeOs::OnGetDisplayed(
+    GetDisplayedNotificationsCallback callback,
+    std::set<std::string> notification_ids,
+    bool supports_synchronization) const {
+  std::set<std::string> original_notification_ids;
+  for (const auto& id : notification_ids) {
+    auto iter = active_notifications_.find(id);
+    if (iter != active_notifications_.end())
+      original_notification_ids.insert(iter->second->original_id());
+  }
+  std::move(callback).Run(std::move(original_notification_ids),
+                          supports_synchronization);
 }

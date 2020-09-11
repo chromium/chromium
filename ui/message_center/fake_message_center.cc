@@ -13,7 +13,7 @@ namespace message_center {
 
 FakeMessageCenter::FakeMessageCenter() : notifications_(this) {}
 
-FakeMessageCenter::~FakeMessageCenter() {}
+FakeMessageCenter::~FakeMessageCenter() = default;
 
 void FakeMessageCenter::AddObserver(MessageCenterObserver* observer) {
   observers_.AddObserver(observer);
@@ -58,6 +58,10 @@ Notification* FakeMessageCenter::FindVisibleNotificationById(
 NotificationList::Notifications FakeMessageCenter::FindNotificationsByAppId(
     const std::string& app_id) {
   return notifications_.GetNotificationsByAppId(app_id);
+}
+
+NotificationList::Notifications FakeMessageCenter::GetNotifications() {
+  return notifications_.GetNotifications();
 }
 
 const NotificationList::Notifications&

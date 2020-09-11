@@ -93,11 +93,15 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   void RemoveNotification(const std::string& id);
 
+  // Returns all notifications in this list.
+  Notifications GetNotifications() const;
+
   // Returns all notifications that have a matching |notifier_id|.
-  Notifications GetNotificationsByNotifierId(const NotifierId& notifier_id);
+  Notifications GetNotificationsByNotifierId(
+      const NotifierId& notifier_id) const;
 
   // Returns all notifications that have a matching |app_id|.
-  Notifications GetNotificationsByAppId(const std::string& app_id);
+  Notifications GetNotificationsByAppId(const std::string& app_id) const;
 
   // Returns true if the notification exists and was updated.
   bool SetNotificationIcon(const std::string& notification_id,
@@ -110,11 +114,11 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // Returns true if |id| matches a notification in the list and that
   // notification's type matches the given type.
   bool HasNotificationOfType(const std::string& id,
-                             const NotificationType type);
+                             const NotificationType type) const;
 
   // Returns false if the first notification has been shown as a popup (which
   // means that all notifications have been shown).
-  bool HasPopupNotifications(const NotificationBlockers& blockers);
+  bool HasPopupNotifications(const NotificationBlockers& blockers) const;
 
   // Returns the recent notifications of the priority higher then LOW,
   // that have not been shown as a popup. kMaxVisiblePopupNotifications are
@@ -163,6 +167,8 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Iterates through the list and returns the first notification matching |id|.
   OwnedNotifications::iterator GetNotification(const std::string& id);
+  OwnedNotifications::const_iterator GetNotification(
+      const std::string& id) const;
 
   void EraseNotification(OwnedNotifications::iterator iter);
 

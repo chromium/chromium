@@ -86,6 +86,10 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual NotificationList::Notifications FindNotificationsByAppId(
       const std::string& app_id) = 0;
 
+  // Gets all notifications the message center knows about. These might contain
+  // currently hidden ones due to any active NotificationBlockers.
+  virtual NotificationList::Notifications GetNotifications() = 0;
+
   // Gets all notifications to be shown to the user in the message center.  Note
   // that queued changes due to the message center being open are not reflected
   // in this list.
