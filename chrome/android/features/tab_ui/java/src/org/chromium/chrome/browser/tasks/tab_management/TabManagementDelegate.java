@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -128,14 +127,4 @@ public interface TabManagementDelegate {
      * @return the {@link TabSuggestions} for the activity
      */
     TabSuggestions createTabSuggestions(ChromeActivity activity);
-
-    /**
-     * Create the {@link TabGroupPopupUi}.
-     * @param themeColorProvider The {@link ThemeColorProvider} for this UI.
-     * @param parentViewSupplier The {@link ObservableSupplier} that provides parent view of this
-     *         component.
-     * @return The {@link TabGroupPopupUi}.
-     */
-    TabGroupPopupUi createTabGroupPopUi(
-            ThemeColorProvider themeColorProvider, ObservableSupplier<View> parentViewSupplier);
 }

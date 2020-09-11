@@ -74,7 +74,7 @@ specific_include_rules = {
   ],
 
   # Tests and test-oriented classes are allowed to rely on ChromeActivity for DEPS. When committing
-  # a file that doesn't conform to these patterns, add an allow rule to the DEPS file to the 
+  # a file that doesn't conform to these patterns, add an allow rule to the DEPS file to the
   # testing directory.
   ".*Test\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
@@ -129,12 +129,6 @@ specific_include_rules = {
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "TasksSurfaceCoordinator\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "TabGroupPopupUi\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "TabGroupPopupUiCoordinator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "TabGroupUi\.java": [
