@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
@@ -282,6 +283,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kIdSelectorClass:
         return CompareCSSValues<cssvalue::CSSIdSelectorValue>(*this, other);
+      case kElementOffsetClass:
+        return CompareCSSValues<cssvalue::CSSElementOffsetValue>(*this, other);
     }
     NOTREACHED();
     return false;
@@ -404,6 +407,8 @@ String CSSValue::CssText() const {
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
     case kIdSelectorClass:
       return To<cssvalue::CSSIdSelectorValue>(this)->CustomCSSText();
+    case kElementOffsetClass:
+      return To<cssvalue::CSSElementOffsetValue>(this)->CustomCSSText();
   }
   NOTREACHED();
   return String();
@@ -587,6 +592,9 @@ void CSSValue::FinalizeGarbageCollectedObject() {
     case kIdSelectorClass:
       To<cssvalue::CSSIdSelectorValue>(this)->~CSSIdSelectorValue();
       return;
+    case kElementOffsetClass:
+      To<cssvalue::CSSElementOffsetValue>(this)->~CSSElementOffsetValue();
+      return;
   }
   NOTREACHED();
 }
@@ -768,6 +776,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kIdSelectorClass:
       To<cssvalue::CSSIdSelectorValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kElementOffsetClass:
+      To<cssvalue::CSSElementOffsetValue>(this)->TraceAfterDispatch(visitor);
       return;
   }
   NOTREACHED();

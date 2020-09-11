@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 
+#include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_id_selector_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -29,6 +30,14 @@ bool IsNone(const CSSValue* value) {
   return IsIdentifier(value, CSSValueID::kNone);
 }
 
+bool IsStart(const CSSValue* value) {
+  return IsIdentifier(value, CSSValueID::kStart);
+}
+
+bool IsEnd(const CSSValue* value) {
+  return IsIdentifier(value, CSSValueID::kEnd);
+}
+
 const cssvalue::CSSIdSelectorValue* GetIdSelectorValue(const CSSValue* value) {
   if (const auto* selector = DynamicTo<CSSFunctionValue>(value)) {
     if (selector->FunctionType() != CSSValueID::kSelector)
@@ -39,13 +48,44 @@ const cssvalue::CSSIdSelectorValue* GetIdSelectorValue(const CSSValue* value) {
   return nullptr;
 }
 
-Element* ComputeScrollSource(Element* element, const CSSValue* value) {
+Element* ComputeScrollSource(Document& document, const CSSValue* value) {
   if (const auto* id = GetIdSelectorValue(value))
-    return element->GetDocument().getElementById(id->Id());
+    return document.getElementById(id->Id());
   if (IsNone(value))
     return nullptr;
   DCHECK(!value || IsAuto(value));
-  return element->GetDocument().scrollingElement();
+  return document.scrollingElement();
+}
+
+Element* ComputeElementOffsetTarget(Document& document, const CSSValue* value) {
+  if (const auto* id = GetIdSelectorValue(value))
+    return document.getElementById(id->Id());
+  return nullptr;
+}
+
+String ComputeElementOffsetEdge(const CSSValue* value) {
+  if (!value || IsStart(value))
+    return "start";
+  DCHECK(IsEnd(value));
+  return "end";
+}
+
+double ComputeElementOffsetThreshold(const CSSValue* value) {
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    DCHECK(primitive_value->IsNumber());
+    return primitive_value->GetDoubleValue();
+  }
+  return 0;
+}
+
+ScrollTimelineElementBasedOffset* ComputeElementBasedOffset(
+    Document& document,
+    const cssvalue::CSSElementOffsetValue* value) {
+  auto* offset = MakeGarbageCollected<ScrollTimelineElementBasedOffset>();
+  offset->setTarget(ComputeElementOffsetTarget(document, value->Target()));
+  offset->setEdge(ComputeElementOffsetEdge(value->Edge()));
+  offset->setThreshold(ComputeElementOffsetThreshold(value->Threshold()));
+  return offset;
 }
 
 ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
@@ -68,14 +108,20 @@ ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
   }
 }
 
-ScrollTimelineOffset* ComputeScrollOffset(const CSSValue* value) {
+ScrollTimelineOffset* ComputeScrollOffset(Document& document,
+                                          const CSSValue* value) {
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
     return MakeGarbageCollected<ScrollTimelineOffset>(primitive_value);
+  if (auto* offset = DynamicTo<cssvalue::CSSElementOffsetValue>(value)) {
+    auto* element_based = ComputeElementBasedOffset(document, offset);
+    return MakeGarbageCollected<ScrollTimelineOffset>(element_based);
+  }
   DCHECK(!value || IsAuto(value));
   return MakeGarbageCollected<ScrollTimelineOffset>();
 }
 
 HeapVector<Member<ScrollTimelineOffset>>* ComputeScrollOffsets(
+    Document& document,
     const CSSValue* start,
     const CSSValue* end) {
   auto* offsets =
@@ -85,9 +131,9 @@ HeapVector<Member<ScrollTimelineOffset>>* ComputeScrollOffsets(
   // offsets once spec decision on multiple scroll offsets is finalized.
   // https://github.com/w3c/csswg-drafts/issues/4912
   if (!IsAuto(start))
-    offsets->push_back(ComputeScrollOffset(start));
+    offsets->push_back(ComputeScrollOffset(document, start));
   if (!IsAuto(end) || !IsAuto(start))
-    offsets->push_back(ComputeScrollOffset(end));
+    offsets->push_back(ComputeScrollOffset(document, end));
 
   return offsets;
 }
@@ -103,9 +149,11 @@ base::Optional<double> ComputeTimeRange(const CSSValue* value) {
 
 CSSScrollTimeline::Options::Options(Element* element,
                                     StyleRuleScrollTimeline& rule)
-    : source_(ComputeScrollSource(element, rule.GetSource())),
+    : source_(ComputeScrollSource(element->GetDocument(), rule.GetSource())),
       direction_(ComputeScrollDirection(rule.GetOrientation())),
-      offsets_(ComputeScrollOffsets(rule.GetStart(), rule.GetEnd())),
+      offsets_(ComputeScrollOffsets(element->GetDocument(),
+                                    rule.GetStart(),
+                                    rule.GetEnd())),
       time_range_(ComputeTimeRange(rule.GetTimeRange())) {}
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, const Options& options)

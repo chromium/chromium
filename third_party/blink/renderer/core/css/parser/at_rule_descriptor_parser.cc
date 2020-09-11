@@ -141,18 +141,9 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
 }
 
 CSSValue* ConsumeScrollTimelineSource(CSSParserTokenRange& range) {
-  if (range.Peek().FunctionId() == CSSValueID::kSelector) {
-    auto block = css_parsing_utils::ConsumeFunction(range);
-    block.ConsumeWhitespace();
-    if (auto* id_value = css_parsing_utils::ConsumeIdSelector(block)) {
-      if (!block.AtEnd())
-        return nullptr;
-      auto* selector_function =
-          MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSelector);
-      selector_function->Append(*id_value);
-      return selector_function;
-    }
-    return nullptr;
+  if (auto* selector_function =
+          css_parsing_utils::ConsumeSelectorFunction(range)) {
+    return selector_function;
   }
   return css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
       range);

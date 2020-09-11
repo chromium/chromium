@@ -177,6 +177,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kLightDarkValuePairClass;
   }
   bool IsIdSelectorValue() const { return class_type_ == kIdSelectorClass; }
+  bool IsElementOffsetValue() const {
+    return class_type_ == kElementOffsetClass;
+  }
 
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
@@ -209,6 +212,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kValuePairClass,
     kLightDarkValuePairClass,
     kIdSelectorClass,
+    kElementOffsetClass,
 
     // Basic shape classes.
     // TODO(sashab): Represent these as a single subclass, BasicShapeClass.

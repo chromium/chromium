@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_value.h"
 #include "third_party/blink/renderer/core/css/css_font_style_range_value.h"
@@ -1091,6 +1092,21 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
   AtomicString url_string(url.ToString());
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       url_string, context.CompleteURL(url_string));
+}
+
+CSSValue* ConsumeSelectorFunction(CSSParserTokenRange& range) {
+  if (range.Peek().FunctionId() != CSSValueID::kSelector)
+    return nullptr;
+  auto block = ConsumeFunction(range);
+  if (auto* id_value = ConsumeIdSelector(block)) {
+    if (!block.AtEnd())
+      return nullptr;
+    auto* selector_function =
+        MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSelector);
+    selector_function->Append(*id_value);
+    return selector_function;
+  }
+  return nullptr;
 }
 
 CSSValue* ConsumeIdSelector(CSSParserTokenRange& range) {
@@ -2614,15 +2630,41 @@ bool IsTimelineName(const CSSParserToken& token) {
 
 CSSValue* ConsumeScrollOffset(CSSParserTokenRange& range,
                               const CSSParserContext& context) {
-  range.ConsumeWhitespace();
   if (IdentMatches<CSSValueID::kAuto>(range.Peek().Id()))
     return ConsumeIdent(range);
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
+  if (auto* element_offset = ConsumeElementOffset(range, context))
+    return element_offset;
   CSSValue* value =
       ConsumeLengthOrPercent(range, context, kValueRangeNonNegative);
   if (!range.AtEnd())
     return nullptr;
   return value;
+}
+
+namespace {
+
+// https://drafts.csswg.org/scroll-animations-1/#typedef-element-offset-edge
+CSSValue* ConsumeElementOffsetEdge(CSSParserTokenRange& range) {
+  return ConsumeIdent<CSSValueID::kStart, CSSValueID::kEnd>(range);
+}
+
+}  // namespace
+
+// https://drafts.csswg.org/scroll-animations-1/#typedef-element-offset
+CSSValue* ConsumeElementOffset(CSSParserTokenRange& range,
+                               const CSSParserContext& context) {
+  CSSValue* target = ConsumeSelectorFunction(range);
+  if (!target)
+    return nullptr;
+  CSSValue* edge = ConsumeElementOffsetEdge(range);
+  CSSValue* threshold = ConsumeNumber(range, context, kValueRangeNonNegative);
+  // Edge and threshold may appear in any order.
+  edge = edge ? edge : ConsumeElementOffsetEdge(range);
+  if (!range.AtEnd())
+    return nullptr;
+  return MakeGarbageCollected<cssvalue::CSSElementOffsetValue>(target, edge,
+                                                               threshold);
 }
 
 CSSValue* ConsumeSelfPositionOverflowPosition(

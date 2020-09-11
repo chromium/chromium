@@ -129,6 +129,7 @@ StringView ConsumeUrlAsStringView(CSSParserTokenRange&,
                                   const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
                                   const CSSParserContext&);
+CSSValue* ConsumeSelectorFunction(CSSParserTokenRange&);
 CORE_EXPORT CSSValue* ConsumeIdSelector(CSSParserTokenRange&);
 
 CSSValue* ConsumeColor(CSSParserTokenRange&,
@@ -243,6 +244,7 @@ bool IsCustomIdent(CSSValueID);
 bool IsTimelineName(const CSSParserToken&);
 
 CSSValue* ConsumeScrollOffset(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeElementOffset(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeSelfPositionOverflowPosition(CSSParserTokenRange&,
                                               IsPositionKeyword);
 CSSValue* ConsumeSimplifiedDefaultPosition(CSSParserTokenRange&,

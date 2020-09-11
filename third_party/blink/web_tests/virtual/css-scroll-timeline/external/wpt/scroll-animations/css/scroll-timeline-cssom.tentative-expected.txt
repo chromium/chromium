@@ -71,8 +71,32 @@ PASS CSSScrollTimelineRule.start #fff
 PASS CSSScrollTimelineRule.end #fff
 PASS CSSScrollTimelineRule.start unset
 PASS CSSScrollTimelineRule.end unset
+PASS CSSScrollTimelineRule.start unknown(#foo)
+PASS CSSScrollTimelineRule.end unknown(#foo)
+PASS CSSScrollTimelineRule.start start
+PASS CSSScrollTimelineRule.end start
+PASS CSSScrollTimelineRule.start end
+PASS CSSScrollTimelineRule.end end
+PASS CSSScrollTimelineRule.start 3
+PASS CSSScrollTimelineRule.end 3
 PASS CSSScrollTimelineRule.start selector(#foo)
 PASS CSSScrollTimelineRule.end selector(#foo)
+PASS CSSScrollTimelineRule.start  selector(#foo)
+PASS CSSScrollTimelineRule.end  selector(#foo)
+PASS CSSScrollTimelineRule.start selector(#foo) start
+PASS CSSScrollTimelineRule.end selector(#foo) start
+PASS CSSScrollTimelineRule.start selector(#foo) start 3
+PASS CSSScrollTimelineRule.end selector(#foo) start 3
+PASS CSSScrollTimelineRule.start selector(#foo) 3
+PASS CSSScrollTimelineRule.end selector(#foo) 3
+PASS CSSScrollTimelineRule.start selector(#foo) 3.5
+PASS CSSScrollTimelineRule.end selector(#foo) 3.5
+PASS CSSScrollTimelineRule.start selector(#foo) end
+PASS CSSScrollTimelineRule.end selector(#foo) end
+PASS CSSScrollTimelineRule.start selector(#foo) end 3
+PASS CSSScrollTimelineRule.end selector(#foo) end 3
+PASS CSSScrollTimelineRule.start selector(#foo) 3 end
+PASS CSSScrollTimelineRule.end selector(#foo) 3 end
 PASS CSSScrollTimelineRule.timeRange auto
 PASS CSSScrollTimelineRule.timeRange  auto 
 PASS CSSScrollTimelineRule.timeRange 1s
