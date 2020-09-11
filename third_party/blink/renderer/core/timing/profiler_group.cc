@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -83,11 +84,11 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
   DCHECK(cpu_profiler_);
 
   String profiler_id = NextProfilerId();
-  v8::CpuProfilingOptions options(
-      v8::kLeafNodeLineNumbers,
-      init_options.hasMaxBufferSize() ? init_options.maxBufferSize()
+  v8::CpuProfilingOptions options(v8::kLeafNodeLineNumbers,
+                                  init_options.hasMaxBufferSize()
+                                      ? init_options.maxBufferSize()
                                       : v8::CpuProfilingOptions::kNoSampleLimit,
-      static_cast<int>(sample_interval_us), script_state->GetContext());
+                                  static_cast<int>(sample_interval_us));
 
   cpu_profiler_->StartProfiling(V8String(isolate_, profiler_id), options);
 
@@ -199,14 +200,19 @@ void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
   DCHECK(cpu_profiler_);
   DCHECK(!profiler->stopped());
   profilers_.erase(profiler);
-  ExecutionContext::From(script_state)
-      ->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&ProfilerGroup::CancelProfilerImpl,
+
+  // Since it's possible for the profiler to get destructed along with its
+  // associated context, dispatch a task to cleanup context-independent isolate
+  // resources (rather than use the context's task runner).
+  ThreadScheduler::Current()->V8TaskRunner()->PostTask(
+      FROM_HERE, WTF::Bind(&ProfilerGroup::CancelProfilerImpl,
                            WrapPersistent(this), profiler->ProfilerId()));
 }
 
 void ProfilerGroup::CancelProfilerImpl(String profiler_id) {
+  if (!cpu_profiler_)
+    return;
+
   v8::HandleScope scope(isolate_);
   v8::Local<v8::String> v8_profiler_id = V8String(isolate_, profiler_id);
   auto* profile = cpu_profiler_->StopProfiling(v8_profiler_id);
