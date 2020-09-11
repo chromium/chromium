@@ -1092,7 +1092,7 @@ try_.chromium_mac_builder(
     builderless = False,
     use_clang_coverage = True,
     goma_jobs = goma.jobs.J150,
-    tryjob = try_.job(experiment_percentage = 10),
+    tryjob = try_.job(experiment_percentage = 8),
 )
 
 try_.chromium_mac_builder(
