@@ -2701,6 +2701,10 @@ crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.12 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.13 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc-insertable-streams/RTCPeerConnection-insertable-streams.https.html [ Timeout ]
 crbug.com/626703 external/wpt/content-security-policy/frame-src/frame-src-same-document.sub.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Timeout ]
