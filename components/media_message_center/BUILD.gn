@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "media_controls_progress_view_unittest.cc",
     "media_notification_background_unittest.cc",
     "media_notification_view_impl_unittest.cc",
+    "media_notification_view_modern_impl_unittest.cc",
   ]
 
   deps = [
