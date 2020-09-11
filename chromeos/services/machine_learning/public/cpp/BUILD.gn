@@ -6,6 +6,8 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("cpp") {
   sources = [
+    "handwriting_model_loader.cc",
+    "handwriting_model_loader.h",
     "handwriting_recognizer_manager.cc",
     "handwriting_recognizer_manager.h",
     "service_connection.cc",
@@ -13,6 +15,7 @@ source_set("cpp") {
   ]
   deps = [
     "//base",
+    "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
   ]
@@ -34,11 +37,15 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "service_connection_unittest.cc" ]
+  sources = [
+    "handwriting_model_loader_unittest.cc",
+    "service_connection_unittest.cc",
+  ]
   deps = [
     ":cpp",
     ":test_support",
     "//base/test:test_support",
+    "//chromeos/dbus/dlcservice:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
     "//mojo/core/embedder",
