@@ -606,6 +606,14 @@ def dawn_builder(*, name, builderless = True, **kwargs):
         **kwargs
     )
 
+def dawn_windows_builder(*, name, **kwargs):
+    return dawn_builder(
+        name = name,
+        os = builders.os.WINDOWS_ANY,
+        pool = "luci.chromium.gpu.ci",
+        **kwargs
+    )
+
 def fuzz_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
@@ -770,6 +778,7 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
         builderless = True,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.WINDOWS_ANY,
+        pool = "luci.chromium.gpu.ci",
         **kwargs
     )
 
@@ -920,6 +929,7 @@ def swangle_windows_builder(*, name, **kwargs):
         name = name,
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.WINDOWS_DEFAULT,
+        pool = "luci.chromium.gpu.ci",
         **kwargs
     )
 
@@ -970,6 +980,7 @@ ci = struct(
     clang_builder = clang_builder,
     clang_mac_builder = clang_mac_builder,
     dawn_builder = dawn_builder,
+    dawn_windows_builder = dawn_windows_builder,
     fuzz_builder = fuzz_builder,
     fuzz_libfuzzer_builder = fuzz_libfuzzer_builder,
     fyi_builder = fyi_builder,
