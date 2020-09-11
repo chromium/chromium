@@ -112,6 +112,7 @@ void FileSystemFileStreamReader::DidCreateSnapshot(
           file_system_context_->sandbox_delegate()->memory_file_util_delegate();
     }
     file_reader_ = FileStreamReader::CreateForMemoryFile(
+        file_system_context_->default_file_task_runner(),
         memory_file_util_delegate, platform_path, initial_offset_,
         expected_modification_time_);
   } else {
