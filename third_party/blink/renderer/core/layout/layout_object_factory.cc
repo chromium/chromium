@@ -139,6 +139,11 @@ LayoutBlock* LayoutObjectFactory::CreateGrid(Node& node,
 LayoutBlock* LayoutObjectFactory::CreateMath(Node& node,
                                              const ComputedStyle& style,
                                              LegacyLayout legacy) {
+  // TODO(http://crbug.com/1127222): math display values on non-MathML elements
+  // should compute to the corresponding non-math display values instead.
+  // DCHECK(IsA<MathMLElement>(node));
+
+  DCHECK_NE(legacy, LegacyLayout::kForce);
   bool disable_ng_for_type = !RuntimeEnabledFeatures::MathMLCoreEnabled();
   if (IsA<MathMLElement>(node) && To<MathMLElement>(node).IsTokenElement()) {
     return CreateObject<LayoutBlockFlow, LayoutNGMathMLBlockFlow,

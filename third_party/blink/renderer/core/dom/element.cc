@@ -2671,9 +2671,10 @@ void Element::AttachLayoutTree(AttachContext& context) {
       // too.
       if (ShouldForceLegacyLayout())
         children_context.force_legacy_layout = true;
-      LegacyLayout legacy = children_context.force_legacy_layout
-                                ? LegacyLayout::kForce
-                                : LegacyLayout::kAuto;
+      LegacyLayout legacy =
+          children_context.force_legacy_layout && !ShouldForceNGLayout()
+              ? LegacyLayout::kForce
+              : LegacyLayout::kAuto;
       LayoutTreeBuilderForElement builder(*this, context, style, legacy);
       builder.CreateLayoutObject();
 

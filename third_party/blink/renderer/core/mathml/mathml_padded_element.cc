@@ -85,9 +85,9 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
 LayoutObject* MathMLPaddedElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  // TODO(crbug.com/1125133): legacy check should be removed.
+  DCHECK_NE(legacy, LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      legacy == LegacyLayout::kForce || !style.IsDisplayMathType())
+      !style.IsDisplayMathType())
     return MathMLElement::CreateLayoutObject(style, legacy);
   return new LayoutNGMathMLBlockWithAnonymousMrow(this);
 }

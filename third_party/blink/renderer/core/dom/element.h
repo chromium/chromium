@@ -801,7 +801,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // descendants. Note that even if this element returns true, it's not implied
   // that all descendants will return the same. Once an element needs to force
   // legacy layout, though, the layout engine knows that it will have to perform
-  // legacy layout on the entire subtree.
+  // legacy layout on the entire subtree, unless this is overridden by
+  // ShouldForceNGLayout().
   bool ShouldForceLegacyLayout() const {
     if (TypeShouldForceLegacyLayout())
       return true;
@@ -809,6 +810,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       return false;
     return StyleShouldForceLegacyLayout() || ShouldForceLegacyLayoutForChild();
   }
+
+  // Return true if we should force NG layout on this element. This is needed
+  // for elements that don't have legacy implementation (i.e. MathML elements).
+  virtual bool ShouldForceNGLayout() const { return false; }
 
   virtual void BuildPendingResource() {}
 

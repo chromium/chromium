@@ -22,6 +22,10 @@ class LayoutNGMathMLBlock : public LayoutNGMixin<LayoutBlock> {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
   bool CanHaveChildren() const final;
   void StyleDidChange(StyleDifference, const ComputedStyle*) final;
+
+  PaginationBreakability GetPaginationBreakability() const final {
+    return kForbidBreaks;
+  }
 };
 
 }  // namespace blink

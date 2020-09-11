@@ -15,9 +15,8 @@ MathMLRowElement::MathMLRowElement(const QualifiedName& tagName,
 
 LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
                                                    LegacyLayout legacy) {
-  // TODO(crbug.com/1125133): legacy check should be removed.
+  DCHECK_NE(legacy, LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      legacy == LegacyLayout::kForce ||
       (!style.IsDisplayMathType() && !HasTagName(mathml_names::kMathTag)))
     return MathMLElement::CreateLayoutObject(style, legacy);
   return new LayoutNGMathMLBlock(this);

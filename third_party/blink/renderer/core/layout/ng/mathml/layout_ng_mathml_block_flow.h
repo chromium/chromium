@@ -23,6 +23,10 @@ class LayoutNGMathMLBlockFlow final : public LayoutNGBlockFlow {
     return true;
   }
   bool CreatesNewFormattingContext() const final { return true; }
+
+  PaginationBreakability GetPaginationBreakability() const final {
+    return kForbidBreaks;
+  }
 };
 
 }  // namespace blink
