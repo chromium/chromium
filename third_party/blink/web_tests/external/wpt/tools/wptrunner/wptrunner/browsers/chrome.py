@@ -1,3 +1,4 @@
+from . import chrome_spki_certs
 from .base import Browser, ExecutorBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
 from ..webdriver_server import ChromeDriverServer
@@ -22,25 +23,6 @@ __wptrunner__ = {"product": "chrome",
                  "env_extras": "env_extras",
                  "env_options": "env_options",
                  "timeout_multiplier": "get_timeout_multiplier",}
-
-# This is generated using:
-# ```
-# openssl x509 -noout -pubkey -in ./tools/certs/web-platform.test.pem |
-# openssl pkey -pubin -outform der |
-# openssl dgst -sha256 -binary |
-# base64
-# ```
-# TODO(https://github.com/web-platform-tests/wpt/issues/21968):
-# Automate the regeneration of this value.
-WPT_FINGERPRINT = 'VPzsk0tdACJMqhsnPpMDesIkQYZrI2RGR+UlPK4emE4='
-
-# And one for signed-exchange/resources/127.0.0.1.sxg.pem
-SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
-
-IGNORE_CERTIFICATE_ERRORS_SPKI_LIST = [
-    WPT_FINGERPRINT,
-    SXG_WPT_FINGERPRINT
-]
 
 def check_args(**kwargs):
     require_arg(kwargs, "webdriver_binary")
@@ -89,7 +71,7 @@ def executor_kwargs(test_type, server_config, cache_manager, run_info_data,
 
     chrome_options["args"].append("--ignore-certificate-errors")
     chrome_options["args"].append("--ignore-certificate-errors-spki-list=%s" %
-                                  ','.join(IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
+                                  ','.join(chrome_spki_certs.IGNORE_CERTIFICATE_ERRORS_SPKI_LIST))
 
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
