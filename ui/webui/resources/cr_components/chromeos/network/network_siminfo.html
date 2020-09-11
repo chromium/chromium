@@ -1,6 +1,5 @@
 <link rel="import" href="../../../html/polymer.html">
 
-<link rel="import" href="onc_mojo.html">
 <link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
 <link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="../../../cr_elements/cr_toggle/cr_toggle.html">
@@ -10,8 +9,10 @@
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="mojo_interface_provider.html">
 <link rel="import" href="network_password_input.html">
 <link rel="import" href="network_shared_css.html">
+<link rel="import" href="onc_mojo.html">
 
 <dom-module id="network-siminfo">
   <template>
@@ -50,7 +51,7 @@
     </style>
 
     <!-- SIM missing UI -->
-    <div class="property-box two-line"
+    <div id="simMissing" class="property-box two-line"
         hidden$="[[!showSimMissing_(deviceState)]]">
       <div class="start layout horizontal center">
         <iron-icon icon="cr:sim-card-alert"></iron-icon>
