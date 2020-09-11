@@ -102,6 +102,10 @@
     "label": "//chrome/test:android_sync_integration_tests",
     "type": "windowed_test_launcher",
   },
+  "android_tools": {
+    "label": "//tools/android:android_tools",
+    "type": "additional_compile_target",
+  },
   "android_webview_junit_tests": {
     "label": "//android_webview/test:android_webview_junit_tests",
     "type": "junit_test",
@@ -398,6 +402,10 @@
   "cast_unittests": {
     "label": "//media/cast:cast_unittests",
     "type": "windowed_test_launcher",
+  },
+  "cc_perftests": {
+    "label": "//cc:cc_perftests",
+    "type": "additional_compile_target",
   },
   "cc_unittests": {
     "label": "//cc:cc_unittests",
@@ -1398,6 +1406,10 @@
     "label": "//chrome/browser/metrics/perf:profile_provider_unittest",
     "type": "console_test_launcher",
   },
+  "push_apps_to_background_apk": {
+    "label": "//tools/android/push_apps_to_background:push_apps_to_background_apk",
+    "type": "additional_compile_target",
+  },
   "remoting/client:client": {
     "label": "//remoting/client:client",
     "type": "additional_compile_target",
@@ -1535,6 +1547,10 @@
     "label": "//android_webview:system_webview_apk",
     "type": "additional_compile_target",
   },
+  "system_webview_shell_apk": {
+    "label": "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    "type": "additional_compile_target",
+  },
   "system_webview_shell_layout_test_apk": {
     "args": [
       "--replace-system-package",
@@ -1610,6 +1626,10 @@
     "label": "//chrome/test:telemetry_unittests",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
+  },
+  "telemetry_weblayer_apks": {
+    "label": "//tools/perf/chrome_telemetry_build:telemetry_weblayer_apks",
+    "type": "additional_compile_target",
   },
   # TODO(crbug.com/1080749): Re-add this once the test is fixed and re-enabled.
   # "test_buildbucket_api_gpu_use_cases": {

@@ -191,7 +191,16 @@
       "microdump_stackwalk",
       "angle_perftests",
       "chrome_apk",
-      "system_webview_google_apk"
+      "system_webview_google_apk",
+      "android_tools",
+      "cc_perftests",
+      "chrome_public_apk",
+      "chromium_builder_perf",
+      "dump_syms",
+      "gpu_perftests",
+      "push_apps_to_background_apk",
+      "system_webview_apk",
+      "system_webview_shell_apk"
     ],
     "isolated_scripts": [
       {
@@ -696,7 +705,16 @@
       "microdump_stackwalk",
       "angle_perftests",
       "chrome_apk",
-      "system_webview_google_apk"
+      "system_webview_google_apk",
+      "android_tools",
+      "cc_perftests",
+      "chrome_public_apk",
+      "chromium_builder_perf",
+      "gpu_perftests",
+      "push_apps_to_background_apk",
+      "system_webview_apk",
+      "system_webview_shell_apk",
+      "telemetry_weblayer_apks"
     ],
     "isolated_scripts": [
       {
@@ -910,6 +928,9 @@
     ]
   },
   "chromeos-amd64-generic-lacros-builder-perf": {
+    "additional_compile_targets": [
+      "chrome"
+    ],
     "isolated_scripts": [
       {
         "args": [],
@@ -941,7 +962,8 @@
   },
   "linux-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver"
+      "chromedriver",
+      "chromium_builder_perf"
     ]
   },
   "linux-perf": {
@@ -1120,7 +1142,8 @@
   },
   "mac-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver"
+      "chromedriver",
+      "chromium_builder_perf"
     ]
   },
   "win-10-perf": {
@@ -1240,12 +1263,14 @@
   },
   "win32-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver"
+      "chromedriver",
+      "chromium_builder_perf"
     ]
   },
   "win64-builder-perf": {
     "additional_compile_targets": [
-      "chromedriver"
+      "chromedriver",
+      "chromium_builder_perf"
     ]
   }
 }

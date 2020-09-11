@@ -101,6 +101,18 @@ LIGHTWEIGHT_TESTERS = [
 ]
 
 FYI_BUILDERS = {
+    'android-cfi-builder-perf-fyi': {
+        'additional_compile_targets': [
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'gpu_perftests',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
+        ],
+    },
     'android-nexus5x-perf-fyi': {
         'tests': [{
             'isolate':
@@ -145,8 +157,7 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate': 'performance_test_suite',
         }],
-        'platform':
-        'android-chrome-bundle',
+        'platform': 'android-chrome-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf-fyi',
             'os': 'Android',
@@ -154,6 +165,18 @@ FYI_BUILDERS = {
             'device_os': 'O',
             'device_os_flavor': 'google',
         },
+    },
+    'android_arm64-cfi-builder-perf-fyi': {
+        'additional_compile_targets': [
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'gpu_perftests',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
+        ],
     },
     'linux-perf-fyi': {
         'tests': [{
@@ -196,6 +219,9 @@ FYI_BUILDERS = {
             'gpu': None,
             'os': 'Windows-10',
         },
+    },
+    'chromeos-kevin-builder-perf-fyi': {
+        'additional_compile_targets': ['chromium_builder_perf'],
     },
     'chromeos-kevin-perf-fyi': {
         'tests': [
@@ -241,8 +267,19 @@ FYI_BUILDERS = {
 BUILDERS = {
     'android-builder-perf': {
         'additional_compile_targets': [
-            'microdump_stackwalk', 'angle_perftests', 'chrome_apk',
-            'system_webview_google_apk'
+            'microdump_stackwalk',
+            'angle_perftests',
+            'chrome_apk',
+            'system_webview_google_apk',
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'dump_syms',
+            'gpu_perftests',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
         ],
         'tests': [
             {
@@ -291,8 +328,19 @@ BUILDERS = {
     },
     'android_arm64-builder-perf': {
         'additional_compile_targets': [
-            'microdump_stackwalk', 'angle_perftests', 'chrome_apk',
-            'system_webview_google_apk'
+            'microdump_stackwalk',
+            'angle_perftests',
+            'chrome_apk',
+            'system_webview_google_apk',
+            'android_tools',
+            'cc_perftests',
+            'chrome_public_apk',
+            'chromium_builder_perf',
+            'gpu_perftests',
+            'push_apps_to_background_apk',
+            'system_webview_apk',
+            'system_webview_shell_apk',
+            'telemetry_weblayer_apks',
         ],
         'tests': [
             {
@@ -345,16 +393,16 @@ BUILDERS = {
         False,
     },
     'linux-builder-perf': {
-        'additional_compile_targets': ['chromedriver'],
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
     'mac-builder-perf': {
-        'additional_compile_targets': ['chromedriver'],
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
     'win32-builder-perf': {
-        'additional_compile_targets': ['chromedriver'],
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
     'win64-builder-perf': {
-        'additional_compile_targets': ['chromedriver'],
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
     'android-go-perf': {
         'tests': [{
@@ -466,9 +514,10 @@ BUILDERS = {
                 '--experimental-tbmv3-metrics',
             ],
         }],
-        'platform': 'android-chrome',
+        'platform':
+        'android-chrome',
         'dimension': {
-            'pool': 'chrome.tests.pinpoint', # Sharing Pinpoint pool
+            'pool': 'chrome.tests.pinpoint',  # Sharing Pinpoint pool
             'os': 'Android',
             'device_type': 'sunfish',
             'device_os': 'QD4A.200102.001.A1',
@@ -655,6 +704,7 @@ BUILDERS = {
         'perf_processor': True,
     },
     'chromeos-amd64-generic-lacros-builder-perf': {
+        'additional_compile_targets': ['chrome'],
         'tests': [
             {
                 'name': 'resource_sizes_lacros_chrome',
@@ -667,7 +717,8 @@ BUILDERS = {
             'os': 'Ubuntu-16.04',
             'pool': 'chrome.tests',
         },
-        'perf_trigger': False,
+        'perf_trigger':
+        False,
     }
 }
 
