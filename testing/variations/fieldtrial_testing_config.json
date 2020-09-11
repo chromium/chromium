@@ -6961,46 +6961,6 @@
             ]
         }
     ],
-    "ThirdPartyModulesBlocking": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ThirdPartyModulesBlocking"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ThrottleDelayable": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "MaxDelayable_3g_8_Weight3_20190215",
-                    "params": {
-                        "EffectiveConnectionType1": "3G",
-                        "MaxDelayableRequests1": "8",
-                        "NonDelayableWeight1": "3.0"
-                    },
-                    "enable_features": [
-                        "ThrottleDelayable"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThrottleInstallingServiceWorker": [
         {
             "platforms": [
@@ -7599,26 +7559,6 @@
                     },
                     "enable_features": [
                         "AdjustWebApkInstallationSpace"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebAudioAutoplay": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "AutoplayIgnoreWebAudio"
                     ]
                 }
             ]
