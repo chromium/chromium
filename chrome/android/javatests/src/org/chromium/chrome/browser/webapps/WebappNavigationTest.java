@@ -42,16 +42,12 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -257,7 +253,6 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @DisableFeatures({ChromeFeatureList.REVAMPED_CONTEXT_MENU})
     public void testOpenInChromeFromContextMenuTabbedChrome() throws Exception {
         // Needed to get full context menu.
         FirstRunStatus.setFirstRunFlowComplete(true);
@@ -270,7 +265,7 @@ public class WebappNavigationTest {
         final ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
 
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 null /* activity to check for focus after click */,
                 mActivityTestRule.getActivity().getActivityTab(), "myTestAnchorId",
                 R.id.contextmenu_open_in_chrome);
@@ -278,27 +273,6 @@ public class WebappNavigationTest {
         CriteriaHelper.pollInstrumentationThread(() -> {
             return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
         });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Webapps"})
-    @EnableFeatures({ChromeFeatureList.REVAMPED_CONTEXT_MENU})
-    public void testOpenInChromeFromRevampedContextMenuTabbedChrome() throws Exception {
-        // Needed to get full context menu.
-        FirstRunStatus.setFirstRunFlowComplete(true);
-        runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());
-
-        addAnchor("myTestAnchorId", offOriginUrl(), "_self");
-
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                null /* activity to check for focus after click */,
-                mActivityTestRule.getActivity().getActivityTab(), "myTestAnchorId",
-                R.id.contextmenu_open_in_chrome);
-
-        ChromeTabbedActivity tabbedChrome =
-                ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class);
-        ChromeTabUtils.waitForTabPageLoaded(tabbedChrome.getActivityTab(), offOriginUrl());
     }
 
     @Test

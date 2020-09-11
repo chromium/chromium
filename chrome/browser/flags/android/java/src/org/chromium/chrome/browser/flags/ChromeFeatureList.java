@@ -380,7 +380,6 @@ public abstract class ChromeFeatureList {
     public static final String REMOVE_NAVIGATION_HISTORY = "RemoveNavigationHistory";
     public static final String RELATED_SEARCHES = "RelatedSearches";
     public static final String REPORT_FEED_USER_ACTIONS = "ReportFeedUserActions";
-    public static final String REVAMPED_CONTEXT_MENU = "RevampedContextMenu";
     public static final String SAFETY_CHECK_ANDROID = "SafetyCheckAndroid";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED =

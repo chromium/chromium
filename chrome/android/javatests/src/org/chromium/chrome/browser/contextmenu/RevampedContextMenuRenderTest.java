@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.test.filters.LargeTest;
 
@@ -66,8 +67,9 @@ public class RevampedContextMenuRenderTest extends DummyUiActivityTestCase {
         mListItems = new ModelList();
         mAdapter = new ModelListAdapter(mListItems);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity().setContentView(R.layout.revamped_context_menu);
+            getActivity().setContentView(R.layout.context_menu_fullscreen_container);
             mView = getActivity().findViewById(android.R.id.content);
+            ((ViewStub) mView.findViewById(R.id.context_menu_stub)).inflate();
             mFrame = mView.findViewById(R.id.context_menu_frame);
             RevampedContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
             listView.setAdapter(mAdapter);

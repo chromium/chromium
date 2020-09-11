@@ -42,7 +42,7 @@ public class RevampedContextMenuChipControllerTest extends DummyUiActivityTestCa
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.revamped_context_menu);
+        DummyUiActivity.setTestLayout(R.layout.context_menu_fullscreen_container);
     }
 
     @Override

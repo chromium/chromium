@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Pair;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
-import android.view.View.OnCreateContextMenuListener;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,7 +17,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.share.LensUtils;
@@ -30,9 +25,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.base.WindowAndroid.OnCloseContextMenuListener;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A helper class that handles generating context menus for {@link WebContents}s.
  */
-public class ContextMenuHelper implements OnCreateContextMenuListener {
+public class ContextMenuHelper {
     public static Callback<RevampedContextMenuCoordinator> sRevampedContextMenuShownCallback;
 
     private final WebContents mWebContents;
@@ -132,51 +125,21 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
                     mNativeContextMenuHelper, ContextMenuHelper.this);
         };
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REVAMPED_CONTEXT_MENU)
-                && params.getSourceType() != MenuSourceType.MENU_SOURCE_MOUSE) {
-            // NOTE: This is a temporary implementation to enable experimentation and should not
-            // not be enabled under any circumstances on Stable Chrome builds due to potential
-            // latency impact.
-            if (LensUtils.enableShoppyImageMenuItem()
-                    && LensController.getInstance().isSdkAvailable()) {
-                mPopulator.retrieveImage(
-                        renderFrameHost, ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-                            LensController.getInstance().classifyImage(
-                                    uri, (Boolean isShoppyImage) -> {
-                                        displayRevampedContextMenu(
-                                                renderFrameHost, topContentOffsetPx, isShoppyImage);
-                                    });
+        // NOTE: This is a temporary implementation to enable experimentation and should not
+        // not be enabled under any circumstances on Stable Chrome builds due to potential
+        // latency impact.
+        if (LensUtils.enableShoppyImageMenuItem()
+                && LensController.getInstance().isSdkAvailable()) {
+            mPopulator.retrieveImage(
+                    renderFrameHost, ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
+                        LensController.getInstance().classifyImage(uri, (Boolean isShoppyImage) -> {
+                            displayRevampedContextMenu(
+                                    renderFrameHost, topContentOffsetPx, isShoppyImage);
                         });
-            } else {
-                displayRevampedContextMenu(
-                        renderFrameHost, topContentOffsetPx, /* addShoppyMenuItem */ false);
-            }
-            return;
-        }
-
-        // The Platform Context Menu requires the listener within this helper since this helper and
-        // provides context menu for us to show.
-        view.setOnCreateContextMenuListener(this);
-        boolean wasContextMenuShown = false;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE) {
-            final float density = view.getResources().getDisplayMetrics().density;
-            final float touchPointXPx = params.getTriggeringTouchXDp() * density;
-            final float touchPointYPx =
-                    (params.getTriggeringTouchYDp() * density) + topContentOffsetPx;
-            wasContextMenuShown = view.showContextMenu(touchPointXPx, touchPointYPx);
+                    });
         } else {
-            wasContextMenuShown = view.showContextMenu();
-        }
-        if (wasContextMenuShown) {
-            mOnMenuShown.run();
-            windowAndroid.addContextMenuCloseListener(new OnCloseContextMenuListener() {
-                @Override
-                public void onContextMenuClosed() {
-                    mOnMenuClosed.onResult(false);
-                    windowAndroid.removeContextMenuCloseListener(this);
-                }
-            });
+            displayRevampedContextMenu(
+                    renderFrameHost, topContentOffsetPx, /* addShoppyMenuItem */ false);
         }
     }
 
@@ -221,20 +184,6 @@ public class ContextMenuHelper implements OnCreateContextMenuListener {
         mPopulator.retrieveImage(renderFrameHost, ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
             ShareHelper.shareImage(mWindow, ShareHelper.getLastShareComponentName(), uri);
         });
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        List<Pair<Integer, List<ContextMenuItem>>> items =
-                mPopulator.buildContextMenu(menu, v.getContext(), mCurrentContextMenuParams, false);
-
-        if (items.isEmpty()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mOnMenuClosed.bind(false));
-            return;
-        }
-        ContextMenuUi menuUi = new PlatformContextMenuUi(menu);
-        menuUi.displayMenu(mWindow, mWebContents, mCurrentContextMenuParams, items, mCallback,
-                mOnMenuShown, mOnMenuClosed);
     }
 
     private void recordTimeToTakeActionHistogram(boolean selectedItem) {

@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -104,7 +104,7 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         // Download an image (shows 'Downloading...' toast)
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 mDownloadTestRule.getActivity(), tab, IMAGE_ID, R.id.contextmenu_save_image);
 
         // Wait for UI activity to settle
@@ -126,7 +126,7 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         // Open link in a new tab (shows 'Tab Opened In Background' toast)
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 mDownloadTestRule.getActivity(), tab, LINK_ID, R.id.contextmenu_open_in_new_tab);
 
         // Wait for UI activity to settle

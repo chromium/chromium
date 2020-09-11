@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -120,7 +121,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
@@ -392,9 +393,9 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        Menu menu = ContextMenuUtils.openContextMenu(
+        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "logo");
-        assertEquals(expectedMenuSize, menu.size());
+        assertEquals(expectedMenuSize, menu.getCount());
 
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_copy_link_address));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_call));
@@ -407,20 +408,6 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_share_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_open_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_save_video));
-
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_save_image).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_share_image).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_open_image).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_search_by_image).isVisible());
-
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_address).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_call).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_send_message).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_add_to_contacts).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_text).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_link_as).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_video).isVisible());
     }
 
     /**
@@ -434,9 +421,9 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        Menu menu = ContextMenuUtils.openContextMenu(
+        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "aboutLink");
-        assertEquals(expectedMenuSize, menu.size());
+        assertEquals(expectedMenuSize, menu.getCount());
 
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_copy_link_address));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_call));
@@ -449,20 +436,6 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_share_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_open_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_save_video));
-
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_copy_link_address).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_copy_link_text).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_save_link_as).isVisible());
-
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_share_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_call).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_send_message).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_add_to_contacts).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_open_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_search_by_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_video).isVisible());
     }
 
     /**
@@ -475,9 +448,9 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        Menu menu = ContextMenuUtils.openContextMenu(
+        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "email");
-        assertEquals(expectedMenuSize, menu.size());
+        assertEquals(expectedMenuSize, menu.getCount());
 
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_copy_link_address));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_call));
@@ -490,20 +463,6 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_share_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_open_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_save_video));
-
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_send_message).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_add_to_contacts).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_copy).isVisible());
-
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_address).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_call).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_share_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_open_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_search_by_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_text).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_link_as).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_video).isVisible());
     }
 
     /**
@@ -516,9 +475,9 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
 
         final int expectedMenuSize = 12;
-        Menu menu = ContextMenuUtils.openContextMenu(
+        RevampedContextMenuCoordinator menu = RevampedContextMenuUtils.openContextMenu(
                 mCustomTabActivityTestRule.getActivity().getActivityTab(), "tel");
-        assertEquals(expectedMenuSize, menu.size());
+        assertEquals(expectedMenuSize, menu.getCount());
 
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_copy_link_address));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_call));
@@ -531,20 +490,6 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_share_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_open_image));
         Assert.assertNotNull(menu.findItem(R.id.contextmenu_save_video));
-
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_call).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_send_message).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_add_to_contacts).isVisible());
-        Assert.assertTrue(menu.findItem(R.id.contextmenu_copy).isVisible());
-
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_address).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_share_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_open_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_search_by_image).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_copy_link_text).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_link_as).isVisible());
-        Assert.assertFalse(menu.findItem(R.id.contextmenu_save_video).isVisible());
     }
 
     /**

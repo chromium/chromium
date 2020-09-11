@@ -3859,10 +3859,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
-    {"enable-revamped-context-menu",
-     flag_descriptions::kEnableRevampedContextMenuName,
-     flag_descriptions::kEnableRevampedContextMenuDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRevampedContextMenu)},
     {"tabbed-app-overflow-menu-icons",
      flag_descriptions::kTabbedAppOverflowMenuIconsName,
      flag_descriptions::kTabbedAppOverflowMenuIconsDescription, kOsAndroid,

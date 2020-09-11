@@ -98,7 +98,6 @@ extern const base::Feature kReachedCodeProfiler;
 extern const base::Feature kReengagementNotification;
 extern const base::Feature kReaderModeInCCT;
 extern const base::Feature kRelatedSearches;
-extern const base::Feature kRevampedContextMenu;
 extern const base::Feature kSearchEnginePromoExistingDevice;
 extern const base::Feature kSearchEnginePromoNewDevice;
 extern const base::Feature kServiceManagerForBackgroundPrefetch;

@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -91,18 +93,20 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             final Callback<Boolean> onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
         mOnMenuClosed = onMenuClosed;
         final boolean lensShoppingFeatureEnabled = lensAsyncManager != null;
+        final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE;
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
         final float touchPointYPx = params.getTriggeringTouchYDp() * density;
         int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
         int dialogBottomMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
-        final View view =
-                LayoutInflater.from(activity).inflate(R.layout.revamped_context_menu, null);
 
-        // Only display a chip if an image was selected.
-        if (params.isImage() && lensShoppingFeatureEnabled) {
-            View chipAnchorView = view.findViewById(R.id.context_menu_chip_anchor_point);
+        final View layout = LayoutInflater.from(activity).inflate(
+                R.layout.context_menu_fullscreen_container, null);
+
+        // Only display a chip if an image was selected and the menu isn't a popup.
+        if (params.isImage() && lensShoppingFeatureEnabled && !isPopup) {
+            View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
             mChipController = new RevampedContextMenuChipController(
                     activity, chipAnchorView, lensAsyncManager, () -> {
                         // A chip selection should trigger the lens shopping action.
@@ -114,8 +118,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             dialogTopMarginPx = dialogBottomMarginPx / 2;
         }
 
-        mDialog = createContextMenuDialog(activity, view, touchPointXPx, touchPointYPx,
-                dialogTopMarginPx, dialogBottomMarginPx);
+        final View menu = isPopup
+                ? LayoutInflater.from(activity).inflate(R.layout.context_menu, null)
+                : ((ViewStub) layout.findViewById(R.id.context_menu_stub)).inflate();
+        mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,
+                touchPointYPx, dialogTopMarginPx, dialogBottomMarginPx);
         mDialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         mDialog.setOnDismissListener(dialogInterface -> mOnMenuClosed.onResult(false));
 
@@ -153,7 +160,7 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             }
         };
 
-        mListView = view.findViewById(R.id.context_menu_list_view);
+        mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
         // Note: clang-format does a bad job formatting lambdas so we turn it off here.
@@ -203,9 +210,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
      * Returns the fully complete dialog based off the params and the itemGroups.
      *
      * @param activity Used to inflate the dialog.
-     * @param view The inflated view, including the scrim, that contains the list view.
-     * @param touchPointYPx The x-coordinate of the touch that triggered the context menu.
-     * @param touchPointXPx The y-coordinate of the touch that triggered the context menu.
+     * @param layout The inflated context menu layout that will house the context menu.
+     * @param view The inflated view that contains the list view.
+     * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
+     * @param touchPointXPx The x-coordinate of the touch that triggered the context menu.
+     * @param touchPointYPx The y-coordinate of the touch that triggered the context menu.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
      *                    defined in XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
@@ -213,14 +222,14 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
      * @return Returns a final dialog that does not have a background can be displayed using
      *         {@link AlertDialog#show()}.
      */
-    private ContextMenuDialog createContextMenuDialog(Activity activity, View view,
-            float touchPointXPx, float touchPointYPx, int topMarginPx, int bottomMarginPx) {
-        View frame = view.findViewById(R.id.context_menu_frame);
+    private ContextMenuDialog createContextMenuDialog(Activity activity, View layout, View view,
+            boolean isPopup, float touchPointXPx, float touchPointYPx, int topMarginPx,
+            int bottomMarginPx) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
-        final ContextMenuDialog dialog =
-                new ContextMenuDialog(activity, R.style.Theme_Chromium_AlertDialog, touchPointXPx,
-                        touchPointYPx, mTopContentOffsetPx, topMarginPx, bottomMarginPx, frame);
-        dialog.setContentView(view);
+        final ContextMenuDialog dialog = new ContextMenuDialog(activity,
+                R.style.Theme_Chromium_AlertDialog, touchPointXPx, touchPointYPx,
+                mTopContentOffsetPx, topMarginPx, bottomMarginPx, layout, view, isPopup);
+        dialog.setContentView(layout);
 
         return dialog;
     }
@@ -314,5 +323,26 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
 
     public void clickListItemForTesting(int id) {
         mListView.performItemClick(null, -1, id);
+    }
+
+    @VisibleForTesting
+    ListItem getItem(int index) {
+        return (ListItem) mListView.getAdapter().getItem(index);
+    }
+
+    @VisibleForTesting
+    public int getCount() {
+        return mListView.getAdapter().getCount();
+    }
+
+    @VisibleForTesting
+    public ListItem findItem(int id) {
+        for (int i = 0; i < getCount(); i++) {
+            final ListItem item = getItem(i);
+            if (item.model.get(RevampedContextMenuItemProperties.MENU_ID) == id) {
+                return item;
+            }
+        }
+        return null;
     }
 }

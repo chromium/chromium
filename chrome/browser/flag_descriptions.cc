@@ -2785,12 +2785,6 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-const char kEnableRevampedContextMenuName[] =
-    "Enable the revamped context menu";
-const char kEnableRevampedContextMenuDescription[] =
-    "Enables a revamped context menu when a link, image, or video is long "
-    "pressed within Chrome.";
-
 const char kEnableOfflinePreviewsName[] = "Offline Page Previews";
 const char kEnableOfflinePreviewsDescription[] =
     "Enable showing offline page previews on slow networks.";
