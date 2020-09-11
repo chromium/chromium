@@ -90831,7 +90831,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>tedchoc@chromium.org</owner>
   <summary>
-    Android: Count of page loads started by intents from external apps.
+    Android: Count of page loads started by intents from external apps. In M87
+    the reporting of this histogram was updated to exclude intents sent from
+    Chrome itself.
   </summary>
 </histogram>
 
