@@ -7,6 +7,8 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"  // nogncheck
@@ -157,13 +159,51 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
     return false;
 
   const auto& device_info = vulkan_info.physical_devices.front();
-  constexpr uint32_t kVendorARM = 0x13b5;
 
-  // https://crbug.com/1096222: Display problem with Huawei and Honor devices
-  // with Mali GPU. The Mali driver version is < 19.0.0.
-  if (device_info.properties.vendorID == kVendorARM &&
-      device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0)) {
-    return false;
+  constexpr uint32_t kVendorARM = 0x13b5;
+  if (device_info.properties.vendorID == kVendorARM) {
+    // https://crbug.com/1096222: Display problem with Huawei and Honor devices
+    // with Mali GPU. The Mali driver version is < 19.0.0.
+    if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0))
+      return false;
+
+    // Remove "Mali-" prefix.
+    base::StringPiece device_name(device_info.properties.deviceName);
+    if (!base::StartsWith(device_name, "Mali-")) {
+      LOG(ERROR) << "Unexpected device_name " << device_name;
+      return false;
+    }
+    device_name.remove_prefix(5);
+
+    // Remove anything trailing a space (e.g. "G76 MC4" => "G76").
+    device_name = device_name.substr(0, device_name.find(" "));
+
+    // Older Mali GPUs are not performant with Vulkan -- this blocks all Utgard
+    // gen, Midgard gen, and some Bifrost 1st & 2nd gen.
+    std::vector<const char*> slow_gpus = {"2??", "3??", "4??", "T???",
+                                          "G31", "G51", "G52"};
+    for (base::StringPiece slow_gpu : slow_gpus) {
+      if (base::MatchPattern(device_name, slow_gpu))
+        return false;
+    }
+  }
+
+  constexpr uint32_t kVendorQualcomm = 0x5143;
+  if (device_info.properties.vendorID == kVendorQualcomm) {
+    // Remove "Adreno (TM) " prefix.
+    base::StringPiece device_name(device_info.properties.deviceName);
+    if (!base::StartsWith(device_name, "Adreno (TM) ")) {
+      LOG(ERROR) << "Unexpected device_name " << device_name;
+      return false;
+    }
+    device_name.remove_prefix(12);
+
+    // Older Adreno GPUs are not performant with Vulkan.
+    std::vector<const char*> slow_gpus = {"4??", "50?", "51?"};
+    for (base::StringPiece slow_gpu : slow_gpus) {
+      if (base::MatchPattern(device_name, slow_gpu))
+        return false;
+    }
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
