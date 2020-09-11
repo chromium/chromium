@@ -187,6 +187,13 @@ const char kDefaultToDesktopOnIPadDescription[] =
     "By default, on iPad, the desktop version of the web sites will be "
     "requested";
 
+const char kDefaultBrowserFullscreenPromoName[] =
+    "Fullscreen modal promo about the default browser feature";
+const char kDefaultBrowserFullscreenPromoDescription[] =
+    "When enabled, will allow for a fullscreen modal promo to be shown to "
+    "users informing them about the default browser feature and providing a "
+    "button that takes users to Settings.app to update their default browser.";
+
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

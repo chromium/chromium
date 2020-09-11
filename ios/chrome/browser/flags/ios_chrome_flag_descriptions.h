@@ -151,6 +151,12 @@ extern const char kDcheckIsFatalDescription[];
 extern const char kDefaultToDesktopOnIPadName[];
 extern const char kDefaultToDesktopOnIPadDescription[];
 
+// Title and description for the flag to show a fullscreen modal promo with a
+// button that would send the users in the Settings.app to update the default
+// browser.
+extern const char kDefaultBrowserFullscreenPromoName[];
+extern const char kDefaultBrowserFullscreenPromoDescription[];
+
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
 extern const char kDetectMainThreadFreezeName[];

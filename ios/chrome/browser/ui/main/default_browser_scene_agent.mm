@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 
+#include "base/feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,6 +44,11 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (!base::FeatureList::IsEnabled(kDefaultBrowserFullscreenPromo)) {
+    // Do nothing if the Default Browser Fullscreen Promo feature flag is not
+    // on.
+    return;
+  }
   AppState* appState = self.sceneState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the UI if user has met the
