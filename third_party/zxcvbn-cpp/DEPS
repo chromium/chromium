@@ -1,7 +1,6 @@
 include_rules = [
-    "+base/containers/flat_map.h",
-    "+base/no_destructor.h",
-    "+base/strings",
-    "+testing/gmock",
-    "+testing/gtest",
+    "+base",
+    "+testing",
+    "+third_party/icu/source/common/unicode",
+    "+third_party/icu/source/i18n/unicode",
 ]

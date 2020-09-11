@@ -33,6 +33,10 @@ Applied the following patches:
   number of computed guesses exceeds DBL_MAX.
 - patches/flat_map_ranked.diff: Use base::flat_map instead of std::unordered_map
   for ranked dictionaries to reduce memory foot print.
+- patches/utf8_support.diff: Switched the regex engine in matching.cpp from
+  std::regex to ICU's regex, so that repeat matches work with multi-byte code
+  points. Also guarded an assert in scoring.cpp that was hit for non-ASCII
+  passwords.
 - Dropped the data dictionary from the check-out, as the data will now be
   provided via component updater. The used dictionaries can be found at
   https://github.com/rianhunter/zxcvbn-cpp/tree/cf092c952cd2325ce390b2691231a8f1cb195d59/data

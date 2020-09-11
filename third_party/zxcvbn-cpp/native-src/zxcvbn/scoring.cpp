@@ -75,7 +75,11 @@ std::size_t token_len(const Match & m) __attribute__((pure));
 static
 std::size_t token_len(const Match & m) {
   std::size_t result = m.j - m.i + 1;
-  assert(result == util::character_len(m.token));
+  // Bruteforce matches might be any substring of the original string, which are
+  // not necessarily aligned to UTF8 code points, and thus m.token might not be
+  // a valid UTF8 string.
+  if (m.get_pattern() != MatchPattern::BRUTEFORCE)
+    assert(result == util::character_len(m.token));
   return result;
 }
 

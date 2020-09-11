@@ -30,7 +30,10 @@ source_set("zxcvbn-cpp") {
     "native-src/zxcvbn/util.hpp",
   ]
 
-  deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//third_party/icu",
+  ]
 
   public_configs = [ ":zxcvbn_include_config" ]
 }
@@ -52,9 +55,11 @@ test("zxcvbn_unittests") {
 fuzzer_test("zxcvbn_matching_fuzzer") {
   sources = [ "test/matching_fuzzer.cc" ]
   deps = [ ":zxcvbn-cpp" ]
+  libfuzzer_options = [ "max_len=128" ]
 }
 
 fuzzer_test("zxcvbn_scoring_fuzzer") {
   sources = [ "test/scoring_fuzzer.cc" ]
   deps = [ ":zxcvbn-cpp" ]
+  libfuzzer_options = [ "max_len=128" ]
 }

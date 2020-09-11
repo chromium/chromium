@@ -9,8 +9,12 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string password(reinterpret_cast<const char*>(data), size);
+  if (!base::IsStringUTF8(password))
+    return 0;
 
   zxcvbn::dictionary_match(password, {});
   zxcvbn::reverse_dictionary_match(password, {});

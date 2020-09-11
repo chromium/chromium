@@ -812,6 +812,20 @@ TEST(ZxcvbnTest, RepeatMatching) {
                              .base_token = "ab",
                          }));
   }
+
+  {
+    // identifies äö as repeat string, even though äöäö is also repeated.
+    // verifies that match.i and match.j operate in code point counts, and not
+    // in bytes.
+    std::string pattern = "\u00E4\u00F6\u00E4\u00F6\u00E4\u00F6\u00E4\u00F6";
+    std::vector<Match> matches = repeat_match(pattern);
+    EXPECT_THAT(matches, ElementsAre(ExpectedRepeatMatch{
+                             .i = 0,
+                             .j = 7,
+                             .token = pattern,
+                             .base_token = "\u00E4\u00F6",
+                         }));
+  }
 }
 
 TEST(ZxcvbnTest, RegexMatching) {

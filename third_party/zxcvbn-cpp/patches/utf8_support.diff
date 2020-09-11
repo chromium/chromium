@@ -1,0 +1,158 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index 8f4e6d2f0e00..13465dee1cd7 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+@@ -20,6 +20,9 @@
+ #include <unordered_set>
+ 
+ #include "base/no_destructor.h"
++#include "base/strings/string_util.h"
++#include "third_party/icu/source/common/unicode/unistr.h"
++#include "third_party/icu/source/i18n/unicode/regex.h"
+ 
+ namespace zxcvbn {
+ 
+@@ -453,69 +456,91 @@ std::vector<Match> spatial_match_helper(const std::string & password,
+ // repeats (aaa, abcabcabc) and sequences (abcdef) ------------------------------
+ //-------------------------------------------------------------------------------
+ 
+-std::vector<Match> repeat_match(const std::string & password) {
++std::vector<Match> repeat_match(const std::string& password) {
+   std::vector<Match> matches;
+-  std::regex greedy(R"((.+)\1+)");
+-  std::regex lazy(R"((.+?)\1+)");
+-  std::regex lazy_anchored(R"(^(.+?)\1+$)");
+-  idx_t lastIndex = 0;
++
++  auto unicode_password = icu::UnicodeString::fromUTF8(password);
++
++  UErrorCode status = U_ZERO_ERROR;
++  std::unique_ptr<icu::RegexPattern> greedy_pattern(icu::RegexPattern::compile(
++      icu::UnicodeString::fromUTF8(R"((.+)\1+)"), 0, status));
++  std::unique_ptr<icu::RegexMatcher> greedy_matcher(
++      greedy_pattern->matcher(unicode_password, status));
++
++  std::unique_ptr<icu::RegexPattern> lazy_pattern(icu::RegexPattern::compile(
++      icu::UnicodeString::fromUTF8(R"((.+?)\1+)"), 0, status));
++  std::unique_ptr<icu::RegexMatcher> lazy_matcher(
++      lazy_pattern->matcher(unicode_password, status));
++
++  std::unique_ptr<icu::RegexPattern> lazy_anchored_pattern(
++      icu::RegexPattern::compile(icu::UnicodeString::fromUTF8(R"(^(.+?)\1+$)"),
++                                 0, status));
++
++  int lastUnicodeIndex = 0;
++  size_t lastIndex = 0;
+   while (lastIndex < password.length()) {
+-    auto start_iter = lastIndex + password.begin();
+-    std::smatch greedy_match, lazy_match;
+-    std::regex_search(start_iter, password.end(),
+-                      greedy_match, greedy);
+-    std::regex_search(start_iter, password.end(),
+-                      lazy_match, lazy);
+-    if (!greedy_match.size()) break;
+-    std::smatch match;
+-    std::string base_token;
+-    if (greedy_match[0].length() > lazy_match[0].length()) {
++    if (!greedy_matcher->find(lastUnicodeIndex, status) ||
++        !lazy_matcher->find(lastUnicodeIndex, status)) {
++      break;
++    }
++
++    icu::RegexMatcher* matcher = nullptr;
++    icu::UnicodeString base_token;
++    if (greedy_matcher->group(status).length() >
++        lazy_matcher->group(status).length()) {
+       // greedy beats lazy for 'aabaab'
+       //   greedy: [aabaab, aab]
+       //   lazy:   [aa,     a]
+-      match = greedy_match;
++      matcher = greedy_matcher.get();
+       // greedy's repeated string might itself be repeated, eg.
+       // aabaab in aabaabaabaab.
+       // run an anchored lazy match on greedy's repeated string
+       // to find the shortest repeated string
+-      std::smatch lazy_anchored_match;
+-      auto greedy_found = match.str(0);
+-      auto ret = std::regex_search(greedy_found, lazy_anchored_match, lazy_anchored);
++      auto greedy_found = matcher->group(status);
++
++      std::unique_ptr<icu::RegexMatcher> lazy_anchored_matcher(
++          lazy_anchored_pattern->matcher(greedy_found, status));
++      auto ret = lazy_anchored_matcher->find(status);
+       assert(ret);
+       (void) ret;
+-      base_token = lazy_anchored_match.str(1);
++      base_token = lazy_anchored_matcher->group(1, status);
+     }
+     else {
+       // lazy beats greedy for 'aaaaa'
+       //   greedy: [aaaa,  aa]
+       //   lazy:   [aaaaa, a]
+-      match = std::move(lazy_match);
+-      base_token = match.str(1);
++      matcher = lazy_matcher.get();
++      base_token = matcher->group(1, status);
+     }
+-    auto idx = lastIndex + match.position();
+-    auto jdx = lastIndex + match.position() + match[0].length();
++
++    std::string matched_string;
++    matcher->group(status).toUTF8String(matched_string);
++
++    auto idx = password.find(matched_string, lastIndex);
++    auto jdx = idx + matched_string.size();
++
+     auto i = util::character_len(password, 0, idx);
+     auto j = i + util::character_len(password, idx, jdx) - 1;
+     // recursively match and score the base string
+-    auto sub_matches = omnimatch(base_token);
+-    auto base_analysis = most_guessable_match_sequence(
+-      base_token,
+-      sub_matches,
+-      false
+-      );
++    std::string base_string;
++    base_token.toUTF8String(base_string);
++    auto sub_matches = omnimatch(base_string);
++    auto base_analysis =
++        most_guessable_match_sequence(base_string, sub_matches, false);
+     std::vector<Match> base_matches;
+     std::move(base_analysis.sequence.begin(), base_analysis.sequence.end(),
+               std::back_inserter(base_matches));
+-    auto & base_guesses = base_analysis.guesses;
+-    matches.push_back(Match(i, j, match.str(0),
++    auto& base_guesses = base_analysis.guesses;
++    matches.push_back(Match(i, j, matched_string,
+                             RepeatMatch{
+-                              base_token,
++                                base_string,
+                                 base_guesses,
+                                 std::move(base_matches),
+-                                match[0].length() / base_token.length(),
+-                                }));
++                                matched_string.size() / base_string.size(),
++                            }));
+     matches.back().idx = idx;
+     matches.back().jdx = jdx;
++    lastUnicodeIndex = matcher->end(status);
+     lastIndex = jdx;
+   }
+   return matches;
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+index a4e341935ffb..e5c120a86a5c 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.cpp
+@@ -75,7 +75,11 @@ std::size_t token_len(const Match & m) __attribute__((pure));
+ static
+ std::size_t token_len(const Match & m) {
+   std::size_t result = m.j - m.i + 1;
+-  assert(result == util::character_len(m.token));
++  // Bruteforce matches might be any substring of the original string, which are
++  // not necessarily aligned to UTF8 code points, and thus m.token might not be
++  // a valid UTF8 string.
++  if (m.get_pattern() != MatchPattern::BRUTEFORCE)
++    assert(result == util::character_len(m.token));
+   return result;
+ }
+ 
