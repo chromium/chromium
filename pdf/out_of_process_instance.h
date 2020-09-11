@@ -57,26 +57,26 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   OutOfProcessInstance& operator=(const OutOfProcessInstance&) = delete;
   ~OutOfProcessInstance() override;
 
-  // pp::Instance implementation.
+  // pp::Instance:
   bool Init(uint32_t argc, const char* argn[], const char* argv[]) override;
   void HandleMessage(const pp::Var& message) override;
   bool HandleInputEvent(const pp::InputEvent& event) override;
   void DidChangeView(const pp::View& view) override;
   void DidChangeFocus(bool has_focus) override;
 
-  // pp::Find_Private implementation.
+  // pp::Find_Private:
   bool StartFind(const std::string& text, bool case_sensitive) override;
   void SelectFindResult(bool forward) override;
   void StopFind() override;
 
-  // pp::PaintManager::Client implementation.
+  // pp::PaintManager::Client:
   std::unique_ptr<Graphics> CreatePaintGraphics(const gfx::Size& size) override;
   bool BindPaintGraphics(Graphics& graphics) override;
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>* ready,
                std::vector<gfx::Rect>* pending) override;
 
-  // pp::Printing_Dev implementation.
+  // pp::Printing_Dev:
   uint32_t QuerySupportedPrintOutputFormats() override;
   int32_t PrintBegin(const PP_PrintSettings_Dev& print_settings) override;
   pp::Resource PrintPages(const PP_PrintPageNumberRange_Dev* page_ranges,
@@ -84,7 +84,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void PrintEnd() override;
   bool IsPrintScalingDisabled() override;
 
-  // pp::Private implementation.
+  // pp::Private:
   pp::Var GetLinkAtPosition(const pp::Point& point);
   void GetPrintPresetOptionsFromDocument(PP_PdfPrintPresetOptions_Dev* options);
   void EnableAccessibility();
@@ -105,10 +105,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                         const PP_PdfPrintSettings_Dev* pdf_print_settings);
 
   void FlushCallback(int32_t result);
-  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);
-  void DidOpenPreview(std::unique_ptr<UrlLoader> loader, int32_t result);
 
-  // PdfViewPluginBase implementation.
+  // PdfViewPluginBase:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
   void DidScroll(const gfx::Vector2d& offset) override;
@@ -163,7 +161,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   float GetToolbarHeightInScreenCoords() override;
   void DocumentFocusChanged(bool document_has_focus) override;
 
-  // PreviewModeClient::Client implementation.
+  // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;
   void PreviewDocumentLoadFailed() override;
 
@@ -174,6 +172,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Creates a file name for saving a PDF file, given the source URL. Exposed
   // for testing.
   static std::string GetFileNameFromUrl(const std::string& url);
+
+ protected:
+  // PdfViewPluginBase:
+  base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
+  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
+  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
+  void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
+                      int32_t result) override;
 
  private:
   // Message handlers.
@@ -218,12 +224,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Draws a rectangle with the specified dimensions and color in our buffer.
   void FillRect(const pp::Rect& rect, uint32_t color);
-
-  void LoadUrl(const std::string& url, bool is_print_preview);
-
-  // Creates a URL loader and allows it to access all urls, i.e. not just the
-  // frame's origin.
-  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal();
 
   bool CanSaveEdits() const;
   void SaveToFile(const std::string& token);

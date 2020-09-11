@@ -2084,20 +2084,8 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
     SendAccessibilityViewportInfo();
 }
 
-void OutOfProcessInstance::LoadUrl(const std::string& url,
-                                   bool is_print_preview) {
-  UrlRequest request;
-  request.url = url;
-  request.method = "GET";
-  request.ignore_redirects = true;
-
-  std::unique_ptr<UrlLoader> loader = CreateUrlLoaderInternal();
-  UrlLoader* raw_loader = loader.get();
-  raw_loader->Open(
-      request,
-      base::BindOnce(is_print_preview ? &OutOfProcessInstance::DidOpenPreview
-                                      : &OutOfProcessInstance::DidOpen,
-                     weak_factory_.GetWeakPtr(), std::move(loader)));
+base::WeakPtr<PdfViewPluginBase> OutOfProcessInstance::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {

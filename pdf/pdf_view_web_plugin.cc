@@ -6,10 +6,13 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "cc/paint/paint_canvas.h"
@@ -23,6 +26,10 @@
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/web/web_associated_url_loader.h"
+#include "third_party/blink/public/web/web_associated_url_loader_options.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "ui/base/cursor/cursor.h"
@@ -254,5 +261,40 @@ float PdfViewWebPlugin::GetToolbarHeightInScreenCoords() {
 }
 
 void PdfViewWebPlugin::DocumentFocusChanged(bool document_has_focus) {}
+
+std::unique_ptr<blink::WebAssociatedURLLoader>
+PdfViewWebPlugin::CreateAssociatedURLLoader(
+    const blink::WebAssociatedURLLoaderOptions& options) {
+  if (!container_)
+    return nullptr;
+
+  blink::WebLocalFrame* frame = container_->GetDocument().GetFrame();
+  if (!frame)
+    return nullptr;
+
+  // TODO(crbug.com/1127146): blink::WebLocalFrame::CreateAssociatedURLLoader()
+  // really should return a std::unique_ptr instead.
+  return base::WrapUnique(frame->CreateAssociatedURLLoader(options));
+}
+
+base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
+  auto loader = std::make_unique<BlinkUrlLoader>(weak_factory_.GetWeakPtr());
+  loader->GrantUniversalAccess();
+  return loader;
+}
+
+void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
+                               int32_t result) {
+  NOTIMPLEMENTED();
+}
+
+void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
+                                      int32_t result) {
+  NOTIMPLEMENTED();
+}
 
 }  // namespace chrome_pdf

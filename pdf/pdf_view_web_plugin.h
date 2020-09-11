@@ -5,7 +5,9 @@
 #ifndef PDF_PDF_VIEW_WEB_PLUGIN_H_
 #define PDF_PDF_VIEW_WEB_PLUGIN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
+#include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
 
 namespace blink {
@@ -17,7 +19,8 @@ namespace chrome_pdf {
 
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
-                               public blink::WebPlugin {
+                               public blink::WebPlugin,
+                               public BlinkUrlLoader::Client {
  public:
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
@@ -98,11 +101,25 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   float GetToolbarHeightInScreenCoords() override;
   void DocumentFocusChanged(bool document_has_focus) override;
 
+  // BlinkUrlLoader::Client:
+  std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
+      const blink::WebAssociatedURLLoaderOptions& options) override;
+
+ protected:
+  // PdfViewPluginBase:
+  base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
+  std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
+  void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result) override;
+  void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
+                      int32_t result) override;
+
  private:
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
   blink::WebPluginContainer* container_ = nullptr;
+
+  base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf
