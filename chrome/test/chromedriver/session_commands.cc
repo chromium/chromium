@@ -233,6 +233,11 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
     caps->SetBoolean("hasTouchScreen", session->chrome->HasTouchScreen());
   }
 
+  if (session->webSocketUrl) {
+    caps->SetString("webSocketUrl",
+                    "ws://" + session->host + "/session/" + session->id);
+  }
+
   return caps;
 }
 

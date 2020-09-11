@@ -70,6 +70,7 @@ struct Session {
 
   explicit Session(const std::string& id);
   Session(const std::string& id, std::unique_ptr<Chrome> chrome);
+  Session(const std::string& id, const std::string& host);
   ~Session();
 
   Status GetTargetWindow(WebView** web_view);
@@ -129,6 +130,7 @@ struct Session {
   std::string unhandled_prompt_behavior;
   int click_count;
   base::TimeTicks mouse_click_timestamp;
+  std::string host;
 
  private:
   void SwitchFrameInternal(bool for_top_frame);

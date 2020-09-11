@@ -61,16 +61,13 @@ void ExecuteGetStatus(
                std::string(), kW3CDefault);
 }
 
-void ExecuteCreateSession(
-    SessionThreadMap* session_thread_map,
-    const Command& init_session_cmd,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
-  std::string new_id = session_id;
-  if (new_id.empty())
-    new_id = GenerateId();
-  std::unique_ptr<Session> session = std::make_unique<Session>(new_id);
+void ExecuteCreateSession(SessionThreadMap* session_thread_map,
+                          const Command& init_session_cmd,
+                          const base::DictionaryValue& params,
+                          const std::string& host,
+                          const CommandCallback& callback) {
+  std::string new_id = GenerateId();
+  std::unique_ptr<Session> session = std::make_unique<Session>(new_id, host);
   std::unique_ptr<SessionThreadInfo> threadInfo =
       std::make_unique<SessionThreadInfo>(new_id, GetW3CSetting(params));
   if (!threadInfo->thread()->Start()) {

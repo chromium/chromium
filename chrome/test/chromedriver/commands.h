@@ -28,12 +28,11 @@ void ExecuteGetStatus(
     const CommandCallback& callback);
 
 // Creates a new session.
-void ExecuteCreateSession(
-    SessionThreadMap* session_thread_map,
-    const Command& init_session_cmd,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteCreateSession(SessionThreadMap* session_thread_map,
+                          const Command& init_session_cmd,
+                          const base::DictionaryValue& params,
+                          const std::string& host,
+                          const CommandCallback& callback);
 
 // Gets all sessions
 void ExecuteGetSessions(

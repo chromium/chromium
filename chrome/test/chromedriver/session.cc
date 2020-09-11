@@ -75,20 +75,13 @@ Session::Session(const std::string& id)
       mouse_click_timestamp(base::TimeTicks::Now()) {}
 
 Session::Session(const std::string& id, std::unique_ptr<Chrome> chrome)
-    : id(id),
-      w3c_compliant(kW3CDefault),
-      quit(false),
-      detach(false),
-      chrome(std::move(chrome)),
-      sticky_modifiers(0),
-      mouse_position(0, 0),
-      pressed_mouse_button(kNoneMouseButton),
-      implicit_wait(kDefaultImplicitWaitTimeout),
-      page_load_timeout(kDefaultPageLoadTimeout),
-      script_timeout(kDefaultScriptTimeout),
-      strict_file_interactability(false),
-      click_count(0),
-      mouse_click_timestamp(base::TimeTicks::Now()) {}
+    : Session(id) {
+  this->chrome = std::move(chrome);
+}
+
+Session::Session(const std::string& id, const std::string& host) : Session(id) {
+  this->host = host;
+}
 
 Session::~Session() {}
 

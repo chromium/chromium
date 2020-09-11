@@ -1061,8 +1061,11 @@ void HttpHandler::HandleCommand(
                     nullptr, session_id, true);
     return;
   }
-
-  iter->command.Run(params, session_id,
+  // Pass host instead for potential WebSocketUrl if it's a new session
+  iter->command.Run(params,
+                    internal::IsNewSession(*iter)
+                        ? request.GetHeaderValue("host")
+                        : session_id,
                     base::BindRepeating(&HttpHandler::PrepareResponse,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         trimmed_path, send_response_func));
@@ -1351,6 +1354,11 @@ bool MatchesCommand(const std::string& method,
   }
   out_params->MergeDictionary(&params);
   return true;
+}
+
+bool IsNewSession(const CommandMapping& command) {
+  return command.method == kPost &&
+         command.path_pattern == kNewSessionPathPattern;
 }
 
 }  // namespace internal

@@ -162,6 +162,8 @@ bool MatchesCommand(const std::string& method,
                     std::string* session_id,
                     base::DictionaryValue* out_params);
 
+bool IsNewSession(const CommandMapping& command);
+
 }  // namespace internal
 
 #endif  // CHROME_TEST_CHROMEDRIVER_SERVER_HTTP_HANDLER_H_

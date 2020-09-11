@@ -504,6 +504,30 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
                       driver.Load, 'http://invalid/')
     self.assertEquals('http://invalid/', driver.GetCurrentUrl())
 
+class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
+  @staticmethod
+  def composeWebSocketUrl(server_url, session_id):
+    return server_url.replace('http', 'ws') + '/session/' + session_id
+
+  def testDefaultSession(self):
+    driver = self.CreateDriver()
+    self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+
+  def testWebSocketUrlFalse(self):
+    driver = self.CreateDriver(web_socket_url=False)
+    self.assertFalse(driver.capabilities.has_key('webSocketUrl'))
+
+  def testWebSocketUrlTrue(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    self.assertTrue(driver.capabilities.has_key('webSocketUrl'))
+    self.assertNotEqual(None, driver.GetSessionId())
+    self.assertEquals(driver.capabilities['webSocketUrl'],
+        self.composeWebSocketUrl(_CHROMEDRIVER_SERVER_URL,
+                                 driver.GetSessionId()))
+
+  def testWebSocketUrlInvalid(self):
+    self.assertRaises(chromedriver.InvalidArgument,
+        self.CreateDriver, web_socket_url='Invalid')
 
 class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   """End to end tests for ChromeDriver."""
