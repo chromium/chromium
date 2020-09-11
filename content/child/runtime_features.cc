@@ -376,6 +376,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"CustomElementsV0", blink::features::kWebComponentsV0, kDefault},
           {"FeaturePolicyForClientHints",
            features::kFeaturePolicyForClientHints, kDefault},
+          {"EditingNG", blink::features::kEditingNG, kDefault},
           {"FontAccess", blink::features::kFontAccess, kDefault},
           {"FontSrcLocalMatching", features::kFontSrcLocalMatching, kDefault},
           {"ForceSynchronousHTMLParsing",
