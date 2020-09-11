@@ -34,8 +34,10 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/device_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace plugin_vm {
 
@@ -170,6 +172,9 @@ void PluginVmInstaller::Cancel() {
 }
 
 void PluginVmInstaller::CheckLicense() {
+  // Request wake lock when state_ goes to kInstalling, and cancel it when state
+  // goes back to kIdle.
+  GetWakeLock()->RequestWakeLock();
   state_ = State::kInstalling;
   UpdateInstallingState(InstallingState::kCheckingLicense);
 
@@ -919,6 +924,7 @@ void PluginVmInstaller::OnTemporaryImageRemoved(bool success) {
 void PluginVmInstaller::CancelFinished() {
   DCHECK_EQ(state_, State::kCancelling);
   state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;
 
   if (observer_)
@@ -927,6 +933,7 @@ void PluginVmInstaller::CancelFinished() {
 
 void PluginVmInstaller::InstallFailed(FailureReason reason) {
   state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;
   base::UmaHistogramEnumeration(kFailureReasonHistogram, reason);
   RecordPluginVmSetupResultHistogram(PluginVmSetupResult::kError);
@@ -938,7 +945,21 @@ void PluginVmInstaller::InstallFinished() {
   base::UmaHistogramLongTimes(kSetupTimeHistogram,
                               base::TimeTicks::Now() - setup_start_tick_);
   state_ = State::kIdle;
+  GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;
+}
+
+device::mojom::WakeLock* PluginVmInstaller::GetWakeLock() {
+  if (!wake_lock_) {
+    mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+    content::GetDeviceService().BindWakeLockProvider(
+        wake_lock_provider.BindNewPipeAndPassReceiver());
+    wake_lock_provider->GetWakeLockWithoutContext(
+        device::mojom::WakeLockType::kPreventAppSuspension,
+        device::mojom::WakeLockReason::kOther, "Plugin VM Installer",
+        wake_lock_.BindNewPipeAndPassReceiver());
+  }
+  return wake_lock_.get();
 }
 
 }  // namespace plugin_vm
