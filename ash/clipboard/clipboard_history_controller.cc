@@ -47,6 +47,16 @@ ui::ClipboardNonBacked* GetClipboard() {
   return clipboard;
 }
 
+bool IsRectContainedByAnyDisplay(const gfx::Rect& rect) {
+  const std::vector<display::Display>& displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+  for (const auto& display : displays) {
+    if (display.bounds().Contains(rect))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 // ClipboardHistoryController::AcceleratorTarget -------------------------------
@@ -310,7 +320,7 @@ gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
-  // |text_input_client| may be null. For example, in clamshell mode and without
+  // `text_input_client` may be null. For example, in clamshell mode and without
   // any window open.
   const gfx::Rect textfield_bounds =
       text_input_client ? text_input_client->GetCaretBounds() : gfx::Rect();
@@ -318,12 +328,11 @@ gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {
   // Note that the width of caret's bounds may be zero in some views (such as
   // the search bar of Google search web page). So we cannot use
   // gfx::Size::IsEmpty() here. In addition, the applications using IFrame may
-  // provide unreliable |textfield_bounds| which are not fully contained by the
+  // provide unreliable `textfield_bounds` which are not fully contained by the
   // display bounds.
-  // TODO(https://crbug.com/1110027).
   const bool textfield_bounds_are_valid =
       textfield_bounds.size() != gfx::Size() &&
-      display.bounds().Contains(textfield_bounds);
+      IsRectContainedByAnyDisplay(textfield_bounds);
 
   if (textfield_bounds_are_valid)
     return textfield_bounds;
