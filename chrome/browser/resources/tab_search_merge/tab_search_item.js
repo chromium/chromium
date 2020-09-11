@@ -30,7 +30,7 @@ export class TabSearchItem extends PolymerElement {
    * @param {!Event} e
    * @private
    */
-  onItemCancel_(e) {
+  onItemClose_(e) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
   }

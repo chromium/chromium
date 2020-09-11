@@ -10,6 +10,7 @@ import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
+import {sampleData} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
@@ -34,67 +35,6 @@ suite('TabSearchAppTest', () => {
    */
   function queryRows() {
     return tabSearchApp.shadowRoot.querySelectorAll('tab-search-item');
-  }
-
-  function sampleData() {
-    const profileTabs = {
-      windows: [
-        {
-          active: true,
-          tabs: [
-            {
-              index: 0,
-              tabId: 1,
-              favIconUrl: '',
-              title: 'Google',
-              url: 'https://www.google.com',
-            },
-            {
-              index: 1,
-              tabId: 5,
-              favIconUrl: '',
-              title: 'Amazon',
-              url: 'https://www.amazon.com',
-            },
-            {
-              index: 2,
-              tabId: 6,
-              favIconUrl: '',
-              title: 'Apple',
-              url: 'https://www.apple.com',
-            }
-          ],
-        },
-        {
-          active: false,
-          tabs: [
-            {
-              index: 0,
-              tabId: 2,
-              favIconUrl: '',
-              title: 'Bing',
-              url: 'https://www.bing.com/',
-            },
-            {
-              index: 1,
-              tabId: 3,
-              favIconUrl: '',
-              title: 'Yahoo',
-              url: 'https://www.yahoo.com',
-            },
-            {
-              index: 2,
-              tabId: 4,
-              favIconUrl: '',
-              title: 'Apple',
-              url: 'https://www.apple.com/',
-            },
-          ]
-        }
-      ]
-    };
-
-    return profileTabs;
   }
 
   async function setupTest(sampleData) {

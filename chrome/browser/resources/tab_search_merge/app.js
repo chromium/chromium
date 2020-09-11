@@ -19,6 +19,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
+const selectorNavigationKeys = ['ArrowUp', 'ArrowDown', 'Home', 'End'];
+
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
     return 'tab-search-app';
@@ -35,12 +37,6 @@ export class TabSearchAppElement extends PolymerElement {
         type: String,
         value: '',
       },
-
-      /**
-       * The seleted item's index, or -1 if no item selected.
-       * @private {number}
-       */
-      selectedIndex_: {type: Number, value: -1},
 
       /** @private {?Array<!tabSearch.mojom.WindowTabs>} */
       openTabs_: {
@@ -132,9 +128,15 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  /** @return {number} */
+  /**
+   * The seleted item's index, or -1 if no item selected.
+   * @return {number}
+   */
   getSelectedIndex() {
-    return this.selectedIndex_;
+    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    return selector.selected !== undefined ?
+        /** @type {number} */ (selector.selected) :
+        -1;
   }
 
   /**
@@ -146,13 +148,19 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.updateFilteredTabs_(this.openTabs_ || []);
     // Reset the selected item whenever a search query is provided.
-    this.selectedIndex_ = this.filteredOpenTabs_.length > 0 ? 0 : -1;
+    this.$.selector.selected =
+        this.filteredOpenTabs_.length > 0 ? 0 : undefined;
     this.$.tabs.scrollTop = 0;
   }
 
   /** @private */
   onFeedbackClick_() {
     this.apiProxy_.showFeedbackPage();
+  }
+
+  /** @private */
+  onFeedbackFocus_() {
+    this.$.selector.selected = undefined;
   }
 
   /**
@@ -184,27 +192,79 @@ export class TabSearchAppElement extends PolymerElement {
     // selected; else retain the currently selected index. If the list
     // shrunk above the selected index, select the last index in the list.
     // If there are no matching results, set the selected index value to none.
-    this.selectedIndex_ = Math.min(
-        Math.max(this.selectedIndex_, 0), this.filteredOpenTabs_.length - 1);
+    this.$.selector.selectIndex(Math.min(
+        Math.max(this.getSelectedIndex(), 0),
+        this.filteredOpenTabs_.length - 1));
   }
 
   /**
-   * @param {number} index A valid index for an element present in the
-   *     filteredOpenTabs_ array.
-   * @return {?HTMLElement}
+   * @param {!Event} e
    * @private
    */
-  getTabSearchItem_(index) {
-    const tabItemId = assert(this.filteredOpenTabs_[index]).tabId;
-    return this.shadowRoot.getElementById(tabItemId.toString());
+  onItemFocus_(e) {
+    this.$.selector.selected =
+        e.currentTarget.parentNode.indexOf(e.currentTarget);
+    this.updateScrollView_();
   }
 
   /**
-   * TODO(crbug.com/1113470): Tab Search item and buttons focus and navigation.
+   * @param {string} key Keyboard event key value.
+   * @private
+   */
+  selectorNavigate_(key) {
+    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    switch (key) {
+      case 'ArrowUp':
+        selector.selectPrevious();
+        break;
+      case 'ArrowDown':
+        selector.selectNext();
+        break;
+      case 'Home':
+        selector.selected = 0;
+        break;
+      case 'End':
+        selector.selected = this.filteredOpenTabs_.length - 1;
+        break;
+    }
+  }
+
+  /**
+   * Handles key events when list item elements have focus.
    * @param {!KeyboardEvent} e
    * @private
    */
-  onKeyDown_(e) {
+  onItemKeyDown_(e) {
+    if (e.shiftKey) {
+      return;
+    }
+
+    e.stopPropagation();
+
+    if (this.getSelectedIndex() === -1) {
+      // No tabs matching the search text criteria.
+      return;
+    }
+
+    if (selectorNavigationKeys.includes(e.key)) {
+      this.selectorNavigate_(e.key);
+      /** @type {!HTMLElement} */ (this.$.selector.selectedItem).focus({
+        preventScroll: true
+      });
+      e.preventDefault();
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
+      this.apiProxy_.switchToTab(
+          {tabId: selectedItem.tabId}, !!this.searchText_);
+    }
+  }
+
+  /**
+   * Handles key events when the search field has focus.
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onSearchKeyDown_(e) {
     // Do not interfere with the search field's management of text selection.
     if (e.shiftKey) {
       return;
@@ -212,58 +272,19 @@ export class TabSearchAppElement extends PolymerElement {
 
     e.stopPropagation();
 
-    if (this.selectedIndex_ === -1) {
+    if (this.getSelectedIndex() === -1) {
       // No tabs matching the search text criteria.
       return;
     }
 
-    switch (e.key) {
-      case 'ArrowUp':
-        this.selectItem_(-1);
-        e.preventDefault();
-        break;
-      case 'ArrowDown':
-        this.selectItem_(1);
-        e.preventDefault();
-        break;
-      case 'Home':
-        this.selectItem_(-this.selectedIndex_);
-        e.preventDefault();
-        break;
-      case 'End':
-        this.selectItem_(
-            this.filteredOpenTabs_.length - 1 - this.selectedIndex_);
-        e.preventDefault();
-        break;
-      case 'Enter':
-        const selectedItem = this.filteredOpenTabs_[this.selectedIndex_];
-        this.apiProxy_.switchToTab({tabId : selectedItem.tabId},
-                                   !!this.searchText_);
-        break;
-    }
-  }
-
-  /**
-   * @param {number} offset Distance from the desired item to select and the
-   *     currently selected item.
-   * @private
-   */
-  selectItem_(offset) {
-    const length = assert(this.filteredOpenTabs_.length);
-    this.selectedIndex_ = (this.selectedIndex_ + offset + length) % length;
-
-    // Ensure the scroll view can fully display a preceding or following tab
-    // item if existing. Use Math.sign to identify any such preceding or
-    // following item.
-    if (this.selectedIndex_ === 0 ||
-        this.selectedIndex_ === this.filteredOpenTabs_.length - 1) {
-      this.getTabSearchItem_(this.selectedIndex_).scrollIntoView({
-        behavior: 'smooth'
-      });
-    } else {
-      this.getTabSearchItem_(this.selectedIndex_ + Math.sign(offset))
-          .scrollIntoView(
-              {behavior: 'smooth', block: offset > 0 ? 'end' : 'start'});
+    if (selectorNavigationKeys.includes(e.key)) {
+      this.selectorNavigate_(e.key);
+      this.updateScrollView_();
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      const selectedItem = this.filteredOpenTabs_[this.getSelectedIndex()];
+      this.apiProxy_.switchToTab(
+          {tabId: selectedItem.tabId}, !!this.searchText_);
     }
   }
 
@@ -291,6 +312,35 @@ export class TabSearchAppElement extends PolymerElement {
         b.lastActiveTimeTicks.internalValue - a.lastActiveTimeTicks.internalValue :
         0);
     this.filteredOpenTabs_ = fuzzySearch(this.searchText_, result);
+  }
+
+  /**
+   * Ensure the scroll view can fully display a preceding or following tab item
+   * if existing.
+   * @private
+   */
+  updateScrollView_() {
+    const selectedIndex = this.getSelectedIndex();
+    if (selectedIndex === 0 ||
+        selectedIndex === this.filteredOpenTabs_.length - 1) {
+      /** @type {!Element} */ (this.$.selector.selectedItem).scrollIntoView({
+        behavior: 'smooth'
+      });
+    } else {
+      const previousItem = this.$.selector.items[this.$.selector.selected - 1];
+      if (previousItem.offsetTop < this.$.tabs.scrollTop) {
+        /** @type {!Element} */ (previousItem)
+            .scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        return;
+      }
+
+      const nextItem = this.$.selector.items[this.$.selector.selected + 1];
+      if (nextItem.offsetTop + nextItem.offsetHeight >
+          this.$.tabs.scrollTop + this.$.tabs.offsetHeight) {
+        /** @type {!Element} */ (nextItem).scrollIntoView(
+            {behavior: 'smooth', block: 'nearest'});
+      }
+    }
   }
 }
 

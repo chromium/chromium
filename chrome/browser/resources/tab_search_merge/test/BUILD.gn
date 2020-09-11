@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
   deps = [
     ":fuzzy_search_test",
     ":tab_search_app_test",
+    ":tab_search_app_focus_test",
   ]
 }
 
@@ -26,6 +27,15 @@ js_library("fuzzy_search_test") {
 }
 
 js_library("tab_search_app_test") {
+  deps = [
+    ":test_tab_search_api_proxy",
+    "../..:chai_assert",
+    "//chrome/browser/resources/tab_search:app",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("tab_search_app_focus_test") {
   deps = [
     ":test_tab_search_api_proxy",
     "../..:chai_assert",

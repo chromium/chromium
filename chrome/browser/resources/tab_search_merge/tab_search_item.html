@@ -1,10 +1,20 @@
 <style>
-  :host(:hover, .selected) .button-container {
-    display: flex;
+  :host(:focus) {
+    outline-color: rgba(var(--mwb-background-color), 0.24);
   }
 
-  .button-container {
-    display: none;
+  :host(:hover, .selected) .button-container cr-icon-button {
+    --cr-icon-button-fill-color: var(--google-grey-refresh-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host(:hover, .selected) .button-container cr-icon-button {
+      --cr-icon-button-fill-color: var(--google-grey-refresh-300);
+    }
+  }
+
+  .button-container cr-icon-button {
+    --cr-icon-button-fill-color: transparent;
   }
 
   img {
@@ -50,7 +60,7 @@
   <div class="secondary-text">[[urlHostname_(data.url)]]</div>
 </div>
 <div class="button-container">
-  <cr-icon-button aria-labelledby="label" iron-icon="cr:cancel"
-      on-click="onItemCancel_" title="$i18n{close}">
+  <cr-icon-button id="closeButton" aria-labelledby="label"
+      iron-icon="cr:close" on-click="onItemClose_" title="$i18n{close}">
   </cr-icon-button>
 </div>

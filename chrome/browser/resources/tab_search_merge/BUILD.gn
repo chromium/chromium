@@ -25,6 +25,7 @@ js_library("app") {
     ":tab_search_api_proxy",
     ":tab_search_item",
     ":tab_search_search_field",
+    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
