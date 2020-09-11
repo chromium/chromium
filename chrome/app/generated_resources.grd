@@ -3680,7 +3680,7 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_EXTENSION_DISABLED_ERROR_LABEL" desc="Text displayed when an extension was disabled due to a new upgrade requiring an explicit permission check from the user.">
         To re-enable it, accept the new permissions:
       </message>
-      <message name="IDS_EXTENSION_IS_BLACKLISTED" desc="Text displayed in an infobar when an extension is blacklisted and prevented from being installed.">
+      <message name="IDS_EXTENSION_IS_BLOCKLISTED" desc="Text displayed in an infobar when an extension is blocklisted and prevented from being installed.">
         Google has flagged "<ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph>" as malicious and installation has been prevented
       </message>
       <message name="IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE" desc="Title of the notification that an extension or app was disabled due to it being installed server side, requiring an explicit permission check from the user.">
@@ -3805,13 +3805,13 @@ are declared in tools/grit/grit_rule.gni.
        <message name="IDS_EXTENSION_AND_APP_ALERT_TITLE" desc="Titlebar of the extension and app notification alert">
         These items may be dangerous
       </message>
-      <message name="IDS_EXTENSION_ALERT_ITEM_BLACKLISTED_OTHER" desc="A statement that an extension has been newly blacklisted. https://support.google.com/chrome/answer/1210215 contains the language on which we're basing the phrasing.">
+      <message name="IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER" desc="A statement that an extension has been newly blocklisted. https://support.google.com/chrome/answer/1210215 contains the language on which we're basing the phrasing.">
         The extension "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" was automatically disabled.
       </message>
-      <message name="IDS_EXTENSION_ALERT_ITEM_BLACKLISTED_MALWARE" desc="A statement that an extension has been newly blacklisted for malware.">
+      <message name="IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE" desc="A statement that an extension has been newly blocklisted for malware.">
         "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" has been disabled because it contains malware
       </message>
-      <message name="IDS_APP_ALERT_ITEM_BLACKLISTED_OTHER" desc="A statement that a packaged app has been newly blacklisted. https://support.google.com/chrome/answer/1210215 contains the language on which we're basing the phrasing.">
+      <message name="IDS_APP_ALERT_ITEM_BLOCKLISTED_OTHER" desc="A statement that a packaged app has been newly blocklisted. https://support.google.com/chrome/answer/1210215 contains the language on which we're basing the phrasing.">
         The app "<ph name="EXTENSION_NAME">$1<ex>Gmail</ex></ph>" was automatically removed.
       </message>
       <message name="IDS_EXTENSION_ALERT_ITEM_OK" desc="The title of the default button acknowledging the information presented.">
@@ -4170,7 +4170,7 @@ are declared in tools/grit/grit_rule.gni.
           Read and change saved password settings
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_USERS_PRIVATE" desc="Permission string for access to user accounts.">
-          Read and change whitelisted users
+          Read and change allowlisted users
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_DISPLAY_SOURCE" desc="Permission string for access to Display Source API.">
           Send audio and video to displays on the local network
@@ -4234,7 +4234,7 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_EXTENSION_INSTALL_DEPENDENCY_NOT_SHARED_MODULE" desc="Error displayed during installation of an extension which tries to imports resources from an extension which is not a shared module.">
         Unable to import extension "<ph name="IMPORT_NAME">$1<ex>Gmail</ex></ph>" because it is not a shared module
       </message>
-      <message name="IDS_EXTENSION_INSTALL_DEPENDENCY_NOT_WHITELISTED" desc="Error displayed during installation of an extension which tries to imports resources from an extension, but it is not whitelisted to do so.">
+      <message name="IDS_EXTENSION_INSTALL_DEPENDENCY_NOT_ALLOWLISTED" desc="Error displayed during installation of an extension which tries to imports resources from an extension, but it is not allowlisted to do so.">
         Unable to install "<ph name="APP_NAME">$1<ex>Google Play Movies &amp; TV</ex></ph>" because it is not allowed by "<ph name="IMPORT_NAME">$2<ex>Google Cast API</ex></ph>"
       </message>
       <message name="IDS_EXTENSION_INSTALL_GALLERY_ONLY" desc="Error displayed when an app or extension that has an update URL used by the gallery is installed when not directly downloaded from the gallery.">
@@ -7020,7 +7020,7 @@ the Bookmarks menu.">
           Installed because of dependent extension(s).
         </message>
 
-        <!-- Extension blacklist state -->
+        <!-- Extension blocklist state -->
         <message name="IDS_EXTENSIONS_BLOCKLISTED_MALWARE" desc="The text explaining the reason for disabling extension or app. The extension in question contains malware.">
           This extension contains malware.
         </message>

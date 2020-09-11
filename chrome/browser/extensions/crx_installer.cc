@@ -650,7 +650,7 @@ void CrxInstaller::CheckInstall() {
             CrxInstallErrorType::DECLINED,
             CrxInstallErrorDetail::DEPENDENCY_NOT_ALLOWLISTED,
             l10n_util::GetStringFUTF16(
-                IDS_EXTENSION_INSTALL_DEPENDENCY_NOT_WHITELISTED,
+                IDS_EXTENSION_INSTALL_DEPENDENCY_NOT_ALLOWLISTED,
                 base::UTF8ToUTF16(extension()->name()),
                 base::UTF8ToUTF16(imported_module->name()))));
         return;
@@ -717,7 +717,7 @@ void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
       ReportFailureFromUIThread(CrxInstallError(
           CrxInstallErrorType::DECLINED,
           CrxInstallErrorDetail::EXTENSION_IS_BLOCKLISTED,
-          l10n_util::GetStringFUTF16(IDS_EXTENSION_IS_BLACKLISTED,
+          l10n_util::GetStringFUTF16(IDS_EXTENSION_IS_BLOCKLISTED,
                                      base::UTF8ToUTF16(extension()->name()))));
       UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.BlockCRX",
                                 extension()->location(),
