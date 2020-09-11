@@ -17,7 +17,7 @@
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
-suite('NetworkNetworkListTest', function() {
+suite('NetworkListTest', function() {
   /** @type {!NetworkList|undefined} */
   let networkList;
 

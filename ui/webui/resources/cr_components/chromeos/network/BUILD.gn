@@ -275,7 +275,7 @@ js_type_check("closure_compile_module") {
     #  ":network_proxy.m",
     #  ":network_proxy_exclusions.m",
     #  ":network_proxy_input.m",
-    #  ":network_select.m",
+    ":network_select.m",
     ":network_shared_css.m",
     #  ":network_siminfo.m",
     ":onc_mojo.m",
@@ -535,7 +535,11 @@ js_library("network_proxy_input.m") {
 js_library("network_select.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_select.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":network_list.m",
+    ":network_listener_behavior.m",
+    ":onc_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/paper-progress:paper-progress",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":network_select_module" ]
 }
@@ -724,6 +728,8 @@ polymer_modulizer("network_select") {
   js_file = "network_select.js"
   html_file = "network_select.html"
   html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
 polymer_modulizer("network_shared_css") {

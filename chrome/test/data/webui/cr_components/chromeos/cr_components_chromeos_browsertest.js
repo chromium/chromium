@@ -46,6 +46,10 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
 [
+  ['NetworkSelect', 'network/network_select_test.js', []],
+].forEach(test => registerTest('NetworkComponents', 'network', ...test));
+
+[
   ['BasePage', 'cellular_setup/base_page_test.js', []],
   ['ButtonBar', 'cellular_setup/button_bar_test.js',[]],
   ['CellularSetup', 'cellular_setup/cellular_setup_test.js', []],
