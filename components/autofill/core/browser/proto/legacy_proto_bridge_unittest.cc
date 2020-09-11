@@ -168,6 +168,14 @@ TEST(ProtoBridgeTest, CreateLegacyResponseFromApiResponse) {
                    Eq(dummy_password_type)),
           Property(&AutofillQueryResponseContents::Field::FieldPrediction::type,
                    Eq(dummy_address_type))));
+  EXPECT_THAT(
+      legacy_response.field(0).predictions(),
+      ElementsAre(Property(&AutofillQueryResponseContents::Field::
+                               FieldPrediction::may_use_prefilled_placeholder,
+                           Eq(true)),
+                  Property(&AutofillQueryResponseContents::Field::
+                               FieldPrediction::may_use_prefilled_placeholder,
+                           Eq(true))));
   EXPECT_THAT(legacy_response.field(0).password_requirements(),
               Property(&PasswordRequirementsSpec::priority,
                        Eq(dummy_password_priority)));
@@ -182,6 +190,14 @@ TEST(ProtoBridgeTest, CreateLegacyResponseFromApiResponse) {
                    Eq(dummy_address_type)),
           Property(&AutofillQueryResponseContents::Field::FieldPrediction::type,
                    Eq(dummy_password_type))));
+  EXPECT_THAT(
+      legacy_response.field(1).predictions(),
+      ElementsAre(Property(&AutofillQueryResponseContents::Field::
+                               FieldPrediction::may_use_prefilled_placeholder,
+                           Eq(false)),
+                  Property(&AutofillQueryResponseContents::Field::
+                               FieldPrediction::may_use_prefilled_placeholder,
+                           Eq(false))));
   EXPECT_THAT(legacy_response.field(1).password_requirements(),
               Property(&PasswordRequirementsSpec::priority,
                        Eq(dummy_password_priority)));

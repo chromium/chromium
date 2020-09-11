@@ -45,9 +45,13 @@ AutofillQueryResponseContents::Field CreateLegacyFieldFromApiField(
   AutofillQueryResponseContents::Field legacy_field;
   legacy_field.set_overall_type_prediction(api_field.primary_type_prediction());
   for (const auto& api_prediction : api_field.predictions()) {
-    *legacy_field.add_predictions() =
+    AutofillQueryResponseContents::Field::FieldPrediction legacy_prediction =
         CreateLegacyFieldPredictionFromApiPrediction(api_prediction);
+    legacy_prediction.set_may_use_prefilled_placeholder(
+        api_field.may_use_prefilled_placeholder());
+    *legacy_field.add_predictions() = legacy_prediction;
   }
+
   *legacy_field.mutable_password_requirements() =
       api_field.password_requirements();
   return legacy_field;
