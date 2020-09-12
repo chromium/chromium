@@ -45,6 +45,10 @@ class CC_PAINT_EXPORT TextureBacking : public SkRefCnt {
                           size_t dst_row_bytes,
                           int src_x,
                           int src_y) = 0;
+
+  // Force a flush of any pending skia work. Only supported if this
+  // TextureBacking wraps an SkImage.
+  virtual void FlushPendingSkiaOps() = 0;
 };
 
 }  // namespace cc

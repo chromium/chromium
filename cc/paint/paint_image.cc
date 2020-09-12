@@ -217,7 +217,7 @@ bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
                            GeneratorClientId client_id) const {
   DCHECK(pixmaps.isValid());
   DCHECK(paint_image_generator_);
-  const uint32_t lazy_pixel_ref = unique_id();
+  const uint32_t lazy_pixel_ref = stable_id();
   return paint_image_generator_->GetYUVAPlanes(pixmaps, frame_index,
                                                lazy_pixel_ref);
 }
@@ -231,7 +231,7 @@ bool PaintImage::DecodeFromGenerator(void* memory,
   // First convert the info to have the requested color space, since the decoder
   // will convert this for us.
   *info = info->makeColorSpace(std::move(color_space));
-  const uint32_t lazy_pixel_ref = unique_id();
+  const uint32_t lazy_pixel_ref = stable_id();
   return paint_image_generator_->GetPixels(*info, memory, info->minRowBytes(),
                                            frame_index, client_id,
                                            lazy_pixel_ref);
@@ -294,12 +294,13 @@ bool PaintImage::IsTextureBacked() const {
 }
 
 void PaintImage::FlushPendingSkiaOps() {
-  if (!texture_backing_)
-    return;
+  if (texture_backing_)
+    texture_backing_->FlushPendingSkiaOps();
+}
 
-  auto image = texture_backing_->GetAcceleratedSkImage();
-  if (image)
-    image->getBackendTexture(true);
+bool PaintImage::HasExclusiveTextureAccess() const {
+  DCHECK(IsTextureBacked());
+  return texture_backing_->unique();
 }
 
 int PaintImage::width() const {

@@ -9,9 +9,13 @@
 
 namespace blink {
 
-MailboxTextureBacking::MailboxTextureBacking(sk_sp<SkImage> sk_image,
-                                             const SkImageInfo& info)
-    : sk_image_(std::move(sk_image)), sk_image_info_(info) {}
+MailboxTextureBacking::MailboxTextureBacking(
+    sk_sp<SkImage> sk_image,
+    const SkImageInfo& info,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
+    : sk_image_(std::move(sk_image)),
+      sk_image_info_(info),
+      context_provider_wrapper_(std::move(context_provider_wrapper)) {}
 
 MailboxTextureBacking::MailboxTextureBacking(
     const gpu::Mailbox& mailbox,
@@ -77,6 +81,13 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                  src_y);
   }
   return false;
+}
+
+void MailboxTextureBacking::FlushPendingSkiaOps() {
+  if (!context_provider_wrapper_ || !sk_image_)
+    return;
+  sk_image_->flushAndSubmit(
+      context_provider_wrapper_->ContextProvider()->GetGrContext());
 }
 
 }  // namespace blink

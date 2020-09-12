@@ -16,8 +16,11 @@ class WebGraphicsContext3DProviderWrapper;
 
 class MailboxTextureBacking : public TextureBacking {
  public:
-  explicit MailboxTextureBacking(sk_sp<SkImage> sk_image,
-                                 const SkImageInfo& info);
+  explicit MailboxTextureBacking(
+      sk_sp<SkImage> sk_image,
+      const SkImageInfo& info,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+          context_provider_wrapper);
   explicit MailboxTextureBacking(
       const gpu::Mailbox& mailbox,
       const SkImageInfo& info,
@@ -32,6 +35,7 @@ class MailboxTextureBacking : public TextureBacking {
                   size_t dst_row_bytes,
                   int src_x,
                   int src_y) override;
+  void FlushPendingSkiaOps() override;
 
  private:
   const sk_sp<SkImage> sk_image_;

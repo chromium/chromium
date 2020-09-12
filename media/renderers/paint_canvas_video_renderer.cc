@@ -766,8 +766,12 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 // GetSkImageViaReadback())
 class VideoTextureBacking : public cc::TextureBacking {
  public:
-  explicit VideoTextureBacking(sk_sp<SkImage> sk_image)
-      : sk_image_(std::move(sk_image)) {}
+  explicit VideoTextureBacking(
+      sk_sp<SkImage> sk_image,
+      scoped_refptr<viz::RasterContextProvider> raster_context_provider)
+      : sk_image_(std::move(sk_image)) {
+    raster_context_provider_ = std::move(raster_context_provider);
+  }
 
   const SkImageInfo& GetSkImageInfo() override {
     return sk_image_->imageInfo();
@@ -791,10 +795,16 @@ class VideoTextureBacking : public cc::TextureBacking {
     }
     return false;
   }
+  void FlushPendingSkiaOps() override {
+    if (!raster_context_provider_ || !sk_image_)
+      return;
+    sk_image_->flushAndSubmit(raster_context_provider_->GrContext());
+  }
 
  private:
   const sk_sp<SkImage> sk_image_;
   const gpu::Mailbox mailbox_;
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
 
 PaintCanvasVideoRenderer::PaintCanvasVideoRenderer()
@@ -1656,14 +1666,13 @@ bool PaintCanvasVideoRenderer::Cache::Recycle() {
   if (!texture_ownership_in_skia)
     return true;
 
-  auto sk_image = paint_image.GetSkImage();
-  paint_image = cc::PaintImage();
-  if (!sk_image->unique())
+  if (!paint_image.HasExclusiveTextureAccess())
     return false;
 
   // Flush any pending GPU work using this texture.
-  sk_image->flushAndSubmit(raster_context_provider->GrContext());
+  paint_image.FlushPendingSkiaOps();
 
+  paint_image = cc::PaintImage();
   // We need a new texture ID because skia will destroy the previous one with
   // the SkImage.
   texture_ownership_in_skia = false;
@@ -1797,8 +1806,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         }
       }
       paint_image_builder.set_texture_backing(
-          sk_sp<VideoTextureBacking>(
-              new VideoTextureBacking(std::move(source_subset))),
+          sk_sp<VideoTextureBacking>(new VideoTextureBacking(
+              std::move(source_subset), raster_context_provider)),
           cc::PaintImage::GetNextContentId());
     } else {
       cache_.emplace(video_frame->unique_id());

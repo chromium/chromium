@@ -338,9 +338,10 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
       &ReleaseTexture, release_ctx);
 
   if (sk_image) {
-    skia_context_provider_wrapper_ = std::move(context_provider_wrapper);
+    skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ =
-        sk_make_sp<MailboxTextureBacking>(std::move(sk_image), sk_image_info_);
+        sk_make_sp<MailboxTextureBacking>(std::move(sk_image), sk_image_info_,
+                                          std::move(context_provider_wrapper));
   }
 }
 

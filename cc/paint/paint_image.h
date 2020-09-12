@@ -251,10 +251,6 @@ class CC_PAINT_EXPORT PaintImage {
   }
   DecodingMode decoding_mode() const { return decoding_mode_; }
 
-  // TODO(vmpstr): Don't get the SkImage here if you don't need to.
-  uint32_t unique_id() const {
-    return paint_worklet_input_ ? 0 : GetSkImage()->uniqueID();
-  }
   explicit operator bool() const {
     return paint_worklet_input_ || cached_sk_image_ || texture_backing_;
   }
@@ -266,6 +262,7 @@ class CC_PAINT_EXPORT PaintImage {
   // Skia internally buffers commands and flushes them as necessary but there
   // are some cases where we need to force a flush.
   void FlushPendingSkiaOps();
+  bool HasExclusiveTextureAccess() const;
   int width() const;
   int height() const;
   SkColorSpace* color_space() const {
@@ -326,7 +323,6 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
-  friend class AcceleratedStaticBitmapImageTest;
 
   bool DecodeFromGenerator(void* memory,
                            SkImageInfo* info,

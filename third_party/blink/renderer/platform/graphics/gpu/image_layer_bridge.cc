@@ -95,8 +95,7 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
       // m_image->EnsureMailbox() call of
       // ImageLayerBridge::PrepareTransferableResource. To prevent a potential
       // memory leak we must flush the GrContext here.
-      image_->PaintImageForCurrentFrame().GetSkImage()->getBackendTexture(
-          true);  // GrContext flush.
+      image_->PaintImageForCurrentFrame().FlushPendingSkiaOps();
     }
   }
   has_presented_since_last_set_image_ = false;

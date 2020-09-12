@@ -262,7 +262,7 @@ void Image::DrawPattern(GraphicsContext& context,
   local_matrix.preScale(scale_src_to_dest.Width(), scale_src_to_dest.Height());
 
   // Fetch this now as subsetting may swap the image.
-  auto image_id = image.GetSkImage()->uniqueID();
+  auto image_id = image.stable_id();
 
   const FloatSize tile_size(
       subset_rect.Width() * scale_src_to_dest.Width() + repeat_spacing.Width(),

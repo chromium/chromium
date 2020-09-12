@@ -292,7 +292,7 @@ void BitmapImage::Draw(
     }
   }
 
-  uint32_t unique_id = image.GetSkImage()->uniqueID();
+  uint32_t stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
   canvas->drawImageRect(std::move(image), adjusted_src_rect, adjusted_dst_rect,
                         &flags,
@@ -301,7 +301,7 @@ void BitmapImage::Draw(
   if (is_lazy_generated) {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "Draw LazyPixelRef", TRACE_EVENT_SCOPE_THREAD,
-                         "LazyPixelRef", unique_id);
+                         "LazyPixelRef", stable_id);
   }
 
   StartAnimation();
