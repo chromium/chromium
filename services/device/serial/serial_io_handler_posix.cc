@@ -126,7 +126,11 @@ scoped_refptr<SerialIoHandler> SerialIoHandler::Create(
 void SerialIoHandlerPosix::ReadImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_read_buffer());
-  DCHECK(file().IsValid());
+
+  if (!file().IsValid()) {
+    QueueReadCompleted(0, mojom::SerialReceiveError::DISCONNECTED);
+    return;
+  }
 
   // Try to read immediately. This is needed because on some platforms
   // (e.g., OSX) there may not be a notification from the message loop
@@ -138,7 +142,11 @@ void SerialIoHandlerPosix::ReadImpl() {
 void SerialIoHandlerPosix::WriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_write_buffer());
-  DCHECK(file().IsValid());
+
+  if (!file().IsValid()) {
+    QueueWriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
+    return;
+  }
 
   EnsureWatchingWrites();
 }
