@@ -78,8 +78,10 @@ MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
   if (!active_session_view_)
     return nullptr;
 
-  auto container =
-      std::make_unique<MediaNotificationContainerImplView>(id, item, service_);
+  auto container = std::make_unique<MediaNotificationContainerImplView>(
+      id, item, service_,
+      media_message_center::MediaNotificationViewImpl::BackgroundStyle::
+          kAshStyle);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
   observed_containers_[id] = container_ptr;

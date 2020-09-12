@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_notification_background.h"
+#include "components/media_message_center/media_notification_background_impl.h"
 
 #include <algorithm>
 #include <vector>
@@ -233,7 +233,7 @@ base::Optional<SkColor> GetNotificationForegroundColor(
 
 }  // namespace
 
-MediaNotificationBackground::MediaNotificationBackground(
+MediaNotificationBackgroundImpl::MediaNotificationBackgroundImpl(
     int top_radius,
     int bottom_radius,
     double artwork_max_width_pct)
@@ -241,10 +241,10 @@ MediaNotificationBackground::MediaNotificationBackground(
       bottom_radius_(bottom_radius),
       artwork_max_width_pct_(artwork_max_width_pct) {}
 
-MediaNotificationBackground::~MediaNotificationBackground() = default;
+MediaNotificationBackgroundImpl::~MediaNotificationBackgroundImpl() = default;
 
-void MediaNotificationBackground::Paint(gfx::Canvas* canvas,
-                                        views::View* view) const {
+void MediaNotificationBackgroundImpl::Paint(gfx::Canvas* canvas,
+                                            views::View* view) const {
   DCHECK(view);
 
   gfx::ScopedCanvas scoped_canvas(canvas);
@@ -323,7 +323,8 @@ void MediaNotificationBackground::Paint(gfx::Canvas* canvas,
   }
 }
 
-void MediaNotificationBackground::UpdateArtwork(const gfx::ImageSkia& image) {
+void MediaNotificationBackgroundImpl::UpdateArtwork(
+    const gfx::ImageSkia& image) {
   if (artwork_.BackedBySameObjectAs(image))
     return;
 
@@ -332,8 +333,8 @@ void MediaNotificationBackground::UpdateArtwork(const gfx::ImageSkia& image) {
   UpdateColorsInternal();
 }
 
-bool MediaNotificationBackground::UpdateCornerRadius(int top_radius,
-                                                     int bottom_radius) {
+bool MediaNotificationBackgroundImpl::UpdateCornerRadius(int top_radius,
+                                                         int bottom_radius) {
   if (top_radius_ == top_radius && bottom_radius_ == bottom_radius)
     return false;
 
@@ -342,7 +343,7 @@ bool MediaNotificationBackground::UpdateCornerRadius(int top_radius,
   return true;
 }
 
-bool MediaNotificationBackground::UpdateArtworkMaxWidthPct(
+bool MediaNotificationBackgroundImpl::UpdateArtworkMaxWidthPct(
     double max_width_pct) {
   if (artwork_max_width_pct_ == max_width_pct)
     return false;
@@ -351,7 +352,8 @@ bool MediaNotificationBackground::UpdateArtworkMaxWidthPct(
   return true;
 }
 
-void MediaNotificationBackground::UpdateFavicon(const gfx::ImageSkia& icon) {
+void MediaNotificationBackgroundImpl::UpdateFavicon(
+    const gfx::ImageSkia& icon) {
   if (favicon_.BackedBySameObjectAs(icon))
     return;
 
@@ -363,7 +365,7 @@ void MediaNotificationBackground::UpdateFavicon(const gfx::ImageSkia& icon) {
   UpdateColorsInternal();
 }
 
-void MediaNotificationBackground::UpdateDeviceSelectorAvailability(
+void MediaNotificationBackgroundImpl::UpdateDeviceSelectorAvailability(
     bool availability) {
   if (audio_device_selector_availability_ == availability)
     return;
@@ -371,14 +373,14 @@ void MediaNotificationBackground::UpdateDeviceSelectorAvailability(
   audio_device_selector_availability_ = availability;
 }
 
-SkColor MediaNotificationBackground::GetBackgroundColor(
+SkColor MediaNotificationBackgroundImpl::GetBackgroundColor(
     const views::View& owner) const {
   if (background_color_.has_value())
     return *background_color_;
   return GetDefaultBackgroundColor(owner);
 }
 
-SkColor MediaNotificationBackground::GetForegroundColor(
+SkColor MediaNotificationBackgroundImpl::GetForegroundColor(
     const views::View& owner) const {
   const SkColor foreground =
       foreground_color_.has_value()
@@ -391,7 +393,7 @@ SkColor MediaNotificationBackground::GetForegroundColor(
       .color;
 }
 
-int MediaNotificationBackground::GetArtworkWidth(
+int MediaNotificationBackgroundImpl::GetArtworkWidth(
     const gfx::Size& view_size) const {
   if (artwork_.isNull())
     return 0;
@@ -402,14 +404,14 @@ int MediaNotificationBackground::GetArtworkWidth(
   return ceil(view_size.height() * aspect_ratio);
 }
 
-int MediaNotificationBackground::GetArtworkVisibleWidth(
+int MediaNotificationBackgroundImpl::GetArtworkVisibleWidth(
     const gfx::Size& view_size) const {
   // The artwork should only take up a maximum percentage of the notification.
   return std::min(GetArtworkWidth(view_size),
                   (int)ceil(view_size.width() * artwork_max_width_pct_));
 }
 
-gfx::Rect MediaNotificationBackground::GetArtworkBounds(
+gfx::Rect MediaNotificationBackgroundImpl::GetArtworkBounds(
     const views::View& owner) const {
   const gfx::Rect& view_bounds = owner.GetContentsBounds();
   int width = GetArtworkWidth(view_bounds.size());
@@ -426,7 +428,7 @@ gfx::Rect MediaNotificationBackground::GetArtworkBounds(
                 view_bounds.height()));
 }
 
-gfx::Rect MediaNotificationBackground::GetFilledBackgroundBounds(
+gfx::Rect MediaNotificationBackgroundImpl::GetFilledBackgroundBounds(
     const views::View& owner) const {
   // The filled background should take up the full notification except the area
   // taken up by the artwork.
@@ -436,7 +438,7 @@ gfx::Rect MediaNotificationBackground::GetFilledBackgroundBounds(
   return owner.GetMirroredRect(bounds);
 }
 
-gfx::Rect MediaNotificationBackground::GetGradientBounds(
+gfx::Rect MediaNotificationBackgroundImpl::GetGradientBounds(
     const views::View& owner) const {
   if (artwork_.isNull())
     return gfx::Rect(0, 0, 0, 0);
@@ -448,7 +450,7 @@ gfx::Rect MediaNotificationBackground::GetGradientBounds(
       view_bounds.y(), kMediaImageGradientWidth, view_bounds.height()));
 }
 
-gfx::Rect MediaNotificationBackground::GetBottomGradientBounds(
+gfx::Rect MediaNotificationBackgroundImpl::GetBottomGradientBounds(
     const views::View& owner) const {
   if (artwork_.isNull())
     return gfx::Rect(0, 0, 0, 0);
@@ -462,25 +464,25 @@ gfx::Rect MediaNotificationBackground::GetBottomGradientBounds(
                 kMediaImageGradientWidth)));
 }
 
-SkPoint MediaNotificationBackground::GetGradientStartPoint(
+SkPoint MediaNotificationBackgroundImpl::GetGradientStartPoint(
     const gfx::Rect& draw_bounds) const {
   return gfx::PointToSkPoint(base::i18n::IsRTL() ? draw_bounds.right_center()
                                                  : draw_bounds.left_center());
 }
 
-SkPoint MediaNotificationBackground::GetGradientEndPoint(
+SkPoint MediaNotificationBackgroundImpl::GetGradientEndPoint(
     const gfx::Rect& draw_bounds) const {
   return gfx::PointToSkPoint(base::i18n::IsRTL() ? draw_bounds.left_center()
                                                  : draw_bounds.right_center());
 }
 
-SkColor MediaNotificationBackground::GetDefaultBackgroundColor(
+SkColor MediaNotificationBackgroundImpl::GetDefaultBackgroundColor(
     const views::View& owner) const {
   return owner.GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_BubbleBackground);
 }
 
-void MediaNotificationBackground::UpdateColorsInternal() {
+void MediaNotificationBackgroundImpl::UpdateColorsInternal() {
   // If there is an artwork, it should be used.
   // If there is no artwork, neither a favicon, the artwork bitmap will be used
   // which is going to be a null bitmap and produce a default value.

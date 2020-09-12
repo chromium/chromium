@@ -72,7 +72,9 @@ class MediaNotificationContainerImplView::DismissButton
 MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    MediaNotificationService* service)
+    MediaNotificationService* service,
+    media_message_center::MediaNotificationViewImpl::BackgroundStyle
+        background_style)
     : views::Button(this),
       id_(id),
       foreground_color_(kDefaultForegroundColor),
@@ -127,9 +129,10 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   } else {
     view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
         this, std::move(item), std::move(dismiss_button_placeholder),
-        base::string16(), kWidth, /*should_show_icon=*/false);
+        base::string16(), kWidth, /*should_show_icon=*/false, background_style);
     SetPreferredSize(kNormalSize);
   }
+
   view_ = swipeable_container_->AddChildView(std::move(view));
 
   if (base::FeatureList::IsEnabled(

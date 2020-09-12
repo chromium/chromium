@@ -40,6 +40,7 @@ MediaNotificationListView::MediaNotificationListView()
 MediaNotificationListView::MediaNotificationListView(
     const base::Optional<SeparatorStyle>& separator_style)
     : separator_style_(separator_style) {
+  SetBackgroundColor(base::nullopt);
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

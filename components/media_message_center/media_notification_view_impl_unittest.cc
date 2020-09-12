@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "components/media_message_center/media_notification_background.h"
+#include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_controller.h"
@@ -247,7 +247,9 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
   MediaSessionNotificationItem* GetItem() const { return item_.get(); }
 
   const gfx::ImageSkia& GetArtworkImage() const {
-    return view()->GetMediaNotificationBackground()->artwork_;
+    return static_cast<MediaNotificationBackgroundImpl*>(
+               view()->GetMediaNotificationBackground())
+        ->artwork_;
   }
 
   const gfx::ImageSkia& GetAppIcon() const {

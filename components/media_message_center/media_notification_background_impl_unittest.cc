@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/media_message_center/media_notification_background.h"
+#include "components/media_message_center/media_notification_background_impl.h"
 
 #include <memory>
 
@@ -84,22 +84,23 @@ gfx::ImageSkia CreateTestBackgroundImage(SkColor color) {
 
 }  // namespace
 
-class MediaNotificationBackgroundTest : public testing::Test {
+class MediaNotificationBackgroundImplTest : public testing::Test {
  public:
-  MediaNotificationBackgroundTest() = default;
-  ~MediaNotificationBackgroundTest() override = default;
+  MediaNotificationBackgroundImplTest() = default;
+  ~MediaNotificationBackgroundImplTest() override = default;
 
   void SetUp() override {
-    background_ = std::make_unique<MediaNotificationBackground>(10, 10, 0.1);
+    background_ =
+        std::make_unique<MediaNotificationBackgroundImpl>(10, 10, 0.1);
 
     EXPECT_FALSE(GetBackgroundColor().has_value());
   }
 
-  void TearDown() override {
-    background_.reset();
-  }
+  void TearDown() override { background_.reset(); }
 
-  MediaNotificationBackground* background() const { return background_.get(); }
+  MediaNotificationBackgroundImpl* background() const {
+    return background_.get();
+  }
 
   base::Optional<SkColor> GetBackgroundColor() const {
     return background_->background_color_;
@@ -110,38 +111,39 @@ class MediaNotificationBackgroundTest : public testing::Test {
   }
 
   double GetBackgroundFaviconColorShadeFactor() const {
-    return MediaNotificationBackground::kBackgroundFaviconColorShadeFactor;
+    return MediaNotificationBackgroundImpl::kBackgroundFaviconColorShadeFactor;
   }
 
  private:
-  std::unique_ptr<MediaNotificationBackground> background_;
+  std::unique_ptr<MediaNotificationBackgroundImpl> background_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationBackgroundTest);
+  DISALLOW_COPY_AND_ASSIGN(MediaNotificationBackgroundImplTest);
 };
 
 // If we have no artwork then we should use the default background color.
-TEST_F(MediaNotificationBackgroundTest, DeriveBackgroundColor_NoArtwork) {
+TEST_F(MediaNotificationBackgroundImplTest, DeriveBackgroundColor_NoArtwork) {
   background()->UpdateArtwork(gfx::ImageSkia());
   EXPECT_FALSE(GetBackgroundColor().has_value());
 }
 
 // If we have artwork with no popular color then we should use the default
 // background color.
-TEST_F(MediaNotificationBackgroundTest, DeriveBackgroundColor_NoPopularColor) {
+TEST_F(MediaNotificationBackgroundImplTest,
+       DeriveBackgroundColor_NoPopularColor) {
   background()->UpdateArtwork(CreateTestBackgroundImage(SK_ColorTRANSPARENT));
   EXPECT_FALSE(GetBackgroundColor().has_value());
 }
 
 // If the most popular color is not white or black then we should use that
 // color.
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_PopularNonWhiteBlackColor) {
   constexpr SkColor kTestColor = SK_ColorYELLOW;
   background()->UpdateArtwork(CreateTestBackgroundImage(kTestColor));
   EXPECT_EQ(kTestColor, GetBackgroundColor());
 }
 
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_NoArtworkAfterHavingOne) {
   constexpr SkColor kTestColor = SK_ColorYELLOW;
   background()->UpdateArtwork(CreateTestBackgroundImage(kTestColor));
@@ -152,7 +154,7 @@ TEST_F(MediaNotificationBackgroundTest,
 }
 
 // Favicons should be used when available but have a shade applying to them.
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_PopularNonWhiteBlackColorFavicon) {
   constexpr SkColor kTestColor = SK_ColorYELLOW;
   background()->UpdateFavicon(CreateTestBackgroundImage(kTestColor));
@@ -163,7 +165,7 @@ TEST_F(MediaNotificationBackgroundTest,
   EXPECT_EQ(expected_color, GetBackgroundColor());
 }
 
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_NoFaviconAfterHavingOne) {
   constexpr SkColor kTestColor = SK_ColorYELLOW;
   background()->UpdateFavicon(CreateTestBackgroundImage(kTestColor));
@@ -177,7 +179,7 @@ TEST_F(MediaNotificationBackgroundTest,
   EXPECT_FALSE(GetBackgroundColor().has_value());
 }
 
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_FaviconSetThenArtwork) {
   constexpr SkColor kArtworkColor = SK_ColorYELLOW;
   constexpr SkColor kFaviconColor = SK_ColorRED;
@@ -188,7 +190,7 @@ TEST_F(MediaNotificationBackgroundTest,
   EXPECT_EQ(kArtworkColor, GetBackgroundColor());
 }
 
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_ArtworkSetThenFavicon) {
   constexpr SkColor kArtworkColor = SK_ColorYELLOW;
   constexpr SkColor kFaviconColor = SK_ColorRED;
@@ -199,7 +201,7 @@ TEST_F(MediaNotificationBackgroundTest,
   EXPECT_EQ(kArtworkColor, GetBackgroundColor());
 }
 
-TEST_F(MediaNotificationBackgroundTest,
+TEST_F(MediaNotificationBackgroundImplTest,
        DeriveBackgroundColor_SetAndRemoveArtworkWithFavicon) {
   constexpr SkColor kArtworkColor = SK_ColorYELLOW;
   constexpr SkColor kFaviconColor = SK_ColorRED;
@@ -215,17 +217,17 @@ TEST_F(MediaNotificationBackgroundTest,
   EXPECT_EQ(expected_color, GetBackgroundColor());
 }
 
-TEST_F(MediaNotificationBackgroundTest, GetBackgroundColorRespectsTheme) {
+TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
   TestDarkTheme dark_theme;
   views::View owner;
   owner.SetNativeThemeForTesting(&dark_theme);
   EXPECT_EQ(kDarkBackgroundColor, background()->GetBackgroundColor(owner));
 }
 
-// MediaNotificationBackgroundBlackWhiteTest will repeat these tests with a
+// MediaNotificationBackgroundImplBlackWhiteTest will repeat these tests with a
 // parameter that is either black or white.
-class MediaNotificationBackgroundBlackWhiteTest
-    : public MediaNotificationBackgroundTest,
+class MediaNotificationBackgroundImplBlackWhiteTest
+    : public MediaNotificationBackgroundImplTest,
       public testing::WithParamInterface<SkColor> {
  public:
   bool IsBlack() const { return GetParam() == SK_ColorBLACK; }
@@ -251,12 +253,12 @@ class MediaNotificationBackgroundBlackWhiteTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MediaNotificationBackgroundBlackWhiteTest,
+                         MediaNotificationBackgroundImplBlackWhiteTest,
                          testing::Values(SK_ColorBLACK, SK_ColorWHITE));
 
 // If the most popular color is black or white but there is no secondary color
 // we should use the most popular color.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveBackgroundColor_PopularBlackWhiteNoSecondaryColor) {
   background()->UpdateArtwork(CreateTestBackgroundImage(GetParam()));
   EXPECT_EQ(GetParam(), GetBackgroundColor());
@@ -264,7 +266,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If the most popular color is black or white and there is a secondary color
 // that is very minor then we should use the most popular color.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveBackgroundColor_VeryPopularBlackWhite) {
   background()->UpdateArtwork(
       CreateTestBackgroundImage(GetParam(), SK_ColorYELLOW, 20));
@@ -273,7 +275,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If the most popular color is black or white but it is not that popular then
 // we should use the secondary color.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveBackgroundColor_NotVeryPopularBlackWhite) {
   constexpr SkColor kTestColor = SK_ColorYELLOW;
   background()->UpdateArtwork(
@@ -283,7 +285,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If there are multiple vibrant colors then the foreground color should be the
 // most popular one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_MultiVibrant) {
   const SkColor kTestColor = SK_ColorCYAN;
 
@@ -297,7 +299,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If there is a vibrant and muted color then the foreground color should be the
 // more vibrant one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_Vibrant) {
   const SkColor kTestColor = GetColorFromSL(kVibrantSaturation, kNormalLuma);
 
@@ -311,7 +313,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If there are multiple muted colors then the foreground color should be the
 // most popular one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_MultiMuted) {
   const SkColor kTestColor = GetColorFromSL(kMutedSaturation, kNormalLuma);
 
@@ -325,7 +327,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If there is a normal and light muted color then the foreground color should
 // be the normal one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_Muted) {
   const SkColor kTestColor = GetColorFromSL(kMutedSaturation, kNormalLuma);
   const SkColor kSecondColor =
@@ -340,7 +342,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If the best color is not the most popular one, but the most popular one is
 // not that popular then we should use the best color.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_NotPopular) {
   const SkColor kTestColor = SK_ColorMAGENTA;
 
@@ -354,7 +356,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If we do not have a best color but we have a popular one over a threshold
 // then we should use that one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_MostPopular) {
   const SkColor kTestColor = GetColorFromSL(kMutedSaturation, kNormalLuma);
 
@@ -367,7 +369,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If the background color is dark then we should select for a lighter color,
 // otherwise we should select for a darker one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_MoreVibrant) {
   const SkColor kTestColor =
       GetColorFromSL(kVibrantSaturation, IsBlack() ? kLightLuma : kDarkLuma);
@@ -382,7 +384,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If the background color is dark then we should select for a lighter color,
 // otherwise we should select for a darker one.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Palette_MoreMuted) {
   const SkColor kTestColor =
       GetColorFromSL(kMutedSaturation, IsBlack() ? kLightLuma : kDarkLuma);
@@ -398,7 +400,7 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
 
 // If we do not have any colors then we should use the fallback color based on
 // the background color.
-TEST_P(MediaNotificationBackgroundBlackWhiteTest,
+TEST_P(MediaNotificationBackgroundImplBlackWhiteTest,
        DeriveForegroundColor_Fallback) {
   background()->UpdateArtwork(CreateTestForegroundArtwork(
       SK_ColorTRANSPARENT, SK_ColorTRANSPARENT, 0, 0));
@@ -408,10 +410,10 @@ TEST_P(MediaNotificationBackgroundBlackWhiteTest,
             GetForegroundColor());
 }
 
-// MediaNotificationBackgroundRTLTest will repeat these tests with RTL disabled
-// and enabled.
-class MediaNotificationBackgroundRTLTest
-    : public MediaNotificationBackgroundTest,
+// MediaNotificationBackgroundImplRTLTest will repeat these tests with RTL
+// disabled and enabled.
+class MediaNotificationBackgroundImplRTLTest
+    : public MediaNotificationBackgroundImplTest,
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
@@ -419,7 +421,7 @@ class MediaNotificationBackgroundRTLTest
         switches::kForceUIDirection, GetParam() ? switches::kForceDirectionRTL
                                                 : switches::kForceDirectionLTR);
 
-    MediaNotificationBackgroundTest::SetUp();
+    MediaNotificationBackgroundImplTest::SetUp();
 
     ASSERT_EQ(IsRTL(), base::i18n::IsRTL());
   }
@@ -432,10 +434,10 @@ class MediaNotificationBackgroundRTLTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MediaNotificationBackgroundRTLTest,
+                         MediaNotificationBackgroundImplRTLTest,
                          testing::Bool());
 
-TEST_P(MediaNotificationBackgroundRTLTest, BoundsSanityCheck) {
+TEST_P(MediaNotificationBackgroundImplRTLTest, BoundsSanityCheck) {
   // The test notification will have a width of 200 and a height of 50.
   gfx::Rect bounds(0, 0, 200, 50);
   auto owner = std::make_unique<views::StaticSizedView>();

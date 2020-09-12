@@ -6,7 +6,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
-#include "components/media_message_center/media_notification_background.h"
+#include "components/media_message_center/media_notification_background_ash_impl.h"
+#include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -110,7 +111,8 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     std::unique_ptr<views::View> header_row_controls_view,
     const base::string16& default_app_name,
     int notification_width,
-    bool should_show_icon)
+    bool should_show_icon,
+    BackgroundStyle background_style)
     : container_(container),
       item_(std::move(item)),
       default_app_name_(default_app_name),
@@ -265,9 +267,13 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   picture_in_picture_button_ =
       button_row_->AddChildView(std::move(picture_in_picture_button));
 
-  SetBackground(std::make_unique<MediaNotificationBackground>(
-      message_center::kNotificationCornerRadius,
-      message_center::kNotificationCornerRadius, kMediaImageMaxWidthPct));
+  if (background_style == BackgroundStyle::kAshStyle) {
+    SetBackground(std::make_unique<MediaNotificationBackgroundAshImpl>());
+  } else {
+    SetBackground(std::make_unique<MediaNotificationBackgroundImpl>(
+        message_center::kNotificationCornerRadius,
+        message_center::kNotificationCornerRadius, kMediaImageMaxWidthPct));
+  }
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
                      message_center::kNotificationCornerRadius);

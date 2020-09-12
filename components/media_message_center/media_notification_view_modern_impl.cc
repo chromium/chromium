@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
-#include "components/media_message_center/media_notification_background.h"
+#include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -153,7 +153,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
-  SetBackground(std::make_unique<MediaNotificationBackground>(
+  SetBackground(std::make_unique<MediaNotificationBackgroundImpl>(
       message_center::kNotificationCornerRadius,
       message_center::kNotificationCornerRadius, 0));
 
