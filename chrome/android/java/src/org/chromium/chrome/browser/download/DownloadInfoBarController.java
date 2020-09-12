@@ -70,6 +70,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     private static final String SPEEDING_UP_MESSAGE_ENABLED = "speeding_up_message_enabled";
     private static final long DURATION_ACCELERATED_INFOBAR_IN_MS = 3000;
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
+    private static final long DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS = 12000;
 
     // Values for the histogram Android.Download.InfoBar.Shown. Keep this in sync with the
     // DownloadInfoBar.ShownState enum in enums.xml.
@@ -210,6 +211,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
             forceReparent = other.forceReparent;
             downloadCount = other.downloadCount;
             resultState = other.resultState;
+            schedule = other.schedule;
         }
     }
 
@@ -572,7 +574,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
 
     /**
      * Determines the {@link OfflineItemState} for the message to be shown on the infobar. For
-     * DOWNLOADING state, it will return {@link OfflineItemState.IN_PROGRESS}. Otherwise it should
+     * DOWNLOADING state, it will return {@link OfflineItemState#IN_PROGRESS}. Otherwise it should
      * show the result state which can be complete, failed or pending. There is usually a delay of
      * DURATION_SHOW_RESULT_IN_MS between transition between these states, except for the complete
      * state which must be shown as soon as received. While the InfoBar is in one of these states,
@@ -717,8 +719,7 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         clearEndTimerRunnable();
 
         if (startTimer) {
-            long delay =
-                    showAccelerating ? getDurationAcceleratedInfoBar() : getDurationShowResult();
+            long delay = getDelayToNextStep(showAccelerating, resultState);
             mEndTimerRunnable = () -> {
                 mEndTimerRunnable = null;
                 if (mCurrentInfo != null) mCurrentInfo.resultState = ResultState.INVALID;
@@ -740,6 +741,12 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
         info.downloadCount = getDownloadCount();
         info.forceReparent = !info.downloadCount.equals(
                 mCurrentInfo == null ? null : mCurrentInfo.downloadCount);
+
+        // TODO(xingliu, shaktisahu): downloadCount may not be updated at the correct time, see
+        // https://crbug.com/1127522. For now, scheduled download will always show in new tabs.
+        if (info.downloadCount.scheduled > 0) {
+            info.forceReparent = true;
+        }
     }
 
     private void setAccessibilityMessage(
@@ -790,13 +797,12 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     }
 
     @VisibleForTesting
-    protected long getDurationAcceleratedInfoBar() {
-        return DURATION_ACCELERATED_INFOBAR_IN_MS;
-    }
+    protected long getDelayToNextStep(boolean showAccelerating, @ResultState int resultState) {
+        if (showAccelerating) return DURATION_ACCELERATED_INFOBAR_IN_MS;
 
-    @VisibleForTesting
-    protected long getDurationShowResult() {
-        return DURATION_SHOW_RESULT_IN_MS;
+        // Scheduled download uses a longer delay to reset tracking downloads states.
+        return resultState == ResultState.SCHEDULED ? DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS
+                                                    : DURATION_SHOW_RESULT_IN_MS;
     }
 
     @VisibleForTesting

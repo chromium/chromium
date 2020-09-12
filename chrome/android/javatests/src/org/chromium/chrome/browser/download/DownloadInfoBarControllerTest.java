@@ -51,8 +51,7 @@ public class DownloadInfoBarControllerTest {
 
     private static final String TEST_FILE_NAME = "TestFile";
     private static final String MESSAGE_SINGLE_DOWNLOAD_COMPLETE = "TestFile.";
-    private static final long TEST_DURATION_ACCELERATED_INFOBAR = 100;
-    private static final long TEST_DURATION_SHOW_RESULT = 200;
+    private static final long TEST_TO_NEXT_STEP_DELAY = 100;
 
     private TestDownloadInfoBarController mTestController;
 
@@ -83,13 +82,8 @@ public class DownloadInfoBarControllerTest {
         }
 
         @Override
-        protected long getDurationAcceleratedInfoBar() {
-            return TEST_DURATION_ACCELERATED_INFOBAR;
-        }
-
-        @Override
-        protected long getDurationShowResult() {
-            return TEST_DURATION_SHOW_RESULT;
+        protected long getDelayToNextStep(boolean showAccelerating, int resultState) {
+            return TEST_TO_NEXT_STEP_DELAY;
         }
 
         @Override
