@@ -46,6 +46,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   FindMyDeviceController* GetFindMyDeviceController() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
   NotificationManager* GetNotificationManager() override;
+  OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
 
@@ -59,6 +60,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<FindMyDeviceController> find_my_device_controller_;
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;
+  std::unique_ptr<OnboardingUiTracker> onboarding_ui_tracker_;
   std::unique_ptr<PhoneModel> phone_model_;
   std::unique_ptr<TetherController> tether_controller_;
 };

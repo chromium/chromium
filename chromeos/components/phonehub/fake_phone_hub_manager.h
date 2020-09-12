@@ -12,6 +12,7 @@
 #include "chromeos/components/phonehub/fake_find_my_device_controller.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
+#include "chromeos/components/phonehub/fake_onboarding_ui_tracker.h"
 #include "chromeos/components/phonehub/fake_tether_controller.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
@@ -45,6 +46,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_notification_manager_;
   }
 
+  FakeOnboardingUiTracker* fake_onboarding_ui_tracker() {
+    return &fake_onboarding_ui_tracker_;
+  }
+
   MutablePhoneModel* mutable_phone_model() { return &mutable_phone_model_; }
 
   FakeTetherController* fake_tether_controller() {
@@ -58,6 +63,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FindMyDeviceController* GetFindMyDeviceController() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
   NotificationManager* GetNotificationManager() override;
+  OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
 
@@ -66,6 +72,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeFindMyDeviceController fake_find_my_device_controller_;
   FakeNotificationAccessManager fake_notification_access_manager_;
   FakeNotificationManager fake_notification_manager_;
+  FakeOnboardingUiTracker fake_onboarding_ui_tracker_;
   MutablePhoneModel mutable_phone_model_;
   FakeTetherController fake_tether_controller_;
 };

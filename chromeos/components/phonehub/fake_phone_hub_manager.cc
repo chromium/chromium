@@ -31,6 +31,10 @@ NotificationManager* FakePhoneHubManager::GetNotificationManager() {
   return &fake_notification_manager_;
 }
 
+OnboardingUiTracker* FakePhoneHubManager::GetOnboardingUiTracker() {
+  return &fake_onboarding_ui_tracker_;
+}
+
 PhoneModel* FakePhoneHubManager::GetPhoneModel() {
   return &mutable_phone_model_;
 }
