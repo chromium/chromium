@@ -82,11 +82,6 @@ bool TextEncoding::UsesVisualOrdering() const {
 }
 
 bool TextEncoding::IsNonByteBasedEncoding() const {
-  if (NoExtendedTextEncodingNameUsed()) {
-    return *this == UTF16LittleEndianEncoding() ||
-           *this == UTF16BigEndianEncoding();
-  }
-
   return *this == UTF16LittleEndianEncoding() ||
          *this == UTF16BigEndianEncoding();
 }
