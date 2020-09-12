@@ -5361,8 +5361,12 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
   DCHECK(width_size_type == kMinSize ||
          width_size_type == kMainOrPreferredSize || !logical_width.IsAuto());
   if (width_size_type == kMinSize && logical_width.IsAuto()) {
-    // TODO(cbiesinger): Implement for aspect-ratio.
-    logical_width_value = LayoutUnit();
+    if (ShouldComputeLogicalWidthFromAspectRatio()) {
+      logical_width_value =
+          IntrinsicLogicalWidths(MinMaxSizesType::kIntrinsic).min_size;
+    } else {
+      logical_width_value = LayoutUnit();
+    }
   } else if (width_size_type == kMainOrPreferredSize &&
              logical_width.IsAuto() &&
              ComputeLogicalWidthFromAspectRatio(&logical_width_value)) {
@@ -5709,7 +5713,9 @@ void LayoutBox::ComputePositionedLogicalHeight(
   if (logical_min_height.IsMinContent() || logical_min_height.IsMaxContent() ||
       logical_min_height.IsMinIntrinsic() || logical_min_height.IsFitContent())
     logical_min_height = Length::Auto();
-  if (!logical_min_height.IsZero() || logical_min_height.IsFillAvailable()) {
+  // auto is considered to be zero, so we need to check for it explicitly.
+  if (logical_min_height.IsAuto() || !logical_min_height.IsZero() ||
+      logical_min_height.IsFillAvailable()) {
     LogicalExtentComputedValues min_values;
 
     ComputePositionedLogicalHeightUsing(
@@ -5795,8 +5801,10 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
          height_size_type == kMainOrPreferredSize ||
          !logical_height_length.IsAuto());
   if (height_size_type == kMinSize && logical_height_length.IsAuto()) {
-    // TODO(cbiesinger): Implement for aspect-ratio.
-    logical_height_length = Length::Fixed(0);
+    if (ShouldComputeLogicalHeightFromAspectRatio())
+      logical_height_length = Length::Fixed(logical_height);
+    else
+      logical_height_length = Length::Fixed(0);
   }
 
   // 'top' and 'bottom' cannot both be 'auto' because 'top would of been
@@ -5811,7 +5819,8 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
 
   LayoutUnit logical_top_value;
 
-  bool from_aspect_ratio = ShouldComputeLogicalHeightFromAspectRatio();
+  bool from_aspect_ratio = height_size_type == kMainOrPreferredSize &&
+                           ShouldComputeLogicalHeightFromAspectRatio();
   bool logical_height_is_auto =
       logical_height_length.IsAuto() && !from_aspect_ratio;
   bool logical_top_is_auto = logical_top.IsAuto();
