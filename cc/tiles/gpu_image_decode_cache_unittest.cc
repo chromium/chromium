@@ -3096,7 +3096,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
 
   const auto hdr_cs = gfx::ColorSpace::CreateHDR10(/*sdr_white_level=*/200.0f);
 
-  // Ensure that when R16 is supported, it's used and preferred over half-float.
+  // Test that decoding to R16 works when supported.
   {
     auto r16_caps = original_caps;
     r16_caps.texture_norm16 = true;
@@ -3135,7 +3135,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                  SkYUVAPixmapInfo::DataType::kUnorm16, hdr_cs);
   }
 
-  // Verify that half-float is used when R16 is not available.
+  // Test that decoding to half-float works when supported.
   {
     auto f16_caps = original_caps;
     f16_caps.texture_norm16 = false;
@@ -3183,6 +3183,17 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     auto no_yuv16_cache = CreateCache();
 
     yuv_data_type_ = SkYUVAPixmapInfo::DataType::kUnorm16;
+
+    yuv_format_ = YUVSubsampling::k420;
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
+
+    yuv_format_ = YUVSubsampling::k422;
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
+
+    yuv_format_ = YUVSubsampling::k444;
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), false);
+
+    yuv_data_type_ = SkYUVAPixmapInfo::DataType::kFloat16;
 
     yuv_format_ = YUVSubsampling::k420;
     decode_and_check_plane_sizes(no_yuv16_cache.get(), false);

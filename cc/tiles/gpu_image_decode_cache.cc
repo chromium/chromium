@@ -992,7 +992,8 @@ GpuImageDecodeCache::GpuImageDecodeCache(
     if (caps.texture_norm16) {
       yuva_supported_data_types_.enableDataType(
           SkYUVAPixmapInfo::DataType::kUnorm16, 1);
-    } else if (caps.texture_half_float_linear) {
+    }
+    if (caps.texture_half_float_linear) {
       yuva_supported_data_types_.enableDataType(
           SkYUVAPixmapInfo::DataType::kFloat16, 1);
     }
