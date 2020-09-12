@@ -29,6 +29,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/capture/mojom/image_capture_types.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "ui/gfx/geometry/size.h"
 
 @implementation DeviceNameAndTransportType
@@ -429,8 +430,8 @@ bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
   if (capture_api_type != VideoCaptureApi::MACOSX_AVFOUNDATION)
     return false;
 
-  capture_device_.reset(
-      [[VideoCaptureDeviceAVFoundation alloc] initWithFrameReceiver:this]);
+  capture_device_.reset([[GetVideoCaptureDeviceAVFoundationImplementationClass()
+      alloc] initWithFrameReceiver:this]);
 
   if (!capture_device_)
     return false;

@@ -6,14 +6,31 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "media/base/media_switches.h"
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 
-TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
+enum class AVFoundationCaptureV2 { kEnabled, kDisabled };
+
+class VideoCaptureDeviceFactoryMacTest
+    : public ::testing::TestWithParam<AVFoundationCaptureV2> {
+ public:
+  VideoCaptureDeviceFactoryMacTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        media::kAVFoundationCaptureV2,
+        /*enabled=*/GetParam() == AVFoundationCaptureV2::kEnabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
   RunTestCase(base::BindOnce([]() {
     VideoCaptureDeviceFactoryMac video_capture_device_factory;
 
@@ -30,7 +47,7 @@ TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
   }));
 }
 
-TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesWithNoPanTiltZoomSupport) {
+TEST_P(VideoCaptureDeviceFactoryMacTest, ListDevicesWithNoPanTiltZoomSupport) {
   RunTestCase(base::BindOnce([]() {
     VideoCaptureDeviceFactoryMac video_capture_device_factory;
 
@@ -44,5 +61,10 @@ TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesWithNoPanTiltZoomSupport) {
       EXPECT_FALSE(device.descriptor.pan_tilt_zoom_supported());
   }));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         VideoCaptureDeviceFactoryMacTest,
+                         ::testing::Values(AVFoundationCaptureV2::kEnabled,
+                                           AVFoundationCaptureV2::kDisabled));
 
 }  // namespace media

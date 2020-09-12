@@ -162,8 +162,11 @@ component("capture_lib") {
 
   if (is_mac) {
     sources += [
+      "video/mac/video_capture_device_avfoundation_legacy_mac.h",
+      "video/mac/video_capture_device_avfoundation_legacy_mac.mm",
       "video/mac/video_capture_device_avfoundation_mac.h",
       "video/mac/video_capture_device_avfoundation_mac.mm",
+      "video/mac/video_capture_device_avfoundation_protocol_mac.h",
       "video/mac/video_capture_device_avfoundation_utils_mac.h",
       "video/mac/video_capture_device_avfoundation_utils_mac.mm",
       "video/mac/video_capture_device_decklink_mac.h",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_LEGACY_MAC_H_
+#define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_LEGACY_MAC_H_
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
@@ -15,10 +15,7 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
-// TODO(crbug.com/1126690): rename this file to be suffixed by the
-// "next generation" moniker.
-CAPTURE_EXPORT
-@interface VideoCaptureDeviceAVFoundation
+@interface VideoCaptureDeviceAVFoundationLegacy
     : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,
                 VideoCaptureDeviceAVFoundationProtocol> {
  @private
@@ -47,7 +44,7 @@ CAPTURE_EXPORT
   size_t _takePhotoPendingCount;
   size_t _takePhotoCompletedCount;
   bool _stillImageOutputWarmupCompleted;
-  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
+  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundationLegacy>>
       _weakPtrFactoryForTakePhoto;
 
   // For testing.
@@ -55,10 +52,6 @@ CAPTURE_EXPORT
 
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
-
-- (void)setOnStillImageOutputStoppedForTesting:
-    (base::RepeatingCallback<void()>)onStillImageOutputStopped;
-
 @end
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_LEGACY_MAC_H_

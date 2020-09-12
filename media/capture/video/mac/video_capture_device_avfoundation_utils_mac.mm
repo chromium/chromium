@@ -8,6 +8,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "media/base/media_switches.h"
+#include "media/capture/video/mac/video_capture_device_avfoundation_legacy_mac.h"
+#include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
@@ -297,6 +300,13 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
     }
   }
   return formats;
+}
+
+Class GetVideoCaptureDeviceAVFoundationImplementationClass() {
+  if (base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2)) {
+    return [VideoCaptureDeviceAVFoundation class];
+  }
+  return [VideoCaptureDeviceAVFoundationLegacy class];
 }
 
 }  // namespace media

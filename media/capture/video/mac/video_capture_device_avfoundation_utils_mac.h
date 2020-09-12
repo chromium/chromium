@@ -42,6 +42,10 @@ void ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
                                  CMSampleBufferRef sample_buffer);
 
+// Returns implementation class for VideoCaptureDeviceAVFoundation depending
+// on if |kMacNextGenerationCapturer| is enabled or disabled.
+Class GetVideoCaptureDeviceAVFoundationImplementationClass();
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_MAC_H_
