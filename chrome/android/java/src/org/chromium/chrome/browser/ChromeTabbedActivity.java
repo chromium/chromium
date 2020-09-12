@@ -283,6 +283,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private boolean mOverviewShownOnStart;
 
+    private NextTabPolicySupplier mNextTabPolicySupplier;
+
     private final ObservableSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
             new ObservableSupplierImpl<>();
     private OverviewModeController mOverviewModeController;
@@ -1535,11 +1537,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && savedInstanceState.getBoolean("is_incognito_selected", false);
         int index = savedInstanceState != null ? savedInstanceState.getInt(WINDOW_INDEX, 0) : 0;
 
-        NextTabPolicySupplier nextTabPolicySupplier =
-                new ChromeNextTabPolicySupplier(mOverviewModeController);
+        mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mOverviewModeBehaviorSupplier);
         mTabModelSelectorImpl =
                 (TabModelSelectorImpl) TabWindowManager.getInstance().requestSelector(
-                        this, this, nextTabPolicySupplier, index);
+                        this, this, mNextTabPolicySupplier, index);
         if (mTabModelSelectorImpl == null) {
             Toast.makeText(
                          this, getString(R.string.unsupported_number_of_windows), Toast.LENGTH_LONG)
@@ -2257,5 +2258,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @VisibleForTesting
     public MultiInstanceManager getMultiInstanceMangerForTesting() {
         return mMultiInstanceManager;
+    }
+
+    @VisibleForTesting
+    public ChromeNextTabPolicySupplier getNextTabPolicySupplier() {
+        return (ChromeNextTabPolicySupplier) mNextTabPolicySupplier;
     }
 }

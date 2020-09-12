@@ -52,6 +52,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/app/appmenu/DataSaverAppMenuTest.java",
   "javatests/src/org/chromium/chrome/browser/app/appmenu/OverviewAppMenuTest.java",
   "javatests/src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
+  "javatests/src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupWithKeyboardTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillTest.java",
