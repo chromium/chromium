@@ -28,6 +28,7 @@
 #include <vsync-feedback-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+#include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
@@ -76,6 +77,7 @@
 #include "components/exo/wayland/zwp_pointer_gestures.h"
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
 #include "components/exo/wayland/zwp_text_input_manager.h"
+#include "components/exo/wayland/zxdg_decoration_manager.h"
 #include "components/exo/wayland/zxdg_shell.h"
 #endif
 
@@ -206,6 +208,8 @@ Server::Server(Display* display)
                    bind_relative_pointer_manager);
   wl_global_create(wl_display_.get(), &zcr_color_space_v1_interface, 1,
                    display_, bind_color_space);
+  wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
+                   display_, bind_zxdg_decoration_manager);
 
   zwp_text_manager_data_ =
       std::make_unique<WaylandTextInputManager>(serial_tracker_.get());

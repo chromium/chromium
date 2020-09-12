@@ -27,6 +27,10 @@ wayland_protocol("linux_dmabuf_protocol") {
   sources = [ "src/unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml" ]
 }
 
+wayland_protocol("xdg_decoration_protocol") {
+  sources = [ "src/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml" ]
+}
+
 wayland_protocol("viewporter_protocol") {
   sources = [ "src/stable/viewporter/viewporter.xml" ]
 }

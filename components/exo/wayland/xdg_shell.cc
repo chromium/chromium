@@ -6,6 +6,7 @@
 
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+#include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -158,6 +159,36 @@ struct WaylandXdgSurface {
   DISALLOW_COPY_AND_ASSIGN(WaylandXdgSurface);
 };
 
+class WaylandXdgToplevelDecoration {
+ public:
+  WaylandXdgToplevelDecoration(wl_resource* resource) : resource_(resource) {}
+
+  WaylandXdgToplevelDecoration(const WaylandXdgToplevelDecoration&) = delete;
+  WaylandXdgToplevelDecoration& operator=(const WaylandXdgToplevelDecoration&) =
+      delete;
+
+  uint32_t decoration_mode() const { return default_mode_; }
+  void SetDecorationMode(uint32_t mode) {
+    if (default_mode_ != mode) {
+      default_mode_ = mode;
+      OnConfigure(mode);
+    }
+  }
+
+ private:
+  void OnConfigure(uint32_t mode) {
+    switch (mode) {
+      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
+      case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
+        zxdg_toplevel_decoration_v1_send_configure(resource_, mode);
+        break;
+    }
+  }
+
+  wl_resource* const resource_;
+  uint32_t default_mode_ = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+};
+
 // Wrapper around shell surface that allows us to handle the case where the
 // xdg surface resource is destroyed before the toplevel resource.
 class WaylandToplevel : public aura::WindowObserver {
@@ -176,6 +207,7 @@ class WaylandToplevel : public aura::WindowObserver {
             base::BindRepeating(&WaylandToplevel::OnConfigure,
                                 weak_ptr_factory_.GetWeakPtr())));
   }
+
   ~WaylandToplevel() override {
     if (shell_surface_data_)
       shell_surface_data_->shell_surface->host_window()->RemoveObserver(this);
@@ -657,7 +689,80 @@ const struct xdg_wm_base_interface xdg_wm_base_implementation = {
     xdg_wm_base_destroy, xdg_wm_base_create_positioner,
     xdg_wm_base_get_xdg_surface, xdg_wm_base_pong};
 
+////////////////////////////////////////////////////////////////////////////////
+// Top level decoration
+void toplevel_decoration_handle_destroy(wl_client* client,
+                                        wl_resource* resource) {
+  wl_resource_destroy(resource);
+}
+
+void toplevel_decoration_handle_set_mode(wl_client* client,
+                                         wl_resource* resource,
+                                         uint32_t mode) {
+  GetUserDataAs<WaylandXdgToplevelDecoration>(resource)->SetDecorationMode(
+      mode);
+}
+
+void toplevel_decoration_handle_unset_mode(wl_client* client,
+                                           wl_resource* resource) {
+  NOTIMPLEMENTED();
+}
+
+const struct zxdg_toplevel_decoration_v1_interface toplevel_decoration_impl = {
+    .destroy = toplevel_decoration_handle_destroy,
+    .set_mode = toplevel_decoration_handle_set_mode,
+    .unset_mode = toplevel_decoration_handle_unset_mode,
+};
+
+// Decoration manager
+void decoration_manager_handle_destroy(wl_client* client,
+                                       wl_resource* manager_resource) {
+  wl_resource_destroy(manager_resource);
+}
+
+void decoration_manager_handle_get_toplevel_decoration(
+    wl_client* client,
+    wl_resource* manager_resource,
+    uint32_t id,
+    wl_resource* toplevel_resource) {
+  uint32_t version = wl_resource_get_version(manager_resource);
+  wl_resource* decoration_resource = wl_resource_create(
+      client, &zxdg_toplevel_decoration_v1_interface, version, id);
+  if (!decoration_resource) {
+    wl_client_post_no_memory(client);
+    return;
+  }
+
+  auto xdg_toplevel_decoration =
+      std::make_unique<WaylandXdgToplevelDecoration>(decoration_resource);
+
+  // Enables client-side decoration
+  xdg_toplevel_decoration->SetDecorationMode(
+      ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+
+  SetImplementation(decoration_resource, &toplevel_decoration_impl,
+                    std::move(xdg_toplevel_decoration));
+}
+
+static const struct zxdg_decoration_manager_v1_interface
+    decoration_manager_impl = {
+        .destroy = decoration_manager_handle_destroy,
+        .get_toplevel_decoration =
+            decoration_manager_handle_get_toplevel_decoration,
+};
+
 }  // namespace
+
+void bind_zxdg_decoration_manager(wl_client* client,
+                                  void* data,
+                                  uint32_t version,
+                                  uint32_t id) {
+  wl_resource* resource = wl_resource_create(
+      client, &zxdg_decoration_manager_v1_interface, version, id);
+
+  wl_resource_set_implementation(resource, &decoration_manager_impl, data,
+                                 nullptr);
+}
 
 void bind_xdg_shell(wl_client* client,
                     void* data,

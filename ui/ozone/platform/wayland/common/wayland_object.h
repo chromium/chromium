@@ -57,11 +57,25 @@ struct zwp_text_input_manager_v1;
 struct zwp_text_input_v1;
 struct zxdg_exporter_v1;
 struct zxdg_exported_v1;
+struct zxdg_decoration_manager_v1;
+struct zxdg_toplevel_decoration_v1;
 
 namespace wl {
 
 template <typename T>
 struct ObjectTraits;
+
+template <>
+struct ObjectTraits<zxdg_decoration_manager_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zxdg_decoration_manager_v1*);
+};
+
+template <>
+struct ObjectTraits<zxdg_toplevel_decoration_v1> {
+  static const wl_interface* interface;
+  static void (*deleter)(zxdg_toplevel_decoration_v1*);
+};
 
 template <>
 struct ObjectTraits<gtk_primary_selection_device_manager> {

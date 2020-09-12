@@ -72,6 +72,9 @@ class WaylandConnection {
       const {
     return linux_explicit_synchronization_.get();
   }
+  zxdg_decoration_manager_v1* xdg_decoration_manager_v1() const {
+    return xdg_decoration_manager_.get();
+  }
 
   void set_serial(uint32_t serial, EventType event_type) {
     serial_ = {serial, event_type};
@@ -186,6 +189,7 @@ class WaylandConnection {
   wl::Object<zaura_shell> aura_shell_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;
+  wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
 
   // Event source instance. Must be declared before input objects so it
   // outlives them so thus being able to properly handle their destruction.

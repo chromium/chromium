@@ -7,6 +7,8 @@
 
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 
+#include <xdg-decoration-unstable-v1-client-protocol.h>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -68,6 +70,14 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   static void CloseTopLevelV6(void* data,
                               struct zxdg_toplevel_v6* zxdg_toplevel_v6);
 
+  void SetTopLevelDecorationMode(
+      zxdg_toplevel_decoration_v1_mode requested_mode);
+  // zxdg_decoration_listener
+  static void ConfigureDecoration(
+      void* data,
+      struct zxdg_toplevel_decoration_v1* decoration,
+      uint32_t mode);
+
   struct xdg_surface* xdg_surface() const;
   zxdg_surface_v6* zxdg_surface() const;
 
@@ -76,6 +86,9 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   bool InitializeStable(bool with_toplevel);
   // Initializes using XDG Shell V6 protocol.
   bool InitializeV6(bool with_toplevel);
+
+  // Initializes the xdg-decoration protocol extension, if available.
+  void InitializeXdgDecoration();
 
   // Non-owing WaylandWindow that uses this surface wrapper.
   WaylandWindow* const wayland_window_;
@@ -87,8 +100,10 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   wl::Object<zxdg_toplevel_v6> zxdg_toplevel_v6_;
   wl::Object<struct xdg_surface> xdg_surface_;
   wl::Object<xdg_toplevel> xdg_toplevel_;
+  wl::Object<zxdg_toplevel_decoration_v1> zxdg_toplevel_decoration_;
 
   bool surface_for_popup_ = false;
+  enum zxdg_toplevel_decoration_v1_mode zxdg_toplevel_decoration_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(XDGSurfaceWrapperImpl);
 };

@@ -57,6 +57,7 @@ constexpr uint32_t kMaxExplicitSyncVersion = 2;
 constexpr uint32_t kMinAuraShellVersion = 10;
 constexpr uint32_t kMinWlDrmVersion = 2;
 constexpr uint32_t kMinWlOutputVersion = 2;
+constexpr uint32_t kMaxXdgDecorationVersion = 1;
 }  // namespace
 
 WaylandConnection::WaylandConnection() = default;
@@ -386,6 +387,11 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind zaura_shell";
       return;
     }
+  } else if (!connection->xdg_decoration_manager_ &&
+             strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
+    connection->xdg_decoration_manager_ =
+        wl::Bind<struct zxdg_decoration_manager_v1>(registry, name,
+                                                    kMaxXdgDecorationVersion);
   }
 
   connection->ScheduleFlush();
