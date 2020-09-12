@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
@@ -30,7 +29,6 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -270,7 +268,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
   AutofillInteractiveTestBase()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  ~AutofillInteractiveTestBase() override {}
+ public:
+  AutofillInteractiveTestBase(const AutofillInteractiveTestBase&) = delete;
+  AutofillInteractiveTestBase& operator=(const AutofillInteractiveTestBase&) =
+      delete;
+
+ protected:
+  ~AutofillInteractiveTestBase() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {
@@ -706,8 +710,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   // The response to return for queries to |kTestUrlPath|
   std::string test_url_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillInteractiveTestBase);
 };
 
 const char AutofillInteractiveTestBase::kTestUrlPath[] =
@@ -2523,6 +2525,14 @@ IN_PROC_BROWSER_TEST_P(AutofillCompanyInteractiveTest, FieldsChangeName) {
 class AutofillCreditCardInteractiveTest : public AutofillInteractiveTestBase {
  protected:
   AutofillCreditCardInteractiveTest() = default;
+
+ public:
+  AutofillCreditCardInteractiveTest(const AutofillCreditCardInteractiveTest&) =
+      delete;
+  AutofillCreditCardInteractiveTest& operator=(
+      const AutofillCreditCardInteractiveTest&) = delete;
+
+ protected:
   ~AutofillCreditCardInteractiveTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2537,9 +2547,6 @@ class AutofillCreditCardInteractiveTest : public AutofillInteractiveTestBase {
   // we won't be able to encrypt the cc number. There will be a crash while
   // encrypting the cc number.
   void TearDownOnMainThread() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardInteractiveTest);
 };
 
 // Test that credit card autofill works.
@@ -2919,6 +2926,14 @@ class AutofillDynamicFormInteractiveTest
     // Setup that the test expects a re-fill to happen.
     test_delegate()->SetIsExpectingDynamicRefill(true);
   }
+
+ public:
+  AutofillDynamicFormInteractiveTest(
+      const AutofillDynamicFormInteractiveTest&) = delete;
+  AutofillDynamicFormInteractiveTest& operator=(
+      const AutofillDynamicFormInteractiveTest&) = delete;
+
+ protected:
   ~AutofillDynamicFormInteractiveTest() override = default;
 
   // AutofillInteractiveTestBase:
@@ -2947,8 +2962,6 @@ class AutofillDynamicFormInteractiveTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillDynamicFormInteractiveTest);
 };
 
 // Test that we can Autofill dynamically generated forms.

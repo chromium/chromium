@@ -12,7 +12,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -160,8 +159,10 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
   WebContentsHiddenObserver(content::WebContents* web_contents,
                             base::OnceClosure hidden_callback)
       : WebContentsObserver(web_contents),
-        hidden_callback_(std::move(hidden_callback)),
-        hidden_observed_(false) {}
+        hidden_callback_(std::move(hidden_callback)) {}
+  WebContentsHiddenObserver(const WebContentsHiddenObserver&) = delete;
+  WebContentsHiddenObserver& operator=(const WebContentsHiddenObserver&) =
+      delete;
 
   // WebContentsObserver.
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -171,13 +172,11 @@ class WebContentsHiddenObserver : public content::WebContentsObserver {
     }
   }
 
-  bool hidden_observed() { return hidden_observed_; }
+  bool hidden_observed() const { return hidden_observed_; }
 
  private:
   base::OnceClosure hidden_callback_;
-  bool hidden_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsHiddenObserver);
+  bool hidden_observed_ = false;
 };
 
 // Watches for context menu to be shown, sets a boolean if it is shown.
@@ -187,7 +186,9 @@ class ContextMenuShownObserver {
     RenderViewContextMenu::RegisterMenuShownCallbackForTesting(base::BindOnce(
         &ContextMenuShownObserver::OnMenuShown, base::Unretained(this)));
   }
-  ~ContextMenuShownObserver() {}
+  ContextMenuShownObserver(const ContextMenuShownObserver&) = delete;
+  ContextMenuShownObserver& operator=(const ContextMenuShownObserver&) = delete;
+  ~ContextMenuShownObserver() = default;
 
   void OnMenuShown(RenderViewContextMenu* context_menu) {
     shown_ = true;
@@ -205,14 +206,15 @@ class ContextMenuShownObserver {
  private:
   bool shown_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuShownObserver);
 };
 
 class EmbedderWebContentsObserver : public content::WebContentsObserver {
  public:
   explicit EmbedderWebContentsObserver(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents), terminated_(false) {}
+      : WebContentsObserver(web_contents) {}
+  EmbedderWebContentsObserver(const EmbedderWebContentsObserver&) = delete;
+  EmbedderWebContentsObserver& operator=(const EmbedderWebContentsObserver&) =
+      delete;
 
   // WebContentsObserver.
   void RenderProcessGone(base::TerminationStatus status) override {
@@ -229,10 +231,8 @@ class EmbedderWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  bool terminated_;
+  bool terminated_ = false;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbedderWebContentsObserver);
 };
 
 void ExecuteScriptWaitForTitle(content::WebContents* web_contents,
@@ -254,6 +254,8 @@ class SelectControlWaiter : public aura::WindowObserver,
  public:
   SelectControlWaiter() { aura::Env::GetInstance()->AddObserver(this); }
 
+  SelectControlWaiter(const SelectControlWaiter&) = delete;
+  SelectControlWaiter& operator=(const SelectControlWaiter&) = delete;
   ~SelectControlWaiter() override {
     aura::Env::GetInstance()->RemoveObserver(this);
   }
@@ -287,8 +289,6 @@ class SelectControlWaiter : public aura::WindowObserver,
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   std::set<aura::Window*> observed_windows_;
   bool wait_for_widget_shown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectControlWaiter);
 };
 
 // Simulate real click with delay between mouse down and up.
@@ -302,6 +302,8 @@ class LeftMouseClick {
     mouse_event_.button = blink::WebMouseEvent::Button::kLeft;
   }
 
+  LeftMouseClick(const LeftMouseClick&) = delete;
+  LeftMouseClick& operator=(const LeftMouseClick&) = delete;
   ~LeftMouseClick() {
     DCHECK(click_completed_);
   }
@@ -351,8 +353,6 @@ class LeftMouseClick {
   blink::WebMouseEvent mouse_event_;
 
   bool click_completed_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(LeftMouseClick);
 };
 
 #endif
@@ -379,10 +379,10 @@ bool IsShowingInterstitial(content::WebContents* tab) {
 // the test run successfully on trybots.
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  MockWebContentsDelegate()
-      : requested_(false),
-        checked_(false) {}
-  ~MockWebContentsDelegate() override {}
+  MockWebContentsDelegate() = default;
+  MockWebContentsDelegate(const MockWebContentsDelegate&) = delete;
+  MockWebContentsDelegate& operator=(const MockWebContentsDelegate&) = delete;
+  ~MockWebContentsDelegate() override = default;
 
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -417,12 +417,10 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
   }
 
  private:
-  bool requested_;
-  bool checked_;
+  bool requested_ = false;
+  bool checked_ = false;
   scoped_refptr<content::MessageLoopRunner> request_message_loop_runner_;
   scoped_refptr<content::MessageLoopRunner> check_message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWebContentsDelegate);
 };
 
 // This class intercepts download request from the guest.
@@ -430,12 +428,12 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
  public:
   explicit MockDownloadWebContentsDelegate(
       content::WebContentsDelegate* orig_delegate)
-      : orig_delegate_(orig_delegate),
-        waiting_for_decision_(false),
-        expect_allow_(false),
-        decision_made_(false),
-        last_download_allowed_(false) {}
-  ~MockDownloadWebContentsDelegate() override {}
+      : orig_delegate_(orig_delegate) {}
+  MockDownloadWebContentsDelegate(const MockDownloadWebContentsDelegate&) =
+      delete;
+  MockDownloadWebContentsDelegate& operator=(
+      const MockDownloadWebContentsDelegate&) = delete;
+  ~MockDownloadWebContentsDelegate() override = default;
 
   void CanDownload(const GURL& url,
                    const std::string& request_method,
@@ -482,13 +480,11 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
 
  private:
   content::WebContentsDelegate* orig_delegate_;
-  bool waiting_for_decision_;
-  bool expect_allow_;
-  bool decision_made_;
-  bool last_download_allowed_;
+  bool waiting_for_decision_ = false;
+  bool expect_allow_ = false;
+  bool decision_made_ = false;
+  bool last_download_allowed_ = false;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadWebContentsDelegate);
 };
 
 class WebViewTest : public extensions::PlatformAppBrowserTest {
@@ -906,8 +902,10 @@ class WebContentsAudioMutedObserver : public content::WebContentsObserver {
  public:
   explicit WebContentsAudioMutedObserver(content::WebContents* web_contents)
       : WebContentsObserver(web_contents),
-        loop_runner_(new content::MessageLoopRunner),
-        muting_update_observed_(false) {}
+        loop_runner_(new content::MessageLoopRunner) {}
+  WebContentsAudioMutedObserver(const WebContentsAudioMutedObserver&) = delete;
+  WebContentsAudioMutedObserver& operator=(
+      const WebContentsAudioMutedObserver&) = delete;
 
   // WebContentsObserver.
   void DidUpdateAudioMutingState(bool muted) override {
@@ -923,16 +921,16 @@ class WebContentsAudioMutedObserver : public content::WebContentsObserver {
 
  private:
   scoped_refptr<content::MessageLoopRunner> loop_runner_;
-  bool muting_update_observed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsAudioMutedObserver);
+  bool muting_update_observed_ = false;
 };
 
 class IsAudibleObserver : public content::WebContentsObserver {
  public:
   explicit IsAudibleObserver(content::WebContents* contents)
       : WebContentsObserver(contents) {}
-  ~IsAudibleObserver() override {}
+  IsAudibleObserver(const IsAudibleObserver&) = delete;
+  IsAudibleObserver& operator=(const IsAudibleObserver&) = delete;
+  ~IsAudibleObserver() override = default;
 
   void WaitForCurrentlyAudible(bool audible) {
     // If there's no state change to observe then return right away.
@@ -954,10 +952,8 @@ class IsAudibleObserver : public content::WebContentsObserver {
       message_loop_runner_->Quit();
   }
 
-  bool audible_;
+  bool audible_ = false;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsAudibleObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, AudibilityStatePropagates) {
@@ -3284,10 +3280,11 @@ class WebViewChannelTest
       public testing::WithParamInterface<version_info::Channel> {
  public:
   WebViewChannelTest() : channel_(GetParam()) {}
+  WebViewChannelTest(const WebViewChannelTest&) = delete;
+  WebViewChannelTest& operator=(const WebViewChannelTest&) = delete;
 
  private:
   extensions::ScopedCurrentChannel channel_;
-  DISALLOW_COPY_AND_ASSIGN(WebViewChannelTest);
 };
 
 // This test verify that the set of rules registries of a webview will be

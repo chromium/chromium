@@ -6414,6 +6414,8 @@ class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {
   FlagsStateSingleton()
       : flags_state_(
             std::make_unique<flags_ui::FlagsState>(kFeatureEntries, this)) {}
+  FlagsStateSingleton(const FlagsStateSingleton&) = delete;
+  FlagsStateSingleton& operator=(const FlagsStateSingleton&) = delete;
   ~FlagsStateSingleton() override = default;
 
   static FlagsStateSingleton* GetInstance() {
@@ -6436,8 +6438,6 @@ class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {
   }
 
   std::unique_ptr<flags_ui::FlagsState> flags_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsStateSingleton);
 };
 
 bool ShouldSkipNonDeprecatedFeatureEntry(const FeatureEntry& entry) {
