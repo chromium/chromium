@@ -58,6 +58,8 @@
   "ycmd.global_extra_config": "${workspaceFolder}/tools/vim/chromium.ycm_extra_conf.py",
   "ycmd.confirm_extra_conf": false,
 
+  // Optional: Only format modified lines instead of the whole file.
+  // "editor.formatOnSaveMode": "modifications",
   // Optional: Highlight current line at the left of the editor.
   // "editor.renderLineHighlight": "gutter",
   // Optional: Don't automatically add closing brackets. It gets in the way.
