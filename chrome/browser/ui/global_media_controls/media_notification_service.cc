@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
+#include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -788,6 +789,19 @@ void MediaNotificationService::OnStartPresentationContextCreated(
 void MediaNotificationService::set_device_provider_for_testing(
     std::unique_ptr<MediaNotificationDeviceProvider> device_provider) {
   device_provider_ = std::move(device_provider);
+}
+
+std::unique_ptr<media_router::CastDialogController>
+MediaNotificationService::CreateCastDialogControllerForSession(
+    const std::string& session_id) {
+  auto it = sessions_.find(session_id);
+  if (it != sessions_.end()) {
+    auto ui = std::make_unique<media_router::MediaRouterUI>(
+        it->second.web_contents());
+    ui->InitWithDefaultMediaSource();
+    return ui;
+  }
+  return nullptr;
 }
 
 void MediaNotificationService::OnItemUnfrozen(const std::string& id) {

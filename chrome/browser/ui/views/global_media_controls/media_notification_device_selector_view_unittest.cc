@@ -123,14 +123,12 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
                        ui::EventTimeForNow(), 0, 0));
   }
 
-  static std::string EntryLabelText(views::View* entry_view) {
-    return MediaNotificationDeviceSelectorView::get_entry_label_for_testing(
-        entry_view);
+  std::string EntryLabelText(views::View* entry_view) {
+    return view_->GetEntryLabelForTesting(entry_view);
   }
 
-  static bool IsHighlighted(views::View* entry_view) {
-    return MediaNotificationDeviceSelectorView::
-        get_entry_is_highlighted_for_testing(entry_view);
+  bool IsHighlighted(views::View* entry_view) {
+    return view_->GetEntryIsHighlightedForTesting(entry_view);
   }
 
   std::string GetButtonText(views::View* view) {
@@ -150,11 +148,12 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
-  ASSERT_TRUE(view_->audio_device_entries_container_ != nullptr);
+  ASSERT_TRUE(view_->device_entry_views_container_ != nullptr);
 
-  auto container_children = view_->audio_device_entries_container_->children();
+  auto container_children = view_->device_entry_views_container_->children();
   ASSERT_EQ(container_children.size(), 3u);
 
   EXPECT_EQ(EntryLabelText(container_children.at(0)), "Speaker");
@@ -171,12 +170,13 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   ASSERT_TRUE(view_->expand_button_);
-  EXPECT_FALSE(view_->audio_device_entries_container_->GetVisible());
-  SimulateButtonClick(view_->get_expand_button_for_testing());
-  EXPECT_TRUE(view_->audio_device_entries_container_->GetVisible());
+  EXPECT_FALSE(view_->device_entry_views_container_->GetVisible());
+  SimulateButtonClick(view_->GetExpandButtonForTesting());
+  EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
 }
 
 TEST_F(MediaNotificationDeviceSelectorViewTest,
@@ -190,14 +190,14 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   EXPECT_CALL(delegate, OnAudioSinkChosen("1")).Times(1);
   EXPECT_CALL(delegate, OnAudioSinkChosen("2")).Times(1);
   EXPECT_CALL(delegate, OnAudioSinkChosen("3")).Times(1);
 
-  for (views::View* child :
-       view_->audio_device_entries_container_->children()) {
+  for (views::View* child : view_->device_entry_views_container_->children()) {
     SimulateButtonClick(child);
   }
 }
@@ -212,10 +212,10 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, CurrentDeviceHighlighted) {
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "3", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "3",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
-  auto* first_entry =
-      view_->audio_device_entries_container_->children().front();
+  auto* first_entry = view_->device_entry_views_container_->children().front();
   EXPECT_EQ(EntryLabelText(first_entry), "Earbuds");
   EXPECT_TRUE(IsHighlighted(first_entry));
 }
@@ -229,14 +229,16 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceHighlightedOnChange) {
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
-  auto& container_children = view_->audio_device_entries_container_->children();
+  auto& container_children = view_->device_entry_views_container_->children();
 
   // There should be only one highlighted button. It should be the first button.
   // It's text should be "Speaker"
-  EXPECT_EQ(base::ranges::count_if(container_children, IsHighlighted), 1);
-  EXPECT_EQ(base::ranges::find_if(container_children, IsHighlighted),
+  auto highlight_pred = [this](views::View* v) { return IsHighlighted(v); };
+  EXPECT_EQ(base::ranges::count_if(container_children, highlight_pred), 1);
+  EXPECT_EQ(base::ranges::find_if(container_children, highlight_pred),
             container_children.begin());
   EXPECT_EQ(EntryLabelText(container_children.front()), "Speaker");
 
@@ -244,8 +246,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceHighlightedOnChange) {
   view_->UpdateCurrentAudioDevice("3");
 
   // The button for "Earbuds" should come before all others & be highlighted.
-  EXPECT_EQ(base::ranges::count_if(container_children, IsHighlighted), 1);
-  EXPECT_EQ(base::ranges::find_if(container_children, IsHighlighted),
+  EXPECT_EQ(base::ranges::count_if(container_children, highlight_pred), 1);
+  EXPECT_EQ(base::ranges::find_if(container_children, highlight_pred),
             container_children.begin());
   EXPECT_EQ(EntryLabelText(container_children.front()), "Earbuds");
 }
@@ -260,7 +262,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsChange) {
   provider->AddDevice("Earbuds", "3");
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* media_router::CastDialogController*/ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   provider->ResetDevices();
   // Make "Monitor" the default device.
@@ -269,8 +272,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsChange) {
   provider->RunUICallback();
 
   {
-    auto& container_children =
-        view_->audio_device_entries_container_->children();
+    auto& container_children = view_->device_entry_views_container_->children();
     EXPECT_EQ(container_children.size(), 1u);
     ASSERT_FALSE(container_children.empty());
     EXPECT_EQ(EntryLabelText(container_children.front()), "Monitor");
@@ -287,8 +289,7 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsChange) {
   provider->RunUICallback();
 
   {
-    auto& container_children =
-        view_->audio_device_entries_container_->children();
+    auto& container_children = view_->device_entry_views_container_->children();
     EXPECT_EQ(container_children.size(), 3u);
     ASSERT_FALSE(container_children.empty());
 
@@ -311,8 +312,9 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
 
   EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(2);
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, media::AudioDeviceDescription::kDefaultDeviceId,
-      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr,
+      media::AudioDeviceDescription::kDefaultDeviceId, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor);
   EXPECT_FALSE(view_->GetVisible());
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -346,7 +348,9 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceChangeIsNotSupported) {
   delegate.supports_switching = false;
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr,
+      media::AudioDeviceDescription::kDefaultDeviceId, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor);
   EXPECT_FALSE(view_->GetVisible());
 
   delegate.supports_switching = true;
@@ -365,7 +369,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 0);
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   view_->ShowDevices();
 
   histogram_tester_.ExpectTotalCount(kAudioDevicesCountHistogramName, 1);
@@ -389,7 +394,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 0);
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   EXPECT_FALSE(view_->GetVisible());
   histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 0);
@@ -407,7 +413,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
 
   delegate.supports_switching = true;
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   EXPECT_TRUE(view_->GetVisible());
   histogram_tester_.ExpectTotalCount(kDeviceSelectorAvailableHistogramName, 2);
@@ -431,7 +438,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 0);
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   EXPECT_FALSE(view_->GetVisible());
   view_.reset();
 
@@ -441,7 +449,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
 
   delegate.supports_switching = true;
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   view_.reset();
 
   histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 1);
@@ -449,7 +458,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
                                       1);
 
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, /* CastDialogController */ nullptr, "1",
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   view_->ShowDevices();
 
   histogram_tester_.ExpectTotalCount(kDeviceSelectorOpenedHistogramName, 2);

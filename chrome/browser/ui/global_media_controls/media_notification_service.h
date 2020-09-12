@@ -39,6 +39,10 @@ namespace media_message_center {
 class MediaSessionNotificationItem;
 }  // namespace media_message_center
 
+namespace media_router {
+class CastDialogController;
+}
+
 class MediaDialogDelegate;
 class MediaNotificationContainerImpl;
 class MediaNotificationServiceObserver;
@@ -130,6 +134,11 @@ class MediaNotificationService
 
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
+
+  // Instantiates a MediaRouterViewsUI object associated with the Session with
+  // the given |session_id|.
+  std::unique_ptr<media_router::CastDialogController>
+  CreateCastDialogControllerForSession(const std::string& session_id);
 
  private:
   friend class MediaNotificationServiceTest;
@@ -261,7 +270,7 @@ class MediaNotificationService
     mojo::Receiver<media_session::mojom::MediaControllerObserver>
         observer_receiver_{this};
 
-    // Used to request audio output be routed to a different device
+    // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
 
     base::WeakPtr<media_router::WebContentsPresentationManager>

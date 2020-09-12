@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -138,9 +139,14 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   if (base::FeatureList::IsEnabled(
           media::kGlobalMediaControlsSeamlessTransfer) &&
       !is_cast_notification) {
+    auto cast_controller =
+        media_router::GlobalMediaControlsCastStartStopEnabled()
+            ? service_->CreateCastDialogControllerForSession(id_)
+            : nullptr;
     auto audio_device_selector_view =
         std::make_unique<MediaNotificationDeviceSelectorView>(
-            this, audio_sink_id_, foreground_color_, background_color_);
+            this, std::move(cast_controller), audio_sink_id_, foreground_color_,
+            background_color_);
     audio_device_selector_view_ =
         AddChildView(std::move(audio_device_selector_view));
     view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
