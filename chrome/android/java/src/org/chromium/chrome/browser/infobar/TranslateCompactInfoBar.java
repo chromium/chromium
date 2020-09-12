@@ -229,7 +229,9 @@ public class TranslateCompactInfoBar extends InfoBar
             // Set translating status in the beginning for pages translated automatically.
             mTabLayout.getTabAt(TARGET_TAB_INDEX).select();
             mTabLayout.showProgressBarOnTab(TARGET_TAB_INDEX);
-            mUserInteracted = true;
+            if (mOptions.triggeredFromMenu()) {
+                mUserInteracted = true;
+            }
         } else if (mInitialStep == AFTER_TRANSLATING_INFOBAR) {
             // Focus on target tab since we are after translation.
             mTabLayout.getTabAt(TARGET_TAB_INDEX).select();
@@ -298,14 +300,34 @@ public class TranslateCompactInfoBar extends InfoBar
         }
     }
 
-    private void startTranslating(int tabPosition) {
-        if (TARGET_TAB_INDEX == tabPosition) {
-            // Already on the target tab.
+    /**
+     * Selects the tab at tabIndex without triggering onTabSelected. This avoids treating the
+     * selection as a user interaction and prevents a potential loop where a translate state change
+     * updates the UI, which then updates the translate state.
+     */
+    private void silentlySelectTabAt(int tabIndex) {
+        if (mTabLayout == null) {
+            return;
+        }
+
+        mTabLayout.removeOnTabSelectedListener(this);
+        mTabLayout.getTabAt(tabIndex).select();
+        mTabLayout.addOnTabSelectedListener(this);
+    }
+
+    /**
+     * Begins the translation process and marks it as initiated by the user.
+     */
+    private void startUserInitiatedTranslation() {
+        mUserInteracted = true;
+        onButtonClicked(ActionType.TRANSLATE);
+    }
+
+    @CalledByNative
+    private void onTranslating() {
+        if (mTabLayout != null) {
+            silentlySelectTabAt(TARGET_TAB_INDEX);
             mTabLayout.showProgressBarOnTab(TARGET_TAB_INDEX);
-            onButtonClicked(ActionType.TRANSLATE);
-            mUserInteracted = true;
-        } else {
-            mTabLayout.getTabAt(TARGET_TAB_INDEX).select();
         }
     }
 
@@ -319,11 +341,7 @@ public class TranslateCompactInfoBar extends InfoBar
                 Toast.makeText(getContext(), R.string.translate_infobar_error, Toast.LENGTH_SHORT)
                         .show();
                 errorUIShown = true;
-                // Disable OnTabSelectedListener then revert selection.
-                mTabLayout.removeOnTabSelectedListener(this);
-                mTabLayout.getTabAt(SOURCE_TAB_INDEX).select();
-                // Add OnTabSelectedListener back.
-                mTabLayout.addOnTabSelectedListener(this);
+                silentlySelectTabAt(SOURCE_TAB_INDEX);
             }
         }
         return errorUIShown;
@@ -382,13 +400,14 @@ public class TranslateCompactInfoBar extends InfoBar
             case SOURCE_TAB_INDEX:
                 incrementAndRecordTranslationsPerPageCount();
                 recordInfobarAction(INFOBAR_REVERT);
+                mUserInteracted = true;
                 onButtonClicked(ActionType.TRANSLATE_SHOW_ORIGINAL);
                 return;
             case TARGET_TAB_INDEX:
                 recordInfobarAction(INFOBAR_TARGET_TAB_TRANSLATE);
                 recordInfobarLanguageData(
                         INFOBAR_HISTOGRAM_TRANSLATE_LANGUAGE, mOptions.targetLanguageCode());
-                startTranslating(TARGET_TAB_INDEX);
+                startUserInitiatedTranslation();
                 return;
             default:
                 assert false : "Unexpected Tab Index";
@@ -460,7 +479,7 @@ public class TranslateCompactInfoBar extends InfoBar
                     TranslateCompactInfoBar.this, TranslateOption.TARGET_CODE, code);
             // Adjust UI.
             mTabLayout.replaceTabTitle(TARGET_TAB_INDEX, mOptions.getRepresentationFromCode(code));
-            startTranslating(mTabLayout.getSelectedTabPosition());
+            startUserInitiatedTranslation();
         }
     }
 
@@ -474,7 +493,7 @@ public class TranslateCompactInfoBar extends InfoBar
                     TranslateCompactInfoBar.this, TranslateOption.SOURCE_CODE, code);
             // Adjust UI.
             mTabLayout.replaceTabTitle(SOURCE_TAB_INDEX, mOptions.getRepresentationFromCode(code));
-            startTranslating(mTabLayout.getSelectedTabPosition());
+            startUserInitiatedTranslation();
         }
     }
 
@@ -585,20 +604,22 @@ public class TranslateCompactInfoBar extends InfoBar
 
         switch (actionId) {
             case ACTION_OVERFLOW_ALWAYS_TRANSLATE:
+                mUserInteracted = true;
                 toggleAlwaysTranslate();
                 // Start translating if always translate is selected and if page is not already
                 // translated to the target language.
                 if (mOptions.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE)
                         && mTabLayout.getSelectedTabPosition() == SOURCE_TAB_INDEX) {
-                    startTranslating(mTabLayout.getSelectedTabPosition());
+                    startUserInitiatedTranslation();
                 }
                 return;
             case ACTION_AUTO_ALWAYS_TRANSLATE:
                 toggleAlwaysTranslate();
                 return;
             case ACTION_OVERFLOW_NEVER_LANGUAGE:
-            case ACTION_AUTO_NEVER_LANGUAGE:
                 mUserInteracted = true;
+                // Fallthrough intentional.
+            case ACTION_AUTO_NEVER_LANGUAGE:
                 // After applying this option, the infobar will dismiss.
                 TranslateCompactInfoBarJni.get().applyBoolTranslateOption(
                         mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this,

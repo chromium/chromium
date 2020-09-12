@@ -245,7 +245,6 @@ bool ChromeTranslateClient::ShowTranslateUI(
       InfoBarService::FromWebContents(web_contents()),
       web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
       source_language, target_language, error_type, triggered_from_menu);
-  return true;
 #else
   DCHECK(TranslateService::IsTranslateBubbleEnabled());
   // Bubble UI.
@@ -299,7 +298,7 @@ void ChromeTranslateClient::ManualTranslateWhenReady() {
     manual_translate_on_ready_ = true;
   } else {
     translate::TranslateManager* manager = GetTranslateManager();
-    manager->InitiateManualTranslation();
+    manager->InitiateManualTranslation(true);
   }
 }
 #endif
@@ -356,7 +355,7 @@ void ChromeTranslateClient::OnLanguageDetermined(
 #if defined(OS_ANDROID)
   // See ChromeTranslateClient::ManualTranslateOnReady
   if (manual_translate_on_ready_) {
-    GetTranslateManager()->InitiateManualTranslation();
+    GetTranslateManager()->InitiateManualTranslation(true);
     manual_translate_on_ready_ = false;
   }
 #endif

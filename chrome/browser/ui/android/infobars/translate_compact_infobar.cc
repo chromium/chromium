@@ -229,6 +229,9 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
     if (error_ui_shown) {
       GetDelegate()->OnErrorShown(error_type);
     }
+  } else if (step == translate::TRANSLATE_STEP_TRANSLATING) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_TranslateCompactInfoBar_onTranslating(env, GetJavaInfoBar());
   }
 }
 
