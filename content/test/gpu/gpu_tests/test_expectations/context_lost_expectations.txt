@@ -1,4 +1,4 @@
-# tags: [ android fuchsia linux lion mac mountainlion win win7 win8 win10]
+# tags: [ android chromeos fuchsia linux lion mac mountainlion win win7 win8 win10]
 # tags: [ debug ]
 # tags: [ intel nvidia qualcomm-adreno-(tm)-418 qualcomm-adreno-(tm)-420 ]
 # tags: [ asan no-asan ]
@@ -75,7 +75,8 @@ crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
 crbug.com/1105308 [ fuchsia ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/1105308 [ fuchsia ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
-# Webgpu not fully supported on Linux, Android, and Fuchsia
+# Webgpu not fully supported on Linux, Android, ChromeOS, and Fuchsia
 [ linux ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 [ fuchsia ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
 [ android ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
+[ chromeos ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
