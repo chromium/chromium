@@ -159,12 +159,14 @@ StreamMixer::StreamMixer(
     : StreamMixer(nullptr,
                   std::make_unique<base::Thread>("CMA mixer"),
                   nullptr,
+                  "",
                   std::move(io_task_runner)) {}
 
 StreamMixer::StreamMixer(
     std::unique_ptr<MixerOutputStream> output,
     std::unique_ptr<base::Thread> mixer_thread,
     scoped_refptr<base::SingleThreadTaskRunner> mixer_task_runner,
+    const std::string& pipeline_json,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner)
     : output_(std::move(output)),
       post_processing_pipeline_factory_(
@@ -226,8 +228,8 @@ StreamMixer::StreamMixer(
     LOG(INFO) << "Setting fixed sample rate to " << fixed_output_sample_rate_;
   }
 
-  CreatePostProcessors([](bool, const std::string&) {},
-                       "" /* override_config */, kDefaultInputChannels);
+  CreatePostProcessors([](bool, const std::string&) {}, pipeline_json,
+                       kDefaultInputChannels);
   mixer_pipeline_->SetPlayoutChannel(playout_channel_);
 
   // TODO(jyw): command line flag for filter frame alignment.

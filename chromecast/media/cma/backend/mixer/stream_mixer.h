@@ -122,6 +122,7 @@ class StreamMixer {
       std::unique_ptr<MixerOutputStream> output,
       std::unique_ptr<base::Thread> mixer_thread,
       scoped_refptr<base::SingleThreadTaskRunner> mixer_task_runner,
+      const std::string& pipeline_json,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner = nullptr);
   void ResetPostProcessorsForTest(
       std::unique_ptr<PostProcessingPipelineFactory> pipeline_factory,

@@ -378,8 +378,8 @@ class StreamMixerTest : public testing::Test {
   StreamMixerTest() {
     auto output = std::make_unique<NiceMock<MockMixerOutput>>();
     mock_output_ = output.get();
-    mixer_ = std::make_unique<StreamMixer>(std::move(output), nullptr,
-                                           base::ThreadTaskRunnerHandle::Get());
+    mixer_ = std::make_unique<StreamMixer>(
+        std::move(output), nullptr, base::ThreadTaskRunnerHandle::Get(), "{}");
     mixer_->SetVolume(AudioContentType::kMedia, 1.0f);
     mixer_->SetVolume(AudioContentType::kAlarm, 1.0f);
     std::string test_pipeline_json = base::StringPrintf(

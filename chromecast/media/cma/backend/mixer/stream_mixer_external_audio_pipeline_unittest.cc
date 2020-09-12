@@ -82,8 +82,8 @@ class ExternalAudioPipelineTest : public ::testing::Test {
     // Set that external library is supported.
     external_audio_pipeline_support_->SetSupported();
 
-    mixer_ = std::make_unique<StreamMixer>(nullptr, nullptr,
-                                           base::ThreadTaskRunnerHandle::Get());
+    mixer_ = std::make_unique<StreamMixer>(
+        nullptr, nullptr, base::ThreadTaskRunnerHandle::Get(), "{}");
   }
 
   void TearDown() override {
