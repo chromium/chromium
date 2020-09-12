@@ -1821,4 +1821,24 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
             properties->Filter()->Filter().ReferenceBox().Location());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>line {transition: transform 1s; transform: translateY(1px)}</style>
+    <svg width="200" height="200" stroke="black">
+      <line id="line" x1="0" y1="0" x2="150" y2="50">
+    </svg>
+  )HTML");
+
+  const auto* properties = PaintPropertiesForElement("line");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Transform());
+  EXPECT_FALSE(properties->Transform()->HasDirectCompositingReasons());
+
+  GetDocument().getElementById("line")->setAttribute(
+      html_names::kStyleAttr, "transform: translateY(100px)");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(properties, PaintPropertiesForElement("line"));
+  EXPECT_TRUE(properties->Transform()->HasDirectCompositingReasons());
+}
+
 }  // namespace blink

@@ -2251,7 +2251,8 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       (diff.TransformChanged() || diff.OpacityChanged() ||
        diff.ZIndexChanged() || diff.FilterChanged() ||
        diff.BackdropFilterChanged() || diff.CssClipChanged() ||
-       diff.BlendModeChanged() || diff.MaskChanged())) {
+       diff.BlendModeChanged() || diff.MaskChanged() ||
+       diff.CompositingReasonsChanged())) {
     SetNeedsPaintPropertyUpdate();
   }
 }
