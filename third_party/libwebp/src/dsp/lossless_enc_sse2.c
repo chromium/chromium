@@ -460,20 +460,22 @@ static void PredictorSub0_SSE2(const uint32_t* in, const uint32_t* upper,
   (void)upper;
 }
 
-#define GENERATE_PREDICTOR_1(X, IN)                                           \
-static void PredictorSub##X##_SSE2(const uint32_t* in, const uint32_t* upper, \
-                                   int num_pixels, uint32_t* out) {           \
-  int i;                                                                      \
-  for (i = 0; i + 4 <= num_pixels; i += 4) {                                  \
-    const __m128i src = _mm_loadu_si128((const __m128i*)&in[i]);              \
-    const __m128i pred = _mm_loadu_si128((const __m128i*)&(IN));              \
-    const __m128i res = _mm_sub_epi8(src, pred);                              \
-    _mm_storeu_si128((__m128i*)&out[i], res);                                 \
-  }                                                                           \
-  if (i != num_pixels) {                                                      \
-    VP8LPredictorsSub_C[(X)](in + i, upper + i, num_pixels - i, out + i);     \
-  }                                                                           \
-}
+#define GENERATE_PREDICTOR_1(X, IN)                                         \
+  static void PredictorSub##X##_SSE2(const uint32_t* const in,              \
+                                     const uint32_t* const upper,           \
+                                     int num_pixels, uint32_t* const out) { \
+    int i;                                                                  \
+    for (i = 0; i + 4 <= num_pixels; i += 4) {                              \
+      const __m128i src = _mm_loadu_si128((const __m128i*)&in[i]);          \
+      const __m128i pred = _mm_loadu_si128((const __m128i*)&(IN));          \
+      const __m128i res = _mm_sub_epi8(src, pred);                          \
+      _mm_storeu_si128((__m128i*)&out[i], res);                             \
+    }                                                                       \
+    if (i != num_pixels) {                                                  \
+      VP8LPredictorsSub_C[(X)](in + i, WEBP_OFFSET_PTR(upper, i),           \
+                               num_pixels - i, out + i);                    \
+    }                                                                       \
+  }
 
 GENERATE_PREDICTOR_1(1, in[i - 1])       // Predictor1: L
 GENERATE_PREDICTOR_1(2, upper[i])        // Predictor2: T
