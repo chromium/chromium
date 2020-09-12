@@ -411,6 +411,10 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
 SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Since SharedImageFactory also has a reference to ImplOnGpu's member
+  // SharedContextState, we need to explicitly invoke the factory's destructor
+  // before deleting ImplOnGpu's other member variables.
+  shared_image_factory_.reset();
   if (context_state_) {
     context_state_->RemoveContextLostObserver(this);
 
