@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,7 +18,9 @@ UpdatePasswordInfobarInteractionHandler::
     UpdatePasswordInfobarInteractionHandler(Browser* browser)
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypePasswordUpdate,
-          std::make_unique<PasswordInfobarBannerInteractionHandler>(),
+          std::make_unique<PasswordInfobarBannerInteractionHandler>(
+              UpdatePasswordInfobarBannerOverlayRequestConfig::
+                  RequestSupport()),
           /*sheet_handler=*/nullptr,
           std::make_unique<PasswordInfobarModalInteractionHandler>(browser)) {}
 

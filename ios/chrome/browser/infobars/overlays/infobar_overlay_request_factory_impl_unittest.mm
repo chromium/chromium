@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
@@ -64,7 +65,29 @@ TEST_F(InfobarOverlayRequestFactoryImplTest, SavePasswords) {
       factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
   EXPECT_TRUE(
       modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
+}
 
+// Tests that the factory creates an update passwords infobar request.
+TEST_F(InfobarOverlayRequestFactoryImplTest, UpdatePasswords) {
+  GURL url("https://chromium.test");
+  std::unique_ptr<InfoBarDelegate> delegate =
+      MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username", @"password",
+                                                       url);
+  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordUpdate,
+                     std::move(delegate));
+
+  // Test banner request creation.
+  std::unique_ptr<OverlayRequest> banner_request =
+      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kBanner);
+  EXPECT_TRUE(
+      banner_request
+          ->GetConfig<UpdatePasswordInfobarBannerOverlayRequestConfig>());
+
+  // Test modal request creation.
+  std::unique_ptr<OverlayRequest> modal_request =
+      factory()->CreateInfobarRequest(&infobar, InfobarOverlayType::kModal);
+  EXPECT_TRUE(
+      modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
   // TODO(crbug.com/1033154): Add additional tests for other
   // InfobarOverlayTypes.
 }

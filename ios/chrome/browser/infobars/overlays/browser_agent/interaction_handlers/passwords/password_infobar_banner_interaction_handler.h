@@ -14,7 +14,8 @@ class IOSChromeSavePasswordInfoBarDelegate;
 class PasswordInfobarBannerInteractionHandler
     : public InfobarBannerInteractionHandler {
  public:
-  PasswordInfobarBannerInteractionHandler();
+  PasswordInfobarBannerInteractionHandler(
+      const OverlayRequestSupport* request_support);
   ~PasswordInfobarBannerInteractionHandler() override;
 
   // InfobarBannerInteractionHandler:

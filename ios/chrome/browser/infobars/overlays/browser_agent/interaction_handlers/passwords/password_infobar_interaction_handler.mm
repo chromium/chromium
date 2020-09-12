@@ -17,7 +17,8 @@ PasswordInfobarInteractionHandler::PasswordInfobarInteractionHandler(
     Browser* browser)
     : InfobarInteractionHandler(
           InfobarType::kInfobarTypePasswordSave,
-          std::make_unique<PasswordInfobarBannerInteractionHandler>(),
+          std::make_unique<PasswordInfobarBannerInteractionHandler>(
+              SavePasswordInfobarBannerOverlayRequestConfig::RequestSupport()),
           /*sheet_handler=*/nullptr,
           std::make_unique<PasswordInfobarModalInteractionHandler>(browser)) {}
 

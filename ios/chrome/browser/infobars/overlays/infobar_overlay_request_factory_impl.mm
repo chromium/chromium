@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -29,10 +30,11 @@ InfobarOverlayRequestFactoryImpl::InfobarOverlayRequestFactoryImpl() {
                  CreateFactory<SavePasswordInfobarBannerOverlayRequestConfig>(),
                  /*detail_sheet_factory=*/nullptr,
                  CreateFactory<PasswordInfobarModalOverlayRequestConfig>());
-  SetUpFactories(InfobarType::kInfobarTypePasswordUpdate,
-                 CreateFactory<SavePasswordInfobarBannerOverlayRequestConfig>(),
-                 /*detail_sheet_factory=*/nullptr,
-                 CreateFactory<PasswordInfobarModalOverlayRequestConfig>());
+  SetUpFactories(
+      InfobarType::kInfobarTypePasswordUpdate,
+      CreateFactory<UpdatePasswordInfobarBannerOverlayRequestConfig>(),
+      /*detail_sheet_factory=*/nullptr,
+      CreateFactory<PasswordInfobarModalOverlayRequestConfig>());
   SetUpFactories(InfobarType::kInfobarTypeTranslate,
                  CreateFactory<TranslateBannerRequestConfig>(),
                  /*detail_sheet_factory=*/nullptr,
