@@ -20,6 +20,7 @@
 namespace arc {
 namespace {
 
+constexpr const char kAdbdJson[] = "/etc/arc/adbd.json";
 constexpr const char kArcVmConfigJsonPath[] = "/usr/share/arcvm/config.json";
 constexpr const char kBuiltinPath[] = "/opt/google/vms/android";
 constexpr const char kFstabPath[] = "/run/arcvm/host_generated/fstab";
@@ -42,7 +43,8 @@ FileSystemStatus::FileSystemStatus()
       vendor_image_path_(base::FilePath(kBuiltinPath).Append(kVendorImage)),
       guest_kernel_path_(base::FilePath(kBuiltinPath).Append(kKernel)),
       fstab_path_(kFstabPath),
-      is_system_image_ext_format_(IsSystemImageExtFormat(system_image_path_)) {}
+      is_system_image_ext_format_(IsSystemImageExtFormat(system_image_path_)),
+      has_adbd_json_(base::PathExists(base::FilePath(kAdbdJson))) {}
 
 // static
 bool FileSystemStatus::IsAndroidDebuggable(const base::FilePath& json_path) {
