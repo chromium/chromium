@@ -4280,12 +4280,24 @@ ci.mac_builder(
     name = "mac-arm64-rel",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
-        category = "release",
-        short_name = "a64",
+        category = "release|arm64",
+        short_name = "bld",
     ),
     main_console_view = settings.main_console_name,
     cores = None,
     os = os.MAC_ANY,
+)
+
+ci.thin_tester(
+    name = "mac-arm64-rel-tests",
+    builder_group = "chromium.fyi",
+    console_view_entry = ci.console_view_entry(
+        category = "mac",
+        short_name = "a64",
+    ),
+    # TODO(estaab): Make this true when promoting out of FYI.
+    tree_closing = False,
+    triggered_by = [builder_name("mac-arm64-rel")],
 )
 
 ci.thin_tester(

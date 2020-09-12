@@ -2409,6 +2409,15 @@
           'isolated_scripts': 'wpt_web_tests',
         },
       },
+      'mac-arm64-rel-tests': {
+        'mixins': [
+            'mac_arm64_apple_dtk_experimental',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
+      },
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
