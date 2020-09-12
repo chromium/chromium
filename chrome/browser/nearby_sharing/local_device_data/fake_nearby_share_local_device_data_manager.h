@@ -90,17 +90,9 @@ class FakeNearbyShareLocalDeviceDataManager
       std::vector<nearbyshare::proto::PublicCertificate> certificates,
       UploadCompleteCallback callback) override;
 
-  // Make protected observer-notification methods from base class public in this
-  // fake class.
-  using NearbyShareLocalDeviceDataManager::NotifyLocalDeviceDataChanged;
-
   void SetId(const std::string& id) { id_ = id; }
-  void SetFullName(const base::Optional<std::string>& full_name) {
-    full_name_ = full_name;
-  }
-  void SetIconUrl(const base::Optional<std::string>& icon_url) {
-    icon_url_ = icon_url;
-  }
+  void SetFullName(const base::Optional<std::string>& full_name);
+  void SetIconUrl(const base::Optional<std::string>& icon_url);
 
   size_t num_download_device_data_calls() const {
     return num_download_device_data_calls_;

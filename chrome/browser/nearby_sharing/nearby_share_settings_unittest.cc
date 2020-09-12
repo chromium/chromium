@@ -123,10 +123,6 @@ TEST_F(NearbyShareSettingsTest, GetAndSetDeviceName) {
   EXPECT_EQ("d", nearby_share_settings_.GetDeviceName());
 
   EXPECT_EQ("uncalled", observer_.device_name);
-  local_device_data_manager_.NotifyLocalDeviceDataChanged(
-      /*did_device_name_change=*/true,
-      /*did_full_name_change=*/false,
-      /*did_icon_url_change=*/false);
   FlushMojoMessages();
   EXPECT_EQ("d", observer_.device_name);
 

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind_test_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -82,7 +83,14 @@ TEST(NearbyShareDefaultDeviceNameTest, DefaultDeviceName) {
   EXPECT_EQ(std::string(kFakeNameFromProfile) + "'s " +
                 base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             *device_name);
-#else   // !defined(OS_CHROMEOS)
+#elif defined(OS_WIN)
+  std::string expected_model_name = GetModelNameBlocking();
+  if (expected_model_name.empty()) {
+    EXPECT_TRUE(device_name->rfind("First Last's ", 0) == 0);
+  } else {
+    EXPECT_EQ("First Last's " + expected_model_name, device_name);
+  }
+#else   // !defined(OS_CHROMEOS) && !defined(OS_WIN)
   std::string expected_model_name = GetModelNameBlocking();
   if (expected_model_name.empty()) {
     EXPECT_TRUE(

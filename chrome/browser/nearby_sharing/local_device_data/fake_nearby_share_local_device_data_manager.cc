@@ -62,6 +62,9 @@ std::string FakeNearbyShareLocalDeviceDataManager::GetId() {
 
 base::Optional<std::string>
 FakeNearbyShareLocalDeviceDataManager::GetDeviceName() const {
+  if (!device_name_ || device_name_->empty())
+    return base::nullopt;
+
   return device_name_;
 }
 
@@ -77,7 +80,14 @@ base::Optional<std::string> FakeNearbyShareLocalDeviceDataManager::GetIconUrl()
 
 void FakeNearbyShareLocalDeviceDataManager::SetDeviceName(
     const std::string& name) {
+  if (device_name_ == name)
+    return;
+
   device_name_ = name;
+  NotifyLocalDeviceDataChanged(
+      /*did_device_name_change=*/true,
+      /*did_full_name_change=*/false,
+      /*did_icon_url_change=*/false);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::DownloadDeviceData() {
@@ -95,6 +105,29 @@ void FakeNearbyShareLocalDeviceDataManager::UploadCertificates(
     UploadCompleteCallback callback) {
   upload_certificates_calls_.emplace_back(std::move(certificates),
                                           std::move(callback));
+}
+void FakeNearbyShareLocalDeviceDataManager::SetFullName(
+    const base::Optional<std::string>& full_name) {
+  if (full_name_ == full_name)
+    return;
+
+  full_name_ = full_name;
+  NotifyLocalDeviceDataChanged(
+      /*did_device_name_change=*/false,
+      /*did_full_name_change=*/true,
+      /*did_icon_url_change=*/false);
+}
+
+void FakeNearbyShareLocalDeviceDataManager::SetIconUrl(
+    const base::Optional<std::string>& icon_url) {
+  if (icon_url_ == icon_url)
+    return;
+
+  icon_url_ = icon_url;
+  NotifyLocalDeviceDataChanged(
+      /*did_device_name_change=*/false,
+      /*did_full_name_change=*/false,
+      /*did_icon_url_change=*/true);
 }
 
 void FakeNearbyShareLocalDeviceDataManager::OnStart() {}

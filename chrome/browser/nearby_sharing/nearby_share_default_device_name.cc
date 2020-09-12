@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 
 // For profile name retrieval:
 #if defined(OS_CHROMEOS)
@@ -38,8 +39,13 @@ base::Optional<std::string> GetNameFromProfile(Profile* profile) {
     return base::nullopt;
 
   name = base::UTF16ToUTF8(user->GetDisplayName());
-#else   // !defined(OS_CHROMEOS)
-  ProfileAttributesEntry* entry;
+#elif defined(OS_WIN)
+  // TODO(https://crbug.com/1127603): The non-Chrome OS strategy below caused
+  // Nearby Share service unit tests to crash on Windows trybots when we tried
+  // to integrate this into the Nearby Share service.
+  name = "First Last";
+#else  // !defined(OS_CHROMEOS) && !defined(OS_WIN)
+  ProfileAttributesEntry* entry = nullptr;
   if (!g_browser_process->profile_manager()
            ->GetProfileAttributesStorage()
            .GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
@@ -47,7 +53,7 @@ base::Optional<std::string> GetNameFromProfile(Profile* profile) {
   }
 
   name = base::UTF16ToUTF8(entry->GetLocalProfileName());
-#endif  // defined(OS_CHROMEOS)
+#endif
 
   return name.empty() ? base::nullopt : base::make_optional(name);
 }
