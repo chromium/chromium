@@ -22,6 +22,7 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
+#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
@@ -64,7 +65,8 @@ class ListPublicCertificatesResponse;
 // interface for performing cryptographic operations related to certificates."
 class NearbyShareCertificateManagerImpl
     : public NearbyShareCertificateManager,
-      public NearbyShareContactManager::Observer {
+      public NearbyShareContactManager::Observer,
+      public NearbyShareLocalDeviceDataManager::Observer {
  public:
   class Factory {
    public:
@@ -125,6 +127,11 @@ class NearbyShareCertificateManagerImpl
       const std::set<std::string>& allowed_contact_ids,
       const std::vector<nearbyshare::proto::ContactRecord>& contacts) override;
   void OnContactsUploaded(bool did_contacts_change_since_last_upload) override;
+
+  // NearbyShareLocalDeviceDataManager::Observer:
+  void OnLocalDeviceDataChanged(bool did_device_name_change,
+                                bool did_full_name_change,
+                                bool did_icon_url_change) override;
 
   // Used by the private certificate expiration scheduler to determine the next
   // private certificate expiration time. Returns base::Time::Min() if

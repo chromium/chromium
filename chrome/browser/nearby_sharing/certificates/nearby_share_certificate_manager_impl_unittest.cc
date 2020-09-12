@@ -68,6 +68,15 @@ class NearbyShareCertificateManagerImplTest
     NearbyShareCertificateStorageImpl::Factory::SetFactoryForTesting(
         &cert_store_factory_);
 
+    // Set default device data.
+    local_device_data_manager_->SetDeviceName(
+        GetNearbyShareTestMetadata().device_name());
+    local_device_data_manager_->SetFullName(
+        GetNearbyShareTestMetadata().full_name());
+    local_device_data_manager_->SetIconUrl(
+        GetNearbyShareTestMetadata().icon_url());
+    SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
+
     cert_manager_ = NearbyShareCertificateManagerImpl::Factory::Create(
         local_device_data_manager_.get(), contact_manager_.get(),
         pref_service_.get(),
@@ -497,14 +506,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ValidCertificates) {
   cert_store_->SetPrivateCertificates(private_certificates_);
 
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
-
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/false,
                                   /*expected_success=*/true);
@@ -515,14 +516,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadSuccess) {
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
-
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
@@ -536,14 +529,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   cert_store_->SetPrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
-
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
                                   /*expected_success=*/true);
@@ -555,8 +540,8 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RevokePrivateCertificates_OnAllowlistChanged) {
   cert_manager_->Start();
 
-  // Destroy and recreate private certificates if and only if contacts were
-  // removed from the user's list of selected contacts.
+  // Destroy and recreate private certificates if contacts were removed from the
+  // user's list of selected contacts.
   size_t num_expected_calls = 0;
   for (bool were_contacts_added_to_allowlist : {true, false}) {
     for (bool were_contacts_removed_from_allowlist : {true, false}) {
@@ -569,7 +554,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
       EXPECT_EQ(num_expected_calls,
                 cert_store_->num_clear_private_certificates_calls());
       EXPECT_EQ(num_expected_calls,
-                private_cert_exp_scheduler_->num_reschedule_calls());
+                private_cert_exp_scheduler_->num_immediate_requests());
     }
   }
 }
@@ -578,8 +563,8 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RevokePrivateCertificates_OnContactsUploaded) {
   cert_manager_->Start();
 
-  // Destroy and recreate private certificates if and only if the user's contact
-  // list has changed since the last upload.
+  // Destroy and recreate private certificates if the user's contact list has
+  // changed since the last upload.
   size_t num_expected_calls = 0;
   for (bool did_contacts_change_since_last_upload : {true, false}) {
     contact_manager_->NotifyContactsUploaded(
@@ -590,7 +575,33 @@ TEST_F(NearbyShareCertificateManagerImplTest,
     EXPECT_EQ(num_expected_calls,
               cert_store_->num_clear_private_certificates_calls());
     EXPECT_EQ(num_expected_calls,
-              private_cert_exp_scheduler_->num_reschedule_calls());
+              private_cert_exp_scheduler_->num_immediate_requests());
+  }
+}
+
+TEST_F(NearbyShareCertificateManagerImplTest,
+       RefreshPrivateCertificates_OnLocalDeviceMetadataChanged) {
+  cert_manager_->Start();
+
+  // Destroy and recreate private certificates if any metadata fields change.
+  size_t num_expected_calls = 0;
+  for (bool did_device_name_change : {true, false}) {
+    for (bool did_full_name_change : {true, false}) {
+      for (bool did_icon_url_change : {true, false}) {
+        local_device_data_manager_->NotifyLocalDeviceDataChanged(
+            did_device_name_change, did_full_name_change, did_icon_url_change);
+
+        if (did_device_name_change || did_full_name_change ||
+            did_icon_url_change) {
+          ++num_expected_calls;
+        }
+
+        EXPECT_EQ(num_expected_calls,
+                  cert_store_->num_clear_private_certificates_calls());
+        EXPECT_EQ(num_expected_calls,
+                  private_cert_exp_scheduler_->num_immediate_requests());
+      }
+    }
   }
 }
 
@@ -599,14 +610,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   // First certificates are expired;
   FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
   cert_store_->SetPrivateCertificates(private_certificates_);
-
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
@@ -621,11 +624,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
       std::vector<NearbySharePrivateCertificate>());
 
   // Device name is missing in local device data manager.
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
+  local_device_data_manager_->SetDeviceName(std::string());
 
   cert_manager_->Start();
 
@@ -640,12 +639,6 @@ TEST_F(NearbyShareCertificateManagerImplTest,
       std::vector<NearbySharePrivateCertificate>());
 
   // The bluetooth adapter returns an invalid Bluetooth MAC address.
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  local_device_data_manager_->SetFullName(
-      GetNearbyShareTestMetadata().full_name());
-  local_device_data_manager_->SetIconUrl(
-      GetNearbyShareTestMetadata().icon_url());
   SetBluetoothMacAddress("invalid_mac_address");
 
   cert_manager_->Start();
@@ -666,9 +659,8 @@ TEST_F(NearbyShareCertificateManagerImplTest,
       std::vector<NearbySharePrivateCertificate>());
 
   // Full name and icon URL are missing in local device data manager.
-  local_device_data_manager_->SetDeviceName(
-      GetNearbyShareTestMetadata().device_name());
-  SetBluetoothMacAddress(kTestUnparsedBluetoothMacAddress);
+  local_device_data_manager_->SetFullName(base::nullopt);
+  local_device_data_manager_->SetIconUrl(base::nullopt);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,

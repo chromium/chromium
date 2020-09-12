@@ -21,7 +21,6 @@
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
-#include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
@@ -234,10 +233,12 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
                                   /*page_number=*/1,
                                   /*certificate_count=*/0),
               clock_)) {
+  local_device_data_manager_->AddObserver(this);
   contact_manager_->AddObserver(this);
 }
 
 NearbyShareCertificateManagerImpl::~NearbyShareCertificateManagerImpl() {
+  local_device_data_manager_->RemoveObserver(this);
   contact_manager_->RemoveObserver(this);
 }
 
@@ -303,7 +304,7 @@ void NearbyShareCertificateManagerImpl::OnAllowlistChanged(
     return;
 
   certificate_storage_->ClearPrivateCertificates();
-  private_certificate_expiration_scheduler_->Reschedule();
+  private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
 void NearbyShareCertificateManagerImpl::OnContactsDownloaded(
@@ -316,7 +317,18 @@ void NearbyShareCertificateManagerImpl::OnContactsUploaded(
     return;
 
   certificate_storage_->ClearPrivateCertificates();
-  private_certificate_expiration_scheduler_->Reschedule();
+  private_certificate_expiration_scheduler_->MakeImmediateRequest();
+}
+
+void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
+    bool did_device_name_change,
+    bool did_full_name_change,
+    bool did_icon_url_change) {
+  if (!did_device_name_change && !did_full_name_change && !did_icon_url_change)
+    return;
+
+  certificate_storage_->ClearPrivateCertificates();
+  private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
 base::Optional<base::Time>
