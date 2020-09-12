@@ -144,10 +144,6 @@ bool OSExchangeData::GetVirtualFilesAsTempFiles(
         callback) const {
   return provider_->GetVirtualFilesAsTempFiles(std::move(callback));
 }
-
-void OSExchangeData::SetDownloadFileInfo(DownloadFileInfo* download) {
-  provider_->SetDownloadFileInfo(download);
-}
 #endif
 
 #if defined(USE_AURA)

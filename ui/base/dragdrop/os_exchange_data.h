@@ -176,9 +176,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
                                   base::FilePath,
                                   /*display name*/ base::FilePath>>&)> callback)
       const;
-
-  // Adds a download file with full path (CF_HDROP).
-  void SetDownloadFileInfo(DownloadFileInfo* download);
 #endif
 
 #if defined(USE_AURA)
