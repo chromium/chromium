@@ -289,8 +289,10 @@ void AccessibilityTreeFormatterAuraLinux::AddActionProperties(
     return;
 
   auto actions = std::make_unique<base::ListValue>();
-  for (int i = 0; i < action_count; i++)
-    actions->AppendString(atk_action_get_name(action, i));
+  for (int i = 0; i < action_count; i++) {
+    const char* name = atk_action_get_name(action, i);
+    actions->AppendString(name ? name : "");
+  }
   dict->Set("actions", std::move(actions));
 }
 

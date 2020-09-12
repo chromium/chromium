@@ -326,7 +326,8 @@ void NetworkFetcherWinHTTP::HeadersAvailable() {
   if (SUCCEEDED(QueryHeadersString(
           request_handle_.get(), WINHTTP_QUERY_CUSTOM,
           base::SysUTF8ToWide(
-              update_client::NetworkFetcher::kHeaderXCupServerProof),
+              update_client::NetworkFetcher::kHeaderXCupServerProof)
+              .c_str(),
           &xheader_cup_server_proof))) {
     header_x_cup_server_proof_ = base::SysWideToUTF8(xheader_cup_server_proof);
   }
@@ -334,8 +335,8 @@ void NetworkFetcherWinHTTP::HeadersAvailable() {
   int xheader_retry_after_sec = 0;
   if (SUCCEEDED(QueryHeadersInt(
           request_handle_.get(), WINHTTP_QUERY_CUSTOM,
-          base::SysUTF8ToWide(
-              update_client::NetworkFetcher::kHeaderXRetryAfter),
+          base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderXRetryAfter)
+              .c_str(),
           &xheader_retry_after_sec))) {
     header_x_retry_after_sec_ = xheader_retry_after_sec;
   }

@@ -30,8 +30,8 @@ const char kVideoSubsystem[] = "video4linux";
 
 // Add more subsystems here for monitoring.
 const SubsystemMap kSubsystemMap[] = {
-    {base::SystemMonitor::DEVTYPE_AUDIO, kAudioSubsystem, NULL},
-    {base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE, kVideoSubsystem, NULL},
+    {base::SystemMonitor::DEVTYPE_AUDIO, kAudioSubsystem, ""},
+    {base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE, kVideoSubsystem, ""},
 };
 
 }  // namespace

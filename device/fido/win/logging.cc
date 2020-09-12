@@ -32,6 +32,10 @@ std::wstring Quoted(base::WStringPiece in) {
   return L"\"" + result + L"\"";
 }
 
+std::wstring Quoted(const wchar_t* in) {
+  return Quoted(base::WStringPiece(in ? in : L""));
+}
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out,

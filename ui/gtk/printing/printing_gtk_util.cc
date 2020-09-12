@@ -47,8 +47,9 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
   DCHECK(page_setup);
   DCHECK(print_settings);
 
-  base::string16 name(base::UTF8ToUTF16(
-      static_cast<const char*>(gtk_print_settings_get_printer(settings))));
+  const char* printer_name = gtk_print_settings_get_printer(settings);
+  base::string16 name =
+      printer_name ? base::UTF8ToUTF16(printer_name) : base::string16();
   print_settings->set_device_name(name);
 
   gfx::Size physical_size_device_units;

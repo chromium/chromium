@@ -340,7 +340,7 @@ class SearchEnginePreconnectorGoogleOnlyBrowserTest
            {net::features::kNetUnusedIdleSocketTimeout,
             {{"unused_idle_socket_timeout_seconds", "60"}}}},
           {
-              {features::kPreconnectToSearchNonGoogle, {{}}},
+              features::kPreconnectToSearchNonGoogle,
           });
     }
   }

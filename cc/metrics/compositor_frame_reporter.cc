@@ -235,9 +235,9 @@ std::string GetCompositorLatencyHistogramName(
 std::string GetEventLatencyHistogramBaseName(
     const EventMetrics& event_metrics) {
   const bool is_scroll = event_metrics.scroll_type().has_value();
-  return base::StrCat(
-      {"EventLatency.", event_metrics.GetTypeName(), is_scroll ? "." : nullptr,
-       is_scroll ? event_metrics.GetScrollTypeName() : nullptr});
+  return base::StrCat({"EventLatency.", event_metrics.GetTypeName(),
+                       is_scroll ? "." : "",
+                       is_scroll ? event_metrics.GetScrollTypeName() : ""});
 }
 
 base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {

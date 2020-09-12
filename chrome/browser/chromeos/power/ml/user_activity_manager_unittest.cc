@@ -992,7 +992,7 @@ TEST_P(UserActivityManagerTest, ScreenDimDeferredWithFinalEvent) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
 
   // sigmoid(0.43) * 100 = 60
@@ -1047,7 +1047,7 @@ TEST_P(UserActivityManagerTest, ScreenDimDeferredWithoutFinalEvent) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
 
   // sigmoid(0.43) * 100 = 60
@@ -1087,7 +1087,7 @@ TEST_P(UserActivityManagerTest, ScreenDimRequestCanceled) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
 
   // sigmoid(0.43) * 100 = 60
@@ -1134,7 +1134,7 @@ TEST_P(UserActivityManagerTest, ScreenDimConsecutiveRequests) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
 
   // sigmoid(0.43) * 100 = 60
@@ -1193,7 +1193,7 @@ TEST_P(UserActivityManagerTest, ScreenDimNotDeferred) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
 
   // sigmoid(0.43) * 100 = 60
@@ -1240,7 +1240,7 @@ TEST_P(UserActivityManagerTest, TwoScreenDimImminentWithEventInBetween) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
   model_.set_decision_threshold(50);
 
@@ -1333,7 +1333,7 @@ TEST_P(UserActivityManagerTest, TwoScreenDimImminentWithoutEventInBetween) {
   } else {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::kUserActivityPrediction, params}},
-        {{features::kSmartDimNewMlAgent, {{}}}});
+        {features::kSmartDimNewMlAgent});
   }
   model_.set_decision_threshold(50);
 
@@ -1414,7 +1414,7 @@ TEST_P(UserActivityManagerTest, ModelError) {
   // kSmartDimNewMlAgent for this test.
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kUserActivityPrediction, params}},
-      {{features::kSmartDimNewMlAgent, {{}}}});
+      {features::kSmartDimNewMlAgent});
 
   // This value will trigger a model error.
   model_.set_inactivity_score(160);

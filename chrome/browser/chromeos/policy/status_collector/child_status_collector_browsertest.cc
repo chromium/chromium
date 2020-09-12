@@ -231,9 +231,9 @@ class ChildStatusCollectorTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {{features::kPerAppTimeLimits,
-                                 features::kAppActivityReporting}},
-        /* disabled_features */ {{}});
+        /* enabled_features */ {features::kPerAppTimeLimits,
+                                features::kAppActivityReporting},
+        /* disabled_features */ {});
 
     RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
 

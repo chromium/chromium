@@ -103,8 +103,8 @@ const FeatureEntry::FeatureVariation kTestVariations3[] = {
 
 const char kTestVariation3Cmdline[] = "FeatureName3:param1/value/param2/value";
 
-const char* kDummyName = nullptr;
-const char* kDummyDescription = nullptr;
+const char kDummyName[] = "";
+const char kDummyDescription[] = "";
 
 bool SkipFeatureEntry(const FeatureEntry& feature_entry) {
   return false;

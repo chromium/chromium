@@ -13,19 +13,19 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string16.h"
 #include "chrome/updater/win/util.h"
 
 namespace updater {
 
 HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
-                           base::StringPiece16 name,
+                           const base::char16* name,
                            base::string16* value);
 
 HRESULT QueryHeadersInt(HINTERNET request_handle,
                         uint32_t info_level,
-                        base::StringPiece16 name,
+                        const base::char16* name,
                         int* value);
 
 // Queries WinHTTP options for the given |handle|. Returns S_OK if the call

@@ -42,7 +42,7 @@ TEST_F(XCallbackURLTest, URLWithScheme) {
   const XCallbackURLEncodeTestCase test_cases[] = {
       {
           "chrome",
-          nullptr,
+          "",
           GURL(),
           GURL(),
           GURL(),

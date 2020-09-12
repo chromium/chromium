@@ -631,8 +631,8 @@ TEST_F(ArcPolicyBridgeTest, VpnConfigAllowedTest) {
 TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /* enabled_features */ {{arc::kEnableSecondaryAccountsForChild}},
-      /* disabled_features */ {{}});
+      /* enabled_features */ {arc::kEnableSecondaryAccountsForChild},
+      /* disabled_features */ {});
   // Mark profile as supervised user.
   profile()->SetSupervisedUserId(::supervised_users::kChildAccountSUID);
   EXPECT_TRUE(profile()->IsChild());

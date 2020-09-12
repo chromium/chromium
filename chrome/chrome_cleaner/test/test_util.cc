@@ -77,8 +77,7 @@ class ChromeCleanerTestSuite : public base::TestSuite {
   void Initialize() override {
     base::TestSuite::Initialize();
     scoped_logging.reset(new chrome_cleaner::ScopedLogging(
-        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix
-                             : nullptr));
+        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix : L""));
   }
 
  private:

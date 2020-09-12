@@ -19,6 +19,11 @@
 
 namespace {
 
+base::StringPiece AsStringPiece(NSString* str) {
+  const char* data = [str fileSystemRepresentation];
+  return data ? base::StringPiece(data) : base::StringPiece();
+}
+
 // Given the |path| of a package, returns the destination that the package
 // should be zipped to. Returns an empty path on any errors.
 base::FilePath ZipDestination(const base::FilePath& path) {
@@ -32,12 +37,12 @@ base::FilePath ZipDestination(const base::FilePath& path) {
   // TMPDIR/<bundleID>/zip_cache/<guid>
 
   NSString* bundleID = [[NSBundle mainBundle] bundleIdentifier];
-  dest = dest.Append([bundleID fileSystemRepresentation]);
+  dest = dest.Append(AsStringPiece(bundleID));
 
   dest = dest.Append("zip_cache");
 
   NSString* guid = [[NSProcessInfo processInfo] globallyUniqueString];
-  dest = dest.Append([guid fileSystemRepresentation]);
+  dest = dest.Append(AsStringPiece(guid));
 
   return dest;
 }

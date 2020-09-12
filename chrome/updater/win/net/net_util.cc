@@ -5,25 +5,23 @@
 #include "chrome/updater/win/net/net_util.h"
 
 #include <vector>
-#include "base/strings/string_piece.h"
 
 namespace updater {
 
 HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
-                           base::StringPiece16 name,
+                           const base::char16* name,
                            base::string16* value) {
   DWORD num_bytes = 0;
-  ::WinHttpQueryHeaders(request_handle, info_level, name.data(),
+  ::WinHttpQueryHeaders(request_handle, info_level, name,
                         WINHTTP_NO_OUTPUT_BUFFER, &num_bytes,
                         WINHTTP_NO_HEADER_INDEX);
   auto hr = HRESULTFromLastError();
   if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
     return hr;
   std::vector<base::char16> buffer(num_bytes / sizeof(base::char16));
-  if (!::WinHttpQueryHeaders(request_handle, info_level, name.data(),
-                             &buffer.front(), &num_bytes,
-                             WINHTTP_NO_HEADER_INDEX)) {
+  if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
+                             &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }
   DCHECK_EQ(0u, num_bytes % sizeof(base::char16));
@@ -34,11 +32,11 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
 
 HRESULT QueryHeadersInt(HINTERNET request_handle,
                         uint32_t info_level,
-                        base::StringPiece16 name,
+                        const base::char16* name,
                         int* value) {
   info_level |= WINHTTP_QUERY_FLAG_NUMBER;
   DWORD num_bytes = sizeof(*value);
-  if (!::WinHttpQueryHeaders(request_handle, info_level, name.data(), value,
+  if (!::WinHttpQueryHeaders(request_handle, info_level, name, value,
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }

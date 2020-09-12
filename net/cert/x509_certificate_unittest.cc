@@ -1175,10 +1175,9 @@ struct CertificateNameVerifyTestData {
 void PrintTo(const CertificateNameVerifyTestData& data, std::ostream* os) {
   ASSERT_TRUE(data.hostname);
   ASSERT_TRUE(data.dns_names || data.ip_addrs);
-  // Using StringPiece to allow for optional fields being NULL.
   *os << " expected: " << data.expected << "; hostname: " << data.hostname
-      << "; dns_names: " << base::StringPiece(data.dns_names)
-      << "; ip_addrs: " << base::StringPiece(data.ip_addrs);
+      << "; dns_names: " << (data.dns_names ? data.dns_names : "")
+      << "; ip_addrs: " << (data.ip_addrs ? data.ip_addrs : "");
 }
 
 const CertificateNameVerifyTestData kNameVerifyTestData[] = {

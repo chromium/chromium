@@ -98,7 +98,7 @@ TEST_F(SmsObserverTest, TextMessageEmptyText) {
 TEST_F(SmsObserverTest, TextMessageMissingText) {
   SmsObserver* sms_observer = GetSmsObserver();
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
-  std::unique_ptr<base::DictionaryValue> sms(CreateMessage(nullptr));
+  std::unique_ptr<base::DictionaryValue> sms(CreateMessage(""));
   sms_observer->MessageReceived(*sms);
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());
 }
