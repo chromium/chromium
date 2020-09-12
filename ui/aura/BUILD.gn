@@ -247,7 +247,7 @@ static_library("test_support") {
     sources += [ "test/ui_controls_factory_aurawin.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "test/ui_controls_factory_aura_linux.cc" ]
   }
 

@@ -226,7 +226,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [ "test/test_compositor_host_linux.cc" ]
   }
 }

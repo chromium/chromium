@@ -148,8 +148,8 @@ declare_args() {
 # will be hosted in the mojo CDM service running in the CDM (utility) process.
 # On Fuchsia, this is only enabled to build libclearkeycdm.so, the mojo CDM
 # service is not used.
-enable_library_cdms =
-    (is_linux && !is_chromecast) || is_mac || is_win || is_fuchsia
+enable_library_cdms = (is_linux && !is_chromecast) || is_chromeos || is_mac ||
+                      is_win || is_fuchsia
 
 declare_args() {
   # When enabled, this feature allows developers to use a runtime flag to
