@@ -49,6 +49,7 @@ class Device {
   const std::string serial_;
   std::string active_package_;
   Adb* adb_;
+  int devtools_port_ = 0;
   base::OnceCallback<void()> release_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(Device);

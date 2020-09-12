@@ -169,6 +169,22 @@ Status AdbImpl::ForwardPort(const std::string& device_serial,
   return Status(kOk);
 }
 
+Status AdbImpl::KillForwardPort(const std::string& device_serial,
+                                int port) {
+  std::string response;
+  Status adb_command_status = ExecuteHostCommand(
+      device_serial, "killforward:tcp:" + base::NumberToString(port),
+      &response);
+  if (adb_command_status.IsError())
+    return Status(kUnknownError, "Failed to kill forward port of device " +
+                                     device_serial + ": " +
+                                     base::NumberToString(port) + ": " +
+                                     response + ". " +
+                                     adb_command_status.message());
+  return Status(kOk);
+}
+
+
 Status AdbImpl::SetCommandLineFile(const std::string& device_serial,
                                    const std::string& command_line_file,
                                    const std::string& exec_name,
