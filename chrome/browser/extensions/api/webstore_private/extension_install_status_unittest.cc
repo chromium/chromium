@@ -325,6 +325,27 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByManifestType) {
                                               PermissionSet()));
 }
 
+TEST_F(ExtensionInstallStatusTest, ExtensionWithoutPermissionInfo) {
+  SetExtensionSettings(R"({
+    "*": {
+      "blocked_permissions": ["storage"]
+    }
+  })");
+
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+TEST_F(ExtensionInstallStatusTest, ExtensionWithoutManifestInfo) {
+  SetExtensionSettings(R"({
+    "*": {
+      "allowed_types": ["theme"]
+    }
+  })");
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
 TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByPermissions) {
   // Block 'storage' for all extensions.
   SetExtensionSettings(R"({
