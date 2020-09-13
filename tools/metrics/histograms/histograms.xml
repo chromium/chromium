@@ -112371,6 +112371,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.ExploreOffline.Action"
     enum="NewTabPage.ExploreOffline.Action" expires_after="2020-08-01">
+  <obsolete>
+    Deprecated as of 08/2020.
+  </obsolete>
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>

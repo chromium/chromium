@@ -50901,6 +50901,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NewTabPage.ExploreOffline.Action">
+  <obsolete>
+    Deprecated as of 08/2020.
+  </obsolete>
   <int value="0" label="Displayed explore offline card on NTP"/>
   <int value="1" label="Clicked confirm button"/>
   <int value="2" label="Clicked cancel button"/>

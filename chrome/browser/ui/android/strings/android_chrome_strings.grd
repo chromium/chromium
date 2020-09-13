@@ -2500,15 +2500,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- New Tab Page strings -->
-      <message name="IDS_EXPLORE_OFFLINE_CARD_TITLE" desc="Card title text informing the user that they can explore the offline feed. ">
-        Keep exploring offline
-      </message>
-      <message name="IDS_EXPLORE_OFFLINE_CARD_DESCRIPTION" desc="Card description text informing the user that they can consume the videos, articles and other content even though they are offline. ">
-        Get articles, videos, and other content from sites you like, even if you’re offline or your connection is poor.
-      </message>
-      <message name="IDS_EXPLORE_OFFLINE_CARD_EXPLORE" desc="Button text on the explore offline card on new tab page that shows up when the user is offline. Clicking on this button will take the user to downloads home where they can consume articles, audios and videos while being offline.">
-        Explore
-      </message>
       <message name="IDS_RECENT_TABS" desc="Text for button to show 'Recent tabs', i.e. recently closed tabs and tabs that are open on other devices [CHAR-LIMIT=20]">
         Recent tabs
       </message>

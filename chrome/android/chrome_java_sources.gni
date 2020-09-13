@@ -1002,7 +1002,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/TitleUtil.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/CardsVariationParameters.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/ChildNode.java",
-  "java/src/org/chromium/chrome/browser/ntp/cards/ExploreOfflineCard.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/InnerNode.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/ItemViewType.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/NewTabPageViewHolder.java",

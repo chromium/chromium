@@ -51,15 +51,6 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <!-- Explore offline card -->
-    <ViewStub
-        android:id="@+id/explore_offline_card_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout="@layout/new_tab_page_offline_card"
-        android:inflatedId="@+id/explore_offline_card" />
-
     <!-- Middle spacer -->
     <View
         android:id="@+id/ntp_middle_spacer"

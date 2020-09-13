@@ -29,14 +29,11 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
-import org.chromium.chrome.browser.download.DownloadOpenSource;
-import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
-import org.chromium.chrome.browser.ntp.cards.ExploreOfflineCard;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -93,7 +90,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private LogoDelegateImpl mLogoDelegate;
     private TileGroup mTileGroup;
     private UiConfig mUiConfig;
-    private Supplier<Tab> mTabProvider;
     private CallbackController mCallbackController = new CallbackController();
 
     /**
@@ -128,7 +124,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private int mSearchBoxBoundsVerticalInset;
 
     private ScrollDelegate mScrollDelegate;
-    private ExploreOfflineCard mExploreOfflineCard;
 
     private NewTabPageUma mNewTabPageUma;
 
@@ -177,7 +172,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         super.onFinishInflate();
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
         mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
-        mExploreOfflineCard = new ExploreOfflineCard(this, openDownloadHomeCallback());
         insertSiteSectionView();
 
         int variation = ExploreSitesBridge.getVariation();
@@ -223,7 +217,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         mManager = manager;
         mActivity = activity;
         mUiConfig = uiConfig;
-        mTabProvider = tabProvider;
         mNewTabPageUma = uma;
 
         Profile profile = Profile.getLastUsedRegularProfile();
@@ -875,7 +868,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             mCallbackController = null;
         }
 
-        if (mExploreOfflineCard != null) mExploreOfflineCard.destroy();
         VrModuleProvider.unregisterVrModeObserver(this);
 
         if (mSearchProviderLogoView != null) {
@@ -910,13 +902,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             measureExactly(mSearchProviderLogoView, exploreWidth,
                     mSearchProviderLogoView.getMeasuredHeight());
         }
-    }
-
-    private Runnable openDownloadHomeCallback() {
-        return () -> {
-            DownloadUtils.showDownloadManager(mActivity, mTabProvider.get(),
-                    DownloadOpenSource.NEW_TAB_PAGE, true /*showPrefetchedContent*/);
-        };
     }
 
     /**
