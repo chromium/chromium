@@ -5,7 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS rules.length is 3
 PASS rules[0].selectorText is '::cue'
 PASS rules[1].selectorText is '::cue(c)'
-PASS rules[2].selectorText is '::cue(c,.class,#id:past,i:future)'
+PASS rules[2].selectorText is '::cue(c, .class, #id:past, i:future)'
 PASS successfullyParsed is true
 
 TEST COMPLETE

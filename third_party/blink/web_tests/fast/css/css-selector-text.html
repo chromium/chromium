@@ -85,7 +85,7 @@ debug('');
 
 testSelectorRoundTrip(":lang(a)");
 testSelectorRoundTrip(":not(a)");
-testSelectorRoundTrip(":-webkit-any(a,b,p)");
+testSelectorRoundTrip(":-webkit-any(a, b, p)");
 
 debug('');
 
@@ -135,8 +135,8 @@ testSelectorRoundTrip('input:not([type="file"]):focus');
 testSelectorRoundTrip('input:not([type="file"]):focus-within');
 testSelectorRoundTrip(':-webkit-any([type="file"])');
 testSelectorRoundTrip(':-webkit-any(:hover)');
-testSelectorRoundTrip('input:-webkit-any([type="file"],:hover,:focus):enabled');
-testSelectorRoundTrip(':-webkit-any(input[type="file"],a:hover,button:focus)');
+testSelectorRoundTrip('input:-webkit-any([type="file"], :hover, :focus):enabled');
+testSelectorRoundTrip(':-webkit-any(input[type="file"], a:hover, button:focus)');
 testSelectorRoundTrip(':-webkit-any(.class1.class2.class3)');
 testSelectorRoundTrip(':-webkit-any(.class1:hover)');
 testSelectorRoundTrip(':-webkit-any(a.class1.class2.class3:hover)');
@@ -163,7 +163,7 @@ shouldBe("parseThenSerializeRule(':after { }')", "'::after { }'");
 shouldBe("parseThenSerializeRule(':before { }')", "'::before { }'");
 shouldBe("parseThenSerializeRule(':first-letter { }')", "'::first-letter { }'");
 shouldBe("parseThenSerializeRule(':first-line { }')", "'::first-line { }'");
-shouldBe("parseThenSerializeRule(':-webkit-any(    a.class1  ,  	#id,[attr]  ) { }')","':-webkit-any(a.class1,#id,[attr]) { }'");
+shouldBe("parseThenSerializeRule(':-webkit-any(    a.class1  ,  	#id,[attr]  ) { }')","':-webkit-any(a.class1, #id, [attr]) { }'");
 
 debug('');
 

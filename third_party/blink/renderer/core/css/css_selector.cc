@@ -871,7 +871,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
       for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
            sub_selector = CSSSelectorList::Next(*sub_selector)) {
         if (sub_selector != first_sub_selector)
-          builder.Append(',');
+          builder.Append(", ");
         builder.Append(sub_selector->SelectorText());
       }
       builder.Append(')');

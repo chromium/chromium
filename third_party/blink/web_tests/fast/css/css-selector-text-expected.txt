@@ -54,7 +54,7 @@ PASS parseThenSerializeRule(':visited { }') is ':visited { }'
 
 PASS parseThenSerializeRule(':lang(a) { }') is ':lang(a) { }'
 PASS parseThenSerializeRule(':not(a) { }') is ':not(a) { }'
-PASS parseThenSerializeRule(':-webkit-any(a,b,p) { }') is ':-webkit-any(a,b,p) { }'
+PASS parseThenSerializeRule(':-webkit-any(a, b, p) { }') is ':-webkit-any(a, b, p) { }'
 
 
 PASS parseThenSerializeRule('::after { }') is '::after { }'
@@ -98,8 +98,8 @@ PASS parseThenSerializeRule('input:not([type="file"]):focus { }') is 'input:not(
 PASS parseThenSerializeRule('input:not([type="file"]):focus-within { }') is 'input:not([type="file"]):focus-within { }'
 PASS parseThenSerializeRule(':-webkit-any([type="file"]) { }') is ':-webkit-any([type="file"]) { }'
 PASS parseThenSerializeRule(':-webkit-any(:hover) { }') is ':-webkit-any(:hover) { }'
-PASS parseThenSerializeRule('input:-webkit-any([type="file"],:hover,:focus):enabled { }') is 'input:-webkit-any([type="file"],:hover,:focus):enabled { }'
-PASS parseThenSerializeRule(':-webkit-any(input[type="file"],a:hover,button:focus) { }') is ':-webkit-any(input[type="file"],a:hover,button:focus) { }'
+PASS parseThenSerializeRule('input:-webkit-any([type="file"], :hover, :focus):enabled { }') is 'input:-webkit-any([type="file"], :hover, :focus):enabled { }'
+PASS parseThenSerializeRule(':-webkit-any(input[type="file"], a:hover, button:focus) { }') is ':-webkit-any(input[type="file"], a:hover, button:focus) { }'
 PASS parseThenSerializeRule(':-webkit-any(.class1.class2.class3) { }') is ':-webkit-any(.class1.class2.class3) { }'
 PASS parseThenSerializeRule(':-webkit-any(.class1:hover) { }') is ':-webkit-any(.class1:hover) { }'
 PASS parseThenSerializeRule(':-webkit-any(a.class1.class2.class3:hover) { }') is ':-webkit-any(a.class1.class2.class3:hover) { }'
@@ -122,7 +122,7 @@ PASS parseThenSerializeRule(':after { }') is '::after { }'
 PASS parseThenSerializeRule(':before { }') is '::before { }'
 PASS parseThenSerializeRule(':first-letter { }') is '::first-letter { }'
 PASS parseThenSerializeRule(':first-line { }') is '::first-line { }'
-PASS parseThenSerializeRule(':-webkit-any(    a.class1  ,  	#id,[attr]  ) { }') is ':-webkit-any(a.class1,#id,[attr]) { }'
+PASS parseThenSerializeRule(':-webkit-any(    a.class1  ,  	#id,[attr]  ) { }') is ':-webkit-any(a.class1, #id, [attr]) { }'
 
 
 PASS successfullyParsed is true

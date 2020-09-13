@@ -18,7 +18,7 @@
 </head>
 <script>
 description("Test for cssText of ':host()' rule.");
-shouldBeEqualToString("document.getElementById('style1').sheet.cssRules.item(0).cssText", ".foo:host(div,body.mytheme,p#myid,.bar:first-child,span:hover) > div { display: block; }");
+shouldBeEqualToString("document.getElementById('style1').sheet.cssRules.item(0).cssText", ".foo:host(div, body.mytheme, p#myid, .bar:first-child, span:hover) > div { display: block; }");
 shouldBeEqualToString("document.getElementById('style1').sheet.cssRules.item(1).cssText", ":host { display: block; }");
 shouldBeEqualToString("document.getElementById('style1').sheet.cssRules.item(2).cssText", ":host(*) { display: block; }");
 shouldBe("document.getElementById('style-invalid').sheet.cssRules.length", "0");
