@@ -299,7 +299,7 @@ class BASE_EXPORT File {
   //  * Within a process, locking the same file (by the same or new handle)
   //    will succeed. The new lock replaces the old lock.
   //  * Closing any descriptor on a given file releases the lock.
-  Error Lock(LockMode mode = LockMode::kExclusive);
+  Error Lock(LockMode mode);
 
   // Unlock a file previously locked.
   Error Unlock();
