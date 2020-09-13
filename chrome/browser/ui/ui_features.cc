@@ -97,6 +97,10 @@ const base::Feature kTabOutlinesInLowContrastThemes{
 // Enables searching tabs across multiple windows.
 const base::Feature kTabSearch{"TabSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the tab search bubble having a fixed tab strip position.
+const base::Feature kTabSearchFixedEntrypoint{
+    "TabSearchFixedEntrypoint", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing text next to the 3-dot menu when an update is available.
 // See https://crbug.com/1001731
 const base::Feature kUseTextForUpdateButton{"UseTextForUpdateButton",

@@ -2177,19 +2177,36 @@ void TabStrip::Layout() {
   }
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-    // With tab scrolling, the tabstrip is solely responsible for its own
-    // width.
-    // It should never be larger than its preferred width.
-    const int max_width =
-        layout_helper_->CalculatePreferredWidth() + GetRightSideReservedWidth();
-    // It should never be smaller than its minimum width.
-    const int min_width = GetMinimumSize().width();
-    // If it can, it should fit within the tab strip region.
     const int available_width = available_width_callback_.Run();
-    // It should be as wide as possible subject to the above constraints.
-    const int width = std::min(max_width, std::max(min_width, available_width));
-    SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
+
+    if (base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)) {
+      // If the tab search fixed entrypoint is enabled, the tab strip should
+      // take whole available width.
+      SetBounds(0, 0, available_width, GetLayoutConstant(TAB_HEIGHT));
+    } else {
+      // With tab scrolling, the tabstrip is solely responsible for its own
+      // width.
+      // It should never be larger than its preferred width.
+      const int max_width = layout_helper_->CalculatePreferredWidth() +
+                            GetRightSideReservedWidth();
+      // It should never be smaller than its minimum width.
+      const int min_width = GetMinimumSize().width();
+      // If it can, it should fit within the tab strip region.
+      // It should be as wide as possible subject to the above constraints.
+      const int width =
+          std::min(max_width, std::max(min_width, available_width));
+      SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
+    }
+
     SetTabSlotVisibility();
+  }
+
+  if (tab_search_button_ &&
+      !tab_controls_container_->Contains(tab_search_button_)) {
+    auto preferred_size = tab_search_button_->GetPreferredSize();
+    tab_search_button_->SetBoundsRect(
+        gfx::Rect(width() - preferred_size.width(), 0, preferred_size.width(),
+                  preferred_size.height()));
   }
 
   // Only do a layout if our size changed.
@@ -2300,6 +2317,11 @@ void TabStrip::PaintChildren(const views::PaintInfo& paint_info) {
 
   // Paint the tab controls.
   tab_controls_container_->Paint(paint_info);
+
+  if (tab_search_button_ &&
+      !tab_controls_container_->Contains(tab_search_button_)) {
+    tab_search_button_->Paint(paint_info);
+  }
 
   // If dragging a group, paint the group highlight and header above all
   // non-dragging tabs and groups.
@@ -2479,7 +2501,10 @@ void TabStrip::Init() {
     tab_search_button->AddObserver(this);
 
     tab_search_button_ =
-        tab_controls_container_->AddChildView(std::move(tab_search_button));
+        base::FeatureList::IsEnabled(features::kTabSearchFixedEntrypoint)
+            ? AddChildView(std::move(tab_search_button))
+            : tab_controls_container_->AddChildView(
+                  std::move(tab_search_button));
   }
 
   UpdateNewTabButtonBorder();
