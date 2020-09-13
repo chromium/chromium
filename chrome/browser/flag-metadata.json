@@ -547,16 +547,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "content-indexing-download-home",
-    "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 85
-  },
-  {
-    "name": "content-indexing-ntp",
-    "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "content-settings-redesign",
     "owners": [
       "tchudakov",

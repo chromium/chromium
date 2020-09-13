@@ -13,7 +13,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.ExploreOfflineStatusProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.lang.annotation.Retention;
@@ -49,7 +48,6 @@ public class ExploreOfflineCard {
         mRootView = rootView;
         mOpenDownloadHomeCallback = openDownloadHomeCallback;
 
-        if (!isFeatureEnabled()) return;
         setCardViewVisibility();
         mConnectionTypeObserver = connectionType -> {
             setCardViewVisibility();
@@ -102,12 +100,7 @@ public class ExploreOfflineCard {
     }
 
     private static boolean shouldShowExploreOfflineMessage() {
-        return isFeatureEnabled() && NetworkChangeNotifier.isInitialized()
-                && !NetworkChangeNotifier.isOnline()
+        return NetworkChangeNotifier.isInitialized() && !NetworkChangeNotifier.isOnline()
                 && ExploreOfflineStatusProvider.getInstance().isPrefetchContentAvailable();
-    }
-
-    private static boolean isFeatureEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTENT_INDEXING_NTP);
     }
 }

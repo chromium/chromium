@@ -15,7 +15,6 @@ public class DownloadManagerUiConfigHelper {
         return new DownloadManagerUiConfig.Builder()
                 .setUseNewDownloadPath(ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER))
-                .setSupportsGrouping(ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTENT_INDEXING_DOWNLOAD_HOME));
+                .setSupportsGrouping(true);
     }
 }

@@ -1718,36 +1718,6 @@
             ]
         }
     ],
-    "ContentIndexingDownloadHome": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ContentIndexingDownloadHome",
-                    "enable_features": [
-                        "ContentIndexingDownloadHome"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ContentIndexingNTP": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ContentIndexingNTP",
-                    "enable_features": [
-                        "ContentIndexingNTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualSearch": [
         {
             "platforms": [

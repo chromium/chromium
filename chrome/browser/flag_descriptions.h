@@ -1562,12 +1562,6 @@ extern const char kCloseTabSuggestionsDescription[];
 extern const char kCriticalPersistedTabDataName[];
 extern const char kCriticalPersistedTabDataDescription[];
 
-extern const char kContentIndexingDownloadHomeName[];
-extern const char kContentIndexingDownloadHomeDescription[];
-
-extern const char kContentIndexingNTPName[];
-extern const char kContentIndexingNTPDescription[];
-
 extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[];
 extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[];
 

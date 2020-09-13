@@ -2692,15 +2692,6 @@ const char kCriticalPersistedTabDataDescription[] =
     "A new method of persisting Tab data across restarts has been devised "
     "and implemented. This actives the new approach.";
 
-const char kContentIndexingDownloadHomeName[] =
-    "Content indexing in download home";
-const char kContentIndexingDownloadHomeDescription[] =
-    "Shows content indexing articles in group cards in download home";
-
-const char kContentIndexingNTPName[] = "Content indexing in NTP";
-const char kContentIndexingNTPDescription[] =
-    "Shows content indexing entry point UI in NTP";
-
 const char kContextMenuPerformanceInfoAndRemoteHintFetchingName[] =
     "Context menu performance info and remote hint fetching";
 const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[] =

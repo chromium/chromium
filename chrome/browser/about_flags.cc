@@ -3178,13 +3178,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOfflineIndicatorAlwaysHttpProbeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          offline_pages::kOfflineIndicatorAlwaysHttpProbeFeature)},
-    {"content-indexing-download-home",
-     flag_descriptions::kContentIndexingDownloadHomeName,
-     flag_descriptions::kContentIndexingDownloadHomeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContentIndexingDownloadHome)},
-    {"content-indexing-ntp", flag_descriptions::kContentIndexingNTPName,
-     flag_descriptions::kContentIndexingNTPDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContentIndexingNTP)},
     {"offline-indicator-v2", flag_descriptions::kOfflineIndicatorV2Name,
      flag_descriptions::kOfflineIndicatorV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kOfflineIndicatorV2)},

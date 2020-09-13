@@ -133,8 +133,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeSharingHubV15,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
-    &kContentIndexingDownloadHome,
-    &kContentIndexingNTP,
     &kContentSuggestionsScrollToLoad,
     &kContextMenuEnableLensShoppingAllowlist,
     &kContextMenuGoogleLensChip,
@@ -380,12 +378,6 @@ const base::Feature kChromeSharingHubV15{"ChromeSharingHubV15",
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContentIndexingDownloadHome{
-    "ContentIndexingDownloadHome", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kContentIndexingNTP{"ContentIndexingNTP",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContentSuggestionsScrollToLoad{
     "ContentSuggestionsScrollToLoad", base::FEATURE_DISABLED_BY_DEFAULT};
