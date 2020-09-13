@@ -200,16 +200,16 @@ public class PictureInPictureController {
         // We don't want InfoBars displaying while in PiP, they cover too much content.
         InfoBarContainer.get(activity.getActivityTab()).setHidden(true);
 
+        // Setup observers to dismiss the Activity on events that should end PiP.
+        final Tab activityTab = activity.getActivityTab();
+
         mOnLeavePipCallbacks.add(new Callback<ChromeActivity>() {
             @Override
             public void onResult(ChromeActivity activity2) {
                 webContents.setHasPersistentVideo(false);
-                InfoBarContainer.get(activity.getActivityTab()).setHidden(false);
+                InfoBarContainer.get(activityTab).setHidden(false);
             }
         });
-
-        // Setup observers to dismiss the Activity on events that should end PiP.
-        final Tab activityTab = activity.getActivityTab();
 
         final TabObserver tabObserver = new DismissActivityOnTabEventObserver(activity);
         final TabModelSelectorObserver tabModelSelectorObserver =
