@@ -115,11 +115,10 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
 
   if (wl_resource_get_version(output_resource_) >=
       WL_OUTPUT_SCALE_SINCE_VERSION) {
-    // Sending 100% if the scale is less then 100%, because wl_output_send_scale
-    // doesn't support fractional scale.
-    wl_output_send_scale(
-        output_resource_,
-        std::max(1, static_cast<int32_t>(display.device_scale_factor())));
+    // wl_output only supports integer scaling, so if device scale factor is
+    // fractional we need to round it up to the closest integer.
+    wl_output_send_scale(output_resource_,
+                         std::ceil(display.device_scale_factor()));
   }
 
   // TODO(reveman): Send real list of modes.
