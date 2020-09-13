@@ -459,5 +459,15 @@ suite('input page', () => {
 
       assertTrue(editDictionarySubpageTrigger.disabled);
     });
+
+    test('opens edit dictionary page', () => {
+      const editDictionarySubpageTrigger =
+          inputPage.$$('#editDictionarySubpageTrigger');
+      editDictionarySubpageTrigger.click();
+      const router = settings.Router.getInstance();
+      assertEquals(
+          router.getCurrentRoute().getAbsolutePath(),
+          'chrome://os-settings/osLanguages/editDictionary');
+    });
   });
 });

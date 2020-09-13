@@ -10,6 +10,7 @@
 <link rel="import" href="add_input_methods_dialog.html">
 <link rel="import" href="input_method_util.html">
 <link rel="import" href="languages_metrics_proxy.html">
+<link rel="import" href="os_edit_dictionary_page.html">
 <link rel="import" href="remove_input_method_dialog.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
@@ -18,6 +19,7 @@
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
 
 <dom-module id="os-settings-input-page">
   <template>
@@ -40,6 +42,11 @@
 
       .name-with-error[disabled] {
         pointer-events: none;
+      }
+
+      /* Paddings when showing download error */
+      .name-with-error {
+        padding: 14px 0;
       }
 
       .name-with-error div {
@@ -111,7 +118,7 @@
             <div class$="list-item [[getInputMethodItemClass_(
                 item.id, languages.inputMethods.currentId)]]"
                 actionable on-click="onInputMethodClick_"
-                on-keypress="onInputMethodKeyPress_" 
+                on-keypress="onInputMethodKeyPress_"
                 tabindex$="[[getInputMethodTabIndex_(
                     item.id, languages.inputMethods.currentId)]]"
                 aria-labelledby$="language-[[index]]" role="button">
@@ -226,6 +233,7 @@
             disabled="[[!prefs.browser.enable_spellchecking.value]]">
         </settings-toggle-button>
         <cr-link-row class="hr" label="$i18n{editDictionaryLabel}"
+            on-click="onEditDictionaryClick_"
             id="editDictionarySubpageTrigger"
             disabled="[[!prefs.browser.enable_spellchecking.value]]"
             role-description="$i18n{subpageArrowRoleDescription}">

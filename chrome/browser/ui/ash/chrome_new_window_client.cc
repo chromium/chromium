@@ -131,6 +131,8 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
       chromeos::settings::mojom::kLanguagesAndInputSectionPath},
      {ChromePage::OSLANGUAGESDETAILS,
       chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath},
+     {ChromePage::OSLANGUAGESEDITDICTIONARY,
+      chromeos::settings::mojom::kEditDictionarySubpagePath},
      {ChromePage::OSLANGUAGESINPUT,
       chromeos::settings::mojom::kInputSubpagePath},
      {ChromePage::OSLANGUAGESINPUTMETHODS,

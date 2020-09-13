@@ -294,6 +294,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       base_url.Resolve(
           chromeos::settings::mojom::kLanguagesAndInputDetailsSubpagePath));
   TestOpenChromePage(
+      ChromePage::OSLANGUAGESEDITDICTIONARY,
+      base_url.Resolve(chromeos::settings::mojom::kEditDictionarySubpagePath));
+  TestOpenChromePage(
       ChromePage::OSLANGUAGESINPUT,
       base_url.Resolve(chromeos::settings::mojom::kInputSubpagePath));
   TestOpenChromePage(

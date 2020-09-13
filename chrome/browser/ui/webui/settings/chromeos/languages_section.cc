@@ -17,6 +17,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/spellcheck/browser/pref_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -115,6 +116,18 @@ const std::vector<SearchConcept>& GetInputPageSearchConceptsV2() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheck}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetEditDictionarySearchConceptsV2() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
+       mojom::kEditDictionarySubpagePath,
+       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kEditDictionary}},
   });
   return *tags;
 }
@@ -309,12 +322,21 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
 }  // namespace
 
 LanguagesSection::LanguagesSection(Profile* profile,
-                                   SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {
+                                   SearchTagRegistry* search_tag_registry,
+                                   PrefService* pref_service)
+    : OsSettingsSection(profile, search_tag_registry),
+      pref_service_(pref_service) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   if (IsLanguageSettingsV2Enabled()) {
+    pref_change_registrar_.Init(pref_service_);
+    pref_change_registrar_.Add(
+        spellcheck::prefs::kSpellCheckEnable,
+        base::BindRepeating(&LanguagesSection::UpdateSpellCheckSearchTags,
+                            base::Unretained(this)));
+
     updater.AddSearchTags(GetLanguagesPageSearchConceptsV2());
     updater.AddSearchTags(GetInputPageSearchConceptsV2());
+    UpdateSpellCheckSearchTags();
   } else {
     updater.AddSearchTags(GetLanguagesSearchConceptsV1());
   }
@@ -402,13 +424,6 @@ std::string LanguagesSection::GetSectionPath() const {
   return mojom::kLanguagesAndInputSectionPath;
 }
 
-bool LanguagesSection::IsEmojiSuggestionAllowed() const {
-  return base::FeatureList::IsEnabled(
-             ::chromeos::features::kEmojiSuggestAddition) &&
-         profile()->GetPrefs()->GetBoolean(
-             ::chromeos::prefs::kEmojiSuggestionEnterpriseAllowed);
-}
-
 void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Languages.
   generator->RegisterTopLevelSubpage(
@@ -433,6 +448,13 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputPageSettings,
                             generator);
+
+  // Edit dictionary.
+  generator->RegisterNestedSubpage(
+      IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
+      mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
+      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kEditDictionarySubpagePath);
 
   // Languages and input details.
   generator->RegisterTopLevelSubpage(
@@ -492,6 +514,25 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSmartInputs,
                             kSmartInputsFeaturesSettings, generator);
+}
+
+bool LanguagesSection::IsEmojiSuggestionAllowed() const {
+  return base::FeatureList::IsEnabled(
+             ::chromeos::features::kEmojiSuggestAddition) &&
+         pref_service_->GetBoolean(
+             ::chromeos::prefs::kEmojiSuggestionEnterpriseAllowed);
+}
+
+bool LanguagesSection::IsSpellCheckEnabled() const {
+  return pref_service_->GetBoolean(spellcheck::prefs::kSpellCheckEnable);
+}
+
+void LanguagesSection::UpdateSpellCheckSearchTags() {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetEditDictionarySearchConceptsV2());
+  if (IsSpellCheckEnabled()) {
+    updater.AddSearchTags(GetEditDictionarySearchConceptsV2());
+  }
 }
 
 }  // namespace settings

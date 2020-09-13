@@ -889,6 +889,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_SPELL_CHECK" translateable="false" desc="Text for search result item which, when clicked, navigates the user to input settings, with all the options for spell check settings">
     Spell check
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY" translateable="false" desc="Text for search result item which, when clicked, navigates the user to edit dictionary page.">
+    Customize spell check
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_METHODS" desc="Text for search result item which, when clicked, navigates the user to input settings, with the option to enable/disable input in supported languages.">
     Manage input methods
   </message>

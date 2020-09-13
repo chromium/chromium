@@ -103,8 +103,8 @@ OsSettingsSections::OsSettingsSections(
   sections_map_[mojom::Section::kPrivacyAndSecurity] = privacy_section.get();
   sections_.push_back(std::move(privacy_section));
 
-  auto language_section =
-      std::make_unique<LanguagesSection>(profile, search_tag_registry);
+  auto language_section = std::make_unique<LanguagesSection>(
+      profile, search_tag_registry, profile->GetPrefs());
   sections_map_[mojom::Section::kLanguagesAndInput] = language_section.get();
   sections_.push_back(std::move(language_section));
 

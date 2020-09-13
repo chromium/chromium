@@ -53437,6 +53437,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1203" label="Input Method Options"/>
   <int value="1204" label="Languages"/>
   <int value="1205" label="Input"/>
+  <int value="1206" label="Customize spell check"/>
   <int value="1300" label="Network File Shares"/>
   <int value="1400" label="Printing Details"/>
   <int value="1500" label="Manage Accessibility"/>

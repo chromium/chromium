@@ -23,6 +23,12 @@ Polymer({
       notify: true,
     },
 
+    /** @type {!Map<string, (string|Function)>} */
+    focusConfig: {
+      type: Object,
+      observer: 'focusConfigChanged_',
+    },
+
     /**
      * Read-only reference to the languages model provided by the
      * 'os-settings-languages' instance.
@@ -95,6 +101,20 @@ Polymer({
     }
 
     this.attemptDeepLink();
+  },
+
+  /**
+   * @param {!Map<string, (string|Function)>} newConfig
+   * @param {?Map<string, (string|Function)>} oldConfig
+   * @private
+   */
+  focusConfigChanged_(newConfig, oldConfig) {
+    // focusConfig is set only once on the parent, so this observer should
+    // only fire once.
+    assert(!oldConfig);
+    this.focusConfig.set(
+        settings.routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
+        () => cr.ui.focusWithoutInk(this.$.editDictionarySubpageTrigger));
   },
 
   /**
@@ -365,5 +385,16 @@ Polymer({
     return this.i18n(
         'languagesDictionaryDownloadRetryDescription',
         item.language.displayName);
+  },
+
+  /**
+   * Opens the Custom Dictionary page.
+   * @private
+   */
+  onEditDictionaryClick_() {
+    this.languagesMetricsProxy_.recordInteraction(
+        settings.LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_LANGUAGES_EDIT_DICTIONARY);
   }
 });

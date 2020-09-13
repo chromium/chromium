@@ -59,6 +59,7 @@
  *   OS_ACCESSIBILITY: !settings.Route,
  *   OS_LANGUAGES: !settings.Route,
  *   OS_LANGUAGES_DETAILS: !settings.Route,
+ *   OS_LANGUAGES_EDIT_DICTIONARY: !settings.Route,
  *   OS_LANGUAGES_INPUT: !settings.Route,
  *   OS_LANGUAGES_INPUT_METHODS: !settings.Route,
  *   OS_LANGUAGES_INPUT_METHOD_OPTIONS: !settings.Route,

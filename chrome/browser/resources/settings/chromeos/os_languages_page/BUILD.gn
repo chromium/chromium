@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":languages_metrics_proxy",
     ":manage_input_methods_page",
     ":os_add_languages_dialog",
+    ":os_edit_dictionary_page",
     ":os_languages_page",
     ":os_languages_page_v2",
     ":os_languages_section",
@@ -77,6 +78,9 @@ js_library("manage_input_methods_page") {
     "../../prefs",
   ]
   externs_list = [ "$externs_path/language_settings_private.js" ]
+}
+
+js_library("os_edit_dictionary_page") {
 }
 
 js_library("os_languages_section") {
@@ -172,6 +176,7 @@ js_type_check("closure_compile_module") {
     ":languages_metrics_proxy.m",
     ":manage_input_methods_page.m",
     ":os_add_languages_dialog.m",
+    ":os_edit_dictionary_page.m",
     ":os_languages_page.m",
     ":os_languages_page_v2.m",
     ":os_languages_section.m",
@@ -219,6 +224,7 @@ js_library("input_page.m") {
     ":add_input_methods_dialog.m",
     ":input_method_util.m",
     ":languages_metrics_proxy.m",
+    ":os_edit_dictionary_page.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
@@ -254,6 +260,11 @@ js_library("os_add_languages_dialog.m") {
     "//ui/webui/resources/js:find_shortcut_behavior.m",
   ]
   extra_deps = [ ":os_add_languages_dialog_module" ]
+}
+
+js_library("os_edit_dictionary_page.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_edit_dictionary_page.m.js" ]
+  extra_deps = [ ":os_edit_dictionary_page_module" ]
 }
 
 js_library("os_languages_page.m") {
@@ -348,6 +359,7 @@ group("polymer3_elements") {
     ":manage_input_methods_page_module",
     ":modulize",
     ":os_add_languages_dialog_module",
+    ":os_edit_dictionary_page_module",
     ":os_languages_page_module",
     ":os_languages_page_v2_module",
     ":os_languages_section_module",
@@ -388,6 +400,15 @@ polymer_modulizer("manage_input_methods_page") {
 polymer_modulizer("os_add_languages_dialog") {
   js_file = "os_add_languages_dialog.js"
   html_file = "os_add_languages_dialog.html"
+  html_type = "dom-module"
+  migrated_imports = settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("os_edit_dictionary_page") {
+  js_file = "os_edit_dictionary_page.js"
+  html_file = "os_edit_dictionary_page.html"
   html_type = "dom-module"
   migrated_imports = settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

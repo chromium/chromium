@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_LANGUAGES_SECTION_H_
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace content {
 class WebUIDataSource;
@@ -21,7 +22,9 @@ class SearchTagRegistry;
 // the relevant features are enabled.
 class LanguagesSection : public OsSettingsSection {
  public:
-  LanguagesSection(Profile* profile, SearchTagRegistry* search_tag_registry);
+  LanguagesSection(Profile* profile,
+                   SearchTagRegistry* search_tag_registry,
+                   PrefService* pref_service);
   ~LanguagesSection() override;
 
  private:
@@ -35,6 +38,11 @@ class LanguagesSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   bool IsEmojiSuggestionAllowed() const;
+  bool IsSpellCheckEnabled() const;
+  void UpdateSpellCheckSearchTags();
+
+  PrefService* pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace settings

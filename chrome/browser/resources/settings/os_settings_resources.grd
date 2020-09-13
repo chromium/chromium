@@ -743,6 +743,12 @@
       <structure name="IDR_OS_SETTINGS_LANGUAGES_PAGE_INPUT_PAGE_JS"
                  file="chromeos/os_languages_page/input_page.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_PAGE_OS_EDIT_DICTIONARY_PAGE_HTML"
+                 file="chromeos/os_languages_page/os_edit_dictionary_page.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_PAGE_OS_EDIT_DICTIONARY_PAGE_JS"
+                 file="chromeos/os_languages_page/os_edit_dictionary_page.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_LANGUAGES_PAGE_OS_LANGUAGES_PAGE_V2_HTML"
                  file="chromeos/os_languages_page/os_languages_page_v2.html"
                  compress="false" type="chrome_html" />
