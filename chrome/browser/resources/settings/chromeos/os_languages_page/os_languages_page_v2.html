@@ -77,6 +77,10 @@
                 <div title="[[item.language.nativeDisplayName]]">
                   [[item.language.displayName]]
                 </div>
+                <div class="secondary" hidden="[[!isTranslationTarget_(
+                    item.language.code, languages.translateTarget)]]">
+                  $i18n{translateTargetLabel}
+                </div>
               </div>
               <cr-icon-button class="icon-more-vert"
                   title="$i18n{moreActions}" id="more-[[item.language.code]]"

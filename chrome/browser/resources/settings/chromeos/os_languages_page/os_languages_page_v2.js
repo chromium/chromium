@@ -254,4 +254,15 @@ Polymer({
   onTranslateToggleChange_(e) {
     this.languagesMetricsProxy_.recordToggleTranslate(e.target.checked);
   },
+
+  /**
+   * @param {string} languageCode The language code identifying a language.
+   * @param {string} translateTarget The target language.
+   * @return {boolean} true if |languageCode| matches the target language
+   * @private
+   */
+  isTranslationTarget_(languageCode, translateTarget) {
+    return this.languageHelper.convertLanguageCodeForTranslate(languageCode) ===
+        translateTarget;
+  },
 });

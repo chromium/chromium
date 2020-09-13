@@ -277,6 +277,9 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" translateable="false" desc="The description of the section in the language settings page where users can add languages they read to an ordered list. The web content languages will be served in the order of the list.">
     Add and order languages you read. Apps and websites will be displayed in the most preferred language available. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL" translateable="false" desc="The label of the toggle that enables the prompt to translate a page to users.">
+   The language is used when translating pages
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL" translateable="false" desc="The label of the toggle that enables the prompt to translate a page to users.">
    Translation suggestion
   </message>

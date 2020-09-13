@@ -224,6 +224,43 @@ suite('languages page', () => {
       actionMenu.close();
     });
 
+    test('test translate target language is labelled', function() {
+      // Translate target language disabled.
+      const targetLanguageCode = languageHelper.languages.translateTarget;
+      assertTrue(!!targetLanguageCode);
+      assertTrue(languageHelper.languages.enabled.some(
+          l => languageHelper.convertLanguageCodeForTranslate(
+                   l.language.code) === targetLanguageCode));
+      assertTrue(languageHelper.languages.enabled.some(
+          l => languageHelper.convertLanguageCodeForTranslate(
+                   l.language.code) !== targetLanguageCode));
+      let translateTargetLabel = null;
+      let item = null;
+
+      const listItems = languagesList.querySelectorAll('.list-item');
+      const domRepeat = languagesList.querySelector('dom-repeat');
+      assertTrue(!!domRepeat);
+
+      let num_visibles = 0;
+      Array.from(listItems).forEach(function(el) {
+        item = domRepeat.itemForElement(el);
+        if (item) {
+          translateTargetLabel = el.querySelector('.secondary');
+          assertTrue(!!translateTargetLabel);
+          if (getComputedStyle(translateTargetLabel).display !== 'none') {
+            num_visibles++;
+            assertEquals(
+                targetLanguageCode,
+                languageHelper.convertLanguageCodeForTranslate(
+                    item.language.code));
+          }
+        }
+        assertEquals(
+            1, num_visibles,
+            'Not exactly one target info label (' + num_visibles + ').');
+      });
+    });
+
     test('Deep link to add language', async () => {
       loadTimeData.overrideValues({
         isDeepLinkingEnabled: true,

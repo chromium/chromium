@@ -270,6 +270,8 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE},
       {"languagesPreferenceDescription",
        IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION},
+      {"translateTargetLabel",
+       IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL},
       {"offerTranslationLabel",
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL},
       {"offerTranslationSublabel",
