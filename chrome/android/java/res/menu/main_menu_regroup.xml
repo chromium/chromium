@@ -88,9 +88,6 @@
                 android:title="@null" />
           </menu>
         </item>
-        <item android:id="@+id/paint_preview_show_id"
-            android:title="@string/menu_paint_preview_show"
-            android:icon="@drawable/ic_photo_camera" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />
@@ -114,6 +111,9 @@
                 android:checkable="true" />
           </menu>
         </item>
+        <item android:id="@+id/paint_preview_show_id"
+            android:title="@string/menu_paint_preview_show"
+            android:icon="@drawable/ic_photo_camera" />
         <item android:id="@+id/divider_line_id"
             android:title="@null" />
         <item android:id="@+id/reader_mode_prefs_id"
