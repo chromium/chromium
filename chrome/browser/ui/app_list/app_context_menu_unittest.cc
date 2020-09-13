@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -40,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -56,19 +56,22 @@ namespace {
 class FakeAppContextMenuDelegate : public app_list::AppContextMenuDelegate {
  public:
   FakeAppContextMenuDelegate() = default;
+  FakeAppContextMenuDelegate(const FakeAppContextMenuDelegate&) = delete;
+  FakeAppContextMenuDelegate& operator=(const FakeAppContextMenuDelegate&) =
+      delete;
   ~FakeAppContextMenuDelegate() override = default;
 
   // app_list::AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAppContextMenuDelegate);
 };
 
 class FakeAppListControllerDelegate
     : public test::TestAppListControllerDelegate {
  public:
   FakeAppListControllerDelegate() = default;
+  FakeAppListControllerDelegate(const FakeAppListControllerDelegate&) = delete;
+  FakeAppListControllerDelegate& operator=(
+      const FakeAppListControllerDelegate&) = delete;
   ~FakeAppListControllerDelegate() override = default;
 
   void SetAppPinnable(const std::string& app_id, Pinnable type) {
@@ -98,8 +101,6 @@ class FakeAppListControllerDelegate
  private:
   std::map<std::string, Pinnable> pinnable_apps_;
   std::unordered_set<std::string> open_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppListControllerDelegate);
 };
 
 std::unique_ptr<KeyedService> MenuManagerFactory(
@@ -161,7 +162,8 @@ class AppContextMenuTest : public AppListTestBase,
           features::kDesktopPWAsWithoutExtensions);
     }
   }
-
+  AppContextMenuTest(const AppContextMenuTest&) = delete;
+  AppContextMenuTest& operator=(const AppContextMenuTest&) = delete;
   ~AppContextMenuTest() override = default;
 
   void SetUp() override {
@@ -346,8 +348,6 @@ class AppContextMenuTest : public AppListTestBase,
   std::unique_ptr<FakeAppContextMenuDelegate> menu_delegate_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   apps::AppServiceTest app_service_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppContextMenuTest);
 };
 
 TEST_P(AppContextMenuTest, ExtensionApp) {
@@ -673,8 +673,46 @@ TEST_P(AppContextMenuTest, InternalAppMenu) {
   }
 }
 
+// Lacros has its own test suite because the feature needs to be enabled before
+// SetUp().
+class AppContextMenuLacrosTest : public AppContextMenuTest {
+ public:
+  AppContextMenuLacrosTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  }
+  AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
+  AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
+  ~AppContextMenuLacrosTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AppContextMenuLacrosTest, LacrosApp) {
+  app_service_test().SetUp(profile());
+  app_service_test().FlushMojoCalls();
+
+  // Create the context menu.
+  AppServiceContextMenu menu(menu_delegate(), profile(),
+                             extension_misc::kLacrosAppId, controller());
+  std::unique_ptr<ui::MenuModel> menu_model = GetMenuModel(&menu);
+  ASSERT_NE(menu_model, nullptr);
+
+  // Verify expected menu items.
+  EXPECT_EQ(menu_model->GetItemCount(), 1);
+  std::vector<MenuState> states;
+  AddToStates(menu, MenuState(ash::APP_CONTEXT_MENU_NEW_WINDOW), &states);
+  ValidateMenuState(menu_model.get(), states);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AppContextMenuTest,
+                         ::testing::Values(ProviderType::kBookmarkApps,
+                                           ProviderType::kWebApps),
+                         web_app::ProviderTypeParamToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppContextMenuLacrosTest,
                          ::testing::Values(ProviderType::kBookmarkApps,
                                            ProviderType::kWebApps),
                          web_app::ProviderTypeParamToString);
