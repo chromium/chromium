@@ -13,11 +13,16 @@ namespace chrome {
 
 BluetoothServerSocket::BluetoothServerSocket(
     mojo::PendingRemote<bluetooth::mojom::ServerSocket> server_socket)
-    : server_socket_(std::move(server_socket)) {}
+    : pending_server_socket_(std::move(server_socket)) {}
 
 BluetoothServerSocket::~BluetoothServerSocket() = default;
 
 std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
+  // We're now in the thread that BluetoothServerSocket primarily operates in.
+  // Bind |server_socket_| in this correct thread. See header documentation.
+  if (pending_server_socket_)
+    server_socket_.Bind(std::move(pending_server_socket_));
+
   bluetooth::mojom::AcceptConnectionResultPtr result;
   bool success = server_socket_->Accept(&result);
 
@@ -31,7 +36,7 @@ std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
 }
 
 Exception BluetoothServerSocket::Close() {
-  // TODO(b/154849933): Implement this in a subsequent CL.
+  pending_server_socket_.reset();
   server_socket_.reset();
   return {Exception::kSuccess};
 }

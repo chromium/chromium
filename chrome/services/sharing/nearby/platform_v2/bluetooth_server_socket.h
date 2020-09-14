@@ -31,6 +31,14 @@ class BluetoothServerSocket : public api::BluetoothServerSocket {
   Exception Close() override;
 
  private:
+  // BluetoothServerSocket is created on the main thread, but its public methods
+  // are used on a separate dedicated thread. mojo::Remote objects (namely,
+  // |server_socket_|) must be bound on the same thread they are used on, to
+  // prevent deadlock. So, we hold onto this mojo::PendingRemote
+  // |pending_server_socket_| until Accept() is called, at which point
+  // |server_socket_| is bound with it (it is acceptable to pass a
+  // mojo::PendingRemote around multiple threads).
+  mojo::PendingRemote<bluetooth::mojom::ServerSocket> pending_server_socket_;
   mojo::Remote<bluetooth::mojom::ServerSocket> server_socket_;
 };
 

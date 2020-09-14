@@ -90,8 +90,19 @@ class BluetoothServerSocketTest : public testing::Test {
         std::move(fake_server_socket),
         pending_server_socket.InitWithNewPipeAndPassReceiver());
 
-    bluetooth_server_socket_ = std::make_unique<BluetoothServerSocket>(
-        std::move(pending_server_socket));
+    // In production Nearby Connections code, BluetoothServerSocket is created
+    // on a thread separate from the thread it is later used on. Replicate this
+    // behavior by creating |bluetooth_server_socket_| on a dedicated thread.
+    base::RunLoop run_loop;
+    auto creation_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    creation_task_runner->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] {
+          bluetooth_server_socket_ = std::make_unique<BluetoothServerSocket>(
+              std::move(pending_server_socket));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
   }
 
  protected:

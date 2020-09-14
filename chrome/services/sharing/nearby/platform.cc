@@ -60,9 +60,9 @@ ImplementationPlatform::CreateSingleThreadExecutor() {
 
 std::unique_ptr<SubmittableExecutor>
 ImplementationPlatform::CreateMultiThreadExecutor(int max_concurrency) {
-  // Chrome task runner does not support max_concurrency.
-  return std::make_unique<chrome::SubmittableExecutor>(
-      base::ThreadPool::CreateTaskRunner({base::MayBlock()}));
+  // Chrome TaskRunner does not support |max_concurrency|. Simply use our
+  // SingleThreadExecutor.
+  return CreateSingleThreadExecutor();
 }
 
 std::unique_ptr<ScheduledExecutor>
