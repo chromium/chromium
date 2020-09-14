@@ -256,9 +256,6 @@ std::unique_ptr<views::Widget> CreateWallpaperWidget(
                                                  ::wm::ANIMATE_NONE);
   }
 
-  aura::Window* container = root_window->GetChildById(container_id);
-  wallpaper_widget->SetBounds(container->bounds());
-
   return wallpaper_widget;
 }
 
