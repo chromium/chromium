@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
+#import "ios/chrome/browser/metrics/previous_session_info.h"
 #include "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp_snippets/content_suggestions_scheduler_notifications.h"
 #include "ios/chrome/browser/screenshot/screenshot_delegate.h"
@@ -296,6 +297,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       level > SceneActivationLevelBackground && !self.hasInitializedUI;
   if (initializingUIInColdStart) {
     [self initializeUI];
+    if (@available(iOS 13, *)) {
+      // Add the scene to the list of connected scene, to restore in case of
+      // crashes.
+      [[PreviousSessionInfo sharedInstance]
+          addSceneSessionID:sceneState.scene.session.persistentIdentifier];
+    }
   }
 
   if (level == SceneActivationLevelForegroundActive) {
@@ -340,6 +347,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   if (self.hasInitializedUI && level == SceneActivationLevelUnattached) {
+    if (@available(iOS 13, *)) {
+      [[PreviousSessionInfo sharedInstance]
+          removeSceneSessionID:sceneState.scene.session.persistentIdentifier];
+    }
     [self teardownUI];
   }
 }

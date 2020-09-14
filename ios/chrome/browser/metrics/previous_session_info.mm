@@ -94,6 +94,7 @@ NSString* const kPreviousSessionInfoLowPowerMode =
 //   version of the application.
 NSString* const kPreviousSessionInfoMultiWindowEnabled =
     @"PreviousSessionInfoMultiWindowEnabled";
+
 }  // namespace
 
 namespace previous_session_info_constants {
@@ -102,6 +103,8 @@ NSString* const kDidSeeMemoryWarningShortlyBeforeTerminating =
 NSString* const kOSStartTime = @"OSStartTime";
 NSString* const kPreviousSessionInfoRestoringSession =
     @"PreviousSessionInfoRestoringSession";
+NSString* const kPreviousSessionInfoConnectedSceneSessionIDs =
+    @"PreviousSessionInfoConnectedSceneSessionIDs";
 }  // namespace previous_session_info_constants
 
 @interface PreviousSessionInfo ()
@@ -112,6 +115,10 @@ NSString* const kPreviousSessionInfoRestoringSession =
 // Used for setting and resetting kPreviousSessionInfoRestoringSession flag.
 // Can be greater than one if multiple sessions are being restored in parallel.
 @property(atomic, assign) int numberOfSessionsBeingRestored;
+
+// The list of the session IDs for all the connected scenes, used for crash
+// restoration.
+@property(nonatomic, strong) NSMutableSet<NSString*>* connectedSceneSessionsIDs;
 
 // Redefined to be read-write.
 @property(nonatomic, assign) NSInteger availableDeviceStorage;
@@ -184,6 +191,12 @@ static PreviousSessionInfo* gSharedInstance = nil;
     // sessions is done.
     gSharedInstance.isMultiWindowEnabledSession =
         [defaults boolForKey:kPreviousSessionInfoMultiWindowEnabled];
+
+    gSharedInstance.connectedSceneSessionsIDs = [NSMutableSet
+        setWithArray:[defaults
+                         stringArrayForKey:
+                             previous_session_info_constants::
+                                 kPreviousSessionInfoConnectedSceneSessionIDs]];
 
     NSTimeInterval lastSystemStartTime =
         [defaults doubleForKey:previous_session_info_constants::kOSStartTime];
@@ -401,6 +414,29 @@ static PreviousSessionInfo* gSharedInstance = nil;
                              kDidSeeMemoryWarningShortlyBeforeTerminating];
   // Save critical state information for crash detection.
   [defaults synchronize];
+}
+
+- (void)synchronizeSceneSessionIDs {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:[self.connectedSceneSessionsIDs allObjects]
+               forKey:previous_session_info_constants::
+                          kPreviousSessionInfoConnectedSceneSessionIDs];
+  [defaults synchronize];
+}
+
+- (void)addSceneSessionID:(NSString*)sessionID {
+  [self.connectedSceneSessionsIDs addObject:sessionID];
+  [self synchronizeSceneSessionIDs];
+}
+
+- (void)removeSceneSessionID:(NSString*)sessionID {
+  [self.connectedSceneSessionsIDs removeObject:sessionID];
+  [self synchronizeSceneSessionIDs];
+}
+
+- (void)resetConnectedSceneSessionIDs {
+  self.connectedSceneSessionsIDs = [[NSMutableSet alloc] init];
+  [self synchronizeSceneSessionIDs];
 }
 
 - (base::ScopedClosureRunner)startSessionRestoration {

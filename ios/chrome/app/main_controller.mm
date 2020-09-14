@@ -486,6 +486,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     needRestoration = [CrashRestoreHelper
         moveAsideSessionInformationForBrowserState:chromeBrowserState];
   }
+  [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
   // Initialize and set the main browser state.
   [self initializeBrowserState:chromeBrowserState];
