@@ -3234,6 +3234,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
+    @DisabledTest(message = "Flaky https://crbug.com/1127796")
     public void testQuickActionUrl_Longpress_DLD(@EnabledFeature int enabledFeature)
             throws Exception {
         // TODO(donnd): figure out why this fails to select on Longpress, but works fine on the
