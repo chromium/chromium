@@ -194,15 +194,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             handleFinishAndClose();
         });
         component.resolveSessionHandler();
-        component.resolveCustomTabIncognitoManager();
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
+
+        if (intentDataProvider.isIncognito()) {
+            component.resolveCustomTabIncognitoManager();
+        }
+
         if (intentDataProvider.isWebappOrWebApkActivity()) {
             mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
         }
+
         if (intentDataProvider.isWebApkActivity()) {
             component.resolveWebApkActivityCoordinator();
         }
+
         if (mIntentDataProvider.isTrustedWebActivity()) {
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
         }
