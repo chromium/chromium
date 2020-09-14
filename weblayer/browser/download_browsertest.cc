@@ -281,6 +281,10 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, Cancel) {
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, PauseResume) {
+  // Add an initial navigation to avoid the tab being deleted if the first
+  // navigation is a download, since we use the tab for convenience in the
+  // lambda.
+  shell()->tab()->GetNavigationController()->Navigate(GURL("about:blank"));
   set_started_callback(base::BindLambdaForTesting([&](Download* download) {
     download->Pause();
     GURL url = embedded_test_server()->GetURL(
