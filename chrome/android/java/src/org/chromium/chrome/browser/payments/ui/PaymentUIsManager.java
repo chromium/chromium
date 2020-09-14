@@ -1496,6 +1496,33 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     }
 
     /**
+     * The implementation of {@link PaymentRequestUI.Client#getDefaultPaymentInformation}.
+     * @param callback Retrieves the data to show in the initial PaymentRequest UI.
+     * @param isCurrentPaymentRequestShowing Whether the current payment request is showing.
+     * @param isFinishedQueryingPaymentApps Whether payment apps have finished being queried.
+     * @param waitForUpdatedDetails Whether to wait for updated payment details.
+     */
+    public void getDefaultPaymentInformation(Callback<PaymentInformation> callback,
+            boolean isCurrentPaymentRequestShowing, boolean isFinishedQueryingPaymentApps,
+            boolean waitForUpdatedDetails) {
+        mPaymentInformationCallback = callback;
+
+        // mPaymentRequestUI.show() is called only after request.show() is
+        // called and all payment apps are ready.
+        assert isCurrentPaymentRequestShowing;
+        assert isFinishedQueryingPaymentApps;
+
+        if (waitForUpdatedDetails) return;
+
+        mHandler.post(() -> {
+            if (mPaymentRequestUI != null) {
+                providePaymentInformationToPaymentRequestUI();
+                mDelegate.recordShowEventAndTransactionAmount();
+            }
+        });
+    }
+
+    /**
      * The implementation of {@link PaymentRequestUI.Client#onSectionOptionSelected}.
      * @param optionType Data being updated.
      * @param option Value of the data being updated.

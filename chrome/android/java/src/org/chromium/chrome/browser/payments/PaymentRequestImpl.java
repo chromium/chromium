@@ -961,21 +961,8 @@ public class PaymentRequestImpl
      */
     @Override
     public void getDefaultPaymentInformation(Callback<PaymentInformation> callback) {
-        mPaymentUIsManager.setPaymentInformationCallback(callback);
-
-        // mPaymentUIsManager.getPaymentRequestUI().show() is called only after request.show() is
-        // called and all payment apps are ready.
-        assert mIsCurrentPaymentRequestShowing;
-        assert mIsFinishedQueryingPaymentApps;
-
-        if (mWaitForUpdatedDetails) return;
-
-        mHandler.post(() -> {
-            if (mPaymentUIsManager.getPaymentRequestUI() != null) {
-                mPaymentUIsManager.providePaymentInformationToPaymentRequestUI();
-                recordShowEventAndTransactionAmount();
-            }
-        });
+        mPaymentUIsManager.getDefaultPaymentInformation(callback, mIsCurrentPaymentRequestShowing,
+                mIsFinishedQueryingPaymentApps, mWaitForUpdatedDetails);
     }
 
     // Implement PaymentUIsManager.Delegate:
