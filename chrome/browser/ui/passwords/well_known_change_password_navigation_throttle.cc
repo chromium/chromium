@@ -71,7 +71,7 @@ WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
   // password url first. We should only check the feature flag when the feature
   // would be used. Otherwise the we would not see a difference between control
   // and experiment groups on the dashboards.
-  if (IsWellKnownChangePasswordUrl(url) &&
+  if (handle->IsInMainFrame() && IsWellKnownChangePasswordUrl(url) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kWellKnownChangePassword)) {
     return base::WrapUnique(
