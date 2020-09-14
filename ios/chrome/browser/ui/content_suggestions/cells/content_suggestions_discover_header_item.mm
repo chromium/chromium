@@ -180,8 +180,7 @@ const CGFloat kFeedCardIPhoneWidth = 375;
       [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
                            view:self.menuButton];
 
-  menuButtonGuide.constrainedFrame =
-      [self.contentView convertRect:self.menuButton.frame toView:nil];
+  menuButtonGuide.constrainedView = self.menuButton;
   self.discoverFeedVisible = [NSNumber numberWithBool:visible];
 }
 

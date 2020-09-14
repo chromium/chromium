@@ -11,6 +11,10 @@
 // Opens Discover feed control menu.
 - (void)openDiscoverFeedMenu:(UIView*)menuButton;
 
+// Sends a notification to indicate that the Discover feed has loaded, so the
+// IPH can be shown.
+- (void)notifyFeedLoadedForHeaderMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_MENU_COMMANDS_H_
