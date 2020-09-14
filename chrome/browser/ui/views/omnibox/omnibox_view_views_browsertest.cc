@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FragmentUnescapedForDisplay) {
   ui_test_utils::NavigateToURL(browser(),
                                GURL("http://example.com/#%E2%98%83"));
 
-  EXPECT_EQ(view->GetText(), base::UTF8ToUTF16("http://example.com/#\u2603"));
+  EXPECT_EQ(view->GetText(), base::UTF8ToUTF16("example.com/#\u2603"));
 }
 
 // Ensure that when the user navigates between suggestions, that the accessible
@@ -725,29 +725,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
       static_cast<OmniboxViewViews*>(omnibox_view);
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Use a hostname ("a.test") since IP addresses aren't eligible for eliding.
-  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL url = embedded_test_server()->GetURL("/title1.html");
   base::string16 url_text = base::ASCIIToUTF16(url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);
 
-  // By default, the URL should be elided by pushing the scheme out of the
-  // display area.
-  EXPECT_EQ(url_text, omnibox_view_views->GetText());
-  EXPECT_GT(0,
-            omnibox_view_views->GetRenderText()->GetUpdatedDisplayOffset().x());
+  // By default, the elided URL should be shown.
+  EXPECT_EQ(url_text,
+            base::ASCIIToUTF16("http://") + omnibox_view_views->GetText());
 
   // After toggling the setting, the full URL should be shown.
   chrome::ToggleShowFullURLs(browser());
   EXPECT_EQ(url_text, omnibox_view_views->GetText());
-  EXPECT_EQ(0,
-            omnibox_view_views->GetRenderText()->GetUpdatedDisplayOffset().x());
 
   // Toggling the setting again should go back to the elided URL.
   chrome::ToggleShowFullURLs(browser());
-  EXPECT_EQ(url_text, omnibox_view_views->GetText());
-  EXPECT_GT(0,
-            omnibox_view_views->GetRenderText()->GetUpdatedDisplayOffset().x());
+  EXPECT_EQ(url_text,
+            base::ASCIIToUTF16("http://") + omnibox_view_views->GetText());
 }
 
 // The following set of tests require UIA accessibility support, which only
