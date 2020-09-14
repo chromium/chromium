@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -437,6 +438,10 @@ base::string16 AddressComponent::ReplacePlaceholderTypesWithValues(
   // Assumptions: Placeholder values are not nested.
   //
   // * Search for a substring of the form "{$[^}]*}".
+  // The substring can contain semicolon-separated tokens. The first token is
+  // always the type name. If present, the second token is a prefix that is only
+  // inserted if the corresponding value is not empty. Accordingly, the third
+  // token is a suffix.
   //
   // * Check if this substring is a supported type of this component.
   //
@@ -450,12 +455,10 @@ base::string16 AddressComponent::ReplacePlaceholderTypesWithValues(
 
   // Create a result vector for the tokens that are joined in the end.
   std::vector<base::StringPiece16> result_pieces;
-  // Reserve space for 10 tokens. This should be sufficient for most cases.
-  result_pieces.reserve(10);
 
-  // Store the inserted values to allow the used StringPieces to stay valid.
+  // Store the token pieces that are joined in the end.
   std::vector<base::string16> inserted_values;
-  inserted_values.reserve(4);
+  inserted_values.reserve(20);
 
   // Use a StringPiece rather than the string since this allows for getting
   // cheap views onto substrings.
@@ -473,7 +476,7 @@ base::string16 AddressComponent::ReplacePlaceholderTypesWithValues(
       started_control_sequence = true;
       // Append the preceding string since it can't be a valid placeholder.
       if (i > 0) {
-        result_pieces.emplace_back(format_piece.substr(
+        inserted_values.emplace_back(format_piece.substr(
             processed_until_index, i - processed_until_index));
       }
       processed_until_index = i;
@@ -483,29 +486,55 @@ base::string16 AddressComponent::ReplacePlaceholderTypesWithValues(
       // The control sequence came to an end.
       started_control_sequence = false;
       size_t placeholder_start = processed_until_index + 2;
-      base::string16 type_name(
+      base::string16 placeholder(
           format_piece.substr(placeholder_start, i - placeholder_start));
+
+      std::vector<base::string16> placeholder_tokens =
+          base::SplitString(placeholder, base::ASCIIToUTF16(";"),
+                            base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      DCHECK(placeholder_tokens.size() > 0);
+
+      // By convention, the first token is the type of the placeholder.
+      base::string16 type_name = placeholder_tokens.at(0);
+      // If present, the second token is the prefix.
+      base::string16 prefix = placeholder_tokens.size() > 1
+                                  ? placeholder_tokens.at(1)
+                                  : base::string16();
+      // And the third token the suffix.
+      base::string16 suffix = placeholder_tokens.size() > 2
+                                  ? placeholder_tokens.at(2)
+                                  : base::string16();
+
       base::string16 value;
       if (GetValueAndStatusForTypeIfPossible(base::UTF16ToASCII(type_name),
                                              &value, nullptr)) {
         // The type is valid and should be substituted.
-        inserted_values.emplace_back(std::move(value));
-        result_pieces.emplace_back(base::StringPiece16(inserted_values.back()));
+        if (!value.empty()) {
+          // Add the prefix if present.
+          if (!prefix.empty())
+            inserted_values.emplace_back(std::move(prefix));
+
+          // Add the substituted value.
+          inserted_values.emplace_back(std::move(value));
+          // Add the suffix if present.
+          if (!suffix.empty())
+            inserted_values.emplace_back(std::move(suffix));
+        }
       } else {
         // Append the control sequence as it is, because the type is not
         // supported by the component tree.
-        result_pieces.emplace_back(format_piece.substr(
+        inserted_values.emplace_back(format_piece.substr(
             processed_until_index, i - processed_until_index + 1));
       }
       processed_until_index = i + 1;
     }
   }
   // Append the rest of the string.
-  result_pieces.emplace_back(
+  inserted_values.emplace_back(
       format_piece.substr(processed_until_index, base::string16::npos));
 
   // Build the final result.
-  return base::JoinString(result_pieces, base::ASCIIToUTF16(""));
+  return base::JoinString(inserted_values, base::ASCIIToUTF16(""));
 }
 
 bool AddressComponent::CompleteFullTree() {
@@ -531,7 +560,8 @@ void AddressComponent::RecursivelyCompleteTree() {
     return;
 
   // If the value is assigned, parse the subcomponents from the value.
-  if (!GetValue().empty())
+  if (!GetValue().empty() &&
+      MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() == 1)
     ParseValueAndAssignSubcomponents();
 
   // First call completion on all subcomponents.

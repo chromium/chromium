@@ -39,21 +39,15 @@ base::string16 ReduceToInitials(const base::string16& value) {
   return base::i18n::ToUpper(result);
 }
 
-NameHonorific::NameHonorific() : NameHonorific(nullptr) {}
-
 NameHonorific::NameHonorific(AddressComponent* parent)
     : AddressComponent(NAME_HONORIFIC_PREFIX, parent) {}
 
 NameHonorific::~NameHonorific() = default;
 
-NameFirst::NameFirst() : NameFirst(nullptr) {}
-
 NameFirst::NameFirst(AddressComponent* parent)
     : AddressComponent(NAME_FIRST, parent) {}
 
 NameFirst::~NameFirst() = default;
-
-NameMiddle::NameMiddle() : NameMiddle(nullptr) {}
 
 NameMiddle::NameMiddle(AddressComponent* parent)
     : AddressComponent(NAME_MIDDLE, parent) {}
@@ -96,14 +90,10 @@ bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
   return false;
 }
 
-NameLastFirst::NameLastFirst() : NameLastFirst(nullptr) {}
-
 NameLastFirst::NameLastFirst(AddressComponent* parent)
     : AddressComponent(NAME_LAST_FIRST, parent) {}
 
 NameLastFirst::~NameLastFirst() = default;
-
-NameLastConjunction::NameLastConjunction() : NameLastConjunction(nullptr) {}
 
 NameLastConjunction::NameLastConjunction(AddressComponent* parent)
     : AddressComponent(NAME_LAST_CONJUNCTION, parent) {}
@@ -120,14 +110,10 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
   return {pattern_provider->GetRegEx(RegEx::kParseLastNameIntoSecondLastName)};
 }
 
-NameLastSecond::NameLastSecond() : NameLastSecond(nullptr) {}
-
 NameLastSecond::NameLastSecond(AddressComponent* parent)
     : AddressComponent(NAME_LAST_SECOND, parent) {}
 
 NameLastSecond::~NameLastSecond() = default;
-
-NameLast::NameLast() : NameLast(nullptr) {}
 
 NameLast::NameLast(AddressComponent* parent)
     : AddressComponent(NAME_LAST, parent, {&first_, &conjunction_, &second_}) {}

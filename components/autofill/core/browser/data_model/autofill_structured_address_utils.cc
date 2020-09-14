@@ -212,9 +212,11 @@ std::string CaptureTypeWithPattern(
       options);
 }
 
-std::string CaptureTypeWithPattern(const ServerFieldType& type,
-                                   const std::string& pattern,
-                                   const CaptureOptions& options) {
+std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
+                                          const std::string& prefix,
+                                          const std::string& pattern,
+                                          const std::string& suffix,
+                                          const CaptureOptions& options) {
   std::string quantifier;
   switch (options.quantifier) {
     // Makes the match optional.
@@ -232,13 +234,32 @@ std::string CaptureTypeWithPattern(const ServerFieldType& type,
 
   // By adding an "i" in the first group, the capturing is case insensitive.
   // Allow multiple separators to support the ", " case.
-  return base::StrCat({"(?i:(?P<", AutofillType(type).ToString(), ">", pattern,
-                       ")(?:", options.separator, ")+)", quantifier});
+  return base::StrCat({"(?i:", prefix, "(?P<", AutofillType(type).ToString(),
+                       ">", pattern, ")", suffix, "(?:", options.separator,
+                       ")+)", quantifier});
+}
+
+std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,
+                                           const std::string& pattern,
+                                           const std::string& suffix_pattern,
+                                           const CaptureOptions& options) {
+  return CaptureTypeWithAffixedPattern(type, std::string(), pattern,
+                                       suffix_pattern, options);
+}
+
+std::string CaptureTypeWithPrefixedPattern(const ServerFieldType& type,
+                                           const std::string& prefix_pattern,
+                                           const std::string& pattern,
+                                           const CaptureOptions& options) {
+  return CaptureTypeWithAffixedPattern(type, prefix_pattern, pattern,
+                                       std::string(), options);
 }
 
 std::string CaptureTypeWithPattern(const ServerFieldType& type,
-                                   const std::string& pattern) {
-  return CaptureTypeWithPattern(type, pattern, CaptureOptions());
+                                   const std::string& pattern,
+                                   CaptureOptions options) {
+  return CaptureTypeWithAffixedPattern(type, std::string(), pattern,
+                                       std::string(), options);
 }
 
 base::string16 NormalizeValue(const base::string16& value) {

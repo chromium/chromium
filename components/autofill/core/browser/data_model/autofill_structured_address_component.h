@@ -373,13 +373,13 @@ class AddressComponent {
   // If no empty node is available, it appends the value to the first node.
   virtual void ConsumeAdditionalToken(const base::string16& token_value);
 
- private:
-  // Returns a reference to the constant root node of the tree.
-  const AddressComponent& GetRootNode() const;
-
   // Returns a reference to the root node of the tree.
   AddressComponent& GetRootNode();
 
+  // Returns a reference to the root node of the tree.
+  const AddressComponent& GetRootNode() const;
+
+ private:
   // Unsets the node and all of its children.
   void UnsetAddressComponentAndItsSubcomponents();
 

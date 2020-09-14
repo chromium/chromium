@@ -50,6 +50,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
+    case ADDRESS_HOME_FLOOR:
       return true;
 
     // Billing address types that should not be returned by GetStorableType().
@@ -209,6 +210,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ADDRESS_HOME_ADDRESS";
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
       return "ADDRESS_HOME_ADDRESS_WITH_NAME";
+    case ADDRESS_HOME_FLOOR:
+      return "ADDRESS_HOME_FLOOR";
     case ADDRESS_HOME_LINE1:
       return "ADDRESS_HOME_LINE1";
     case ADDRESS_HOME_LINE2:

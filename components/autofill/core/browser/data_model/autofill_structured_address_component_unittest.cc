@@ -171,6 +171,29 @@ class TestCompoundNameCustomFormatAddressComponent : public AddressComponent {
   TestAtomicLastNameAddressComponent last_name{this};
 };
 
+// Creates a compound name with a custom format for testing purposes.
+class TestCompoundNameCustomAffixedFormatAddressComponent
+    : public AddressComponent {
+ public:
+  TestCompoundNameCustomAffixedFormatAddressComponent()
+      : TestCompoundNameCustomAffixedFormatAddressComponent(nullptr) {}
+  explicit TestCompoundNameCustomAffixedFormatAddressComponent(
+      AddressComponent* parent)
+      : AddressComponent(NAME_FULL,
+                         parent,
+                         {&first_name, &middle_name, &last_name}) {}
+
+  // Introduces a custom format with a leading last name.
+  base::string16 GetBestFormatString() const override {
+    return ASCIIToUTF16("${NAME_LAST;Dr. ; MD}, ${NAME_FIRST}");
+  }
+
+ private:
+  TestAtomicFirstNameAddressComponent first_name{this};
+  TestAtomicMiddleNameAddressComponent middle_name{this};
+  TestAtomicLastNameAddressComponent last_name{this};
+};
+
 // Creates a compound name with a custom format with unsupported token.
 class TestCompoundNameCustomFormatWithUnsupportedTokenAddressComponent
     : public AddressComponent {
@@ -720,6 +743,32 @@ TEST(AutofillStructuredAddressAddressComponent,
   // Format the compound and verify the expectation.
   compound_component.FormatValueFromSubcomponentsForTesting();
   base::string16 expected_value = ASCIIToUTF16("Smith, Winston");
+  base::string16 actual_value = compound_component.GetValue();
+
+  EXPECT_EQ(expected_value, actual_value);
+}
+
+// Tests the formatting of the unstructured value from the components with a
+// type-specific format string containing a prefix and a suffix.
+TEST(AutofillStructuredAddressAddressComponent,
+     FormatValueFromSubcomponentsWithTypeSpecificAffixedFormat) {
+  base::string16 first_name = ASCIIToUTF16("Winston");
+  base::string16 middle_name = ASCIIToUTF16("O'Brien");
+  base::string16 last_name = ASCIIToUTF16("Smith");
+  // Create a compound component.
+  TestCompoundNameCustomAffixedFormatAddressComponent compound_component;
+
+  // Set the values of the subcomponents.
+  compound_component.SetValueForTypeIfPossible(
+      NAME_FIRST, first_name, VerificationStatus::kUserVerified);
+  compound_component.SetValueForTypeIfPossible(
+      NAME_MIDDLE, middle_name, VerificationStatus::kUserVerified);
+  compound_component.SetValueForTypeIfPossible(
+      NAME_LAST, last_name, VerificationStatus::kUserVerified);
+
+  // Format the compound and verify the expectation.
+  compound_component.FormatValueFromSubcomponentsForTesting();
+  base::string16 expected_value = ASCIIToUTF16("Dr. Smith MD, Winston");
   base::string16 actual_value = compound_component.GetValue();
 
   EXPECT_EQ(expected_value, actual_value);

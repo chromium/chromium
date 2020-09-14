@@ -230,9 +230,12 @@ enum ServerFieldType {
   // The complete formatted address including the name.
   ADDRESS_HOME_ADDRESS_WITH_NAME = 115,
 
+  // The floor number within a building.
+  ADDRESS_HOME_FLOOR = 116,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 116,
+  MAX_VALID_FIELD_TYPE = 117,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.
