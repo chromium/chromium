@@ -4,14 +4,17 @@
 
 #include <string>
 
+#include "base/at_exit.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/chromeos/dbus/dbus_helper.h"
 #include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/fuzzer/policy_fuzzer.pb.h"
@@ -31,6 +34,8 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 
 namespace policy {
 
@@ -44,9 +49,23 @@ struct Environment {
     CHECK(base::PathService::Override(chrome::DIR_USER_DATA,
                                       scoped_temp_dir.GetPath()));
     CHECK(base::i18n::InitializeICU());
+
+    ui::RegisterPathProvider();
+
+    base::FilePath ui_test_pak_path =
+        base::PathService::CheckedGet(ui::UI_TEST_PAK);
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+
+    base::FilePath pak_path = base::PathService::CheckedGet(base::DIR_MODULE);
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        pak_path.AppendASCII("components_tests_resources.pak"),
+        ui::SCALE_FACTOR_NONE);
   }
 
+  ~Environment() { ui::ResourceBundle::CleanupSharedInstance(); }
+
   base::ScopedTempDir scoped_temp_dir;
+  base::AtExitManager exit_manager;
 };
 
 struct PerInputEnvironment {

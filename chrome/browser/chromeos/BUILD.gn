@@ -3873,7 +3873,9 @@ if (use_libfuzzer) {
       "//chrome/browser/chromeos",
       "//chromeos/dbus:dbus",
       "//chromeos/tpm",
+      "//components:components_tests_pak",
       "//third_party/libprotobuf-mutator",
+      "//ui/resources:ui_test_pak",
     ]
   }
 
