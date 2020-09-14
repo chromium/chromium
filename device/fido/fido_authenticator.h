@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_FIDO_AUTHENTICATOR_H_
 #define DEVICE_FIDO_FIDO_AUTHENTICATOR_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -20,8 +21,10 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/credential_management.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/large_blob.h"
 
 namespace device {
 
@@ -70,6 +73,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using BioEnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               base::Optional<BioEnrollmentResponse>)>;
+  using LargeBlobReadCallback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      base::Optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
+          callback)>;
 
   FidoAuthenticator() = default;
   virtual ~FidoAuthenticator() = default;
@@ -201,6 +208,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual void BioEnrollDelete(const pin::TokenResponse&,
                                std::vector<uint8_t> template_id,
                                BioEnrollmentCallback);
+
+  // Large blob commands.
+  // Attempts to write a |large_blob| into the credential. If there is an
+  // existing credential for the |large_blob_key|, it will be overwritten.
+  virtual void WriteLargeBlob(
+      const std::vector<uint8_t>& large_blob,
+      const LargeBlobKey& large_blob_key,
+      base::Optional<pin::TokenResponse> pin_uv_auth_token,
+      base::OnceCallback<void(CtapDeviceResponseCode)> callback);
+  // Attempts to read large blobs from the credential encrypted with
+  // |large_blob_keys|. Returns a map of keys to their blobs.
+  virtual void ReadLargeBlob(
+      const std::vector<const LargeBlobKey>& large_blob_keys,
+      base::Optional<pin::TokenResponse> pin_uv_auth_token,
+      LargeBlobReadCallback callback);
 
   // GetAlgorithms returns the list of supported COSEAlgorithmIdentifiers, or
   // |nullopt| if this is unknown and thus all requests should be tried in case

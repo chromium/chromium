@@ -4,6 +4,7 @@
 
 #include "device/fido/fido_device_authenticator.h"
 
+#include <algorithm>
 #include <numeric>
 #include <utility>
 
@@ -16,9 +17,11 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/get_assertion_task.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
 #include "device/fido/u2f_command_constructor.h"
@@ -730,6 +733,193 @@ void FidoDeviceAuthenticator::BioEnrollEnumerate(
       std::move(callback), base::BindOnce(&BioEnrollmentResponse::Parse));
 }
 
+void FidoDeviceAuthenticator::WriteLargeBlob(
+    const std::vector<uint8_t>& large_blob,
+    const LargeBlobKey& large_blob_key,
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
+  auto pin_uv_auth_token_copy = pin_uv_auth_token;
+  FetchLargeBlobArray(
+      pin_uv_auth_token_copy, LargeBlobArrayReader(),
+      base::BindOnce(&FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite,
+                     weak_factory_.GetWeakPtr(), large_blob, large_blob_key,
+                     std::move(pin_uv_auth_token), std::move(callback)));
+}
+
+void FidoDeviceAuthenticator::ReadLargeBlob(
+    const std::vector<const LargeBlobKey>& large_blob_keys,
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    LargeBlobReadCallback callback) {
+  FetchLargeBlobArray(
+      std::move(pin_uv_auth_token), LargeBlobArrayReader(),
+      base::BindOnce(&FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead,
+                     weak_factory_.GetWeakPtr(), large_blob_keys,
+                     std::move(callback)));
+}
+
+void FidoDeviceAuthenticator::FetchLargeBlobArray(
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    LargeBlobArrayReader large_blob_array_reader,
+    base::OnceCallback<void(CtapDeviceResponseCode,
+                            base::Optional<LargeBlobArrayReader>)> callback) {
+  size_t bytes_to_read = max_large_blob_fragment_length();
+  LargeBlobsRequest request =
+      LargeBlobsRequest::ForRead(bytes_to_read, large_blob_array_reader.size());
+  if (pin_uv_auth_token) {
+    request.SetPinParam(*pin_uv_auth_token);
+  }
+  RunOperation<LargeBlobsRequest, LargeBlobsResponse>(
+      std::move(request),
+      base::BindOnce(&FidoDeviceAuthenticator::OnReadLargeBlobFragment,
+                     weak_factory_.GetWeakPtr(), bytes_to_read,
+                     std::move(large_blob_array_reader),
+                     std::move(pin_uv_auth_token), std::move(callback)),
+      base::BindOnce(&LargeBlobsResponse::ParseForRead, bytes_to_read));
+}
+
+void FidoDeviceAuthenticator::OnReadLargeBlobFragment(
+    const size_t bytes_requested,
+    LargeBlobArrayReader large_blob_array_reader,
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode,
+                            base::Optional<LargeBlobArrayReader>)> callback,
+    CtapDeviceResponseCode status,
+    base::Optional<LargeBlobsResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status, base::nullopt);
+    return;
+  }
+
+  DCHECK(response && response->config());
+  large_blob_array_reader.Append(*response->config());
+
+  if (response->config()->size() == bytes_requested) {
+    // More data may be available, read the next fragment.
+    FetchLargeBlobArray(std::move(pin_uv_auth_token),
+                        std::move(large_blob_array_reader),
+                        std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
+                          std::move(large_blob_array_reader));
+}
+
+void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForWrite(
+    const std::vector<uint8_t>& large_blob,
+    const LargeBlobKey& large_blob_key,
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback,
+    CtapDeviceResponseCode status,
+    base::Optional<LargeBlobArrayReader> large_blob_array_reader) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  base::Optional<std::vector<LargeBlobData>> large_blob_array =
+      large_blob_array_reader->Materialize();
+  if (!large_blob_array) {
+    // The large blob array is corrupted. Replace it completely with a new one.
+    // TODO(nsatragno): but maybe we want to do something else like trying
+    // again? It might have been corrupted while transported. Decide when we
+    // have hardware to test.
+    large_blob_array.emplace();
+    return;
+  }
+
+  auto existing_large_blob =
+      std::find_if(large_blob_array->begin(), large_blob_array->end(),
+                   [&large_blob_key](const LargeBlobData& blob) {
+                     return blob.Decrypt(large_blob_key);
+                   });
+
+  LargeBlobData new_large_blob_data(large_blob_key, large_blob);
+  if (existing_large_blob != large_blob_array->end()) {
+    *existing_large_blob = std::move(new_large_blob_data);
+  } else {
+    large_blob_array->emplace_back(std::move(new_large_blob_data));
+  }
+
+  WriteLargeBlobArray(std::move(pin_uv_auth_token),
+                      LargeBlobArrayWriter(*large_blob_array),
+                      std::move(callback));
+}
+
+void FidoDeviceAuthenticator::WriteLargeBlobArray(
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    LargeBlobArrayWriter large_blob_array_writer,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
+  LargeBlobArrayFragment fragment =
+      large_blob_array_writer.Pop(max_large_blob_fragment_length());
+
+  LargeBlobsRequest request = LargeBlobsRequest::ForWrite(
+      std::move(fragment), large_blob_array_writer.size());
+  if (pin_uv_auth_token) {
+    request.SetPinParam(*pin_uv_auth_token);
+  }
+  RunOperation<LargeBlobsRequest, LargeBlobsResponse>(
+      std::move(request),
+      base::BindOnce(&FidoDeviceAuthenticator::OnWriteLargeBlobFragment,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(large_blob_array_writer),
+                     std::move(pin_uv_auth_token), std::move(callback)),
+      base::BindOnce(&LargeBlobsResponse::ParseForWrite));
+}
+
+void FidoDeviceAuthenticator::OnWriteLargeBlobFragment(
+    LargeBlobArrayWriter large_blob_array_writer,
+    const base::Optional<pin::TokenResponse> pin_uv_auth_token,
+    base::OnceCallback<void(CtapDeviceResponseCode)> callback,
+    CtapDeviceResponseCode status,
+    base::Optional<LargeBlobsResponse> response) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  if (large_blob_array_writer.has_remaining_fragments()) {
+    WriteLargeBlobArray(std::move(pin_uv_auth_token),
+                        std::move(large_blob_array_writer),
+                        std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(CtapDeviceResponseCode::kSuccess);
+}
+
+void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
+    const std::vector<const LargeBlobKey>& large_blob_keys,
+    LargeBlobReadCallback callback,
+    CtapDeviceResponseCode status,
+    base::Optional<LargeBlobArrayReader> large_blob_array_reader) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status, base::nullopt);
+    return;
+  }
+
+  base::Optional<std::vector<LargeBlobData>> large_blob_array =
+      large_blob_array_reader->Materialize();
+  if (!large_blob_array) {
+    std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrIntegrityFailure,
+                            base::nullopt);
+    return;
+  }
+
+  std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>> result;
+  for (const LargeBlobData& blob : *large_blob_array) {
+    for (const LargeBlobKey& key : large_blob_keys) {
+      base::Optional<std::vector<uint8_t>> plaintext = blob.Decrypt(key);
+      if (plaintext) {
+        result.emplace_back(std::make_pair(key, std::move(*plaintext)));
+        break;
+      }
+    }
+  }
+
+  std::move(callback).Run(CtapDeviceResponseCode::kSuccess, std::move(result));
+}
+
 base::Optional<base::span<const int32_t>>
 FidoDeviceAuthenticator::GetAlgorithms() {
   if (device_->supported_protocol() == ProtocolVersion::kU2f) {
@@ -881,6 +1071,13 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKeyForUvToken(
   RunOperation<pin::UvTokenRequest, pin::TokenResponse>(
       std::move(request), std::move(callback),
       base::BindOnce(&pin::TokenResponse::Parse, std::move(shared_key)));
+}
+
+size_t FidoDeviceAuthenticator::max_large_blob_fragment_length() {
+  return device_->device_info()->max_msg_size
+             ? *device_->device_info()->max_msg_size -
+                   kLargeBlobReadEncodingOverhead
+             : kLargeBlobDefaultMaxFragmentLength;
 }
 
 base::WeakPtr<FidoAuthenticator> FidoDeviceAuthenticator::GetWeakPtr() {

@@ -31,7 +31,7 @@ enum class Permissions : uint8_t {
   kGetAssertion = 0x02,
   kCredentialManagement = 0x04,
   kBioEnrollment = 0x08,
-  kPlatformConfiguration = 0x10,
+  kLargeBlobWrite = 0x10,
 };
 
 // kProtocolVersion is the version of the PIN protocol that this code
@@ -246,7 +246,7 @@ class HMACSecretRequest {
 // decrypt a response, the shared key from the request is needed. Once a pin-
 // token has been decrypted, it can be used to calculate the pinAuth parameters
 // needed to show user-verification in future operations.
-class TokenResponse {
+class COMPONENT_EXPORT(DEVICE_FIDO) TokenResponse {
  public:
   ~TokenResponse();
   TokenResponse(const TokenResponse&);

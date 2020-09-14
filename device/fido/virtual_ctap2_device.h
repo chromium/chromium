@@ -69,6 +69,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool cred_protect_support = false;
     bool hmac_secret_support = false;
     bool large_blob_support = false;
+    // The space available to store a large blob. In real authenticators this
+    // may change depending on the number of resident credentials. We treat this
+    // as a fixed size area for the large blob.
+    size_t available_large_blob_storage = 1024;
+
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;
 
@@ -218,6 +223,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
       std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnBioEnrollment(base::span<const uint8_t> request,
                                          std::vector<uint8_t>* response);
+  CtapDeviceResponseCode OnLargeBlobs(base::span<const uint8_t> request,
+                                      std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnAuthenticatorGetInfo(
       std::vector<uint8_t>* response) const;
 

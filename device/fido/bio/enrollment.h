@@ -145,7 +145,7 @@ struct BioEnrollmentRequest {
   ~BioEnrollmentRequest();
 
  private:
-  BioEnrollmentRequest(Version);
+  explicit BioEnrollmentRequest(Version);
 };
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {

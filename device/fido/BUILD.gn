@@ -160,6 +160,8 @@ component("fido") {
       "hid/fido_hid_message.h",
       "hid/fido_hid_packet.cc",
       "hid/fido_hid_packet.h",
+      "large_blob.cc",
+      "large_blob.h",
       "make_credential_request_handler.cc",
       "make_credential_request_handler.h",
       "make_credential_task.cc",
