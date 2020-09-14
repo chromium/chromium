@@ -224,23 +224,25 @@ public class Browser {
      * @param view The new top-view, or null to remove the view.
      * @param minHeight The minimum height in pixels that the top controls can scoll up to. A value
      *        of 0 means the top-view should scroll entirely off screen.
-     * @param pinToContentTop Whether the top-view should only be expanded when the web
+     * @param onlyExpandControlsAtPageTop Whether the top-view should only be expanded when the web
      *        content is scrolled to the top. A true value makes the top-view behave as though it
-     *        were inserted into the top of the page content.
+     *        were inserted into the top of the page content. If true, the top-view should NOT be
+     *        used to display the URL, as this will prevent it from expanding in security-sensitive
+     *        contexts where the URL should be visible to the user.
      * @param animate Whether or not any height/visibility changes that result from this call
      *        should be animated.
      *
      * @since 86
      */
-    public void setTopView(
-            @Nullable View view, int minHeight, boolean pinToContentTop, boolean animate) {
+    public void setTopView(@Nullable View view, int minHeight, boolean onlyExpandControlsAtPageTop,
+            boolean animate) {
         ThreadCheck.ensureOnUiThread();
         if (WebLayer.getSupportedMajorVersionInternal() < 86) {
             throw new UnsupportedOperationException();
         }
         try {
             mImpl.setTopViewAndScrollingBehavior(
-                    ObjectWrapper.wrap(view), minHeight, pinToContentTop, animate);
+                    ObjectWrapper.wrap(view), minHeight, onlyExpandControlsAtPageTop, animate);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

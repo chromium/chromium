@@ -38,5 +38,6 @@ interface IBrowser {
   ITab createTab() = 11;
 
   void setTopViewAndScrollingBehavior(in IObjectWrapper view, in int minHeight,
-                                      in boolean pinToContentTop, in boolean animate) = 12;
+                                      in boolean onlyExpandControlsAtPageTop,
+                                      in boolean animate) = 12;
 }
