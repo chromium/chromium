@@ -152,9 +152,15 @@ bool* UIEnabledStorage() {
   return &enabled;
 }
 
-EventResult CalculateEventResult(bool allowed, bool should_warn) {
-  return allowed ? EventResult::ALLOWED
-                 : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
+EventResult CalculateEventResult(
+    const enterprise_connectors::AnalysisSettings& settings,
+    bool allowed_by_scan_result,
+    bool should_warn) {
+  bool wait_for_verdict = settings.block_until_verdict ==
+                          enterprise_connectors::BlockUntilVerdict::BLOCK;
+  return (allowed_by_scan_result || !wait_for_verdict)
+             ? EventResult::ALLOWED
+             : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
 }
 
 }  // namespace
@@ -410,7 +416,7 @@ void DeepScanningDialogDelegate::StringRequestCallback(
       "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       access_point_, content_size, result, response,
-      CalculateEventResult(text_complies, should_warn));
+      CalculateEventResult(data_.settings, text_complies, should_warn));
 
   if (!text_complies) {
     if (should_warn) {
@@ -445,7 +451,7 @@ void DeepScanningDialogDelegate::CompleteFileRequestCallback(
       file_info_[index].sha256, mime_type,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       access_point_, file_info_[index].size, result, response,
-      CalculateEventResult(file_complies, should_warn));
+      CalculateEventResult(data_.settings, file_complies, should_warn));
 
   ++file_result_count_;
 

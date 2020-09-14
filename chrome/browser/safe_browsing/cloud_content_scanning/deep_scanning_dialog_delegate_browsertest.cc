@@ -816,7 +816,11 @@ IN_PROC_BROWSER_TEST_P(DeepScanningDialogDelegateDelayDeliveryUntilVerdictTest,
       /*dlp_verdict*/ dlp_verdict,
       /*mimetypes*/ DocMimeTypes(),
       /*size*/ std::string("foo content").size(),
-      /*result*/ EventResultToString(EventResult::BLOCKED));
+      // If the policy allows immediate delivery of the file, then the result is
+      // ALLOWED even if the verdict obtained afterwards is BLOCKED.
+      /*result*/
+      EventResultToString(expected_result() ? EventResult::ALLOWED
+                                            : EventResult::BLOCKED));
 
   bool called = false;
   base::RunLoop run_loop;
