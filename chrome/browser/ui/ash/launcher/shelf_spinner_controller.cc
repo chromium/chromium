@@ -224,7 +224,9 @@ bool ShelfSpinnerController::RemoveSpinnerFromControllerMap(
 
   const ash::ShelfID shelf_id(app_id);
   DCHECK_EQ(it->second.controller(),
-            owner_->shelf_model()->GetShelfItemDelegate(shelf_id));
+            it->second.IsFinished()
+                ? nullptr
+                : owner_->shelf_model()->GetShelfItemDelegate(shelf_id));
   app_controller_map_.erase(it);
 
   return true;
