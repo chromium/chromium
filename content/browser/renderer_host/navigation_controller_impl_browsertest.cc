@@ -9288,10 +9288,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                                1);
 }
 
-// Tests that if an entry is marked as skippable, it will be reset if there is a
-// navigation to this entry again. This does not need the feature to be enabled.
+// Tests that if an entry is marked as skippable, it will not be reset if there
+// is a navigation to this entry again (crbug.com/112129). This does not need
+// the feature to be enabled.
 IN_PROC_BROWSER_TEST_P(NavigationControllerDisableHistoryIntervention,
-                       ResetSkipOnBackForward) {
+                       DoNotResetSkipOnBackForward) {
   base::HistogramTester histograms;
   GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
 
@@ -9327,15 +9328,60 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerDisableHistoryIntervention,
   controller.GoToIndex(0);
   back_nav_load_observer.Wait();
 
-  // Going back again to an entry should reset its skippable flag.
-  EXPECT_FALSE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  // Going back again to an entry should not reset its skippable flag.
+  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
 
   // Navigating away from this with a browser initiated navigation should log a
-  // histogram with skippable as false.
+  // histogram with skippable as true.
   GURL url1(embedded_test_server()->GetURL("/title2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   histograms.ExpectBucketCount(
-      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", false, 1);
+      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
+}
+
+// Tests that if an entry is marked as skippable, it will not be reset if there
+// is a navigation to this entry again (crbug.com/112129) using history.back/
+// forward. This does not need the feature to be enabled.
+IN_PROC_BROWSER_TEST_P(NavigationControllerDisableHistoryIntervention,
+                       DoNotResetSkipOnHistoryBackAPI) {
+  base::HistogramTester histograms;
+  GURL main_url(embedded_test_server()->GetURL("/frame_tree/top.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // Last entry should have been marked as skippable.
+  EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+  histograms.ExpectBucketCount(
+      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 1);
+
+  // Go back to the last entry using history.back.
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(shell(), "history.back();"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // Going back again to an entry should not reset its skippable flag.
+  EXPECT_TRUE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 }
 
 // Tests that if a navigation entry is marked as skippable due to pushState then
@@ -9412,11 +9458,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(push_state_url1, controller.GetLastCommittedEntry()->GetURL());
 
   // We now have (Before user gesture)
-  // [skippable_url(skip), redirected_url(skip), push_state_url1*,
+  // [skippable_url(skip), redirected_url(skip), push_state_url1(skip)*,
   // push_state_url2(skip), push_state_url3]
+  // Note the entry at index 2 retains its skippable flag.
   EXPECT_TRUE(controller.GetEntryAtIndex(0)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
-  EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
 

@@ -576,7 +576,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // inserted in |entries_| to make sure UKM reports the URL of the document
   // adding the entry.
   void SetShouldSkipOnBackForwardUIIfNeeded(
-      RenderFrameHostImpl* rfh,
       bool replace_entry,
       bool previous_document_was_activated,
       bool is_renderer_initiated,

@@ -1203,11 +1203,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // the entry.
   active_entry->ResetForCommit(frame_entry);
 
-  // It is possible that we are re-using this entry and it was marked to be
-  // skipped on back/forward UI in its previous navigation. Reset it here so
-  // that it is set afresh, if applicable, for this navigation.
-  active_entry->set_should_skip_on_back_forward_ui(false);
-
   // The active entry's SiteInstance should match our SiteInstance.
   // TODO(creis): This check won't pass for subframes until we create entries
   // for subframe navigations.
@@ -1575,7 +1570,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewPage(
   }
 
   SetShouldSkipOnBackForwardUIIfNeeded(
-      rfh, replace_entry, previous_document_was_activated,
+      replace_entry, previous_document_was_activated,
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
@@ -1865,7 +1860,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
           delegate_->GetFrameTree()->root());
 
   SetShouldSkipOnBackForwardUIIfNeeded(
-      rfh, replace_entry, previous_document_was_activated,
+      replace_entry, previous_document_was_activated,
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
 
   // TODO(creis): Update this to add the frame_entry if we can't find the one
@@ -2222,10 +2217,6 @@ void NavigationControllerImpl::NotifyUserActivation() {
   if (!last_committed_entry)
     return;
 
-  // |last_committed_entry| should not be skippable because it is the current
-  // entry and in case the skippable bit was earlier set then on re-navigation
-  // it would have been reset.
-  DCHECK(!last_committed_entry->should_skip_on_back_forward_ui());
   SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false);
 }
 
@@ -3667,7 +3658,6 @@ void NavigationControllerImpl::SetGetTimestampCallbackForTest(
 
 // History manipulation intervention:
 void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
-    RenderFrameHostImpl* rfh,
     bool replace_entry,
     bool previous_document_was_activated,
     bool is_renderer_initiated,
@@ -3678,8 +3668,13 @@ void NavigationControllerImpl::SetShouldSkipOnBackForwardUIIfNeeded(
   if (replace_entry || previous_document_was_activated ||
       !is_renderer_initiated) {
     if (last_committed_entry_index_ != -1) {
+      // This histogram always counts when navigating away from an entry,
+      // irrespective of whether the skippable flag was changed or not, and
+      // whether this entry is being reused or not.
       UMA_HISTOGRAM_BOOLEAN(
-          "Navigation.BackForward.SetShouldSkipOnBackForwardUI", false);
+          "Navigation.BackForward.SetShouldSkipOnBackForwardUI",
+          GetEntryAtIndex(last_committed_entry_index_)
+              ->should_skip_on_back_forward_ui());
     }
     return;
   }

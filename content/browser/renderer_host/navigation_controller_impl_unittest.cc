@@ -1600,6 +1600,12 @@ TEST_F(NavigationControllerTest, Forward) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
+  // Simulate a user gesture so that the above entry is not marked to be skipped
+  // on back.
+  main_test_rfh()->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+
   auto forward_navigation =
       NavigationSimulator::CreateHistoryNavigation(1, contents());
   forward_navigation->Start();
@@ -1662,6 +1668,12 @@ TEST_F(NavigationControllerTest, Forward_GeneratesNewPage) {
   NavigationSimulator::GoBack(contents());
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
+
+  // Simulate a user gesture so that the above entry is not marked to be skipped
+  // on back.
+  main_test_rfh()->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
 
   auto forward_navigation =
       NavigationSimulator::CreateHistoryNavigation(1, contents());
