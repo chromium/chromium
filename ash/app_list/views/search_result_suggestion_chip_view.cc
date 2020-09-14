@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/search_result_suggestion_chip_view.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
