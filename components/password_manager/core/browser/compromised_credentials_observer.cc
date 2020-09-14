@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/compromised_credentials_table.h"
 
 namespace password_manager {
@@ -23,7 +24,7 @@ void ProcessLoginsChanged(const PasswordStoreChangeList& changes,
       continue;
     auto reason = RemoveCompromisedCredentialsReason::kUpdate;
     if (change.type() == PasswordStoreChange::REMOVE &&
-        std::none_of(changes.begin(), changes.end(), [](const auto& change) {
+        base::ranges::none_of(changes, [](const auto& change) {
           return change.type() == PasswordStoreChange::ADD;
         })) {
       reason = RemoveCompromisedCredentialsReason::kRemove;

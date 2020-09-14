@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -219,9 +220,8 @@ void FindBestMatches(
     std::vector<const PasswordForm*>* non_federated_same_scheme,
     std::vector<const PasswordForm*>* best_matches,
     const PasswordForm** preferred_match) {
-  DCHECK(std::all_of(
-      non_federated_matches.begin(), non_federated_matches.end(),
-      [](const PasswordForm* match) { return !match->blocked_by_user; }));
+  DCHECK(base::ranges::none_of(non_federated_matches,
+                               &PasswordForm::blocked_by_user));
   DCHECK(non_federated_same_scheme);
   DCHECK(best_matches);
   DCHECK(preferred_match);

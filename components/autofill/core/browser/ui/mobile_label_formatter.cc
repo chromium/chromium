@@ -8,6 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -142,11 +143,9 @@ base::string16 MobileLabelFormatter::GetLabelForShowAllVariant(
   if (could_show_name_) {
     // Due to mobile platforms' space constraints, only the first name is shown
     // if the form contains a first name field or a full name field.
-    std::any_of(field_types_for_labels().begin(),
-                field_types_for_labels().end(),
-                [](ServerFieldType type) {
-                  return type == NAME_FIRST || type == NAME_FULL;
-                })
+    base::ranges::any_of(
+        field_types_for_labels(),
+        [](auto type) { return type == NAME_FIRST || type == NAME_FULL; })
         ? AddLabelPartIfNotEmpty(GetLabelFirstName(profile, app_locale()),
                                  &label_parts)
         : AddLabelPartIfNotEmpty(

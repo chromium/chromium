@@ -19,6 +19,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -111,9 +112,9 @@ bool FindByGUID(const C& container, const StringType& guid) {
 
 template <typename C, typename T>
 bool FindByContents(const C& container, const T& needle) {
-  return std::any_of(
-      std::begin(container), std::end(container),
-      [&needle](const auto& element) { return element->Compare(needle) == 0; });
+  return base::ranges::any_of(container, [&needle](const auto& element) {
+    return element->Compare(needle) == 0;
+  });
 }
 
 bool IsSyncEnabledFor(const syncer::SyncService* sync_service,

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -121,11 +122,11 @@ bool IsStreetAddressPart(ServerFieldType type) {
 }
 
 bool HasNonStreetAddress(const std::vector<ServerFieldType>& types) {
-  return std::any_of(types.begin(), types.end(), IsNonStreetAddressPart);
+  return base::ranges::any_of(types, IsNonStreetAddressPart);
 }
 
 bool HasStreetAddress(const std::vector<ServerFieldType>& types) {
-  return std::any_of(types.begin(), types.end(), IsStreetAddressPart);
+  return base::ranges::any_of(types, IsStreetAddressPart);
 }
 
 std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(

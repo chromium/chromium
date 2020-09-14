@@ -15,6 +15,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
@@ -174,7 +175,7 @@ bool MatchesInteractability(const ProcessedField& processed_field,
 }
 
 bool DoesStringContainOnlyDigits(const base::string16& s) {
-  return std::all_of(s.begin(), s.end(), &base::IsAsciiDigit<base::char16>);
+  return base::ranges::all_of(s, &base::IsAsciiDigit<base::char16>);
 }
 
 // Heuristics to determine that a string is very unlikely to be a username.

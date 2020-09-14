@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_utils.h"
@@ -373,12 +374,10 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
   if (origin.opaque())
     return false;  // Don't proceed for invalid origins.
 
-  const auto& credentials =
-      credential_cache_->GetCredentialStore(origin).GetCredentials();
-  return std::any_of(
-      credentials.begin(), credentials.end(), [&](const auto& credential) {
-        return suggestion ==
-               (is_password ? credential.password() : credential.username());
+  return base::ranges::any_of(
+      credential_cache_->GetCredentialStore(origin).GetCredentials(),
+      [&](const auto& cred) {
+        return suggestion == (is_password ? cred.password() : cred.username());
       });
 }
 

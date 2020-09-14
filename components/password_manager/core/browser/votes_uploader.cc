@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -656,8 +657,7 @@ void VotesUploader::GeneratePasswordAttributesVote(
   bool respond_randomly = base::RandGenerator(2);
   bool randomized_value_for_character_class =
       respond_randomly ? base::RandGenerator(2)
-                       : std::any_of(password_value.begin(),
-                                     password_value.end(), predicate);
+                       : base::ranges::any_of(password_value, predicate);
   form_structure->set_password_attributes_vote(std::make_pair(
       character_class_attribute, randomized_value_for_character_class));
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -44,20 +45,13 @@ void ScopedFakeAffiliationAPI::ServeNextRequest() {
   FakeAffiliationFetcher* fetcher = fake_fetcher_factory_.PopNextFetcher();
   std::unique_ptr<AffiliationFetcherDelegate::Result> fake_response(
       new AffiliationFetcherDelegate::Result);
-  for (const auto& preset_equivalence_class : preset_equivalence_relation_) {
-    bool had_intersection_with_request = false;
-    for (const auto& requested_facet_uri : fetcher->GetRequestedFacetURIs()) {
-      if (std::any_of(preset_equivalence_class.begin(),
-                      preset_equivalence_class.end(),
-                      [&requested_facet_uri](const Facet& facet) {
-                        return facet.uri == requested_facet_uri;
-                      })) {
-        had_intersection_with_request = true;
-        break;
-      }
-    }
+  for (const auto& facets : preset_equivalence_relation_) {
+    bool had_intersection_with_request = base::ranges::any_of(
+        fetcher->GetRequestedFacetURIs(), [&facets](const auto& uri) {
+          return base::ranges::find(facets, uri, &Facet::uri) != facets.end();
+        });
     if (had_intersection_with_request)
-      fake_response->affiliations.push_back(preset_equivalence_class);
+      fake_response->affiliations.push_back(facets);
   }
   fetcher->SimulateSuccess(std::move(fake_response));
 }

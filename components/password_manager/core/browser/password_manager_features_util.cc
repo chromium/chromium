@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -223,15 +224,12 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
     return false;
   }
 
-  const base::DictionaryValue* global_pref =
-      pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings);
   // Show the opt-in if any known previous user opted into using the account
   // storage before and might want to access it again.
-  return std::any_of(
-      global_pref->begin(), global_pref->end(),
-      [](const std::pair<std::string, std::unique_ptr<base::Value>>& prefs) {
-        return prefs.second->FindBoolKey(kAccountStorageOptedInKey)
-            .value_or(false);
+  return base::ranges::any_of(
+      *pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings),
+      [](const std::pair<std::string, std::unique_ptr<base::Value>>& p) {
+        return p.second->FindBoolKey(kAccountStorageOptedInKey).value_or(false);
       });
 }
 

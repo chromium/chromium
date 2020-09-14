@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -360,12 +361,10 @@ AutofillField* GetBestPossibleCVCFieldForUpload(
 // Some autofill types are detected based on values and not based on form
 // features. We may decide that it's an autofill form after submission.
 bool ContainsAutofillableValue(const autofill::FormStructure& form) {
-  return std::any_of(form.begin(), form.end(),
-                     [](const std::unique_ptr<autofill::AutofillField>& field) {
-                       return base::Contains(field->possible_types(),
-                                             UPI_VPA) ||
-                              IsUPIVirtualPaymentAddress(field->value);
-                     });
+  return base::ranges::any_of(form, [](const auto& field) {
+    return base::Contains(field->possible_types(), UPI_VPA) ||
+           IsUPIVirtualPaymentAddress(field->value);
+  });
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)

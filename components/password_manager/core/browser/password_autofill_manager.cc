@@ -180,20 +180,16 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
 }
 
 void MaybeAppendManualFallback(std::vector<autofill::Suggestion>* suggestions) {
-  bool has_no_fillable_suggestions = std::none_of(
-      suggestions->begin(), suggestions->end(),
-      [](const autofill::Suggestion& suggestion) {
-        return suggestion.frontend_id ==
-                   autofill::POPUP_ITEM_ID_USERNAME_ENTRY ||
-               suggestion.frontend_id ==
-                   autofill::POPUP_ITEM_ID_PASSWORD_ENTRY ||
-               suggestion.frontend_id ==
-                   autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY ||
-               suggestion.frontend_id ==
-                   autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
-               suggestion.frontend_id ==
-                   autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY;
-      });
+  bool has_no_fillable_suggestions = base::ranges::none_of(
+      *suggestions,
+      [](int id) {
+        return id == autofill::POPUP_ITEM_ID_USERNAME_ENTRY ||
+               id == autofill::POPUP_ITEM_ID_PASSWORD_ENTRY ||
+               id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY ||
+               id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
+               id == autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY;
+      },
+      &autofill::Suggestion::frontend_id);
   if (has_no_fillable_suggestions)
     return;
   autofill::Suggestion suggestion(
@@ -257,30 +253,24 @@ autofill::Suggestion CreateAccountStorageEmptyEntry() {
 }
 
 bool ContainsOtherThanManagePasswords(
-    const std::vector<autofill::Suggestion> suggestions) {
-  return std::any_of(suggestions.begin(), suggestions.end(),
-                     [](const auto& suggestion) {
-                       return suggestion.frontend_id !=
-                              autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY;
-                     });
+    base::span<const autofill::Suggestion> suggestions) {
+  return base::ranges::any_of(suggestions, [](const auto& s) {
+    return s.frontend_id != autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY;
+  });
 }
 
 bool AreSuggestionForPasswordField(
     base::span<const autofill::Suggestion> suggestions) {
-  return std::any_of(suggestions.begin(), suggestions.end(),
-                     [](const autofill::Suggestion& suggestion) {
-                       return suggestion.frontend_id ==
-                              autofill::POPUP_ITEM_ID_PASSWORD_ENTRY;
-                     });
+  return base::ranges::any_of(suggestions, [](const auto& suggestion) {
+    return suggestion.frontend_id == autofill::POPUP_ITEM_ID_PASSWORD_ENTRY;
+  });
 }
 
 bool HasLoadingSuggestion(base::span<const autofill::Suggestion> suggestions,
                           autofill::PopupItemId item_id) {
-  return std::any_of(suggestions.begin(), suggestions.end(),
-                     [&item_id](const autofill::Suggestion& suggestion) {
-                       return suggestion.frontend_id == item_id &&
-                              suggestion.is_loading;
-                     });
+  return base::ranges::any_of(suggestions, [&item_id](const auto& suggestion) {
+    return suggestion.frontend_id == item_id && suggestion.is_loading;
+  });
 }
 
 std::vector<autofill::Suggestion> SetUnlockLoadingState(

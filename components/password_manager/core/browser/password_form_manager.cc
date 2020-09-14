@@ -16,9 +16,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -286,20 +288,14 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 
   const base::string16& username = GetPendingCredentials().username_value;
   const base::string16& password = GetPendingCredentials().password_value;
-  const std::vector<const PasswordForm*> matches =
-      form_fetcher_->GetBestMatches();
   // If no match in the profile store with the same username and password exist,
   // then there is nothing to move.
-  if (std::none_of(matches.cbegin(), matches.cend(),
-                   [&](const PasswordForm* match) {
-                     return !match->IsUsingAccountStore() &&
-                            match->username_value == username &&
-                            match->password_value == password;
-                   })) {
-    return false;
-  }
-
-  return !form_fetcher_->IsMovingBlocked(GaiaIdHash::FromGaiaId(gaia_id),
+  auto is_movable = [&](const PasswordForm* match) {
+    return !match->IsUsingAccountStore() && match->username_value == username &&
+           match->password_value == password;
+  };
+  return base::ranges::any_of(form_fetcher_->GetBestMatches(), is_movable) &&
+         !form_fetcher_->IsMovingBlocked(GaiaIdHash::FromGaiaId(gaia_id),
                                          username);
 }
 
