@@ -10,6 +10,9 @@
 // Records different metrics for the NTP's Discover feed.
 @interface DiscoverFeedMetricsRecorder : NSObject
 
+// Record metrics for when the user has scrolled |scrollDistance| in the Feed.
+- (void)recordFeedScrolled:(int)scrollDistance;
+
 // Record metrics for when the user has reached the bottom of their current
 // feed.
 - (void)recordInfiniteFeedTriggered;

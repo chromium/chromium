@@ -19,6 +19,7 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
@@ -209,8 +210,11 @@
 
   if (IsDiscoverFeedEnabled()) {
     // Creating the DiscoverFeedService will start the DiscoverFeed.
-    DiscoverFeedServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState());
+    DiscoverFeedService* discoverFeedService =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.discoverFeedMetricsRecorder =
+        discoverFeedService->GetDiscoverFeedMetricsRecorder();
   }
   self.discoverFeedViewController = [self discoverFeed];
 
@@ -239,7 +243,6 @@
   self.metricsRecorder = [[ContentSuggestionsMetricsRecorder alloc] init];
   self.metricsRecorder.delegate = self.contentSuggestionsMediator;
 
-  self.discoverFeedMetricsRecorder = [[DiscoverFeedMetricsRecorder alloc] init];
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
@@ -266,6 +269,8 @@
       self.browser->GetCommandDispatcher(), SnackbarCommands);
   self.suggestionsViewController.dispatcher = dispatcher;
   self.suggestionsViewController.discoverFeedMenuHandler = self;
+  self.suggestionsViewController.discoverFeedMetricsRecorder =
+      self.discoverFeedMetricsRecorder;
 
   self.discoverFeedHeaderDelegate =
       self.suggestionsViewController.discoverFeedHeaderDelegate;

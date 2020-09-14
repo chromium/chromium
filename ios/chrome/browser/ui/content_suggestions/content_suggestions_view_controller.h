@@ -21,6 +21,7 @@
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol DiscoverFeedHeaderChanging;
 @protocol DiscoverFeedMenuCommands;
+@class DiscoverFeedMetricsRecorder;
 @protocol OverscrollActionsControllerDelegate;
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
@@ -69,6 +70,9 @@ extern NSString* const
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider
     API_AVAILABLE(ios(13.0));
+// Discover Feed metrics recorder.
+@property(nonatomic, strong)
+    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;

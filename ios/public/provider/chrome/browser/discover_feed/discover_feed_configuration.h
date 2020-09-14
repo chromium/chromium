@@ -8,12 +8,16 @@
 #import <Foundation/Foundation.h>
 
 class ChromeBrowserState;
+@class DiscoverFeedMetricsRecorder;
 
 // Configuration object used by the DiscoverFeedProvider.
 @interface DiscoverFeedConfiguration : NSObject
 
 // BrowserState used by DiscoverFeedProvider;
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+
+// DiscoverFeed metrics recorder used by DiscoverFeedProvider;
+@property(nonatomic, strong) DiscoverFeedMetricsRecorder* metricsRecorder;
 
 @end
 
