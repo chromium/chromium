@@ -11,7 +11,8 @@
     android:layout_height="wrap_content"
     android:paddingStart="@dimen/keyboard_accessory_suggestion_padding"
     android:paddingEnd="6dp"
-    android:layout_marginTop="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:fillViewport="true"
     android:minHeight="@dimen/keyboard_accessory_suggestion_height"
     android:background="?attr/selectableItemBackground">
