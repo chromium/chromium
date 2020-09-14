@@ -12,6 +12,10 @@
 #include "components/exo/shell_surface_base.h"
 #include "ui/base/ui_base_types.h"
 
+namespace ash {
+class ScopedAnimationDisabler;
+}  // namespace ash
+
 namespace ui {
 class CompositorLock;
 }  // namespace ui
@@ -122,7 +126,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   bool OnPreWidgetCommit() override;
 
  private:
-  class ScopedAnimationsDisabled;
   struct Config;
 
   // Helper class used to coalesce a number of changes into one "configure"
@@ -161,7 +164,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   void EndDrag();
 
-  std::unique_ptr<ScopedAnimationsDisabled> scoped_animations_disabled_;
+  std::unique_ptr<ash::ScopedAnimationDisabler> animations_disabler_;
 
   std::unique_ptr<ui::CompositorLock> configure_compositor_lock_;
   ConfigureCallback configure_callback_;

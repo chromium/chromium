@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_state_type.h"
+#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -35,43 +36,6 @@ namespace {
 constexpr int kMaximizedOrFullscreenOrPinnedLockTimeoutMs = 100;
 
 }  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// ShellSurface, ScopedAnimationsDisabled:
-
-// Helper class used to temporarily disable animations. Restores the
-// animations disabled property when instance is destroyed.
-class ShellSurface::ScopedAnimationsDisabled {
- public:
-  explicit ScopedAnimationsDisabled(ShellSurface* shell_surface);
-  ~ScopedAnimationsDisabled();
-
- private:
-  ShellSurface* const shell_surface_;
-  bool saved_animations_disabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAnimationsDisabled);
-};
-
-ShellSurface::ScopedAnimationsDisabled::ScopedAnimationsDisabled(
-    ShellSurface* shell_surface)
-    : shell_surface_(shell_surface) {
-  if (shell_surface_->widget_) {
-    aura::Window* window = shell_surface_->widget_->GetNativeWindow();
-    saved_animations_disabled_ =
-        window->GetProperty(aura::client::kAnimationsDisabledKey);
-    window->SetProperty(aura::client::kAnimationsDisabledKey, true);
-  }
-}
-
-ShellSurface::ScopedAnimationsDisabled::~ScopedAnimationsDisabled() {
-  if (shell_surface_->widget_) {
-    aura::Window* window = shell_surface_->widget_->GetNativeWindow();
-    DCHECK_EQ(window->GetProperty(aura::client::kAnimationsDisabledKey), true);
-    window->SetProperty(aura::client::kAnimationsDisabledKey,
-                        saved_animations_disabled_);
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurface, Config:
@@ -448,8 +412,8 @@ void ShellSurface::OnPreWindowStateTypeChange(ash::WindowState* window_state,
           nullptr, base::TimeDelta::FromMilliseconds(
                        kMaximizedOrFullscreenOrPinnedLockTimeoutMs));
     } else {
-      scoped_animations_disabled_ =
-          std::make_unique<ScopedAnimationsDisabled>(this);
+      animations_disabler_ = std::make_unique<ash::ScopedAnimationDisabler>(
+          widget_->GetNativeWindow());
     }
   }
 }
@@ -467,7 +431,7 @@ void ShellSurface::OnPostWindowStateTypeChange(ash::WindowState* window_state,
   }
 
   // Re-enable animations if they were disabled in pre state change handler.
-  scoped_animations_disabled_.reset();
+  animations_disabler_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
