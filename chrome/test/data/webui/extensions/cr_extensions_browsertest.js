@@ -519,9 +519,10 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToDetails);
     });
 
+// Disabled as flaky. TODO(crbug.com/1127741): Enable this test.
 TEST_F(
-    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToActivityLogFail',
-    function() {
+    'CrExtensionsManagerTestWithIdQueryParam',
+    'DISABLED_UrlNavigationToActivityLogFail', function() {
       this.runMochaTest(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogFail);
     });
