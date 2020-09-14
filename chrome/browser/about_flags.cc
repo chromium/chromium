@@ -6077,6 +6077,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kUseMediaHistoryStore)},
 
 #if !defined(OS_ANDROID)
+    {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
+     flag_descriptions::kCopyLinkToTextDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCopyLinkToText)},
     {"nearby-sharing", flag_descriptions::kNearbySharingName,
      flag_descriptions::kNearbySharingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNearbySharing)},

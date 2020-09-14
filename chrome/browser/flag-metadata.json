@@ -642,6 +642,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "copy-link-to-text",
+    "owners": [ "johntlee" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "cors-for-content-scripts",
     "owners": [ "lukasza", "creis", "rdcronin" ],
     "expiry_milestone": 89

@@ -3253,6 +3253,11 @@ const char kCastMediaRouteProviderDescription[] =
     "Enables the native Cast Media Route Provider implementation to be used "
     "instead of the implementation in the Media Router component extension.";
 
+const char kCopyLinkToTextName[] = "Copy Link To Text";
+const char kCopyLinkToTextDescription[] =
+    "Adds an item to the context menu to allow a user to copy a link to the "
+    "page with the selected text highlighted.";
+
 const char kGlobalMediaControlsCastStartStopName[] =
     "Global media controls control Cast start/stop";
 const char kGlobalMediaControlsCastStartStopDescription[] =

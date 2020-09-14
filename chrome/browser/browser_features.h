@@ -26,6 +26,7 @@ extern const base::Feature kDoubleTapToZoomInTabletMode;
 #endif
 
 #if !defined(OS_ANDROID)
+extern const base::Feature kCopyLinkToText;
 extern const base::Feature kNearbySharing;
 #endif
 

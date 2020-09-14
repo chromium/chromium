@@ -40528,6 +40528,7 @@ from previous Chrome versions.
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
   <int value="-2074080173" label="NightLight:disabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
+  <int value="-2071202821" label="CopyLinkToText:enabled"/>
   <int value="-2068490665" label="PasswordChange:enabled"/>
   <int value="-2067166422" label="enable-slimming-paint-v2"/>
   <int value="-2066541315" label="Mus:enabled"/>
@@ -41961,6 +41962,7 @@ from previous Chrome versions.
   <int value="-662064703" label="MediaSessionService:enabled"/>
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
+  <int value="-657808907" label="CopyLinkToText:disabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
   <int value="-650504533" label="enable-speculative-launch-service-worker"/>
