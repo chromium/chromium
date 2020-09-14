@@ -2325,6 +2325,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       UIViewController* viewController =
           _ntpCoordinatorsForWebStates[webState].viewController;
       viewController.view.frame = [self ntpFrameForWebState:webState];
+      [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
       // not be restored until LoadIfNecessary call. Remove when fixed.
       webState->GetNavigationManager()->LoadIfNecessary();
@@ -4410,6 +4411,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     newPage = [self viewForWebState:webState];
     newPage.userInteractionEnabled = NO;
     newPage.frame = self.view.bounds;
+    [newPage layoutIfNeeded];
   } else {
     [self viewForWebState:webState].frame = self.contentArea.bounds;
     // Setting the frame here doesn't trigger a layout pass. Trigger it manually
