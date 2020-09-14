@@ -672,6 +672,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWellKnownChangePasswordName,
      flag_descriptions::kWellKnownChangePasswordDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
+    {"default-browser-fullscreen-promo",
+     flag_descriptions::kDefaultBrowserFullscreenPromoName,
+     flag_descriptions::kDefaultBrowserFullscreenPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromo)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

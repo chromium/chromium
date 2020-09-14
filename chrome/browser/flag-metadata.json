@@ -769,6 +769,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "default-browser-fullscreen-promo",
+    "owners": [ "thegreenfrog", "bling-team@google.com" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "delay-async-script-execution",
     "owners": [ "dom", "chrome-loading@google.com" ],
     "expiry_milestone": 88

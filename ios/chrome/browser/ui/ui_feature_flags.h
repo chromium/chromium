@@ -68,4 +68,9 @@ extern const base::Feature kEnableFullPageScreenshot;
 // Feature flag that enables reauth for filling passwords;
 extern const base::Feature kEnableAutofillPasswordReauthIOS;
 
+// Feature flag that enables showing a fullscreen modal promo informing users
+// about the default browser feature that also provides a button to send the
+// users in the Settings.app to update the default browser.
+extern const base::Feature kDefaultBrowserFullscreenPromo;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
