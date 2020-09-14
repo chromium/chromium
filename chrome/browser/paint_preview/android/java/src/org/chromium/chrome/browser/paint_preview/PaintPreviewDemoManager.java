@@ -74,6 +74,7 @@ public class PaintPreviewDemoManager implements TabViewProvider {
     }
 
     void removePaintPreviewDemo() {
+        PaintPreviewCompositorUtils.stopWarmCompositor();
         if (mTab == null || mPlayerManager == null) {
             return;
         }

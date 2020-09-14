@@ -40,6 +40,7 @@ public class PaintPreviewTabHelper extends EmptyTabObserver implements UserData 
             return;
         }
 
+        PaintPreviewCompositorUtils.warmupCompositor();
         mPaintPreviewDemoManager.showPaintPreviewDemo();
     }
 

@@ -154,6 +154,8 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         mInitializing = hasCapture;
         mMetricsHelper.recordHadCapture(hasCapture);
         if (!hasCapture) return false;
+
+        PaintPreviewCompositorUtils.warmupCompositor();
         mFirstMeaningfulPaintHappened = false;
 
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(),
@@ -187,6 +189,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
      * nothing if there is no view showing.
      */
     private void removePaintPreview(@ExitCause int exitCause) {
+        PaintPreviewCompositorUtils.stopWarmCompositor();
         mOnDismissed = null;
         mInitializing = false;
         if (mTab == null || mPlayerManager == null) return;

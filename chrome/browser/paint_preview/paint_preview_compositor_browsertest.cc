@@ -18,6 +18,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service_test_factory.h"
 #include "components/paint_preview/browser/paint_preview_compositor_client_impl.h"
 #include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
+#include "components/paint_preview/browser/warm_compositor.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
@@ -196,6 +197,30 @@ IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest,
   compositor_service.reset();
   disconnect_loop.Run();
   EXPECT_FALSE(IsBoundAndConnected(compositor.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest, PreWarmCompositor) {
+  // Start with warm compositor.
+  WarmCompositor* warm_compositor = WarmCompositor::GetInstance();
+  warm_compositor->WarmupCompositor();
+  auto compositor_service = ToCompositorServiceImpl(
+      warm_compositor->GetOrStartCompositorService(base::DoNothing()));
+  EXPECT_FALSE(warm_compositor->StopCompositor());
+  EXPECT_NE(compositor_service, nullptr);
+  compositor_service.reset();
+  EXPECT_EQ(compositor_service, nullptr);
+
+  // Start and stop.
+  warm_compositor->WarmupCompositor();
+  EXPECT_TRUE(warm_compositor->StopCompositor());
+
+  // Verify it is still possible to start if the compositor was prematurely
+  // stopped.
+  compositor_service = ToCompositorServiceImpl(
+      warm_compositor->GetOrStartCompositorService(base::DoNothing()));
+  EXPECT_NE(compositor_service, nullptr);
+  compositor_service.reset();
+  EXPECT_EQ(compositor_service, nullptr);
 }
 
 }  // namespace paint_preview

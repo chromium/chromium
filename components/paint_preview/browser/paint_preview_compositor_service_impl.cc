@@ -101,6 +101,12 @@ bool PaintPreviewCompositorServiceImpl::HasActiveClients() const {
   return !active_clients_.empty();
 }
 
+void PaintPreviewCompositorServiceImpl::SetDisconnectHandler(
+    base::OnceClosure disconnect_handler) {
+  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+  user_disconnect_closure_ = std::move(disconnect_handler);
+}
+
 void PaintPreviewCompositorServiceImpl::MarkCompositorAsDeleted(
     const base::UnguessableToken& token) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
@@ -121,7 +127,8 @@ void PaintPreviewCompositorServiceImpl::OnCompositorCreated(
 
 void PaintPreviewCompositorServiceImpl::DisconnectHandler() {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  std::move(user_disconnect_closure_).Run();
+  if (user_disconnect_closure_)
+    std::move(user_disconnect_closure_).Run();
   compositor_service_.reset();
 }
 

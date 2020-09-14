@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "components/paint_preview/browser/file_manager.h"
+#include "components/paint_preview/browser/warm_compositor.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_ANDROID)

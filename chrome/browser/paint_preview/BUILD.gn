@@ -22,6 +22,8 @@ source_set("services") {
   ]
 
   if (is_android) {
+    sources += [ "paint_preview_compositor_utils.cc" ]
+
     deps += [ "//chrome/browser/paint_preview/android:jni_headers" ]
   }
 }
