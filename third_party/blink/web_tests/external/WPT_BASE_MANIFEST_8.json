@@ -161839,15 +161839,15 @@
      []
     ],
     "domain": {
-     "domain-attribute-host-with-and-without-leading-period.sub.html.sub.headers": [
+     "domain-attribute-host-with-and-without-leading-period.sub.https.html.sub.headers": [
       "77d3d8c0c447c99fa556ea58dee090fadf7ad31d",
       []
      ],
-     "domain-attribute-host-with-leading-period.sub.html.sub.headers": [
+     "domain-attribute-host-with-leading-period.sub.https.html.sub.headers": [
       "7de4ae2e6a5093fce5cc4405c0f1b92bf5f0981a",
       []
      ],
-     "domain-attribute-matches-host.sub.html.sub.headers": [
+     "domain-attribute-matches-host.sub.https.html.sub.headers": [
       "8a2329e8c2f7fdd09847ae8a51e543e4b9495c87",
       []
      ],
@@ -220531,7 +220531,7 @@
      []
     ],
     "sanitizer-api.tentative.idl": [
-     "25cba22ecfc4ee194cf4f21aa2c0d24c7c16de05",
+     "600ae0514a3094e19813476cd065162b9e0dfb4c",
      []
     ],
     "savedata.idl": [
@@ -226915,16 +226915,16 @@
      []
     ],
     "sanitizer-sanitize.tentative-expected.txt": [
-     "0b905ce775358ec7f21e604200f393f883d26cab",
+     "c5224d4efab840963aa3acd47e776238cc13cf9e",
      []
     ],
     "sanitizer-sanitizeToString.tentative-expected.txt": [
-     "04e4c685a582f453af3d22b02b82be4f6fd7298a",
+     "de05576e7ba55e476dde82fdb42f3b9e014089ff",
      []
     ],
     "support": {
      "testcases.sub.js": [
-      "d1af1c9b5a9fc5d057fd3fd14c48283ecfbb7337",
+      "a3cc6d38c8cd3d98a93a082fa4216a83de00d471",
       []
      ]
     }
@@ -231912,19 +231912,19 @@
       []
      ],
      "cacert.key": [
-      "c36ebcbc91054d4d61036004883f9bfbf7d4f5ac",
+      "7b83e8f0e9ebe229c83335b3a2f0632540942ed2",
       []
      ],
      "cacert.pem": [
-      "f450f014d9f09b7f7c4e60f23a2f7cb779ab8188",
+      "a8ce54be5579b743001fa0de3c163129965d356c",
       []
      ],
      "web-platform.test.key": [
-      "0d422053f76ba4df1e69df513fe916532c4ccfad",
+      "c4f5dc3f2cfba081e4536708c4667e7595e09d74",
       []
      ],
      "web-platform.test.pem": [
-      "e7b1b018466895f32356c24ae1f3da0fff2f1c4c",
+      "438f504b2b696757ea292e3c53ea0f0baa1fdd23",
       []
      ]
     },
@@ -238204,7 +238204,7 @@
         []
        ],
        "chrome.py": [
-        "880e2bd43eb6bbb4c9b8d052af77537ce3f27e3d",
+        "486070ad86d451e73f0e56ce720134024ffc1121",
         []
        ],
        "chrome_android.py": [
@@ -238216,7 +238216,7 @@
         []
        ],
        "chrome_spki_certs.py": [
-        "e8971e7acde3ed68bf5671e7e2f812765eb7c6c8",
+        "289453bd080959445ea5a452362b05a7675735e4",
         []
        ],
        "edge.py": [
@@ -269079,21 +269079,21 @@
      ]
     ],
     "domain": {
-     "domain-attribute-host-with-and-without-leading-period.sub.html": [
+     "domain-attribute-host-with-and-without-leading-period.sub.https.html": [
       "7273daa8499f6b37cc959b390cbab77d46665ffb",
       [
        null,
        {}
       ]
      ],
-     "domain-attribute-host-with-leading-period.sub.html": [
+     "domain-attribute-host-with-leading-period.sub.https.html": [
       "5b295e7393fba696bfef438179de15c05a765def",
       [
        null,
        {}
       ]
      ],
-     "domain-attribute-matches-host.sub.html": [
+     "domain-attribute-matches-host.sub.https.html": [
       "f790b49d98b91cc8db63ba440b635eb8e165cfac",
       [
        null,
@@ -269396,7 +269396,7 @@
        }
       ]
      ],
-     "iframe.document.html": [
+     "iframe.document.https.html": [
       "2d276dbcaa9ce740ffdd8c8516defe18ab51de95",
       [
        null,
@@ -382207,21 +382207,21 @@
      ]
     ],
     "sanitizer-config.tentative.html": [
-     "c780bbe21b74fc96c491b29181a05decb3e5fea5",
+     "5c115a467cb64e1e93e9293692d122271d64df8a",
      [
       null,
       {}
      ]
     ],
     "sanitizer-sanitize.tentative.html": [
-     "219eff418918484a2b8f42062ea7bf8cb60dbad8",
+     "44961e02f4e8dcd876b250f2826cea4c7fe487ae",
      [
       null,
       {}
      ]
     ],
     "sanitizer-sanitizeToString.tentative.html": [
-     "98bb4a4601863d2ee50ef18333f88cfbe43e40fe",
+     "7efbc3ca7bd7d8c84595744d622dc4c92c87e347",
      [
       null,
       {}
