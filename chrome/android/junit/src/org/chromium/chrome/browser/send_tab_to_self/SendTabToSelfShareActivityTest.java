@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
+import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -61,6 +62,9 @@ public class SendTabToSelfShareActivityTest {
     @Mock
     private BottomSheetController mBottomSheetController;
 
+    @Mock
+    private AndroidSyncSettings mSyncSettings;
+
     private Profile mProfile;
 
     @Before
@@ -94,9 +98,13 @@ public class SendTabToSelfShareActivityTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getVisibleEntry()).thenReturn(mNavigationEntry);
 
+        // Setup the mocked object for sync settings.
+        when(mSyncSettings.isSyncEnabled()).thenReturn(true);
+        SendTabToSelfShareActivity.setAndroidSyncSettingsForTesting(mSyncSettings);
+
         // Setup the mocked object chain to get the bottom controller.
         SendTabToSelfShareActivity shareActivity = new SendTabToSelfShareActivity();
-        SendTabToSelfShareActivity.setBottomSheetContentForTesting(mBottomSheetContent);
+        SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
         SendTabToSelfShareActivity.setBottomSheetControllerForTesting(mBottomSheetController);
         shareActivity.handleAction(mChromeActivity);
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));

@@ -20,8 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfMetrics.SendTabToSelfShareClickResult;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.ButtonCompat;
@@ -46,9 +44,12 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private final String mUrl;
     private final String mTitle;
     private final long mNavigationTime;
+    private final SettingsLauncher mSettingsLauncher;
+    private final boolean mIsSyncEnabled;
 
     public DevicePickerBottomSheetContent(Context context, String url, String title,
-            long navigationTime, BottomSheetController controller) {
+            long navigationTime, BottomSheetController controller,
+            SettingsLauncher settingsLauncher, boolean isSyncEnabled) {
         mContext = context;
         mController = controller;
         mProfile = Profile.getLastUsedRegularProfile();
@@ -56,6 +57,8 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         mUrl = url;
         mTitle = title;
         mNavigationTime = navigationTime;
+        mSettingsLauncher = settingsLauncher;
+        mIsSyncEnabled = isSyncEnabled;
 
         createToolbarView();
         createContentView();
@@ -72,7 +75,7 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         List<TargetDeviceInfo> targetDeviceList = new ArrayList<TargetDeviceInfo>();
         SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(mProfile, targetDeviceList);
 
-        if (!AndroidSyncSettings.get().isChromeSyncEnabled()) {
+        if (!mIsSyncEnabled) {
             RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NotSyncing");
             mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                     R.layout.send_tab_to_self_feature_unavailable_prompt, null);
@@ -96,12 +99,14 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     }
 
     private void enableSettingsButton() {
+        if (mSettingsLauncher == null) {
+            return;
+        }
         ButtonCompat chromeSettingsButton = mContentView.findViewById(R.id.chrome_settings);
         chromeSettingsButton.setVisibility(View.VISIBLE);
         chromeSettingsButton.setOnClickListener(view -> {
             RecordUserAction.record("SharingHubAndroid.SendTabToSelf.ChromeSettingsClicked");
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(ContextUtils.getApplicationContext());
+            mSettingsLauncher.launchSettingsActivity(ContextUtils.getApplicationContext());
         });
     }
 

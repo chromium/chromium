@@ -23,6 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +55,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final Supplier<Tab> mTabProvider;
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
     private final Callback<Tab> mPrintTabCallback;
+    private final SettingsLauncher mSettingsLauncher;
+    private final boolean mIsSyncEnabled;
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
@@ -81,13 +84,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
-            LargeIconBridge iconBridge) {
+            LargeIconBridge iconBridge, SettingsLauncher settingsLauncher, boolean isSyncEnabled) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mTabProvider = tabProvider;
         mPropertyModelBuilder = modelBuilder;
         mPrintTabCallback = printTab;
+        mSettingsLauncher = settingsLauncher;
+        mIsSyncEnabled = isSyncEnabled;
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetContentChanged(BottomSheetContent bottomSheet) {
@@ -178,7 +183,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(activity,
                 mTabProvider, mBottomSheetController, mBottomSheet, shareParams, chromeShareExtras,
-                mPrintTabCallback, mShareStartTime, this);
+                mPrintTabCallback, mSettingsLauncher, mIsSyncEnabled, mShareStartTime, this);
         mIsMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(

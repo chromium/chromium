@@ -21,7 +21,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
+import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfCoordinator;
+import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
@@ -55,6 +56,8 @@ class ChromeProvidedSharingOptionsProvider {
     private final ShareSheetBottomSheetContent mBottomSheetContent;
     private final ShareParams mShareParams;
     private final Callback<Tab> mPrintTabCallback;
+    private final SettingsLauncher mSettingsLauncher;
+    private final boolean mIsSyncEnabled;
     private final long mShareStartTime;
     private final List<FirstPartyOption> mOrderedFirstPartyOptions;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
@@ -79,7 +82,8 @@ class ChromeProvidedSharingOptionsProvider {
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheetContent, ShareParams shareParams,
-            ChromeShareExtras chromeShareExtras, Callback<Tab> printTab, long shareStartTime,
+            ChromeShareExtras chromeShareExtras, Callback<Tab> printTab,
+            SettingsLauncher settingsLauncher, boolean isSyncEnabled, long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback) {
         mActivity = activity;
         mTabProvider = tabProvider;
@@ -87,6 +91,8 @@ class ChromeProvidedSharingOptionsProvider {
         mBottomSheetContent = bottomSheetContent;
         mShareParams = shareParams;
         mPrintTabCallback = printTab;
+        mSettingsLauncher = settingsLauncher;
+        mIsSyncEnabled = isSyncEnabled;
         mShareStartTime = shareStartTime;
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
@@ -296,14 +302,15 @@ class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.send_tab, R.string.send_tab_to_self_share_activity_title)
                 .setFeatureNameForMetrics("SharingHubAndroid.SendTabToSelfSelected")
                 .setOnClickCallback((view) -> {
-                    SendTabToSelfShareActivity.actionHandler(mActivity, mUrl,
-                            mShareParams.getTitle(),
-                            mTabProvider.get()
-                                    .getWebContents()
-                                    .getNavigationController()
-                                    .getVisibleEntry()
-                                    .getTimestamp(),
-                            mBottomSheetController);
+                    SendTabToSelfCoordinator sttsCoordinator =
+                            new SendTabToSelfCoordinator(mActivity, mUrl, mShareParams.getTitle(),
+                                    mBottomSheetController, mSettingsLauncher, mIsSyncEnabled,
+                                    mTabProvider.get()
+                                            .getWebContents()
+                                            .getNavigationController()
+                                            .getVisibleEntry()
+                                            .getTimestamp());
+                    sttsCoordinator.show();
                 })
                 .build();
     }

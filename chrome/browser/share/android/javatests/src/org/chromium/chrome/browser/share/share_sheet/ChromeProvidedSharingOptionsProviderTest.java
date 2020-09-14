@@ -314,6 +314,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 new ShareParams.Builder(null, "", "").build(),
                 new ChromeShareExtras.Builder().build(),
                 /*TabPrinterDelegate=*/null,
+                /*settingsLauncher=*/null,
+                /*syncState=*/false,
                 /*shareStartTime=*/0, mShareSheetCoordinator);
     }
 

@@ -99,7 +99,7 @@ public final class ShareSheetCoordinatorTest {
                 .thenReturn(thirdPartyPropertyModels);
 
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher, null,
-                mPropertyModelBuilder, null, new MockLargeIconBridge());
+                mPropertyModelBuilder, null, new MockLargeIconBridge(), null, false);
     }
 
     @Test

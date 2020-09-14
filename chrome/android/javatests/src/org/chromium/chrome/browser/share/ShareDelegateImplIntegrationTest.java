@@ -121,7 +121,7 @@ public class ShareDelegateImplIntegrationTest {
                 void share(ShareParams params, ChromeShareExtras chromeShareParams,
                         BottomSheetController controller,
                         ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-                        Callback<Tab> printCallback, long shareStartTime,
+                        Callback<Tab> printCallback, boolean syncState, long shareStartTime,
                         boolean sharingHubEnabled) {
                     paramsRef.set(params);
                     helper.notifyCalled();
