@@ -155,16 +155,15 @@ public class MinimalUICoordinator {
     /**
      * Runs when the payment request is closed.
      * @param result The status of PaymentComplete.
-     * @param onMinimalUiErroredAndClosed The function called when MinimalUI errors and closes.
-     * @param onMinimalUiCompletedAndClosed The function called when MinimalUI completes and closes.
+     * @param onErroredAndClosed The function called when the UI errors and closes.
+     * @param onCompletedAndClosed The function called when the UI completes and closes.
      */
-    public void onPaymentRequestComplete(int result,
-                                         ErrorAndCloseObserver onMinimalUiErroredAndClosed,
-                                         CompleteAndCloseObserver onMinimalUiCompletedAndClosed) {
+    public void onPaymentRequestComplete(int result, ErrorAndCloseObserver onErroredAndClosed,
+            CompleteAndCloseObserver onCompletedAndClosed) {
         if (result == PaymentComplete.FAIL) {
-            showErrorAndClose(onMinimalUiErroredAndClosed, R.string.payments_error_message);
+            showErrorAndClose(onErroredAndClosed, R.string.payments_error_message);
         } else {
-            showCompleteAndClose(onMinimalUiCompletedAndClosed);
+            showCompleteAndClose(onCompletedAndClosed);
         }
     }
 

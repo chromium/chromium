@@ -510,8 +510,8 @@ public class PaymentRequestImpl
 
             if (isMinimalUiApplicable()) {
                 if (mPaymentUIsManager.triggerMinimalUI(chromeActivity, mSpec.getRawTotal(),
-                        this::onMinimalUIReady, this::onMinimalUiConfirmed,
-                        this::onMinimalUiDismissed)) {
+                            this::onMinimalUIReady, this::onMinimalUiConfirmed,
+                            /*dismissObserver=*/this::onDismiss)) {
                     mDidRecordShowEvent = true;
                     mJourneyLogger.setEventOccurred(Event.SHOWN);
                 } else {
@@ -566,21 +566,14 @@ public class PaymentRequestImpl
         onPayClicked(null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
 
-    private void onMinimalUiDismissed() {
-        onDismiss();
-    }
-
-    private void onMinimalUiErroredAndClosed() {
-        close();
-    }
-
     private void onMinimalUiCompletedAndClosed() {
         if (mComponentPaymentRequestImpl == null) return;
         mComponentPaymentRequestImpl.onComplete();
         close();
     }
 
-    private void onPaymentRequestCompleteForNonMinimalUI() {
+    /** Called after the non-minimal UI has handled {@link #complete}. */
+    private void onNonMinimalUiHandledComplete() {
         if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
             ComponentPaymentRequestImpl.getNativeObserverForTest().onCompleteCalled();
         }
@@ -1220,8 +1213,9 @@ public class PaymentRequestImpl
                     mSpec.getRawTotal().amount.value, true /*completed*/);
         }
 
-        mPaymentUIsManager.onPaymentRequestComplete(result, this::onMinimalUiErroredAndClosed,
-                this::onMinimalUiCompletedAndClosed, this::onPaymentRequestCompleteForNonMinimalUI);
+        mPaymentUIsManager.onPaymentRequestComplete(result,
+                /*onMinimalUiErroredAndClosed=*/this::close, this::onMinimalUiCompletedAndClosed,
+                this::onNonMinimalUiHandledComplete);
     }
 
     // Implement BrowserPaymentRequest:
@@ -1768,7 +1762,7 @@ public class PaymentRequestImpl
         if (mPaymentUIsManager.getMinimalUI() != null) {
             mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
             mPaymentUIsManager.getMinimalUI().showErrorAndClose(
-                    this::onMinimalUiErroredAndClosed, R.string.payments_error_message);
+                    /*observer=*/this::close, R.string.payments_error_message);
             return;
         }
 
