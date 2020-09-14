@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/public/types.h"
 
 using base::android::JavaParamRef;
@@ -26,9 +27,21 @@ void OnFetchFinished(JNIEnv* env,
       base::android::ToJavaByteArray(env, response.response_bytes));
 }
 
+FeedStreamApi* GetFeedStream() {
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+  if (!profile)
+    return nullptr;
+
+  FeedService* feed_service = FeedServiceFactory::GetForBrowserContext(profile);
+  if (!feed_service)
+    return nullptr;
+
+  return feed_service->GetStream();
+}
+
 }  // namespace
 
-void JNI_FeedImageFetchClient_SendRequest(
+jint JNI_FeedImageFetchClient_SendRequest(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_url,
     const JavaParamRef<jobject>& j_response_callback) {
@@ -36,17 +49,24 @@ void JNI_FeedImageFetchClient_SendRequest(
   // with OnFetchFinished.
   base::android::ScopedJavaGlobalRef<jobject> callback(j_response_callback);
 
-  Profile* profile = ProfileManager::GetLastUsedProfile();
-  if (!profile)
-    return OnFetchFinished(env, std::move(callback), {});
+  FeedStreamApi* stream = GetFeedStream();
+  if (!stream) {
+    OnFetchFinished(env, std::move(callback), {});
+    return 0;
+  }
 
-  FeedService* feed_service = FeedServiceFactory::GetForBrowserContext(profile);
-  if (!feed_service || !feed_service->GetStream())
-    return OnFetchFinished(env, std::move(callback), {});
+  return stream
+      ->FetchImage(GURL(base::android::ConvertJavaStringToUTF8(env, j_url)),
+                   base::BindOnce(&OnFetchFinished, env, std::move(callback)))
+      .GetUnsafeValue();
+}
 
-  feed_service->GetStream()->FetchImage(
-      GURL(base::android::ConvertJavaStringToUTF8(env, j_url)),
-      base::BindOnce(&OnFetchFinished, env, std::move(callback)));
+void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
+  FeedStreamApi* stream = GetFeedStream();
+  if (!stream)
+    return;
+
+  stream->CancelImageFetch(ImageFetchId::FromUnsafeValue(j_request_id));
 }
 
 }  // namespace feed

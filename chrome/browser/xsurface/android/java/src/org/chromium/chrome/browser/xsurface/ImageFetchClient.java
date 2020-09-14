@@ -37,6 +37,22 @@ public interface ImageFetchClient {
      *
      * @param url URL to request
      * @param responseConsumer The callback to call with the response
+     * @return Request ID that can be passed to cancel()
+     */
+    default int sendCancelableRequest(String url, HttpResponseConsumer responseConsumer) {
+        return 0;
+    }
+
+    /**
+     * Send a GET request. TODO(iwells): Remove when the caller switches to the cancelable version.
      */
     default void sendRequest(String url, HttpResponseConsumer responseConsumer) {}
+
+    /**
+     * Cancel a pending request. Causes the request's response callback to be called with an empty
+     * response body and net::Error::ERR_ABORTED.
+     *
+     * @param requestId ID of request to be canceled.
+     */
+    default void cancel(int requestId) {}
 }

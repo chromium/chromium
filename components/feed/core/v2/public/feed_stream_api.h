@@ -78,10 +78,15 @@ class FeedStreamApi {
                         base::OnceCallback<void(bool)> callback) = 0;
 
   // Request to fetch and image for use in the feed. Calls |callback|
-  // with the network response when complete.
-  virtual void FetchImage(
+  // with the network response when complete. The returned ImageFetchId can be
+  // passed to CancelImageFetch() to cancel the request.
+  virtual ImageFetchId FetchImage(
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) = 0;
+  // If |id| matches an active fetch, cancels the fetch and runs the callback
+  // with an empty response body and status_code=net::Error::ERR_ABORTED. If
+  // |id| doesn't match an active fetch, nothing happens.
+  virtual void CancelImageFetch(ImageFetchId id) = 0;
 
   // Apply |operations| to the stream model. Does nothing if the model is not
   // yet loaded.

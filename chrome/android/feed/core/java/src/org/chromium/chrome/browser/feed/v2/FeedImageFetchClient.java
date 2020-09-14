@@ -36,9 +36,21 @@ public class FeedImageFetchClient implements ImageFetchClient {
     }
 
     @Override
-    public void sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer) {
+    public int sendCancelableRequest(
+            String url, ImageFetchClient.HttpResponseConsumer responseConsumer) {
         assert ThreadUtils.runningOnUiThread();
-        FeedImageFetchClientJni.get().sendRequest(url, responseConsumer);
+        return FeedImageFetchClientJni.get().sendRequest(url, responseConsumer);
+    }
+
+    @Override
+    public void sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer) {
+        sendCancelableRequest(url, responseConsumer);
+    }
+
+    @Override
+    public void cancel(int requestId) {
+        assert ThreadUtils.runningOnUiThread();
+        FeedImageFetchClientJni.get().cancel(requestId);
     }
 
     @CalledByNative
@@ -49,6 +61,7 @@ public class FeedImageFetchClient implements ImageFetchClient {
 
     @NativeMethods
     interface Natives {
-        void sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer);
+        int sendRequest(String url, ImageFetchClient.HttpResponseConsumer responseConsumer);
+        void cancel(int requestId);
     }
 }

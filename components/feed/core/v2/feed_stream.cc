@@ -627,10 +627,14 @@ void FeedStream::FinishClearAll() {
   delegate_->ClearAll();
 }
 
-void FeedStream::FetchImage(
+ImageFetchId FeedStream::FetchImage(
     const GURL& url,
     base::OnceCallback<void(NetworkResponse)> callback) {
-  image_fetcher_->Fetch(url, std::move(callback));
+  return image_fetcher_->Fetch(url, std::move(callback));
+}
+
+void FeedStream::CancelImageFetch(ImageFetchId id) {
+  image_fetcher_->Cancel(id);
 }
 
 void FeedStream::UploadAction(

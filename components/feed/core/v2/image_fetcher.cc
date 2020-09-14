@@ -6,6 +6,7 @@
 
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/types.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -18,7 +19,7 @@ ImageFetcher::ImageFetcher(
 
 ImageFetcher::~ImageFetcher() = default;
 
-void ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
+ImageFetchId ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("interest_feedv2_image_send", R"(
         semantics {
@@ -48,29 +49,73 @@ void ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   auto* const simple_loader_ptr = simple_loader.get();
+
+  ImageFetchId id = id_generator_.GenerateNextId();
+  bool inserted =
+      pending_requests_
+          .try_emplace(id, std::move(simple_loader), std::move(callback))
+          .second;
+  DCHECK(inserted);
+
   simple_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ImageFetcher::OnFetchComplete, weak_factory_.GetWeakPtr(),
-                     std::move(simple_loader), std::move(callback)),
+                     id),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+  return id;
 }
 
-void ImageFetcher::OnFetchComplete(
-    std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    ImageCallback callback,
-    std::unique_ptr<std::string> response_data) {
-  MetricsReporter::OnImageFetched(
-      response_data ? simple_loader->ResponseInfo()->headers->response_code()
-                    : simple_loader->NetError());
-  NetworkResponse response{std::string(), simple_loader->NetError()};
-  if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers) {
+void ImageFetcher::OnFetchComplete(ImageFetchId id,
+                                   std::unique_ptr<std::string> response_data) {
+  base::Optional<PendingRequest> request = RemovePending(id);
+  if (!request)
+    return;
+
+  NetworkResponse response;
+  if (request->loader->ResponseInfo() &&
+      request->loader->ResponseInfo()->headers) {
     response.status_code =
-        simple_loader->ResponseInfo()->headers->response_code();
+        request->loader->ResponseInfo()->headers->response_code();
+  } else {
+    response.status_code = request->loader->NetError();
   }
+  MetricsReporter::OnImageFetched(response.status_code);
 
   if (response_data)
     response.response_bytes = std::move(*response_data);
-  std::move(callback).Run(std::move(response));
+  std::move(request->callback).Run(std::move(response));
 }
+
+void ImageFetcher::Cancel(ImageFetchId id) {
+  base::Optional<PendingRequest> request = RemovePending(id);
+  if (!request)
+    return;
+
+  // Cancel the fetch before running the callback.
+  request->loader.reset();
+  std::move(request->callback)
+      .Run({/*response_bytes=*/std::string(), net::Error::ERR_ABORTED});
+}
+
+base::Optional<ImageFetcher::PendingRequest> ImageFetcher::RemovePending(
+    ImageFetchId id) {
+  auto iterator = pending_requests_.find(id);
+  if (iterator == pending_requests_.end())
+    return base::nullopt;
+
+  auto request = base::make_optional(std::move(iterator->second));
+  pending_requests_.erase(iterator);
+  return request;
+}
+
+ImageFetcher::PendingRequest::PendingRequest(
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    ImageCallback callback)
+    : loader(std::move(loader)), callback(std::move(callback)) {}
+ImageFetcher::PendingRequest::PendingRequest(
+    ImageFetcher::PendingRequest&& other) = default;
+ImageFetcher::PendingRequest& ImageFetcher::PendingRequest::operator=(
+    ImageFetcher::PendingRequest&& other) = default;
+ImageFetcher::PendingRequest::~PendingRequest() = default;
 
 }  // namespace feed

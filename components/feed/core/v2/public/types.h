@@ -32,6 +32,7 @@ struct DisplayMetrics {
 // A unique ID for an ephemeral change.
 using EphemeralChangeId = util::IdTypeU32<class EphemeralChangeIdClass>;
 using SurfaceId = util::IdTypeU32<class SurfaceIdClass>;
+using ImageFetchId = util::IdTypeU32<class ImageFetchIdClass>;
 
 struct NetworkResponseInfo {
   NetworkResponseInfo();
@@ -55,6 +56,7 @@ struct NetworkResponse {
   // HTTP status code if available, or net::Error otherwise.
   int status_code;
 
+  NetworkResponse() = default;
   NetworkResponse(NetworkResponse&& other) = default;
   NetworkResponse& operator=(NetworkResponse&& other) = default;
 };

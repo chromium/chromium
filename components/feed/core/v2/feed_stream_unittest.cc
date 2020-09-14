@@ -264,12 +264,18 @@ class TestImageFetcher : public ImageFetcher {
   explicit TestImageFetcher(
       scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory)
       : ImageFetcher(url_loader_factory) {}
-  void Fetch(const GURL& url,
-             base::OnceCallback<void(NetworkResponse)> callback) override {
+  ImageFetchId Fetch(
+      const GURL& url,
+      base::OnceCallback<void(NetworkResponse)> callback) override {
     // Emulate a response.
     NetworkResponse response = {"dummyresponse", 200};
     std::move(callback).Run(std::move(response));
+    return id_generator_.GenerateNextId();
   }
+  void Cancel(ImageFetchId id) override {}
+
+ private:
+  ImageFetchId::Generator id_generator_;
 };
 
 class TestFeedNetwork : public FeedNetwork {

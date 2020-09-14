@@ -6,8 +6,11 @@
 #define COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "components/feed/core/v2/public/types.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -29,14 +32,29 @@ class ImageFetcher {
   ImageFetcher(const ImageFetcher&) = delete;
   ImageFetcher& operator=(const ImageFetcher&) = delete;
 
-  virtual void Fetch(const GURL& url, ImageCallback callback);
+  virtual ImageFetchId Fetch(const GURL& url, ImageCallback callback);
+  virtual void Cancel(ImageFetchId id);
 
  private:
+  struct PendingRequest {
+    PendingRequest(std::unique_ptr<network::SimpleURLLoader> loader,
+                   ImageCallback callback);
+    PendingRequest(PendingRequest&& other);
+    PendingRequest& operator=(PendingRequest&& other);
+    ~PendingRequest();
+
+    std::unique_ptr<network::SimpleURLLoader> loader;
+    ImageCallback callback;
+  };
+
   // Called when fetch request completes.
-  void OnFetchComplete(std::unique_ptr<network::SimpleURLLoader> simple_loader,
-                       ImageCallback callback,
+  void OnFetchComplete(ImageFetchId id,
                        std::unique_ptr<std::string> response_data);
 
+  base::Optional<PendingRequest> RemovePending(ImageFetchId id);
+
+  ImageFetchId::Generator id_generator_;
+  base::flat_map<ImageFetchId, PendingRequest> pending_requests_;
   const scoped_refptr<::network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<ImageFetcher> weak_factory_{this};
 };
