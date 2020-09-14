@@ -27,13 +27,7 @@ const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
 const char kDiceRequestHeader[] = "X-Chrome-ID-Consistency-Request";
 const char kDiceResponseHeader[] = "X-Chrome-ID-Consistency-Response";
 
-ManageAccountsParams::ManageAccountsParams()
-    : service_type(GAIA_SERVICE_TYPE_NONE),
-      email(""),
-      is_saml(false),
-      continue_url(""),
-      is_same_tab(false) {
-}
+ManageAccountsParams::ManageAccountsParams() = default;
 
 ManageAccountsParams::ManageAccountsParams(const ManageAccountsParams&) =
     default;
