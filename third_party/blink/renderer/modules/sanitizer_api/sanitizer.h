@@ -32,6 +32,8 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  // TODO(lyf): Make config_ read-only. The creationOptions getter which
+  // asks for the pointer is forbidened by a read-only variable.
   Member<SanitizerConfig> config_ = {};
 };
 
