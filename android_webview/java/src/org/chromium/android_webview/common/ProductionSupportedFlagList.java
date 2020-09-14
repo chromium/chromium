@@ -61,6 +61,9 @@ public final class ProductionSupportedFlagList {
                             + "crash reporting is typically compiled but disabled."),
             Flag.commandLine(GpuSwitches.DISABLE_GPU_RASTERIZATION,
                     "Disables GPU rasterization, i.e. rasterizes on the CPU only."),
+            Flag.commandLine(GpuSwitches.IGNORE_GPU_BLOCKLIST,
+                    "Overrides the built-in software rendering list and enables "
+                            + "GPU acceleration on unsupported device configurations."),
             Flag.baseFeature("OutOfBlinkCors",
                     "Moves CORS logic into the Network Service (rather than inside the blink "
                             + "rendering engine)."),
