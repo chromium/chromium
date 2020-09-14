@@ -8,6 +8,12 @@
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 config("rlz_lib_config") {
   defines = [ "RLZ_NETWORK_IMPLEMENTATION_CHROME_NET" ]
 }
@@ -36,9 +42,6 @@ source_set("rlz_utils") {
 if (enable_rlz_support) {
   source_set("rlz_lib_no_network") {
     sources = [
-      "chromeos/lib/rlz_value_store_chromeos.cc",
-      "chromeos/lib/rlz_value_store_chromeos.h",
-      "ios/lib/machine_id_ios.cc",
       "lib/crc8.cc",
       "lib/crc8.h",
       "lib/machine_deal_win.h",
@@ -50,25 +53,24 @@ if (enable_rlz_support) {
       "lib/supplementary_branding.cc",
       "lib/supplementary_branding.h",
       "lib/time_util.h",
-      "mac/lib/machine_id_mac.cc",
-      "mac/lib/rlz_value_store_mac.h",
-      "mac/lib/rlz_value_store_mac.mm",
-      "win/lib/lib_mutex.cc",
-      "win/lib/lib_mutex.h",
-      "win/lib/machine_deal.cc",
-      "win/lib/machine_deal.h",
-      "win/lib/machine_id_win.cc",
-      "win/lib/process_info.cc",
-      "win/lib/process_info.h",
-      "win/lib/registry_util.cc",
-      "win/lib/registry_util.h",
-      "win/lib/rlz_lib_win.cc",
-      "win/lib/rlz_value_store_registry.cc",
-      "win/lib/rlz_value_store_registry.h",
     ]
 
     if (is_win) {
-      sources += [ "lib/time_util_win.cc" ]
+      sources += [
+        "lib/time_util_win.cc",
+        "win/lib/lib_mutex.cc",
+        "win/lib/lib_mutex.h",
+        "win/lib/machine_deal.cc",
+        "win/lib/machine_deal.h",
+        "win/lib/machine_id_win.cc",
+        "win/lib/process_info.cc",
+        "win/lib/process_info.h",
+        "win/lib/registry_util.cc",
+        "win/lib/registry_util.h",
+        "win/lib/rlz_lib_win.cc",
+        "win/lib/rlz_value_store_registry.cc",
+        "win/lib/rlz_value_store_registry.h",
+      ]
     } else {
       sources += [ "lib/time_util_base.cc" ]
     }
@@ -79,27 +81,32 @@ if (enable_rlz_support) {
     ]
 
     if (is_chromeos) {
+      sources += [
+        "chromeos/lib/rlz_value_store_chromeos.cc",
+        "chromeos/lib/rlz_value_store_chromeos.h",
+      ]
       deps += [
         "//chromeos/dbus",
         "//chromeos/system",
       ]
     }
 
-    if (is_mac) {
-      frameworks = [
-        "Foundation.framework",
-        "IOKit.framework",
-      ]
-    }
-
-    if (is_ios) {
-      # These _mac files are also used on iOS.
-      set_sources_assignment_filter([])
+    if (is_apple) {
       sources += [
         "mac/lib/rlz_value_store_mac.h",
         "mac/lib/rlz_value_store_mac.mm",
       ]
-      set_sources_assignment_filter(sources_assignment_filter)
+
+      frameworks = [ "Foundation.framework" ]
+
+      if (is_mac) {
+        sources += [ "mac/lib/machine_id_mac.cc" ]
+        frameworks += [ "IOKit.framework" ]
+      }
+
+      if (is_ios) {
+        sources += [ "ios/lib/machine_id_ios.cc" ]
+      }
     }
 
     if (is_posix) {
@@ -172,8 +179,11 @@ if (enable_rlz_support) {
       "lib/rlz_lib_test.cc",
       "lib/string_utils_unittest.cc",
       "test/rlz_unittest_main.cc",
-      "win/lib/machine_deal_test.cc",
     ]
+
+    if (is_win) {
+      sources += [ "win/lib/machine_deal_test.cc" ]
+    }
 
     # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
     configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
