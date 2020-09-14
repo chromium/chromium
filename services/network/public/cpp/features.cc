@@ -193,11 +193,7 @@ const char kCorbAllowlistAlsoAppliesToOorCorsParamName[] =
 // See also https://crbug.com/920634
 const base::Feature kRequestInitiatorSiteLockEnfocement = {
     "RequestInitiatorSiteLockEnfocement",
-#if defined(OS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT};
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
 
 // The preflight parser should reject Access-Control-Allow-* headers which do
 // not conform to ABNF. But if the strict check is applied directly, some
