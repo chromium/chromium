@@ -83,14 +83,7 @@ TEST(NearbyShareDefaultDeviceNameTest, DefaultDeviceName) {
   EXPECT_EQ(std::string(kFakeNameFromProfile) + "'s " +
                 base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
             *device_name);
-#elif defined(OS_WIN)
-  std::string expected_model_name = GetModelNameBlocking();
-  if (expected_model_name.empty()) {
-    EXPECT_TRUE(device_name->rfind("First Last's ", 0) == 0);
-  } else {
-    EXPECT_EQ("First Last's " + expected_model_name, device_name);
-  }
-#else   // !defined(OS_CHROMEOS) && !defined(OS_WIN)
+#else   // !defined(OS_CHROMEOS)
   std::string expected_model_name = GetModelNameBlocking();
   if (expected_model_name.empty()) {
     EXPECT_TRUE(
