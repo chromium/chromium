@@ -27,7 +27,7 @@ declare_args() {
 
   # Enable multi-window configuration in Info.plist. Includes all the effects of
   # setting |ios_enable_scene_startup| to |true|.
-  ios_enable_multi_window = false
+  ios_enable_multi_window = true
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
