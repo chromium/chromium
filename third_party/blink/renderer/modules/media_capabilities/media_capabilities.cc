@@ -1149,8 +1149,13 @@ void MediaCapabilities::GetGpuFactoriesSupport(
   DCHECK(pending_cb_map_.Contains(callback_id));
 
   PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
+  if (!pending_cb) {
+    // TODO(crbug.com/1125956): Determine how this can happen and prevent it.
+    return;
+  }
+
   ExecutionContext* execution_context =
-      pending_cb_map_.at(callback_id)->resolver->GetExecutionContext();
+      pending_cb->resolver->GetExecutionContext();
 
   DCHECK(UseGpuFactoriesForPowerEfficient(execution_context,
                                           pending_cb->key_system_access));
@@ -1367,7 +1372,13 @@ void MediaCapabilities::OnGpuFactoriesSupport(int callback_id,
 }
 
 int MediaCapabilities::CreateCallbackId() {
-  ++last_callback_id_;
+  // Search for the next available callback ID. 0 and -1 are reserved by
+  // wtf::HashMap (meaning "empty" and "deleted").
+  do {
+    ++last_callback_id_;
+  } while (last_callback_id_ == 0 || last_callback_id_ == -1 ||
+           pending_cb_map_.Contains(last_callback_id_));
+
   return last_callback_id_;
 }
 
