@@ -12,6 +12,7 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/common/web_application_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -57,7 +58,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   base::Time GetAppInstallTime(const web_app::AppId& app_id) const override;
   std::vector<WebApplicationIconInfo> GetAppIconInfos(
       const web_app::AppId& app_id) const override;
-  std::vector<SquareSizePx> GetAppDownloadedIconSizesAny(
+  SortedSizesPx GetAppDownloadedIconSizesAny(
       const web_app::AppId& app_id) const override;
   std::vector<WebApplicationShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const web_app::AppId& app_id) const override;

@@ -44,10 +44,9 @@ class AppIconManager {
 
   // Returns false if any icon in |icon_sizes_in_px| is missing from downloaded
   // icons for a given app and |purpose|.
-  virtual bool HasIcons(
-      const AppId& app_id,
-      IconPurpose purpose,
-      const std::vector<SquareSizePx>& icon_sizes_in_px) const = 0;
+  virtual bool HasIcons(const AppId& app_id,
+                        IconPurpose purpose,
+                        const SortedSizesPx& icon_sizes_in_px) const = 0;
   struct IconSizeAndPurpose {
     SquareSizePx size_px = 0;
     IconPurpose purpose = IconPurpose::ANY;
@@ -70,7 +69,7 @@ class AppIconManager {
   // |callback| if IO error.
   virtual void ReadIcons(const AppId& app_id,
                          IconPurpose purpose,
-                         const std::vector<SquareSizePx>& icon_sizes_in_px,
+                         const SortedSizesPx& icon_sizes,
                          ReadIconsCallback callback) const = 0;
 
   using ReadShortcutsMenuIconsCallback = base::OnceCallback<void(

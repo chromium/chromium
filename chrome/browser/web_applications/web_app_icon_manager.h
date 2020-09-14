@@ -53,10 +53,9 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   // AppIconManager:
   void Start() override;
   void Shutdown() override;
-  bool HasIcons(
-      const AppId& app_id,
-      IconPurpose purpose,
-      const std::vector<SquareSizePx>& icon_sizes_in_px) const override;
+  bool HasIcons(const AppId& app_id,
+                IconPurpose purpose,
+                const SortedSizesPx& icon_sizes) const override;
   base::Optional<IconSizeAndPurpose> FindIconMatchBigger(
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
@@ -66,7 +65,7 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
                        SquareSizePx min_size) const override;
   void ReadIcons(const AppId& app_id,
                  IconPurpose purpose,
-                 const std::vector<SquareSizePx>& icon_sizes,
+                 const SortedSizesPx& icon_sizes,
                  ReadIconsCallback callback) const override;
   void ReadAllIcons(const AppId& app_id,
                     ReadIconBitmapsCallback callback) const override;

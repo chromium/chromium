@@ -5,12 +5,14 @@
 #ifndef CHROME_COMMON_WEB_APPLICATION_INFO_H_
 #define CHROME_COMMON_WEB_APPLICATION_INFO_H_
 
+#include <functional>
 #include <iosfwd>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -21,6 +23,8 @@
 #include "url/gurl.h"
 
 using SquareSizePx = int;
+// Iterates in ascending order (checked in SortedSizesPxIsAscending test).
+using SortedSizesPx = base::flat_set<SquareSizePx, std::less<>>;
 using ShortcutsMenuIconsBitmaps = std::vector<std::map<SquareSizePx, SkBitmap>>;
 using IconPurpose = blink::Manifest::ImageResource::Purpose;
 

@@ -8,7 +8,6 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -161,14 +160,12 @@ bool DesktopPWAsWithoutExtensions() {
   return base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions);
 }
 
-bool HasMatchingOrGreaterThanIcon(
-    std::vector<SquareSizePx> downloaded_icon_sizes,
-    int pixels) {
-  for (const SquareSizePx icon_size : downloaded_icon_sizes) {
-    if (icon_size >= pixels)
-      return true;
-  }
-  return false;
+bool HasMatchingOrGreaterThanIcon(const SortedSizesPx& downloaded_icon_sizes,
+                                  int pixels) {
+  if (downloaded_icon_sizes.empty())
+    return false;
+  SquareSizePx largest = *downloaded_icon_sizes.rbegin();
+  return largest >= pixels;
 }
 
 }  // namespace

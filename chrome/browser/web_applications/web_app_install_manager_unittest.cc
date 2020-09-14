@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/web_application_info.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -366,10 +367,9 @@ class WebAppInstallManagerTest : public WebAppTest {
     return result.app_id;
   }
 
-  std::map<SquareSizePx, SkBitmap> ReadIcons(
-      const AppId& app_id,
-      IconPurpose purpose,
-      std::vector<SquareSizePx> sizes_px) {
+  std::map<SquareSizePx, SkBitmap> ReadIcons(const AppId& app_id,
+                                             IconPurpose purpose,
+                                             SortedSizesPx sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
     base::RunLoop run_loop;
     icon_manager().ReadIcons(

@@ -109,7 +109,7 @@ class AppRegistrar {
       const AppId& app_id) const = 0;
 
   // Represents which icon sizes we successfully downloaded from the IconInfos.
-  virtual std::vector<SquareSizePx> GetAppDownloadedIconSizesAny(
+  virtual SortedSizesPx GetAppDownloadedIconSizesAny(
       const AppId& app_id) const = 0;
 
   // Returns the "shortcuts" field from the app manifest, use |AppIconManager|

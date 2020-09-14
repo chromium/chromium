@@ -153,7 +153,7 @@ std::vector<WebApplicationIconInfo> TestAppRegistrar::GetAppIconInfos(
   return {};
 }
 
-std::vector<SquareSizePx> TestAppRegistrar::GetAppDownloadedIconSizesAny(
+SortedSizesPx TestAppRegistrar::GetAppDownloadedIconSizesAny(
     const AppId& app_id) const {
   NOTIMPLEMENTED();
   return {};

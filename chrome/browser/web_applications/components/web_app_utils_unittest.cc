@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/web_application_info.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +26,26 @@
 namespace web_app {
 
 using WebAppUtilsTest = WebAppTest;
+using ::testing::ElementsAre;
+
+// Sanity check that iteration order of SortedSizesPx is ascending. The
+// correctness of most usage of SortedSizesPx depends on this.
+TEST(WebAppTest, SortedSizesPxIsAscending) {
+  // Removal of duplicates is expected but not required for correctness.
+  std::vector<SquareSizePx> in{512, 512, 16, 512, 64, 32, 256};
+  SortedSizesPx sorted(in);
+  ASSERT_THAT(sorted, ElementsAre(16, 32, 64, 256, 512));
+
+  std::vector<SquareSizePx> out(sorted.begin(), sorted.end());
+  ASSERT_THAT(out, ElementsAre(16, 32, 64, 256, 512));
+
+  std::vector<SquareSizePx> reversed(sorted.rbegin(), sorted.rend());
+  ASSERT_THAT(reversed, ElementsAre(512, 256, 64, 32, 16));
+
+  std::vector<SquareSizePx> base_reversed(base::Reversed(sorted).begin(),
+                                          base::Reversed(sorted).end());
+  ASSERT_THAT(base_reversed, ElementsAre(512, 256, 64, 32, 16));
+}
 
 TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   Profile* regular_profile = profile();

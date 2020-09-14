@@ -175,6 +175,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetIconInfos(web_app_info.icon_infos);
   web_app.SetDownloadedIconSizes(
       IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps_any));
+  // TODO (crbug.com/1114638): Add monochrome icons support.
   web_app.SetDownloadedIconSizes(
       IconPurpose::MASKABLE,
       GetSquareSizePxs(web_app_info.icon_bitmaps_maskable));

@@ -43,8 +43,7 @@ WebApp::WebApp(const WebApp& web_app) = default;
 
 WebApp& WebApp::operator=(WebApp&& web_app) = default;
 
-const std::vector<SquareSizePx>& WebApp::downloaded_icon_sizes(
-    IconPurpose purpose) const {
+const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::ANY:
       return downloaded_icon_sizes_any_;
@@ -200,9 +199,7 @@ void WebApp::SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos) {
   icon_infos_ = std::move(icon_infos);
 }
 
-void WebApp::SetDownloadedIconSizes(IconPurpose purpose,
-                                    std::vector<SquareSizePx> sizes) {
-  std::sort(sizes.begin(), sizes.end());
+void WebApp::SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes) {
   switch (purpose) {
     case IconPurpose::ANY:
       downloaded_icon_sizes_any_ = std::move(sizes);

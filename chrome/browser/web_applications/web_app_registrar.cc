@@ -142,11 +142,11 @@ std::vector<WebApplicationIconInfo> WebAppRegistrar::GetAppIconInfos(
                  : std::vector<WebApplicationIconInfo>();
 }
 
-std::vector<SquareSizePx> WebAppRegistrar::GetAppDownloadedIconSizesAny(
+SortedSizesPx WebAppRegistrar::GetAppDownloadedIconSizesAny(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->downloaded_icon_sizes(IconPurpose::ANY)
-                 : std::vector<SquareSizePx>();
+                 : SortedSizesPx();
 }
 
 std::vector<WebApplicationShortcutsMenuItemInfo>

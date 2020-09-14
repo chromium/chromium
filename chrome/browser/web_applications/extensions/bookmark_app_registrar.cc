@@ -263,11 +263,11 @@ std::vector<WebApplicationIconInfo> BookmarkAppRegistrar::GetAppIconInfos(
   return result;
 }
 
-std::vector<SquareSizePx> BookmarkAppRegistrar::GetAppDownloadedIconSizesAny(
+SortedSizesPx BookmarkAppRegistrar::GetAppDownloadedIconSizesAny(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);
   return extension ? GetBookmarkAppDownloadedIconSizes(extension)
-                   : std::vector<SquareSizePx>();
+                   : SortedSizesPx();
 }
 
 std::vector<WebApplicationShortcutsMenuItemInfo>

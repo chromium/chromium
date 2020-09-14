@@ -179,7 +179,7 @@ void BookmarkAppIconManager::Shutdown() {}
 bool BookmarkAppIconManager::HasIcons(
     const web_app::AppId& app_id,
     IconPurpose purpose,
-    const std::vector<SquareSizePx>& icon_sizes_in_px) const {
+    const SortedSizesPx& icon_sizes_in_px) const {
   const Extension* app = GetBookmarkApp(profile_, app_id);
   if (!app)
     return false;
@@ -231,11 +231,10 @@ bool BookmarkAppIconManager::HasSmallestIcon(
   return FindIconMatchBigger(app_id, purposes, min_size).has_value();
 }
 
-void BookmarkAppIconManager::ReadIcons(
-    const web_app::AppId& app_id,
-    IconPurpose purpose,
-    const std::vector<SquareSizePx>& icon_sizes_in_px,
-    ReadIconsCallback callback) const {
+void BookmarkAppIconManager::ReadIcons(const web_app::AppId& app_id,
+                                       IconPurpose purpose,
+                                       const SortedSizesPx& icon_sizes_in_px,
+                                       ReadIconsCallback callback) const {
   DCHECK(HasIcons(app_id, purpose, icon_sizes_in_px));
   // Legacy bookmark apps handle IconPurpose::ANY icons only.
   if (purpose != IconPurpose::ANY) {

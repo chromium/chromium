@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
+#include "chrome/common/web_application_info.h"
 
 class Profile;
 
@@ -24,10 +25,9 @@ class BookmarkAppIconManager : public web_app::AppIconManager {
   // AppIconManager:
   void Start() override;
   void Shutdown() override;
-  bool HasIcons(
-      const web_app::AppId& app_id,
-      IconPurpose purpose,
-      const std::vector<SquareSizePx>& icon_sizes_in_px) const override;
+  bool HasIcons(const web_app::AppId& app_id,
+                IconPurpose purpose,
+                const SortedSizesPx& icon_sizes_in_px) const override;
   base::Optional<IconSizeAndPurpose> FindIconMatchBigger(
       const web_app::AppId& app_id,
       const std::vector<IconPurpose>& purposes,
@@ -37,7 +37,7 @@ class BookmarkAppIconManager : public web_app::AppIconManager {
                        SquareSizePx min_size) const override;
   void ReadIcons(const web_app::AppId& app_id,
                  IconPurpose purpose,
-                 const std::vector<SquareSizePx>& icon_sizes_in_px,
+                 const SortedSizesPx& icon_sizes_in_px,
                  ReadIconsCallback callback) const override;
   void ReadAllIcons(const web_app::AppId& app_id,
                     ReadIconBitmapsCallback callback) const override;

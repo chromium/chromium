@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/common/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -452,13 +453,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   std::vector<SquareSizePx> icon_sizes_any;
   for (int32_t size : local_data.downloaded_icon_sizes_purpose_any())
     icon_sizes_any.push_back(size);
-  web_app->SetDownloadedIconSizes(IconPurpose::ANY, std::move(icon_sizes_any));
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY,
+                                  SortedSizesPx(std::move(icon_sizes_any)));
 
   std::vector<SquareSizePx> icon_sizes_maskable;
   for (int32_t size : local_data.downloaded_icon_sizes_purpose_maskable())
     icon_sizes_maskable.push_back(size);
-  web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE,
-                                  std::move(icon_sizes_maskable));
+  web_app->SetDownloadedIconSizes(
+      IconPurpose::MASKABLE, SortedSizesPx(std::move(icon_sizes_maskable)));
 
   web_app->SetIsGeneratedIcon(local_data.is_generated_icon());
 
