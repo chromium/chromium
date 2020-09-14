@@ -160,8 +160,11 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
       widget_observer_(new TrayWidgetObserver(this)) {
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
-  set_ink_drop_base_color(ShelfConfig::Get()->GetInkDropBaseColor());
-  set_ink_drop_visible_opacity(ShelfConfig::Get()->GetInkDropVisibleOpacity());
+  AshColorProvider::RippleAttributes ripple_attributes =
+      ShelfConfig::Get()->GetInkDropRippleAttributes();
+
+  set_ink_drop_base_color(ripple_attributes.base_color);
+  set_ink_drop_visible_opacity(ripple_attributes.inkdrop_opacity);
 
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   SetLayoutManager(std::make_unique<views::FillLayout>());

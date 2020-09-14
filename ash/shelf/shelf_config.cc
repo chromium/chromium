@@ -444,13 +444,9 @@ int ShelfConfig::GetShelfSize(bool ignore_in_app_state) const {
   return is_dense_ ? 48 : 56;
 }
 
-SkColor ShelfConfig::GetInkDropBaseColor() const {
-  return AshColorProvider::Get()->GetInkDropBaseColor(
-      AshColorProvider::AshColorMode::kDark);
-}
-
-float ShelfConfig::GetInkDropVisibleOpacity() const {
-  return AshColorProvider::Get()->GetInkDropVisibleOpacity();
+AshColorProvider::RippleAttributes ShelfConfig::GetInkDropRippleAttributes()
+    const {
+  return AshColorProvider::Get()->GetRippleAttributes(GetDefaultShelfColor());
 }
 
 SkColor ShelfConfig::GetShelfControlButtonColor() const {

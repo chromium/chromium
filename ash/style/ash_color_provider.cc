@@ -272,17 +272,6 @@ SkColor AshColorProvider::GetBackgroundColor() const {
   return IsThemed() ? GetBackgroundThemedColor() : GetBackgroundDefaultColor();
 }
 
-SkColor AshColorProvider::GetInkDropBaseColor(
-    AshColorMode given_color_mode) const {
-  AshColorMode color_mode =
-      color_mode_ != AshColorMode::kDefault ? color_mode_ : given_color_mode;
-  return color_mode == AshColorMode::kLight ? SK_ColorBLACK : SK_ColorWHITE;
-}
-
-float AshColorProvider::GetInkDropVisibleOpacity() const {
-  return 0.2f;
-}
-
 void AshColorProvider::DecoratePillButton(views::LabelButton* button,
                                           ButtonType type,
                                           const gfx::VectorIcon& icon) {

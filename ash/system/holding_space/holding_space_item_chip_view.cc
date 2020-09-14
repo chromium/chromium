@@ -58,7 +58,8 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   GetViewAccessibility().OverrideName(item_->text());
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  set_ink_drop_visible_opacity(ShelfConfig::Get()->GetInkDropVisibleOpacity());
+  set_ink_drop_visible_opacity(
+      ShelfConfig::Get()->GetInkDropRippleAttributes().inkdrop_opacity);
   SetNotifyEnterExitOnChild(true);
 
   // Ink drop layers should be clipped to match the corner radius of this view.
@@ -76,7 +77,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
 SkColor HoldingSpaceItemChipView::GetInkDropBaseColor() const {
-  return ShelfConfig::Get()->GetInkDropBaseColor();
+  return ShelfConfig::Get()->GetInkDropRippleAttributes().base_color;
 }
 
 int HoldingSpaceItemChipView::GetDragOperations(const gfx::Point& point) {

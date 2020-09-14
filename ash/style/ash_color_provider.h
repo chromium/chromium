@@ -205,12 +205,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // |is_themed_|).
   SkColor GetBackgroundColor() const;
 
-  // Ink drop color for shelf items.
-  SkColor GetInkDropBaseColor(AshColorMode given_color_mode) const;
-
-  // Opacity of the ink drop ripple for shelf items when the ripple is visible.
-  float GetInkDropVisibleOpacity() const;
-
   // Helpers to style buttons based on the desired |type| and theme. Depending
   // on the type may style text, icon and background colors for both enabled and
   // disabled states. May overwrite an prior styles on |button|.
