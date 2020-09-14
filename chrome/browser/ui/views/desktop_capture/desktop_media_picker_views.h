@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "ui/views/controls/label.h"
@@ -86,6 +87,12 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 // DesktopMediaPicker.
 class DesktopMediaPickerViews : public DesktopMediaPicker {
  public:
+#if defined(OS_WIN) || defined(USE_CRAS)
+  static constexpr bool kScreenAudioShareSupportedOnPlatform = true;
+#else
+  static constexpr bool kScreenAudioShareSupportedOnPlatform = false;
+#endif
+
   DesktopMediaPickerViews();
   ~DesktopMediaPickerViews() override;
 

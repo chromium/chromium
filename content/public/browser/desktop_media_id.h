@@ -24,9 +24,9 @@ struct CONTENT_EXPORT DesktopMediaID {
   typedef intptr_t Id;
 
   // Represents an "unset" value for either |id| or |window_id|.
-  static const Id kNullId;
+  static constexpr Id kNullId = 0;
   // Represents a fake id to create a dummy capturer for autotests.
-  static const Id kFakeId;
+  static constexpr Id kFakeId = -3;
 
 #if defined(USE_AURA) || defined(OS_MAC)
   // Assigns integer identifier to the |window| and returns its DesktopMediaID.
@@ -53,6 +53,7 @@ struct CONTENT_EXPORT DesktopMediaID {
   // Operators so that DesktopMediaID can be used with STL containers.
   bool operator<(const DesktopMediaID& other) const;
   bool operator==(const DesktopMediaID& other) const;
+  bool operator!=(const DesktopMediaID& other) const;
 
   bool is_null() const { return type == TYPE_NONE; }
   std::string ToString() const;

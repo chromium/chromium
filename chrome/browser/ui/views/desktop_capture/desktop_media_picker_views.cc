@@ -268,11 +268,8 @@ void DesktopMediaPickerDialogView::OnSourceTypeSwitched(int index) {
   if (audio_share_checkbox_) {
     switch (source_types_[index]) {
       case DesktopMediaID::TYPE_SCREEN:
-#if defined(USE_CRAS) || defined(OS_WIN)
-        audio_share_checkbox_->SetVisible(true);
-#else
-        audio_share_checkbox_->SetVisible(false);
-#endif
+        audio_share_checkbox_->SetVisible(
+            DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform);
         break;
       case DesktopMediaID::TYPE_WINDOW:
         audio_share_checkbox_->SetVisible(false);
@@ -341,7 +338,8 @@ base::string16 DesktopMediaPickerDialogView::GetWindowTitle() const {
 bool DesktopMediaPickerDialogView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button != ui::DIALOG_BUTTON_OK ||
-         GetSelectedController()->GetSelection().has_value();
+         GetSelectedController()->GetSelection().has_value() ||
+         accepted_source_.has_value();
 }
 
 views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
@@ -349,6 +347,7 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 }
 
 bool DesktopMediaPickerDialogView::Accept() {
+  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   // Ok button should only be enabled when a source is selected.
   base::Optional<DesktopMediaID> source_optional =
       accepted_source_.has_value() ? accepted_source_
@@ -444,6 +443,8 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   // When not using the web-modal dialog, center the dialog with its new size.
   GetWidget()->CenterWindow(new_size);
 }
+
+constexpr bool DesktopMediaPickerViews::kScreenAudioShareSupportedOnPlatform;
 
 DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
