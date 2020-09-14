@@ -121,6 +121,7 @@ def set_defaults(milestone_vars, **kwargs):
         service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
         swarming_tags = ["vpython:native-python-wrapper"],
         task_template_canary_percentage = 5,
+        goma_use_luci_auth = True,
     )
     default_values.update(kwargs)
     for k, v in default_values.items():
