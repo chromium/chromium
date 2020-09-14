@@ -41,6 +41,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -116,6 +117,7 @@ public class AwContentsTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "Crash https://crbug.com/1073077")
     public void testCreateLoadDestroyManyAtOnce() throws Throwable {
         AwTestContainerView views[] = new AwTestContainerView[10];
 
