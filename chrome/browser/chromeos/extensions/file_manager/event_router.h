@@ -30,6 +30,7 @@
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
 
@@ -45,6 +46,7 @@ namespace file_manager {
 class EventRouter
     : public KeyedService,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
+      public extensions::ExtensionRegistryObserver,
       public chromeos::system::TimezoneSettings::Observer,
       public VolumeManagerObserver,
       public arc::ArcIntentHelperObserver,
@@ -108,6 +110,13 @@ class EventRouter
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver overrides.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
+
+  // extensions::ExtensionRegistryObserver overrides
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
 
   // chromeos::system::TimezoneSettings::Observer overrides.
   void TimezoneChanged(const icu::TimeZone& timezone) override;
@@ -199,6 +208,8 @@ class EventRouter
       const std::string& pref_name,
       extensions::api::file_manager_private::CrostiniEventType pref_true,
       extensions::api::file_manager_private::CrostiniEventType pref_false);
+
+  void NotifyDriveConnectionStatusChanged();
 
   base::Time last_copy_progress_event_;
 

@@ -1816,7 +1816,10 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends Command {
           const offlineNotNeededAction = actionsModel.getAction(
               ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY);
           // Saving for offline has a priority if both actions are available.
-          const action = saveForOfflineAction || offlineNotNeededAction;
+          let action = offlineNotNeededAction;
+          if (saveForOfflineAction && saveForOfflineAction.canExecute()) {
+            action = saveForOfflineAction;
+          }
           if (action) {
             actionsController.executeAction(action);
           }
@@ -1845,8 +1848,12 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends Command {
           actionsModel.getAction(ActionsModel.CommonActionId.SAVE_FOR_OFFLINE);
       const offlineNotNeededAction = actionsModel.getAction(
           ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY);
-      const action = saveForOfflineAction || offlineNotNeededAction;
-      command.checked = !!offlineNotNeededAction && !saveForOfflineAction;
+      let action = offlineNotNeededAction;
+      command.checked = !!offlineNotNeededAction;
+      if (saveForOfflineAction && saveForOfflineAction.canExecute()) {
+        action = saveForOfflineAction;
+        command.checked = false;
+      }
       event.canExecute = action && action.canExecute();
       command.disabled = !event.canExecute;
     }

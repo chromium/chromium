@@ -38,7 +38,8 @@ class VolumeManagerImpl extends cr.EventTarget {
     this.driveConnectionState_ = {
       type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
       reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
-      hasCellularNetworkAccess: false
+      hasCellularNetworkAccess: false,
+      canPinHostedFiles: false,
     };
 
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(

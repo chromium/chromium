@@ -626,6 +626,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("driveOpenSidebarSharedWithMe"),
                       TestCase("driveAutoCompleteQuery"),
                       TestCase("drivePinMultiple"),
+                      TestCase("drivePinHosted"),
                       TestCase("drivePinFileMobileNetwork"),
                       TestCase("driveClickFirstSearchResult"),
                       TestCase("drivePressEnterToSearch"),

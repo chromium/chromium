@@ -159,6 +159,7 @@ function testDriveDirectoryEntry(callback) {
             volumeManager.driveConnectionState = {
               type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
               hasCellularNetworkAccess: false,
+              canPinHostedFiles: false,
             };
             assertFalse(shareAction.canExecute());
 
@@ -306,6 +307,220 @@ function testDriveFileEntry(callback) {
           .then(() => {
             assertFalse(metadataModel.properties.pinned);
             assertEquals(2, invalidated);
+          }),
+      callback);
+}
+
+/**
+ * Tests that the correct actions are available for a Google Drive hosted file.
+ */
+function testDriveHostedFileEntry(callback) {
+  const testDocument = MockFileEntry.create(driveFileSystem, '/test.gdoc');
+  const testFile = MockFileEntry.create(driveFileSystem, '/test.txt');
+  driveFileSystem.entries['/test.gdoc'] = testDocument;
+  driveFileSystem.entries['/test.txt'] = testFile;
+
+  const metadataModel = new MockMetadataModel({});
+  metadataModel.set(testDocument, {hosted: true, pinned: false});
+  metadataModel.set(testFile, {hosted: false, pinned: false});
+  volumeManager.driveConnectionState = {
+    type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    hasCellularNetworkAccess: false,
+    canPinHostedFiles: true,
+  };
+  chrome.fileManagerPrivate.pinDriveFile = (entry, pin, callback) => {
+    const metadata = metadataModel.getCache([entry])[0];
+    metadata.pinned = pin;
+    metadataModel.set(entry, metadata);
+    callback();
+  };
+
+  let model = new ActionsModel(
+      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      [testDocument]);
+
+  return reportPromise(
+      model.initialize()
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Save for Offline' should be enabled.
+            const saveForOfflineAction =
+                actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+            assertTrue(!!saveForOfflineAction);
+            assertTrue(saveForOfflineAction.canExecute());
+
+            // Check the actions for multiple selection.
+            model = new ActionsModel(
+                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
+                ui, [testDocument, testFile]);
+            return model.initialize();
+          })
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Offline not Necessary' should not be enabled.
+            assertFalse(actions.hasOwnProperty(
+                ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY));
+
+            // 'Save for Offline' should be enabled.
+            const saveForOfflineAction =
+                actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+            assertTrue(!!saveForOfflineAction);
+            assertTrue(saveForOfflineAction.canExecute());
+
+            // For pinning, invalidating is done asynchronously, so we need to
+            // wait for it with a promise.
+            return new Promise((fulfill, reject) => {
+              model.addEventListener('invalidated', () => {
+                fulfill();
+              });
+              saveForOfflineAction.execute();
+            });
+          })
+          .then(() => {
+            assertTrue(!!metadataModel.getCache([testDocument])[0].pinned);
+            assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
+
+            model = new ActionsModel(
+                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
+                ui, [testDocument, testFile]);
+            return model.initialize();
+          })
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Offline not Necessary' should be enabled.
+            const offlineNotNecessaryAction =
+                actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
+            assertTrue(!!offlineNotNecessaryAction);
+            assertTrue(offlineNotNecessaryAction.canExecute());
+
+            // 'Save for Offline' should not be enabled.
+            assertFalse(actions.hasOwnProperty(
+                ActionsModel.CommonActionId.SAVE_FOR_OFFLINE));
+
+            // For pinning, invalidating is done asynchronously, so we need to
+            // wait for it with a promise.
+            return new Promise((fulfill, reject) => {
+              model.addEventListener('invalidated', () => {
+                fulfill();
+              });
+              offlineNotNecessaryAction.execute();
+            });
+          })
+          .then(() => {
+            assertFalse(!!metadataModel.getCache([testDocument])[0].pinned);
+            assertFalse(!!metadataModel.getCache([testFile])[0].pinned);
+          }),
+      callback);
+}
+
+/**
+ * Tests that the correct actions are available for a Google Drive hosted file
+ * when the user does not have the required extension installed.
+ */
+function testDriveHostedFileEntryWithoutExtension(callback) {
+  const testDocument = MockFileEntry.create(driveFileSystem, '/test.gdoc');
+  const testFile = MockFileEntry.create(driveFileSystem, '/test.txt');
+  driveFileSystem.entries['/test.gdoc'] = testDocument;
+  driveFileSystem.entries['/test.txt'] = testFile;
+
+  const metadataModel = new MockMetadataModel({});
+  metadataModel.set(testDocument, {hosted: true, pinned: false});
+  metadataModel.set(testFile, {hosted: false, pinned: false});
+  volumeManager.driveConnectionState = {
+    type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    hasCellularNetworkAccess: false,
+    canPinHostedFiles: false,
+  };
+  chrome.fileManagerPrivate.pinDriveFile = (entry, pin, callback) => {
+    const metadata = metadataModel.getCache([entry])[0];
+    metadata.pinned = pin;
+    metadataModel.set(entry, metadata);
+    callback();
+  };
+
+  let model = new ActionsModel(
+      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      [testDocument]);
+
+  return reportPromise(
+      model.initialize()
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Save for Offline' should be enabled, but not executable.
+            const saveForOfflineAction =
+                actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+            assertTrue(!!saveForOfflineAction);
+            assertFalse(saveForOfflineAction.canExecute());
+
+            // Check the actions for multiple selection.
+            model = new ActionsModel(
+                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
+                ui, [testDocument, testFile]);
+            return model.initialize();
+          })
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Offline not Necessary' should not be enabled.
+            assertFalse(actions.hasOwnProperty(
+                ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY));
+
+            // 'Save for Offline' should be enabled even though we can't pin
+            // hosted files as we've also selected a non-hosted file.
+            const saveForOfflineAction =
+                actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+            assertTrue(!!saveForOfflineAction);
+            assertTrue(saveForOfflineAction.canExecute());
+
+            // For pinning, invalidating is done asynchronously, so we need to
+            // wait for it with a promise.
+            return new Promise((fulfill, reject) => {
+              model.addEventListener('invalidated', () => {
+                fulfill();
+              });
+              saveForOfflineAction.execute();
+            });
+          })
+          .then(() => {
+            assertFalse(!!metadataModel.getCache([testDocument])[0].pinned);
+            assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
+
+            model = new ActionsModel(
+                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
+                ui, [testDocument, testFile]);
+            return model.initialize();
+          })
+          .then(() => {
+            const actions = model.getActions();
+
+            // 'Offline not Necessary' should be enabled.
+            const offlineNotNecessaryAction =
+                actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
+            assertTrue(!!offlineNotNecessaryAction);
+            assertTrue(offlineNotNecessaryAction.canExecute());
+
+            // 'Save for Offline' should be enabled, but not executable.
+            const saveForOfflineAction =
+                actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
+            assertTrue(!!saveForOfflineAction);
+            assertFalse(saveForOfflineAction.canExecute());
+
+            // For pinning, invalidating is done asynchronously, so we need to
+            // wait for it with a promise.
+            return new Promise((fulfill, reject) => {
+              model.addEventListener('invalidated', () => {
+                fulfill();
+              });
+              offlineNotNecessaryAction.execute();
+            });
+          })
+          .then(() => {
+            assertFalse(!!metadataModel.getCache([testDocument])[0].pinned);
+            assertFalse(!!metadataModel.getCache([testFile])[0].pinned);
           }),
       callback);
 }
@@ -486,6 +701,7 @@ function testProvidedEntry(callback) {
         volumeManager.driveConnectionState = {
           type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
           hasCellularNetworkAccess: false,
+          canPinHostedFiles: false,
         };
         assertTrue(shareAction.canExecute());
         assertEquals('Share it!', shareAction.getTitle());

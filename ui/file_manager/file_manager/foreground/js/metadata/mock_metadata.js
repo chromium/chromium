@@ -16,16 +16,33 @@ class MockMetadataModel {
      * @public @const {Object}
      */
     this.properties = initial_properties;
+
+    /**
+     * Per entry properties, which can be set by a test.
+     * @private @const {Map<string, Object>}
+     */
+    this.propertiesMap_ = new Map();
   }
 
   /** @override */
-  get() {
-    return Promise.resolve([this.properties]);
+  get(entries) {
+    return Promise.resolve(this.getCache(entries));
   }
 
   /** @override */
-  getCache() {
-    return [this.properties];
+  getCache(entries) {
+    return entries.map(
+        entry => this.propertiesMap_.has(entry.toURL()) ?
+            this.propertiesMap_.get(entry.toURL()) :
+            this.properties);
+  }
+
+  /**
+   * @param {Entry} entry
+   * @param {Object} properties
+   */
+  set(entry, properties) {
+    this.propertiesMap_.set(entry.toURL(), properties);
   }
 
   /** @override */

@@ -67,10 +67,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
   dict->SetBoolean(
       "FILTERS_IN_RECENTS_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecents));
-  dict->SetBoolean(
-      "DRIVE_BIDIRECTIONAL_NATIVE_MESSAGING_ENABLED",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kDriveFsBidirectionalNativeMessaging));
   dict->SetBoolean("HOLDING_SPACE_ENABLED",
                    ash::features::IsTemporaryHoldingSpaceEnabled());
   dict->SetBoolean("FILES_SINGLE_PARTITION_FORMAT_ENABLED",

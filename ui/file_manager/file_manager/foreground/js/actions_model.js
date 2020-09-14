@@ -137,10 +137,13 @@ class DriveToggleOfflineAction {
    * @param {!MetadataModel} metadataModel
    * @param {!DriveSyncHandler} driveSyncHandler
    * @param {!ActionModelUI} ui
+   * @param {!VolumeManager} volumeManager
    * @param {boolean} value
    * @param {function()} onExecute
    */
-  constructor(entries, metadataModel, driveSyncHandler, ui, value, onExecute) {
+  constructor(
+      entries, metadataModel, driveSyncHandler, ui, volumeManager, value,
+      onExecute) {
     /**
      * @private {!Array<!Entry>}
      * @const
@@ -160,6 +163,12 @@ class DriveToggleOfflineAction {
     this.driveSyncHandler_ = driveSyncHandler;
 
     /**
+     * @private {!VolumeManager}
+     * @const
+     */
+    this.volumeManager_ = volumeManager;
+
+    /**
      * @private {!ActionModelUI}
      * @const
      */
@@ -176,6 +185,13 @@ class DriveToggleOfflineAction {
      * @const
      */
     this.onExecute_ = onExecute;
+
+    /**
+     * @private {boolean}
+     * @const
+     */
+    this.containsOnlyHosted_ = metadataModel.getCache(entries, ['hosted'])
+                                   .every(metadata => metadata.hosted);
   }
 
   /**
@@ -183,31 +199,25 @@ class DriveToggleOfflineAction {
    * @param {!MetadataModel} metadataModel
    * @param {!DriveSyncHandler} driveSyncHandler
    * @param {!ActionModelUI} ui
+   * @param {!VolumeManager} volumeManager
    * @param {boolean} value
    * @param {function()} onExecute
    * @return {DriveToggleOfflineAction}
    */
   static create(
-      entries, metadataModel, driveSyncHandler, ui, value, onExecute) {
-    const actionableEntries = entries.filter(entry => {
-      const metadata = metadataModel.getCache([entry], ['hosted', 'pinned'])[0];
-      if (!util.isDriveBidirectionalNativeMessagingEnabled() &&
-          metadata.hosted) {
-        return false;
-      }
-      if (metadata.pinned === value) {
-        return false;
-      }
-      return true;
-    });
+      entries, metadataModel, driveSyncHandler, ui, volumeManager, value,
+      onExecute) {
+    const actionableEntries = entries.filter(
+        entry =>
+            metadataModel.getCache([entry], ['pinned'])[0].pinned !== value);
 
     if (actionableEntries.length === 0) {
       return null;
     }
 
     return new DriveToggleOfflineAction(
-        actionableEntries, metadataModel, driveSyncHandler, ui, value,
-        onExecute);
+        actionableEntries, metadataModel, driveSyncHandler, ui, volumeManager,
+        value, onExecute);
   }
 
   /**
@@ -230,8 +240,15 @@ class DriveToggleOfflineAction {
           return;
         }
         currentEntry = entries.shift();
-        chrome.fileManagerPrivate.pinDriveFile(
-            currentEntry, this.value_, steps.entryPinned);
+        // Skip hosted files if we cannot pin them.
+        if (this.volumeManager_.getDriveConnectionState().canPinHostedFiles ||
+            !this.metadataModel_.getCache([currentEntry], ['hosted'])[0]
+                 .hosted) {
+          chrome.fileManagerPrivate.pinDriveFile(
+              currentEntry, this.value_, steps.entryPinned);
+        } else {
+          steps.start();
+        }
       },
 
       // Check the result of pinning.
@@ -283,7 +300,8 @@ class DriveToggleOfflineAction {
    * @override
    */
   canExecute() {
-    return true;
+    return this.volumeManager_.getDriveConnectionState().canPinHostedFiles ||
+        !this.containsOnlyHosted_;
   }
 
   /**
@@ -733,7 +751,8 @@ class ActionsModel extends cr.EventTarget {
 
               const saveForOfflineAction = DriveToggleOfflineAction.create(
                   this.entries_, this.metadataModel_, this.driveSyncHandler_,
-                  this.ui_, true, this.invalidate_.bind(this));
+                  this.ui_, this.volumeManager_, true,
+                  this.invalidate_.bind(this));
               if (saveForOfflineAction) {
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE] =
                     saveForOfflineAction;
@@ -741,7 +760,8 @@ class ActionsModel extends cr.EventTarget {
 
               const offlineNotNecessaryAction = DriveToggleOfflineAction.create(
                   this.entries_, this.metadataModel_, this.driveSyncHandler_,
-                  this.ui_, false, this.invalidate_.bind(this));
+                  this.ui_, this.volumeManager_, false,
+                  this.invalidate_.bind(this));
               if (offlineNotNecessaryAction) {
                 actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY] =
                     offlineNotNecessaryAction;

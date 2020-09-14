@@ -17,6 +17,7 @@ class MockVolumeManager {
       type: /** @type {!chrome.fileManagerPrivate.DriveConnectionStateType} */ (
           'ONLINE'),
       hasCellularNetworkAccess: false,
+      canPinHostedFiles: false,
     };
 
     // Create Drive.   Drive attempts to resolve FilesSystemURLs for '/root',

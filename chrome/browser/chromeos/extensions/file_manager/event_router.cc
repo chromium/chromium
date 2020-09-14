@@ -52,6 +52,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -449,6 +450,8 @@ void EventRouter::Shutdown() {
 
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
 
+  extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
+
   DriveIntegrationService* const integration_service =
       DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
@@ -503,6 +506,8 @@ void EventRouter::ObserveEvents() {
   }
 
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+
+  extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
 
   pref_change_registrar_->Init(profile_->GetPrefs());
   base::Closure callback =
@@ -651,14 +656,19 @@ void EventRouter::OnWatcherManagerNotification(
 }
 
 void EventRouter::OnConnectionChanged(network::mojom::ConnectionType type) {
-  DCHECK(profile_);
-  DCHECK(extensions::EventRouter::Get(profile_));
+  NotifyDriveConnectionStatusChanged();
+}
 
-  BroadcastEvent(
-      profile_, extensions::events::
-                    FILE_MANAGER_PRIVATE_ON_DRIVE_CONNECTION_STATUS_CHANGED,
-      file_manager_private::OnDriveConnectionStatusChanged::kEventName,
-      file_manager_private::OnDriveConnectionStatusChanged::Create());
+void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
+                                    const extensions::Extension* extension) {
+  NotifyDriveConnectionStatusChanged();
+}
+
+void EventRouter::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  NotifyDriveConnectionStatusChanged();
 }
 
 void EventRouter::TimezoneChanged(const icu::TimeZone& timezone) {
@@ -915,6 +925,18 @@ void EventRouter::OnCrostiniChanged(
         file_manager_private::OnCrostiniChanged::kEventName,
         file_manager_private::OnCrostiniChanged::Create(event));
   }
+}
+
+void EventRouter::NotifyDriveConnectionStatusChanged() {
+  DCHECK(profile_);
+  DCHECK(extensions::EventRouter::Get(profile_));
+
+  BroadcastEvent(
+      profile_,
+      extensions::events::
+          FILE_MANAGER_PRIVATE_ON_DRIVE_CONNECTION_STATUS_CHANGED,
+      file_manager_private::OnDriveConnectionStatusChanged::kEventName,
+      file_manager_private::OnDriveConnectionStatusChanged::Create());
 }
 
 base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {

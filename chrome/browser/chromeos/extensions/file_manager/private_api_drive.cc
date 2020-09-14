@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/string_search.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
+#include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
 #include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
@@ -41,7 +43,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/drivefs/drivefs_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
@@ -53,6 +57,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/extension_registry.h"
 #include "google_apis/drive/auth_service.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -790,6 +795,16 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
       chromeos::NetworkHandler::Get()
           ->network_state_handler()
           ->FirstNetworkByType(chromeos::NetworkTypePattern::Mobile());
+
+  const auto& enabled_extensions =
+      extensions::ExtensionRegistry::Get(browser_context())
+          ->enabled_extensions();
+  result.can_pin_hosted_files =
+      base::FeatureList::IsEnabled(
+          chromeos::features::kDriveFsBidirectionalNativeMessaging) &&
+      enabled_extensions.Contains(extension_misc::kDocsOfflineExtensionId) &&
+      enabled_extensions.Contains(
+          GURL(drive::kDriveFsNativeMessageHostOrigins[0]).host());
 
   return RespondNow(ArgumentList(
       api::file_manager_private::GetDriveConnectionState::Results::Create(

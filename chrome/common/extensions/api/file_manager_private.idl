@@ -642,6 +642,9 @@ dictionary DriveConnectionState {
   // Whether the device has a cellular network access or not. i.e. the |type|
   // can be 'metered' or not.
   boolean hasCellularNetworkAccess;
+
+  // Whether or not hosted files can be pinned.
+  boolean canPinHostedFiles;
 };
 
 // Device event dispatched to listeners of onDeviceChaged.  See also

@@ -1468,15 +1468,6 @@ util.isSinglePartitionFormatEnabled = () => {
 };
 
 /**
- * Returns true if Drive bidirectional native messaging is enabled.
- * @return {boolean}
- */
-util.isDriveBidirectionalNativeMessagingEnabled = () => {
-  return loadTimeData.getBoolean(
-      'DRIVE_BIDIRECTIONAL_NATIVE_MESSAGING_ENABLED');
-};
-
-/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

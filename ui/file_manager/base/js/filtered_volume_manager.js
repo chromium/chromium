@@ -292,6 +292,7 @@ class FilteredVolumeManager extends cr.EventTarget {
         type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
         reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
         hasCellularNetworkAccess: false,
+        canPinHostedFiles: false,
       };
     }
 

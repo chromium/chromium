@@ -477,7 +477,8 @@ chrome.fileManagerPrivate.DriveMetadataSearchResult;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.DriveConnectionStateType,
  *   reason: (!chrome.fileManagerPrivate.DriveOfflineReason|undefined),
- *   hasCellularNetworkAccess: boolean
+ *   hasCellularNetworkAccess: boolean,
+ *   canPinHostedFiles: boolean
  * }}
  */
 chrome.fileManagerPrivate.DriveConnectionState;
