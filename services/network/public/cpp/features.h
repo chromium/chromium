@@ -74,8 +74,6 @@ extern const char kCorbAllowlistAlsoAppliesToOorCorsParamName[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kRequestInitiatorSiteLockEnfocement;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kStrictAccessControlAllowListCheck;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCertVerifierService;
 
 COMPONENT_EXPORT(NETWORK_CPP)

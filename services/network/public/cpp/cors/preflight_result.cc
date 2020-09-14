@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/cors/preflight_result.h"
 
-#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -15,7 +14,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -61,12 +59,8 @@ bool ParseAccessControlMaxAge(const base::Optional<std::string>& max_age,
 }
 
 // Parses |string| as a Access-Control-Allow-* header value, storing the result
-// in |set|.
-//
-// If the |kStrictAccessControlAllowListCheck| feature is enabled,
-// this function returns false when |string| does not satisfy the syntax
-// here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
-// The function always succeeds if the feature is disabled.
+// in |set|. This function returns false when |string| does not satisfy the
+// syntax here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
 bool ParseAccessControlAllowList(const base::Optional<std::string>& string,
                                  base::flat_set<std::string>* set,
                                  bool insert_in_lower_case) {
@@ -75,13 +69,10 @@ bool ParseAccessControlAllowList(const base::Optional<std::string>& string,
   if (!string)
     return true;
 
-  const bool enable_strict_check = base::FeatureList::IsEnabled(
-      features::kStrictAccessControlAllowListCheck);
-
   net::HttpUtil::ValuesIterator it(string->begin(), string->end(), ',', true);
   while (it.GetNext()) {
     base::StringPiece value = it.value_piece();
-    if (enable_strict_check && !net::HttpUtil::IsToken(value)) {
+    if (!net::HttpUtil::IsToken(value)) {
       set->clear();
       return false;
     }

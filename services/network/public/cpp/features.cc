@@ -188,13 +188,6 @@ const base::Feature kRequestInitiatorSiteLockEnfocement = {
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-// The preflight parser should reject Access-Control-Allow-* headers which do
-// not conform to ABNF. But if the strict check is applied directly, some
-// existing sites might fail to load. The feature flag controls whether a strict
-// check will be used or not.
-const base::Feature kStrictAccessControlAllowListCheck = {
-    "StrictAccessControlAllowListCheck", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When the CertVerifierService is enabled, certificate verification will not be
 // performed in the network service, but will instead be brokered to a separate
 // cert verification service potentially running in a different process.
