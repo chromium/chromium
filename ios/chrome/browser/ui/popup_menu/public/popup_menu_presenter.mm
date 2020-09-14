@@ -150,6 +150,10 @@ const CGFloat kDamping = 0.85;
 
 - (void)dismissAnimated:(BOOL)animated {
   [self.popupViewController willMoveToParentViewController:nil];
+  // Notify the presented view controller that it will be removed to prevent it
+  // from triggering unnecessary layout passes, which might lead to a hang. See
+  // crbug.com/1126618.
+  [self.presentedViewController willMoveToParentViewController:nil];
   [NSLayoutConstraint deactivateConstraints:self.presentedConstraints];
   [NSLayoutConstraint activateConstraints:self.initialConstraints];
   auto completion = ^(BOOL finished) {
