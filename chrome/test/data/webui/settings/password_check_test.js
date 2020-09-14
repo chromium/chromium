@@ -16,6 +16,7 @@ import {makeCompromisedCredential,  makePasswordCheckStatus} from 'chrome://test
 import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.m.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
+import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 // clang-format on
 
@@ -1191,7 +1192,7 @@ suite('PasswordsCheckSection', function() {
         checkPasswordSection.$$('settings-password-check-edit-dialog')));
   });
 
-  if (cr.isChromeOS) {
+  if (isChromeOS) {
     // Verify that getPlaintext succeeded after auth token resolved
     test('showHidePasswordMenuItemAuth', async function() {
       passwordManager.data.leakedCredentials =
@@ -1206,7 +1207,8 @@ suite('PasswordsCheckSection', function() {
       // Open the more actions menu and click 'Show Password'.
       node.$.more.click();
       checkPasswordSection.$.menuShowPassword.click();
-      await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+      // Wait for the more actions menu to disappear before proceeding.
+      await eventToPromise('close', checkPasswordSection.$.moreActionsMenu);
 
       // Verify that password field didn't change
       assertEquals('password', node.$.leakedPassword.type);
@@ -1214,7 +1216,6 @@ suite('PasswordsCheckSection', function() {
 
       passwordManager.plaintextPassword_ = 'test4';
       node.tokenRequestManager.resolve();
-      passwordManager.resetResolver('getPlaintextCompromisedPassword');
       await passwordManager.whenCalled('getPlaintextCompromisedPassword');
 
       assertEquals('text', node.$.leakedPassword.type);
