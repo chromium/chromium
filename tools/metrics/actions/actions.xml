@@ -5006,12 +5006,48 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.ReadLater">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'Read Later' option for a Feed card.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.SendFeedback">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'send feedback' option for a Feed card.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.HeaderAction.ManageActivity">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'Manage Activity' option in the feed header menu.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.HeaderAction.ManageInterests">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'Manage Interests' option in the feed header menu.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.InfiniteFeedTriggered">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user has scrolled down enough to trigger the infinite feed pagination.
   </description>
 </action>
 
@@ -24238,8 +24274,7 @@ should be able to be added at any place in this file.
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <description>
-    Android: The suggestions section is collapsed by user click on the section
-    header.
+    The suggestions section is collapsed through the section header.
   </description>
 </action>
 
@@ -24247,8 +24282,7 @@ should be able to be added at any place in this file.
   <owner>twellington@chromium.org</owner>
   <owner>chrome-android-app@chromium.org</owner>
   <description>
-    Android: The suggestions section is expanded by user click on the section
-    header.
+    The suggestions section is expanded through the section header.
   </description>
 </action>
 
