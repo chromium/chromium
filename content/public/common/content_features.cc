@@ -349,6 +349,14 @@ const base::Feature kLogJsConsoleMessages {
 const base::Feature kLowPriorityIframes{"LowPriorityIframes",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Removes the association between the `AgentSchedulingGroup` interfaces and the
+// IPC Channel. This will break ordering guarantees between different agent
+// scheduling groups (ordering withing a group is still preserved).
+// DO NOT USE! The feature is not yet fully implemented. See crbug.com/1111231.
+const base::Feature kMbiDetachAgentSchedulingGroupFromChannel{
+    "MbiDetachAgentSchedulingGroupFromChannel",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the
 // cache is considered invalid on every enumeration request.

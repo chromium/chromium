@@ -82,6 +82,8 @@ CONTENT_EXPORT extern const base::Feature kLazyInitializeMediaControls;
 CONTENT_EXPORT extern const base::Feature kLegacyWindowsDWriteFontFallback;
 CONTENT_EXPORT extern const base::Feature kLogJsConsoleMessages;
 CONTENT_EXPORT extern const base::Feature kLowPriorityIframes;
+CONTENT_EXPORT extern const base::Feature
+    kMbiDetachAgentSchedulingGroupFromChannel;
 CONTENT_EXPORT extern const base::Feature kMediaDevicesSystemMonitorCache;
 CONTENT_EXPORT extern const base::Feature kMojoDedicatedThread;
 CONTENT_EXPORT extern const base::Feature kMojoVideoCapture;

@@ -448,6 +448,11 @@ class CONTENT_EXPORT RenderThreadImpl
           agent_scheduling_group_host,
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group)
       override;
+  void CreateAssociatedAgentSchedulingGroup(
+      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+          agent_scheduling_group_host,
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+          agent_scheduling_group) override;
   void CreateFrameProxy(
       int32_t routing_id,
       int32_t render_view_routing_id,

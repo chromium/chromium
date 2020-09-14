@@ -5,10 +5,13 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/supports_user_data.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -16,8 +19,14 @@ namespace {
 
 using ::IPC::ChannelProxy;
 using ::IPC::Listener;
+using ::mojo::AssociatedReceiver;
+using ::mojo::AssociatedRemote;
+using ::mojo::PendingAssociatedReceiver;
+using ::mojo::PendingAssociatedRemote;
+using ::mojo::PendingReceiver;
 using ::mojo::PendingRemote;
 using ::mojo::Receiver;
+using ::mojo::Remote;
 
 static constexpr char kAgentGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
@@ -39,6 +48,63 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
 
 }  // namespace
 
+// MaybeAssociatedReceiver:
+AgentSchedulingGroupHost::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
+    AgentSchedulingGroupHost& host,
+    bool should_associate) {
+  if (should_associate) {
+    receiver_.emplace<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
+        &host);
+  } else {
+    receiver_.emplace<Receiver<mojom::AgentSchedulingGroupHost>>(&host);
+  }
+}
+
+AgentSchedulingGroupHost::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
+    default;
+
+PendingRemote<mojom::AgentSchedulingGroupHost>
+AgentSchedulingGroupHost::MaybeAssociatedReceiver::BindNewPipeAndPassRemote() {
+  return absl::get<Receiver<mojom::AgentSchedulingGroupHost>>(receiver_)
+      .BindNewPipeAndPassRemote();
+}
+
+PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+AgentSchedulingGroupHost::MaybeAssociatedReceiver::
+    BindNewEndpointAndPassRemote() {
+  return absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
+             receiver_)
+      .BindNewEndpointAndPassRemote();
+}
+
+// MaybeAssociatedRemote:
+AgentSchedulingGroupHost::MaybeAssociatedRemote::MaybeAssociatedRemote(
+    bool should_associate) {
+  if (should_associate) {
+    remote_ = AssociatedRemote<mojom::AgentSchedulingGroup>();
+  } else {
+    remote_ = Remote<mojom::AgentSchedulingGroup>();
+  }
+}
+
+AgentSchedulingGroupHost::MaybeAssociatedRemote::~MaybeAssociatedRemote() =
+    default;
+
+PendingReceiver<mojom::AgentSchedulingGroup>
+AgentSchedulingGroupHost::MaybeAssociatedRemote::BindNewPipeAndPassReceiver() {
+  return absl::get<Remote<mojom::AgentSchedulingGroup>>(remote_)
+      .BindNewPipeAndPassReceiver();
+}
+
+PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+AgentSchedulingGroupHost::MaybeAssociatedRemote::
+    BindNewEndpointAndPassReceiver() {
+  return absl::get<AssociatedRemote<mojom::AgentSchedulingGroup>>(remote_)
+      .BindNewEndpointAndPassReceiver();
+}
+
+// AgentSchedulingGroupHost:
+
 // static
 AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
     const SiteInstance& instance,
@@ -57,11 +123,26 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
 }
 
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
-    : process_(process) {
+    : AgentSchedulingGroupHost(
+          process,
+          !base::FeatureList::IsEnabled(
+              features::kMbiDetachAgentSchedulingGroupFromChannel)) {}
+
+AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process,
+                                                   bool should_associate)
+    : process_(process),
+      receiver_(*this, should_associate),
+      mojo_remote_(should_associate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-      receiver_.BindNewPipeAndPassRemote(),
-      mojo_remote_.BindNewPipeAndPassReceiver());
+  if (should_associate) {
+    process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
+        receiver_.BindNewEndpointAndPassRemote(),
+        mojo_remote_.BindNewEndpointAndPassReceiver());
+  } else {
+    process_.GetRendererInterface()->CreateAgentSchedulingGroup(
+        receiver_.BindNewPipeAndPassRemote(),
+        mojo_remote_.BindNewPipeAndPassReceiver());
+  }
 }
 
 // DO NOT USE |process_| HERE! At this point it (or at least parts of it) is no

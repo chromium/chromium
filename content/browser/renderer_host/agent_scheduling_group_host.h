@@ -11,8 +11,11 @@
 #include "content/common/associated_interfaces.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace IPC {
 class ChannelProxy;
@@ -43,7 +46,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   static AgentSchedulingGroupHost* Get(const SiteInstance& instance,
                                        RenderProcessHost& process);
 
-  // Should not be called explicitly. Use Get() instead.
+  // Utility ctor, forwarding to the main ctor below.
+  // Should not be called explicitly. Use `Get()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
@@ -64,16 +68,70 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void DestroyView(int32_t routing_id);
 
  private:
+  // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
+  // classes that allow us to switch between using associated and non-associated
+  // mojo interfaces. This behavior is controlled by the
+  // `kMbiDetachAgentSchedulingGroupFromChannel` feature flag.
+  // Associated interfaces are associated with the IPC channel (transitively,
+  // via the `Renderer` interface), thus preserving cross-agent scheduling group
+  // message order. Non-associated interfaces are independent from each other
+  // and do not preserve message order between agent scheduling groups.
+  // TODO(crbug.com/1111231): Remove these once we can remove the flag.
+  class MaybeAssociatedReceiver {
+   public:
+    MaybeAssociatedReceiver(AgentSchedulingGroupHost& host,
+                            bool should_associate);
+    ~MaybeAssociatedReceiver();
+
+    mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
+    BindNewPipeAndPassRemote() WARN_UNUSED_RESULT;
+    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+    BindNewEndpointAndPassRemote() WARN_UNUSED_RESULT;
+
+   private:
+    absl::variant<
+        // This is required to make the variant default constructible. After the
+        // ctor body finishes, the variant will never hold this alternative.
+        absl::monostate,
+        mojo::Receiver<mojom::AgentSchedulingGroupHost>,
+        mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost>>
+        receiver_;
+  };
+
+  class MaybeAssociatedRemote {
+   public:
+    explicit MaybeAssociatedRemote(bool should_associate);
+    ~MaybeAssociatedRemote();
+
+    mojo::PendingReceiver<mojom::AgentSchedulingGroup>
+    BindNewPipeAndPassReceiver() WARN_UNUSED_RESULT;
+    mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+    BindNewEndpointAndPassReceiver() WARN_UNUSED_RESULT;
+
+   private:
+    absl::variant<mojo::Remote<mojom::AgentSchedulingGroup>,
+                  mojo::AssociatedRemote<mojom::AgentSchedulingGroup>>
+        remote_;
+  };
+
+  // Main constructor.
+  // |should_associate| determines whether the `AgentSchedulingGroupHost` and
+  // `AgentSchedulingGroup` mojos should be associated with the `Renderer` or
+  // not. If they are, message order will be preserved across the entire
+  // process. If not, ordering will only be preserved inside an
+  // `AgentSchedulingGroup`.
+  AgentSchedulingGroupHost(RenderProcessHost& process, bool should_associate);
+
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.
-  mojo::Receiver<mojom::AgentSchedulingGroupHost> receiver_{this};
+  MaybeAssociatedReceiver receiver_;
 
   // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
   // (renderer-side) `AgentSchedulingGroup`.
-  mojo::Remote<mojom::AgentSchedulingGroup> mojo_remote_;
+  MaybeAssociatedRemote mojo_remote_;
 };
 
 }  // namespace content

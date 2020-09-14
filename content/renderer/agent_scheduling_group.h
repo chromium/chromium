@@ -8,8 +8,11 @@
 #include "base/callback.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -27,6 +30,12 @@ class CONTENT_EXPORT AgentSchedulingGroup : public mojom::AgentSchedulingGroup {
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
       base::OnceCallback<void(const AgentSchedulingGroup*)>
           mojo_disconnect_handler);
+  AgentSchedulingGroup(
+      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+          host_remote,
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+      base::OnceCallback<void(const AgentSchedulingGroup*)>
+          mojo_disconnect_handler);
   ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
@@ -35,13 +44,55 @@ class CONTENT_EXPORT AgentSchedulingGroup : public mojom::AgentSchedulingGroup {
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&&) = delete;
 
  private:
+  // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
+  // classes that allow us to switch between using associated and non-associated
+  // mojo interfaces. This behavior is controlled by the
+  // `kMbiDetachAgentSchedulingGroupFromChannel` feature flag.
+  // Associated interfaces are associated with the IPC channel (transitively,
+  // via the `Renderer` interface), thus preserving cross-agent scheduling group
+  // message order. Non-associated interfaces are independent from each other
+  // and do not preserve message order between agent scheduling groups.
+  // TODO(crbug.com/1111231): Remove these once we can remove the flag.
+  class MaybeAssociatedReceiver {
+   public:
+    MaybeAssociatedReceiver(
+        AgentSchedulingGroup& impl,
+        mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
+        base::OnceClosure disconnect_handler);
+    MaybeAssociatedReceiver(
+        AgentSchedulingGroup& impl,
+        mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+        base::OnceClosure disconnect_handler);
+    ~MaybeAssociatedReceiver();
+
+   private:
+    absl::variant<mojo::Receiver<mojom::AgentSchedulingGroup>,
+                  mojo::AssociatedReceiver<mojom::AgentSchedulingGroup>>
+        receiver_;
+  };
+
+  class MaybeAssociatedRemote {
+   public:
+    explicit MaybeAssociatedRemote(
+        mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote);
+    explicit MaybeAssociatedRemote(
+        mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+            host_remote);
+    ~MaybeAssociatedRemote();
+
+   private:
+    absl::variant<mojo::Remote<mojom::AgentSchedulingGroupHost>,
+                  mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>>
+        remote_;
+  };
+
   // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
   // calls from the (browser-side) `AgentSchedulingGroupHost`.
-  mojo::Receiver<mojom::AgentSchedulingGroup> receiver_;
+  MaybeAssociatedReceiver receiver_;
 
   // Remote stub of mojom::AgentSchedulingGroupHost, used for sending calls to
   // the (browser-side) AgentSchedulingGroupHost.
-  mojo::Remote<mojom::AgentSchedulingGroupHost> host_remote_;
+  MaybeAssociatedRemote host_remote_;
 };
 
 }  // namespace content

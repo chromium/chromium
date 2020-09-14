@@ -260,10 +260,22 @@ interface Renderer {
 
   // Tells the renderer to create a new AgentSchedulingGroup, that will
   // communicate via the pending |agent_scheduling_group_host| and
-  // |agent_scheduling_group|.
+  // |agent_scheduling_group|. This will create "independent" interfaces that
+  // are not associated with the IPC channel, which will not guarantee any order
+  // across agent scheduling groups.
   CreateAgentSchedulingGroup(
     pending_remote<AgentSchedulingGroupHost> agent_scheduling_group_host,
     pending_receiver<AgentSchedulingGroup> agent_scheduling_group
+  );
+
+  // Tells the renderer to create a new AgentSchedulingGroup, that will
+  // communicate via the pending |agent_scheduling_group_host| and
+  // |agent_scheduling_group|. This will create channel-associated interfaces
+  // that will preserve message ordering across agent scheduling groups.
+  CreateAssociatedAgentSchedulingGroup(
+    pending_associated_remote<AgentSchedulingGroupHost>
+      agent_scheduling_group_host,
+    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group
   );
 
   // Tells the renderer to create a new RenderFrameProxy object with

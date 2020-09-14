@@ -1875,6 +1875,16 @@ void RenderThreadImpl::CreateAgentSchedulingGroup(
       remove_agent_scheduling_group_callback_));
 }
 
+void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
+    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+        agent_scheduling_group_host,
+    mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
+        agent_scheduling_group) {
+  agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
+      std::move(agent_scheduling_group_host), std::move(agent_scheduling_group),
+      remove_agent_scheduling_group_callback_));
+}
+
 void RenderThreadImpl::CreateFrameProxy(
     int32_t routing_id,
     int32_t render_view_routing_id,
