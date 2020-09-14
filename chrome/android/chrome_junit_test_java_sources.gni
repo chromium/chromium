@@ -184,6 +184,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderViewBinderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/suggestions/tail/AlignmentManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchServiceUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/page_info/PermissionParamsListBuilderUnitTest.java",
   "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksFaviconThrottleTest.java",
   "junit/src/org/chromium/chrome/browser/partnerbookmarks/PartnerBookmarksReaderTest.java",

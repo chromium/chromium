@@ -183,6 +183,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
 
     /**  Parameters to configure the view of a permission row. */
     public static class PermissionRowParams {
+        public CharSequence name;
+        public boolean allowed;
+        // TODO(crbug.com/1077766): Remove status text and associations after migration.
         public CharSequence status;
         public @DrawableRes int iconResource;
         public @ColorRes int iconTintColorResource;

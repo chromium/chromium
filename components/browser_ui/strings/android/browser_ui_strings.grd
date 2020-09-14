@@ -438,6 +438,33 @@
       <message name="IDS_PAGE_INFO_PERMISSIONS_TITLE" desc="Label used in the Page Info dialog above the permissions list.">
         Permissions
       </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_OS_WARNING" desc="Text to show an OS-level permission warning.">
+        <ph name="PERMISSION">%1$s<ex>Location</ex></ph> - <ph name="WARNING_MESSAGE">%2$s<ex>Turned off for this device</ex></ph>
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_1_ALLOWED" desc="Summary page info permissions string for one allowed permission.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> allowed
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_1_BLOCKED" desc="Summary page info permissions string for for one blocked permission.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> blocked
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_MIXED" desc="Summary page info permissions string for 2 permissions, with a mix of allowed/blocked.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> allowed, <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> blocked
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_ALLOWED" desc="Summary page info permissions string for 2 permissions, all allowed.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> and <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> allowed
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_2_BLOCKED" desc="Summary page info permissions string for 2 permissions, all blocked.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph> and <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> blocked
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_MORE_MIXED" desc="Summary page info permissions string for more than 2 permissions, with a mix of allowed/blocked.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> and <ph name="NUM_MORE">%3$s<ex>2</ex></ph> more
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_MORE_ALLOWED" desc="Summary page info permissions string for more than 2 permissions, all allowed.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> and <ph name="NUM_MORE">%3$s<ex>2</ex></ph> more allowed
+      </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_SUMMARY_MORE_BLOCKED" desc="Summary page info permissions string for more than 2 permissions, all blocked.">
+        <ph name="PERMISSION_1">%1$s<ex>Location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>Sound</ex></ph> and <ph name="NUM_MORE">%3$s<ex>2</ex></ph> more blocked
+      </message>
       <message name="IDS_PAGE_INFO_INSTANT_APP_BUTTON" desc="Text in the button that opens an Android Instant app that is associated with the website's URL.">
         Open Instant App
       </message>

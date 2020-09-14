@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.page_info;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertNotNull;
@@ -270,13 +273,28 @@ public class PageInfoViewTest {
     }
 
     /**
-     * Tests the permissions page of the new PageInfo UI.
+     * Tests that the permissions page of the new PageInfo UI is gone when there are no permissions
+     * set.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    public void testNoPermissionsSubpage() throws IOException {
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
+        View dialog = (View) getPageInfoView().getParent();
+        onView(withId(R.id.page_info_permissions_row))
+                .check(matches(withEffectiveVisibility(GONE)));
+    }
+
+    /**
+     * Tests the permissions page of the new PageInfo UI with permissions.
      */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowPermissionsSubpage() throws IOException {
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(mPath));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage");
