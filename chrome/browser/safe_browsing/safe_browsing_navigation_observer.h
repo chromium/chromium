@@ -136,8 +136,6 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
-  void DidActivatePortal(content::WebContents* predecessor_web_contents,
-                         base::TimeTicks activation_time) override;
 
   // content_settings::Observer overrides.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
