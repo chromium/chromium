@@ -762,10 +762,16 @@ const AXPosition AXPosition::AsValidDOMPosition(
   DCHECK(container_node) << "All anonymous layout objects and list markers "
                             "should have a containing block element.";
   DCHECK(!container->IsDetached());
+  if (!container_node || container->IsDetached())
+    return {};
+
   auto& ax_object_cache_impl = container->AXObjectCache();
   const AXObject* new_container =
       ax_object_cache_impl.GetOrCreate(container_node);
   DCHECK(new_container);
+  if (!new_container)
+    return {};
+
   AXPosition position(*new_container);
   if (new_container == container->ParentObjectIncludedInTree()) {
     position.text_offset_or_child_index_ = container->IndexInParent();
@@ -796,6 +802,9 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
   const Node* container_node = adjusted_position.container_object_->GetNode();
   DCHECK(container_node) << "AX positions that are valid DOM positions should "
                             "always be connected to their DOM nodes.";
+  if (!container_node)
+    return {};
+
   if (!adjusted_position.IsTextPosition()) {
     // AX positions that are unumbiguously at the start or end of a container,
     // should convert to the corresponding DOM positions at the start or end of
@@ -810,10 +819,16 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
       DCHECK(child_node) << "AX objects used in AX positions that are valid "
                             "DOM positions should always be connected to their "
                             "DOM nodes.";
+      if (!child_node)
+        return {};
+
       if (!child_node->previousSibling()) {
         // Creates a |PositionAnchorType::kBeforeChildren| position.
         container_node = child_node->parentNode();
         DCHECK(container_node);
+        if (!container_node)
+          return {};
+
         return PositionWithAffinity(
             Position::FirstPositionInNode(*container_node), affinity_);
       }
@@ -830,12 +845,17 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
       DCHECK(last_child_node) << "AX objects used in AX positions that are "
                                  "valid DOM positions should always be "
                                  "connected to their DOM nodes.";
+      if (!last_child_node)
+        return {};
 
       // Check if this is an "after children" position in the DOM as well.
       if (!last_child_node->nextSibling()) {
         // Creates a |PositionAnchorType::kAfterChildren| position.
         container_node = last_child_node->parentNode();
         DCHECK(container_node);
+        if (!container_node)
+          return {};
+
         return PositionWithAffinity(
             Position::LastPositionInNode(*container_node), affinity_);
       }
