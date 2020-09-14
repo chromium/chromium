@@ -95,6 +95,9 @@ void JNI_PaymentAppServiceBridge_Create(
 
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+  if (!render_frame_host)  // The frame is being unloaded.
+    return;
+
   std::string top_origin = ConvertJavaStringToUTF8(jtop_origin);
 
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =

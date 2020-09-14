@@ -124,7 +124,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
     jint reason) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-
+  DCHECK(web_contents);  // Verified in Java before invoking this function.
   content::PaymentAppProvider::GetInstance()->OnClosingOpenedWindow(
       web_contents,
       static_cast<payments::mojom::PaymentEventResponseType>(reason));

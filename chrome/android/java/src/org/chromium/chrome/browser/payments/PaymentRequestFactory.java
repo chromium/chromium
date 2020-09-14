@@ -132,6 +132,7 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
         @Override
         public String getInvalidSslCertificateErrorMessage() {
             WebContents webContents = getWebContents();
+            if (webContents == null || webContents.isDestroyed()) return null;
             if (!OriginSecurityChecker.isSchemeCryptographic(webContents.getLastCommittedUrl())) {
                 return null;
             }
@@ -146,8 +147,10 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
 
         @Override
         public boolean prefsCanMakePayment() {
-            return UserPrefs.get(Profile.fromWebContents(getWebContents()))
-                    .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
+            WebContents webContents = getWebContents();
+            return webContents != null && !webContents.isDestroyed()
+                    && UserPrefs.get(Profile.fromWebContents(webContents))
+                               .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
         }
 
         @Override
@@ -161,6 +164,7 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
             return activity != null ? mPackageManager.getTwaPackageName(activity) : null;
         }
 
+        @Nullable
         private WebContents getWebContents() {
             return WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         }
@@ -196,6 +200,8 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
         }
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+        if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
+
         return ComponentPaymentRequestImpl.createPaymentRequest(mRenderFrameHost,
                 /*isOffTheRecord=*/delegate.isOffTheRecord(webContents),
                 /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(),

@@ -141,10 +141,10 @@ public class ServiceWorkerPaymentAppBridge {
     /**
      * Notify closing the opened payment app window.
      *
-     * @param webContents The web contents in the opened window.
+     * @param webContents The web contents in the opened window. Can be null.
      */
-    public static void onClosingPaymentAppWindow(WebContents webContents) {
-        if (webContents.isDestroyed()) return;
+    public static void onClosingPaymentAppWindow(@Nullable WebContents webContents) {
+        if (webContents == null || webContents.isDestroyed()) return;
         ServiceWorkerPaymentAppBridgeJni.get().onClosingPaymentAppWindow(
                 webContents, PaymentEventResponseType.PAYMENT_HANDLER_WINDOW_CLOSING);
     }

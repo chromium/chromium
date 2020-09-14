@@ -177,9 +177,9 @@ public class ComponentPaymentRequestImpl {
         assert onClosedListener != null;
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
-        if (webContents == null) {
-            abortBeforeInstantiation(client, /*journeyLogger=*/null, ErrorStrings.NO_WEB_CONTENTS,
-                    AbortReason.INVALID_DATA_FROM_RENDERER);
+        if (webContents == null || webContents.isDestroyed()) {
+            abortBeforeInstantiation(/*client=*/null, /*journeyLogger=*/null,
+                    ErrorStrings.NO_WEB_CONTENTS, AbortReason.INVALID_DATA_FROM_RENDERER);
             return null;
         }
 
