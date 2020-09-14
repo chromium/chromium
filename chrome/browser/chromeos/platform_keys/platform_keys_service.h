@@ -67,8 +67,8 @@ using RemoveKeyCallback = base::OnceCallback<void(Status status)>;
 // If the list of available tokens could be successfully retrieved, |token_ids|
 // will contain the token ids. If an error occurs, |token_ids| will be nullptr.
 using GetTokensCallback =
-    base::Callback<void(std::unique_ptr<std::vector<TokenId>> token_ids,
-                        Status status)>;
+    base::OnceCallback<void(std::unique_ptr<std::vector<TokenId>> token_ids,
+                            Status status)>;
 
 // If token ids have been successfully retrieved, two cases are possible then:
 // If |token_ids| is not empty, |token_ids| has been filled with the identifiers
@@ -222,7 +222,7 @@ class PlatformKeysService : public KeyedService {
   // Gets the list of available tokens. |callback| will be invoked when the list
   // of available tokens is determined, possibly with an error status.
   // Calls |callback| on the UI thread.
-  virtual void GetTokens(const GetTokensCallback& callback) = 0;
+  virtual void GetTokens(GetTokensCallback callback) = 0;
 
   // Determines the token(s) on which the private key corresponding to
   // |public_key_spki_der| is stored. |callback| will be invoked when the token
@@ -347,7 +347,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void RemoveKey(TokenId token_id,
                  const std::string& public_key_spki_der,
                  RemoveKeyCallback callback) override;
-  void GetTokens(const GetTokensCallback& callback) override;
+  void GetTokens(GetTokensCallback callback) override;
   void GetKeyLocations(const std::string& public_key_spki_der,
                        const GetKeyLocationsCallback& callback) override;
   void SetAttributeForKey(TokenId token_id,

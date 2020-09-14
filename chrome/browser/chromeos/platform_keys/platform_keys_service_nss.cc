@@ -469,8 +469,7 @@ class RemoveKeyState : public NSSOperationState {
 
 class GetTokensState : public NSSOperationState {
  public:
-  explicit GetTokensState(ServiceWeakPtr weak_ptr,
-                          const GetTokensCallback& callback);
+  explicit GetTokensState(ServiceWeakPtr weak_ptr, GetTokensCallback callback);
   ~GetTokensState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
@@ -488,7 +487,7 @@ class GetTokensState : public NSSOperationState {
                 std::unique_ptr<std::vector<TokenId>> token_ids,
                 Status status) {
     auto bound_callback =
-        base::BindOnce(callback_, std::move(token_ids), status);
+        base::BindOnce(std::move(callback_), std::move(token_ids), status);
     origin_task_runner_->PostTask(
         from, base::BindOnce(&NSSOperationState::RunCallback,
                              std::move(bound_callback), service_weak_ptr_));
@@ -675,8 +674,8 @@ RemoveKeyState::RemoveKeyState(ServiceWeakPtr weak_ptr,
       callback_(std::move(callback)) {}
 
 GetTokensState::GetTokensState(ServiceWeakPtr weak_ptr,
-                               const GetTokensCallback& callback)
-    : NSSOperationState(weak_ptr), callback_(callback) {}
+                               GetTokensCallback callback)
+    : NSSOperationState(weak_ptr), callback_(std::move(callback)) {}
 
 GetKeyLocationsState::GetKeyLocationsState(
     ServiceWeakPtr weak_ptr,
@@ -1772,10 +1771,10 @@ void PlatformKeysServiceImpl::RemoveKey(TokenId token_id,
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::GetTokens(const GetTokensCallback& callback) {
+void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto state =
-      std::make_unique<GetTokensState>(weak_factory_.GetWeakPtr(), callback);
+  auto state = std::make_unique<GetTokensState>(weak_factory_.GetWeakPtr(),
+                                                std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

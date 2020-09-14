@@ -112,7 +112,7 @@ class MockPlatformKeysService : public PlatformKeysService {
                RemoveKeyCallback callback),
               (override));
 
-  MOCK_METHOD(void, GetTokens, (const GetTokensCallback& callback), (override));
+  MOCK_METHOD(void, GetTokens, (GetTokensCallback callback), (override));
 
   MOCK_METHOD(void,
               GetKeyLocations,

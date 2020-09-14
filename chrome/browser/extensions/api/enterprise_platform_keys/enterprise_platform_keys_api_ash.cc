@@ -255,7 +255,7 @@ EnterprisePlatformKeysInternalGetTokensFunction::Run() {
           browser_context());
   CHECK(platform_keys_service);
 
-  platform_keys_service->GetTokens(base::Bind(
+  platform_keys_service->GetTokens(base::BindOnce(
       &EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens, this));
   return RespondLater();
 }
