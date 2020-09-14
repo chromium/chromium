@@ -3621,9 +3621,16 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
             AXObjectCache().GetDocument().GetFrame()->View();
         IntRect root_frame_rect =
             root_view->FrameToScreen(root_view->FrameRect());
+
+        // Screen coordinates are in DIP without device scale factor applied.
+        // Accessibility expects device scale factor applied here which is
+        // unapplied at the destination AXTree.
+        float scale_factor =
+            view->GetPage()->GetChromeClient().WindowToViewportScalar(
+                layout_object->GetFrame(), 1.0f);
         out_bounds_in_container.SetLocation(
-            FloatPoint(frame_rect.X() - root_frame_rect.X(),
-                       frame_rect.Y() - root_frame_rect.Y()));
+            FloatPoint(scale_factor * (frame_rect.X() - root_frame_rect.X()),
+                       scale_factor * (frame_rect.Y() - root_frame_rect.Y())));
       }
     }
     return;
