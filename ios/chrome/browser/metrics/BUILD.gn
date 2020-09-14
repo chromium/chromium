@@ -80,6 +80,7 @@ source_set("metrics") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/whats_new:utils",
     "//ios/chrome/browser/variations",

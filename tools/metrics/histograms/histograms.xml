@@ -86208,6 +86208,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.Browser.MemoryFootprint.NumLiveOverscroll" units="tabs"
+    expires_after="M88">
+  <owner>rkgibson@google.com</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    Investigation into crbug.com/1102494 shows that OverscrollActionsController
+    is allocating thousands of objects in it's -initWithScrollView:. This is
+    likely because thousands of OverscrollActionsControllers are being
+    initialized. The theory is that there are users that have many many tabs,
+    causing many OverscrollActionsControllers to be allocated. This histogram
+    tests that theory by logging how many live OverscrollActionsControllers
+    there are. This is recorded every time histograms are uploaded.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
+    expires_after="M88">
+  <owner>rkgibson@google.com</owner>
+  <owner>eugenebut@chromium.org</owner>
+  <summary>
+    Investigation into crbug.com/1102494 shows that OverscrollActionsController
+    is allocating thousands of objects in it's -initWithScrollView:. This is
+    likely because thousands of OverscrollActionsControllers are being
+    initialized. The theory is that there are users that have many many tabs,
+    causing many OverscrollActionsControllers to be allocated. This histogram
+    tests that theory by logging how many open tabs there are. This is recorded
+    every time histograms are uploaded.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
     expires_after="2021-08-27">
   <owner>eugenebut@chromium.org</owner>

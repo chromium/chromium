@@ -74,6 +74,11 @@ const CFTimeInterval kMinimumPullDurationToTriggerActionInSeconds = 0.2;
 const CGFloat kSpringTightness = 2;
 const CGFloat kSpringDampiness = 0.5;
 
+// Investigation into crbug.com/1102494 shows that the most likely issue is
+// that there are many many instances of OverscrollActionsController live at
+// once. This tracks how many live instances there are.
+static int gInstanceCount = 0;
+
 // This holds the current state of the bounce back animation.
 typedef struct {
   CGFloat yInset;
@@ -277,6 +282,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
       << "exactly one of scrollView and webViewProxy must be non-nil";
 
   if ((self = [super init])) {
+    gInstanceCount++;
     _overscrollActionView =
         [[OverscrollActionsView alloc] initWithFrame:CGRectZero];
     _overscrollActionView.delegate = self;
@@ -320,6 +326,11 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 - (void)dealloc {
   self.overscrollActionView.delegate = nil;
   [self invalidate];
+  gInstanceCount--;
+}
+
++ (int)instanceCount {
+  return gInstanceCount;
 }
 
 - (void)scheduleInvalidate {

@@ -98,6 +98,11 @@ extern NSString* const kOverscrollActionsDidEnd;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Investigation into crbug.com/1102494 shows that the most likely issue is
+// that there are many many instances of OverscrollActionsController live at
+// once. This tracks how many live instances there are.
++ (int)instanceCount;
+
 // The scrollview the overscroll controller will control.
 @property(weak, nonatomic, readonly) UIScrollView* scrollView;
 // The current state of the overscroll controller.
