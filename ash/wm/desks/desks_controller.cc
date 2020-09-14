@@ -27,6 +27,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -544,6 +545,13 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   active_desk_->Activate(update_window_activation);
 
   MaybeUpdateShelfItems(old_active->windows(), active_desk_->windows());
+
+  // If in the middle of a window cycle gesture, reset the window cycle list
+  // contents so it contains the new active desk's windows.
+  if (features::IsAltTabLimitedToActiveDesk()) {
+    auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+    window_cycle_controller->MaybeResetCycleList();
+  }
 
   for (auto& observer : observers_)
     observer.OnDeskActivationChanged(active_desk_, old_active);

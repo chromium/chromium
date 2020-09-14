@@ -850,6 +850,20 @@ TEST_F(LimitedWindowCycleControllerTest, CycleShowsActiveDeskWindows) {
   EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
   cycle_controller->CompleteCycling();
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+
+  // Swap desks while cycling, contents should update.
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(2u, cycle_windows.size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win0.get()));
+  EXPECT_TRUE(base::Contains(cycle_windows, win1.get()));
+  ActivateDesk(desk_2);
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_EQ(1u, cycle_windows.size());
+  EXPECT_TRUE(base::Contains(cycle_windows, win2.get()));
+  cycle_controller->CompleteCycling();
+  EXPECT_EQ(win2.get(), window_util::GetActiveWindow());
 }
 
 class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {

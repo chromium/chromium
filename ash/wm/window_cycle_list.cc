@@ -296,6 +296,24 @@ class WindowCycleView : public views::WidgetDelegateView,
   WindowCycleView& operator=(const WindowCycleView&) = delete;
   ~WindowCycleView() override = default;
 
+  void UpdateWindows(const WindowCycleList::WindowList& windows) {
+    for (auto* window : windows) {
+      auto* view = mirror_container_->AddChildView(
+          std::make_unique<WindowCycleItemView>(window));
+      window_view_map_[window] = view;
+
+      no_previews_set_.insert(view);
+    }
+
+    // Resize the widget.
+    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
+    gfx::Rect widget_rect = root_window->GetBoundsInScreen();
+    widget_rect.ClampToCenteredSize(GetPreferredSize());
+    GetWidget()->SetBounds(widget_rect);
+
+    SetTargetWindow(windows[0]);
+  }
+
   void FadeInLayer() {
     DCHECK(GetWidget());
 
@@ -514,6 +532,25 @@ WindowCycleList::~WindowCycleList() {
   Shell::Get()->frame_throttling_controller()->EndThrottling();
 }
 
+void WindowCycleList::ReplaceWindows(const WindowList& windows) {
+  if (windows.empty()) {
+    Shell::Get()->window_cycle_controller()->CancelCycling();
+    return;
+  }
+
+  for (auto* existing_window : windows_)
+    RemoveWindow(existing_window);
+
+  current_index_ = 0;
+  windows_ = windows;
+
+  for (auto* new_window : windows_)
+    new_window->AddObserver(this);
+
+  if (ShouldShowUi() && cycle_view_)
+    cycle_view_->UpdateWindows(windows_);
+}
+
 void WindowCycleList::Step(int offset) {
   if (windows_.empty())
     return;
@@ -580,6 +617,29 @@ void WindowCycleList::DisableInitialDelayForTesting() {
 }
 
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {
+  RemoveWindow(window);
+
+  if (cycle_view_ && windows_.empty()) {
+    // This deletes us.
+    Shell::Get()->window_cycle_controller()->CancelCycling();
+  }
+}
+
+void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
+                                              uint32_t changed_metrics) {
+  if (cycle_ui_widget_ &&
+      display.id() ==
+          display::Screen::GetScreen()
+              ->GetDisplayNearestWindow(cycle_ui_widget_->GetNativeWindow())
+              .id() &&
+      (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION))) {
+    Shell::Get()->window_cycle_controller()->CancelCycling();
+    // |this| is deleted.
+    return;
+  }
+}
+
+void WindowCycleList::RemoveWindow(aura::Window* window) {
   window->RemoveObserver(this);
 
   WindowList::iterator i = std::find(windows_.begin(), windows_.end(), window);
@@ -596,25 +656,6 @@ void WindowCycleList::OnWindowDestroying(aura::Window* window) {
     auto* new_target_window =
         windows_.empty() ? nullptr : windows_[current_index_];
     cycle_view_->HandleWindowDestruction(window, new_target_window);
-    if (windows_.empty()) {
-      // This deletes us.
-      Shell::Get()->window_cycle_controller()->CancelCycling();
-      return;
-    }
-  }
-}
-
-void WindowCycleList::OnDisplayMetricsChanged(const display::Display& display,
-                                              uint32_t changed_metrics) {
-  if (cycle_ui_widget_ &&
-      display.id() ==
-          display::Screen::GetScreen()
-              ->GetDisplayNearestWindow(cycle_ui_widget_->GetNativeWindow())
-              .id() &&
-      (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION))) {
-    Shell::Get()->window_cycle_controller()->CancelCycling();
-    // |this| is deleted.
-    return;
   }
 }
 
