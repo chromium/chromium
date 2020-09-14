@@ -125,7 +125,6 @@ public class MainSettings extends PreferenceFragmentCompat
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSigninSupported()) {
             signinManager.addSignInStateObserver(this);
-            mSyncPromoPreference.registerForUpdates();
             mSignInPreference.registerForUpdates();
         }
         ProfileSyncService syncService = ProfileSyncService.get();
@@ -141,7 +140,6 @@ public class MainSettings extends PreferenceFragmentCompat
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSigninSupported()) {
             signinManager.removeSignInStateObserver(this);
-            mSyncPromoPreference.unregisterForUpdates();
             mSignInPreference.unregisterForUpdates();
         }
         ProfileSyncService syncService = ProfileSyncService.get();
