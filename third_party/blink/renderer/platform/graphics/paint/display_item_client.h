@@ -27,15 +27,12 @@ enum class RasterEffectOutset : uint8_t {
 // dereferenced unless we can make sure the client is still alive.
 class PLATFORM_EXPORT DisplayItemClient {
  public:
-  DisplayItemClient()
-      : paint_invalidation_reason_(PaintInvalidationReason::kJustCreated),
-        is_in_paint_controller_before_finish_cycle_(false) {
+  DisplayItemClient() {
 #if DCHECK_IS_ON()
     OnCreate();
 #endif
   }
   virtual ~DisplayItemClient() {
-    CHECK(!is_in_paint_controller_before_finish_cycle_);
 #if DCHECK_IS_ON()
     OnDestroy();
 #endif
@@ -109,12 +106,6 @@ class PLATFORM_EXPORT DisplayItemClient {
     return paint_invalidation_reason_ == PaintInvalidationReason::kNone;
   }
 
-  // This is used to track early deletion of DisplayItemClient after paint
-  // before PaintController::FinishCycle().
-  void SetIsInPaintControllerBeforeFinishCycle(bool b) const {
-    is_in_paint_controller_before_finish_cycle_ = b;
-  }
-
   String ToString() const;
 
  private:
@@ -131,8 +122,8 @@ class PLATFORM_EXPORT DisplayItemClient {
   void OnDestroy();
 #endif
 
-  mutable PaintInvalidationReason paint_invalidation_reason_ : 7;
-  mutable bool is_in_paint_controller_before_finish_cycle_ : 1;
+  mutable PaintInvalidationReason paint_invalidation_reason_ =
+      PaintInvalidationReason::kJustCreated;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayItemClient);
 };

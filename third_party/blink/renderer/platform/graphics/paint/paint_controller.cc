@@ -277,9 +277,6 @@ void PaintController::DidAppendItem(DisplayItem& display_item) {
   if (usage_ == kTransient)
     return;
 
-  if (!display_item.IsMovedFromCachedSubsequence())
-    display_item.Client().SetIsInPaintControllerBeforeFinishCycle(true);
-
 #if DCHECK_IS_ON()
   if (display_item.IsCacheable()) {
     auto index = FindItemFromIdIndexMap(display_item.GetId(),
@@ -330,12 +327,6 @@ DisplayItem& PaintController::MoveItemFromCurrentListToNewList(
 }
 
 void PaintController::DidAppendChunk() {
-  if (usage_ == kMultiplePaints &&
-      !new_paint_chunks_.LastChunk().is_moved_from_cached_subsequence) {
-    new_paint_chunks_.LastChunk()
-        .id.client.SetIsInPaintControllerBeforeFinishCycle(true);
-  }
-
 #if DCHECK_IS_ON()
   if (new_paint_chunks_.LastChunk().is_cacheable) {
     AddToIdIndexMap(new_paint_chunks_.LastChunk().id,
@@ -612,7 +603,6 @@ void PaintController::FinishCycle() {
     client.ClearPartialInvalidationVisualRect();
     if (client.IsCacheable())
       client.Validate();
-    client.SetIsInPaintControllerBeforeFinishCycle(false);
   }
   for (const auto& chunk : current_paint_artifact_->PaintChunks()) {
     const auto& client = chunk.id.client;
@@ -625,7 +615,6 @@ void PaintController::FinishCycle() {
     }
     if (client.IsCacheable())
       client.Validate();
-    client.SetIsInPaintControllerBeforeFinishCycle(false);
   }
 
   current_paint_artifact_->FinishCycle();
