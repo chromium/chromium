@@ -41,6 +41,8 @@
         android:id="@+id/account_picker_bottom_sheet_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginEnd="44dp"
         android:layout_marginBottom="16dp"
         android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
