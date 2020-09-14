@@ -788,30 +788,39 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
         editDialogTitle(cta, CUSTOMIZED_TITLE1);
-        collapseTargetString =
-                String.format("Collapse %s tab group with 3 tabs.", CUSTOMIZED_TITLE1);
+        collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
 
         // Group card content description should update with group title.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
-        expandTargetString = String.format("Expand %s tab group with 3 tabs.", CUSTOMIZED_TITLE1);
+        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 3 tabs.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
+
+        // Verify the TabSwitcher group card close button content description should update with
+        // group title.
+        View closeButton = firstItem.findViewById(R.id.action_button);
+        String closeButtonTargetString = "Close " + CUSTOMIZED_TITLE1 + " group with 3 tabs";
+        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
 
         // Back button content description should update with group count change.
         openDialogFromTabSwitcherAndVerify(cta, 3, CUSTOMIZED_TITLE1);
         closeFirstTabInDialog();
         verifyShowingDialog(cta, 2, CUSTOMIZED_TITLE1);
-        collapseTargetString =
-                String.format("Collapse %s tab group with 2 tabs.", CUSTOMIZED_TITLE1);
+        collapseTargetString = "Collapse " + CUSTOMIZED_TITLE1 + " tab group with 2 tabs.";
         verifyDialogBackButtonContentDescription(cta, collapseTargetString);
 
         // Group card content description should update with group count change.
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        expandTargetString = String.format("Expand %s tab group with 2 tabs.", CUSTOMIZED_TITLE1);
+        expandTargetString = "Expand " + CUSTOMIZED_TITLE1 + " tab group with 2 tabs.";
         assertEquals(expandTargetString, firstItem.getContentDescription());
+
+        // TabSwitcher group card Close button content description should update with group count
+        // change.
+        closeButtonTargetString = "Close " + CUSTOMIZED_TITLE1 + " group with 2 tabs";
+        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
 
         // Back button content description should restore when the group loses customized title.
         openDialogFromTabSwitcherAndVerify(cta, 2, CUSTOMIZED_TITLE1);
@@ -830,6 +839,11 @@ public class TabGridDialogTest {
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         assertEquals(null, firstItem.getContentDescription());
+
+        // TabSwitcher Group card Close button content description should restore when the group
+        // becomes a single tab.
+        closeButtonTargetString = "Close New tab tab";
+        assertEquals(closeButtonTargetString, closeButton.getContentDescription());
     }
 
     @Test

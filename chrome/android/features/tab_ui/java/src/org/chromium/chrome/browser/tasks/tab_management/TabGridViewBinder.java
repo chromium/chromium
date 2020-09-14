@@ -189,6 +189,7 @@ class TabGridViewBinder {
         } else if (CARD_ALPHA == propertyKey) {
             view.setAlpha(model.get(CARD_ALPHA));
         } else if (TabProperties.TITLE == propertyKey) {
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
             String title = model.get(TabProperties.TITLE);
             view.fastFindViewById(R.id.action_button)
                     .setContentDescription(view.getResources().getString(
@@ -232,6 +233,11 @@ class TabGridViewBinder {
             searchButton.setIcon(iconDrawableId, shouldTint);
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             view.setSelected(model.get(TabProperties.IS_SELECTED));
+        } else if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+                && TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
+            view.fastFindViewById(R.id.action_button)
+                    .setContentDescription(
+                            model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
         }
     }
 

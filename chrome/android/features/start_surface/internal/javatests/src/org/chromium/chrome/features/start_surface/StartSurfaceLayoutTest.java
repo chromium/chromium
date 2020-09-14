@@ -1450,6 +1450,58 @@ public class StartSurfaceLayoutTest {
         verifyTabModelTabCount(cta, 0, 0);
     }
 
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+        ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
+    public void testCloseButtonDescription() {
+        String expectedDescription = "Close New tab tab";
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+
+        // Test single tab.
+        onView(allOf(withParent(withId(R.id.content_view)), withId(R.id.action_button),
+                       withEffectiveVisibility(VISIBLE)))
+                .check(ViewContentDescription.havingDescription(expectedDescription));
+
+        // Create 2 tabs and merge them into one group.
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
+        List<Tab> tabGroup = new ArrayList<>(
+                Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
+        createTabGroup(cta, false, tabGroup);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Test group tab.
+        expectedDescription = "Close tab group with 2 tabs";
+        onView(allOf(withParent(withId(R.id.content_view)), withId(R.id.action_button),
+                       withEffectiveVisibility(VISIBLE)))
+                .check(ViewContentDescription.havingDescription(expectedDescription));
+    }
+
+    private static class ViewContentDescription implements ViewAssertion {
+        private String mExpectedDescription;
+
+        public static ViewContentDescription havingDescription(String description) {
+            return new ViewContentDescription(description);
+        }
+
+        public ViewContentDescription(String description) {
+            mExpectedDescription = description;
+        }
+
+        @Override
+        public void check(View view, NoMatchingViewException noMatchException) {
+            if (noMatchException != null) throw noMatchException;
+
+            assertEquals(mExpectedDescription, view.getContentDescription());
+        }
+    }
+
     private static class TabCountAssertion implements ViewAssertion {
         private int mExpectedCount;
 

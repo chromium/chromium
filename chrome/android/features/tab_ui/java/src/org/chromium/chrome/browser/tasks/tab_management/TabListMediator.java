@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
@@ -778,6 +779,10 @@ class TabListMediator {
                     if (index == TabModel.INVALID_TAB_INDEX) return;
                     mModel.get(index).model.set(TabProperties.TITLE, title);
                     updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
+                    if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                        updateCloseButtonDescriptionString(
+                                PseudoTab.fromTab(tab), mModel.get(index).model);
+                    }
                 }
 
                 @Override
@@ -1018,6 +1023,9 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
         updateDescriptionString(pseudoTab, mModel.get(index).model);
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
+        }
         if (isRealTab) {
             mModel.get(index).model.set(
                     TabProperties.URL_DOMAIN, getDomainForTab(pseudoTab.getTab()));
@@ -1276,6 +1284,9 @@ class TabListMediator {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
             tabInfo.set(TabProperties.TAB_CLOSED_LISTENER, isRealTab ? mTabClosedListener : null);
             updateDescriptionString(pseudoTab, tabInfo);
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                updateCloseButtonDescriptionString(pseudoTab, tabInfo);
+            }
         }
 
         if (index >= mModel.size()) {
@@ -1348,6 +1359,33 @@ class TabListMediator {
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
+    }
+
+    private void updateCloseButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
+        if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+        if (mActionsOnAllRelatedTabs) {
+            int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
+            if (numOfRelatedTabs > 1) {
+                String title = getLatestTitleForTab(pseudoTab);
+                title = title.equals(pseudoTab.getTitle(mTitleProvider)) ? "" : title;
+
+                if (title.isEmpty()) {
+                    model.set(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                            mContext.getString(R.string.accessibility_close_tab_group_button,
+                                    String.valueOf(numOfRelatedTabs)));
+                } else {
+                    model.set(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING,
+                            mContext.getString(
+                                    R.string.accessibility_close_tab_group_button_with_group_name,
+                                    title, String.valueOf(numOfRelatedTabs)));
+                }
+                return;
+            }
+        }
+
+        model.set(CLOSE_BUTTON_DESCRIPTION_STRING,
+                mContext.getString(
+                        R.string.accessibility_tabstrip_btn_close_tab, pseudoTab.getTitle()));
     }
 
     @VisibleForTesting
