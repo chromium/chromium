@@ -25,7 +25,7 @@
 <translation id="225614027745146050">مرحبًا</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى تهيئة الشبكة التي تستخدمها.</translation>
+<translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  شوهد متصلاً آخر مرة <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">منح إذن "أدوات تمكين الوصول" إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">متصل بـ <ph name="HOSTNAME" /></translation>
@@ -59,7 +59,7 @@
 <translation id="3905196214175737742">نطاق مالك المضيف غير صالح.</translation>
 <translation id="3931191050278863510">المضيف توقف.</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
-<translation id="405887016757208221">قد فشل الكمبيوتر البعيد في تهيئة الجلسة. وإذا استمرت المشكلة، يُرجى محاولة تهيئة المضيف مرة أخرى.</translation>
+<translation id="405887016757208221">تعذّر على الكمبيوتر البعيد إعداد الجلسة. وإذا استمرت المشكلة، يُرجى محاولة إعداد المضيف مرة أخرى.</translation>
 <translation id="4060747889721220580">تنزيل الملف</translation>
 <translation id="4126409073460786861">بعد اكتمال الإعداد، يمكنك إعادة تحميل هذه الصفحة وستتمكّن بعد ذلك من الوصول إلى جهاز الكمبيوتر من خلال اختيار جهازك وإدخال رقم التعريف الشخصي</translation>
 <translation id="4145029455188493639">تم تسجيل الدخول باسم <ph name="EMAIL_ADDRESS" />.</translation>
@@ -107,7 +107,7 @@
 <translation id="5841343754884244200">خيارات العرض</translation>
 <translation id="6033507038939587647">خيارات لوحة المفاتيح</translation>
 <translation id="6040143037577758943">إغلاق</translation>
-<translation id="6062854958530969723">فشلت تهيئة المضيف.</translation>
+<translation id="6062854958530969723">تعذّر إعداد المضيف.</translation>
 <translation id="6099500228377758828">‏خدمة سطح المكتب البعيد من Chrome</translation>
 <translation id="6122191549521593678">متصل</translation>
 <translation id="6178645564515549384">مضيف الرسائل الأصلي للمساعدة عن بُعد</translation>
@@ -162,7 +162,7 @@
 
 في حال سبق ووضعت علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />"، عليك إزالة العلامة ثم وضعها مرة أخرى.</translation>
 <translation id="8383794970363966105">‏لاستخدام التوافق مع نظام التشغيل Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
-<translation id="8386846956409881180">‏تمت تهيئة المضيف بواسطة بيانات اعتماد OAuth غير صالحة.</translation>
+<translation id="8386846956409881180">‏تم إعداد المضيف بواسطة بيانات اعتماد OAuth غير صالحة.</translation>
 <translation id="8397385476380433240">منح الإذن إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="8406498562923498210">‏عليك اختيار جلسة لإطلاقها ضمن بيئة "سطح المكتب البعيد من Chrome". (تجدر الإشارة إلى أنه يمكن ألا تدعم بعض أنواع الجلسات التشغيل ضمن "سطح المكتب البعيد من Chrome" وعلى وحدة التحكّم المحلية في آنٍ واحد.)</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
@@ -178,7 +178,7 @@
 <translation id="9126115402994542723">عدم المطالبة برقم التعريف الشخصي مرة أخرى عند الاتصال بهذا المضيف من هذا الجهاز.</translation>
 <translation id="916856682307586697">‏إطلاق جلسة Xsession التلقائية</translation>
 <translation id="9187628920394877737">منح إذن "تسجيل الشاشة" إلى <ph name="PRODUCT_NAME" /></translation>
-<translation id="9213184081240281106">تهيئة المضيف غير صالحة.</translation>
+<translation id="9213184081240281106">إعداد المضيف غير صالح.</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (آخر دخول على الإنترنت في تمام <ph name="DATE_OR_TIME" />)</translation>
