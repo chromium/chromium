@@ -179,4 +179,10 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         TextView urlBarTextView = (TextView) textView;
         return urlBarTextView.getText().toString();
     }
+
+    @Override
+    public String getTranslateInfoBarTargetLanguage(ITab tab) {
+        TabImpl tabImpl = (TabImpl) tab;
+        return tabImpl.getTranslateInfoBarTargetLanguageForTesting();
+    }
 }
