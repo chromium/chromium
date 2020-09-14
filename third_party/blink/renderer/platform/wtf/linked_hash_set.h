@@ -328,12 +328,13 @@ inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(
 
 template <typename T, typename TraitsArg, typename Allocator>
 inline void LinkedHashSet<T, TraitsArg, Allocator>::erase(const_iterator it) {
+  if (it == end())
+    return;
+
   // Forbid GC while modifying LinkedHashSet to avoid conflict between
   // |value_to_index_| and |list_|.
   auto scope = GCForbiddenScope();
 
-  if (it == end())
-    return;
   value_to_index_.erase(*it);
   list_.erase(it.iterator_);
 }
