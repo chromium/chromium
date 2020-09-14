@@ -171,6 +171,13 @@ const CGFloat kFeedCardIPhoneWidth = 375;
   } else {
     [self setHeaderForFeedVisible:visible animate:NO];
   }
+  [self.contentView layoutIfNeeded];
+  NamedGuide* menuButtonGuide =
+      [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
+                           view:self.menuButton];
+
+  menuButtonGuide.constrainedFrame =
+      [self.contentView convertRect:self.menuButton.frame toView:nil];
   self.discoverFeedVisible = [NSNumber numberWithBool:visible];
 }
 
