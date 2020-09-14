@@ -1843,7 +1843,7 @@
     },
     {
       name: "ThirdPartyOriginTrials",
-      status: "test",
+      status: "stable",
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
