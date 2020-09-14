@@ -5109,6 +5109,7 @@ void WebContentsImpl::OnThemeColorChanged(RenderViewHostImpl* source) {
     observers_.ForEachObserver([&](WebContentsObserver* observer) {
       observer->DidChangeThemeColor();
     });
+    last_sent_theme_color_ = source->theme_color();
   }
 }
 
