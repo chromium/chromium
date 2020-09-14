@@ -61,6 +61,9 @@ public interface OmniboxSuggestionsDropdown {
     /** Show (and properly size) the suggestions list. */
     void show();
 
+    /** Hide the suggestions list and release any cached resources. */
+    void hide();
+
     /**
      * Sets the embedder for the list view.
      * @param embedder the embedder of this list.

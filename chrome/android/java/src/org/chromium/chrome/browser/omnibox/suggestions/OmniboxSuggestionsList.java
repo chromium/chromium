@@ -88,6 +88,12 @@ public class OmniboxSuggestionsList
     }
 
     @Override
+    public void hide() {
+        if (getVisibility() != VISIBLE) return;
+        setVisibility(GONE);
+    }
+
+    @Override
     public void refreshPopupBackground(boolean isIncognito) {
         setBackground(mDropdownDelegate.getPopupBackground(isIncognito));
     }

@@ -45,7 +45,7 @@ class SuggestionListViewBinder {
                 if (dropdownView.getParent() == null) view.container.addView(dropdownView);
                 view.dropdown.show();
             } else {
-                dropdownView.setVisibility(View.GONE);
+                view.dropdown.hide();
                 UiUtils.removeViewFromParent(dropdownView);
                 view.container.setVisibility(View.INVISIBLE);
             }

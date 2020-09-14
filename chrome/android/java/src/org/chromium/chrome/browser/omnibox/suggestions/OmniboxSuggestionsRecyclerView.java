@@ -151,6 +151,13 @@ public class OmniboxSuggestionsRecyclerView
     }
 
     @Override
+    public void hide() {
+        if (getVisibility() != VISIBLE) return;
+        setVisibility(GONE);
+        getRecycledViewPool().clear();
+    }
+
+    @Override
     public void refreshPopupBackground(boolean isIncognito) {
         setBackground(mDropdownDelegate.getPopupBackground(isIncognito));
     }
