@@ -29,6 +29,7 @@
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/download_metadata.h"
+#include "components/download/public/background_service/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -193,7 +194,10 @@ class PluginVmInstallerViewBrowserTestWithFeatureEnabled
     : public PluginVmInstallerViewBrowserTest {
  public:
   PluginVmInstallerViewBrowserTestWithFeatureEnabled() {
-    feature_list_.InitAndEnableFeature(features::kPluginVm);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPluginVm, {}},
+         {download::kDownloadServiceFeature, {{"start_up_delay_ms", "0"}}}},
+        {});
   }
 
  private:
