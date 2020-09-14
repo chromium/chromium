@@ -108,18 +108,9 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
   }
 
   // OOM kills.
-  const char* sample_lines[] = {
-      "3,3429,812967386,-;Out of memory: Kill process 8291 (handle-watcher-) "
-      "score 674 or sacrifice child",
-      "3,3431,812981331,-;Out of memory: Kill process 8271 (.gms.persistent) "
-      "score 652 or sacrifice child",
-      "3,3433,812993014,-;Out of memory: Kill process 9210 (lowpool[11]) "
-      "score 653 or sacrifice child"
-  };
-
-  for (unsigned long i = 0; i < base::size(sample_lines); ++i) {
-    MemoryKillsMonitor::TryMatchOomKillLine(sample_lines[i]);
-  }
+  // Simulate getting 3 more oom kills.
+  g_memory_kills_monitor_unittest_instance->CheckOOMKillImpl(
+      g_memory_kills_monitor_unittest_instance->last_oom_kills_count_ + 3);
 
   oom_count_histogram = GetOOMKillsCountHistogram();
   ASSERT_TRUE(oom_count_histogram);
@@ -132,15 +123,6 @@ TEST_F(MemoryKillsMonitorTest, TestHistograms) {
     EXPECT_EQ(1, count_samples->GetCount(2));
     EXPECT_EQ(1, count_samples->GetCount(3));
   }
-
-  // Call StartMonitoring multiple times.
-  base::DelegateSimpleThread* thread1 = g_memory_kills_monitor_unittest_instance
-                                            ->non_joinable_worker_thread_.get();
-  EXPECT_NE(nullptr, thread1);
-  g_memory_kills_monitor_unittest_instance->StartMonitoring();
-  base::DelegateSimpleThread* thread2 = g_memory_kills_monitor_unittest_instance
-                                            ->non_joinable_worker_thread_.get();
-  EXPECT_EQ(thread1, thread2);
 
   lmk_count_histogram = GetLowMemoryKillsCountHistogram();
   ASSERT_TRUE(lmk_count_histogram);
