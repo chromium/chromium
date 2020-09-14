@@ -5,6 +5,7 @@
 # Note that this build file assumes rlz_use_chrome_net which is a condition in
 # the GYP file, but is always true for Chrome builds.
 
+import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 config("rlz_lib_config") {
@@ -32,7 +33,7 @@ source_set("rlz_utils") {
   deps = [ "//third_party/zlib" ]
 }
 
-if (!is_android) {
+if (enable_rlz_support) {
   source_set("rlz_lib_no_network") {
     sources = [
       "chromeos/lib/rlz_value_store_chromeos.cc",
