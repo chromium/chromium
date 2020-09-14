@@ -147457,6 +147457,19 @@
        ]
       },
       "images": {
+       "blocked-by-csp.html": [
+        "2416e5dfd089baba6716b4f2393e3dc86e242519",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/images/blocked-by-csp-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "space.html": [
         "fee115dfce6a0cf03069b6a24e8cb3149446a5ad",
         [
@@ -214410,6 +214423,10 @@
       "images": {
        "OWNERS": [
         "9b2e5be0a19c48f73b57fe0ad8bbeea81238a1d1",
+        []
+       ],
+       "blocked-by-csp-ref.html": [
+        "f37d8a3ec94834673a75749a28a42638f9c2a0db",
         []
        ],
        "space-ref.html": [
@@ -295754,6 +295771,78 @@
        {}
       ]
      ],
+     "parsing": {
+      "attribute.html": [
+       "a8fcfb24f5a9b1350adda6e59af814f1111325c1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "child.html": [
+       "510c45db867e978fc54d3b66f705d18acbf2aff8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "class.html": [
+       "00abcf838da18641d96c9381da77d38365329356",
+       [
+        null,
+        {}
+       ]
+      ],
+      "descendant.html": [
+       "5ff3a7bbfd973a88a30d1c804347403e1df57562",
+       [
+        null,
+        {}
+       ]
+      ],
+      "id.html": [
+       "2441c4217eb4b9ef1c8bde1aa5a96269b09b6304",
+       [
+        null,
+        {}
+       ]
+      ],
+      "is.html": [
+       "68236445c5f1e871cd4e0c500057b2ad11955b60",
+       [
+        null,
+        {}
+       ]
+      ],
+      "not.html": [
+       "3895683d1c84c1a39a38f2976f7b672a2b06e121",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sibling.html": [
+       "4f7a7a3fbcc14d20282a7eee5ab4f9dd768467bb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "universal.html": [
+       "e944a93f12c0eafc9c19a2e827d93eb4448984e0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "where.html": [
+       "3a90969570925fd85df07508a76baa02dc1ec5b6",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "pseudo-enabled-disabled.html": [
       "521767de3763130f22e066c01d38fb7e83cb3de9",
       [
