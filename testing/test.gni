@@ -249,6 +249,7 @@ template("test") {
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+    _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
 
     declare_args() {
       # Keep the unittest-as-xctest functionality defaulted to off until the
@@ -335,6 +336,7 @@ template("test") {
 
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
+      write_runtime_deps = _runtime_deps_file
     }
   } else if (is_chromeos && cros_board != "") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
