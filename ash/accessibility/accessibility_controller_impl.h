@@ -60,7 +60,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   enum FeatureType {
     kAutoclick = 0,
     kCaretHighlight,
-    KCursorHighlight,
+    kCursorHighlight,
     kDictation,
     kFloatingMenu,
     kFocusHighlight,
@@ -98,7 +98,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     // - there is an other feature, which conflicts with the current one.
     virtual void SetEnabled(bool enabled);
     bool enabled() const { return enabled_; }
-    bool IsVisibleInTray() const;
+    virtual bool IsVisibleInTray() const;
     bool IsEnterpriseIconVisible() const;
     const std::string& pref_name() const { return pref_name_; }
     const gfx::VectorIcon& icon() const;
@@ -154,6 +154,13 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     Dialog dialog_;
   };
 
+  // Switch access has custom tray visibility logic.
+  class SwitchAccessFeature : public Feature {
+   public:
+    using Feature::Feature;
+    bool IsVisibleInTray() const override;
+  };
+
   AccessibilityControllerImpl();
   ~AccessibilityControllerImpl() override;
 
@@ -189,9 +196,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void SetDisplayRotationAcceleratorDialogBeenAccepted();
   bool HasDisplayRotationAcceleratorDialogBeenAccepted() const;
 
-  bool IsAutoclickSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForAutoclick();
-
   void SetAutoclickEventType(AutoclickEventType event_type);
   AutoclickEventType GetAutoclickEventType();
   void SetAutoclickMenuPosition(FloatingMenuPosition position);
@@ -207,57 +211,17 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // virtual keyboard position).
   void UpdateAutoclickMenuBoundsIfNeeded();
 
-  bool IsCaretHighlightSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForCaretHighlight();
-
-  bool IsCursorHighlightSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForCursorHighlight();
-
-  bool IsDictationSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForDictation();
-
-  bool IsFocusHighlightSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForFocusHighlight();
-
-  bool IsFullScreenMagnifierSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForFullScreenMagnifier();
-
-  bool IsDockedMagnifierSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForDockedMagnifier();
-
-  bool IsHighContrastSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForHighContrast();
-
-  bool IsLargeCursorSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForLargeCursor();
-
-  bool IsMonoAudioSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForMonoAudio();
-
   void SetSpokenFeedbackEnabled(bool enabled,
                                 AccessibilityNotificationVisibility notify);
-  bool IsSpokenFeedbackSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForSpokenFeedback();
-
-  bool IsSelectToSpeakSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForSelectToSpeak();
 
   void RequestSelectToSpeakStateChange();
   SelectToSpeakState GetSelectToSpeakState() const;
 
-  bool IsStickyKeysSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForStickyKeys();
-
   // Switch access may be disabled in prefs but still running when the disable
   // dialog is displaying.
   bool IsSwitchAccessRunning() const;
-  bool IsSwitchAccessSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForSwitchAccess();
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
-
-  bool IsVirtualKeyboardSettingVisibleInTray();
-  bool IsEnterpriseIconVisibleForVirtualKeyboard();
 
   void SetTabletModeShelfNavigationButtonsEnabled(bool enabled);
   bool tablet_mode_shelf_navigation_buttons_enabled() const {
@@ -315,20 +279,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // Returns true if that accessibility feature pref |path| is being controlled
   // by a policy and false otherwise.
   bool IsEnterpriseIconVisibleInTrayMenu(const std::string& path);
-
-  // Returns true if at least one of the primary settings of the accessibility
-  // features is going to be visible in the accessibility tray menu.
-  bool IsPrimarySettingsViewVisibleInTray();
-
-  // Returns true if at least one of the additional settings of the
-  // accessibility features is going to be visible in the accessibility tray
-  // menu.
-  bool IsAdditionalSettingsViewVisibleInTray();
-
-  // Returns true if there exist one of the additional accessibility features
-  // and one of the primary accessibility features which are going to visible on
-  // accessibility tray menu.
-  bool IsAdditionalSettingsSeparatorVisibleInTray();
 
   // Starts point scanning, to select a point onscreen without using a mouse
   // (as used by Switch Access).
