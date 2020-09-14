@@ -131,6 +131,10 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         // has not yet started.
         if (ViewCompat.isAttachedToWindow(mDialogView)) {
             runExitAnimation();
+        } else {
+            // Cancel any existing animations as when the animation completes it may try to make use
+            // of objects that have been set to null.
+            mDialogContainer.animate().cancel();
         }
 
         if (mModelChangeProcessor != null) {

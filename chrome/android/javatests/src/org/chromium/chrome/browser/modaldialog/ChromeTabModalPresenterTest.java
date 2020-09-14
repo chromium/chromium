@@ -542,6 +542,23 @@ public class ChromeTabModalPresenterTest {
         Assert.assertEquals(BrowserControlsState.BOTH, getBrowserControlsConstraints());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
+    // Ensures an exception isn't thrown when a dialog is dismissed and the View is no longer
+    // attached to a Window. See https://crbug.com/1127254 for the specifics.
+    public void testDismissAfterRemovingView() throws Throwable {
+        PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mManager.showDialog(dialog1, ModalDialogType.TAB);
+            ViewGroup containerParent = (ViewGroup) mTabModalPresenter.getContainerParentForTest();
+            // This is a bit hacky and intended to correspond to a case where the hosting
+            // ViewGroup is no longer attached to a Window.
+            containerParent.removeAllViews();
+            mManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+        });
+    }
+
     @BrowserControlsState
     private int getBrowserControlsConstraints() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
