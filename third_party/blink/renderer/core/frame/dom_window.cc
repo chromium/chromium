@@ -446,10 +446,27 @@ void DOMWindow::InstallCoopAccessMonitor(
   monitor.report_type = report_type;
   monitor.accessing_main_frame = accessing_frame->GetFrameToken();
 
-  // TODO(arthursonzogni): Clean coop_access_monitor_ when a reporter is gone.
-  // Use mojo::Remote::set_disconnect_handler.
   monitor.reporter.Bind(std::move(pending_reporter));
+  // CoopAccessMonitor are cleared when their reporter are gone. This avoids
+  // accumulation. However it would have been interesting continuing reporting
+  // accesses past this point, at least for the ReportingObserver and Devtool.
+  // TODO(arthursonzogni): Consider observing |accessing_main_frame| deletion
+  // instead.
+  monitor.reporter.set_disconnect_handler(
+      WTF::Bind(&DOMWindow::DisconnectCoopAccessMonitor,
+                WrapWeakPersistent(this), monitor.accessing_main_frame));
 
+  // As long as RenderDocument isn't shipped, it can exist a CoopAccessMonitor
+  // for the same |accessing_main_frame|, because it might now host a different
+  // Document. Same is true for |this| DOMWindow, it might refer to a window
+  // hosting a different document.
+  // The new documents will still be part of a different virtual browsing
+  // context group, however the new COOPAccessMonitor might now contain updated
+  // URLs.
+  DisconnectCoopAccessMonitor(monitor.accessing_main_frame);
+
+  // Any attempts to access |this| window from |accessing_main_frame| will now
+  // trigger reports (network, ReportingObserver, Devtool).
   coop_access_monitor_.push_back(std::move(monitor));
 }
 
@@ -630,6 +647,17 @@ void DOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(input_capabilities_);
   visitor->Trace(location_);
   EventTargetWithInlineData::Trace(visitor);
+}
+
+void DOMWindow::DisconnectCoopAccessMonitor(
+    base::UnguessableToken accessing_main_frame) {
+  auto* it = coop_access_monitor_.begin();
+  while (it != coop_access_monitor_.end()) {
+    if (it->accessing_main_frame == accessing_main_frame)
+      it = coop_access_monitor_.erase(it);
+    else
+      ++it;
+  }
 }
 
 }  // namespace blink
