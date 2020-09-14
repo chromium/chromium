@@ -1712,25 +1712,23 @@ ci.dawn_builder(
     triggered_by = ["Dawn Mac x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_windows_builder(
     name = "Dawn Win10 x64 ASAN Release",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|ASAN",
         short_name = "x64",
     ),
-    os = os.WINDOWS_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_windows_builder(
     name = "Dawn Win10 x64 Builder",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Builder",
         short_name = "x64",
     ),
-    os = os.WINDOWS_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_windows_builder(
     name = "Dawn Win10 x64 DEPS Builder",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -1739,7 +1737,6 @@ ci.dawn_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.WINDOWS_ANY,
 )
 
 ci.dawn_builder(
@@ -1794,16 +1791,15 @@ ci.dawn_builder(
     triggered_by = ["Dawn Win10 x64 Builder"],
 )
 
-ci.dawn_builder(
+ci.dawn_windows_builder(
     name = "Dawn Win10 x86 Builder",
     console_view_entry = ci.console_view_entry(
         category = "ToT|Windows|Builder",
         short_name = "x86",
     ),
-    os = os.WINDOWS_ANY,
 )
 
-ci.dawn_builder(
+ci.dawn_windows_builder(
     name = "Dawn Win10 x86 DEPS Builder",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
@@ -1812,7 +1808,6 @@ ci.dawn_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
-    os = os.WINDOWS_ANY,
 )
 
 ci.dawn_builder(
@@ -3076,6 +3071,7 @@ ci.gpu_builder(
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
     os = os.WINDOWS_ANY,
+    pool = "luci.chromium.gpu.ci",
 )
 
 ci.gpu_builder(
@@ -3085,6 +3081,7 @@ ci.gpu_builder(
         category = "Windows",
     ),
     os = os.WINDOWS_ANY,
+    pool = "luci.chromium.gpu.ci",
     tree_closing = False,
 )
 
