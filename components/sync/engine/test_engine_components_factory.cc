@@ -9,10 +9,6 @@
 
 namespace syncer {
 
-TestEngineComponentsFactory::TestEngineComponentsFactory() {}
-
-TestEngineComponentsFactory::~TestEngineComponentsFactory() {}
-
 std::unique_ptr<SyncScheduler> TestEngineComponentsFactory::BuildScheduler(
     const std::string& name,
     SyncCycleContext* context,

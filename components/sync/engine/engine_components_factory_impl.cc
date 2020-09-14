@@ -18,8 +18,6 @@ EngineComponentsFactoryImpl::EngineComponentsFactoryImpl(
     const Switches& switches)
     : switches_(switches) {}
 
-EngineComponentsFactoryImpl::~EngineComponentsFactoryImpl() {}
-
 std::unique_ptr<SyncScheduler> EngineComponentsFactoryImpl::BuildScheduler(
     const std::string& name,
     SyncCycleContext* context,

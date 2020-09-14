@@ -9,15 +9,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/engine/engine_components_factory.h"
 
 namespace syncer {
 
 class TestEngineComponentsFactory : public EngineComponentsFactory {
  public:
-  TestEngineComponentsFactory();
-  ~TestEngineComponentsFactory() override;
+  TestEngineComponentsFactory() = default;
+  TestEngineComponentsFactory(const TestEngineComponentsFactory&) = delete;
+  TestEngineComponentsFactory& operator=(const TestEngineComponentsFactory&) =
+      delete;
+  ~TestEngineComponentsFactory() override = default;
 
   std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,
@@ -36,9 +38,6 @@ class TestEngineComponentsFactory : public EngineComponentsFactory {
       const std::string& store_birthday,
       const std::string& bag_of_chips,
       base::TimeDelta poll_interval) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestEngineComponentsFactory);
 };
 
 }  // namespace syncer

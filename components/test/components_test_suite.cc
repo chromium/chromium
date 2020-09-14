@@ -5,6 +5,7 @@
 #include "components/test/components_test_suite.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -49,6 +50,8 @@ const char* const kNonWildcardDomainNonPortSchemes[] = {
 class ComponentsTestSuite : public base::TestSuite {
  public:
   ComponentsTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+  ComponentsTestSuite(const ComponentsTestSuite&) = delete;
+  ComponentsTestSuite& operator=(const ComponentsTestSuite&) = delete;
 
  private:
   void Initialize() override {
@@ -111,14 +114,16 @@ class ComponentsTestSuite : public base::TestSuite {
 #if defined(OS_WIN)
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentsTestSuite);
 };
 
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
  public:
-  ComponentsUnitTestEventListener() {}
-  ~ComponentsUnitTestEventListener() override {}
+  ComponentsUnitTestEventListener() = default;
+  ComponentsUnitTestEventListener(const ComponentsUnitTestEventListener&) =
+      delete;
+  ComponentsUnitTestEventListener& operator=(
+      const ComponentsUnitTestEventListener&) = delete;
+  ~ComponentsUnitTestEventListener() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
 #if defined(OS_IOS)
@@ -142,8 +147,6 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 #else
   std::unique_ptr<content::TestContentClientInitializer> content_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentsUnitTestEventListener);
 };
 
 }  // namespace

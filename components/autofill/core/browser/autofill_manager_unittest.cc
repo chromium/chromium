@@ -112,17 +112,15 @@ class MockAutofillClient : public TestAutofillClient {
     ON_CALL(*this, GetChannel())
         .WillByDefault(Return(version_info::Channel::UNKNOWN));
   }
-
-  ~MockAutofillClient() override {}
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+  ~MockAutofillClient() override = default;
 
   MOCK_METHOD0(ShouldShowSigninPromo, bool());
   MOCK_CONST_METHOD0(GetChannel, version_info::Channel());
   MOCK_METHOD2(ConfirmSaveUpiIdLocally,
                void(const std::string& upi_id,
                     base::OnceCallback<void(bool user_decision)> callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
 };
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
@@ -130,6 +128,9 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
   MockAutofillDownloadManager(AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer)
       : TestAutofillDownloadManager(driver, observer) {}
+  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
+  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+      delete;
 
   MOCK_METHOD6(StartUploadRequest,
                bool(const FormStructure&,
@@ -138,9 +139,6 @@ class MockAutofillDownloadManager : public TestAutofillDownloadManager {
                     const std::string&,
                     bool,
                     PrefService*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillDownloadManager);
 };
 
 void ExpectFilledField(const char* expected_label,
@@ -305,7 +303,9 @@ void CheckThatNoFieldHasThisPossibleType(const FormStructure& form_structure,
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MockAutofillDriver() {}
+  MockAutofillDriver() = default;
+  MockAutofillDriver(const MockAutofillDriver&) = delete;
+  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
   // Mock methods to enable testability.
   MOCK_METHOD3(SendFormDataToRenderer,
@@ -315,16 +315,13 @@ class MockAutofillDriver : public TestAutofillDriver {
 
   MOCK_METHOD1(SendAutofillTypePredictionsToRenderer,
                void(const std::vector<FormStructure*>& forms));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillDriver);
 };
 
 }  // namespace
 
 class AutofillManagerTest : public testing::Test {
  public:
-  AutofillManagerTest() {}
+  AutofillManagerTest() = default;
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -5575,10 +5572,9 @@ class ProfileMatchingTypesTest
     : public AutofillManagerTest,
       public ::testing::WithParamInterface<
           std::tuple<ProfileMatchingTypesTestCase,
-                     int,    // AutofillDataModel::ValidityState
-                     bool,   // AutofillDataModel::ValidationSource
-                     bool>>  // kAutofillEnableSupportForMoreStructureInNames
-{
+                     int,      // AutofillDataModel::ValidityState
+                     bool,     // AutofillDataModel::ValidationSource
+                     bool>> {  // kAutofillEnableSupportForMoreStructureInNames
  protected:
   void SetUp() override {
     AutofillManagerTest::SetUp();
@@ -5763,7 +5759,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   for (auto type : expected_possible_types) {
     if (GroupTypeOfServerFieldType(type) != CREDIT_CARD) {
       for (auto& profile : profiles) {
-        ASSERT_TRUE(test_case.field_types.size() > 0);
+        ASSERT_GT(test_case.field_types.size(), 0U);
         if (type == UNKNOWN_TYPE) {
           // An UNKNOWN type is always UNVALIDATED
           validity_state = AutofillDataModel::UNVALIDATED;
@@ -6154,9 +6150,8 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
                       (possible_types.count(NAME_LAST_SECOND) ||
                        possible_types.count(NAME_LAST_FIRST) ||
                        possible_types.count(NAME_FULL)));
-        }
-        // Or even all three.
-        else if (StructuredNames() && possible_types.size() == 3) {
+        } else if (StructuredNames() && possible_types.size() == 3) {
+          // Or even all three.
           EXPECT_TRUE(possible_types.count(NAME_FULL) &&
                       possible_types.count(NAME_LAST) &&
                       (possible_types.count(NAME_LAST_SECOND) ||

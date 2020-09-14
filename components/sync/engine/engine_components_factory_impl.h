@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/sync/engine/engine_components_factory.h"
 
 namespace syncer {
@@ -19,7 +18,10 @@ namespace syncer {
 class EngineComponentsFactoryImpl : public EngineComponentsFactory {
  public:
   explicit EngineComponentsFactoryImpl(const Switches& switches);
-  ~EngineComponentsFactoryImpl() override;
+  EngineComponentsFactoryImpl(const EngineComponentsFactoryImpl&) = delete;
+  EngineComponentsFactoryImpl& operator=(const EngineComponentsFactoryImpl&) =
+      delete;
+  ~EngineComponentsFactoryImpl() override = default;
 
   std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,
@@ -41,7 +43,6 @@ class EngineComponentsFactoryImpl : public EngineComponentsFactory {
 
  private:
   const Switches switches_;
-  DISALLOW_COPY_AND_ASSIGN(EngineComponentsFactoryImpl);
 };
 
 }  // namespace syncer

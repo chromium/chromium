@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -129,8 +128,9 @@ class FakeImageDownloader {
   };
 
   // |downloads| must not be nullptr and must outlive this object.
-  explicit FakeImageDownloader(URLVector* downloads)
-      : downloads_(downloads), next_download_id_(1) {}
+  explicit FakeImageDownloader(URLVector* downloads) : downloads_(downloads) {}
+  FakeImageDownloader(const FakeImageDownloader&) = delete;
+  FakeImageDownloader& operator=(const FakeImageDownloader&) = delete;
 
   // Implementation of FaviconHalder::Delegate's DownloadImage(). If a given
   // URL is not known (i.e. not previously added via Add()), it produces 404s.
@@ -204,7 +204,7 @@ class FakeImageDownloader {
 
  private:
   URLVector* downloads_;
-  int next_download_id_;
+  int next_download_id_ = 1;
 
   // URL to disable automatic callbacks for.
   GURL manual_callback_url_;
@@ -214,8 +214,6 @@ class FakeImageDownloader {
 
   // Registered responses.
   std::map<GURL, Response> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeImageDownloader);
 };
 
 // Fake that implements the calls to FaviconHandler::Delegate's
@@ -229,6 +227,8 @@ class FakeManifestDownloader {
   // |downloads| must not be nullptr and must outlive this object.
   explicit FakeManifestDownloader(URLVector* downloads)
       : downloads_(downloads) {}
+  FakeManifestDownloader(const FakeManifestDownloader&) = delete;
+  FakeManifestDownloader& operator=(const FakeManifestDownloader&) = delete;
 
   // Implementation of FaviconHalder::Delegate's DownloadManifest(). If a given
   // URL is not known (i.e. not previously added via Add()), it produces 404s.
@@ -267,7 +267,7 @@ class FakeManifestDownloader {
 
   // Returns whether an ongoing download exists for a url previously selected
   // via SetRunCallbackManuallyForUrl().
-  bool HasPendingManualCallback() { return !manual_callbacks_.empty(); }
+  bool HasPendingManualCallback() const { return !manual_callbacks_.empty(); }
 
   // Triggers responses for downloads previously selected for manual triggering
   // via SetRunCallbackManuallyForUrl().
@@ -290,8 +290,6 @@ class FakeManifestDownloader {
 
   // Registered responses.
   std::map<GURL, Response> responses_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeManifestDownloader);
 };
 
 class MockDelegate : public FaviconHandler::Delegate {
@@ -352,6 +350,8 @@ class FakeFaviconService {
  public:
   FakeFaviconService()
       : manual_callback_task_runner_(new base::TestSimpleTaskRunner()) {}
+  FakeFaviconService(const FakeFaviconService&) = delete;
+  FakeFaviconService& operator=(const FakeFaviconService&) = delete;
 
   // Stores favicon with bitmap data in |results| at |page_url| and |icon_url|.
   void Store(const GURL& page_url,
@@ -452,8 +452,6 @@ class FakeFaviconService {
   // Callback for GetFaviconForPageOrIconURL() request for
   // |manual_callback_url_|.
   scoped_refptr<base::TestSimpleTaskRunner> manual_callback_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFaviconService);
 };
 
 // MockFaviconService subclass that delegates DB reads to FakeFaviconService.
@@ -470,13 +468,14 @@ class MockFaviconServiceWithFake : public MockFaviconService {
         .WillByDefault(
             Invoke(&fake_, &FakeFaviconService::UpdateFaviconMappingsAndFetch));
   }
+  MockFaviconServiceWithFake(const MockFaviconServiceWithFake&) = delete;
+  MockFaviconServiceWithFake& operator=(const MockFaviconServiceWithFake&) =
+      delete;
 
   FakeFaviconService* fake() { return &fake_; }
 
  private:
   FakeFaviconService fake_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFaviconServiceWithFake);
 };
 
 class FaviconHandlerTest : public testing::Test {
@@ -1822,6 +1821,13 @@ class FaviconHandlerManifestsEnabledTest : public FaviconHandlerTest {
 
   FaviconHandlerManifestsEnabledTest() = default;
 
+ public:
+  FaviconHandlerManifestsEnabledTest(
+      const FaviconHandlerManifestsEnabledTest&) = delete;
+  FaviconHandlerManifestsEnabledTest& operator=(
+      const FaviconHandlerManifestsEnabledTest&) = delete;
+
+ protected:
   // Exercises the handler for the simplest case where all types are kTouchIcon
   // and no sizes are provided, using a FaviconHandler of type TOUCH_LARGETS.
   std::unique_ptr<FaviconHandler> RunHandlerWithSimpleTouchIconCandidates(
@@ -1839,8 +1845,6 @@ class FaviconHandlerManifestsEnabledTest : public FaviconHandlerTest {
   // Avoid accidental use of kFavicon type, since Web Manifests are handled by
   // the FaviconHandler of type TOUCH_LARGEST.
   using FaviconHandlerTest::RunHandlerWithSimpleFaviconCandidates;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHandlerManifestsEnabledTest);
 };
 
 // Test that favicon mappings are deleted when a manifest previously cached in

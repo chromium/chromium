@@ -138,8 +138,10 @@ int GetAutofillEntryCount(const base::string16& name,
 
 class AutofillTableTest : public testing::Test {
  public:
-  AutofillTableTest() {}
-  ~AutofillTableTest() override {}
+  AutofillTableTest() = default;
+  AutofillTableTest(const AutofillTableTest&) = delete;
+  AutofillTableTest& operator=(const AutofillTableTest&) = delete;
+  ~AutofillTableTest() override = default;
 
  protected:
   void SetUp() override {
@@ -160,9 +162,6 @@ class AutofillTableTest : public testing::Test {
   std::unique_ptr<AutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillTableTest);
 };
 
 TEST_F(AutofillTableTest, Autofill) {
@@ -3236,8 +3235,10 @@ struct GetFormValuesTestCase {
 
 class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
  public:
-  GetFormValuesTest() {}
-  ~GetFormValuesTest() override {}
+  GetFormValuesTest() = default;
+  GetFormValuesTest(const GetFormValuesTest&) = delete;
+  GetFormValuesTest& operator=(const GetFormValuesTest&) = delete;
+  ~GetFormValuesTest() override = default;
 
  protected:
   void SetUp() override {
@@ -3257,9 +3258,6 @@ class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<AutofillTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetFormValuesTest);
 };
 
 TEST_P(GetFormValuesTest, GetFormValuesForElementName_SubstringMatchEnabled) {
@@ -3336,11 +3334,11 @@ class AutofillTableTestPerModelType
     : public AutofillTableTest,
       public testing::WithParamInterface<syncer::ModelType> {
  public:
-  AutofillTableTestPerModelType() {}
-  ~AutofillTableTestPerModelType() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillTableTestPerModelType);
+  AutofillTableTestPerModelType() = default;
+  AutofillTableTestPerModelType(const AutofillTableTestPerModelType&) = delete;
+  AutofillTableTestPerModelType& operator=(
+      const AutofillTableTestPerModelType&) = delete;
+  ~AutofillTableTestPerModelType() override = default;
 };
 
 TEST_P(AutofillTableTestPerModelType, AutofillNoMetadata) {

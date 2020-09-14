@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
@@ -57,6 +56,10 @@ class ProfileSyncComponentsFactoryImpl
       const scoped_refptr<password_manager::PasswordStore>&
           account_password_store,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
+  ProfileSyncComponentsFactoryImpl(const ProfileSyncComponentsFactoryImpl&) =
+      delete;
+  ProfileSyncComponentsFactoryImpl& operator=(
+      const ProfileSyncComponentsFactoryImpl&) = delete;
   ~ProfileSyncComponentsFactoryImpl() override;
 
   // Creates and returns enabled datatypes and their controllers.
@@ -124,8 +127,6 @@ class ProfileSyncComponentsFactoryImpl
   const scoped_refptr<password_manager::PasswordStore> profile_password_store_;
   const scoped_refptr<password_manager::PasswordStore> account_password_store_;
   sync_bookmarks::BookmarkSyncService* const bookmark_sync_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileSyncComponentsFactoryImpl);
 };
 
 }  // namespace browser_sync

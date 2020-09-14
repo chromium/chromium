@@ -127,6 +127,9 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
  public:
   explicit HistoryBackendTestDelegate(HistoryBackendTestBase* test)
       : test_(test) {}
+  HistoryBackendTestDelegate(const HistoryBackendTestDelegate&) = delete;
+  HistoryBackendTestDelegate& operator=(const HistoryBackendTestDelegate&) =
+      delete;
 
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
@@ -149,8 +152,6 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
  private:
   // Not owned by us.
   HistoryBackendTestBase* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendTestDelegate);
 };
 
 class HistoryBackendTestBase : public testing::Test {
@@ -159,10 +160,10 @@ class HistoryBackendTestBase : public testing::Test {
   typedef std::vector<URLRows> URLsModifiedList;
   typedef std::vector<std::pair<bool, bool>> URLsDeletedList;
 
-  HistoryBackendTestBase()
-      : loaded_(false) {}
-
-  ~HistoryBackendTestBase() override {}
+  HistoryBackendTestBase() = default;
+  HistoryBackendTestBase(const HistoryBackendTestBase&) = delete;
+  HistoryBackendTestBase& operator=(const HistoryBackendTestBase&) = delete;
+  ~HistoryBackendTestBase() override = default;
 
  protected:
   std::vector<GURL> favicon_changed_notifications_page_urls() const {
@@ -247,7 +248,7 @@ class HistoryBackendTestBase : public testing::Test {
   history::HistoryClientFakeBookmarks history_client_;
   scoped_refptr<HistoryBackend> backend_;  // Will be NULL on init failure.
   std::unique_ptr<InMemoryHistoryBackend> mem_backend_;
-  bool loaded_;
+  bool loaded_ = false;
 
  private:
   friend class HistoryBackendTestDelegate;
@@ -286,8 +287,6 @@ class HistoryBackendTestBase : public testing::Test {
   URLsDeletedList urls_deleted_notifications_;
 
   base::FilePath test_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendTestBase);
 };
 
 void HistoryBackendTestDelegate::SetInMemoryBackend(
@@ -334,8 +333,10 @@ void HistoryBackendTestDelegate::DBLoaded() {
 
 class HistoryBackendTest : public HistoryBackendTestBase {
  public:
-  HistoryBackendTest() {}
-  ~HistoryBackendTest() override {}
+  HistoryBackendTest() = default;
+  HistoryBackendTest(const HistoryBackendTest&) = delete;
+  HistoryBackendTest& operator=(const HistoryBackendTest&) = delete;
+  ~HistoryBackendTest() override = default;
 
  protected:
   favicon::FaviconDatabase* favicon_db() {
@@ -469,15 +470,15 @@ class HistoryBackendTest : public HistoryBackendTestBase {
            bitmap_data->size() == 1u &&
            *bitmap_data->front() == expected_data;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendTest);
 };
 
 class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
  public:
-  InMemoryHistoryBackendTest() {}
-  ~InMemoryHistoryBackendTest() override {}
+  InMemoryHistoryBackendTest() = default;
+  InMemoryHistoryBackendTest(const InMemoryHistoryBackendTest&) = delete;
+  InMemoryHistoryBackendTest& operator=(const InMemoryHistoryBackendTest&) =
+      delete;
+  ~InMemoryHistoryBackendTest() override = default;
 
  protected:
   void SimulateNotificationURLsDeleted(const URLRow* row1,
@@ -539,9 +540,6 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static const KeywordID kTestKeywordId;
   static const char kTestSearchTerm1[];
   static const char kTestSearchTerm2[];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InMemoryHistoryBackendTest);
 };
 
 const KeywordID InMemoryHistoryBackendTest::kTestKeywordId = 42;

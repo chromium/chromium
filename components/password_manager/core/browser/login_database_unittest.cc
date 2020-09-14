@@ -2318,6 +2318,13 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
  protected:
   LoginDatabaseUndecryptableLoginsTest() = default;
 
+ public:
+  LoginDatabaseUndecryptableLoginsTest(
+      const LoginDatabaseUndecryptableLoginsTest&) = delete;
+  LoginDatabaseUndecryptableLoginsTest& operator=(
+      const LoginDatabaseUndecryptableLoginsTest&) = delete;
+
+ protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
@@ -2346,8 +2353,6 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple testing_local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDatabaseUndecryptableLoginsTest);
 };
 
 PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(

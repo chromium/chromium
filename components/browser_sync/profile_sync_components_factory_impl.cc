@@ -134,7 +134,7 @@ ProfileSyncComponentsFactoryImpl::ProfileSyncComponentsFactoryImpl(
   DCHECK(sync_client_);
 }
 
-ProfileSyncComponentsFactoryImpl::~ProfileSyncComponentsFactoryImpl() {}
+ProfileSyncComponentsFactoryImpl::~ProfileSyncComponentsFactoryImpl() = default;
 
 syncer::DataTypeController::TypeVector
 ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(

@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -266,6 +265,10 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
     RequestThrottler::RegisterProfilePrefs(utils_.pref_service()->registry());
   }
 
+  RemoteSuggestionsProviderImplTest(const RemoteSuggestionsProviderImplTest&) =
+      delete;
+  RemoteSuggestionsProviderImplTest& operator=(
+      const RemoteSuggestionsProviderImplTest&) = delete;
   ~RemoteSuggestionsProviderImplTest() override {
     provider_.reset();
     observer_.reset();
@@ -609,8 +612,6 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   FakeDB<SnippetImageProto>* image_db_;
 
   scoped_refptr<TestMockTimeTaskRunner> timer_mock_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsProviderImplTest);
 };
 
 TEST_F(RemoteSuggestionsProviderImplTest, Full) {
