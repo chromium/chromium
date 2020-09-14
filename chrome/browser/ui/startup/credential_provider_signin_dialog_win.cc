@@ -317,7 +317,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   ui::ModalType GetDialogModalType() const override {
-    return ui::MODAL_TYPE_SYSTEM;
+    return ui::MODAL_TYPE_WINDOW;
   }
 
   base::string16 GetDialogTitle() const override { return base::string16(); }
