@@ -762,6 +762,7 @@ chrome_java_resources = [
   "java/res/drawable/tile_view_highlight_plain.xml",
   "java/res/drawable/tile_view_icon_background_modern.xml",
   "java/res/drawable/toolbar_shadow.xml",
+  "java/res/drawable/trending_up_black_24dp.xml",
   "java/res/drawable/visa_card.xml",
   "java/res/font/google_sans.xml",
   "java/res/font/google_sans_medium.xml",

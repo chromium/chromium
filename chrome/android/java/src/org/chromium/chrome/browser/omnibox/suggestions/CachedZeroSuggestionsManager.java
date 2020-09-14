@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX;
@@ -25,7 +26,9 @@ import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 
+import org.chromium.base.Function;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
@@ -34,7 +37,9 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * CachedZeroSuggestionsManager manages caching and restoring zero suggestions.
@@ -88,6 +93,9 @@ public class CachedZeroSuggestionsManager {
                     suggestion.getDescription());
             prefs.writeInt(KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getType());
+            prefs.writeStringSet(
+                    KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(numCachableSuggestions),
+                    convertSet(suggestion.getSubtypes(), v -> v.toString()));
             prefs.writeBoolean(
                     KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX.createKey(numCachableSuggestions),
                     suggestion.isSearchSuggestion());
@@ -163,9 +171,20 @@ public class CachedZeroSuggestionsManager {
             int groupId = prefs.readInt(
                     KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(i), OmniboxSuggestion.INVALID_GROUP);
 
-            OmniboxSuggestion suggestion = new OmniboxSuggestion(nativeType, isSearchType, 0, 0,
-                    displayText, classifications, description, classifications, null, null, url,
-                    GURL.emptyGURL(), null, isStarred, isDeletable, postContentType, postData,
+            Set<Integer> subtypes = null;
+            try {
+                Set<String> subtypeStrings = prefs.readStringSet(
+                        KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(i), null);
+                subtypes = convertSet(subtypeStrings, v -> Integer.parseInt(v));
+            } catch (NumberFormatException e) {
+                // Subtype information contains malformed elements, suggesting that the
+                // entire cache may be damaged.
+                return Collections.emptyList();
+            }
+
+            OmniboxSuggestion suggestion = new OmniboxSuggestion(nativeType, subtypes, isSearchType,
+                    0, 0, displayText, classifications, description, classifications, null, null,
+                    url, GURL.emptyGURL(), null, isStarred, isDeletable, postContentType, postData,
                     groupId, null, null, false);
             suggestions.add(suggestion);
         }
@@ -262,5 +281,24 @@ public class CachedZeroSuggestionsManager {
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_URL
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_TEXT
                 && suggestion.getType() != OmniboxSuggestionType.CLIPBOARD_IMAGE;
+    }
+
+    /**
+     * Convert the set of type T to set of type U objects.
+     *
+     * @param <T> Type of data held in the input set (inferred).
+     * @param <U> Type of data held in the output set (inferred).
+     * @param input Input set.
+     * @param converter Function object that converts type T into type U.
+     * @return A set of input objects converted to string.
+     */
+    private static <T, U> Set<U> convertSet(Set<T> input, Function<T, U> converter) {
+        if (input == null) return null;
+
+        Set<U> result = new ArraySet<>(input.size());
+        for (T item : input) {
+            result.add(converter.apply(item));
+        }
+        return result;
     }
 }

@@ -10,6 +10,7 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.ArraySet;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -29,6 +30,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Bridge to the native AutocompleteControllerAndroid.
@@ -327,14 +329,14 @@ public class AutocompleteController {
     }
 
     @CalledByNative
-    private static OmniboxSuggestion buildOmniboxSuggestion(int nativeType, boolean isSearchType,
-            int relevance, int transition, String contents, int[] contentClassificationOffsets,
-            int[] contentClassificationStyles, String description,
-            int[] descriptionClassificationOffsets, int[] descriptionClassificationStyles,
-            SuggestionAnswer answer, String fillIntoEdit, GURL url, GURL imageUrl,
-            String imageDominantColor, boolean isStarred, boolean isDeletable,
-            String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
-            byte[] clipboardImageData, boolean hasTabMatch) {
+    private static OmniboxSuggestion buildOmniboxSuggestion(int nativeType, int[] nativeSubtypes,
+            boolean isSearchType, int relevance, int transition, String contents,
+            int[] contentClassificationOffsets, int[] contentClassificationStyles,
+            String description, int[] descriptionClassificationOffsets,
+            int[] descriptionClassificationStyles, SuggestionAnswer answer, String fillIntoEdit,
+            GURL url, GURL imageUrl, String imageDominantColor, boolean isStarred,
+            boolean isDeletable, String postContentType, byte[] postData, int groupId,
+            List<QueryTile> tiles, byte[] clipboardImageData, boolean hasTabMatch) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -349,8 +351,13 @@ public class AutocompleteController {
                     descriptionClassificationOffsets[i], descriptionClassificationStyles[i]));
         }
 
-        return new OmniboxSuggestion(nativeType, isSearchType, relevance, transition, contents,
-                contentClassifications, description, descriptionClassifications, answer,
+        Set<Integer> subtypes = new ArraySet(nativeSubtypes.length);
+        for (int i = 0; i < nativeSubtypes.length; i++) {
+            subtypes.add(nativeSubtypes[i]);
+        }
+
+        return new OmniboxSuggestion(nativeType, subtypes, isSearchType, relevance, transition,
+                contents, contentClassifications, description, descriptionClassifications, answer,
                 fillIntoEdit, url, imageUrl, imageDominantColor, isStarred, isDeletable,
                 postContentType, postData, groupId, tiles, clipboardImageData, hasTabMatch);
     }

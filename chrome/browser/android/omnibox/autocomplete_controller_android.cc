@@ -541,7 +541,7 @@ void FormatMatchContentsForDisplay(
     for (size_t i = match.contents_class.size(); i > 0; --i) {
       ACMatchClassification classification(match.contents_class[i - 1]);
       int updated_offset = std::max(
-          0 , static_cast<int>(classification.offset) - match_offset_delta);
+          0, static_cast<int>(classification.offset) - match_offset_delta);
       out_classifications->insert(
           out_classifications->begin(),
           ACMatchClassification(updated_offset, classification.style));
@@ -618,10 +618,11 @@ AutocompleteControllerAndroid::BuildOmniboxSuggestion(
 
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
+  const std::vector<int> subtypes(match.subtypes.begin(), match.subtypes.end());
   return Java_AutocompleteController_buildOmniboxSuggestion(
-      env, match.type, AutocompleteMatch::IsSearchType(match.type),
-      match.relevance, match.transition, jcontents,
-      ToJavaIntArray(env, contents_class_offsets),
+      env, match.type, ToJavaIntArray(env, subtypes),
+      AutocompleteMatch::IsSearchType(match.type), match.relevance,
+      match.transition, jcontents, ToJavaIntArray(env, contents_class_offsets),
       ToJavaIntArray(env, contents_class_styles), description,
       ToJavaIntArray(env, description_class_offsets),
       ToJavaIntArray(env, description_class_styles), janswer, fill_into_edit,

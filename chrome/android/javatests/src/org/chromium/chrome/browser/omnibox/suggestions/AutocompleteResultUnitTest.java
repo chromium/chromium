@@ -42,6 +42,17 @@ public class AutocompleteResultUnitTest {
         List<OmniboxSuggestion> list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
+        // Element 0: 2 subtypes
+        list1.get(0).getSubtypes().add(10);
+        list1.get(0).getSubtypes().add(17);
+        list2.get(0).getSubtypes().add(10);
+        list2.get(0).getSubtypes().add(17);
+
+        // Element 1: 0 subtypes.
+        // Element 2: 1 subtype.
+        list1.get(2).getSubtypes().add(4);
+        list2.get(2).getSubtypes().add(4);
+
         SparseArray<GroupDetails> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupDetails> groupsDetails2 = new SparseArray<>();
 
@@ -195,6 +206,31 @@ public class AutocompleteResultUnitTest {
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1, res3);
         Assert.assertNotEquals(res2, res3);
+    }
+
+    @Test
+    @SmallTest
+    public void autocompleteResult_differentSubtypesAreNotEqual() {
+        List<OmniboxSuggestion> list1 = Arrays.asList(
+                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .addSubtype(10)
+                        .build(),
+                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .addSubtype(17)
+                        .build());
+
+        List<OmniboxSuggestion> list2 = Arrays.asList(
+                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .addSubtype(10)
+                        .build(),
+                OmniboxSuggestionBuilderForTest.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .addSubtype(4)
+                        .build());
+
+        AutocompleteResult res1 = new AutocompleteResult(list1, null);
+        AutocompleteResult res2 = new AutocompleteResult(list2, null);
+
+        Assert.assertNotEquals(res1, res2);
     }
 
     @Test

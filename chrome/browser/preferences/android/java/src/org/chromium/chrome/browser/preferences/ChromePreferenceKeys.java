@@ -737,6 +737,8 @@ public final class ChromePreferenceKeys {
             new KeyPrefix("zero_suggest_description*");
     public static final KeyPrefix KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX =
             new KeyPrefix("zero_suggest_native_type*");
+    public static final KeyPrefix KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX =
+            new KeyPrefix("zero_suggest_native_subtypes*");
     public static final KeyPrefix KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX =
             new KeyPrefix("zero_suggest_is_search*");
     public static final KeyPrefix KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX =

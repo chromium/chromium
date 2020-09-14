@@ -68585,6 +68585,7 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Voice"/>
   <int value="6" label="Calculator"/>
   <int value="7" label="Favicon"/>
+  <int value="8" label="Trends"/>
 </enum>
 
 <enum name="SuggestionPedalType">

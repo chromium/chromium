@@ -209,6 +209,7 @@ public class GrandfatheredChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX,
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_GROUP_ID_PREFIX,

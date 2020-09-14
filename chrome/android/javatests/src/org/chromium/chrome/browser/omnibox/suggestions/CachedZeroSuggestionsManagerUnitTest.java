@@ -27,6 +27,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CachedZeroSuggestionsManager}.
@@ -345,5 +346,79 @@ public class CachedZeroSuggestionsManagerUnitTest {
         CachedZeroSuggestionsManager.removeInvalidSuggestionsAndGroupsDetails(
                 dataWithInvalidItems.getSuggestionsList(), dataWithInvalidItems.getGroupsDetails());
         assertAutocompleteResultEquals(dataWithInvalidItems, dataExpected);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void cacheAndRestoreSuggestionSubtypes() {
+        List<OmniboxSuggestion> list = Arrays.asList(
+                createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
+                        .addSubtype(1)
+                        .addSubtype(4)
+                        .build(),
+                createSuggestionBuilder(2, OmniboxSuggestionType.HISTORY_URL)
+                        .addSubtype(17)
+                        .build(),
+                createSuggestionBuilder(3, OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY)
+                        .addSubtype(2)
+                        .addSubtype(10)
+                        .addSubtype(30)
+                        .build(),
+                createSuggestionBuilder(4, OmniboxSuggestionType.SEARCH_HISTORY).build());
+
+        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        CachedZeroSuggestionsManager.saveToCache(dataToCache);
+        AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
+        assertAutocompleteResultEquals(dataToCache, dataFromCache);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void rejectCacheIfSubtypesAreMalformed() {
+        List<OmniboxSuggestion> list = Arrays.asList(
+                createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
+                        .addSubtype(1)
+                        .addSubtype(4)
+                        .build(),
+                createSuggestionBuilder(2, OmniboxSuggestionType.HISTORY_URL)
+                        .addSubtype(17)
+                        .build());
+
+        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        CachedZeroSuggestionsManager.saveToCache(dataToCache);
+
+        // Insert garbage for the Suggestion Subtypes.
+        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final Set<String> garbageSubtypes = Set.of("invalid");
+        manager.writeStringSet(
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(1),
+                garbageSubtypes);
+
+        AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
+        assertAutocompleteResultEquals(new AutocompleteResult(null, null), dataFromCache);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void rejectCacheIfSubtypesIncludeNull() {
+        List<OmniboxSuggestion> list = Arrays.asList(
+                createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
+                        .addSubtype(1)
+                        .build());
+
+        AutocompleteResult dataToCache = new AutocompleteResult(list, null);
+        CachedZeroSuggestionsManager.saveToCache(dataToCache);
+
+        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        final Set<String> garbageSubtypes = Set.of("null");
+        manager.writeStringSet(
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(0),
+                garbageSubtypes);
+
+        AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
+        assertAutocompleteResultEquals(new AutocompleteResult(null, null), dataFromCache);
     }
 }

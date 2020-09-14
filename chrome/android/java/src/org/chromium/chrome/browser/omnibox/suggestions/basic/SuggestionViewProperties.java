@@ -23,7 +23,8 @@ import java.lang.annotation.RetentionPolicy;
 public class SuggestionViewProperties {
     @IntDef({SuggestionIcon.UNSET, SuggestionIcon.BOOKMARK, SuggestionIcon.HISTORY,
             SuggestionIcon.GLOBE, SuggestionIcon.MAGNIFIER, SuggestionIcon.VOICE,
-            SuggestionIcon.CALCULATOR, SuggestionIcon.FAVICON, SuggestionIcon.TOTAL_COUNT})
+            SuggestionIcon.CALCULATOR, SuggestionIcon.FAVICON, SuggestionIcon.TRENDS,
+            SuggestionIcon.TOTAL_COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SuggestionIcon {
         // This enum is used to back UMA histograms, and should therefore be treated as append-only.
@@ -36,7 +37,8 @@ public class SuggestionViewProperties {
         int VOICE = 5;
         int CALCULATOR = 6;
         int FAVICON = 7;
-        int TOTAL_COUNT = 8;
+        int TRENDS = 8;
+        int TOTAL_COUNT = 9;
     }
 
     /** The suggestion icon type shown. @see SuggestionIcon. Used for metric collection purposes. */
