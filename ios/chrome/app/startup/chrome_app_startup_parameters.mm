@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -168,13 +169,18 @@ enum SearchExtensionAction {
     MobileSessionStartAction action = START_ACTION_OTHER;
     if (gurl.SchemeIs(url::kHttpScheme)) {
       action = START_ACTION_OPEN_HTTP_FROM_OS;
+      base::RecordAction(
+          base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
     } else if (gurl.SchemeIs(url::kHttpsScheme)) {
       action = START_ACTION_OPEN_HTTPS_FROM_OS;
+      base::RecordAction(
+          base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
     } else {
       // Replace the scheme with https or http depending on whether the input
       // |url| scheme ends with an 's'.
       BOOL useHttps = gurl.scheme()[gurl.scheme().length() - 1] == 's';
       action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
+      base::RecordAction(base::UserMetricsAction("MobileFirstPartyViewIntent"));
 
       GURL::Replacements replace_scheme;
       if (useHttps)
