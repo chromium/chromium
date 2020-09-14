@@ -31,6 +31,12 @@ void FamilyUserMetricsProvider::ProvideCurrentSessionData(
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
           ->GetAccountManager(profile->GetPath().value());
+  DCHECK(account_manager);
+  if (!account_manager->IsInitialized()) {
+    base::UmaHistogramEnumeration(kFamilyUserLogSegmentHistogramName,
+                                  LogSegment::kOther);
+    return;
+  }
   // Calls the callback immediately and not asynchronously.
   account_manager->GetAccounts(base::BindOnce(
       &FamilyUserMetricsProvider::CheckSecondaryAccountsAndLogSegment,
