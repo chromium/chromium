@@ -83,19 +83,20 @@ import './element_in_dir/element_in_dir.js';
 
   def _write_v3_files_with_resources_to_src_dir(self):
     resources_path = os.path.join(
-        _HERE_DIR.replace('\\', '/'), 'gen', 'ui', 'webui', 'resources', 'js',
-        'fake_resource.m.js')
+        _HERE_DIR.replace('\\', '/'), 'gen', 'ui', 'webui', 'resources',
+        'preprocessed', 'js', 'fake_resource.js')
     os.makedirs(os.path.dirname(resources_path))
+
     self._tmp_dirs.append('gen')
     with open(resources_path, 'w') as tmp_file:
       tmp_file.write("alert('hello from shared resource');")
 
     self._write_file_to_src_dir('element.js', '''
-import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/js/fake_resource.js';
 alert('yay');
 ''')
     self._write_file_to_src_dir('element_in_dir/element_in_dir.js', '''
-import {foo} from 'chrome://resources/js/fake_resource.m.js';
+import {foo} from 'chrome://resources/js/fake_resource.js';
 import '../strings.m.js';
 alert('hello from element_in_dir');
 ''')
@@ -174,10 +175,8 @@ import './element_in_dir/element_in_dir.js';
     self.assertIn(os.path.normpath('element_in_dir/element_in_dir.js'),
                   depfile_d)
     self.assertIn(
-        os.path.normpath('../../../../ui/webui/resources/js/action_link.js'),
-        depfile_d)
-    self.assertIn(
-        os.path.normpath('../gen/ui/webui/resources/js/fake_resource.m.js'),
+        os.path.normpath(
+            '../gen/ui/webui/resources/preprocessed/js/fake_resource.js'),
         depfile_d)
 
   def testV3MultiBundleOptimize(self):
