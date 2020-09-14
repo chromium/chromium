@@ -17,11 +17,6 @@ namespace weblayer {
 
 WebLayerBrowserTest::WebLayerBrowserTest() {
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
-
-  // Disable auto reload since most browser tests do not expect error pages to
-  // reload automatically. Tests that want auto reload can explicitly enable
-  // this feature.
-  feature_list_.InitAndDisableFeature(features::kEnableAutoReload);
 }
 
 WebLayerBrowserTest::~WebLayerBrowserTest() = default;
@@ -29,6 +24,11 @@ WebLayerBrowserTest::~WebLayerBrowserTest() = default;
 void WebLayerBrowserTest::SetUp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(switches::kNoInitialNavigation);
+
+  // Disable auto reload since most browser tests do not expect error pages to
+  // reload automatically. Tests that want auto reload can explicitly append
+  // switches::kEnableAutoReload, which will override the disable here.
+  command_line->AppendSwitch(switches::kDisableAutoReload);
 
   if (start_in_incognito_mode_)
     command_line->AppendSwitch(switches::kStartInIncognito);

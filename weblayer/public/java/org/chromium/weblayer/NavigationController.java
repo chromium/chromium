@@ -65,7 +65,8 @@ public class NavigationController {
             } else {
                 mNavigationController.navigate2(uri.toString(),
                         params == null ? false : params.getShouldReplaceCurrentEntry(),
-                        params == null ? false : params.isIntentProcessingDisabled());
+                        params == null ? false : params.isIntentProcessingDisabled(),
+                        params == null ? false : params.isNetworkErrorAutoReloadDisabled());
             }
         } catch (RemoteException e) {
             throw new APICallException(e);

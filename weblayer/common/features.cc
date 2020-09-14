@@ -13,9 +13,5 @@ namespace features {
 const base::Feature kWebLayerSafeBrowsing{"WebLayerSafeBrowsing",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable auto-reload of error pages.
-const base::Feature kEnableAutoReload{"EnableAutoReload",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace weblayer

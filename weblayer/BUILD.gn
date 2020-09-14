@@ -206,6 +206,8 @@ source_set("weblayer_lib_base") {
     "browser/navigation_error_navigation_throttle.h",
     "browser/navigation_impl.cc",
     "browser/navigation_impl.h",
+    "browser/navigation_ui_data_impl.cc",
+    "browser/navigation_ui_data_impl.h",
     "browser/no_state_prefetch/prerender_link_manager_factory.cc",
     "browser/no_state_prefetch/prerender_link_manager_factory.h",
     "browser/no_state_prefetch/prerender_manager_delegate_impl.cc",

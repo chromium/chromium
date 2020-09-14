@@ -15,6 +15,7 @@ public class NavigateParams {
     private org.chromium.weblayer_private.interfaces.NavigateParams mInterfaceParams =
             new org.chromium.weblayer_private.interfaces.NavigateParams();
     private boolean mIntentProcessingDisabled;
+    private boolean mNetworkErrorAutoReloadDisabled;
 
     /**
      * A Builder class to help create NavigateParams.
@@ -64,6 +65,21 @@ public class NavigateParams {
             mParams.mIntentProcessingDisabled = true;
             return this;
         }
+
+        /**
+         * Disables auto-reload for this navigation if the network is down and comes back later.
+         *          Auto-reload is enabled by default.
+         *
+         * @since 86
+         */
+        @NonNull
+        public Builder disableNetworkErrorAutoReload() {
+            if (WebLayer.getSupportedMajorVersionInternal() < 86) {
+                throw new UnsupportedOperationException();
+            }
+            mParams.mNetworkErrorAutoReloadDisabled = true;
+            return this;
+        }
     }
 
     org.chromium.weblayer_private.interfaces.NavigateParams toInterfaceParams() {
@@ -82,7 +98,7 @@ public class NavigateParams {
     /**
      * Returns true if intent processing is disabled.
      *
-     * @return Whether intent process is disabled.
+     * @return Whether intent processing is disabled.
      *
      * @since 86
      */
@@ -91,5 +107,19 @@ public class NavigateParams {
             throw new UnsupportedOperationException();
         }
         return mIntentProcessingDisabled;
+    }
+
+    /**
+     * Returns true if auto reload for network errors is disabled.
+     *
+     * @return Whether auto reload for network errors is disabled.
+     *
+     * @since 86
+     */
+    public boolean isNetworkErrorAutoReloadDisabled() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 86) {
+            throw new UnsupportedOperationException();
+        }
+        return mNetworkErrorAutoReloadDisabled;
     }
 }

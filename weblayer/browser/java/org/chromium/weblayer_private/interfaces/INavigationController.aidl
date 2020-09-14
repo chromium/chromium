@@ -40,5 +40,6 @@ interface INavigationController {
   // Added in 86.
   void navigate2(in String uri,
                  in boolean shouldReplaceEntry,
-                 in boolean disableIntentProcessing) = 14;
+                 in boolean disableIntentProcessing,
+                 in boolean disableNetworkErrorAutoReload) = 14;
 }

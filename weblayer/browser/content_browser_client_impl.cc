@@ -80,6 +80,7 @@
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/navigation_error_navigation_throttle.h"
+#include "weblayer/browser/navigation_ui_data_impl.h"
 #include "weblayer/browser/no_state_prefetch/prerender_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
@@ -161,6 +162,16 @@ bool IsSafebrowsingSupported() {
   return true;
 #endif
   return false;
+}
+
+bool IsNetworkErrorAutoReloadEnabled() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kEnableAutoReload))
+    return true;
+  if (command_line.HasSwitch(switches::kDisableAutoReload))
+    return false;
+  return true;
 }
 
 bool IsInHostedApp(content::WebContents* web_contents) {
@@ -623,10 +634,16 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
 
   if (handle->IsInMainFrame()) {
-    auto auto_reload_throttle =
-        error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle);
-    if (auto_reload_throttle)
-      throttles.push_back(std::move(auto_reload_throttle));
+    NavigationUIDataImpl* navigation_ui_data =
+        static_cast<NavigationUIDataImpl*>(handle->GetNavigationUIData());
+    if ((!navigation_ui_data ||
+         !navigation_ui_data->disable_network_error_auto_reload()) &&
+        IsNetworkErrorAutoReloadEnabled()) {
+      auto auto_reload_throttle =
+          error_page::NetErrorAutoReloader::MaybeCreateThrottleFor(handle);
+      if (auto_reload_throttle)
+        throttles.push_back(std::move(auto_reload_throttle));
+    }
 
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only

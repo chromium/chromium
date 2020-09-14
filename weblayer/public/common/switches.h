@@ -8,6 +8,8 @@
 namespace weblayer {
 namespace switches {
 
+extern const char kDisableAutoReload[];
+extern const char kEnableAutoReload[];
 extern const char kWebLayerUserDataDir[];
 
 }  // namespace switches
