@@ -184505,7 +184505,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TileManager.ExceededMemoryBudget" enum="TileMemoryBudget"
-    expires_after="M87">
+    expires_after="M90">
   <owner>pdr@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
