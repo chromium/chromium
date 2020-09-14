@@ -35,6 +35,7 @@
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
@@ -550,6 +551,9 @@ TEST_F(FrameFetchContextModifyRequestTest, SendUpgradeInsecureRequestHeader) {
 }
 
 TEST_F(FrameFetchContextModifyRequestTest, SendRequiredCSPHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kOutOfBlinkCSPEE);
+
   struct TestCase {
     const char* to_request;
     mojom::RequestContextFrameType frame_type;

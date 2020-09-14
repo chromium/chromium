@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -685,7 +687,12 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
   }
 }
 
+// TODO(antoniosartori): Remove this test and the function
+// ContentSecurityPolicy::Subsumes when we remove the feature flag.
 TEST_F(ContentSecurityPolicyTest, Subsumes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kOutOfBlinkCSPEE);
+
   auto* other = MakeGarbageCollected<ContentSecurityPolicy>();
   EXPECT_TRUE(csp->Subsumes(*other));
   EXPECT_TRUE(other->Subsumes(*csp));
@@ -905,7 +912,12 @@ TEST_F(ContentSecurityPolicyTest, CSPBypassDisabledWhenSchemeIsPrivileged) {
   SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLs("https");
 }
 
+// TODO(antoniosartori): Remove this test and the function
+// ContentSecurityPolicy::IsValidCSPAttr when we remove the feature flag.
 TEST_F(ContentSecurityPolicyTest, IsValidCSPAttrTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(network::features::kOutOfBlinkCSPEE);
+
   // Empty string is invalid
   EXPECT_FALSE(ContentSecurityPolicy::IsValidCSPAttr("", ""));
 

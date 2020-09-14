@@ -704,7 +704,7 @@
   {
     "prefix": "out-of-blink-cspee",
     "bases": [ "external/wpt/content-security-policy/embedded-enforcement" ],
-    "args": [ "--enable-features=OutOfBlinkCSPEE" ]
+    "args": [ "--disable-features=OutOfBlinkCSPEE" ]
   },
   {
     "prefix": "subresource-web-bundles-disabled",

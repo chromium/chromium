@@ -239,7 +239,7 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 
 // Enables the Content Security Policy Embedded Enforcement check out of blink
 const base::Feature kOutOfBlinkCSPEE{"OutOfBlinkCSPEE",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kWebSocketReassembleShortMessages{
     "WebSocketReassembleShortMessages", base::FEATURE_ENABLED_BY_DEFAULT};

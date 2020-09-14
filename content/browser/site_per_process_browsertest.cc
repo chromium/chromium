@@ -4164,7 +4164,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessEmbedderCSPEnforcementBrowserTest,
                            csp_values[i].c_str())));
 
     NavigateFrameToURL(child, urls[i]);
-    EXPECT_EQ(csp_values[i], child->frame_owner_properties().required_csp);
+    if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCSPEE)) {
+      EXPECT_EQ(csp_values[i], child->frame_owner_properties().required_csp);
+    } else {
+      EXPECT_EQ(csp_values[i], child->csp_attribute()->header->header_value);
+    }
     // TODO(amalika): add checks that the CSP replication takes effect
 
     const url::Origin child_origin =
