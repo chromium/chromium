@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 
 // Test implementation of ash's SessionController interface.
@@ -43,6 +44,8 @@ class TestSessionController : public ash::SessionController {
   int set_user_session_order_count() const {
     return set_user_session_order_count_;
   }
+
+  void SetScreenLocked(bool locked);
 
   // ash::SessionController:
   void SetClient(ash::SessionControllerClient* client) override;
@@ -82,6 +85,8 @@ class TestSessionController : public ash::SessionController {
   int update_user_session_count_ = 0;
   int lock_animation_complete_call_count_ = 0;
   int set_user_session_order_count_ = 0;
+  bool is_screen_locked_ = false;
+  base::ObserverList<ash::SessionObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSessionController);
 };

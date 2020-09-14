@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -43,7 +44,6 @@
 #include "crypto/random.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/idle/idle.h"
 #include "url/gurl.h"
 
 namespace {
@@ -230,6 +230,14 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
 
+#if defined(OS_CHROMEOS)
+  auto* session_controller = ash::SessionController::Get();
+  if (session_controller) {
+    is_screen_locked_ = session_controller->IsScreenLocked();
+    session_controller->AddObserver(this);
+  }
+#endif  // OS_CHROMEOS
+
   nearby_process_observer_.Add(process_manager_);
 
   settings_.AddSettingsObserver(settings_receiver_.BindNewPipeAndPassRemote());
@@ -281,6 +289,12 @@ void NearbySharingServiceImpl::Shutdown() {
 
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
+
+#if defined(OS_CHROMEOS)
+  auto* session_controller = ash::SessionController::Get();
+  if (session_controller)
+    session_controller->RemoveObserver(this);
+#endif  // OS_CHROMEOS
 
   foreground_receive_callbacks_.Clear();
   background_receive_callbacks_.Clear();
@@ -820,6 +834,13 @@ void NearbySharingServiceImpl::OnEndpointLost(const std::string& endpoint_id) {
   NS_LOG(VERBOSE) << __func__ << ": Reported onShareTargetLost";
 }
 
+void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
+  NS_LOG(VERBOSE) << __func__ << ": Screen lock state changed. (" << locked
+                  << ")";
+  is_screen_locked_ = locked;
+  InvalidateSurfaceState();
+}
+
 void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (enabled) {
@@ -1120,7 +1141,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   }
 
   // Screen is off. Do no work.
-  if (ui::CheckIdleStateIsLocked()) {
+  if (is_screen_locked_) {
     StopAdvertising();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping advertising because the screen is locked.";
@@ -1289,7 +1310,7 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
   }
 
   // Screen is off. Do no work.
-  if (ui::CheckIdleStateIsLocked()) {
+  if (is_screen_locked_) {
     StopScanning();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping discovery because the screen is locked.";
@@ -1346,7 +1367,7 @@ void NearbySharingServiceImpl::StartScanning() {
     return;
   }
 
-  if (ui::CheckIdleStateIsLocked()) {
+  if (is_screen_locked_) {
     NS_LOG(VERBOSE) << __func__
                     << ": Failed to scan because the user's screen is locked.";
     return;

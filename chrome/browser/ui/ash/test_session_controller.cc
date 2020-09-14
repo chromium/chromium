@@ -6,8 +6,16 @@
 
 #include <utility>
 
+#include "ash/public/cpp/session/session_observer.h"
+
 TestSessionController::TestSessionController() = default;
 TestSessionController::~TestSessionController() = default;
+
+void TestSessionController::SetScreenLocked(bool locked) {
+  is_screen_locked_ = locked;
+  for (auto& observer : observers_)
+    observer.OnLockStateChanged(locked);
+}
 
 void TestSessionController::SetClient(ash::SessionControllerClient* client) {}
 
@@ -77,11 +85,14 @@ void TestSessionController::RemoveSessionActivationObserverForAccountId(
     const AccountId& account_id,
     ash::SessionActivationObserver* observer) {}
 
-void TestSessionController::AddObserver(ash::SessionObserver* observer) {}
+void TestSessionController::AddObserver(ash::SessionObserver* observer) {
+  observers_.AddObserver(observer);
+}
 
-void TestSessionController::RemoveObserver(ash::SessionObserver* observer) {}
+void TestSessionController::RemoveObserver(ash::SessionObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 bool TestSessionController::IsScreenLocked() const {
-  NOTIMPLEMENTED();
-  return false;
+  return is_screen_locked_;
 }

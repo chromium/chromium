@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -57,7 +58,8 @@ class NearbySharingServiceImpl
       public NearbyProcessManager::Observer,
       public device::BluetoothAdapter::Observer,
       public NearbyConnectionsManager::IncomingConnectionListener,
-      public NearbyConnectionsManager::DiscoveryListener {
+      public NearbyConnectionsManager::DiscoveryListener,
+      public ash::SessionObserver {
  public:
   explicit NearbySharingServiceImpl(
       PrefService* prefs,
@@ -132,6 +134,9 @@ class NearbySharingServiceImpl
   void OnEndpointLost(const std::string& endpoint_id) override;
 
  private:
+  // ash::SessionObserver:
+  void OnLockStateChanged(bool locked) override;
+
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
   bool IsVisibleInBackground(Visibility visibility);
@@ -316,6 +321,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
   NearbyShareSettings settings_;
   NearbyFileHandler file_handler_;
+  bool is_screen_locked_ = false;
 
   // A list of service observers.
   base::ObserverList<NearbySharingService::Observer> observers_;
