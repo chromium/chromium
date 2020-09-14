@@ -351,12 +351,11 @@ PLATFORM_EXPORT v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
     v8::Local<v8::Object> creation_context,
     const WrapperTypeInfo* wrapper_type_info);
 
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const WrapperTypeInfo* wrapper_type_info,
-                      V8ReturnValue::InterfaceObject) {
+inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
+                             const WrapperTypeInfo* wrapper_type_info,
+                             V8ReturnValue::InterfaceObject) {
   info.GetReturnValue().Set(GetInterfaceObjectExposedOnGlobal(
-      info.GetIsolate(), info.This(), wrapper_type_info));
+      info.GetIsolate(), info.Holder(), wrapper_type_info));
 }
 
 // Nullable types

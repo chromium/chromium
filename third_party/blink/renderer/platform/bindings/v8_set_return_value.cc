@@ -49,11 +49,11 @@ v8::Local<v8::Value> GetInterfaceObjectExposedOnGlobal(
     const WrapperTypeInfo* wrapper_type_info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
       isolate, "Blink_GetInterfaceObjectExposedOnGlobal");
-  V8PerContextData* per_context_data =
-      V8PerContextData::From(creation_context->CreationContext());
-  if (!per_context_data)
-    return v8::Local<v8::Value>();
-  return per_context_data->ConstructorForType(wrapper_type_info);
+  ScriptState* script_state =
+      ScriptState::From(creation_context->CreationContext());
+  if (!script_state->ContextIsValid())
+    return v8::Undefined(isolate);
+  return script_state->PerContextData()->ConstructorForType(wrapper_type_info);
 }
 
 }  // namespace bindings

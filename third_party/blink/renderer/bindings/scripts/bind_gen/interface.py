@@ -4512,7 +4512,7 @@ def _make_exposed_construct_registration_table(table_name,
                    "V8DOMConfiguration::kOnInstance, "
                    "V8DOMConfiguration::kDoNotCheckHolder, "
                    "V8DOMConfiguration::kHasNoSideEffect, "
-                   "V8DOMConfiguration::kAlwaysCallGetter, "
+                   "V8DOMConfiguration::kReplaceWithDataProperty, "
                    "{world}"
                    "}}, ")
         text = _format(
