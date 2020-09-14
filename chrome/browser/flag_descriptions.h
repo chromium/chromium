@@ -1290,6 +1290,9 @@ extern const char kSuggestedContentToggleDescription[];
 extern const char kSuggestionsWithSubStringMatchName[];
 extern const char kSuggestionsWithSubStringMatchDescription[];
 
+extern const char kSyncAutofillWalletOfferDataName[];
+extern const char kSyncAutofillWalletOfferDataDescription[];
+
 extern const char kSyncDeviceInfoInTransportModeName[];
 extern const char kSyncDeviceInfoInTransportModeDescription[];
 

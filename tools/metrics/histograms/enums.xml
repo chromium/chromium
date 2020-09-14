@@ -40965,6 +40965,7 @@ from previous Chrome versions.
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644721118"
       label="disable-experimental-accessibility-chromevox-search-menus"/>
+  <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1634878515" label="ChromeHomeModernLayout:enabled"/>
@@ -42805,6 +42806,7 @@ from previous Chrome versions.
   <int value="266702296" label="disable-plugin-power-saver"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
+  <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
   <int value="272108480" label="SmbFs:enabled"/>
   <int value="272631627" label="BookmarkAppsMac:enabled"/>

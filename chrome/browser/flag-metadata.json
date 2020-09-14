@@ -4294,6 +4294,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "sync-autofill-wallet-offer-data",
+    "owners": ["siyua", "treib"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "sync-setup-friendly-settings",
     "owners": [ "msalama" ],
     "expiry_milestone": 84

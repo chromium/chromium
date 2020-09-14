@@ -2247,6 +2247,11 @@ const char kSuggestionsWithSubStringMatchDescription[] =
     "Match Autofill suggestions based on substrings (token prefixes) rather "
     "than just prefixes.";
 
+const char kSyncAutofillWalletOfferDataName[] =
+    "Enable syncing autofill offer data";
+const char kSyncAutofillWalletOfferDataDescription[] =
+    "When enabled, allows syncing autofill wallet offer data type.";
+
 const char kSyncDeviceInfoInTransportModeName[] =
     "Enable syncing DeviceInfo in transport-only sync mode.";
 const char kSyncDeviceInfoInTransportModeDescription[] =
