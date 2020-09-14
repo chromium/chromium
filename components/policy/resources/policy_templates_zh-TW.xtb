@@ -4638,17 +4638,6 @@
 
           注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />，這項政策會遭到覆寫。</translation>
 <translation id="7632724434767231364">GSSAPI 資料庫名稱</translation>
-<translation id="7642890175637942277">根據預設，系統會在第一次執行 CCT/PWA 時顯示《服務條款》。如果將這項政策設為停用，系統不會在第一次或後續執行 CCT/PWA 時顯示《服務條款》對話方塊。如果將這項政策設為啟用或不設定，系統會在第一次執行 CCT/PWA 時顯示《服務條款》對話方塊。其他注意事項包含：
-
-      - 這項政策只適用於可由統一端點管理供應商所設定的全代管 Android 裝置。
-
-      - 如果停用這項政策，BrowserSignin 政策就不會有任何作用。
-
-      - 如果停用這項政策，系統不會將指標傳送至伺服器。
-
-      - 如果停用這項政策，瀏覽器的功能將受到限制。
-
-      - 如果停用這項政策，管理員必須告知裝置使用者。</translation>
 <translation id="7643883929273267746">限制在 <ph name="PRODUCT_NAME" /> 中顯示的帳戶</translation>
 <translation id="7648907905084499629">對所有網站上的 Cookie 使用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行為</translation>
 <translation id="7651739109954974365">決定是否要為裝置啟用數據漫遊。如果設為 True，就會允許數據漫遊。如未設定或設為 False，就不支援數據漫遊。</translation>
@@ -5668,7 +5657,6 @@
 
       如果沒有設定這項政策，系統會自動採用 <ph name="PRINTERS_ALLOW_ALL" />。
       </translation>
-<translation id="9109086856618439290">在第一次執行 CCT/PWA 時啟用《服務條款》</translation>
 <translation id="9112727953998243860">企業印表機設定檔</translation>
 <translation id="9116740039944096995">網址模式清單。系統會允許相符來源提供的不安全網站所傳送的私人網路要求。
 

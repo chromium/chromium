@@ -4670,17 +4670,6 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />" diese Richtlinie.</translation>
 <translation id="7632724434767231364">Name der GSSAPI-Bibliothek</translation>
-<translation id="7642890175637942277">Standardmäßig werden die Nutzungsbedingungen bei der ersten Ausführung von CCT/PWA angezeigt. Wenn diese Richtlinie deaktiviert ist, wird das Dialogfeld mit den Nutzungsbedingungen weder bei der ersten Ausführung noch bei weiteren angezeigt. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld mit den Nutzungsbedingungen bei der ersten Ausführung angezeigt. Beachten Sie Folgendes:
-
-     – Diese Richtlinie funktioniert nur bei vollständig verwalteten Android-Geräten, die von Unified Endpoint Management-Anbietern konfiguriert werden können.
-
-      – Wenn die Richtlinie deaktiviert ist, hat die BrowserSignin-Richtlinie keine Auswirkungen.
-
-      – Wenn die Richtlinie deaktiviert ist, werden keine Messwerte an den Server gesendet.
-
-      – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
-
-      – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
 <translation id="7651739109954974365">Legt fest, ob Daten-Roaming für das Gerät aktiviert werden soll. Bei Einstellung auf "true" ist das Roaming erlaubt. Ist die Richtlinie nicht konfiguriert oder auf "false" gesetzt, ist kein Roaming verfügbar.</translation>
@@ -5714,7 +5703,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Wenn die Richtlinie nicht festgelegt wird, wird angenommen, dass "<ph name="PRINTERS_ALLOW_ALL" />" ausgewählt ist.
       </translation>
-<translation id="9109086856618439290">Nutzungsbedingungen während der ersten Ausführung für CCT/PWA aktivieren</translation>
 <translation id="9112727953998243860">Unternehmensdrucker-Konfigurationsdatei</translation>
 <translation id="9116740039944096995">Liste der URL-Muster. Anfragen an private Netzwerke, die von unsicheren, von übereinstimmenden Quellen bereitgestellten Websites initiiert werden, sind zulässig.
 

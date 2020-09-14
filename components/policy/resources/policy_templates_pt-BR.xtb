@@ -4654,17 +4654,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> for especificada, ela substituirá esta política.</translation>
 <translation id="7632724434767231364">Nome da biblioteca GSSAPI</translation>
-<translation id="7642890175637942277">Por padrão, os Termos de Serviço são mostrados quando o CCT/PWA é executado pela primeira vez. Definir esta política como "Desativada" fará com que a caixa de diálogo de Termos de Serviço não apareça na primeira execução e nas execuções subsequentes. Definir a política como "Ativada" ou deixá-la sem definição fará com que a caixa de diálogo de Termos de Serviço apareça na primeira execução. As outras ressalvas são as seguintes:
-
-      - Esta política só funciona em dispositivos Android totalmente gerenciados que podem ser configurados por fornecedores de Unified Endpoint Management.
-
-      - Se esta política for desativada, a BrowserSignin não terá efeito.
-
-      - Se esta política for desativada, as métricas​ não serão enviadas para o servidor.
-
-      - Se esta política for desativada, o navegador terá funcionalidade limitada.
-
-      - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="7643883929273267746">Contas restritas que estão visíveis no <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
 <translation id="7651739109954974365">Determina se o roaming de dados deve ser ativado para o dispositivo. Se configurado para true, o roaming de dados será permitido. Se não for configurado ou for configurado como false, o roaming de dados não estará disponível.</translation>
@@ -5703,7 +5692,6 @@ Se você ativar esta configuração, o <ph name="PRODUCT_NAME" /> e os apps ARC 
 
       Se esta política for deixada sem definição, <ph name="PRINTERS_ALLOW_ALL" /> será usada.
       </translation>
-<translation id="9109086856618439290">Ativar TOS durante a primeira execução do CCT/PWA</translation>
 <translation id="9112727953998243860">Arquivo de configuração de impressora corporativa</translation>
 <translation id="9116740039944096995">Lista de padrões de URL. São permitidas solicitações de redes privadas iniciadas por sites não seguros veiculados por origens correspondentes.
 

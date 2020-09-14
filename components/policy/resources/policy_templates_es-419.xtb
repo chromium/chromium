@@ -4682,17 +4682,6 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />, anulará esta política.</translation>
 <translation id="7632724434767231364">Nombre de la biblioteca GSSAPI</translation>
-<translation id="7642890175637942277">De forma predeterminada, se muestran las Condiciones del Servicio cuando se ejecuta CCT/AWP por primera vez. Si inhabilitas esta política, no se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución ni en las subsiguientes. Si la habilitas o no la estableces, se mostrará el diálogo de las Condiciones del Servicio en la primera ejecución. Ten en cuenta las siguientes salvedades:
-
-      - Esta política solo funciona en dispositivos Android completamente administrados que pueden ser configurados por proveedores de administración unificada de terminales (UEM).
-
-      - Si inhabilitas esta política, la política BrowserSignin no tendrá ningún efecto.
-
-      - Si inhabilitas esta política, no se enviarán métricas al servidor.
-
-      - Si inhabilitas esta política, las funciones del navegador estarán limitadas.
-
-      - Si inhabilitas esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="7643883929273267746">Restringir las cuentas visibles en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usar el atributo <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para el comportamiento de las cookies en todos los sitios</translation>
 <translation id="7651739109954974365">Determina si la itinerancia de datos debe activarse en el dispositivo. Si el valor se establece en "true", se permite la itinerancia de datos. Si no se configura o si se establece en "false", la itinerancia de datos no estará disponible.</translation>
@@ -5753,7 +5742,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si no estableces esta política, se utilizará <ph name="PRINTERS_ALLOW_ALL" />.
       </translation>
-<translation id="9109086856618439290">Habilita las Condiciones del Servicio en la primera ejecución para CCT/AWP</translation>
 <translation id="9112727953998243860">Archivo de configuración de impresoras empresariales</translation>
 <translation id="9116740039944096995">Lista de patrones de URL. Se permiten las solicitudes de red privada enviadas desde sitios web no seguros publicados por orígenes que estén contemplados en los patrones especificados.
 

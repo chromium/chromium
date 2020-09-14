@@ -48,6 +48,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
+<translation id="1407069428457324124">Dark theme</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Screenshot taken and saved to clipboard</translation>
@@ -65,6 +66,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1570871743947603115">Toggle Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
+<translation id="1611993646327628135">On</translation>
 <translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1667964833127753507">The neutral colour mode does not use wallpaper extracted colours, replacing them by a set of neutrally toned light or dark hues.</translation>
@@ -79,6 +81,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1761222317188459878">Toggle network connection. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1782199038061388045">translation</translation>
+<translation id="1787955149152357925">Off</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1812997170047690955">What's on my screen?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expand menu</translation>
 <translation id="3087734570205094154">Bottom</translation>
+<translation id="3090989381251959936">Toggle <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Move cursor</translation>
 <translation id="3098580329624789136">Get the <ph name="INTENT" /> for '<ph name="QUERY" />'</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3400357268283240774">Additional settings</translation>
+<translation id="3410336247007142655">Show Dark theme settings</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
 <translation id="3428447136709161042">Disconnect from <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swipe from the right to go back</translation>
@@ -326,6 +331,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4379531060876907730">These are your stylus tools</translation>
 <translation id="4389184120735010762">You pressed the keyboard shortcut for the docked magnifier. Do you want to turn it on?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4421231901400348175">Sharing control of your screen with <ph name="HELPER_NAME" /> via Remote Assistance.</translation>
 <translation id="4430019312045809116">volume</translation>
 <translation id="4450893287417543264">Don't show again</translation>
@@ -345,6 +351,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4570957409596482333">Select-to-Speak button</translation>
 <translation id="4577274620589681794">Time's up · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
+<translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4623167406982293031">Verify account</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4659419629803378708">ChromeVox enabled</translation>
@@ -387,6 +394,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
+<translation id="5208059991603368177">On</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5260676007519551770">Desk 4</translation>
@@ -398,6 +406,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5313326810920013265">Bluetooth settings</translation>
 <translation id="5314219114274263156">Screen recording taken</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
+<translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
 <translation id="5400461572260843123">Quick Settings: press search + left to access the notification centre.</translation>
@@ -434,6 +443,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5769373120130404283">Privacy screen</translation>
 <translation id="5777841717266010279">Stop screen sharing?</translation>
 <translation id="5790085346892983794">Success</translation>
+<translation id="579415080077680903">Silence</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> on <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Off</translation>
@@ -444,6 +454,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>
 <translation id="5947494881799873997">Revert</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5957083217255311415">Mobile data is turned off.</translation>
@@ -468,6 +479,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="615957422585914272">Show on-screen keyboard</translation>
 <translation id="6164005077879661055">All files and local data associated with the supervised user will be permanently deleted once this supervised user is removed. Visited websites and settings for this supervised user may still be visible by the manager at <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Learn more</translation>
+<translation id="6192859646269780503">Locate phone</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6236290670123303279">Manage settings</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +551,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
 <translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>
+<translation id="7013005189539051442">Enable hotspot</translation>
 <translation id="7015766095477679451">Come back at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Connect your <ph name="DEVICE_NAME" /> with your phone</translation>
 <translation id="7026338066939101231">Decrement</translation>
@@ -611,6 +624,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7842569679327885685">Warning: Experimental feature</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7868900307798234037">Unlocking with fingerprint</translation>
+<translation id="7872786842639831132">Off</translation>
 <translation id="7886169021410746335">Adjust privacy settings</translation>
 <translation id="7886277072580235377">Your Internet session will be cleared when you sign out. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Send an email</translation>
@@ -715,6 +729,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="885387440427703469">Screen capture disabled</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
+<translation id="8871580645200179206">Toggle Dark theme. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>

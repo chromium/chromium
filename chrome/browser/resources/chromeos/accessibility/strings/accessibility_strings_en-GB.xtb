@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Toggle button</translation>
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Tap with 4 fingers to enter the ChromeVox menus</translation>
+<translation id="1313373992684326101">Move to previous section. Examples include the Status Tray and Launcher.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menu item radio button unselected</translation>
 <translation id="1325946044405407859">Tan</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> of <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Increase pitch</translation>
 <translation id="151784044608172266">Next Sentence</translation>
 <translation id="1524531499102321782">Braille next Line</translation>
+<translation id="1542513807034338907">Scroll to previous page</translation>
 <translation id="1546370775711804143">Scroll bar</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1559739829547075274">Navigate backward</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">default</translation>
 <translation id="4772771694153161212">Not underline</translation>
+<translation id="4780458943471935919">Scroll to next page</translation>
 <translation id="4784215347943747396">Control the device with just 1 or 2 switches</translation>
 <translation id="4786285211967466855">No previous level 1 heading</translation>
 <translation id="4787577491510559358">Announce formatting for current item</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Change pitch when speaking element types and quoted, deleted, bolded, parenthesised or capitalised text.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>
 <translation id="7505149250476994901">Say 'cap' before letter</translation>
 <translation id="7518543783849163354">To temporarily stop ChromeVox from speaking, press the Control key.</translation>
 <translation id="7533226154149229506">Light Goldenrod Yellow</translation>

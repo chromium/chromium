@@ -4698,17 +4698,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="7632724434767231364">Nom de la bibliothèque GSSAPI</translation>
-<translation id="7642890175637942277">Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome et des progressive web apps sont exécutés. Si cette règle est désactivée, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est activée ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
-
-      - Cette règle ne peut être appliquée que sur des appareils Android entièrement gérés qui peuvent être configurés par des fournisseurs UEM (Unified Endpoint Management, gestion unifiée des points de terminaison).
-
-      - Si cette règle est désactivée, la règle BrowserSignin n'a aucune incidence.
-
-      - Si cette règle est désactivée, les statistiques​ ne sont pas transmises au serveur.
-
-      - Si cette règle est désactivée, les fonctionnalités du navigateur sont limitées.
-
-      - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
 <translation id="7651739109954974365">Détermine si l'itinérance des données doit être activée pour l'appareil. Si cette règle est définie sur "true", l'itinérance des données est autorisée. Si cette règle n'est pas configurée ou si elle est définie sur "false", l'itinérance des données n'est pas possible.</translation>
@@ -5750,7 +5739,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> et les applications AR
 
       Si cette règle n'est pas configurée, la règle <ph name="PRINTERS_ALLOW_ALL" /> s'applique.
       </translation>
-<translation id="9109086856618439290">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome et des progressive web apps</translation>
 <translation id="9112727953998243860">Fichier de configuration des imprimantes d'entreprise</translation>
 <translation id="9116740039944096995">Liste de formats d'URL. Les requêtes de réseaux privés initiées à partir de sites Web non sécurisés desservis par des URL qui figurent sur la liste sont autorisées.
 

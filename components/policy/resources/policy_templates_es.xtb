@@ -4713,17 +4713,6 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
           Nota: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> anula esta política si se especifica la anterior.</translation>
 <translation id="7632724434767231364">Nombre de biblioteca GSSAPI</translation>
-<translation id="7642890175637942277">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT/PWA. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
-
-      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
-
-      - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
-
-      - Si se inhabilita esta política, no se enviarán métricas al servidor.
-
-      - Si se inhabilita esta política, las funciones del navegador estarán limitadas.
-
-      - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="7643883929273267746">Restringir cuentas que se muestran en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usar el comportamiento de cookies de <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> en todos los sitios web</translation>
 <translation id="7651739109954974365">Permite determinar la habilitación de la itinerancia de datos en el dispositivo. Si el valor se establece en "true", se permite la itinerancia de datos. Si no se configura o si el valor se establece en "false", la itinerancia de datos no estará disponible.</translation>
@@ -5768,7 +5757,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si no se establece esta política, se utiliza <ph name="PRINTERS_ALLOW_ALL" />.
       </translation>
-<translation id="9109086856618439290">Habilitar los Términos del Servicio cuando CCT/PWA se ejecute por primera vez</translation>
 <translation id="9112727953998243860">Archivo de configuración de las impresoras de empresa</translation>
 <translation id="9116740039944096995">Lista de patrones de URL. Se permiten las solicitudes de redes privadas iniciadas desde sitios web no seguros procedentes de orígenes incluidos en los patrones.
 

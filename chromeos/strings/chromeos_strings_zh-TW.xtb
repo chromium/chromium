@@ -82,6 +82,7 @@
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8208861521865154048">獎勵</translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議你只讓信任的帳戶使用這項功能。</translation>
 <translation id="8701136875688985581">由 <ph name="ENROLLMENT_DOMAIN" /> 管理這位使用者，因此可能會從遠端管理設定並監控使用者活動。</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8726019395068607495">已停止 - 蓋子處於開啟狀態</translation>

@@ -74,7 +74,7 @@
 <translation id="1708345662127501511">سطح المكتب: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">إعدادات الشبكة</translation>
 <translation id="1743570585616704562">لم يتم التعرف عليها</translation>
-<translation id="1746730358044914197">تتم تهيئة طرق الإدخال بواسطة المشرف.</translation>
+<translation id="1746730358044914197">يتم إعداد طرق الإدخال بواسطة المشرف.</translation>
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1761222317188459878">تبديل الاتصال بالشبكة. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">التمرير لليمين</translation>
@@ -640,7 +640,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8132793192354020517">تم الاتصال بالموقع <ph name="NAME" /></translation>
-<translation id="813913629614996137">جارٍ التهيئة...</translation>
+<translation id="813913629614996137">تجري التهيئة...</translation>
 <translation id="8142441511840089262">النقر مرّتين</translation>
 <translation id="8142699993796781067">الشبكة الخاصة</translation>
 <translation id="8152092012181020186">‏يُرجى الضغط على Ctrl + W للإغلاق.</translation>

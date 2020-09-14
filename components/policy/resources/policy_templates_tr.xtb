@@ -4682,17 +4682,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
           Not: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
 <translation id="7632724434767231364">GSSAPI kitaplığı adı</translation>
-<translation id="7642890175637942277">Varsayılan olarak CCT/PWA ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikayı Devre dışı değerine ayarlamak Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine sebep olur. Bu politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesini sağlar. Dikkat edilmesi gereken diğer noktalar:
-
-      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
-
-      - Bu politika Devre dışıysa BrowserSignin politikasının hiçbir etkisi olmaz.
-
-      - Bu politika Devre dışıysa metrikler sunucuya gönderilmez.
-
-      - Bu politika Devre dışıysa tarayıcının işlevi sınırlı olur.
-
-      - Bu politika Devre dışıysa yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> içinde görülebilen hesapları kısıtlama</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
 <translation id="7651739109954974365">Veri dolaşımının etkin olup olmayacağını belirler. True olarak ayarlanırsa, veri dolaşımına izin verilir. Hiç ayarlanmazsa veya false değerine ayarlanırsa, veri dolaşımına izin verilmez.</translation>
@@ -5709,7 +5698,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       Bu politika ayarlanmazsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.
       </translation>
-<translation id="9109086856618439290">CCT/PWA için ilk çalıştırma sırasında Hizmet Şartları'nı etkinleştirme</translation>
 <translation id="9112727953998243860">Kurumsal yazıcı yapılandırma dosyası</translation>
 <translation id="9116740039944096995">URL kalıpları listesi Eşleşen kaynaklar tarafından sunulan güvenli olmayan web sitelerinden başlatılan özel ağ isteklerine izin verilir.
 

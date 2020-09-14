@@ -13,12 +13,12 @@
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2179565792157161713">Hap përshkrimin e gjatë në skedën e re</translation>
 <translation id="2223143012868735942">Në filtër i personalizueshëm ngjyrash i aplikuar në faqet e uebit për të përmirësuar perceptimin e ngjyrave.</translation>
-<translation id="2394933097471027016">Provoje tani - Shfletimi "Caret" është gjithmonë i aktivizuar në këtë faqe!</translation>
+<translation id="2394933097471027016">Provoje tani - Shfletimi me kursorin e tekstit është gjithmonë i aktivizuar në këtë faqe!</translation>
 <translation id="2471847333270902538">Skema e ngjyrave për <ph name="SITE" />:</translation>
 <translation id="2648340354586434750">Mbaj të shtypur &lt;span class='key'&gt;Opsioni&lt;/span&gt; për të lëvizur sipas fjalëve.</translation>
 <translation id="2795227192542594043">Kjo shtesë të jep një kursor të lëvizshëm në faqen e uebit, duke të lejuar ta zgjedhësh tekstin me tastierë.</translation>
 <translation id="2808027189040546825">Hapi 1: Zgjidh radhën me yjet më të zbehtë:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Kur arrin te një lidhje ose një kontroll, ai fokusohet automatikisht. Shtyp &lt;span class='key'&gt;Enter&lt;/span&gt; për të klikuar te një lidhje ose një buton. &lt;/p&gt; &lt;p&gt;   Kur një kontroll i fokusuar (si p.sh. një kuti teksti ose një kuti liste) kap tastet e shigjetave, shtyp tastin &lt;span class='key'&gt;Esc&lt;/span&gt; të pasuar nga shigjeta e majtë ose e djathtë për të vazhduar me shfletimin me tastierë. &lt;/p&gt; &lt;p&gt;   Si alternativë, shtyp tastin &lt;span class='key'&gt;Tab&lt;/span&gt; për të lëvizur te kontrolli tjetër që mund të fokusohet. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Kur arrin te një lidhje ose një kontroll, ai fokusohet automatikisht. Shtyp &lt;span class='key'&gt;Enter&lt;/span&gt; për të klikuar te një lidhje ose një buton. &lt;/p&gt; &lt;p&gt;   Kur një kontroll i fokusuar (si p.sh. një kuti teksti ose një kuti liste) kap tastet e shigjetave, shtyp tastin &lt;span class='key'&gt;Esc&lt;/span&gt; të pasuar nga shigjeta e majtë ose e djathtë për të vazhduar me "Shfletimin me kursorin e tekstit". &lt;/p&gt; &lt;p&gt;   Si alternativë, shtyp tastin &lt;span class='key'&gt;Tab&lt;/span&gt; për të lëvizur te kontrolli tjetër që mund të fokusohet. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Konfigurimi</translation>
 <translation id="3410969471888629217">Harro personalizimet e sajtit</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
@@ -31,7 +31,7 @@
 <translation id="4769065380738716500">Imazhet janë zëvendësuar me tekstet e tyre alternative.</translation>
 <translation id="4896660567607030658">Nuk ka komente, thjesht trego kursorin.</translation>
 <translation id="4937901943818762779">Lejo imazhet e animuara, por vetëm një herë.</translation>
-<translation id="4949131196216960195">Shtyp &lt;span class='key'&gt;Kërko&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tasti i rritjes së ndriçimit ose F7) për të aktivizuar shfletimin "Caret". Shtype përsëri për ta çaktivizuar.</translation>
+<translation id="4949131196216960195">Shtyp &lt;span class='key'&gt;Kërko&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tasti i rritjes së ndriçimit ose F7) për të aktivizuar "Shfletimin me kursorin e tekstit". Shtype përsëri për ta çaktivizuar.</translation>
 <translation id="4954450790315188152">Kur shfletimi me kursorin e tekstit është i aktivizuar:</translation>
 <translation id="5041932793799765940">Rregullimi i ngjyrave</translation>
 <translation id="5094574508723441140">Kontrasti i rritur</translation>
@@ -52,7 +52,7 @@
 <translation id="633394792577263429">Mbaj shtypur poshtë &lt;span class='key'&gt;Kontrollo&lt;/span&gt; për të lëvizur sipas fjalëve.</translation>
 <translation id="6550675742724504774">Opsionet</translation>
 <translation id="6838518108677880446">Konfigurimi:</translation>
-<translation id="690628312087070417">Kur shenja e vendosjes kërcen me një distancë të madhe:</translation>
+<translation id="690628312087070417">Kur kursori i tekstit kërcen me një distancë të madhe:</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="7379645913608427028">Shkalla</translation>
 <translation id="7384431257964758081">Kontrasti i lartë është i aktivizuar</translation>

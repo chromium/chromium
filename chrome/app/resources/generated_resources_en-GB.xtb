@@ -1476,6 +1476,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2731700343119398978">Please wait…</translation>
 <translation id="2731710757838467317">Creating your supervised user. This may take a few moments.</translation>
 <translation id="2731971182069536520">The next time that you restart your device, your administrator will perform a one-off update that will delete your local data.</translation>
+<translation id="2732134891301408122">Extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2734760316755174687">Sites under <ph name="SITE_GROUP_NAME" /> will also be reset.</translation>
 <translation id="2735712963799620190">Schedule</translation>
 <translation id="2737363922397526254">Collapse...</translation>
@@ -3123,6 +3124,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
 <translation id="4736292055110123391">Sync your bookmarks, passwords, history and more on all your devices</translation>
 <translation id="473775607612524610">Update</translation>
+<translation id="473936925429402449">Selected; extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tickets</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
@@ -4144,6 +4146,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6011449291337289699">Clear site data</translation>
 <translation id="6015266928248016057">Invalid PUK. Retries left: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Year</translation>
+<translation id="6016178549409952427">Navigate to extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirm Powerwash with return to previous version</translation>
 <translation id="6016972670657536680">Select language and keyboard button. Currently selected language is <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Green</translation>
@@ -6451,6 +6454,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8811862054141704416">Crostini microphone access</translation>
 <translation id="8812552797690463522">This network is shared with you.</translation>
 <translation id="8812593354822910461">Also clear browsing data (<ph name="URL" />) which will sign you out of <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">Remind me later</translation>
 <translation id="8813698869395535039">Can't sign in to <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Go and get a parent to approve '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="8813969267212093033">System text is shown in this language</translation>
@@ -6481,6 +6485,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="883911313571074303">Annotate image</translation>
+<translation id="8841843049738266382">Read and change the allowlist users</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8846132060409673887">Read the manufacturer and model of this computer</translation>

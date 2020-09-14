@@ -1905,7 +1905,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3275778913554317645">Ireki leiho gisa</translation>
 <translation id="3277691515294482687">Linux-en bertsioa berritu aurretik, gorde nire aplikazioak eta fitxategiak Nire fitxategiak karpetan.</translation>
 <translation id="3278001907972365362">Google-ko kontuak zure arreta behar du</translation>
-<translation id="3279230909244266691">Prozesuak zenbait minutu iraun ditzake. Makina birtuala abiarazten.</translation>
+<translation id="3279230909244266691">Baliteke prozesuak minutu batzuk behar izatea. Makina birtuala abiarazten.</translation>
 <translation id="3280237271814976245">Gorde &amp;honela…</translation>
 <translation id="3280243678470289153">Gelditu Chrome-n</translation>
 <translation id="3281892622610078515">Berrogeialdian sartu beharreko fitxategiak eta programak:</translation>
@@ -2141,7 +2141,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3559262020195162408">Ezin izan da instalatu gidalerroa gailuan.</translation>
 <translation id="3559533181353831840"><ph name="TIME_LEFT" /> inguru falta dira</translation>
 <translation id="3560034655160545939">&amp;Ortografia-zuzentzailea</translation>
-<translation id="3562423906127931518">Prozesuak zenbait minutu iraun ditzake. Linux edukiontzia konfiguratzen.</translation>
+<translation id="3562423906127931518">Baliteke prozesuak minutu batzuk behar izatea. Linux edukiontzia konfiguratzen.</translation>
 <translation id="3563432852173030730">Ezin izan da deskargatu aplikazio espezializatua.</translation>
 <translation id="3564334271939054422">Baliteke darabilzun sarearen (<ph name="NETWORK_ID" />) saio-hasierako orrira joan behar izatea.</translation>
 <translation id="3564848315152754834">USB bidezko segurtasun-giltza</translation>
@@ -2628,7 +2628,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4095507791297118304">Pantaila nagusia</translation>
 <translation id="409579654357498729">Gehitu Cloud Print zerbitzuan</translation>
 <translation id="4096508467498758490">Desgaitu Garatzaile moduaren luzapenak</translation>
-<translation id="4096824249111507322">Segurtasun-modulua prestatzen ari da. Itxaron pixka bat; minutu batzuk behar izan ditzake…</translation>
+<translation id="4096824249111507322">Segurtasun-modulua prestatzen ari da. Itxaron pixka bat; agian minutu batzuk beharko dira…</translation>
 <translation id="4097406557126260163">Aplikazioak eta luzapenak</translation>
 <translation id="4097560579602855702">Bilatu Google-n</translation>
 <translation id="4098667039111970300">Tresna-barrako arkatzaren tresnak</translation>
@@ -4979,7 +4979,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7029307918966275733">Crostini ez dago instalatuta. Zerrendak ikusi nahi badituzu, instalatu Crostini.</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Serie-ataka konektatuta</translation>
-<translation id="7031962166228839643">TPMa prestatzen ari da. Itxaron pixka bat; minutu batzuk luza daiteke…</translation>
+<translation id="7031962166228839643">TPMa prestatzen ari da. Itxaron pixka bat; agian minutu batzuk beharko dira…</translation>
 <translation id="7036706669646341689">Linux instalatzeko, gutxienez <ph name="DISK_SIZE" /> eduki behar dira libre. Tokia egiteko, ezabatu gailuan dauden fitxategiak.</translation>
 <translation id="7037509989619051237">Aurreikusteko testua</translation>
 <translation id="7038632520572155338">Erabilerraztasun-osagarria</translation>
@@ -6639,7 +6639,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="9024127637873500333">&amp;Ireki fitxa berri batean</translation>
 <translation id="9024158959543687197">Errore bat gertatu da partekatzea muntatzean. Egiaztatu fitxategiak partekatzeko biltegiaren URLa eta saiatu berriro.</translation>
 <translation id="9026731007018893674">deskargatu</translation>
-<translation id="9026852570893462412">Prozesuak zenbait minutu iraun ditzake. Makina birtuala deskargatzen.</translation>
+<translation id="9026852570893462412">Baliteke prozesuak minutu batzuk behar izatea. Makina birtuala deskargatzen.</translation>
 <translation id="9027459031423301635">Ireki esteka &amp;fitxa berri batean</translation>
 <translation id="9030515284705930323">Zure erakundeak ez dizu gaitu kontuan Google Play Store erabiltzeko aukera. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -6763,7 +6763,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth bidezko gailu bat konektatu da</translation>
 <translation id="9179524979050048593">Saioa hasteko pantailako erabiltzaile-izena</translation>
 <translation id="9179734824669616955">Konfiguratu Linux (Beta) <ph name="DEVICE_TYPE" /> gailuan</translation>
-<translation id="9180281769944411366">Prozesuak zenbait minutu iraun ditzake. Linux edukiontzia abiarazten.</translation>
+<translation id="9180281769944411366">Baliteke prozesuak minutu batzuk behar izatea. Linux edukiontzia abiarazten.</translation>
 <translation id="9180380851667544951">Webguneak pantaila parteka dezake</translation>
 <translation id="9188732951356337132">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilerari buruzko datuak. Informazio hori ez da erabiliko haurra identifikatzeko eta, hari esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. <ph name="BEGIN_LINK2" />Lortu informazio gehiago<ph name="END_LINK2" /></translation>
 <translation id="9190063653747922532">L2TP/IPsec + aurrez partekatutako gakoa</translation>
