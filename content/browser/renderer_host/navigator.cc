@@ -397,7 +397,8 @@ void Navigator::DidNavigate(
       !navigation_request->IsServedFromBackForwardCache() &&
       !is_same_document_navigation && !was_within_same_document;
 
-  render_frame_host->DidNavigate(params, did_create_new_document);
+  render_frame_host->DidNavigate(params, navigation_request.get(),
+                                 did_create_new_document);
 
   // Send notification about committed provisional loads. This notification is
   // different from the NAV_ENTRY_COMMITTED notification which doesn't include

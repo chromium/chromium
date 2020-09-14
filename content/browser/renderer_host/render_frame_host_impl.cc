@@ -2421,6 +2421,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
 
 void RenderFrameHostImpl::DidNavigate(
     const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    NavigationRequest* navigation_request,
     bool did_create_new_document) {
   // Keep track of the last committed URL and origin in the RenderFrameHost
   // itself.  These allow GetLastCommittedURL and GetLastCommittedOrigin to
@@ -2439,28 +2440,12 @@ void RenderFrameHostImpl::DidNavigate(
   if (!params.url_is_unreachable)
     last_successful_url_ = params.url;
 
-  if (did_create_new_document) {
-    // After setting the last committed origin, reset the feature policy and
-    // sandbox flags in the RenderFrameHost to a blank policy based on the
-    // parent frame or opener frame.
-    ResetFeaturePolicy();
-    active_sandbox_flags_ = frame_tree_node()->active_sandbox_flags();
-    document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({});
-
-    // Since we're changing documents, we should reset the event handler
-    // trackers.
-    has_before_unload_handler_ = false;
-    has_unload_handler_ = false;
-    has_pagehide_handler_ = false;
-    has_visibilitychange_handler_ = false;
-
-    DCHECK(params.embedding_token.has_value());
-    SetEmbeddingToken(params.embedding_token.value());
-  }
-
   // Reset the salt so that media device IDs are reset after the new navigation
   // if necessary.
   media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+
+  if (did_create_new_document)
+    DidCommitNewDocument(params, navigation_request);
 }
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
@@ -8313,8 +8298,15 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   navigation_request->set_has_user_gesture(params->gesture ==
                                            NavigationGestureUser);
 
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation might not be right. Should this be moved to
+  // DidCommitNewDocument()?
   last_http_status_code_ = params->http_status_code;
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation might not be right. Should this be moved to
+  // DidCommitNewDocument()?
   last_http_method_ = params->method;
+
   UpdateSiteURL(params->url, params->url_is_unreachable);
   if (!is_same_document_navigation)
     UpdateRenderProcessHostFramePriorities();
@@ -8323,11 +8315,20 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // are certain security checks that we cannot apply to subframes in MHTML
   // documents. Do not trust renderer data when determining that, rather use
   // the |navigation_request|, which was generated and stays browser side.
+  //
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation is NOT correct. This should be moved to DidCommitNewDocument().
   is_mhtml_document_ =
       (navigation_request->GetMimeType() == "multipart/related" ||
        navigation_request->GetMimeType() == "message/rfc822");
 
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation might not be right. Should this be moved to
+  // DidCommitNewDocument()?
   accessibility_reset_count_ = 0;
+
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation isn't right. This should be moved to DidCommitNewDocument().
   appcache_handle_ = navigation_request->TakeAppCacheHandle();
 
   bool created_new_document =
@@ -8374,15 +8375,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_used_web_otp_ = false;
   }
 
-  // Keep track of the sandbox policy of the document that has just committed.
-  // It will be compared with the value computed from the renderer. The latter
-  // is expected to be received in DidSetFramePolicyHeaders(..).
-  base::Optional<network::mojom::WebSandboxFlags> active_sandbox_flags_control =
-      navigation_request->SandboxFlagsToCommit();
-
-  int virtual_browsing_context_group =
-      navigation_request->coop_status().virtual_browsing_context_group();
-
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
   // loads to UMA.
@@ -8390,76 +8382,106 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     loading_mem_tracker_->Cancel();
   // Main Frames will create the tracker, which will be triggered after we
   // receive DidStopLoading.
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation isn't right. This should be moved to DidCommitNewDocument().
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
-  if (created_new_document) {
-    cross_origin_opener_policy_ =
-        navigation_request->coop_status().current_coop();
-  }
-
-  network::mojom::ClientSecurityStatePtr client_security_state =
-      navigation_request->TakeClientSecurityState();
-  std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter =
-      navigation_request->TakeCoepReporter();
-  std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter =
-      navigation_request->coop_status().TakeCoopReporter();
-
-  network::mojom::ContentSecurityPolicyPtr required_csp =
-      navigation_request->TakeRequiredCSP();
-
-  // TODO(arthursonzogni, altimin): By taking ownership and deleting the
-  // NavigationRequest, this line triggers the DidFinishNavigation event. There
-  // are several document's associated state assigned below when a new document
-  // is created. We might prefer to fully update the RenderFrameHost before
-  // dispatching the event.
   frame_tree_node()->navigator().DidNavigate(this, *params,
                                              std::move(navigation_request),
                                              is_same_document_navigation);
 
   // Reset back the state to false after navigation commits.
+  // TODO(https://crbug.com/1072817): Undo this plumbing after removing the
+  // early post-crash CommitPending() call.
   committed_speculative_rfh_before_navigation_commit_ = false;
 
+  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
+  // navigation doesn't seem right. This should likely be executed in
+  // DidCommitNewDocument().
   if (IsBackForwardCacheEnabled()) {
     // Store the Commit params so they can be reused if the page is ever
     // restored from the BackForwardCache.
     last_commit_params_ = std::move(params);
   }
 
-  // TODO(arthursonzogni): Investigate what must be done when
-  // navigation_request->IsWaitingToCommit() is false here.
-  if (created_new_document) {
-    renderer_reported_scheduler_tracked_features_ = 0;
-    browser_reported_scheduler_tracked_features_ = 0;
-    last_committed_client_security_state_ = std::move(client_security_state);
-    active_sandbox_flags_control_ = std::move(active_sandbox_flags_control);
-    virtual_browsing_context_group_ = std::move(virtual_browsing_context_group);
-    coep_reporter_ = std::move(coep_reporter);
-    coop_reporter_ = std::move(coop_reporter);
-
-    // Store the required CSP (it will be used by the AncestorThrottle if
-    // this frame embeds a subframe when that subframe navigates).
-    required_csp_ = std::move(required_csp);
-
-    if (coep_reporter_) {
-      mojo::PendingRemote<blink::mojom::ReportingObserver> remote;
-      mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver =
-          remote.InitWithNewPipeAndPassReceiver();
-      coep_reporter_->BindObserver(std::move(remote));
-      // As some tests override the associated frame after commit, do not
-      // call GetAssociatedLocalFrame now.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
-    }
-  }
-
+  // TODO(arthursonzogni): Recording the metrics again for same-document or
+  // bfcache navigation is a no-op. They were already recorded when the document
+  // committed. This should be moved toward NewDocumentCreatedFromNavigation().
   RecordCrossOriginIsolationMetrics(this);
 
+  // TODO(arthursonzogni): Calling this for same-document navigation doesn't
+  // hurt, but this is useless. This should be executed only once per new
+  // document. This should be moved to CommitNewDocumentFromNavigation().
   CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
       frame_tree_node_);
 
   return true;
+}
+
+// TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
+// the navigation to the new document. Consider grouping them in a single
+// struct.
+//
+// TODO(arthursonzogni): Investigate what must be done when
+// navigation_request->IsWaitingToCommit() is false here.
+void RenderFrameHostImpl::DidCommitNewDocument(
+    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+    NavigationRequest* navigation_request) {
+  // BackForwardCache navigations restore existing document, but never create
+  // new ones.
+  DCHECK(!navigation_request->IsServedFromBackForwardCache());
+
+  // After setting the last committed origin, reset the feature policy and
+  // sandbox flags in the RenderFrameHost to a blank policy based on the
+  // parent frame or opener frame.
+  ResetFeaturePolicy();
+  active_sandbox_flags_ = frame_tree_node()->active_sandbox_flags();
+  document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({});
+
+  // Since we're changing documents, we should reset the event handler
+  // trackers.
+  has_before_unload_handler_ = false;
+  has_unload_handler_ = false;
+  has_pagehide_handler_ = false;
+  has_visibilitychange_handler_ = false;
+
+  DCHECK(params.embedding_token.has_value());
+  SetEmbeddingToken(params.embedding_token.value());
+
+  renderer_reported_scheduler_tracked_features_ = 0;
+  browser_reported_scheduler_tracked_features_ = 0;
+
+  last_committed_client_security_state_ =
+      navigation_request->TakeClientSecurityState();
+
+  cross_origin_opener_policy_ =
+      navigation_request->coop_status().current_coop();
+  coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
+  virtual_browsing_context_group_ =
+      navigation_request->coop_status().virtual_browsing_context_group();
+
+  // Store the required CSP (it will be used by the AncestorThrottle if
+  // this frame embeds a subframe when that subframe navigates).
+  required_csp_ = navigation_request->TakeRequiredCSP();
+
+  // Keep track of the sandbox policy of the document that has just committed.
+  // It will be compared with the value computed from the renderer. The latter
+  // is expected to be received in DidSetFramePolicyHeaders(..).
+  active_sandbox_flags_control_ = navigation_request->SandboxFlagsToCommit();
+
+  coep_reporter_ = navigation_request->TakeCoepReporter();
+  if (coep_reporter_) {
+    mojo::PendingRemote<blink::mojom::ReportingObserver> remote;
+    mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver =
+        remote.InitWithNewPipeAndPassReceiver();
+    coep_reporter_->BindObserver(std::move(remote));
+    // As some tests override the associated frame after commit, do not
+    // call GetAssociatedLocalFrame now.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+  }
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(

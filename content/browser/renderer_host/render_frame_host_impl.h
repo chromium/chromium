@@ -530,6 +530,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // true the navigation was not same-document and was not served from the
   // back-forward cache.
   void DidNavigate(const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+                   NavigationRequest* navigation_request,
                    bool did_create_new_document);
 
   AgentSchedulingGroupHost& agent_scheduling_group() {
@@ -2362,6 +2363,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
       std::unique_ptr<NavigationRequest> navigation_request,
       std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params,
       bool is_same_document_navigation);
+
+  // Called when we received the confirmation a new document committed in the
+  // renderer. It was created from the |navigation|.
+  void DidCommitNewDocument(
+      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
+      NavigationRequest* navigation);
 
   // Called by the renderer process when it is done processing a same-document
   // commit request.
