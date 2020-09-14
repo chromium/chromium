@@ -97,14 +97,14 @@ GizmoFrobulateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("gizmo.frobulate", GIZMO_FROBULATE)
 
   GizmoFrobulateFunction();
+  GizmoFrobulateFunction(const GizmoFrobulateFunction&) = delete;
+  GizmoFrobulateFunction& operator=(const GizmoFrobulateFunction&) = delete;
 
  private:
   ~GizmoFrobulateFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(GizmoFrobulateFunction);
 };
 ```
 

@@ -50,6 +50,8 @@ class TitleLoggerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<TitleLoggerTabHelper> {
  public:
+  TitleLoggerTabHelper(const TitleLoggerTabHelper&) = delete;
+  TitleLoggerTabHelper& operator=(const TitleLoggerTabHelper&) = delete;
   ~TitleLoggerTabHelper() override;
 
   // content::WebContentsObserver
@@ -60,8 +62,6 @@ class TitleLoggerTabHelper
  private:
   explicit TitleLoggerTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<TitleLoggerTabHelper>;
-
-  DISALLOW_COPY_AND_ASSIGN(TitleLoggerTabHelper);
 };
 ```
 
