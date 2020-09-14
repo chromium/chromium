@@ -588,24 +588,24 @@ void URLRequest::BeforeRequestComplete(int error) {
   if (error != OK) {
     net_log_.AddEventWithStringParams(NetLogEventType::CANCELLED, "source",
                                       "delegate");
-    StartJob(new URLRequestErrorJob(this, network_delegate_, error));
+    StartJob(
+        std::make_unique<URLRequestErrorJob>(this, network_delegate_, error));
   } else if (!delegate_redirect_url_.is_empty()) {
     GURL new_url;
     new_url.Swap(&delegate_redirect_url_);
 
-    URLRequestRedirectJob* job = new URLRequestRedirectJob(
+    StartJob(std::make_unique<URLRequestRedirectJob>(
         this, network_delegate_, new_url,
         // Use status code 307 to preserve the method, so POST requests work.
-        URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Delegate");
-    StartJob(job);
+        URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Delegate"));
   } else {
     StartJob(context_->job_factory()->CreateJob(this, network_delegate_));
   }
 }
 
-void URLRequest::StartJob(URLRequestJob* job) {
+void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(!is_pending_);
-  DCHECK(!job_.get());
+  DCHECK(!job_);
 
   privacy_mode_ = DeterminePrivacyMode();
 
@@ -616,7 +616,7 @@ void URLRequest::StartJob(URLRequestJob* job) {
         upload_data_stream_ ? upload_data_stream_->identifier() : -1);
   });
 
-  job_.reset(job);
+  job_ = std::move(job);
   job_->SetExtraRequestHeaders(extra_request_headers_);
   job_->SetPriority(priority_);
   job_->SetRequestHeadersCallback(request_headers_callback_);
@@ -649,8 +649,8 @@ void URLRequest::StartJob(URLRequestJob* job) {
       referrer_.clear();
       net_log_.AddEventWithStringParams(NetLogEventType::CANCELLED, "source",
                                         "delegate");
-      RestartWithJob(new URLRequestErrorJob(this, network_delegate_,
-                                            ERR_BLOCKED_BY_CLIENT));
+      RestartWithJob(std::make_unique<URLRequestErrorJob>(
+          this, network_delegate_, ERR_BLOCKED_BY_CLIENT));
       return;
     }
   }
@@ -667,10 +667,10 @@ void URLRequest::StartJob(URLRequestJob* job) {
   job_->Start();
 }
 
-void URLRequest::RestartWithJob(URLRequestJob* job) {
+void URLRequest::RestartWithJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(job->request() == this);
   PrepareToRestart();
-  StartJob(job);
+  StartJob(std::move(job));
 }
 
 int URLRequest::Cancel() {

@@ -30,11 +30,10 @@ class HttpProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
   HttpProtocolHandler& operator=(const HttpProtocolHandler&) = delete;
   ~HttpProtocolHandler() override = default;
 
-  URLRequestJob* MaybeCreateJob(
+  std::unique_ptr<URLRequestJob> CreateJob(
       URLRequest* request,
       NetworkDelegate* network_delegate) const override {
-    return URLRequestHttpJob::Factory(request, network_delegate,
-                                      request->url().scheme());
+    return URLRequestHttpJob::Create(request, network_delegate);
   }
 };
 
@@ -81,29 +80,31 @@ bool URLRequestJobFactory::SetProtocolHandler(
   return true;
 }
 
-URLRequestJob* URLRequestJobFactory::CreateJob(
+std::unique_ptr<URLRequestJob> URLRequestJobFactory::CreateJob(
     URLRequest* request,
     NetworkDelegate* network_delegate) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If we are given an invalid URL, then don't even try to inspect the scheme.
   if (!request->url().is_valid())
-    return new URLRequestErrorJob(request, network_delegate, ERR_INVALID_URL);
+    return std::make_unique<URLRequestErrorJob>(request, network_delegate,
+                                                ERR_INVALID_URL);
 
   if (g_interceptor_for_testing) {
-    URLRequestJob* job = g_interceptor_for_testing->MaybeInterceptRequest(
-        request, network_delegate);
+    std::unique_ptr<URLRequestJob> job(
+        g_interceptor_for_testing->MaybeInterceptRequest(request,
+                                                         network_delegate));
     if (job)
       return job;
   }
 
   auto it = protocol_handler_map_.find(request->url().scheme());
   if (it == protocol_handler_map_.end()) {
-    return new URLRequestErrorJob(request, network_delegate,
-                                  ERR_UNKNOWN_URL_SCHEME);
+    return std::make_unique<URLRequestErrorJob>(request, network_delegate,
+                                                ERR_UNKNOWN_URL_SCHEME);
   }
 
-  return it->second->MaybeCreateJob(request, network_delegate);
+  return it->second->CreateJob(request, network_delegate);
 }
 
 bool URLRequestJobFactory::IsSafeRedirectTarget(const GURL& location) const {

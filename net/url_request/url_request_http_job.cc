@@ -216,21 +216,14 @@ void MarkSameSiteCompatPairs(
 
 namespace net {
 
-// TODO(darin): make sure the port blocking code is not lost
-// static
-URLRequestJob* URLRequestHttpJob::Factory(URLRequest* request,
-                                          NetworkDelegate* network_delegate,
-                                          const std::string& scheme) {
-  DCHECK(scheme == "http" || scheme == "https" || scheme == "ws" ||
-         scheme == "wss");
-
-  if (!request->context()->http_transaction_factory()) {
-    NOTREACHED() << "requires a valid context";
-    return new URLRequestErrorJob(
-        request, network_delegate, ERR_INVALID_ARGUMENT);
-  }
-
+std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(
+    URLRequest* request,
+    NetworkDelegate* network_delegate) {
   const GURL& url = request->url();
+
+  // URLRequestContext must have been initialized.
+  DCHECK(request->context()->http_transaction_factory());
+  DCHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS());
 
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to
   // https and wss requests.
@@ -241,9 +234,8 @@ URLRequestJob* URLRequestHttpJob::Factory(URLRequest* request,
     if (hsts && hsts->ShouldUpgradeToSSL(url.host())) {
       GURL::Replacements replacements;
       replacements.SetSchemeStr(
-
           url.SchemeIs(url::kHttpScheme) ? url::kHttpsScheme : url::kWssScheme);
-      return new URLRequestRedirectJob(
+      return std::make_unique<URLRequestRedirectJob>(
           request, network_delegate, url.ReplaceComponents(replacements),
           // Use status code 307 to preserve the method, so POST requests work.
           URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
@@ -254,15 +246,15 @@ URLRequestJob* URLRequestHttpJob::Factory(URLRequest* request,
     // ERR_CLEARTEXT_NOT_PERMITTED if not.
     if (request->context()->check_cleartext_permitted() &&
         !android::IsCleartextPermitted(url.host())) {
-      return new URLRequestErrorJob(request, network_delegate,
-                                    ERR_CLEARTEXT_NOT_PERMITTED);
+      return std::make_unique<URLRequestErrorJob>(request, network_delegate,
+                                                  ERR_CLEARTEXT_NOT_PERMITTED);
     }
 #endif
   }
 
-  return new URLRequestHttpJob(request,
-                               network_delegate,
-                               request->context()->http_user_agent_settings());
+  return base::WrapUnique<URLRequestJob>(
+      new URLRequestHttpJob(request, network_delegate,
+                            request->context()->http_user_agent_settings()));
 }
 
 URLRequestHttpJob::URLRequestHttpJob(

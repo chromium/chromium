@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/ptr_util.h"
 #include "net/url_request/url_request_interceptor.h"
+#include "net/url_request/url_request_job.h"
 
 namespace cronet {
 
@@ -18,12 +20,13 @@ URLRequestInterceptingJobFactory::URLRequestInterceptingJobFactory(
 
 URLRequestInterceptingJobFactory::~URLRequestInterceptingJobFactory() = default;
 
-net::URLRequestJob* URLRequestInterceptingJobFactory::CreateJob(
+std::unique_ptr<net::URLRequestJob> URLRequestInterceptingJobFactory::CreateJob(
     net::URLRequest* request,
     net::NetworkDelegate* network_delegate) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  net::URLRequestJob* job =
-      interceptor_->MaybeInterceptRequest(request, network_delegate);
+  std::unique_ptr<net::URLRequestJob> job =
+      base::WrapUnique<net::URLRequestJob>(
+          interceptor_->MaybeInterceptRequest(request, network_delegate));
   if (job)
     return job;
   return job_factory_->CreateJob(request, network_delegate);

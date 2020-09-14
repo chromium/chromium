@@ -120,9 +120,11 @@ class MockURLRequestFtpJobFactory : public URLRequestJobFactory {
     delete factory;
   }
 
-  URLRequestJob* CreateJob(URLRequest* request,
-                           NetworkDelegate* network_delegate) const override {
-    return new URLRequestFtpJob(request, network_delegate, factory, auth_cache);
+  std::unique_ptr<URLRequestJob> CreateJob(
+      URLRequest* request,
+      NetworkDelegate* network_delegate) const override {
+    return std::make_unique<URLRequestFtpJob>(request, network_delegate,
+                                              factory, auth_cache);
   }
 
   bool IsSafeRedirectTarget(const GURL& location) const override {

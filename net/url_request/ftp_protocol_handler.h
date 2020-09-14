@@ -37,7 +37,7 @@ class NET_EXPORT FtpProtocolHandler :
       std::unique_ptr<FtpTransactionFactory> ftp_transaction_factory,
       FtpAuthCache* auth_cache);
 
-  URLRequestJob* MaybeCreateJob(
+  std::unique_ptr<URLRequestJob> CreateJob(
       URLRequest* request,
       NetworkDelegate* network_delegate) const override;
 

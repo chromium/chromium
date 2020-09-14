@@ -43,9 +43,13 @@ class UploadDataStream;
 // provides an implementation for both HTTP and HTTPS.
 class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
  public:
-  static URLRequestJob* Factory(URLRequest* request,
-                                NetworkDelegate* network_delegate,
-                                const std::string& scheme);
+  // Creates URLRequestJob for the specified HTTP, HTTPS, WS, or WSS URL.
+  // Returns a job that returns a redirect in the case of HSTS, and returns a
+  // job that fails for unencrypted requests if current settings dont allow
+  // them. Never returns nullptr.
+  static std::unique_ptr<URLRequestJob> Create(
+      URLRequest* request,
+      NetworkDelegate* network_delegate);
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;

@@ -32,6 +32,8 @@ class MockURLRequestJob : public URLRequestJob {
   MockURLRequestJob(URLRequest* request, NetworkDelegate* network_delegate)
       : URLRequestJob(request, network_delegate) {}
 
+  ~MockURLRequestJob() override = default;
+
   void Start() override {
     // Start reading asynchronously so that all error reporting and data
     // callbacks happen as they would for network requests.
@@ -39,9 +41,6 @@ class MockURLRequestJob : public URLRequestJob {
         FROM_HERE, base::BindOnce(&MockURLRequestJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
-
- protected:
-  ~MockURLRequestJob() override = default;
 
  private:
   void StartAsync() { NotifyHeadersComplete(); }
@@ -51,10 +50,10 @@ class MockURLRequestJob : public URLRequestJob {
 
 class DummyProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
  public:
-  URLRequestJob* MaybeCreateJob(
+  std::unique_ptr<URLRequestJob> CreateJob(
       URLRequest* request,
       NetworkDelegate* network_delegate) const override {
-    return new MockURLRequestJob(request, network_delegate);
+    return std::make_unique<MockURLRequestJob>(request, network_delegate);
   }
 };
 

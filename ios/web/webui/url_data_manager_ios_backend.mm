@@ -96,6 +96,8 @@ class URLRequestChromeJob : public net::URLRequestJob {
                       BrowserState* browser_state,
                       bool is_incognito);
 
+  ~URLRequestChromeJob() override;
+
   // net::URLRequestJob implementation.
   void Start() override;
   void Kill() override;
@@ -145,8 +147,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
 
  private:
   friend class URLDataManagerIOSBackend;
-
-  ~URLRequestChromeJob() override;
 
   // Do the actual copy from data_ (the data we're serving) into |buf|.
   // Separate from ReadRawData so we can handle async I/O.
@@ -400,13 +400,13 @@ class ChromeProtocolHandler
       : browser_state_(browser_state), is_incognito_(is_incognito) {}
   ~ChromeProtocolHandler() override {}
 
-  net::URLRequestJob* MaybeCreateJob(
+  std::unique_ptr<net::URLRequestJob> CreateJob(
       net::URLRequest* request,
       net::NetworkDelegate* network_delegate) const override {
     DCHECK(request);
 
-    return new URLRequestChromeJob(request, network_delegate, browser_state_,
-                                   is_incognito_);
+    return std::make_unique<URLRequestChromeJob>(request, network_delegate,
+                                                 browser_state_, is_incognito_);
   }
 
   bool IsSafeRedirectTarget(const GURL& location) const override {

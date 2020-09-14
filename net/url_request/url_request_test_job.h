@@ -12,7 +12,6 @@
 #include "net/base/net_export.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
-#include "net/url_request/url_request_job_factory.h"
 
 namespace net {
 
@@ -125,10 +124,6 @@ class NET_EXPORT_PRIVATE URLRequestTestJob : public URLRequestJob {
   }
 
   RequestPriority priority() const { return priority_; }
-
-  // Create a protocol handler for callers that don't subclass.
-  static std::unique_ptr<URLRequestJobFactory::ProtocolHandler>
-  CreateProtocolHandler();
 
   // Job functions
   void SetPriority(RequestPriority priority) override;

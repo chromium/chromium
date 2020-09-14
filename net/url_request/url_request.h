@@ -763,12 +763,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // paused).
   void BeforeRequestComplete(int error);
 
-  // TODO(mmenke):  Make this take a scoped_ptr.
-  void StartJob(URLRequestJob* job);
+  void StartJob(std::unique_ptr<URLRequestJob> job);
 
   // Restarting involves replacing the current job with a new one such as what
   // happens when following a HTTP redirect.
-  void RestartWithJob(URLRequestJob* job);
+  void RestartWithJob(std::unique_ptr<URLRequestJob> job);
   void PrepareToRestart();
 
   // Cancels the request and set the error and ssl info for this request to the

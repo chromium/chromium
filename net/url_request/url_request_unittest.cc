@@ -2883,7 +2883,7 @@ class URLRequestTestHTTP : public URLRequestTest {
 
     // URLRequestJobFactory::ProtocolHandler implementation:
 
-    URLRequestJob* MaybeCreateJob(
+    std::unique_ptr<URLRequestJob> CreateJob(
         URLRequest* request,
         NetworkDelegate* network_delegate) const override {
       NOTREACHED();
