@@ -340,7 +340,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self.headerView.voiceSearchButton addTarget:self
                                         action:@selector(preloadVoiceSearch:)
                               forControlEvents:UIControlEventTouchDown];
-  self.headerView.voiceSearchButton.enabled = self.voiceSearchIsEnabled;
+  [self updateVoiceSearchDisplay];
 }
 
 // On NTP in split toolbar mode the omnibox has different location (in the
@@ -474,6 +474,15 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     self.logoVendor.showingLogo = self.logoIsShowing;
     [self updateFakeboxDisplay];
   }
+}
+
+// Ensures the state of the Voice Search button matches whether or not it's
+// enabled. If it's not, disables the button and removes it from the a11y loop
+// for VoiceOver.
+- (void)updateVoiceSearchDisplay {
+  self.headerView.voiceSearchButton.enabled = self.voiceSearchIsEnabled;
+  self.headerView.voiceSearchButton.isAccessibilityElement =
+      self.voiceSearchIsEnabled;
 }
 
 // Adds the constraints for the |logoView|, the |fakeomnibox| related to the
@@ -700,7 +709,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (_voiceSearchIsEnabled == voiceSearchIsEnabled)
     return;
   _voiceSearchIsEnabled = voiceSearchIsEnabled;
-  self.headerView.voiceSearchButton.enabled = _voiceSearchIsEnabled;
+  [self updateVoiceSearchDisplay];
 }
 
 #pragma mark - UserAccountImageUpdateDelegate
