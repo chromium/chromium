@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -142,6 +143,10 @@ bool MathMLElement::IsTokenElement() const {
          HasTagName(mathml_names::kMnTag) ||
          HasTagName(mathml_names::kMtextTag) ||
          HasTagName(mathml_names::kMsTag);
+}
+
+bool MathMLElement::ShouldForceNGLayout() const {
+  return ComputedStyleRef().IsDisplayMathType();
 }
 
 }  // namespace blink

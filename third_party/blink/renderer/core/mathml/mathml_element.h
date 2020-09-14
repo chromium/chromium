@@ -55,8 +55,7 @@ class CORE_EXPORT MathMLElement : public Element {
 
  private:
   // Force NG layout as MathML elements don't have legacy layout implementation.
-  // TODO(crbug.com/1127197): Check the display of the computed style.
-  bool ShouldForceNGLayout() const final { return true; }
+  bool ShouldForceNGLayout() const final;
 };
 
 template <typename T>

@@ -15,9 +15,9 @@ MathMLRowElement::MathMLRowElement(const QualifiedName& tagName,
 
 LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
                                                    LegacyLayout legacy) {
-  DCHECK_NE(legacy, LegacyLayout::kForce);
+  DCHECK(!style.IsDisplayMathType() || legacy != LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      (!style.IsDisplayMathType() && !HasTagName(mathml_names::kMathTag)))
+      !style.IsDisplayMathType())
     return MathMLElement::CreateLayoutObject(style, legacy);
   return new LayoutNGMathMLBlock(this);
 }

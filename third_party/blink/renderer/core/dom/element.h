@@ -804,6 +804,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // legacy layout on the entire subtree, unless this is overridden by
   // ShouldForceNGLayout().
   bool ShouldForceLegacyLayout() const {
+    if (ShouldForceNGLayout())
+      return false;
     if (TypeShouldForceLegacyLayout())
       return true;
     if (!HasRareData())
