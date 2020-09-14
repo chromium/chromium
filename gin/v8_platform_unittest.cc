@@ -75,10 +75,8 @@ TEST(V8PlatformTest, PostJobSimple) {
         : num_tasks_to_run(num_tasks_to_run) {}
     void Run(v8::JobDelegate* delegate) override { --(*num_tasks_to_run); }
 
-    // TODO(1114823): Cleanup the old version once migration is complete.
-    size_t GetMaxConcurrency() const override { return *num_tasks_to_run; }
     size_t GetMaxConcurrency(size_t /* worker_count*/) const override {
-      return GetMaxConcurrency();
+      return *num_tasks_to_run;
     }
 
     std::atomic_size_t* num_tasks_to_run;
