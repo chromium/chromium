@@ -51,7 +51,11 @@ namespace {
 
 std::string CleanUpPath(const std::string& path) {
   // Remove the query string for named resource lookups.
-  return path.substr(0, path.find_first_of('?'));
+  std::string clean_path = path.substr(0, path.find_first_of('?'));
+  // Remove a URL fragment (for example #foo) if it exists.
+  clean_path = clean_path.substr(0, path.find_first_of('#'));
+
+  return clean_path;
 }
 
 const int kNonExistentResource = -1;

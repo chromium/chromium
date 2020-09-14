@@ -181,6 +181,19 @@ TEST_F(WebUIDataSourceTest, NamedResourceWithQueryString) {
                    base::BindOnce(&NamedResourceWithQueryStringCallback));
 }
 
+void NamedResourceWithUrlFragmentCallback(
+    scoped_refptr<base::RefCountedMemory> data) {
+  EXPECT_NE(data, nullptr);
+  std::string result(data->front_as<char>(), data->size());
+  EXPECT_NE(result.find(kDummyResource), std::string::npos);
+}
+
+TEST_F(WebUIDataSourceTest, NamedResourceWithUrlFragment) {
+  source()->AddResourcePath("foobar", kDummyResourceId);
+  StartDataRequest("foobar#fragment",
+                   base::BindOnce(&NamedResourceWithUrlFragmentCallback));
+}
+
 void WebUIDataSourceTest::RequestFilterQueryStringCallback(
     scoped_refptr<base::RefCountedMemory> data) {
   std::string result(data->front_as<char>(), data->size());
