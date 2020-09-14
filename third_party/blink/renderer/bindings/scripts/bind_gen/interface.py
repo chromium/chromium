@@ -2402,29 +2402,19 @@ ${class_name}::NamedPropertySetterCallback(
     if not cg_context.indexed_property_setter:
         body.append(
             TextNode("""\
-// 3.8.2. [[Set]]
+// 3.9.2. [[Set]]
 // https://heycam.github.io/webidl/#legacy-platform-object-set
-// step 1. If O and Receiver are the same object, then:
-if (${info}.Holder() == ${info}.This()) {
-  // OrdinarySetWithOwnDescriptor will end up calling DefineOwnProperty,
-  // which will fail when the receiver object is this legacy platform
-  // object.
-  bindings::V8SetReturnValue(${info}, nullptr);
-  if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kIndexedSetterContext,
-                                   "${interface.identifier}");
-    exception_state.ThrowTypeError(
-        "Indexed property setter is not supported.");
-  }
-  return;
+// OrdinarySetWithOwnDescriptor will end up calling DefineOwnProperty,
+// which will fail when the receiver object is this legacy platform
+// object.
+bindings::V8SetReturnValue(${info}, nullptr);
+if (${info}.ShouldThrowOnError()) {
+  ExceptionState exception_state(${info}.GetIsolate(),
+                                 ExceptionState::kIndexedSetterContext,
+                                 "${interface.identifier}");
+  exception_state.ThrowTypeError(
+      "Indexed property setter is not supported.");
 }
-
-// step 2. Let ownDesc be LegacyPlatformObjectGetOwnProperty(O, P, true).
-// step 3. Perform ? OrdinarySetWithOwnDescriptor(O, P, V, Receiver,
-//   ownDesc).
-//
-// Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
 """))
         return func_decl, func_def
 
@@ -2441,23 +2431,22 @@ if (${info}.Holder() == ${info}.This()) {
 
     body.extend([
         TextNode("""\
-// 3.8.2. [[Set]]
+// 3.9.2. [[Set]]
 // https://heycam.github.io/webidl/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
-        CxxLikelyIfNode(
-            cond="${info}.Holder() == ${info}.This()",
-            body=[
-                TextNode("""\
+        CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
+                        body=[
+                            TextNode("""\
 // step 1.1.1. Invoke the indexed property setter with P and V.\
 """),
-                make_steps_of_ce_reactions(cg_context),
-                EmptyNode(),
-                make_v8_set_return_value(cg_context),
-                TextNode("""\
+                            make_steps_of_ce_reactions(cg_context),
+                            EmptyNode(),
+                            make_v8_set_return_value(cg_context),
+                            TextNode("""\
 bindings::V8SetReturnValue(${info}, nullptr);
 return;"""),
-            ]),
+                        ]),
         EmptyNode(),
         TextNode("""\
 // Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
@@ -2493,7 +2482,7 @@ ${class_name}::NamedPropertyDeleterCallback(property_name, ${info});
 
     body.append(
         TextNode("""\
-// 3.8.4. [[Delete]]
+// 3.9.4. [[Delete]]
 // https://heycam.github.io/webidl/#legacy-platform-object-delete
 // step 1.2. If index is not a supported property index, then return true.
 // step 1.3. Return false.
@@ -2538,7 +2527,7 @@ ${class_name}::NamedPropertyDefinerCallback(
 
     body.append(
         TextNode("""\
-// 3.8.3. [[DefineOwnProperty]]
+// 3.9.3. [[DefineOwnProperty]]
 // https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
 // step 1.1. If the result of calling IsDataDescriptor(Desc) is false, then
 //   return false.
@@ -2653,7 +2642,7 @@ def make_indexed_property_enumerator_callback(cg_context, function_name):
 
     body.append(
         TextNode("""\
-// 3.8.6. [[OwnPropertyKeys]]
+// 3.9.6. [[OwnPropertyKeys]]
 // https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
 // step 2. If O supports indexed properties, then for each index of O's
 //   supported property indices, in ascending numerical order, append
@@ -2751,8 +2740,13 @@ def make_named_property_setter_callback(cg_context, function_name):
     body = func_def.body
 
     if not cg_context.named_property_setter:
-        if ("OverrideBuiltins" in cg_context.interface.extended_attributes
-                or "LegacyOverrideBuiltins" in
+        body.append(
+            TextNode("""\
+// 3.9.2. [[Set]]
+// https://heycam.github.io/webidl/#legacy-platform-object-set
+// step 3. Perform ? OrdinarySetWithOwnDescriptor(O, P, V, Receiver, ownDesc).\
+"""))
+        if ("LegacyOverrideBuiltIns" in
                 cg_context.interface.extended_attributes):
             body.append(
                 TextNode("""\
@@ -2764,37 +2758,21 @@ if (${info}.Holder()->GetRealNamedPropertyAttributesInPrototypeChain(
 """))
         body.append(
             TextNode("""\
-// 3.8.2. [[Set]]
-// https://heycam.github.io/webidl/#legacy-platform-object-set
-// step 1. If O and Receiver are the same object, then:
-if (${info}.Holder() == ${info}.This()) {
-  // OrdinarySetWithOwnDescriptor will end up calling DefineOwnProperty.
-  // 3.8.3. [[DefineOwnProperty]]
-  // https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
-  // step 2.1. Let creating be true if P is not a supported property name,
-  //   and false otherwise.
-  // step 2.2.1. If creating is false and O does not implement an interface
-  //   with a named property setter, then return false.
-  ${class_name}::NamedPropertyGetterCallback(${v8_property_name}, ${info});
-  const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
-  if (!is_creating) {
-    bindings::V8SetReturnValue(${info}, nullptr);
-    if (${info}.ShouldThrowOnError()) {
-      ExceptionState exception_state(${info}.GetIsolate(),
-                                     ExceptionState::kNamedSetterContext,
-                                     "${interface.identifier}");
-      exception_state.ThrowTypeError(
-          "Named property setter is not supported.");
-    }
-    return;
+${class_name}::NamedPropertyGetterCallback(${v8_property_name}, ${info});
+const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
+if (!is_creating) {
+  bindings::V8SetReturnValue(${info}, nullptr);
+  if (${info}.ShouldThrowOnError()) {
+    ExceptionState exception_state(${info}.GetIsolate(),
+                                   ExceptionState::kNamedSetterContext,
+                                   "${interface.identifier}");
+    exception_state.ThrowTypeError(
+        "Named property setter is not supported.");
   }
+  return;
 }
 
-// step 2. Let ownDesc be LegacyPlatformObjectGetOwnProperty(O, P, true).
-// step 3. Perform ? OrdinarySetWithOwnDescriptor(O, P, V, Receiver,
-//   ownDesc).
-//
-// Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
+// Do not intercept.  Fallback and let it define a new own property.
 """))
         return func_decl, func_def
 
@@ -2819,20 +2797,19 @@ if (${info}.Holder() == ${info}.This()) {
 
     body.extend([
         TextNode("""\
-// 3.8.2. [[Set]]
+// 3.9.2. [[Set]]
 // https://heycam.github.io/webidl/#legacy-platform-object-set
 // step 1. If O and Receiver are the same object, then:\
 """),
-        CxxLikelyIfNode(
-            cond="${info}.Holder() == ${info}.This()",
-            body=[
-                TextNode("""\
+        CxxLikelyIfNode(cond="${info}.Holder() == ${info}.This()",
+                        body=[
+                            TextNode("""\
 // step 1.2.1. Invoke the named property setter with P and V.\
 """),
-                make_steps_of_ce_reactions(cg_context),
-                EmptyNode(),
-                make_v8_set_return_value(cg_context),
-                TextNode("""\
+                            make_steps_of_ce_reactions(cg_context),
+                            EmptyNode(),
+                            make_v8_set_return_value(cg_context),
+                            TextNode("""\
 % if interface.identifier == "CSSStyleDeclaration":
 // CSSStyleDeclaration is abusing named properties.
 // Do not intercept if the property is not found.
@@ -2840,7 +2817,7 @@ if (${info}.Holder() == ${info}.This()) {
 bindings::V8SetReturnValue(${info}, nullptr);
 % endif
 return;"""),
-            ]),
+                        ]),
         EmptyNode(),
         TextNode("""\
 // Do not intercept.  Fallback to OrdinarySetWithOwnDescriptor.
@@ -2870,7 +2847,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
             and "NotEnumerable" in props.named_getter.extended_attributes):
         body.append(
             TextNode("""\
-// 3.8.4. [[Delete]]
+// 3.9.4. [[Delete]]
 // https://heycam.github.io/webidl/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
@@ -2885,7 +2862,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
     if not cg_context.named_property_deleter:
         body.append(
             TextNode("""\
-// 3.8.4. [[Delete]]
+// 3.9.4. [[Delete]]
 // https://heycam.github.io/webidl/#legacy-platform-object-delete
 // step 2. If O supports named properties, O does not implement an interface
 //   with the [Global] extended attribute and the result of calling the
@@ -2923,7 +2900,7 @@ if (does_exist) {
 
     body.extend([
         TextNode("""\
-// 3.8.4. [[Delete]]
+// 3.9.4. [[Delete]]
 // https://heycam.github.io/webidl/#legacy-platform-object-delete\
 """),
         make_steps_of_ce_reactions(cg_context),
@@ -2969,7 +2946,7 @@ def make_named_property_definer_callback(cg_context, function_name):
     elif not cg_context.interface.indexed_and_named_properties.named_setter:
         body.append(
             TextNode("""\
-// 3.8.3. [[DefineOwnProperty]]
+// 3.9.3. [[DefineOwnProperty]]
 // https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
 // step 2.1. Let creating be true if P is not a supported property name, and
 //   false otherwise.
@@ -2993,7 +2970,7 @@ if (!is_creating) {
     else:
         body.append(
             TextNode("""\
-// 3.8.3. [[DefineOwnProperty]]
+// 3.9.3. [[DefineOwnProperty]]
 // https://heycam.github.io/webidl/#legacy-platform-object-defineownproperty
 // step 2.2.2. If O implements an interface with a named property setter,
 //   then:
@@ -3164,7 +3141,7 @@ def make_named_property_enumerator_callback(cg_context, function_name):
 
     body.append(
         TextNode("""\
-// 3.8.6. [[OwnPropertyKeys]]
+// 3.9.6. [[OwnPropertyKeys]]
 // https://heycam.github.io/webidl/#legacy-platform-object-ownpropertykeys
 // step 3. If O supports named properties, then for each P of O's supported
 //   property names that is visible according to the named property
@@ -3210,32 +3187,6 @@ def make_named_props_obj_indexed_getter_callback(cg_context, function_name):
 v8::Local<v8::String> property_name =
     V8AtomicString(${isolate}, AtomicString::Number(${index}));
 NamedPropsObjNamedGetterCallback(property_name, ${info});
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "uint32_t index",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_value", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_IndexedPropertySetter")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-v8::Local<v8::String> property_name =
-    V8AtomicString(${isolate}, AtomicString::Number(${index}));
-NamedPropsObjNamedSetterCallback(property_name, ${v8_property_value}, ${info});
 """))
 
     return func_def
@@ -3351,42 +3302,6 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
 // TODO(yukishiino): Update the following hard-coded call to an appropriate
 // one.
 V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
-"""))
-
-    return func_def
-
-
-def make_named_props_obj_named_setter_callback(cg_context, function_name):
-    assert isinstance(cg_context, CodeGenContext)
-    assert isinstance(function_name, str)
-
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_value", "info"]
-
-    func_def = _make_interceptor_callback_def(
-        cg_context, function_name, arg_decls, arg_names, None,
-        "NamedPropertiesObject_NamedPropertySetter")
-    body = func_def.body
-
-    body.append(
-        TextNode("""\
-if (${info}.Holder() == ${info}.This()) {
-  // 3.6.4.2. [[DefineOwnProperty]]
-  // https://heycam.github.io/webidl/#named-properties-object-defineownproperty
-  bindings::V8SetReturnValue(${info}, nullptr);
-  if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
-    exception_state.ThrowTypeError(
-        "Named property setter is not supported.");
-  }
-  return;
-}
 """))
 
     return func_def
@@ -5876,8 +5791,6 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
     func_defs = [
         make_named_props_obj_named_getter_callback(
             cg_context, "NamedPropsObjNamedGetterCallback"),
-        make_named_props_obj_named_setter_callback(
-            cg_context, "NamedPropsObjNamedSetterCallback"),
         make_named_props_obj_named_deleter_callback(
             cg_context, "NamedPropsObjNamedDeleterCallback"),
         make_named_props_obj_named_definer_callback(
@@ -5886,8 +5799,6 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
             cg_context, "NamedPropsObjNamedDescriptorCallback"),
         make_named_props_obj_indexed_getter_callback(
             cg_context, "NamedPropsObjIndexedGetterCallback"),
-        make_named_props_obj_indexed_setter_callback(
-            cg_context, "NamedPropsObjIndexedSetterCallback"),
         make_named_props_obj_indexed_deleter_callback(
             cg_context, "NamedPropsObjIndexedDeleterCallback"),
         make_named_props_obj_indexed_definer_callback(
@@ -5904,7 +5815,7 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
 ${npo_prototype_template}->SetHandler(
     v8::NamedPropertyHandlerConfiguration(
         NamedPropsObjNamedGetterCallback,
-        NamedPropsObjNamedSetterCallback,
+        nullptr,  // setter
         nullptr,  // query
         NamedPropsObjNamedDeleterCallback,
         nullptr,  // enumerator
@@ -5918,7 +5829,7 @@ ${npo_prototype_template}->SetHandler(
 ${npo_prototype_template}->SetHandler(
     v8::IndexedPropertyHandlerConfiguration(
         NamedPropsObjIndexedGetterCallback,
-        NamedPropsObjIndexedSetterCallback,
+        nullptr,  // setter
         nullptr,  // query
         NamedPropsObjIndexedDeleterCallback,
         nullptr,  // enumerator
