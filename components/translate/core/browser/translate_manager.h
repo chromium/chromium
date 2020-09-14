@@ -120,8 +120,7 @@ class TranslateManager {
   // Initiate a manually triggered translation process for the current page.
   // Collect source and target languages, and show translation UI. If
   // |auto_translate| is true the page gets translated to the target language.
-  void InitiateManualTranslation(bool auto_translate = false,
-                                 bool triggered_from_menu = false);
+  void InitiateManualTranslation(bool auto_translate = false);
 
   // Returns true iff the current page could be manually translated.
   bool CanManuallyTranslate();
