@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL module script in XHTML documents should be evaluated. assert_true: expected true got undefined
-Harness: the test ran to completion.
-

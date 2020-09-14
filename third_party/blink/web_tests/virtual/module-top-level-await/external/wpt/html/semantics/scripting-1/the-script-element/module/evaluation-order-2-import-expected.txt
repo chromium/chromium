@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test evaluation order of modules assert_array_equals: expected property 2 to be "global-error" but got "microtask-2.2" (expected array ["step-2.2-1", "step-2.2-2", "global-error", "error", "microtask-2.2", "script-load", "global-load"] got ["step-2.2-1", "step-2.2-2", "microtask-2.2", "global-error", "error", "script-load", "global-load"])
-Harness: the test ran to completion.
-
