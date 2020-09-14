@@ -177,7 +177,11 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction(ChromeRestriction.RESTRICTION_TYPE_GOOGLE_PLAY_SERVICES)
-    public void testStartTranslateOnManualInitiation() throws TimeoutException {
+    @DisableIf.
+    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
+            message = "Consistently failing on Marshmallow https://crbug.com/1127786")
+    public void
+    testStartTranslateOnManualInitiation() throws TimeoutException {
         // Load a page that won't trigger the translate recommendation.
         mActivityTestRule.loadUrl(mTestServer.getURL(NON_TRANSLATE_PAGE));
 
