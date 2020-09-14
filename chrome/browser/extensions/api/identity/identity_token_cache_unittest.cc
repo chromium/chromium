@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -22,10 +23,17 @@ class IdentityTokenCacheTest : public testing::Test {
   void SetAccessToken(const std::string& ext_id,
                       const std::string& token_string,
                       const std::set<std::string>& scopes) {
-    ExtensionTokenKey key(ext_id, CoreAccountId(), scopes);
-    IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
-        token_string, scopes, base::TimeDelta::FromSeconds(3600));
-    cache_.SetToken(key, token);
+    SetAccessTokenInternal(ext_id, token_string, scopes,
+                           base::TimeDelta::FromSeconds(3600));
+  }
+
+  void SetExpiredAccessToken(const std::string& ext_id,
+                             const std::string& token_string,
+                             const std::set<std::string>& scopes) {
+    // Token must not be expired at the insertion moment.
+    SetAccessTokenInternal(ext_id, token_string, scopes,
+                           base::TimeDelta::FromMilliseconds(1));
+    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
   }
 
   void SetRemoteConsentApprovedToken(const std::string& ext_id,
@@ -46,6 +54,19 @@ class IdentityTokenCacheTest : public testing::Test {
   IdentityTokenCache& cache() { return cache_; }
 
  private:
+  void SetAccessTokenInternal(const std::string& ext_id,
+                              const std::string& token_string,
+                              const std::set<std::string>& scopes,
+                              base::TimeDelta time_to_live) {
+    ExtensionTokenKey key(ext_id, CoreAccountId(), scopes);
+    IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
+        token_string, scopes, time_to_live);
+    cache_.SetToken(key, token);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   IdentityTokenCache cache_;
 };
 
@@ -59,6 +80,19 @@ TEST_F(IdentityTokenCacheTest, AccessTokenCacheHit) {
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN, cached_token.status());
   EXPECT_EQ(token_string, cached_token.token());
   EXPECT_EQ(scopes, cached_token.granted_scopes());
+}
+
+// The cache should return NOTFOUND status when a token expires.
+// Regression test for https://crbug.com/1127187.
+TEST_F(IdentityTokenCacheTest, ExpiredAccessTokenCacheHit) {
+  std::string token_string = "token";
+  std::set<std::string> scopes = {"foo", "bar"};
+  SetExpiredAccessToken(kDefaultExtensionId, token_string, scopes);
+
+  const IdentityTokenCacheValue& cached_token =
+      GetToken(kDefaultExtensionId, scopes);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            cached_token.status());
 }
 
 TEST_F(IdentityTokenCacheTest, IntermediateValueCacheHit) {
@@ -85,6 +119,21 @@ TEST_F(IdentityTokenCacheTest, CacheHitPriority) {
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN, cached_token.status());
   EXPECT_EQ(token_string, cached_token.token());
   EXPECT_EQ(scopes, cached_token.granted_scopes());
+}
+
+TEST_F(IdentityTokenCacheTest, CacheHitAfterExpired) {
+  std::string token_string = "token";
+  std::set<std::string> scopes = {"foo", "bar"};
+  SetExpiredAccessToken(kDefaultExtensionId, token_string, scopes);
+
+  std::string consent_result = "result";
+  SetRemoteConsentApprovedToken(kDefaultExtensionId, consent_result, scopes);
+
+  const IdentityTokenCacheValue& cached_token =
+      GetToken(kDefaultExtensionId, scopes);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED,
+            cached_token.status());
+  EXPECT_EQ(consent_result, cached_token.consent_result());
 }
 
 TEST_F(IdentityTokenCacheTest, AccessTokenCacheMiss) {
@@ -257,6 +306,48 @@ TEST_F(IdentityTokenCacheTest, SubsetMatchCacheHitPriority) {
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN, cached_token.status());
   EXPECT_EQ(token_string_small, cached_token.token());
   EXPECT_EQ(scopes_small, cached_token.granted_scopes());
+}
+
+TEST_F(IdentityTokenCacheTest, SubsetMatchCacheHitPriorityOneExpired) {
+  std::set<std::string> scopes_smallest = {"foo"};
+  std::string consent_result = "result";
+  SetRemoteConsentApprovedToken(kDefaultExtensionId, consent_result,
+                                scopes_smallest);
+
+  std::set<std::string> scopes_small = {"foo", "bar"};
+  std::string token_string_small = "token_small";
+  SetExpiredAccessToken(kDefaultExtensionId, token_string_small, scopes_small);
+
+  std::set<std::string> scopes_large = {"foo", "bar", "foobar"};
+  std::string token_string_large = "token_large";
+  SetAccessToken(kDefaultExtensionId, token_string_large, scopes_large);
+
+  const IdentityTokenCacheValue& cached_token =
+      GetToken(kDefaultExtensionId, scopes_small);
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN, cached_token.status());
+  EXPECT_EQ(token_string_large, cached_token.token());
+  EXPECT_EQ(scopes_large, cached_token.granted_scopes());
+}
+
+TEST_F(IdentityTokenCacheTest, SubsetMatchCacheHitPriorityTwoExpired) {
+  std::set<std::string> scopes_smallest = {"foo"};
+  std::string consent_result = "result";
+  SetRemoteConsentApprovedToken(kDefaultExtensionId, consent_result,
+                                scopes_smallest);
+
+  std::set<std::string> scopes_small = {"foo", "bar"};
+  std::string token_string_small = "token_small";
+  SetExpiredAccessToken(kDefaultExtensionId, token_string_small, scopes_small);
+
+  std::set<std::string> scopes_large = {"foo", "bar", "foobar"};
+  std::string token_string_large = "token_large";
+  SetExpiredAccessToken(kDefaultExtensionId, token_string_large, scopes_large);
+
+  const IdentityTokenCacheValue& cached_token =
+      GetToken(kDefaultExtensionId, std::set<std::string>({"foo"}));
+  EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED,
+            cached_token.status());
+  EXPECT_EQ(consent_result, cached_token.consent_result());
 }
 
 }  // namespace extensions

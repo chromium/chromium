@@ -146,8 +146,8 @@ IdentityTokenCache::~IdentityTokenCache() = default;
 
 void IdentityTokenCache::SetToken(const ExtensionTokenKey& key,
                                   const IdentityTokenCacheValue& token_data) {
-  DCHECK_NE(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
-            token_data.status());
+  if (token_data.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND)
+    return;
 
   if (token_data.status() != IdentityTokenCacheValue::CACHE_STATUS_TOKEN) {
     const IdentityTokenCacheValue& cached_value = GetToken(key);
@@ -199,6 +199,7 @@ void IdentityTokenCache::EraseAllTokens() {
 
 const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
     const ExtensionTokenKey& key) {
+  EraseStaleTokens();
   AccessTokensKey access_tokens_key(key);
   auto find_tokens_it = access_tokens_cache_.find(access_tokens_key);
   if (find_tokens_it != access_tokens_cache_.end()) {
@@ -211,8 +212,10 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
         });
 
     if (matched_token_it != cached_tokens.end()) {
-      DCHECK_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
-                matched_token_it->status());
+      IdentityTokenCacheValue::CacheValueStatus status =
+          matched_token_it->status();
+      DCHECK(status == IdentityTokenCacheValue::CACHE_STATUS_TOKEN ||
+             status == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND);
       return *matched_token_it;
     }
   }
@@ -227,6 +230,27 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
 const IdentityTokenCache::AccessTokensCache&
 IdentityTokenCache::access_tokens_cache() {
   return access_tokens_cache_;
+}
+
+void IdentityTokenCache::EraseStaleTokens() {
+  // Expired tokens have CACHE_STATUS_NOTFOUND status.
+  for (auto it = access_tokens_cache_.begin();
+       it != access_tokens_cache_.end();) {
+    auto& cached_tokens = it->second;
+    base::EraseIf(cached_tokens, [](const IdentityTokenCacheValue& value) {
+      return value.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND;
+    });
+
+    if (cached_tokens.empty())
+      it = access_tokens_cache_.erase(it);
+    else
+      ++it;
+  }
+
+  base::EraseIf(intermediate_value_cache_, [](const auto& key_value_pair) {
+    const IdentityTokenCacheValue& value = key_value_pair.second;
+    return value.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND;
+  });
 }
 
 }  // namespace extensions
