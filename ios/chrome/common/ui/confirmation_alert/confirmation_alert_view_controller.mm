@@ -288,7 +288,12 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 - (void)updateViewConstraints {
   CGFloat marginValue =
       self.view.layoutMargins.left - self.view.safeAreaInsets.left;
-  self.buttonBottomVerticalConstraint.constant = -marginValue;
+  if (!self.secondaryActionAvailable) {
+    // Do not add margin badding between the bottom button and the containing
+    // view if there is a secondary action button to allow for more spacing
+    // between the content and buttons.
+    self.buttonBottomVerticalConstraint.constant = -marginValue;
+  }
   if (self.traitCollection.horizontalSizeClass ==
       UIUserInterfaceSizeClassCompact) {
     [NSLayoutConstraint deactivateConstraints:self.regularWidthConstraints];
@@ -319,7 +324,9 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     [self.topToolbar setItems:self.regularHeightToolbarItems animated:YES];
   }
 
-  newBottomConstraint.constant = -marginValue;
+  if (!self.secondaryActionAvailable) {
+    newBottomConstraint.constant = -marginValue;
+  }
   [NSLayoutConstraint deactivateConstraints:@[ oldBottomConstraint ]];
   [NSLayoutConstraint activateConstraints:@[ newBottomConstraint ]];
 
@@ -584,7 +591,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   [secondaryActionButton setTitleColor:titleColor
                               forState:UIControlStateNormal];
   secondaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   secondaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
   secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;

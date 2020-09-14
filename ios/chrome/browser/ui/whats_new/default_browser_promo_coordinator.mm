@@ -50,6 +50,8 @@ enum IOSDefaultBrowserFullscreenPromoAction {
   self.defaultBrowerPromoViewController =
       [[DefaultBrowserPromoViewController alloc] init];
   self.defaultBrowerPromoViewController.actionHandler = self;
+  self.defaultBrowerPromoViewController.modalPresentationStyle =
+      UIModalPresentationFormSheet;
   [self.baseViewController
       presentViewController:self.defaultBrowerPromoViewController
                    animated:YES
