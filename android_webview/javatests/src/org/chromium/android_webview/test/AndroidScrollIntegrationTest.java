@@ -449,13 +449,8 @@ public class AndroidScrollIntegrationTest {
     }
 
     @Test
-    /**
-     * @SmallTest
-     * @Feature({"AndroidWebView"})
-     * BUG=813837
-     */
-    // Originally flaked only in multi-process mode (http://crbug.com/616505)
-    @DisabledTest
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testTouchScrollCanBeAlteredByUi() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final ScrollTestContainerView testContainerView =
