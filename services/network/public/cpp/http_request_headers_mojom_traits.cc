@@ -4,23 +4,10 @@
 
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/crash_keys.h"
 
 namespace mojo {
-
-// static
-const std::string&
-StructTraits<network::mojom::HttpRequestHeaderKeyValuePairDataView,
-             net::HttpRequestHeaders::HeaderKeyValuePair>::
-    key(const net::HttpRequestHeaders::HeaderKeyValuePair& item) {
-  if (!net::HttpUtil::IsValidHeaderName(item.key)) {
-    // TODO(crbug.com/1028189): Adding temporarily to debug crbug.com/1028189.
-    base::debug::DumpWithoutCrashing();
-  }
-  return item.key;
-}
 
 // static
 bool StructTraits<network::mojom::HttpRequestHeaderKeyValuePairDataView,

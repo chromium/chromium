@@ -16,7 +16,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::HttpRequestHeaderKeyValuePairDataView,
                  net::HttpRequestHeaders::HeaderKeyValuePair> {
   static const std::string& key(
-      const net::HttpRequestHeaders::HeaderKeyValuePair& item);
+      const net::HttpRequestHeaders::HeaderKeyValuePair& item) {
+    return item.key;
+  }
   static const std::string& value(
       const net::HttpRequestHeaders::HeaderKeyValuePair& item) {
     return item.value;
