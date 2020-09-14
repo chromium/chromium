@@ -301,6 +301,10 @@ public class CrashesListFragmentTest {
                 .check(matches(withText(CRASH_REPORT_BUTTON_TEXT)));
         bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)));
     }
 
     @Test
@@ -336,6 +340,10 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_UPLOAD_BUTTON_TEXT)))
                 .check(matches(isEnabled()));
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)));
     }
 
     @Test
@@ -370,6 +378,10 @@ public class CrashesListFragmentTest {
                 .perform(click());
         bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)));
     }
 
     @Test
@@ -405,6 +417,10 @@ public class CrashesListFragmentTest {
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_UPLOAD_BUTTON_TEXT)))
                 .check(matches(isEnabled()));
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)));
     }
 
     @Test
@@ -502,5 +518,79 @@ public class CrashesListFragmentTest {
             checkUnknownPackageCrashItemHeader(
                     onData(anything()).atPosition(i), crashInfo[crashReportsNum - i - 1]);
         }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testHideCrashButton_uploaded() throws Throwable {
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo("123456", systemTime, "0abcde123456",
+                systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+        assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // Check crash item header
+        checkUnknownPackageCrashItemHeader(onData(anything()).atPosition(0), crashInfo)
+                .perform(click()); // click to expand it
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+
+        crashListLoadInitCount = helper.getCallCount();
+
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)))
+                .perform(click());
+
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    public void testHideCrashButton_pending() throws Throwable {
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo(
+                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // Check crash item header
+        checkUnknownPackageCrashItemHeader(onData(anything()).atPosition(0), crashInfo)
+                .perform(click()); // click to expand it
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+
+        crashListLoadInitCount = helper.getCallCount();
+
+        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+                .check(matches(isDisplayed()))
+                .check(matches(isEnabled()))
+                .check(matches(withDrawable(R.drawable.ic_delete)))
+                .perform(click());
+
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
     }
 }
