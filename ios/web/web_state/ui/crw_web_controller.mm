@@ -86,6 +86,9 @@ NSString* const kIsMainFrame = @"isMainFrame";
 // URL scheme for messages sent from javascript for asynchronous processing.
 NSString* const kScriptMessageName = @"crwebinvoke";
 
+// URL scheme for session restore.
+NSString* const kSessionRestoreScriptMessageName = @"session_restore";
+
 }  // namespace
 
 @interface CRWWebController () <CRWWKNavigationHandlerDelegate,
@@ -441,6 +444,15 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
           [weakSelf didReceiveScriptMessage:message];
         }
                            name:kScriptMessageName
+                        webView:_webView];
+
+    // TODO(crbug.com/1127521) Consider consolidating session restore script
+    // logic into a different place.
+    [messageRouter
+        setScriptMessageHandler:^(WKScriptMessage* message) {
+          [weakSelf didReceiveSessionRestoreScriptMessage:message];
+        }
+                           name:kSessionRestoreScriptMessageName
                         webView:_webView];
 
     _webView.allowsBackForwardNavigationGestures =
@@ -1102,6 +1114,22 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // Broken out into separate method to catch errors.
   if (![self respondToWKScriptMessage:message]) {
     DLOG(WARNING) << "Message from JS not handled due to invalid format";
+  }
+}
+
+// TODO(crbug.com/1127521) Consider consolidating session restore script
+// logic into a different place.
+- (void)didReceiveSessionRestoreScriptMessage:(WKScriptMessage*)message {
+  if ([message.name isEqualToString:kSessionRestoreScriptMessageName] &&
+      [message.body[@"offset"] isKindOfClass:[NSNumber class]]) {
+    NSString* method =
+        [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
+                                   message.body[@"offset"]];
+    // Don't use |_jsInjector| -executeJavaScript here, as it relies on
+    // |windowID| being injected before window.onload starts.
+    web::ExecuteJavaScript(self.webView, method, nil);
+  } else {
+    DLOG(WARNING) << "Invalid session restore JS message name.";
   }
 }
 
