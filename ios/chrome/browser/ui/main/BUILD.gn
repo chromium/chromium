@@ -36,6 +36,20 @@ source_set("scene_state_header") {
   ]
 }
 
+source_set("incognito_blocker_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_blocker_scene_agent.h",
+    "incognito_blocker_scene_agent.mm",
+  ]
+  deps = [
+    ":scene_state_header",
+    "//base",
+    "//ios/chrome/browser/ui/util:multiwindow_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -52,6 +66,7 @@ source_set("scene") {
   ]
 
   deps = [
+    ":incognito_blocker_scene_agent",
     ":main",
     ":scene_guts",
     ":scene_testing",
@@ -193,10 +208,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_view_wrangler_unittest.mm",
+    "incognito_blocker_scene_agent_unittest.mm",
     "scene_controller_unittest.mm",
     "scene_state_browser_agent_unittest.mm",
   ]
   deps = [
+    ":incognito_blocker_scene_agent",
     ":main",
     ":scene",
     "//base",

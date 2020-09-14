@@ -33,10 +33,6 @@
 // The state of the scene controlled by this object.
 @property(nonatomic, weak, readonly) SceneState* sceneState;
 
-// Returns whether the scene is showing or partially showing the
-// incognito panel.
-@property(nonatomic, assign, readonly) BOOL incognitoContentVisible;
-
 // A temporary pointer to MainController.
 @property(nonatomic, weak) id<MainControllerGuts> mainController;
 

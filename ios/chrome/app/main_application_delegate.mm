@@ -193,9 +193,7 @@
   }
 
   [_appState applicationDidEnterBackground:application
-                              memoryHelper:_memoryHelper
-                   incognitoContentVisible:self.sceneController
-                                               .incognitoContentVisible];
+                              memoryHelper:_memoryHelper];
 }
 
 // Called when returning to the foreground.
@@ -283,9 +281,7 @@
   DCHECK(IsSceneStartupSupported());
   if (@available(iOS 13, *)) {
     [_appState applicationDidEnterBackground:UIApplication.sharedApplication
-                                memoryHelper:_memoryHelper
-                     incognitoContentVisible:self.sceneController
-                                                 .incognitoContentVisible];
+                                memoryHelper:_memoryHelper];
   }
 }
 

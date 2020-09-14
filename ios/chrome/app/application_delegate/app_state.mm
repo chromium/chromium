@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/critical_closure.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
@@ -104,8 +103,6 @@ NSString* const kStartupAttemptReset = @"StartupAttempReset";
   base::TimeTicks _sessionStartTime;
   // YES if the app is currently in the process of terminating.
   BOOL _appIsTerminating;
-  // Interstitial view used to block any incognito tabs after backgrounding.
-  UIView* _incognitoBlocker;
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
@@ -212,8 +209,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 #pragma mark - Public methods.
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
-                         memoryHelper:(MemoryWarningHelper*)memoryHelper
-              incognitoContentVisible:(BOOL)incognitoContentVisible {
+                         memoryHelper:(MemoryWarningHelper*)memoryHelper {
   if ([self isInSafeMode]) {
     // Force a crash when backgrounding and in safe mode, so users don't get
     // stuck in safe mode.
@@ -254,34 +250,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                                         foregroundMemoryWarningCount]];
 
   [_startupInformation expireFirstUserActionRecorder];
-
-  // If the current BVC is incognito, or if we are in the tab switcher and there
-  // are incognito tabs visible, place a full screen view containing the
-  // switcher background to hide any incognito content.
-  if (incognitoContentVisible) {
-    // Cover the largest area potentially shown in the app switcher, in case
-    // the screenshot is reused in a different orientation or size class.
-    CGRect screenBounds = [[UIScreen mainScreen] bounds];
-    CGFloat maxDimension =
-        std::max(CGRectGetWidth(screenBounds), CGRectGetHeight(screenBounds));
-    _incognitoBlocker = [[UIView alloc]
-        initWithFrame:CGRectMake(0, 0, maxDimension, maxDimension)];
-    NSBundle* mainBundle = base::mac::FrameworkBundle();
-    NSArray* topObjects =
-        [mainBundle loadNibNamed:@"LaunchScreen" owner:self options:nil];
-    UIViewController* launchScreenController =
-        base::mac::ObjCCastStrict<UIViewController>([topObjects lastObject]);
-    [_incognitoBlocker addSubview:[launchScreenController view]];
-    [launchScreenController view].autoresizingMask =
-        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    _incognitoBlocker.autoresizingMask =
-        UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-
-    // Adding |_incognitoBlocker| to |_window| won't cover overlay windows such
-    // as fullscreen video.  Instead use the sharedApplication |keyWindow|.
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    [window addSubview:_incognitoBlocker];
-  }
 
   // Do not save cookies if it is already in progress.
   id<BrowserInterface> currentInterface =
@@ -344,9 +312,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         ->OnApplicationWillEnterForeground();
   }
 
-  [_incognitoBlocker removeFromSuperview];
-  _incognitoBlocker = nil;
-
   crash_keys::SetCurrentlyInBackground(false);
 
   // Update the state of metrics and crash reporting, as the method of
@@ -393,9 +358,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
              connectionInformation:
                  (id<ConnectionInformation>)connectionInformation {
   DCHECK(!IsSceneStartupSupported());
-  [_incognitoBlocker removeFromSuperview];
-  _incognitoBlocker = nil;
-
   DCHECK([_browserLauncher browserInitializationStage] ==
          INITIALIZATION_STAGE_FOREGROUND);
 

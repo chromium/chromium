@@ -82,6 +82,10 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // WindowActivityRestoredOrigin.
 @property(nonatomic, assign) WindowActivityOrigin currentOrigin;
 
+// YES if some incognito content is visible, for example an incognito tab or the
+// incognito tab switcher.
+@property(nonatomic) BOOL incognitoContentVisible;
+
 // Window for the associated scene, if any.
 @property(nonatomic, strong) UIWindow* window;
 

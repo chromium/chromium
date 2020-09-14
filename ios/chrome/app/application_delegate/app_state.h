@@ -115,8 +115,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Called when going into the background. iOS already broadcasts, so
 // stakeholders can register for it directly.
 - (void)applicationDidEnterBackground:(UIApplication*)application
-                         memoryHelper:(MemoryWarningHelper*)memoryHelper
-              incognitoContentVisible:(BOOL)incognitoContentVisible;
+                         memoryHelper:(MemoryWarningHelper*)memoryHelper;
 
 // Called when returning to the foreground. Resets and uploads the metrics.
 // Starts the browser to foreground if needed.

@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
+#import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -235,6 +236,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
     // Add agents.
     [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
+    [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
   }
   return self;
 }
@@ -1008,7 +1010,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
-  _incognitoContentVisible = incognitoContentVisible;
+  self.sceneState.incognitoContentVisible = incognitoContentVisible;
 }
 
 - (void)startVoiceSearch {
