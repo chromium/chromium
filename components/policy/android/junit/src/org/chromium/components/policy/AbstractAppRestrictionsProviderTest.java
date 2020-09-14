@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.policy;
+package org.chromium.components.policy;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,7 +37,6 @@ public class AbstractAppRestrictionsProviderTest {
      * Minimal concrete class implementing AbstractAppRestrictionsProvider.
      */
     private class DummyAppRestrictionsProvider extends AbstractAppRestrictionsProvider {
-
         public DummyAppRestrictionsProvider(Context context) {
             super(context);
         }
@@ -51,7 +50,6 @@ public class AbstractAppRestrictionsProviderTest {
         protected String getRestrictionChangeIntentAction() {
             return null;
         }
-
     }
 
     /**
@@ -132,5 +130,4 @@ public class AbstractAppRestrictionsProviderTest {
         provider.stopListening();
         Assert.assertFalse(shadowApplication.hasReceiverForIntent(intent));
     }
-
 }

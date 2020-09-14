@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.policy.test;
+package org.chromium.components.policy.test;
 
 import static org.mockito.Mockito.times;
 
@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.policy.PolicyService;
+import org.chromium.components.policy.PolicyService;
 
 import java.util.ArrayList;
 import java.util.List;

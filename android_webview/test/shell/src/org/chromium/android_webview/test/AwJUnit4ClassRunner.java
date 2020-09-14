@@ -13,7 +13,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.OnlyRunIn.ProcessMode;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.policy.test.annotations.Policies;
+import org.chromium.components.policy.test.annotations.Policies;
 
 import java.util.ArrayList;
 import java.util.List;

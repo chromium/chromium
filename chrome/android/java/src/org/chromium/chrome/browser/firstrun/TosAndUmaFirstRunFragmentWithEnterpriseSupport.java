@@ -20,7 +20,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.components.browser_ui.widget.LoadingView;
-import org.chromium.policy.PolicyService;
+import org.chromium.components.policy.PolicyService;
 
 /**
  * Another FirstRunFragment that is only used when running with CCT.

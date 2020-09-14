@@ -9,7 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.policy.AppRestrictionsProvider;
+import org.chromium.components.policy.AppRestrictionsProvider;
 
 /**
  * Does the plumbing between the policies collected via Android's App Restriction system and the

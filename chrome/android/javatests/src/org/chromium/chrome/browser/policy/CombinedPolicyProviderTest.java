@@ -19,9 +19,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.policy.CombinedPolicyProvider;
+import org.chromium.components.policy.PolicyProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.CombinedPolicyProvider;
-import org.chromium.policy.PolicyProvider;
 
 /** Instrumentation tests for {@link CombinedPolicyProvider} */
 @RunWith(ChromeJUnit4ClassRunner.class)

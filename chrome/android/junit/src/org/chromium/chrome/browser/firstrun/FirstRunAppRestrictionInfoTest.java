@@ -29,8 +29,8 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.policy.PolicySwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.PolicySwitches;
 import org.chromium.testing.local.CustomShadowUserManager;
 
 import java.util.Arrays;

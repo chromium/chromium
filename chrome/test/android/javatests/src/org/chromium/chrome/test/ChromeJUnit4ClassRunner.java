@@ -23,9 +23,9 @@ import org.chromium.base.test.util.SkipCheck;
 import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.test.annotations.Policies;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

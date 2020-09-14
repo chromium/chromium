@@ -38,10 +38,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.policy.PolicyService;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.PolicyService;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.lang.annotation.Retention;

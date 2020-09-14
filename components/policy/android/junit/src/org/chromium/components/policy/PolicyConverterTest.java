@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.policy;
+package org.chromium.components.policy;
 
 import static org.mockito.Mockito.verify;
 
@@ -40,7 +40,8 @@ public class PolicyConverterTest {
 
     /**
      * Test method for
-     * {@link org.chromium.policy.PolicyConverter#setPolicy(java.lang.String, java.lang.Object)}.
+     * {@link org.chromium.components.policy.PolicyConverter#setPolicy(java.lang.String,
+     * java.lang.Object)}.
      */
     @Test
     public void testSetPolicy() {

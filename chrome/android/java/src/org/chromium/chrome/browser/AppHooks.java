@@ -47,10 +47,10 @@ import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.browser_ui.widget.FeatureHighlightProvider;
 import org.chromium.components.external_intents.AuthenticatorNavigationInterceptor;
+import org.chromium.components.policy.AppRestrictionsProvider;
+import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.SystemAccountManagerDelegate;
-import org.chromium.policy.AppRestrictionsProvider;
-import org.chromium.policy.CombinedPolicyProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -258,6 +258,13 @@ public abstract class AppHooks {
     }
 
     public void registerPolicyProviders(CombinedPolicyProvider combinedProvider) {
+        combinedProvider.registerProvider(
+                new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
+    }
+
+    // TODO(zmin): Delete once the internal code is migrated.
+    public void registerPolicyProviders(
+            org.chromium.policy.CombinedPolicyProvider combinedProvider) {
         combinedProvider.registerProvider(
                 new AppRestrictionsProvider(ContextUtils.getApplicationContext()));
     }

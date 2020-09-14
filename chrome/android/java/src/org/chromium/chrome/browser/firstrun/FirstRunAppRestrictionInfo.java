@@ -19,8 +19,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.policy.AppRestrictionsProvider;
-import org.chromium.policy.PolicySwitches;
+import org.chromium.components.policy.AppRestrictionsProvider;
+import org.chromium.components.policy.PolicySwitches;
 
 import java.util.LinkedList;
 import java.util.Locale;

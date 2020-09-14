@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.policy.PolicyService;
+import org.chromium.components.policy.PolicyService;
 
 /**
  * Get the PolicyService instance. Note that the associated C++ instance won't

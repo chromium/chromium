@@ -15,11 +15,11 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.policy.AbstractAppRestrictionsProvider;
+import org.chromium.components.policy.AppRestrictionsProvider;
+import org.chromium.components.policy.CombinedPolicyProvider;
+import org.chromium.components.policy.test.PolicyData;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.policy.AbstractAppRestrictionsProvider;
-import org.chromium.policy.AppRestrictionsProvider;
-import org.chromium.policy.CombinedPolicyProvider;
-import org.chromium.policy.test.PolicyData;
 
 import java.util.Arrays;
 

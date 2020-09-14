@@ -5,9 +5,9 @@
 import("//build/config/android/rules.gni")
 
 _jni_sources = [
-  "java/src/org/chromium/policy/CombinedPolicyProvider.java",
-  "java/src/org/chromium/policy/PolicyConverter.java",
-  "java/src/org/chromium/policy/PolicyService.java",
+  "java/src/org/chromium/components/policy/CombinedPolicyProvider.java",
+  "java/src/org/chromium/components/policy/PolicyConverter.java",
+  "java/src/org/chromium/components/policy/PolicyService.java",
 ]
 
 java_cpp_strings("java_switches_srcjar") {
@@ -26,12 +26,14 @@ android_library("policy_java") {
   srcjar_deps = [ ":java_switches_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  sources =
-      _jni_sources + [
-        "java/src/org/chromium/policy/AbstractAppRestrictionsProvider.java",
-        "java/src/org/chromium/policy/AppRestrictionsProvider.java",
-        "java/src/org/chromium/policy/PolicyProvider.java",
-      ]
+  sources = _jni_sources + [
+              "java/src/org/chromium/policy/AppRestrictionsProvider.java",
+              "java/src/org/chromium/policy/CombinedPolicyProvider.java",
+              "java/src/org/chromium/policy/PolicyProvider.java",
+              "java/src/org/chromium/components/policy/AbstractAppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/AppRestrictionsProvider.java",
+              "java/src/org/chromium/components/policy/PolicyProvider.java",
+            ]
 }
 
 android_library("policy_java_test_support") {
@@ -44,8 +46,8 @@ android_library("policy_java_test_support") {
     "//third_party/junit",
   ]
   sources = [
-    "javatests/src/org/chromium/policy/test/PolicyData.java",
-    "javatests/src/org/chromium/policy/test/annotations/Policies.java",
+    "javatests/src/org/chromium/components/policy/test/PolicyData.java",
+    "javatests/src/org/chromium/components/policy/test/annotations/Policies.java",
   ]
 }
 
@@ -59,10 +61,10 @@ java_library("components_policy_junit_tests") {
   bypass_platform_checks = true
   testonly = true
   sources = [
-    "junit/src/org/chromium/policy/AbstractAppRestrictionsProviderTest.java",
-    "junit/src/org/chromium/policy/CombinedPolicyProviderTest.java",
-    "junit/src/org/chromium/policy/PolicyConverterTest.java",
-    "junit/src/org/chromium/policy/test/annotations/PoliciesTest.java",
+    "junit/src/org/chromium/components/policy/AbstractAppRestrictionsProviderTest.java",
+    "junit/src/org/chromium/components/policy/CombinedPolicyProviderTest.java",
+    "junit/src/org/chromium/components/policy/PolicyConverterTest.java",
+    "junit/src/org/chromium/components/policy/test/annotations/PoliciesTest.java",
   ]
   deps = [
     ":policy_java",
@@ -77,8 +79,7 @@ java_library("components_policy_junit_tests") {
   ]
 }
 
-_test_jni_sources =
-    [ "javatests/src/org/chromium/policy/test/PolicyServiceTestSupporter.java" ]
+_test_jni_sources = [ "javatests/src/org/chromium/components/policy/test/PolicyServiceTestSupporter.java" ]
 
 android_library("native_test_support_java") {
   testonly = true

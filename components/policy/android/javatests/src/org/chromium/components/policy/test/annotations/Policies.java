@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.policy.test.annotations;
+package org.chromium.components.policy.test.annotations;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,8 +13,8 @@ import org.junit.Assert;
 import org.junit.runners.model.FrameworkMethod;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
-import org.chromium.policy.AbstractAppRestrictionsProvider;
-import org.chromium.policy.test.PolicyData;
+import org.chromium.components.policy.AbstractAppRestrictionsProvider;
+import org.chromium.components.policy.test.PolicyData;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -117,9 +117,8 @@ public final class Policies {
         AnnotatedElement parent = (element instanceof Method)
                 ? ((Method) element).getDeclaringClass()
                 : ((Class<?>) element).getSuperclass();
-        Map<String, PolicyData> flags = (parent == null)
-                ? new HashMap<String, PolicyData>()
-                : getPolicies(parent);
+        Map<String, PolicyData> flags =
+                (parent == null) ? new HashMap<String, PolicyData>() : getPolicies(parent);
 
         if (element.isAnnotationPresent(Policies.Add.class)) {
             flags.putAll(fromItems(element.getAnnotation(Policies.Add.class).value()));
