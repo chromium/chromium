@@ -254,3 +254,30 @@ fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
   seed_corpus =
       "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
 }
+
+# Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
+# usable on linux through `VideoCaptureDeviceFactoryLinux`.
+if (is_linux) {
+  mojolpm_fuzzer_test("video_capture_host_mojolpm_fuzzer") {
+    sources = [ "video_capture_host_mojolpm_fuzzer.cc" ]
+
+    proto_source = "video_capture_host_mojolpm_fuzzer.proto"
+
+    deps = [
+      "//base/test:test_support",
+      "//content/browser:for_content_tests",
+      "//content/public/browser:browser",
+      "//content/test:content_unittests",
+      "//content/test:test_support",
+      "//media:test_support",
+      "//media/capture:capture_lib",
+      "//media/capture:test_support",
+      "//services/network:test_support",
+      "//storage/browser:test_support",
+      "//third_party/blink/public/common:common",
+      "//third_party/icu:icudata",
+    ]
+
+    proto_deps = [ "//media/capture/mojom:video_capture_mojolpm" ]
+  }
+}
