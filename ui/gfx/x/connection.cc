@@ -21,6 +21,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_switches.h"
+#include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
 #include "ui/gfx/x/xproto_types.h"
@@ -455,8 +456,16 @@ void Connection::PreDispatchEvent(const Event& event) {
   if (auto* mapping = event.As<MappingNotifyEvent>()) {
     if (mapping->request == Mapping::Modifier ||
         mapping->request == Mapping::Keyboard) {
+      setup_.min_keycode = mapping->first_keycode;
+      setup_.max_keycode = static_cast<x11::KeyCode>(
+          static_cast<int>(mapping->first_keycode) + mapping->count - 1);
       ResetKeyboardState();
     }
+  }
+  if (auto* notify = event.As<x11::Xkb::NewKeyboardNotifyEvent>()) {
+    setup_.min_keycode = notify->minKeyCode;
+    setup_.max_keycode = notify->maxKeyCode;
+    ResetKeyboardState();
   }
 
   // This is adapted from XRRUpdateConfiguration.

@@ -80,6 +80,14 @@ void InitializeXkb(x11::Connection* connection) {
           DVLOG(1) << "Could not set XKB auto repeat flag.";
         }
       }));
+
+  constexpr auto kXkbAllMapPartMask = static_cast<x11::Xkb::MapPart>(0xff);
+  xkb.SelectEvents({
+      .deviceSpec = static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),
+      .affectWhich = x11::Xkb::EventType::NewKeyboardNotify,
+      .selectAll = x11::Xkb::EventType::NewKeyboardNotify,
+      .affectMap = kXkbAllMapPartMask,
+  });
 }
 
 x11::Time ExtractTimeFromXEvent(const x11::Event& xev) {
