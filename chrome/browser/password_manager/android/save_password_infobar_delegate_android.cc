@@ -95,7 +95,7 @@ base::string16 SavePasswordInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK)
                                        ? IDS_PASSWORD_MANAGER_SAVE_BUTTON
-                                       : IDS_PASSWORD_MANAGER_BLACKLIST_BUTTON);
+                                       : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON);
 }
 
 bool SavePasswordInfoBarDelegate::Accept() {
