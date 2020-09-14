@@ -188,7 +188,9 @@ AudioLogMessage::~AudioLogMessage() {
 }
 
 void AudioLogMessage::Cancel() {
-  buffer_->Cancel();
+  if (buffer_) {
+    buffer_->Cancel();
+  }
 }
 
 void InitializeAudioLog() {
