@@ -882,6 +882,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
   EXPECT_EQ(card.billing_address_id(), cards[0]->billing_address_id());
   EXPECT_EQ(card.nickname(), cards[0]->nickname());
   EXPECT_EQ(card.card_issuer(), cards[0]->card_issuer());
+  EXPECT_EQ(card.instrument_id(), cards[0]->instrument_id());
 
   // Also make sure that those types are not empty, to exercice all the code
   // paths.
@@ -890,6 +891,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
   EXPECT_NE(0, card.expiration_month());
   EXPECT_NE(0, card.expiration_year());
   EXPECT_FALSE(card.nickname().empty());
+  EXPECT_NE(0, card.instrument_id());
 }
 
 // Test that all field values for a cloud token data sent from the server are
