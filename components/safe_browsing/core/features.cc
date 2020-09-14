@@ -62,6 +62,9 @@ const base::Feature kEnhancedProtection {
 #endif
 };
 
+const base::Feature kLimitedListSizeForIOS{"SafeBrowsingLimitedListSizeForIOS",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMalwareScanEnabled{"SafeBrowsingMalwareScanEnabled",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -168,6 +171,7 @@ constexpr struct {
     {&kDelayedWarnings, true},
     {&kDownloadRequestWithToken, true},
     {&kEnhancedProtection, true},
+    {&kLimitedListSizeForIOS, true},
     {&kMalwareScanEnabled, true},
     {&kPasswordProtectionForSavedPasswords, true},
     {&kPasswordProtectionShowDomainsForSavedPasswords, true},

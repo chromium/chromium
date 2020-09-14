@@ -49,6 +49,10 @@ extern const base::Feature kDownloadRequestWithToken;
 // Enable Chrome Safe Browsing enhanced protection.
 extern const base::Feature kEnhancedProtection;
 
+// Controls whether the limited list size experiment is enabled. This experiment
+// limits the number of entries stored in each Safe Browsing list.
+extern const base::Feature kLimitedListSizeForIOS;
+
 // Controls whether to do deep scanning for malware. If both this feature and
 // the enterprise policies are enabled, the downloaded and uploaded files are
 // sent for scanning.

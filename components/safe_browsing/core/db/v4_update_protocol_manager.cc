@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/features.h"
@@ -75,6 +76,12 @@ static const int kV4TimerStartIntervalSecMax = 300;
 
 // Maximum time, in seconds, to wait for a response to an update request.
 static const int kV4TimerUpdateWaitSecMax = 15 * 60;  // 15 minutes
+
+#if defined(OS_IOS)
+// Maximum number of entries in each list, when the limited list size experiment
+// is enabled.
+static const int kMaximumEntriesPerList = 1 << 18;
+#endif
 
 ChromeClientInfo::SafeBrowsingReportingPopulation GetReportingLevelProtoValue(
     ExtendedReportingLevel reporting_level) {
@@ -242,6 +249,13 @@ std::string V4UpdateProtocolManager::GetBase64SerializedUpdateRequestProto() {
     list_update_request->mutable_constraints()->add_supported_compressions(RAW);
     list_update_request->mutable_constraints()->add_supported_compressions(
         RICE);
+
+#if defined(OS_IOS)
+    if (base::FeatureList::IsEnabled(kLimitedListSizeForIOS)) {
+      list_update_request->mutable_constraints()->set_max_database_entries(
+          kMaximumEntriesPerList);
+    }
+#endif
   }
 
   if (!extended_reporting_level_callback_.is_null()) {
