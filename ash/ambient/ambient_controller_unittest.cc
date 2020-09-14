@@ -11,6 +11,7 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
@@ -472,6 +473,27 @@ TEST_F(AmbientControllerTest,
   FastForwardToInactivity();
   FastForwardToNextImage();
   EXPECT_TRUE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerTest, HideCursor) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  LockScreen();
+
+  cursor_manager->ShowCursor();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  FastForwardToInactivity();
+  FastForwardToNextImage();
+
+  EXPECT_TRUE(container_view());
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kShown);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  // Clean up.
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
 }  // namespace ash

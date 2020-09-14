@@ -44,6 +44,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/visibility_controller.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -548,6 +549,9 @@ void AmbientController::CreateAndShowWidget() {
   ::wm::SetWindowVisibilityChangesAnimated(widget->GetNativeWindow());
 
   widget->Show();
+
+  // Hide cursor.
+  Shell::Get()->cursor_manager()->HideCursor();
 
   // Requests keyboard focus for |container_view_| to receive keyboard events.
   container_view_->RequestFocus();
