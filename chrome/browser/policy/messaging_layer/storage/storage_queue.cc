@@ -920,9 +920,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     }
     scoped_refptr<SingleFile> last_file = assign_result.ValueOrDie();
 
-    // Prepare and initiate writing generation into to a new file.
-    // Pick up when both WriteMetadata and WriteHeaderAndBlock
-    // have finished.
+    // Writing metadata ahead of the data write.
     Status write_result = storage_queue_->WriteMetadata();
     if (!write_result.ok()) {
       Response(write_result);

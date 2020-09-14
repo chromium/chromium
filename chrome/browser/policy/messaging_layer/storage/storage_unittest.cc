@@ -5,8 +5,8 @@
 #include "chrome/browser/policy/messaging_layer/storage/storage.h"
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
@@ -78,7 +78,18 @@ class TestEvent {
 
 class MockUploadClient : public Storage::UploaderInterface {
  public:
-  MockUploadClient() = default;
+  // Mapping of (generation, seq number) to matching record digest. Whenever a
+  // record is uploaded and includes last record digest, this map should have
+  // that digest already recorded. Only the first record in a generation is
+  // uploaded without last record digest.
+  using LastRecordDigestMap =
+      std::map<std::tuple<Priority,
+                          uint64_t /*generation */,
+                          uint64_t /*sequencing number*/>,
+               std::string /*digest*/>;
+
+  explicit MockUploadClient(LastRecordDigestMap* last_record_digest_map)
+      : last_record_digest_map_(last_record_digest_map) {}
 
   void ProcessRecord(StatusOr<EncryptedRecord> encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
@@ -91,25 +102,22 @@ class MockUploadClient : public Storage::UploaderInterface {
     ASSERT_TRUE(wrapped_record.ParseFromString(
         encrypted_record.ValueOrDie().encrypted_wrapped_record()));
     // Verify generation match.
+    const auto& sequencing_information =
+        encrypted_record.ValueOrDie().sequencing_information();
     if (generation_id_.has_value() &&
-        generation_id_.value() != encrypted_record.ValueOrDie()
-                                      .sequencing_information()
-                                      .generation_id()) {
+        generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
           .Run(UploadRecordFailure(Status(
               error::DATA_LOSS,
               base::StrCat({"Generation id mismatch, expected=",
                             base::NumberToString(generation_id_.value()),
                             " actual=",
-                            base::NumberToString(encrypted_record.ValueOrDie()
-                                                     .sequencing_information()
-                                                     .generation_id())}))));
+                            base::NumberToString(
+                                sequencing_information.generation_id())}))));
       return;
     }
     if (!generation_id_.has_value()) {
-      generation_id_ = encrypted_record.ValueOrDie()
-                           .sequencing_information()
-                           .generation_id();
+      generation_id_ = sequencing_information.generation_id();
     }
 
     // Verify digest and its match.
@@ -126,15 +134,30 @@ class MockUploadClient : public Storage::UploaderInterface {
                 Status(error::DATA_LOSS, "Record digest mismatch")));
         return;
       }
+      if (wrapped_record.has_last_record_digest()) {
+        auto it = last_record_digest_map_->find(
+            std::make_tuple(sequencing_information.priority(),
+                            sequencing_information.sequencing_id() - 1,
+                            sequencing_information.generation_id()));
+        if (it == last_record_digest_map_->end() ||
+            it->second != wrapped_record.last_record_digest()) {
+          std::move(processed_cb)
+              .Run(UploadRecordFailure(
+                  Status(error::DATA_LOSS, "Last record digest mismatch")));
+          return;
+        }
+      }
+      last_record_digest_map_->emplace(
+          std::make_tuple(sequencing_information.priority(),
+                          sequencing_information.sequencing_id(),
+                          sequencing_information.generation_id()),
+          record_digest);
     }
 
     std::move(processed_cb)
-        .Run(UploadRecord(
-            encrypted_record.ValueOrDie().sequencing_information().priority(),
-            encrypted_record.ValueOrDie()
-                .sequencing_information()
-                .sequencing_id(),
-            wrapped_record.record().data()));
+        .Run(UploadRecord(sequencing_information.priority(),
+                          sequencing_information.sequencing_id(),
+                          wrapped_record.record().data()));
   }
 
   void Completed(Status status) override { UploadComplete(status); }
@@ -205,6 +228,8 @@ class MockUploadClient : public Storage::UploaderInterface {
 
  private:
   base::Optional<uint64_t> generation_id_;
+  LastRecordDigestMap* const last_record_digest_map_;
+
   Sequence test_upload_sequence_;
 };
 
@@ -234,14 +259,15 @@ class StorageTest : public ::testing::Test {
 
   StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildMockUploader(
       Priority priority) {
-    auto uploader = std::make_unique<MockUploadClient>();
+    auto uploader =
+        std::make_unique<MockUploadClient>(&last_record_digest_map_);
     set_mock_uploader_expectations_.Call(priority, uploader.get());
     return uploader;
   }
 
   Status WriteString(Priority priority, base::StringPiece data) {
-    TestEvent<Status> w;
     EXPECT_TRUE(storage_) << "Storage not created yet";
+    TestEvent<Status> w;
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -265,6 +291,10 @@ class StorageTest : public ::testing::Test {
   base::ScopedTempDir location_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<Storage> storage_;
+
+  // Test-wide global mapping of seq number to record digest.
+  // Serves all MockUploadClients created by test fixture.
+  MockUploadClient::LastRecordDigestMap last_record_digest_map_;
 
   ::testing::MockFunction<void(Priority, MockUploadClient*)>
       set_mock_uploader_expectations_;
