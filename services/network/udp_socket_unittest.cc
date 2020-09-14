@@ -691,8 +691,7 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   mojom::UDPSocketOptionsPtr options = mojom::UDPSocketOptions::New();
   options->allow_address_sharing_for_multicast = true;
 
-  net::IPAddress bind_ip_address;
-  EXPECT_TRUE(bind_ip_address.AssignFromIPLiteral("0.0.0.0"));
+  net::IPAddress bind_ip_address = net::IPAddress::AllZeros(group_ip.size());
   net::IPEndPoint socket_address(bind_ip_address, 0);
   ASSERT_EQ(net::OK, helper.BindSync(socket_address, std::move(options),
                                      &socket_address));
@@ -741,10 +740,14 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
 
   // No longer can receive messages from itself or from second socket.
   EXPECT_EQ(net::OK, helper.SendToSync(group_alias, test_msg));
-  ASSERT_EQ(net::OK, second_socket_helper.SendToSync(group_alias, test_msg));
   socket_remote->ReceiveMore(1);
   socket_remote.FlushForTesting();
-  ASSERT_EQ(2u, listener.results().size());
+  EXPECT_EQ(2u, listener.results().size());
+
+  EXPECT_EQ(net::OK, second_socket_helper.SendToSync(group_alias, test_msg));
+  socket_remote->ReceiveMore(1);
+  socket_remote.FlushForTesting();
+  EXPECT_EQ(2u, listener.results().size());
 }
 
 TEST_F(UDPSocketTest, ErrorHappensDuringSocketOptionsConfiguration) {
