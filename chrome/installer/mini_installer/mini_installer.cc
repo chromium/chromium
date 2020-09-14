@@ -757,6 +757,11 @@ void RecursivelyDeleteDirectory(PathString* path) {
   HANDLE find = ::FindFirstFile(path->get(), &find_data);
   if (find != INVALID_HANDLE_VALUE) {
     do {
+      // Chrome never creates files/directories with reparse points (i.e.,
+      // mounted folders, links, etc), so never try to delete them.
+      if (find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+        continue;
+
       // Use the short name if available to make the most of our buffer.
       const wchar_t* name = find_data.cAlternateFileName[0]
                                 ? find_data.cAlternateFileName
@@ -768,12 +773,10 @@ void RecursivelyDeleteDirectory(PathString* path) {
       if (!path->append(name))
         continue;  // Continue in spite of too long names.
 
-      if ((find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
-          !(find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+      if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         RecursivelyDeleteDirectory(path);
-      } else {
+      else
         ::DeleteFile(path->get());
-      }
     } while (::FindNextFile(find, &find_data));
     ::FindClose(find);
   }
@@ -803,11 +806,12 @@ void DeleteDirectoriesWithPrefix(const wchar_t* parent_dir,
 
   PathString path;
   do {
-    // Skip over directories that have reparse points, since these represent
-    // such things as mounted folders, links, etc, and were therefore not
-    // created by a previous run of this installer.
-    if ((find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
-        !(find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+    // Chrome never creates files/directories with reparse points (i.e., mounted
+    // folders, links, etc), so never try to delete them.
+    if (find_data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+      continue;
+
+    if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
       // Use the short name if available to make the most of our buffer.
       const wchar_t* name = find_data.cAlternateFileName[0]
                                 ? find_data.cAlternateFileName
