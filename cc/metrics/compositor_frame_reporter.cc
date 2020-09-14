@@ -849,12 +849,19 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
                    FrameTerminationStatus::kDidNotProduceFrame) {
           state = ChromeFrameReporter::STATE_NO_UPDATE_DESIRED;
         } else {
-          state = ChromeFrameReporter::STATE_PRESENTED_ALL;
+          state = has_partial_update()
+                      ? ChromeFrameReporter::STATE_PRESENTED_PARTIAL
+                      : ChromeFrameReporter::STATE_PRESENTED_ALL;
         }
         auto* reporter = context.event()->set_chrome_frame_reporter();
         reporter->set_state(state);
         reporter->set_frame_source(args_.frame_id.source_id);
         reporter->set_frame_sequence(args_.frame_id.sequence_number);
+        if (IsDroppedFrameAffectingSmoothness()) {
+          DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
+                 state == ChromeFrameReporter::STATE_PRESENTED_PARTIAL);
+          reporter->set_affects_smoothness(true);
+        }
         // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
       });
 
