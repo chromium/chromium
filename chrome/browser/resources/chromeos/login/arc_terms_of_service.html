@@ -14,6 +14,8 @@
     <!-- As this dialog have pre-loading logic that require access to elements,
          dialog is marked as no-lazy. -->
     <oobe-dialog id="arcTosDialog" has-buttons class="arc-tos-loading"
+        role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'arcTermsOfServiceScreenHeading')]]"
         title-key="arcTermsOfServiceScreenHeading"
         subtitle-key="arcTermsOfServiceScreenDescription" no-lazy>
       <iron-icon src="chrome://oobe/playstore.svg" slot="oobe-icon">
