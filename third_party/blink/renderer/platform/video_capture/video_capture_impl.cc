@@ -142,7 +142,8 @@ struct VideoCaptureImpl::BufferContext
     if (buffer_context->gmb_resources_->mailbox.IsZero()) {
       uint32_t usage =
           gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+          gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
       buffer_context->gmb_resources_->mailbox = sii->CreateSharedImage(
           gpu_memory_buffer.get(),
           buffer_context->gpu_factories_->GpuMemoryBufferManager(),
