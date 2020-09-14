@@ -314,9 +314,10 @@ bool DrainWorklist(Worklist* worklist,
                    YieldPredicate should_yield,
                    int task_id) {
   // For concurrent markers, should_yield also reports marked bytes.
-  if (should_yield()) {
+  if (worklist->IsLocalViewEmpty(task_id))
+    return true;
+  if (should_yield())
     return false;
-  }
   size_t processed_callback_count = kDeadlineCheckInterval;
   typename Worklist::EntryType item;
   while (worklist->Pop(task_id, &item)) {
