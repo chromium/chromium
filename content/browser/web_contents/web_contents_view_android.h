@@ -121,7 +121,8 @@ class WebContentsViewAndroid : public WebContentsView,
   bool ScrollBy(float delta_x, float delta_y) override;
   bool ScrollTo(float x, float y) override;
   void OnSizeChanged() override;
-  void OnPhysicalBackingSizeChanged() override;
+  void OnPhysicalBackingSizeChanged(
+      base::Optional<base::TimeDelta> deadline_override) override;
   void OnBrowserControlsHeightChanged() override;
   void OnControlsResizeViewChanged() override;
 

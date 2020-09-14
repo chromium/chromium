@@ -511,15 +511,17 @@ void ViewAndroid::DispatchOnSizeChanged() {
   }
 }
 
-void ViewAndroid::OnPhysicalBackingSizeChanged(const gfx::Size& size) {
+void ViewAndroid::OnPhysicalBackingSizeChanged(
+    const gfx::Size& size,
+    base::Optional<base::TimeDelta> deadline_override) {
   if (physical_size_ == size)
     return;
   physical_size_ = size;
   if (event_handler_)
-    event_handler_->OnPhysicalBackingSizeChanged();
+    event_handler_->OnPhysicalBackingSizeChanged(deadline_override);
 
   for (auto* child : children_)
-    child->OnPhysicalBackingSizeChanged(size);
+    child->OnPhysicalBackingSizeChanged(size, deadline_override);
 }
 
 void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {

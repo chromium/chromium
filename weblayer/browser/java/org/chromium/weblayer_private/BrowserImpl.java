@@ -140,7 +140,8 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         assert mEmbedderActivityContext == null;
         mWindowAndroid = windowAndroid;
         mEmbedderActivityContext = embedderAppContext;
-        mViewController = new BrowserViewController(windowAndroid, this, mViewControllerState);
+        mViewController = new BrowserViewController(
+                windowAndroid, this, mViewControllerState, mFragmentStoppedForConfigurationChange);
         mLocaleReceiver = new LocaleChangedBroadcastReceiver(windowAndroid.getContext().get());
         mPasswordEchoEnabled = null;
     }
