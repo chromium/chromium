@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 static_library("core") {
   sources = [
     "article_distillation_update.cc",
@@ -14,8 +20,6 @@ static_library("core") {
     "distilled_content_store.h",
     "distilled_page_prefs.cc",
     "distilled_page_prefs.h",
-    "distilled_page_prefs_android.cc",
-    "distilled_page_prefs_android.h",
     "distiller.cc",
     "distiller.h",
     "distiller_page.cc",
@@ -45,7 +49,6 @@ static_library("core") {
     "url_constants.h",
     "url_utils.cc",
     "url_utils.h",
-    "url_utils_android.cc",
     "viewer.cc",
     "viewer.h",
   ]
@@ -73,8 +76,11 @@ static_library("core") {
 
   if (is_android) {
     sources += [
+      "distilled_page_prefs_android.cc",
+      "distilled_page_prefs_android.h",
       "dom_distiller_service_android.cc",
       "dom_distiller_service_android.h",
+      "url_utils_android.cc",
     ]
     deps += [ ":jni_headers" ]
   }
