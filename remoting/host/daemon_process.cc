@@ -289,28 +289,28 @@ bool DaemonProcess::WasTerminalIdAllocated(int terminal_id) {
 void DaemonProcess::OnAccessDenied(const std::string& jid) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnAccessDenied(jid);
 }
 
 void DaemonProcess::OnClientAuthenticated(const std::string& jid) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnClientAuthenticated(jid);
 }
 
 void DaemonProcess::OnClientConnected(const std::string& jid) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnClientConnected(jid);
 }
 
 void DaemonProcess::OnClientDisconnected(const std::string& jid) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnClientDisconnected(jid);
 }
 
@@ -330,21 +330,21 @@ void DaemonProcess::OnClientRouteChange(const std::string& jid,
   CHECK(local_ip.empty() || local_ip.IsValid());
   parsed_route.local_address = net::IPEndPoint(local_ip, route.local_port);
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnClientRouteChange(jid, channel_name, parsed_route);
 }
 
 void DaemonProcess::OnHostStarted(const std::string& xmpp_login) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnStart(xmpp_login);
 }
 
 void DaemonProcess::OnHostShutdown() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  for (auto& observer : status_observers_)
+  for (auto& observer : status_monitor_->observers())
     observer.OnShutdown();
 }
 

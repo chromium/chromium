@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
 #include "ipc/ipc_channel.h"
@@ -36,7 +35,6 @@ namespace remoting {
 class AutoThreadTaskRunner;
 class DesktopSession;
 class HostEventLogger;
-class HostStatusObserver;
 class ProcessStatsSender;
 class ScreenResolution;
 
@@ -189,9 +187,6 @@ class DaemonProcess
 
   // The highest desktop session ID that has been seen so far.
   int next_terminal_id_;
-
-  // Keeps track of observers receiving host status notifications.
-  base::ObserverList<HostStatusObserver>::Unchecked status_observers_;
 
   // Invoked to ask the owner to delete |this|.
   base::OnceClosure stopped_callback_;
