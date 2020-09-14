@@ -46,8 +46,4 @@ interface ITestWebLayer {
   boolean canInfoBarContainerScroll(in ITab tab) = 14;
 
   String getDisplayedUrl(IObjectWrapper /* View */ urlBarView) = 15;
-
-  // Returns the target language of the currently-showing translate infobar, or null if no translate
-  // infobar is currently showing.
-  String getTranslateInfoBarTargetLanguage(in ITab tab) = 16;
 }

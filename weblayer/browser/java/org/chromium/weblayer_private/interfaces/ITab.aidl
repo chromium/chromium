@@ -71,5 +71,4 @@ interface ITab {
   // Added in 86
   void setGoogleAccountsCallbackClient(IGoogleAccountsCallbackClient client) = 23;
   IFaviconFetcher createFaviconFetcher(IFaviconFetcherClient client) = 24;
-  void setTranslateTargetLanguage(in String targetLanguage) = 25;
 }

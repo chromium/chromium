@@ -94,7 +94,6 @@
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "components/embedder_support/android/delegate/color_chooser_android.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"  // nogncheck
-#include "components/translate/core/browser/translate_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "weblayer/browser/browser_controls_container_view.h"
@@ -104,7 +103,6 @@
 #include "weblayer/browser/java/jni/TabImpl_jni.h"
 #include "weblayer/browser/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "weblayer/browser/js_communication/web_message_host_factory_proxy.h"
-#include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/weblayer_factory_impl_android.h"
 #include "weblayer/browser/webrtc/media_stream_manager.h"
 #endif
@@ -806,16 +804,6 @@ jboolean TabImpl::CanTranslate(JNIEnv* env) {
 void TabImpl::ShowTranslateUi(JNIEnv* env) {
   TranslateClientImpl::FromWebContents(web_contents())
       ->ManualTranslateWhenReady();
-}
-
-void TabImpl::SetTranslateTargetLanguage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& translate_target_lang) {
-  translate::TranslateManager* translate_manager =
-      TranslateClientImpl::FromWebContents(web_contents())
-          ->GetTranslateManager();
-  translate_manager->SetPredefinedTargetLanguage(
-      base::android::ConvertJavaStringToUTF8(env, translate_target_lang));
 }
 #endif  // OS_ANDROID
 
