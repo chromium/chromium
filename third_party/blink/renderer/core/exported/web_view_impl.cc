@@ -303,11 +303,13 @@ void WebViewImpl::CloseWindowSoon() {
 }
 
 void WebViewImpl::DoDeferredCloseWindowSoon() {
-  // The main widget is currently not active. The active main frame widget is
-  // in a different process.  Have the browser route the close request to the
-  // active widget instead, so that the correct unload handlers are run.
-  DCHECK(remote_main_frame_host_remote_);
-  remote_main_frame_host_remote_->RouteCloseEvent();
+  // The main widget is currently not active. The active main frame widget is in
+  // a different process. Have the browser route the close request to the active
+  // widget instead, so that the correct unload handlers are run. We do an early
+  // return instead of a DCHECK to guard against DidDetachRemoteMainFrame()
+  // being called between this method is schedule and when it's actually run.
+  if (remote_main_frame_host_remote_.is_bound())
+    remote_main_frame_host_remote_->RouteCloseEvent();
 }
 
 WebViewImpl::WebViewImpl(
