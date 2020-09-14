@@ -211,8 +211,8 @@ std::string MakeThumbnailDataUrlOnThreadPool(
   return base::StrCat({"data:image/png;base64,", base::Base64Encode(png_data)});
 }
 
-// The maximum size of the PDF size for which thumbnails are generated.
-constexpr static uint32_t kMaxPdfSize = 1024u * 1024u;
+// The maximum size of the input PDF file for which thumbnails are generated.
+constexpr uint32_t kMaxPdfSize = 1024u * 1024u;
 
 // A function that performs IO operations to read and render PDF thumbnail
 // Must be run by a blocking task runner.
@@ -1150,7 +1150,7 @@ FileManagerPrivateDetectCharacterEncodingFunction::Run() {
 }
 
 FileManagerPrivateInternalGetThumbnailFunction::
-    FileManagerPrivateInternalGetThumbnailFunction() {}
+    FileManagerPrivateInternalGetThumbnailFunction() = default;
 
 FileManagerPrivateInternalGetThumbnailFunction::
     ~FileManagerPrivateInternalGetThumbnailFunction() = default;
@@ -1290,7 +1290,7 @@ FileManagerPrivateInternalGetThumbnailFunction::GetDrivefsThumbnail(
           base::BindOnce(&FileManagerPrivateInternalGetThumbnailFunction::
                              GotDriveThumbnail,
                          this),
-          base::Optional<std::vector<uint8_t>>()));
+          base::nullopt));
   return RespondLater();
 }
 
@@ -1301,11 +1301,7 @@ void FileManagerPrivateInternalGetThumbnailFunction::GotDriveThumbnail(
     return;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &MakeThumbnailDataUrlOnThreadPool,
-          base::make_span(reinterpret_cast<const uint8_t*>(data->data()),
-                          data->size())),
+      FROM_HERE, base::BindOnce(&MakeThumbnailDataUrlOnThreadPool, *data),
       base::BindOnce(
           &FileManagerPrivateInternalGetThumbnailFunction::SendEncodedThumbnail,
           this));
