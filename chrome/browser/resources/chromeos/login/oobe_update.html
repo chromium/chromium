@@ -97,7 +97,10 @@
         <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
             slot="footer">
           <oobe-carousel slide-duration-in-seconds=3
-              auto-transition="[[getAutoTransition_(uiState, autoTransition)]]">
+              auto-transition="[[getAutoTransition_(uiState, autoTransition)]]"
+              slide-label="slideLabel"
+              selected-button-label="slideSelectedButtonLabel"
+              unselected-button-label="slideUnselectedButtonLabel">
             <oobe-slide slot="slides">
               <img slot="slide-img"
                   class="update-illustration oobe-illustration"

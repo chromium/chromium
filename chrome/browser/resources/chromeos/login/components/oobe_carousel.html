@@ -95,15 +95,19 @@
       .slider-dot {
         background: var(--google-grey-200);
         border-radius: 5px;
+        cursor: pointer;
         height: 10px;
         margin: 5px;
-        pointer-events: none;
         transition: background 200ms;
         transition-delay: 100ms;
         width: 10px;
       }
       .slider-dot[active] {
         background: var(--google-blue-600);
+      }
+      .slider-dot:focus {
+        box-shadow: 0 0 7px 1px rgba(var(--google-blue-600-rgb), .75);
+        outline: none;
       }
 
       .arrow-button {
@@ -117,10 +121,13 @@
       <div id="navigationContainer">
         <cr-icon-button id="left" class="buttons" iron-icon="cr:chevron-left"
             class="arrow-button" on-click="movePrev"></cr-icon-button>
-        <div id="dotsContainer">
+        <div id="dotsContainer" role="radiogroup">
           <template is="dom-repeat" items="[[dots]]">
-            <span class="slider-dot" aria-hidden="true"
-                tabindex="-1" active$="[[isActive_(index, slideIndex)]]"></span>
+            <span class="slider-dot" tabindex="0" on-keypress="onKeypress_"
+                on-click="onClick_" active$="[[isActive_(index, slideIndex)]]"
+                aria-label="[[getDotLabel_(index, slideIndex)]]" aria-live="off"
+                aria-checked="[[isActive_(index, slideIndex)]]"
+                role="radio"></span>
           </template>
         </div>
         <cr-icon-button id="right" class="buttons" iron-icon="cr:chevron-right"
