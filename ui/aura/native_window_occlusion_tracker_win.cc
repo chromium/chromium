@@ -4,6 +4,7 @@
 
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 
+#include <dwmapi.h>
 #include <memory>
 
 #include "base/bind.h"
@@ -18,8 +19,6 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_version.h"
 #include "ui/aura/window_tree_host.h"
-
-#include "dwmapi.h"
 
 namespace aura {
 
@@ -669,18 +668,18 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
         HWND hwnd,
         gfx::Rect* window_rect) {
   return IsWindowVisibleAndFullyOpaque(hwnd, window_rect) &&
-         (IsWindowOnCurrentVirtualDesktop(hwnd) != false);
+         (IsWindowOnCurrentVirtualDesktop(hwnd) == true);
 }
 
 base::Optional<bool> NativeWindowOcclusionTrackerWin::
     WindowOcclusionCalculator::IsWindowOnCurrentVirtualDesktop(HWND hwnd) {
-  if (virtual_desktop_manager_) {
-    BOOL on_current_desktop;
+  if (!virtual_desktop_manager_)
+    return true;
 
-    if (SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
-            hwnd, &on_current_desktop))) {
-      return on_current_desktop;
-    }
+  BOOL on_current_desktop;
+  if (SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
+          hwnd, &on_current_desktop))) {
+    return on_current_desktop;
   }
   return base::nullopt;
 }
