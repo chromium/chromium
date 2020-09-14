@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_EXTERNAL_APP_INSTALL_FEATURES_H_
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
 
-namespace base {
-struct Feature;
-}
-
 namespace web_app {
+
+extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
+
+extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
 // Returns the base::Feature in |kExternalAppInstallFeatures| that corresponds
 // to |feature_name|. Used by external app install configs to gate installation

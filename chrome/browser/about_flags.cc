@@ -196,6 +196,7 @@
 #include "components/external_intents/android/external_intents_feature_list.h"
 #else  // OS_ANDROID
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #endif  // OS_ANDROID
 
 #if defined(OS_CHROMEOS)
@@ -3079,6 +3080,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowAllSitesToInitiateMirroringDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kAllowAllSitesToInitiateMirroring)},
+    {"enable-migrate-default-chrome-app-to-web-apps-gsuite",
+     flag_descriptions::kEnableMigrateDefaultChromeAppToWebAppsGSuiteName,
+     flag_descriptions::
+         kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(web_app::kMigrateDefaultChromeAppToWebAppsGSuite)},
+    {"enable-migrate-default-chrome-app-to-web-apps-non-gsuite",
+     flag_descriptions::kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteName,
+     flag_descriptions::
+         kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(web_app::kMigrateDefaultChromeAppToWebAppsNonGSuite)},
 #endif  // !OS_ANDROID
 #if defined(OS_ANDROID)
     {"autofill-keyboard-accessory-view",

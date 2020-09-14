@@ -10,31 +10,37 @@ namespace web_app {
 
 namespace {
 
-// A hard coded list of features available for externally installed apps to gate
-// their installation on via their config file settings.
-constexpr base::Feature kExternalAppInstallFeatures[] = {
-    // Enables migration of default installed GSuite apps over to their
-    // replacement web apps.
-    {"MigrateDefaultChromeAppToWebAppsGSuite",
-     base::FEATURE_DISABLED_BY_DEFAULT},
-
-    // Enables migration of default installed non-GSuite apps over to their
-    // replacement web apps.
-    {"MigrateDefaultChromeAppToWebAppsNonGSuite",
-     base::FEATURE_DISABLED_BY_DEFAULT},
+// A hard coded list of features available for externally installed apps to
+// gate their installation on via their config file settings. See
+// |kFeatureName| in external_web_app_utils.h.
+constexpr const base::Feature* kExternalAppInstallFeatures[] = {
+    &kMigrateDefaultChromeAppToWebAppsGSuite,
+    &kMigrateDefaultChromeAppToWebAppsNonGSuite,
 };
 
 bool g_always_enabled_for_testing = false;
 
 }  // namespace
 
+// Enables migration of default installed GSuite apps over to their replacement
+// web apps.
+const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite{
+    "MigrateDefaultChromeAppToWebAppsGSuite",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables migration of default installed non-GSuite apps over to their
+// replacement web apps.
+const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
+    "MigrateDefaultChromeAppToWebAppsNonGSuite",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsExternalAppInstallFeatureEnabled(base::StringPiece feature_name) {
   if (g_always_enabled_for_testing)
     return true;
 
-  for (const base::Feature& feature : kExternalAppInstallFeatures) {
-    if (feature.name == feature_name)
-      return base::FeatureList::IsEnabled(feature);
+  for (const base::Feature* feature : kExternalAppInstallFeatures) {
+    if (feature->name == feature_name)
+      return base::FeatureList::IsEnabled(*feature);
   }
 
   return false;

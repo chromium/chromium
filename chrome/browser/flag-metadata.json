@@ -1769,6 +1769,16 @@
     "expiry_milestone": 82
   },
   {
+    "name": "enable-migrate-default-chrome-app-to-web-apps-gsuite",
+    "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 89
+  },
+  {
+    "name": "enable-migrate-default-chrome-app-to-web-apps-non-gsuite",
+    "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "enable-mygoogle",
     "owners": [ "fernandex", "chrome-ios-signin@google.com" ],
     "expiry_milestone": 87

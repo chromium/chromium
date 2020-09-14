@@ -709,6 +709,18 @@ const char kEnableSystemWebAppsDescription[] =
     "Experimental system for using the Desktop PWA framework for running System"
     "Apps (e.g Settings, Discover).";
 
+const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[] =
+    "Migrate default G Suite Chrome apps to web apps";
+const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[] =
+    "Enable the migration of default installed G Suite Chrome apps over to "
+    "their corresponding web apps.";
+
+const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteName[] =
+    "Migrate default non-G Suite Chrome apps to web apps";
+const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription[] =
+    "Enable the migration of default installed non-G Suite Chrome apps over to "
+    "their corresponding web apps.";
+
 const char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 const char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "
