@@ -13,10 +13,12 @@
 #include <stddef.h>
 #include <wrl/client.h>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -107,8 +109,15 @@ void OpenExternalOnWorkerThread(const GURL& url) {
   if (escaped_url.length() > kMaxUrlLength)
     return;
 
+  // Specify the user's %TMP% directory as the CWD so that any new proc spawned
+  // does not inherit this proc's CWD. Without this, uninstalls may be broken by
+  // a long-lived child proc that holds a handle to the browser's version
+  // directory.
+  base::FilePath temp_dir;
+  base::PathService::Get(base::DIR_TEMP, &temp_dir);
   if (reinterpret_cast<ULONG_PTR>(ShellExecuteA(NULL, "open",
-                                                escaped_url.c_str(), NULL, NULL,
+                                                escaped_url.c_str(), NULL,
+                                                temp_dir.AsUTF8Unsafe().c_str(),
                                                 SW_SHOWNORMAL)) <= 32) {
     // On failure, it may be good to display a message to the user.
     // https://crbug.com/727913
