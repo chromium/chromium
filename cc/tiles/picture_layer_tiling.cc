@@ -50,12 +50,21 @@ PictureLayerTiling::PictureLayerTiling(
   DCHECK_GE(raster_transform.translation().y(), 0.f);
   DCHECK_LT(raster_transform.translation().y(), 1.f);
 
-  DCHECK(!gfx::ScaleToFlooredSize(raster_source_->GetSize(),
-                                  raster_transform.scale())
-              .IsEmpty())
+#if DCHECK_IS_ON()
+  gfx::SizeF scaled_source_size(gfx::ScaleSize(
+      gfx::SizeF(raster_source_->GetSize()), raster_transform.scale()));
+  gfx::Size floored_size = gfx::ToFlooredSize(scaled_source_size);
+  bool is_width_empty =
+      !floored_size.width() &&
+      !MathUtil::IsWithinEpsilon(scaled_source_size.width(), 1.f);
+  bool is_height_empty =
+      !floored_size.height() &&
+      !MathUtil::IsWithinEpsilon(scaled_source_size.height(), 1.f);
+  DCHECK(!is_width_empty && !is_height_empty)
       << "Tiling created with scale too small as contents become empty."
       << " Layer bounds: " << raster_source_->GetSize().ToString()
       << " Raster transform: " << raster_transform_.ToString();
+#endif
 
   gfx::Rect content_bounds_rect =
       EnclosingContentsRectFromLayerRect(gfx::Rect(raster_source_->GetSize()));
