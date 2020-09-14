@@ -172,14 +172,14 @@ void FakeServiceWorker::DispatchSyncEvent(const std::string& tag,
                                           bool last_chance,
                                           base::TimeDelta timeout,
                                           DispatchSyncEventCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
 void FakeServiceWorker::DispatchPeriodicSyncEvent(
     const std::string& tag,
     base::TimeDelta timeout,
     DispatchPeriodicSyncEventCallback callback) {
-  NOTIMPLEMENTED();
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
 void FakeServiceWorker::DispatchAbortPaymentEvent(
