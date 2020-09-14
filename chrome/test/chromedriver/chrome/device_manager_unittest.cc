@@ -156,7 +156,7 @@ TEST(DeviceManager, AcquireSpecificDevice) {
 }
 
 TEST(Device, StartStopApp) {
-  int devtools_port;
+  int devtools_port = 0;
   FakeAdb adb;
   DeviceManager device_manager(&adb);
   std::unique_ptr<Device> device1;
