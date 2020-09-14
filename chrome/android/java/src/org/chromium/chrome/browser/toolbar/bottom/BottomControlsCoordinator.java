@@ -111,6 +111,10 @@ public class BottomControlsCoordinator {
         }
         Toast.setGlobalExtraYOffset(
                 root.getResources().getDimensionPixelSize(bottomControlsHeightId));
+
+        // Set the visibility of BottomControls to false by default. Components within
+        // BottomControls should update the visibility explicitly if needed.
+        mMediator.setBottomControlsVisible(false);
     }
 
     /**
