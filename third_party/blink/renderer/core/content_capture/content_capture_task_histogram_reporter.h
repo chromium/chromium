@@ -29,6 +29,7 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   ~ContentCaptureTaskHistogramReporter();
 
   void OnContentChanged();
+  void OnTaskScheduled(bool record_task_delay);
   void OnTaskRun();
   void OnCaptureContentStarted();
   void OnCaptureContentEnded(size_t captured_content_count);
@@ -47,7 +48,8 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   base::TimeTicks capture_content_start_time_;
   // The time to start sending content.
   base::TimeTicks send_content_start_time_;
-  // The time when the task is scheduled.
+  // The time when the task is scheduled, is valid if kTaskDelayInMs needs to be
+  // recorded.
   base::TimeTicks task_scheduled_time_;
 
   // Records time from first content change to content that has been sent, its
