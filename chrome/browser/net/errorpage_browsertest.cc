@@ -21,9 +21,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
-#include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -55,7 +52,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -818,48 +814,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 
   EXPECT_EQ(2, interceptor_failures());
   EXPECT_EQ(3, interceptor_requests());
-}
-
-// Make sure that an error page that is providing its own HTML has auto-reloads
-// disabled.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
-                       CustomErrorPageDoesNotAutoReload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL test_url = embedded_test_server()->base_url();
-  // Navigate to the test site without installing the interceptor so it
-  // succeeds.
-  ui_test_utils::NavigateToURL(browser(), test_url);
-  // Install an interceptor so we can check there was no reload.
-  InstallInterceptor(test_url, 10);
-  // Trigger a custom error page and wait for it to load.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver error_observer(web_contents);
-  web_contents->GetController().LoadPostCommitErrorPage(
-      web_contents->GetMainFrame(), test_url, "error html",
-      net::ERR_CONNECTION_RESET);
-  // Wait for the custom error page to load.
-  error_observer.Wait();
-
-  // Spin a RunLoop to give any scheduled error page auto-reload task ample time
-  // to run. None should run due to this being a custom error page, so there
-  // we should observe no intercepted requests during the wait.
-  base::RunLoop wait_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, wait_loop.QuitClosure(),
-      error_page::NetErrorAutoReloader::GetNextReloadDelayForTesting(
-          /*reload_count=*/0) *
-          2);
-  wait_loop.Run();
-  EXPECT_EQ(0, interceptor_failures());
-  EXPECT_EQ(0, interceptor_requests());
-
-  // Navigate to the page manually to trigger a new error page navigation, and
-  // make sure auto-reloads are enabled at this point.
-  NavigateAndWaitForFailureWithAutoReload(test_url);
-
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(2, interceptor_requests());
 }
 
 class ErrorPageOfflineTest : public ErrorPageTest {

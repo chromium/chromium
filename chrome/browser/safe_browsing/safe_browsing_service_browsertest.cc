@@ -57,11 +57,13 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/prefs/pref_service.h"
 #include "components/prerender/browser/prerender_manager.h"
 #include "components/safe_browsing/buildflags.h"
@@ -1023,6 +1025,33 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckBrowseUrlForBilling) {
     client->CheckBrowseUrl(bad_url);
     EXPECT_EQ(SB_THREAT_TYPE_BILLING, client->GetThreatType());
   }
+}
+
+class V4SafeBrowsingServiceWithAutoReloadTest
+    : public V4SafeBrowsingServiceTest {
+ public:
+  V4SafeBrowsingServiceWithAutoReloadTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableAutoReload);
+    V4SafeBrowsingServiceTest::SetUpCommandLine(command_line);
+  }
+};
+
+// SafeBrowsing interstitials should disable autoreload timer.
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceWithAutoReloadTest,
+                       AutoReloadDisabled) {
+  GURL url = embedded_test_server()->GetURL(kEmptyPage);
+  MarkUrlForMalwareUnexpired(url);
+  EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(1);
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  EXPECT_TRUE(ShowingInterstitialPage());
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* reloader = error_page::NetErrorAutoReloader::FromWebContents(contents);
+  const base::Optional<base::OneShotTimer>& timer =
+      reloader->next_reload_timer_for_testing();
+  EXPECT_EQ(base::nullopt, timer);
 }
 
 // Parameterised fixture to permit running the same test for Window and Worker

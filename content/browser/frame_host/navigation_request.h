@@ -273,7 +273,6 @@ class CONTENT_EXPORT NavigationRequest
   bool IsSameDocument() override;
   bool HasCommitted() override;
   bool IsErrorPage() override;
-  bool IsCustomErrorPage() override;
   bool HasSubframeNavigationEntryCommitted() override;
   bool DidReplaceEntry() override;
   bool ShouldUpdateHistory() override;
@@ -984,12 +983,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Called when the navigation is ready to be committed. This will update the
   // |state_| and inform the delegate.
-  enum class CommitPageType {
-    kNonErrorPage,
-    kErrorPage,
-    kCustomErrorPage,
-  };
-  void ReadyToCommitNavigation(CommitPageType type);
+  void ReadyToCommitNavigation(bool is_error);
 
   // Called if READY_TO_COMMIT -> COMMIT state transition takes an unusually
   // long time.
@@ -1122,9 +1116,6 @@ class CONTENT_EXPORT NavigationRequest
   bool is_view_source_;
   int bindings_;
   bool entry_overrides_ua_ = false;
-
-  // Indicates what type of error page is about to be committed, if any.
-  CommitPageType committed_page_type_ = CommitPageType::kNonErrorPage;
 
   // Set to true if SetIsOverridingUserAgent() is called.
   bool was_set_overriding_user_agent_called_ = false;

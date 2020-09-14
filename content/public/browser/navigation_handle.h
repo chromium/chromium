@@ -237,11 +237,6 @@ class CONTENT_EXPORT NavigationHandle {
   // GetNetErrorCode will be net::OK.
   virtual bool IsErrorPage() = 0;
 
-  // Indicates whether navigation committed a custom error page (i.e. an error
-  // page that provides its own HTML.) IsErrorPage is always true if this is
-  // true, but the inverse doesn't hold.
-  virtual bool IsCustomErrorPage() = 0;
-
   // Not all committed subframe navigations (i.e., !IsInMainFrame &&
   // HasCommitted) end up causing a change of the current NavigationEntry. For
   // example, some users of NavigationHandle may want to ignore the initial

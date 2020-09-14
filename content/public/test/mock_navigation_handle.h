@@ -73,7 +73,6 @@ class MockNavigationHandle : public NavigationHandle {
   }
   bool HasCommitted() override { return has_committed_; }
   bool IsErrorPage() override { return is_error_page_; }
-  bool IsCustomErrorPage() override { return false; }
   MOCK_METHOD0(HasSubframeNavigationEntryCommitted, bool());
   MOCK_METHOD0(DidReplaceEntry, bool());
   MOCK_METHOD0(ShouldUpdateHistory, bool());

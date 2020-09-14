@@ -30,8 +30,10 @@ class WebContents;
 namespace error_page {
 
 // This class implements support for automatic reload attempts with backoff
-// whenever a WebContents' main frame lands on common network error pages. To
-// use this behavior as a Content embedder, simply call the static
+// whenever a WebContents' main frame lands on common network error pages. This
+// excludes errors that aren't connectivity related since a reload doesn't
+// generally fix them (e.g. SSL errors or when the client blocked the request).
+// To use this behavior as a Content embedder, simply call the static
 // `MaybeCreateNavigationThrottle()` method from within your implementation of
 // ContentBrowserClient::CreateThrottlesForNavigation.
 class NetErrorAutoReloader

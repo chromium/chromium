@@ -79,6 +79,7 @@
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/network_time/network_time_test_utils.h"
 #include "components/network_time/network_time_tracker.h"
@@ -8207,6 +8208,32 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ActiveMixedContentTrackedByOrigin) {
   about_blank_navigation.Wait();
   ssl_test_util::CheckAuthenticationBrokenState(
       opened_tab, CertError::NONE, AuthState::RAN_INSECURE_CONTENT);
+}
+
+class SSLUIAutoReloadTest : public SSLUITest {
+ public:
+  SSLUIAutoReloadTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableAutoReload);
+    SSLUITest::SetUpCommandLine(command_line);
+  }
+};
+
+// SSL interstitials should disable autoreload timer.
+IN_PROC_BROWSER_TEST_F(SSLUIAutoReloadTest, AutoReloadDisabled) {
+  ASSERT_TRUE(https_server_expired_.Start());
+  ui_test_utils::NavigateToURL(
+      browser(), https_server_expired_.GetURL("/ssl/google.html"));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WaitForInterstitial(tab);
+  ssl_test_util::CheckAuthenticationBrokenState(
+      tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
+
+  auto* reloader = error_page::NetErrorAutoReloader::FromWebContents(tab);
+  const base::Optional<base::OneShotTimer>& timer =
+      reloader->next_reload_timer_for_testing();
+  EXPECT_EQ(base::nullopt, timer);
 }
 
 // TODO(jcampan): more tests to do below.

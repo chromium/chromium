@@ -381,8 +381,19 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
   }
   {
+    NetErrorUrlInterceptor interceptor(GetTestUrl(), net::ERR_CERT_INVALID);
+    EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
+    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  }
+  {
     NetErrorUrlInterceptor interceptor(GetTestUrl(),
                                        net::ERR_SSL_PROTOCOL_ERROR);
+    EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
+    EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
+  }
+  {
+    NetErrorUrlInterceptor interceptor(GetTestUrl(),
+                                       net::ERR_BLOCKED_BY_CLIENT);
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
     EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
   }
@@ -416,16 +427,6 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     EXPECT_FALSE(NavigateMainFrame(kTestFileUrl));
     EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
   }
-}
-
-// Custom error pages do not activate auto-reload.
-IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
-                       NoAutoReloadWithCustomErrorPage) {
-  CustomErrorPageThrottleInserter custom_error_page(
-      shell()->web_contents(), net::ERR_ACCESS_DENIED,
-      "<html><body><strong>NONE SHALL PASS!</strong></body></html>");
-  EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
-  EXPECT_EQ(base::nullopt, GetCurrentAutoReloadDelay());
 }
 
 // Starting a new navigation cancels any pending auto-reload.

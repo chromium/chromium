@@ -1401,7 +1401,7 @@ void NavigationRequest::BeginNavigation() {
       base::debug::DumpWithoutCrashing();
     }
 
-    ReadyToCommitNavigation(CommitPageType::kNonErrorPage);
+    ReadyToCommitNavigation(false /* is_error */);
     CommitNavigation();
     return;
   }
@@ -3039,8 +3039,7 @@ void NavigationRequest::CommitErrorPage(
   }
 
   sandbox_flags_to_commit_ = ComputeSandboxFlagsToCommit();
-  ReadyToCommitNavigation(error_page_content ? CommitPageType::kCustomErrorPage
-                                             : CommitPageType::kErrorPage);
+  ReadyToCommitNavigation(true);
   render_frame_host_->FailedNavigation(this, *common_params_, *commit_params_,
                                        has_stale_copy_in_cache_, net_error_,
                                        error_page_content);
@@ -3799,7 +3798,7 @@ void NavigationRequest::OnWillProcessResponseProcessed(
     // commit. Inform observers that the navigation is now ready to commit,
     // unless it is not set to commit (204/205s/downloads).
     if (render_frame_host_)
-      ReadyToCommitNavigation(CommitPageType::kNonErrorPage);
+      ReadyToCommitNavigation(false);
 
     // The call above might block on showing a user dialog. The interaction of
     // the user with this dialog might result in the WebContents owning this
@@ -4162,11 +4161,10 @@ bool NavigationRequest::NeedsUrlLoader() {
          !IsForMhtmlSubframe();
 }
 
-void NavigationRequest::ReadyToCommitNavigation(CommitPageType type) {
+void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   EnterChildTraceEvent("ReadyToCommitNavigation", this);
 
   SetState(READY_TO_COMMIT);
-  committed_page_type_ = type;
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
 
@@ -4207,7 +4205,7 @@ void NavigationRequest::ReadyToCommitNavigation(CommitPageType type) {
 
   // Record metrics for the time it takes to get to this state from the
   // beginning of the navigation.
-  if (!IsSameDocument() && type == CommitPageType::kNonErrorPage) {
+  if (!IsSameDocument() && !is_error) {
     is_same_process_ =
         render_frame_host_->GetProcess()->GetID() ==
         frame_tree_node_->current_frame_host()->GetProcess()->GetID();
@@ -4451,11 +4449,6 @@ bool NavigationRequest::HasCommitted() {
 
 bool NavigationRequest::IsErrorPage() {
   return state_ == DID_COMMIT_ERROR_PAGE;
-}
-
-bool NavigationRequest::IsCustomErrorPage() {
-  return state_ == DID_COMMIT_ERROR_PAGE &&
-         committed_page_type_ == CommitPageType::kCustomErrorPage;
 }
 
 net::HttpResponseInfo::ConnectionInfo NavigationRequest::GetConnectionInfo() {
