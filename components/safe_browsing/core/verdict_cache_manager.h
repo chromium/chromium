@@ -141,7 +141,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   base::Optional<size_t> stored_verdict_count_password_entry_;
 
   // Number of verdict stored for this profile for real time url check pings.
-  // This is only used for testing and logging metrics.
+  // This is used for testing, logging metrics and cleaning up during shutdown.
   int stored_verdict_count_real_time_url_check_ = 0;
 
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>

@@ -612,6 +612,9 @@ void VerdictCacheManager::CleanUpExpiredPhishGuardVerdicts() {
 }
 
 void VerdictCacheManager::CleanUpExpiredRealTimeUrlCheckVerdicts() {
+  if (stored_verdict_count_real_time_url_check_ == 0) {
+    return;
+  }
   ContentSettingsForOneType safe_browsing_url_check_data_settings;
   content_settings_->GetSettingsForOneType(
       ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, std::string(),
