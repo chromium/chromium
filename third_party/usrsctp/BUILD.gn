@@ -9,6 +9,12 @@ config("usrsctp_config") {
     "usrsctplib/usrsctplib",
     "usrsctplib/usrsctplib/netinet",
   ]
+
+  # This is part of the public config because it's used both by usrsctp and
+  # the client (WebRTC), to determine if the length field needs populating.
+  if (is_mac || is_ios || target_os == "freebsd") {
+    defines = [ "HAVE_SCONN_LEN" ]
+  }
 }
 
 config("usrsctp_warnings") {
@@ -129,11 +135,9 @@ static_library("usrsctp") {
   } else if (is_apple) {
     defines += [
       "HAVE_SA_LEN",
-      "HAVE_SCONN_LEN",
       "__APPLE_USE_RFC_2292",
       "__Userspace_os_Darwin",
     ]
-    cflags += [ "-U__APPLE__" ]
   }
 
   if (is_win) {
