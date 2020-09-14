@@ -175,7 +175,7 @@ class CC_EXPORT PictureLayerImpl
       const PictureLayerTiling& high_res) const;
   void UpdateTilingsForRasterScaleAndTranslation(bool adjusted_raster_scale);
   void AddLowResolutionTilingIfNeeded();
-  bool ShouldAdjustRasterScale(float old_ideal_contents_scale) const;
+  bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
@@ -199,7 +199,6 @@ class CC_EXPORT PictureLayerImpl
   // factors, and bumps up the reduced scale if those layers end up increasing
   // their contents scale.
   float CalculateDirectlyCompositedImageRasterScale() const;
-  void LogDirectlyCompositedImageRasterScaleUMAs() const;
 
   void SanityCheckTilingState() const;
 

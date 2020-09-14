@@ -596,11 +596,9 @@ bool PictureLayerImpl::UpdateTiles() {
   if (layer_tree_impl()->IsActiveTree())
     CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
 
-  const float old_ideal_contents_scale = ideal_contents_scale_;
   UpdateIdealScales();
 
-  const bool should_adjust_raster_scale =
-      ShouldAdjustRasterScale(old_ideal_contents_scale);
+  const bool should_adjust_raster_scale = ShouldAdjustRasterScale();
   if (should_adjust_raster_scale)
     RecalculateRasterScales();
   UpdateTilingsForRasterScaleAndTranslation(should_adjust_raster_scale);
@@ -1168,33 +1166,6 @@ float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
   return adjusted_raster_scale;
 }
 
-// Log either the tile area saved or added due to directly compositing an
-// image. This is logged every time we choose a raster source scale for a
-// directly composited image.
-void PictureLayerImpl::LogDirectlyCompositedImageRasterScaleUMAs() const {
-  base::CheckedNumeric<int> actual_area =
-      ScaleToCeiledSize(bounds(), raster_source_scale_).GetCheckedArea();
-  base::CheckedNumeric<int> ideal_area =
-      ScaleToCeiledSize(bounds(), ideal_source_scale_).GetCheckedArea();
-  if (actual_area.IsValid() && ideal_area.IsValid()) {
-    int area_difference =
-        std::abs(static_cast<int>((actual_area - ideal_area).ValueOrDie()));
-    bool raster_area_matches = raster_source_scale_ == ideal_source_scale_;
-    UMA_HISTOGRAM_BOOLEAN(
-        "Compositing.Renderer.DirectlyCompositedImage.TileAreaMatches",
-        raster_area_matches);
-    if (raster_source_scale_ < ideal_source_scale_) {
-      UMA_HISTOGRAM_COUNTS_10M(
-          "Compositing.Renderer.DirectlyCompositedImage.TileAreaSaved",
-          area_difference);
-    } else if (raster_source_scale_ > ideal_source_scale_) {
-      UMA_HISTOGRAM_COUNTS_10M(
-          "Compositing.Renderer.DirectlyCompositedImage.TileAreaAdded",
-          area_difference);
-    }
-  }
-}
-
 PictureLayerTiling* PictureLayerImpl::AddTiling(
     const gfx::AxisTransform2d& raster_transform) {
   DCHECK(CanHaveTilings());
@@ -1295,8 +1266,7 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::ShouldAdjustRasterScale(
-    float old_ideal_contents_scale) const {
+bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   if (!raster_contents_scale_)
     return true;
 
@@ -1324,23 +1294,8 @@ bool PictureLayerImpl::ShouldAdjustRasterScale(
     // changed. We should recalculate in order to raster at the intrinsic image
     // size. Note that this is not a comparison of the used raster_source_scale_
     // and desired because of the adjustments in RecalculateRasterScales.
-    bool ideal_contents_scale_changed =
-        old_ideal_contents_scale != 0 &&
-        old_ideal_contents_scale != ideal_contents_scale_;
     bool default_raster_scale_changed =
         default_raster_scale != directly_composited_image_initial_raster_scale_;
-    if (ideal_contents_scale_changed && !default_raster_scale_changed) {
-      // Log a histogram to indicate that we most likely saved raster costs,
-      // if the ideal contents scale changed but we did not need to recalculate
-      // raster scales because this layer is a directly composited image.
-      bool transform_trigger =
-          draw_properties().screen_space_transform_is_animating ||
-          HasWillChangeTransformHint();
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.Renderer.DirectlyCompositedImage."
-          "AvoidRasterAdjustmentWithTransformTrigger",
-          transform_trigger);
-    }
     return default_raster_scale_changed;
   }
 
@@ -1431,14 +1386,7 @@ void PictureLayerImpl::AddLowResolutionTilingIfNeeded() {
 void PictureLayerImpl::RecalculateRasterScales() {
   if (directly_composited_image_size_) {
     float used_raster_scale = CalculateDirectlyCompositedImageRasterScale();
-    const bool should_directly_composite =
-        ShouldDirectlyCompositeImage(used_raster_scale);
-
-    UMA_HISTOGRAM_BOOLEAN(
-        "Compositing.Renderer.DirectlyCompositedImage."
-        "RasterScaleDirectlyComposited",
-        should_directly_composite);
-    if (should_directly_composite) {
+    if (ShouldDirectlyCompositeImage(used_raster_scale)) {
       directly_composited_image_initial_raster_scale_ =
           GetDefaultDirectlyCompositedImageRasterScale();
       raster_source_scale_ = used_raster_scale;
@@ -1446,8 +1394,6 @@ void PictureLayerImpl::RecalculateRasterScales() {
       raster_device_scale_ = 1.f;
       raster_contents_scale_ = raster_source_scale_;
       low_res_raster_contents_scale_ = raster_contents_scale_;
-
-      LogDirectlyCompositedImageRasterScaleUMAs();
       return;
     }
 

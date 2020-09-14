@@ -29655,6 +29655,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Compositing.Renderer.DirectlyCompositedImage.AvoidRasterAdjustmentWithTransformTrigger"
     units="boolean" expires_after="M87">
+  <obsolete>
+    Removed September 2020 because the research it was used for is complete.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -29670,6 +29673,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Compositing.Renderer.DirectlyCompositedImage.RasterScaleDirectlyComposited"
     units="boolean" expires_after="M87">
+  <obsolete>
+    Removed September 2020 because the research it was used for is complete.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -29682,6 +29688,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Renderer.DirectlyCompositedImage.TileAreaAdded"
     units="pixels" expires_after="M87">
+  <obsolete>
+    Removed September 2020 because the research it was used for is complete.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -29695,6 +29704,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Renderer.DirectlyCompositedImage.TileAreaMatches"
     units="boolean" expires_after="M87">
+  <obsolete>
+    Removed September 2020 because the research it was used for is complete.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -29709,6 +29721,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Renderer.DirectlyCompositedImage.TileAreaSaved"
     units="pixels" expires_after="M87">
+  <obsolete>
+    Removed September 2020 because the research it was used for is complete.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>dlibby@microsoft.com</owner>
   <owner>paint-dev@chromium.org</owner>
