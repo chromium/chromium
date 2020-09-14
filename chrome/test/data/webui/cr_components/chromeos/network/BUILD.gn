@@ -21,6 +21,7 @@ js_modulizer("modulize") {
     "network_nameservers_test.js",
     "network_password_input_test.js",
     "network_property_list_mojo_test.js",
+    "network_proxy_input_test.js",
     "network_select_test.js",
     "network_siminfo_test.js",
   ]

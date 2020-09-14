@@ -8,8 +8,6 @@
  * event is fired with the combined url and port values passed as a single
  * string, url:port.
  */
-(function() {
-'use strict';
 
 Polymer({
   is: 'network-proxy-input',
@@ -66,4 +64,3 @@ Polymer({
     this.fire('proxy-input-change', this.value);
   }
 });
-})();

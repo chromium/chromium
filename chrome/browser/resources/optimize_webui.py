@@ -73,6 +73,7 @@ for excluded_file in [
   'resources/css/text_defaults_md.css',
   'resources/mojo/mojo/public/js/mojo_bindings_lite.html',
   'resources/mojo/mojo/public/mojom/base/time.mojom.html',
+  'resources/mojo/mojo/public/mojom/base/time.mojom-lite.js',
   'resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom.html',
   'resources/mojo/services/network/public/mojom/ip_address.mojom.html',
 

@@ -108,6 +108,10 @@
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/network/network_property_list_mojo.m.js"
            use_base_dir="false"
            type="BINDATA" />
+    <include name="IDR_WEBUI_CHROMEOS_NETWORK_PROXY_INPUT_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/network/network_proxy_input.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
     <include name="IDR_WEBUI_CHROMEOS_NETWORK_SELECT_M_JS"
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/network/network_select.m.js"
            use_base_dir="false"

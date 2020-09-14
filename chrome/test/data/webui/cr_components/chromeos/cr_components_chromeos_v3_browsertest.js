@@ -25,6 +25,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
  ['NetworkNameservers', 'network/network_nameservers_test.m.js'],
  ['NetworkPasswordInput', 'network/network_password_input_test.m.js'],
  ['NetworkPropertyListMojo', 'network/network_property_list_mojo_test.m.js'],
+ ['NetworkProxyInput', 'network/network_proxy_input_test.m.js'],
  ['NetworkSelect', 'network/network_select_test.m.js'],
  ['NetworkSiminfo', 'network/network_siminfo_test.m.js'],
 ].forEach(test => registerTest('NetworkComponents', ...test));

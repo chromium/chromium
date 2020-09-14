@@ -274,7 +274,7 @@ js_type_check("closure_compile_module") {
     ":network_property_list_mojo.m",
     #  ":network_proxy.m",
     #  ":network_proxy_exclusions.m",
-    #  ":network_proxy_input.m",
+    ":network_proxy_input.m",
     ":network_select.m",
     ":network_shared_css.m",
     ":network_siminfo.m",
@@ -527,7 +527,11 @@ js_library("network_proxy_exclusions.m") {
 js_library("network_proxy_input.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_proxy_input.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":network_shared_css.m",
+    ":onc_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_proxy_input_module" ]
 }
@@ -734,6 +738,8 @@ polymer_modulizer("network_proxy_input") {
   js_file = "network_proxy_input.js"
   html_file = "network_proxy_input.html"
   html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
 polymer_modulizer("network_select") {
