@@ -216,6 +216,14 @@ imageset("popup_menu_new_tab") {
   ]
 }
 
+imageset("popup_menu_new_window") {
+  sources = [
+    "popup_menu_new_window.imageset/Contents.json",
+    "popup_menu_new_window.imageset/popup_menu_new_window@2x.png",
+    "popup_menu_new_window.imageset/popup_menu_new_window@3x.png",
+  ]
+}
+
 imageset("popup_menu_help") {
   sources = [
     "popup_menu_help.imageset/Contents.json",
