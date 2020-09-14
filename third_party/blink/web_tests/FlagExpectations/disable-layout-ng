@@ -670,3 +670,6 @@ crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-fixed-min-width.html [ Failure ]
+
+# math display values are only supported when MathML Core is enabled.
+crbug.com/6606 external/wpt/css/css-display/display-math-on-non-mathml-elements.html [ Failure ]

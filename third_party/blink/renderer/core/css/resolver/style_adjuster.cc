@@ -638,6 +638,15 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (is_document_element)
       style.SetDisplay(EquivalentBlockDisplay(style.Display()));
 
+    // math display values on non-MathML elements compute to flow display
+    // values.
+    if (element && !element->IsMathMLElement() &&
+        (style.Display() == EDisplay::kMath ||
+         style.Display() == EDisplay::kInlineMath)) {
+      style.SetDisplay(style.Display() == EDisplay::kMath ? EDisplay::kBlock
+                                                          : EDisplay::kInline);
+    }
+
     // We don't adjust the first letter style earlier because we may change the
     // display setting in adjustStyeForTagName() above.
     AdjustStyleForFirstLetter(style);
