@@ -144,6 +144,9 @@ class ElementRareData : public NodeRareData {
   void SetDidAttachInternals() { did_attach_internals_ = true; }
   bool DidAttachInternals() const { return did_attach_internals_; }
   ElementInternals& EnsureElementInternals(HTMLElement& target);
+  const ElementInternals* GetElementInternals() const {
+    return element_internals_;
+  }
 
   void SetStyleShouldForceLegacyLayout(bool force) {
     style_should_force_legacy_layout_ = force;

@@ -828,6 +828,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetDidAttachInternals();
   bool DidAttachInternals() const;
   ElementInternals& EnsureElementInternals();
+  const ElementInternals* GetElementInternals() const;
 
   bool ContainsFullScreenElement() const {
     return HasElementFlag(ElementFlags::kContainsFullScreenElement);

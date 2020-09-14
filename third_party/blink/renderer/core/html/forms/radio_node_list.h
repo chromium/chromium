@@ -45,8 +45,6 @@ class RadioNodeList final : public LiveNodeList {
   void setValue(const String&);
 
  private:
-  bool CheckElementMatchesRadioNodeListFilter(const Element&) const;
-
   bool MatchesByIdOrName(const Element&) const;
   bool ShouldOnlyMatchImgElements() const {
     return GetType() == kRadioImgNodeListType;

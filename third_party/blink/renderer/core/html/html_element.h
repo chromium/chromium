@@ -100,7 +100,7 @@ class CORE_EXPORT HTMLElement : public Element {
 
   bool ShouldSerializeEndTag() const;
 
-  virtual HTMLFormElement* formOwner() const { return nullptr; }
+  virtual HTMLFormElement* formOwner() const;
 
   HTMLFormElement* FindFormAncestor() const;
 

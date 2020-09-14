@@ -3384,6 +3384,10 @@ ElementInternals& Element::EnsureElementInternals() {
   return EnsureElementRareData().EnsureElementInternals(To<HTMLElement>(*this));
 }
 
+const ElementInternals* Element::GetElementInternals() const {
+  return HasRareData() ? GetElementRareData()->GetElementInternals() : nullptr;
+}
+
 ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled(GetExecutionContext()));
   if (ShadowRoot* root = GetShadowRoot()) {

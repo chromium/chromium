@@ -1077,6 +1077,12 @@ void HTMLElement::setDir(const AtomicString& value) {
   setAttribute(html_names::kDirAttr, value);
 }
 
+HTMLFormElement* HTMLElement::formOwner() const {
+  if (const auto* internals = GetElementInternals())
+    return internals->Form();
+  return nullptr;
+}
+
 HTMLFormElement* HTMLElement::FindFormAncestor() const {
   return Traversal<HTMLFormElement>::FirstAncestor(*this);
 }
