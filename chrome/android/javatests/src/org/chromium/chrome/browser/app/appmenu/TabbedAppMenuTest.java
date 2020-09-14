@@ -45,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -242,8 +243,11 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
+    @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
+            ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1065043.
-    public void testBookmarkMenuItem() throws IOException {
+    public void
+    testBookmarkMenuItem() throws IOException {
         MenuItem bookmarkStar =
                 AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
                         .findItem(R.id.bookmark_this_page_id);
