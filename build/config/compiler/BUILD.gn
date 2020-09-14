@@ -501,11 +501,13 @@ config("compiler") {
       "-instcombine-lower-dbg-declare=0",
     ]
 
-    cflags += [
-      # TODO(https://crbug.com/1127713): Investigate, remove.
-      "-mllvm",
-      "-enable-dse-memoryssa=false",
-    ]
+    if (!llvm_force_head_revision) {
+      cflags += [
+        # TODO(https://crbug.com/1127713): Investigate, remove.
+        "-mllvm",
+        "-enable-dse-memoryssa=false",
+      ]
+    }
   }
 
   # C11/C++11 compiler flags setup.
