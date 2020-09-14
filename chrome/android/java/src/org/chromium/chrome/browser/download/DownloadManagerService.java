@@ -301,9 +301,10 @@ public class DownloadManagerService implements DownloadController.Observer,
     // TODO(https://crbug.com/1060940): Remove this function and update all use cases so that
     // the profile would be available instead of isOffTheRecord boolean.
     private static ProfileKey getProfileKey(boolean isOffTheRecord) {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (isOffTheRecord) profile = profile.getPrimaryOTRProfile();
-        return profile.getProfileKey();
+        // If off-the-record is not requested, the request might be before native initialization.
+        if (!isOffTheRecord) return ProfileKey.getLastUsedRegularProfileKey();
+
+        return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile().getProfileKey();
     }
 
     /**
