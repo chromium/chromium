@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -22,8 +24,7 @@ DriveShareAction::DriveShareAction() = default;
 DriveShareAction::~DriveShareAction() = default;
 
 const base::string16 DriveShareAction::GetActionName() {
-  // TODO(crbug.com/1097623): Get the Action name from files app strings.
-  return base::UTF8ToUTF16("ShareWithOthers");
+  return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
 }
 
 const gfx::ImageSkia DriveShareAction::GetActionIcon() {
