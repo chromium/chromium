@@ -2134,17 +2134,6 @@
       },
     },
 
-    # GPU gtests that test only Dawn with backend validation layers
-    'gpu_dawn_extra_gtests': {
-      'dawn_end2end_validation_layers_tests': {
-        'mixins': ['dawn_end2end_gpu_test'],
-        'args': [
-          '--enable-backend-validation',
-        ],
-        'test': 'dawn_end2end_tests',
-      },
-    },
-
     # GPU gtests that test only Dawn
     'gpu_dawn_gtests': {
       'dawn_end2end_no_spvc_tests': {
@@ -5025,13 +5014,11 @@
     # These tests are run both on the CI and trybots which test DEPS Dawn.
     'gpu_dawn_integration_gtests_passthrough': [
       'gpu_dawn_gtests',
-      'gpu_dawn_extra_gtests',
       'gpu_common_gtests_passthrough',
     ],
 
     'gpu_dawn_integration_gtests_validating': [
       'gpu_dawn_gtests',
-      'gpu_dawn_extra_gtests',
       'gpu_common_gtests_validating',
     ],
 
