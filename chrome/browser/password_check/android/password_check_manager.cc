@@ -306,7 +306,6 @@ void PasswordCheckManager::RefreshScripts() {
     FulfillPrecondition(kScriptsCachePrewarmed);
     return;
   }
-
   ResetPrecondition(kScriptsCachePrewarmed);
   password_script_fetcher_->RefreshScriptsIfNecessary(base::BindOnce(
       &PasswordCheckManager::OnScriptsFetched, base::Unretained(this)));
@@ -318,13 +317,11 @@ void PasswordCheckManager::OnScriptsFetched() {
     // Inform the UI about compromised credentials another time because it was
     // not allowed to generate UI before the availability of password scripts is
     // known.
+    FulfillPrecondition(kKnownCredentialsFetched);
     observer_->OnCompromisedCredentialsChanged(
         credentials_count_to_notify_.value());
     credentials_count_to_notify_.reset();
   }
-
-  if (was_start_requested_)
-    StartCheck();
 }
 
 bool PasswordCheckManager::ShouldOfferAutomaticPasswordChange() const {
@@ -353,5 +350,5 @@ void PasswordCheckManager::FulfillPrecondition(CheckPreconditions condition) {
 }
 
 void PasswordCheckManager::ResetPrecondition(CheckPreconditions condition) {
-  fulfilled_preconditions_ &= !condition;
+  fulfilled_preconditions_ &= ~condition;
 }

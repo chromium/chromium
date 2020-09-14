@@ -299,6 +299,39 @@ TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
   EXPECT_NE(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
 }
 
+TEST_F(PasswordCheckManagerTest,
+       RunCheckAfterLastInitializationAutomaticChangeOn) {
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitAndEnableFeature(
+      password_manager::features::kPasswordChangeInSettings);
+  EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged).Times(AtLeast(1));
+  EXPECT_CALL(mock_observer(), OnSavedPasswordsFetched(1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  InitializeManager();
+
+  // Initialization is incomplete, so check shouldn't run.
+  manager().StartCheck();  // Try to start a check — has no immediate effect.
+  service()->set_state_and_notify(State::kIdle);
+  // Since check hasn't started, the last completion time should remain 0.
+  EXPECT_EQ(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+
+  // Fetch scripts availability.
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  // Complete pending initialization. The check should run now.
+  EXPECT_CALL(mock_observer(), OnCompromisedCredentialsChanged(0))
+      .Times(AtLeast(1));
+  RunUntilIdle();
+  service()->set_state_and_notify(State::kIdle);  // Complete check, if any.
+  // Check should have started and the last completion time be non-zero.
+  EXPECT_NE(0.0, manager().GetLastCheckTimestamp().ToDoubleT());
+}
+
 TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
