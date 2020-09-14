@@ -59,10 +59,12 @@ class MEDIA_GPU_EXPORT DecoderInterface {
     // flushed.
     virtual void PrepareChangeResolution() = 0;
 
-    // Return a valid format for |decoder_| output from given |candidates| and
-    // the visible rect.
+    // Return a valid format and size for |decoder_| output from given
+    // |candidates| and the visible rect. The size might be modified from the
+    // ones provided originally to accommodate the needs of the pipeline.
     // Return base::nullopt if no valid format is found.
-    virtual base::Optional<Fourcc> PickDecoderOutputFormat(
+    virtual base::Optional<std::pair<Fourcc, gfx::Size>>
+    PickDecoderOutputFormat(
         const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
         const gfx::Rect& visible_rect) = 0;
   };
@@ -164,7 +166,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // After picking a format, it instantiates an |image_processor_| if none of
   // format in |candidates| is renderable and an ImageProcessor can convert a
   // candidate to renderable format.
-  base::Optional<Fourcc> PickDecoderOutputFormat(
+  base::Optional<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
       const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
       const gfx::Rect& visible_rect) override;
 

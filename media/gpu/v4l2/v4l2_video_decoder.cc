@@ -302,24 +302,26 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   }
 
   // Ask the pipeline to pick the output format.
-  const base::Optional<Fourcc> fourcc =
+  const base::Optional<std::pair<Fourcc, gfx::Size>> output_format =
       client_->PickDecoderOutputFormat(candidates, visible_rect);
-  if (!fourcc) {
-    VLOGF(1) << "Failed to pick a output format.";
+  if (!output_format) {
+    VLOGF(1) << "Failed to pick an output format.";
     return false;
   }
+  Fourcc fourcc = std::move(output_format->first);
+  gfx::Size picked_size = std::move(output_format->second);
 
   // We successfully picked the output format. Now setup output format again.
   base::Optional<struct v4l2_format> format =
-      output_queue_->SetFormat(fourcc->ToV4L2PixFmt(), size, 0);
+      output_queue_->SetFormat(fourcc.ToV4L2PixFmt(), picked_size, 0);
   DCHECK(format);
   gfx::Size adjusted_size(format->fmt.pix_mp.width, format->fmt.pix_mp.height);
   DCHECK_EQ(adjusted_size.width() % 16, 0);
   DCHECK_EQ(adjusted_size.height() % 16, 0);
-  if (!gfx::Rect(adjusted_size).Contains(gfx::Rect(size))) {
+  if (!gfx::Rect(adjusted_size).Contains(gfx::Rect(picked_size))) {
     VLOGF(1) << "The adjusted coded size (" << adjusted_size.ToString()
-             << ") should contains the original coded size(" << size.ToString()
-             << ").";
+             << ") should contains the original coded size("
+             << picked_size.ToString() << ").";
     return false;
   }
 
@@ -331,7 +333,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   if (pool) {
     base::Optional<GpuBufferLayout> layout = pool->Initialize(
-        *fourcc, adjusted_size, visible_rect,
+        fourcc, adjusted_size, visible_rect,
         GetNaturalSize(visible_rect, pixel_aspect_ratio_), num_output_frames_);
     if (!layout) {
       VLOGF(1) << "Failed to setup format to VFPool";
@@ -339,7 +341,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     }
     if (layout->size() != adjusted_size) {
       VLOGF(1) << "The size adjusted by VFPool is different from one "
-               << "adjusted by a video driver. fourcc: " << fourcc->ToString()
+               << "adjusted by a video driver. fourcc: " << fourcc.ToString()
                << ", (video driver v.s. VFPool) " << adjusted_size.ToString()
                << " != " << layout->size().ToString();
       return false;
@@ -348,7 +350,7 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     if (layout->modifier() &&
         layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
       base::Optional<struct v4l2_format> modifier_format =
-          output_queue_->SetModifierFormat(layout->modifier(), size);
+          output_queue_->SetModifierFormat(layout->modifier(), picked_size);
       if (!modifier_format)
         return false;
 

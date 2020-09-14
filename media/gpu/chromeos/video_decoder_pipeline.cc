@@ -496,7 +496,8 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   return main_frame_pool_.get();
 }
 
-base::Optional<Fourcc> VideoDecoderPipeline::PickDecoderOutputFormat(
+base::Optional<std::pair<Fourcc, gfx::Size>>
+VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
     const gfx::Rect& visible_rect) {
   DVLOGF(3);
@@ -513,8 +514,13 @@ base::Optional<Fourcc> VideoDecoderPipeline::PickDecoderOutputFormat(
   for (const auto& candidate : candidates)
     fourccs.push_back(candidate.first);
   const auto renderable_fourcc = PickRenderableFourcc(fourccs);
-  if (renderable_fourcc)
-    return renderable_fourcc;
+  if (renderable_fourcc) {
+    for (const auto& candidate : candidates)
+      if (candidate.first == renderable_fourcc)
+        return candidate;
+    DVLOGF(2) << "Renderable Fourcc not in candidates list. This is a bug.";
+    return base::nullopt;
+  }
 
   std::unique_ptr<ImageProcessor> image_processor =
       ImageProcessorFactory::CreateWithInputCandidates(
@@ -529,6 +535,7 @@ base::Optional<Fourcc> VideoDecoderPipeline::PickDecoderOutputFormat(
 
   // Note that fourcc is specified in ImageProcessor's factory method.
   auto fourcc = image_processor->input_config().fourcc;
+  auto size = image_processor->input_config().size;
 
   // Setup new pipeline.
   image_processor_ = ImageProcessorWithPool::Create(
@@ -539,7 +546,7 @@ base::Optional<Fourcc> VideoDecoderPipeline::PickDecoderOutputFormat(
     return base::nullopt;
   }
 
-  return fourcc;
+  return std::make_pair(fourcc, size);
 }
 
 void VideoDecoderPipeline::OnImageProcessorError() {
