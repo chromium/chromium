@@ -129646,6 +129646,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.NumFormsExtractedIOS" units="forms"
     expires_after="2020-09-27">
+  <obsolete>
+    Removed as of 09/2020.
+  </obsolete>
   <owner>jdoerrie@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>

@@ -183,8 +183,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
   NSString* nsFormData = [NSString stringWithUTF8String:formData.c_str()];
   autofill::ExtractFormsData(nsFormData, false, base::string16(), pageURL,
                              pageURL.GetOrigin(), &forms);
-  UMA_HISTOGRAM_EXACT_LINEAR("PasswordManager.NumFormsExtractedIOS",
-                             forms.size(), 50);
   if (forms.size() != 1)
     return;
 
