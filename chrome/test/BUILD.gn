@@ -5639,6 +5639,7 @@ test("unit_tests") {
     sources += [
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
+      "../browser/ui/in_product_help/feature_promo_snooze_service_unittest.cc",
       "../browser/ui/media_router/media_router_ui_unittest.cc",
       "../browser/ui/views/accelerator_table_unittest.cc",
       "../browser/ui/views/accelerator_table_unittest_mac.mm",

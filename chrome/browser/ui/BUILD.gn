@@ -1017,6 +1017,8 @@ static_library("ui") {
       "hung_renderer/hung_renderer_core.h",
       "in_product_help/active_tab_tracker.cc",
       "in_product_help/active_tab_tracker.h",
+      "in_product_help/feature_promo_snooze_service.cc",
+      "in_product_help/feature_promo_snooze_service.h",
       "in_product_help/global_media_controls_in_product_help.cc",
       "in_product_help/global_media_controls_in_product_help.h",
       "in_product_help/global_media_controls_in_product_help_factory.cc",
