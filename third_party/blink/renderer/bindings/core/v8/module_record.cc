@@ -56,9 +56,12 @@ v8::Local<v8::Value> ModuleEvaluationResult::GetException() const {
 ScriptPromise ModuleEvaluationResult::GetPromise(
     ScriptState* script_state) const {
   DCHECK(base::FeatureList::IsEnabled(features::kTopLevelAwait));
-  DCHECK(IsSuccess());
   DCHECK(!value_.IsEmpty());
-  return ScriptPromise(script_state, value_);
+  if (IsSuccess()) {
+    return ScriptPromise(script_state, value_);
+  } else {
+    return ScriptPromise::Reject(script_state, value_);
+  }
 }
 
 ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
