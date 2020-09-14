@@ -900,6 +900,9 @@ void AccessibilityManager::OnSwitchAccessChanged() {
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       ash::prefs::kAccessibilitySwitchAccessEnabled);
 
+  if (enabled)
+    switch_access_loader_->SetProfile(profile_, base::Closure());
+
   if (switch_access_enabled_ == enabled)
     return;
   switch_access_enabled_ = enabled;
