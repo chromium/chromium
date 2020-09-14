@@ -414,11 +414,11 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // True if the frame that's currently being aggregated has copy requests.
   // This is valid during Aggregate after PrewalkTree is called.
-  bool has_copy_requests_;
+  bool has_copy_requests_ = false;
 
   // True if the frame that's currently being aggregated has cached render
   // passes. This is valid during Aggregate after PrewalkTree is called.
-  bool has_cached_render_passes_;
+  bool has_cached_render_passes_ = false;
 
   // True if any RenderPasses in the aggregated frame have a backdrop filter
   // that moves pixels. This is valid during Aggregate after PrewalkTree is
