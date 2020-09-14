@@ -96,6 +96,65 @@ suite('edit dictionary page', () => {
         'none');  // Make sure add-word button actually clickable.
   });
 
+  test('shows error when adding duplicate word', () => {
+    const WORD = 'unique';
+    loadTimeData.overrideValues({
+      addDictionaryWordDuplicateError: 'duplicate',
+    });
+    // add word
+    languageSettingsPrivate.onCustomDictionaryChanged.callListeners([WORD], []);
+    editDictPage.$.newWord.value = `${WORD} ${WORD}`;
+    Polymer.dom.flush();
+    assertFalse(editDictPage.$.addWord.disabled);
+    assertFalse(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, '');
+
+    // add duplicate word
+    editDictPage.$.newWord.value = WORD;
+    Polymer.dom.flush();
+    assertTrue(editDictPage.$.addWord.disabled);
+    assertTrue(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, 'duplicate');
+
+    // remove word
+    languageSettingsPrivate.onCustomDictionaryChanged.callListeners([], [WORD]);
+    Polymer.dom.flush();
+    assertFalse(editDictPage.$.addWord.disabled);
+    assertFalse(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, '');
+  });
+
+  test('shows error when adding word bigger than 99 bytes', () => {
+    const OK_WORD = 'u'.repeat(99);
+    const TOO_LONG_WORD = 'u'.repeat(100);
+    // This emoji has length 2 and bytesize 4.
+    const TOO_BIG_WORD = '😎'.repeat(25);
+    loadTimeData.overrideValues({
+      addDictionaryWordLengthError: 'too long',
+    });
+
+    editDictPage.$.newWord.value = OK_WORD;
+    Polymer.dom.flush();
+
+    assertFalse(editDictPage.$.addWord.disabled);
+    assertFalse(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, '');
+
+    editDictPage.$.newWord.value = TOO_LONG_WORD;
+    Polymer.dom.flush();
+
+    assertTrue(editDictPage.$.addWord.disabled);
+    assertTrue(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, 'too long');
+
+    editDictPage.$.newWord.value = TOO_BIG_WORD;
+    Polymer.dom.flush();
+
+    assertTrue(editDictPage.$.addWord.disabled);
+    assertTrue(editDictPage.$.newWord.invalid);
+    assertEquals(editDictPage.$.newWord.errorMessage, 'too long');
+  });
+
   test('shows message when empty', () => {
     assertTrue(!!editDictPage);
     return languageSettingsPrivate.whenCalled('getSpellcheckWords').then(() => {

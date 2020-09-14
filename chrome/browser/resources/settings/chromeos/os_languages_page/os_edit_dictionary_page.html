@@ -56,6 +56,8 @@
           on-keys-pressed="onKeysPress_">
       </iron-a11y-keys>
       <cr-input id="newWord" value="{{newWordValue_}}"
+          invalid="[[isNewWordInvalid_(newWordState_)]]"
+          error-message="[[getErrorMessage_(newWordState_)]]"
           spellcheck="false">
         <cr-button on-click="onAddWordTap_" id="addWord" slot="suffix"
             disabled="[[disableAddButton_]]">

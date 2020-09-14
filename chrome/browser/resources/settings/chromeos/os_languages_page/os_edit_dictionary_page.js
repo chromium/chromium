@@ -14,6 +14,18 @@
 // #import {LanguagesBrowserProxyImpl} from '../../languages_page/languages_browser_proxy.m.js';
 // clang-format on
 
+// Max valid word size, keep in sync with kMaxCustomDictionaryWordBytes in
+// //components/spellcheck/common/spellcheck_common.h
+const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
+
+/** @enum {number} */
+const NewWordState = {
+  NO_WORD: 0,
+  VALID_WORD: 1,
+  WORD_ALREADY_ADDED: 2,
+  WORD_TOO_LONG: 3,
+};
+
 Polymer({
   is: 'os-settings-edit-dictionary-page',
 
@@ -55,7 +67,14 @@ Polymer({
     disableAddButton_: {
       type: Boolean,
       value: true,
-      computed: 'shouldDisableAddButton_(newWordValue_)',
+      computed: 'shouldDisableAddButton_(newWordState_)',
+    },
+
+    /** @private */
+    newWordState_: {
+      type: Number,
+      value: NewWordState.NO_WORD,
+      computed: 'updateNewWordState_(newWordValue_, words_.*)',
     }
   },
 
@@ -105,19 +124,61 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getTrimmedNewWord_() {
+    return this.newWordValue_.trim();
+  },
+
+  /**
+   * @return {NewWordState}
+   * @private
+   */
+  updateNewWordState_() {
+    const trimmedNewWord = this.getTrimmedNewWord_();
+    if (!trimmedNewWord.length) {
+      return NewWordState.NO_WORD;
+    }
+    if (this.words_.includes(trimmedNewWord)) {
+      return NewWordState.WORD_ALREADY_ADDED;
+    }
+    if (new Blob([trimmedNewWord]).size > MAX_CUSTOM_DICTIONARY_WORD_BYTES) {
+      return NewWordState.WORD_TOO_LONG;
+    }
+    return NewWordState.VALID_WORD;
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
   shouldDisableAddButton_() {
-    return !this.getTrimmedNewWord_().length;
+    return this.newWordState_ !== NewWordState.VALID_WORD;
   },
 
   /**
    * @return {string}
    * @private
    */
-  getTrimmedNewWord_() {
-    return this.newWordValue_.trim();
+  getErrorMessage_() {
+    switch (this.newWordState_) {
+      case NewWordState.WORD_TOO_LONG:
+        return this.i18n('addDictionaryWordLengthError');
+      case NewWordState.WORD_ALREADY_ADDED:
+        return this.i18n('addDictionaryWordDuplicateError');
+      default:
+        return '';
+    }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isNewWordInvalid_() {
+    return this.newWordState_ === NewWordState.WORD_TOO_LONG ||
+        this.newWordState_ === NewWordState.WORD_ALREADY_ADDED;
   },
 
   /**
