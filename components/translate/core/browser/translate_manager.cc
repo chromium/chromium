@@ -180,7 +180,7 @@ std::string TranslateManager::GetManualTargetLanguage(
 }
 
 bool TranslateManager::CanManuallyTranslate() {
-  if (!base::FeatureList::IsEnabled(translate::kTranslateUI) ||
+  if (!base::FeatureList::IsEnabled(translate::kTranslate) ||
       net::NetworkChangeNotifier::IsOffline() ||
       (!ignore_missing_key_for_testing_ &&
        !::google_apis::HasAPIKeyConfigured()))
@@ -548,7 +548,7 @@ void TranslateManager::SetIgnoreMissingKeyForTesting(bool ignore) {
 // static
 bool TranslateManager::IsAvailable(const TranslatePrefs* prefs) {
   // These conditions mirror the conditions in InitiateTranslation.
-  return base::FeatureList::IsEnabled(translate::kTranslateUI) &&
+  return base::FeatureList::IsEnabled(translate::kTranslate) &&
          (ignore_missing_key_for_testing_ ||
           ::google_apis::HasAPIKeyConfigured()) &&
          prefs->IsOfferTranslateEnabled();
@@ -700,7 +700,7 @@ void TranslateManager::FilterIsTranslatePossible(
         TranslateBrowserMetrics::INITIATION_STATUS_DOESNT_NEED_TRANSLATION);
   }
 
-  if (!base::FeatureList::IsEnabled(translate::kTranslateUI)) {
+  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
     decision->PreventAllTriggering();
     decision->initiation_statuses.push_back(
         TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_SWITCH);

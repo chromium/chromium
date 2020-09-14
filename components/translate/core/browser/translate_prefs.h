@@ -25,7 +25,7 @@ class PrefService;
 namespace base {
 class DictionaryValue;
 class ListValue;
-}
+}  // namespace base
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -41,8 +41,9 @@ namespace translate {
 // target language option.
 extern const base::Feature kTranslateRecentTarget;
 
-// Enable or disable the Translate popup altogether.
-extern const base::Feature kTranslateUI;
+// This allows the user to disable translate by using the
+// `--disable-features=Translate` command-line flag.
+extern const base::Feature kTranslate;
 
 // Minimum number of times the user must accept a translation before we show
 // a shortcut to the "Always Translate" functionality.

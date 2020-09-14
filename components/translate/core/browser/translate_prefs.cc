@@ -122,8 +122,7 @@ const char TranslatePrefs::kPrefExplicitLanguageAskShown[] =
 const base::Feature kTranslateRecentTarget{"TranslateRecentTarget",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kTranslateUI{"TranslateUI",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kTranslate{"Translate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 DenialTimeUpdate::DenialTimeUpdate(PrefService* prefs,
                                    base::StringPiece language,
