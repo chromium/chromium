@@ -27,6 +27,7 @@
   (global-name "com.apple.PowerManagement.control")
   (global-name "com.apple.SecurityServer")
   (global-name "com.apple.system.notification_center")
+  (global-name "com.apple.system.opendirectoryd.membership") ; https://crbug.com/1126350#c5
   (global-name "com.apple.tsm.uiserver")
   (global-name "com.apple.windowserver.active")
 )
