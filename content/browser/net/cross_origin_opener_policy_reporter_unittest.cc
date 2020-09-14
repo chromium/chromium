@@ -80,7 +80,8 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
 
 TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
   auto reporter = GetReporter();
-  std::string url1 = "https://www1.example.com/y#foo?bar=baz";
+  std::string url1 = "https://www1.example.com/y?bar=baz#foo";
+  std::string url1_report = "https://www1.example.com/y?bar=baz";
   std::string url2 = "https://www1.example.com/";
   std::string url3 = "http://www2.example.com:41/z";
 
@@ -94,7 +95,7 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {
   EXPECT_EQ(r1.type, "coop");
   EXPECT_EQ(r1.url, context_url());
   EXPECT_EQ(r1.body.FindKey("disposition")->GetString(), "enforce");
-  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(), url1);
+  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(), url1_report);
   EXPECT_EQ(r1.body.FindKey("referrer")->GetString(), url2);
   EXPECT_EQ(r1.body.FindKey("type")->GetString(), "navigation-to-response");
   EXPECT_EQ(r1.body.FindKey("effectivePolicy")->GetString(),
@@ -135,7 +136,8 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, UserAndPassSanitization) {
 
 TEST_F(CrossOriginOpenerPolicyReporterTest, Clone) {
   auto reporter = GetReporter();
-  std::string url1 = "https://www1.example.com/y#foo?bar=baz";
+  std::string url1 = "https://www1.example.com/y?bar=baz#foo";
+  std::string url1_sanitized = "https://www1.example.com/y?bar=baz";
 
   mojo::Remote<network::mojom::CrossOriginOpenerPolicyReporter> remote;
   reporter->Clone(remote.BindNewPipeAndPassReceiver());
@@ -150,8 +152,9 @@ TEST_F(CrossOriginOpenerPolicyReporterTest, Clone) {
   EXPECT_EQ(r1.type, "coop");
   EXPECT_EQ(r1.url, context_url());
   EXPECT_EQ(r1.body.FindKey("disposition")->GetString(), "enforce");
-  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(), url1);
-  EXPECT_EQ(r1.body.FindKey("referrer")->GetString(), url1);
+  EXPECT_EQ(r1.body.FindKey("previousResponseURL")->GetString(),
+            url1_sanitized);
+  EXPECT_EQ(r1.body.FindKey("referrer")->GetString(), url1_sanitized);
   EXPECT_EQ(r1.body.FindKey("type")->GetString(), "navigation-to-response");
   EXPECT_EQ(r1.body.FindKey("effectivePolicy")->GetString(),
             "same-origin-plus-coep");

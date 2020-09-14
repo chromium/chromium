@@ -113,6 +113,16 @@ FrameTreeNode* TopLevelOpener(FrameTreeNode* frame) {
   return opener ? opener->frame_tree()->root() : nullptr;
 }
 
+// Remove sensitive data from URL used in reports.
+std::string SanitizedURL(const GURL& url) {
+  // Strip username, password and ref fragment from the URL.
+  // Keep only the valid http/https ones.
+  //
+  // Note: This is the exact same operation used in
+  // ReportingServiceImpl::QueueReport() for the |url|.
+  return url.GetAsReferrer().spec();
+}
+
 }  // namespace
 
 CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
@@ -137,21 +147,12 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
   if (!endpoint)
     return;
 
-  url::Replacements<char> replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  std::string sanitized_previous_url;
-  if (same_origin_with_previous) {
-    sanitized_previous_url =
-        previous_url.ReplaceComponents(replacements).spec();
-  }
-  std::string sanitized_referrer_url =
-      referrer_url.ReplaceComponents(replacements).spec();
   base::DictionaryValue body;
   body.SetString(kDisposition,
                  is_report_only ? kDispositionReporting : kDispositionEnforce);
-  body.SetString(kPreviousURL, sanitized_previous_url);
-  body.SetString(kReferrer, sanitized_referrer_url);
+  body.SetString(kPreviousURL,
+                 same_origin_with_previous ? SanitizedURL(previous_url) : "");
+  body.SetString(kReferrer, SanitizedURL(referrer_url));
   body.SetString(kViolationType, kTypeToResponse);
   QueueNavigationReport(std::move(body), *endpoint, is_report_only);
 }
@@ -167,13 +168,9 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationAwayFromCOOPReport(
   if (!endpoint)
     return;
 
-  url::Replacements<char> replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
   std::string sanitized_next_url;
-  if (is_current_source || same_origin_with_next) {
-    sanitized_next_url = next_url.ReplaceComponents(replacements).spec();
-  }
+  if (is_current_source || same_origin_with_next)
+    sanitized_next_url = SanitizedURL(next_url);
   base::DictionaryValue body;
   body.SetString(kNextURL, sanitized_next_url);
   body.SetString(kViolationType, kTypeFromResponse);
@@ -331,12 +328,8 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
   body.SetString(
       kEffectivePolicy,
       ToString(is_report_only ? coop_.report_only_value : coop_.value));
-  url::Replacements<char> replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  GURL sanitized_context_url = context_url_.ReplaceComponents(replacements);
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, sanitized_context_url, /*user_agent=*/base::nullopt,
+      "coop", endpoint, context_url_, /*user_agent=*/base::nullopt,
       std::move(body));
 }
 
