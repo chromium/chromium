@@ -245,9 +245,11 @@ source_set("modules_testing") {
     "//third_party/blink/renderer/core:blink_core_pch",
   ]
 
+  public_deps = [ "//testing/gmock:gmock" ]
   deps = [
     "//third_party/blink/renderer/bindings/modules/v8:testing",
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules",
   ]
 }
@@ -496,23 +498,34 @@ source_set("unit_tests") {
     "//components/schema_org/common:mojom_blink",
     "//media:test_support",
     "//media/mojo/mojom",
+    "//media/webrtc:webrtc",
     "//mojo/public/cpp/bindings",
     "//net:quic_test_tools",
+    "//net:test_support",
     "//services/device/public/cpp:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/modules/gamepad:unit_tests",
     "//third_party/blink/renderer/modules/hid:unit_tests",
+    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
+    "//third_party/blink/renderer/modules/mediastream:test_support",
     "//third_party/blink/renderer/modules/native_file_system:unit_tests",
+    "//third_party/blink/renderer/modules/peerconnection:test_support",
     "//third_party/blink/renderer/modules/storage:unit_tests",
     "//third_party/blink/renderer/modules/webcodecs:unit_tests",
     "//third_party/blink/renderer/modules/webtransport:unit_tests",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/googletest:gmock",
     "//third_party/opus",
     "//third_party/webrtc_overrides:webrtc_component",
     "//v8",
@@ -552,6 +565,7 @@ if (use_libfuzzer) {
 
     deps = [
       ":modules",
+      "//third_party/blink/renderer/core:testing",
       "//third_party/blink/renderer/modules/media_capabilities:fuzzer_media_configuration_proto",
       "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
       "//third_party/libprotobuf-mutator",
@@ -570,6 +584,7 @@ if (use_libfuzzer) {
 
     deps = [
       ":modules",
+      "//third_party/blink/renderer/core:testing",
       "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
       "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
       "//third_party/libprotobuf-mutator",
@@ -588,6 +603,7 @@ if (use_libfuzzer) {
 
     deps = [
       ":modules",
+      "//third_party/blink/renderer/core:testing",
       "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
       "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
       "//third_party/libprotobuf-mutator",
@@ -606,6 +622,7 @@ if (use_libfuzzer) {
 
     deps = [
       ":modules",
+      "//third_party/blink/renderer/core:testing",
       "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
       "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
       "//third_party/libprotobuf-mutator",

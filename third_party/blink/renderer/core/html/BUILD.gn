@@ -687,8 +687,6 @@ blink_core_tests("unit_tests") {
     "media/autoplay_uma_helper_test.cc",
     "media/html_media_element_event_listeners_test.cc",
     "media/html_media_element_test.cc",
-    "media/html_media_test_helper.cc",
-    "media/html_media_test_helper.h",
     "media/html_video_element_persistent_test.cc",
     "media/html_video_element_test.cc",
     "media/media_custom_controls_fullscreen_detector_test.cc",

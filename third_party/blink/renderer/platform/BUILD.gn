@@ -1736,6 +1736,7 @@ static_library("test_support") {
   sources = [
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
+    "graphics/test/fake_canvas_resource_host.h",
     "graphics/test/fake_gles2_interface.h",
     "graphics/test/fake_web_graphics_context_3d_provider.h",
     "graphics/test/gpu_memory_buffer_test_platform.h",
@@ -2404,7 +2405,6 @@ source_set("unit_tests") {
     "graphics/image_decoding_store_test.cc",
     "graphics/image_frame_generator_test.cc",
     "graphics/paint_worklet_paint_dispatcher_test.cc",
-    "graphics/test/fake_canvas_resource_host.h",
     "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.

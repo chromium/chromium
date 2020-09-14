@@ -253,7 +253,6 @@ no_check_targets = [
   "//third_party/blink/renderer/modules/canvas:*",  # 1 error
   "//third_party/blink/renderer/modules/font_access:*",  # 3 errors
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
-  "//third_party/blink/renderer/modules:*",  # 321 errors
   "//third_party/blink/renderer/platform:*",  # 10 errors
 
   "//third_party/breakpad:*",  # 34 errors

@@ -1523,6 +1523,8 @@ source_set("unit_test_support") {
   sources = [
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
+    "html/media/html_media_test_helper.cc",
+    "html/media/html_media_test_helper.h",
     "script/mock_script_element_base.h",
     "testing/core_unit_test_helper.cc",
     "testing/core_unit_test_helper.h",
