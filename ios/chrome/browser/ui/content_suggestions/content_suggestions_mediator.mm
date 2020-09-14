@@ -618,6 +618,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   ContentSuggestionsSectionInformation* sectionInfo =
       self.sectionInformationByCategory[wrapper];
   sectionInfo.expanded = [self.contentArticlesExpanded value];
+  [self.consumer
+      setContentSuggestionsVisible:[self.contentArticlesExpanded value]];
 
   if (allData) {
     [self reloadAllData];

@@ -805,6 +805,10 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   _contentSuggestionsEnabled = enabled;
 }
 
+- (void)setContentSuggestionsVisible:(BOOL)visible {
+  [self.collectionUpdater changeDiscoverFeedHeaderVisibility:visible];
+}
+
 #pragma mark - NSKeyValueObserving
 
 // TODO(crbug.com/1114792): Remove once we stop containing the DiscoverFeed
