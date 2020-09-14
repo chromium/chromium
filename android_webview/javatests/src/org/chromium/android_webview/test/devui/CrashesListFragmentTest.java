@@ -7,19 +7,30 @@ package org.chromium.android_webview.test.devui;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.android_webview.test.common.crash.CrashInfoTest.createCrashInfo;
+import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.getClipBoardTextOnUiThread;
+import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.setClipBoardTextOnUiThread;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -29,12 +40,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.IdRes;
 import androidx.test.espresso.DataInteraction;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Description;
@@ -48,10 +61,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
+import org.chromium.android_webview.common.crash.CrashUploadUtil;
+import org.chromium.android_webview.common.crash.CrashUploadUtil.CrashUploadDelegate;
 import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.devui.CrashesListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -77,13 +93,15 @@ public class CrashesListFragmentTest {
     private static final String CRASH_UPLOAD_BUTTON_TEXT = "Upload this crash report";
 
     @Rule
-    public ActivityTestRule mRule =
-            new ActivityTestRule<MainActivity>(MainActivity.class, false, false);
+    public IntentsTestRule mRule =
+            new IntentsTestRule<MainActivity>(MainActivity.class, false, false);
 
     @After
     public void tearDown() {
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashDir(), null);
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashLogDir(), null);
+        // Tests are responsible for verifying every Intent they trigger.
+        assertNoUnverifiedIntents();
     }
 
     private void launchCrashesFragment() {
@@ -91,6 +109,11 @@ public class CrashesListFragmentTest {
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_CRASHES);
         mRule.launchActivity(intent);
         onView(withId(R.id.fragment_crashes_list)).check(matches(isDisplayed()));
+
+        // Stub all external intents, to avoid launching other apps (ex. system browser), has to be
+        // done after launching the activity.
+        intending(not(IntentMatchers.isInternal()))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
     }
 
     private static File createMinidumpFile(CrashInfo crashInfo) throws IOException {
@@ -309,6 +332,55 @@ public class CrashesListFragmentTest {
 
     @Test
     @Feature({"AndroidWebView"})
+    public void testOpenBugReportCrash() throws Throwable {
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo("123456", systemTime, "0abcde123456",
+                systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+        assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+        // Click the header to expand the list item.
+        onData(anything()).atPosition(0).perform(click());
+        // The body is considered item#2 in the list view after expansion.
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(R.id.crash_report_button))
+                .perform(click());
+        onView(withText(CrashesListFragment.CRASH_BUG_DIALOG_MESSAGE))
+                .check(matches(isDisplayed()));
+        // button2 is the AlertDialog negative button id.
+        onView(withId(android.R.id.button2)).check(matches(withText("Dismiss"))).perform(click());
+        onView(withText(CrashesListFragment.CRASH_BUG_DIALOG_MESSAGE)).check(doesNotExist());
+        // Verify that no intents are sent out.
+        Intents.times(0);
+
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(R.id.crash_report_button))
+                .perform(click());
+        // button1 is the AlertDialog positive button id.
+        onView(withId(android.R.id.button1))
+                .check(matches(withText("Provide more info")))
+                .perform(click());
+        onView(withText(CrashesListFragment.CRASH_BUG_DIALOG_MESSAGE)).check(doesNotExist());
+        Intent expectedIntent = new CrashBugUrlFactory(crashInfo).getReportIntent();
+        // TODO(hazems): use IntentMatchers.filterEquals() after pulling the new version of
+        // espresso-intents
+        intended(allOf(IntentMatchers.hasAction(expectedIntent.getAction()),
+                IntentMatchers.hasData(expectedIntent.getData())));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
         CrashInfo crashInfo = createCrashInfo(
@@ -424,6 +496,124 @@ public class CrashesListFragmentTest {
     }
 
     @Test
+    @Feature({"AndroidWebView"})
+    public void testForceUploadSkippedCrashReport_noWifi() throws Throwable {
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo(
+                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
+
+        File minidumpFile = createMinidumpFile(crashInfo);
+        assertThat("temp minidump file should exist", minidumpFile.exists());
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+
+        CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
+            @Override
+            public void scheduleNewJob(Context context) {}
+
+            @Override
+            public boolean isNetworkUnmetered(Context context) {
+                return false;
+            }
+        });
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // click on the crash item header to expand
+        onData(anything()).atPosition(0).perform(click());
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+        checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
+
+        // Firstly test clicking the upload button, and dismissing the dialog
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button)).perform(click());
+        onView(withText(CrashesListFragment.NO_WIFI_DIALOG_MESSAGE)).check(matches(isDisplayed()));
+        // button2 is the AlertDialog negative button id.
+        onView(withId(android.R.id.button2)).check(matches(withText("Cancel"))).perform(click());
+        // Check no changes in the view after dismissing the dialog
+        checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+                .check(matches(isDisplayed()));
+
+        // Secondly test clicking the upload button, and proceeding with upload.
+        crashListLoadInitCount = helper.getCallCount();
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button)).perform(click());
+        onView(withText(CrashesListFragment.NO_WIFI_DIALOG_MESSAGE)).check(matches(isDisplayed()));
+        // button1 is the AlertDialog positive button id.
+        onView(withId(android.R.id.button1)).check(matches(withText("Upload"))).perform(click());
+        helper.waitForCallback(crashListLoadInitCount, 1);
+        // upload button is now hidden
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+                .check(matches(not(isDisplayed())));
+        crashInfo.uploadState = UploadState.PENDING_USER_REQUESTED;
+        checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
+
+        // Check that minidump file suffix is changed to ".forced"
+        File renamedMinidumpFile =
+                new File(minidumpFile.getAbsolutePath().replace("skipped", "forced"));
+        assertThat("skipped minidump file shouldn't exist", not(minidumpFile.exists()));
+        assertThat("renamed forced minidump file should exist", renamedMinidumpFile.exists());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testForceUploadSkippedCrashReport_withWifi() throws Throwable {
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo(
+                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
+
+        File minidumpFile = createMinidumpFile(crashInfo);
+        assertThat("temp minidump file should exist", minidumpFile.exists());
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+
+        CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
+            @Override
+            public void scheduleNewJob(Context context) {}
+
+            @Override
+            public boolean isNetworkUnmetered(Context context) {
+                return true;
+            }
+        });
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+
+        // click on the crash item header to expand
+        onData(anything()).atPosition(0).perform(click());
+        // The body is considered item#2 in the list view after expansion
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+        DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
+        checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
+
+        crashListLoadInitCount = helper.getCallCount();
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button)).perform(click());
+        helper.waitForCallback(crashListLoadInitCount, 1);
+        // upload button is now hidden
+        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+                .check(matches(not(isDisplayed())));
+        crashInfo.uploadState = UploadState.PENDING_USER_REQUESTED;
+        checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
+
+        // Check that minidump file suffix is changed to ".forced"
+        File renamedMinidumpFile =
+                new File(minidumpFile.getAbsolutePath().replace("skipped", "forced"));
+        assertThat("skipped minidump file shouldn't exist", not(minidumpFile.exists()));
+        assertThat("renamed forced minidump file should exist", renamedMinidumpFile.exists());
+    }
+
+    @Test
+    @LargeTest
     @Feature({"AndroidWebView"})
     // Test when a crash has a known package name that can be found using PackageManager
     public void testInstalledPackageInfo() throws Throwable {
@@ -592,5 +782,81 @@ public class CrashesListFragmentTest {
         helper.waitForCallback(crashListLoadInitCount, 1);
 
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testRefreshMenuOption() throws Throwable {
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
+
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo crashInfo = createCrashInfo(
+                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+
+        assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
+        assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
+
+        crashListLoadInitCount = helper.getCallCount();
+        onView(withText("Refresh")).check(matches(isDisplayed()));
+        onView(withText("Refresh")).perform(click());
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
+        checkUnknownPackageCrashItemHeader(onData(anything()).atPosition(0), crashInfo);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testLongPressCopy() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+        final long systemTime = System.currentTimeMillis();
+        CrashInfo uploadedCrashInfo = createCrashInfo("123456", systemTime - 1000, "0abcde123456",
+                systemTime, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+        CrashInfo pendingCrashInfo = createCrashInfo(
+                "78910", systemTime - 2000, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+
+        assertThat("temp json log file for uploaded crash should exist",
+                writeJsonLogFile(uploadedCrashInfo).exists());
+        assertThat("upload log file should exist",
+                appendUploadedEntryToLog(uploadedCrashInfo).exists());
+
+        assertThat("temp minidump file for pending crash should exist",
+                createMinidumpFile(pendingCrashInfo).exists());
+        assertThat("temp json log file for pending crash should exist",
+                writeJsonLogFile(pendingCrashInfo).exists());
+
+        CallbackHelper helper = getCrashListLoadedListener();
+        int crashListLoadInitCount = helper.getCallCount();
+        launchCrashesFragment();
+        helper.waitForCallback(crashListLoadInitCount, 1);
+
+        onView(withId(R.id.crashes_list)).check(matches(withCount(2)));
+
+        // click on the first crash item header to expand
+        onData(anything()).atPosition(0).perform(click());
+        // long click on the crash item body to copy
+        onData(anything()).atPosition(1).perform(longClick());
+        String expectedUploadInfo = new Date(uploadedCrashInfo.uploadTime).toString()
+                + "\nID: " + uploadedCrashInfo.uploadId;
+        assertThat(getClipBoardTextOnUiThread(context), is(expectedUploadInfo));
+
+        // click on the first crash item header to collapse
+        onData(anything()).atPosition(0).perform(click());
+        // click on the second crash item header to expand
+        onData(anything()).atPosition(1).perform(click());
+        // Clear clipboard content
+        setClipBoardTextOnUiThread(context, "", "");
+        // Crash body is now the second item in the list view, long click on the crash item body to
+        // copy.
+        onData(anything()).atPosition(2).perform(longClick());
+        // This a pending upload, nothing should be copied
+        assertThat(getClipBoardTextOnUiThread(context), is(""));
     }
 }

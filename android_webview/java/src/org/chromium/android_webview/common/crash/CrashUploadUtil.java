@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.Log;
@@ -28,12 +29,43 @@ public final class CrashUploadUtil {
     private static final String TAG = "CrashUploadUtil";
 
     /**
+     * Delegate interface to mock network status check and scheduling upload jobs for testing.
+     */
+    @VisibleForTesting
+    public static interface CrashUploadDelegate {
+        /**
+         * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
+         */
+        void scheduleNewJob(@NonNull Context context);
+
+        /**
+         * Check if network is unmetered or not.
+         */
+        boolean isNetworkUnmetered(@NonNull Context context);
+    }
+
+    private static CrashUploadDelegate sDelegate = new CrashUploadDelegate() {
+        @Override
+        public void scheduleNewJob(@NonNull Context context) {
+            JobInfo.Builder builder = new JobInfo.Builder(TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
+                    new ComponentName(context, ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE));
+            MinidumpUploadJobService.scheduleUpload(builder);
+        }
+
+        @Override
+        public boolean isNetworkUnmetered(@NonNull Context context) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) context.getApplicationContext().getSystemService(
+                            Context.CONNECTIVITY_SERVICE);
+            return NetworkPermissionUtil.isNetworkUnmetered(connectivityManager);
+        }
+    };
+
+    /**
      * Schedule a MinidumpUploadJobService to attempt uploading all ready crash minidumps.
      */
     public static void scheduleNewJob(@NonNull Context context) {
-        JobInfo.Builder builder = new JobInfo.Builder(TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID,
-                new ComponentName(context, ServiceNames.AW_MINIDUMP_UPLOAD_JOB_SERVICE));
-        MinidumpUploadJobService.scheduleUpload(builder);
+        sDelegate.scheduleNewJob(context);
     }
 
     /**
@@ -66,10 +98,12 @@ public final class CrashUploadUtil {
     }
 
     public static boolean isNetworkUnmetered(@NonNull Context context) {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
-        return NetworkPermissionUtil.isNetworkUnmetered(connectivityManager);
+        return sDelegate.isNetworkUnmetered(context);
+    }
+
+    @VisibleForTesting
+    public static void setCrashUploadDelegateForTesting(CrashUploadDelegate delegate) {
+        sDelegate = delegate;
     }
 
     // Do not instantiate this class.

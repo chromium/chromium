@@ -62,6 +62,13 @@ import java.util.Locale;
 public class CrashesListFragment extends DevUiBaseFragment {
     private static final String TAG = "WebViewDevTools";
 
+    public static final String CRASH_BUG_DIALOG_MESSAGE =
+            "This crash has already been reported to our crash system. "
+            + "Do you want to share more information, such as steps to reproduce the crash?";
+    public static final String NO_WIFI_DIALOG_MESSAGE =
+            "You are connected to a metered network or cellular data."
+            + " Do you want to proceed?";
+
     // Max number of crashes to show in the crashes list.
     public static final int MAX_CRASHES_NUMBER = 20;
 
@@ -273,9 +280,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
                     if (!CrashUploadUtil.isNetworkUnmetered(mContext)) {
                         new AlertDialog.Builder(mContext)
                                 .setTitle("Network Warning")
-                                .setMessage(
-                                        "You are connected to a metered network or cellular data."
-                                        + " Do you want to proceed?")
+                                .setMessage(NO_WIFI_DIALOG_MESSAGE)
                                 .setPositiveButton("Upload",
                                         (dialog, id) -> {
                                             logCrashInteraction(
@@ -503,9 +508,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     private AlertDialog buildCrashBugDialog(CrashInfo crashInfo) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-        dialogBuilder.setMessage(
-                "This crash has already been reported to our crash system. Do you want to share "
-                + "more information, such as steps to reproduce the crash?");
+        dialogBuilder.setMessage(CRASH_BUG_DIALOG_MESSAGE);
         dialogBuilder.setPositiveButton("Provide more info", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
             startActivity(new CrashBugUrlFactory(crashInfo).getReportIntent());

@@ -6,6 +6,7 @@ package org.chromium.android_webview.test.devui;
 
 import static org.hamcrest.Matchers.is;
 
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.View;
@@ -60,6 +61,17 @@ public class DeveloperUiTestUtils {
             ClipboardManager clipboardManager =
                     (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
             return clipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
+        });
+    }
+
+    public static void setClipBoardTextOnUiThread(Context context, String key, String value)
+            throws ExecutionException {
+        // ClipManager service has to be called on the UI main thread.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ClipboardManager clipboardManager =
+                    (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(key, value);
+            clipboardManager.setPrimaryClip(clip);
         });
     }
 
