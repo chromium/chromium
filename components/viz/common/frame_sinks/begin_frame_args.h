@@ -124,6 +124,12 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
     return base::TimeDelta::FromSeconds(0);
   }
 
+  // This is the preferred interval to use when the producer doesn't have any
+  // frame rate preference. The Display can use any value which is appropriate.
+  static constexpr base::TimeDelta MaxInterval() {
+    return base::TimeDelta::Max();
+  }
+
   // This is a hard-coded deadline adjustment used by the display compositor.
   // Using 1/3 of the vsync as the default adjustment gives the display
   // compositor the last 1/3 of a frame to produce output, the client impl

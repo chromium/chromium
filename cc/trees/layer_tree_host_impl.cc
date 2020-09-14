@@ -2438,12 +2438,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   if (settings_.force_preferred_interval_for_video ||
       enable_frame_rate_throttling_) {
-    // For now cap the interval assuming a 24fps video, which is likely the
-    // lowest frame rate we'll see for a video that would also be acceptable to
-    // the page.
-    double interval_in_seconds = 1.0 / 24.0;
-    metadata.preferred_frame_interval =
-        base::TimeDelta::FromSecondsD(interval_in_seconds);
+    metadata.preferred_frame_interval = viz::BeginFrameArgs::MaxInterval();
   } else {
     metadata.preferred_frame_interval =
         frame_rate_estimator_.GetPreferredInterval();
