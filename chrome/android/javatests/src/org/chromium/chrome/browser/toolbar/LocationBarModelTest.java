@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -102,6 +103,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/1128073")
     public void testGetProfileOnNullTabInIncognito() {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -114,6 +116,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/1128073")
     public void testGetProfileOnMockTabInIncognito() {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -149,6 +152,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug/1128073")
     public void testGetProfileOnMockTabInRegularCCT() {
         // Create an launch a regular CCT.
         Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
