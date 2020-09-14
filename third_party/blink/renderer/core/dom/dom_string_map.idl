@@ -26,7 +26,7 @@
 // https://html.spec.whatwg.org/C/#the-domstringmap-interface
 
 [
-    LegacyOverrideBuiltins,
+    LegacyOverrideBuiltIns,
     Exposed=Window
 ] interface DOMStringMap {
     [ImplementedAs=item] getter DOMString (DOMString name);

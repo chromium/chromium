@@ -20,10 +20,10 @@
 
 // https://html.spec.whatwg.org/C/#the-embed-element
 
-// TODO(yukishiino): HTMLEmbedElement should not have [LegacyOverrideBuiltins].
+// TODO(yukishiino): HTMLEmbedElement should not have [LegacyOverrideBuiltIns].
 [
     Exposed=Window,
-    LegacyOverrideBuiltins,
+    LegacyOverrideBuiltIns,
     ActiveScriptWrappable,
     HTMLConstructor
 ] interface HTMLEmbedElement : HTMLElement {

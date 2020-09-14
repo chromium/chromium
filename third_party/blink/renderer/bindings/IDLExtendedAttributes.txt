@@ -68,7 +68,7 @@ ImplementedAs=*
 LegacyLenientSetter
 LegacyLenientThis
 LegacyNoInterfaceObject
-LegacyOverrideBuiltins
+LegacyOverrideBuiltIns
 LegacyTreatAsPartialInterface
 LegacyTreatNonObjectAsNull
 LegacyUnenumerableNamedProperties

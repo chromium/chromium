@@ -20,10 +20,10 @@
 
 // https://html.spec.whatwg.org/C/#the-object-element
 
-// TODO(yukishiino): HTMLObjectElement should not have [LegacyOverrideBuiltins].
+// TODO(yukishiino): HTMLObjectElement should not have [LegacyOverrideBuiltIns].
 [
     Exposed=Window,
-    LegacyOverrideBuiltins,
+    LegacyOverrideBuiltIns,
     ActiveScriptWrappable,
     HTMLConstructor
 ] interface HTMLObjectElement : HTMLElement {

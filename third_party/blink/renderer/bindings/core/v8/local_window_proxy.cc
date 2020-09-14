@@ -473,7 +473,7 @@ void LocalWindowProxy::UpdateDocumentInternal() {
 // GetNamedProperty(), Getter(), NamedItemAdded(), and NamedItemRemoved()
 // optimize property access performance for Document.
 //
-// Document interface has [LegacyOverrideBuiltins] and a named getter. If we
+// Document interface has [LegacyOverrideBuiltIns] and a named getter. If we
 // implemented the named getter as a standard IDL-mapped code, we would call a
 // Blink function before any of Document property access, and it would be
 // performance overhead even for builtin properties. Our implementation updates

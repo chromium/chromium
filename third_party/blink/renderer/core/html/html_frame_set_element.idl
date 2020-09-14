@@ -20,11 +20,11 @@
 
 // https://html.spec.whatwg.org/C/#htmlframesetelement
 
-// FIXME: HTMLFrameSetElement should not have [LegacyOverrideBuiltins].
+// FIXME: HTMLFrameSetElement should not have [LegacyOverrideBuiltIns].
 [
     Exposed=Window,
     HTMLConstructor,
-    LegacyOverrideBuiltins
+    LegacyOverrideBuiltIns
 ] interface HTMLFrameSetElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString cols;
     [CEReactions, Reflect] attribute DOMString rows;

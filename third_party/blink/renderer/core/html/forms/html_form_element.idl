@@ -23,7 +23,7 @@
 [
     Exposed=Window,
     HTMLConstructor,
-    LegacyOverrideBuiltins
+    LegacyOverrideBuiltIns
 ] interface HTMLFormElement : HTMLElement {
     [CEReactions, Reflect=accept_charset] attribute DOMString acceptCharset;
     [CEReactions, URL] attribute USVString action;

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 [
-    LegacyOverrideBuiltins
+    LegacyOverrideBuiltIns
 ] interface TestSpecialOperations {
     // [ImplementedAs], union return, nullability
-    // [LegacyOverrideBuiltins] affects named property operations
+    // [LegacyOverrideBuiltIns] affects named property operations
     [ImplementedAs=getItem] getter (Node or NodeList) namedItem(DOMString name);
     setter Node (DOMString name, Node? value);
 };

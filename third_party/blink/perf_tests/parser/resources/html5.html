@@ -9528,7 +9528,7 @@ interface <dfn id=transferable>Transferable</dfn> { };</pre>
   simply being the primary interface of the document object, it is no
   longer defined as inheriting from <code><a href=#document>Document</a></code>.</p>
 
-  <pre class=idl>[LegacyOverrideBuiltins]
+  <pre class=idl>[LegacyOverrideBuiltIns]
 interface <dfn id=htmldocument>HTMLDocument</dfn> {
   // <a href=#resource-metadata-management>resource metadata management</a>
   [PutForwards=<a href=#dom-location-href title=dom-location-href>href</a>] readonly attribute <a href=#location>Location</a>? <a href=#dom-document-location title=dom-document-location>location</a>;
@@ -10222,7 +10222,7 @@ interface <dfn id=htmldocument>HTMLDocument</dfn> {
   <!--
   Note that this named getter overrides built-in properties, as in:
      http://software.hixie.ch/utilities/js/live-dom-viewer/?%3C!DOCTYPE%20html%3E%0D%0A...%3Ciframe%20name%3Dbody%3E%3C%2Fiframe%3E%3Cscript%3Ew(document.body)%3C%2Fscript%3E
-  This is what the "LegacyOverrideBuiltins" bit means in the IDL.
+  This is what the "LegacyOverrideBuiltIns" bit means in the IDL.
   -->
 
   </ol><p><dfn id=dom-document-nameditem-filter title=dom-document-nameditem-filter>Named elements</dfn>
@@ -42582,7 +42582,7 @@ the cell that corresponds to the values of the two dice.
    <dd><code title=attr-fs-target><a href=#attr-fs-target>target</a></code></dd>
    <dt>DOM interface:</dt>
    <dd>
-<pre class=idl>[LegacyOverrideBuiltins]
+<pre class=idl>[LegacyOverrideBuiltIns]
 interface <dfn id=htmlformelement>HTMLFormElement</dfn> : <a href=#htmlelement>HTMLElement</a> {
            attribute DOMString <a href=#dom-form-acceptcharset title=dom-form-acceptCharset>acceptCharset</a>;
            attribute DOMString <a href=#dom-fs-action title=dom-fs-action>action</a>;

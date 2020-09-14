@@ -593,7 +593,7 @@ def interface_context(interface, interfaces, component_info):
         'indexed_property_deleter':
         property_deleter(interface.indexed_property_deleter),
         'is_override_builtins':
-        'LegacyOverrideBuiltins' in extended_attributes,
+        'LegacyOverrideBuiltIns' in extended_attributes,
         'named_property_getter':
         property_getter(interface.named_property_getter, ['name']),
         'named_property_setter':
