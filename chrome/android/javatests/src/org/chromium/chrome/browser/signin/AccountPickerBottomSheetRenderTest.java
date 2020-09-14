@@ -142,7 +142,7 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
         buildAndShowCollapsedBottomSheet();
-        onView(withText(PROFILE_DATA1.getFullName())).perform(click());
+        expandBottomSheet();
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
     }
 
@@ -155,7 +155,7 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
         buildAndShowCollapsedBottomSheet();
-        onView(withText(PROFILE_DATA1.getFullName())).perform(click());
+        expandBottomSheet();
         onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
         onView(isRoot()).perform(pressBack());
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
@@ -269,6 +269,13 @@ public class AccountPickerBottomSheetRenderTest {
         });
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_in_progress_sheet");
+    }
+
+    private void expandBottomSheet() {
+        View view = mCoordinator.getBottomSheetViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { view.findViewById(R.id.account_picker_selected_account).performClick(); });
+        CriteriaHelper.pollUiThread(view.findViewById(R.id.account_picker_account_list)::isShown);
     }
 
     private void buildAndShowCollapsedBottomSheet() {
