@@ -102,19 +102,22 @@ void OffscreenFontSelector::ReportFailedLocalFontMatch(
 void OffscreenFontSelector::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
+    SimpleFontData* resulting_font_data) {}
+
+void OffscreenFontSelector::ReportFontLookupByUniqueNameOnly(
+    const AtomicString& name,
+    const FontDescription& font_description,
     SimpleFontData* resulting_font_data,
     bool is_loading_fallback) {}
 
 void OffscreenFontSelector::ReportFontLookupByFallbackCharacter(
     UChar32 fallback_character,
+    FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
     SimpleFontData* resulting_font_data) {}
 
 void OffscreenFontSelector::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
-    LocalFontLookupType check_type,
     SimpleFontData* resulting_font_data) {}
 
 void OffscreenFontSelector::FontCacheInvalidated() {

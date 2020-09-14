@@ -167,9 +167,8 @@ void LocalFontFaceSource::ReportFontLookup(
     const FontDescription& font_description,
     SimpleFontData* font_data,
     bool is_loading_fallback) {
-  font_selector_->ReportFontLookupByUniqueOrFamilyName(
-      font_name_, font_description, LocalFontLookupType::kAtFontFaceLocalSrc,
-      font_data, is_loading_fallback);
+  font_selector_->ReportFontLookupByUniqueNameOnly(
+      font_name_, font_description, font_data, is_loading_fallback);
 }
 
 }  // namespace blink

@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
@@ -84,12 +85,19 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportFailedLocalFontMatch(const AtomicString& font_name) = 0;
 
   // Called whenever a page attempts to find a local font based on a name. This
-  // includes lookups by a family name, by a PostScript name and by a full font
-  // name.
+  // only includes lookups where the name is allowed to match family names,
+  // PostScript names and full font names.
   virtual void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
+      SimpleFontData* resulting_font_data) = 0;
+
+  // Called whenever a page attempts to find a local font based on a name. This
+  // only includes lookups where the name is allowed to match PostScript names
+  // and full font names, but not family names.
+  virtual void ReportFontLookupByUniqueNameOnly(
+      const AtomicString& name,
+      const FontDescription& font_description,
       SimpleFontData* resulting_font_data,
       bool is_loading_fallback = false) = 0;
 
@@ -97,14 +105,13 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   // character.
   virtual void ReportFontLookupByFallbackCharacter(
       UChar32 fallback_character,
+      FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
       SimpleFontData* resulting_font_data) = 0;
 
   // Called whenever a page attempts to find a last-resort font.
   virtual void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      LocalFontLookupType check_type,
       SimpleFontData* resulting_font_data) = 0;
 
   virtual void RegisterForInvalidationCallbacks(FontSelectorClient*) = 0;

@@ -140,7 +140,6 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
     if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
       font_selector->ReportLastResortFallbackFontLookup(
           font_description_,
-          LocalFontLookupType::kLastResortInFontFallbackIterator,
           last_resort.get());
     }
 
@@ -232,8 +231,7 @@ scoped_refptr<SimpleFontData> FontFallbackIterator::FallbackPriorityFont(
 
   if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
     font_selector->ReportFontLookupByFallbackCharacter(
-        hint, font_description_, LocalFontLookupType::kFallbackPriorityFont,
-        font_data.get());
+        hint, font_fallback_priority_, font_description_, font_data.get());
   }
   return font_data;
 }
@@ -280,8 +278,7 @@ scoped_refptr<SimpleFontData> FontFallbackIterator::UniqueSystemFontForHintList(
 
   if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
     font_selector->ReportFontLookupByFallbackCharacter(
-        hint, font_description_, LocalFontLookupType::kSystemFallbackFont,
-        font_data.get());
+        hint, FontFallbackPriority::kText, font_description_, font_data.get());
   }
   return font_data;
 }

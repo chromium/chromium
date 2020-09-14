@@ -22,6 +22,16 @@ IdentifiabilityBenignStringToken(const String&);
 PLATFORM_EXPORT IdentifiableToken
 IdentifiabilitySensitiveStringToken(const String&);
 
+// For benign strings only (i.e. those where the string is not sensitive). Token
+// construction is additionally case-insensitive (using Unicode CaseFolding).
+PLATFORM_EXPORT IdentifiableToken
+IdentifiabilityBenignCaseFoldingStringToken(const String&);
+
+// For sensitive strings, this function narrows the hash width to 16 bits. Token
+// construction is additionally case-insensitive (using Unicode CaseFolding).
+PLATFORM_EXPORT IdentifiableToken
+IdentifiabilitySensitiveCaseFoldingStringToken(const String&);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PRIVACY_BUDGET_IDENTIFIABILITY_DIGEST_HELPERS_H_
