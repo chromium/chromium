@@ -2,16 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 static_library("rlz") {
   sources = [
     "rlz_tracker.cc",
     "rlz_tracker.h",
-    "rlz_tracker_chromeos.cc",
     "rlz_tracker_delegate.h",
-    "rlz_tracker_ios.cc",
-    "rlz_tracker_mac.cc",
-    "rlz_tracker_win.cc",
   ]
+
+  if (is_ios) {
+    sources += [ "rlz_tracker_ios.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "rlz_tracker_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "rlz_tracker_win.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "rlz_tracker_chromeos.cc" ]
+  }
 
   deps = [
     "//base",
