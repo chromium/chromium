@@ -23,6 +23,7 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
@@ -44,6 +45,8 @@ import org.chromium.ui.util.AccessibilityUtil;
  */
 class BottomSheet extends FrameLayout
         implements BottomSheetSwipeDetector.SwipeableBottomSheet, View.OnLayoutChangeListener {
+    private static final String TAG = "BottomSheet";
+
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
@@ -217,6 +220,9 @@ class BottomSheet extends FrameLayout
      * Called when the activity containing the {@link BottomSheet} is destroyed.
      */
     void destroy() {
+        Log.i(TAG,
+                "Sheet destroyed: state: " + mCurrentState
+                        + ", content null: " + (getCurrentSheetContent() == null));
         mIsDestroyed = true;
         mIsTouchEnabled = false;
         mObservers.clear();
@@ -496,6 +502,11 @@ class BottomSheet extends FrameLayout
         // If the desired content is already showing, do nothing.
         if (mSheetContent == content) return;
 
+        Log.i(TAG,
+                "Setting sheet content: state: " + mCurrentState
+                        + ", content null: " + (content == null));
+        if (content == null) Thread.dumpStack();
+
         // Remove this as listener from previous content layout and size changes.
         if (mSheetContent != null) {
             mSheetContent.setContentSizeListener(null);
@@ -601,6 +612,9 @@ class BottomSheet extends FrameLayout
                 if (mIsDestroyed) return;
 
                 mSettleAnimator = null;
+                Log.i(TAG,
+                        "Ending settle animation: target: " + targetState
+                                + ", content null: " + (getCurrentSheetContent() == null));
                 setInternalCurrentState(targetState, reason);
                 mTargetState = SheetState.NONE;
             }
@@ -615,6 +629,10 @@ class BottomSheet extends FrameLayout
                 setSheetOffsetFromBottom((Float) animator.getAnimatedValue(), reason);
             }
         });
+
+        Log.i(TAG,
+                "Starting settle animation: target: " + targetState
+                        + ", content null: " + (getCurrentSheetContent() == null));
 
         setInternalCurrentState(SheetState.SCROLLING, reason);
         mSettleAnimator.start();
@@ -864,6 +882,10 @@ class BottomSheet extends FrameLayout
     void setSheetState(@SheetState int state, boolean animate, @StateChangeReason int reason) {
         assert state != SheetState.NONE;
 
+        Log.i(TAG,
+                "Setting sheet state: state: " + mCurrentState
+                        + ", content null: " + (getCurrentSheetContent() == null));
+
         // Setting state to SCROLLING is not a valid operation. This can happen only when
         // we're already in the scrolling state. Make it no-op.
         if (state == SheetState.SCROLLING) {
@@ -917,6 +939,10 @@ class BottomSheet extends FrameLayout
      */
     private void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
         if (state == mCurrentState) return;
+
+        if (getCurrentSheetContent() == null && state != SheetState.HIDDEN) {
+            Log.i(TAG, "Content null while open!");
+        }
 
         // TODO(mdjones): This shouldn't be able to happen, but does occasionally during layout.
         //                Fix the race condition that is making this happen.
