@@ -129,6 +129,7 @@ constexpr int kUnifiedTrayTextRightPadding = 1;
 constexpr int kUnifiedTrayTimeLeftPadding = 1;
 constexpr int kUnifiedTraySpacingBetweenIcons = 6;
 constexpr int kUnifiedTrayBatteryWidth = 12;
+constexpr int kUnifiedTrayBatteryBottomPadding = 1;
 constexpr int kUnifiedTrayCornerRadius = 16;
 constexpr int kUnifiedTrayContentPadding = 12;
 constexpr int kUnifiedTopShortcutSpacing = 16;

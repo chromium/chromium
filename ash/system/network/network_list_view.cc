@@ -60,7 +60,7 @@ namespace ash {
 namespace tray {
 namespace {
 
-const int kMobileNetworkBatteryIconSize = 14;
+const int kMobileNetworkBatteryIconSize = 18;
 const int kPowerStatusPaddingRight = 10;
 
 bool IsSecondaryUser() {

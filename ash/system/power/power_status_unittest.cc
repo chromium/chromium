@@ -204,17 +204,17 @@ TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
   EXPECT_EQ(0, power_status_->GetBatteryImageInfo().charge_percent);
   gfx::Image empty_image = get_battery_image();
 
-  // 14% and 15% look different.
-  prop.set_battery_percent(14.0);
+  // 10% and 20% look different.
+  prop.set_battery_percent(10.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(14.0, power_status_->GetBatteryImageInfo().charge_percent);
-  gfx::Image image_14 = get_battery_image();
-  EXPECT_FALSE(gfx::test::AreImagesEqual(empty_image, image_14));
-  prop.set_battery_percent(15.0);
+  EXPECT_EQ(10.0, power_status_->GetBatteryImageInfo().charge_percent);
+  gfx::Image image_10 = get_battery_image();
+  EXPECT_FALSE(gfx::test::AreImagesEqual(empty_image, image_10));
+  prop.set_battery_percent(20.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(15.0, power_status_->GetBatteryImageInfo().charge_percent);
-  gfx::Image image_15 = get_battery_image();
-  EXPECT_FALSE(gfx::test::AreImagesEqual(image_14, image_15));
+  EXPECT_EQ(20.0, power_status_->GetBatteryImageInfo().charge_percent);
+  gfx::Image image_20 = get_battery_image();
+  EXPECT_FALSE(gfx::test::AreImagesEqual(image_10, image_20));
 
   // 99% and 100% look different.
   prop.set_battery_percent(99.0);

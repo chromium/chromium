@@ -33,6 +33,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
@@ -44,6 +45,8 @@ namespace ash {
 namespace tray {
 
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
+  SetBorder(
+      views::CreateEmptyBorder(0, 0, kUnifiedTrayBatteryBottomPadding, 0));
   CreateImageView();
   UpdateImage();
   UpdateStatus();
