@@ -322,7 +322,8 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
   new_reporter->SetDroppedFrameCounter(dropped_frame_counter_);
   new_reporter->cloned_from_ = weak_factory_.GetWeakPtr();
 
-  DCHECK(!cloned_to_);
+  // TODO(https://crbug.com/1127872) Check |cloned_to_| is null before replacing
+  // it.
   cloned_to_ = new_reporter->GetWeakPtr();
   return new_reporter;
 }
