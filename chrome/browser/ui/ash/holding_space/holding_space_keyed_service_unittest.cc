@@ -600,6 +600,10 @@ class HoldingSpaceKeyedServiceDownloadsTest
     MockDownloadManager* mock_download_manager = download_manager();
     HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
         mock_download_manager);
+
+    // Spoof initialization of the `mock_download_manager`.
+    ON_CALL(*mock_download_manager, IsManagerInitialized)
+        .WillByDefault(testing::Return(true));
   }
 
   std::unique_ptr<MockDownloadManager> download_manager_;

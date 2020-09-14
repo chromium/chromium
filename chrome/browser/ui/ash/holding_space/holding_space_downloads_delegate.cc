@@ -47,13 +47,28 @@ void HoldingSpaceDownloadsDelegate::OnHoldingSpaceModelRestored() {
           ? download_manager_for_testing
           : content::BrowserContext::GetDownloadManager(profile());
 
+  if (download_manager->IsManagerInitialized())
+    OnManagerInitialized();
+}
+
+void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
+  if (is_restoring())
+    return;
+
+  content::DownloadManager* download_manager =
+      download_manager_for_testing
+          ? download_manager_for_testing
+          : content::BrowserContext::GetDownloadManager(profile());
+
+  DCHECK(download_manager->IsManagerInitialized());
+
   download::SimpleDownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
 
   for (auto* download : downloads) {
     switch (download->GetState()) {
       case download::DownloadItem::COMPLETE:
-        item_downloaded_callback_.Run(download->GetFullPath());
+        OnDownloadCompleted(download);
         break;
       case download::DownloadItem::IN_PROGRESS:
         download_item_observer_.Add(download);

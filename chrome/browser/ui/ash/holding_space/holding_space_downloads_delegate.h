@@ -51,6 +51,7 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   void OnHoldingSpaceModelRestored() override;
 
   // content::DownloadManager::Observer:
+  void OnManagerInitialized() override;
   void ManagerGoingDown(content::DownloadManager* manager) override;
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;

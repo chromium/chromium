@@ -102,6 +102,12 @@ void HoldingSpaceKeyedService::AddScreenshot(
 
 void HoldingSpaceKeyedService::AddDownload(
     const base::FilePath& download_file) {
+  const bool already_exists =
+      holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
+          HoldingSpaceItem::Type::kDownload, download_file));
+  if (already_exists)
+    return;
+
   GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, download_file);
   if (file_system_url.is_empty())
