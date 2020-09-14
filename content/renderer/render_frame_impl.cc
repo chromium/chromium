@@ -5633,13 +5633,17 @@ void RenderFrameImpl::BeginNavigation(
   // This is fine normally, except if we're showing UI from one security
   // context and they're trying to navigate to a different context.
   const GURL& url = info->url_request.Url();
+  TRACE_EVENT2("navigation", "RenderFrameImpl::BeginNavigation", "url",
+               url.possibly_invalid_spec(), "navigation_type",
+               static_cast<int>(info->navigation_type));
+
   if (GetWebFrame() && GetWebFrame()->DispatchedPagehideAndStillHidden()) {
     // The navigation started after the pagehide event got dispatched. This
     // navigation will be ignored by the browser, and we need to track that it's
     // happening. Note that this problem is not unique to BackForwardCache/
     // same-site BrowsingInstance swap, as navigations started after unload in
     // normal scenarios will also be ignored by the browser.
-    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide",
+    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
                               blink::ActionAfterPagehide::kNavigation);
   }
 
