@@ -164,7 +164,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
 
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
-    base::span<std::vector<uint8_t>> v) {
+    base::span<const std::vector<uint8_t>> v) {
   ScopedJavaLocalRef<jclass> byte_array_clazz = GetClass(env, "[B");
   jobjectArray joa =
       env->NewObjectArray(v.size(), byte_array_clazz.obj(), nullptr);

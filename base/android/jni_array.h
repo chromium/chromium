@@ -77,7 +77,7 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
     JNIEnv* env,
-    base::span<std::vector<uint8_t>> v);
+    base::span<const std::vector<uint8_t>> v);
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
