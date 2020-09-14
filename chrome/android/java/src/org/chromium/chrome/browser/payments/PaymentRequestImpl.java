@@ -571,25 +571,26 @@ public class PaymentRequestImpl
     }
 
     private void onMinimalUiErroredAndClosed() {
-        if (mComponentPaymentRequestImpl == null) return;
         close();
-        closeUIAndDestroyNativeObjects();
     }
 
     private void onMinimalUiCompletedAndClosed() {
-        if (mComponentPaymentRequestImpl != null) {
-            mComponentPaymentRequestImpl.onComplete();
-        }
+        if (mComponentPaymentRequestImpl == null) return;
+        mComponentPaymentRequestImpl.onComplete();
         close();
-        closeUIAndDestroyNativeObjects();
     }
 
     private void onPaymentRequestCompleteForNonMinimalUI() {
         if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
             ComponentPaymentRequestImpl.getNativeObserverForTest().onCompleteCalled();
         }
-
-        closeUIAndDestroyNativeObjects();
+        if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
+            ComponentPaymentRequestImpl.getObserverForTest().onCompleteReplied();
+        }
+        if (mComponentPaymentRequestImpl != null) {
+            mComponentPaymentRequestImpl.onComplete();
+            close();
+        }
     }
 
     private static Map<String, PaymentMethodData> getValidatedMethodData(
@@ -1162,7 +1163,6 @@ public class PaymentRequestImpl
             mComponentPaymentRequestImpl.onError(reason, debugMessage);
         }
         close();
-        closeUIAndDestroyNativeObjects();
         if (ComponentPaymentRequestImpl.getNativeObserverForTest() != null) {
             ComponentPaymentRequestImpl.getNativeObserverForTest().onConnectionTerminated();
         }
@@ -1800,13 +1800,6 @@ public class PaymentRequestImpl
 
         if (mPaymentUIsManager.getPaymentRequestUI() != null) {
             mPaymentUIsManager.getPaymentRequestUI().close();
-            if (mComponentPaymentRequestImpl != null) {
-                if (ComponentPaymentRequestImpl.getObserverForTest() != null) {
-                    ComponentPaymentRequestImpl.getObserverForTest().onCompleteReplied();
-                }
-                mComponentPaymentRequestImpl.onComplete();
-                close();
-            }
             ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
             if (activity != null) {
                 activity.getLifecycleDispatcher().unregister(
