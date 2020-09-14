@@ -236,6 +236,13 @@ const base::Feature kSafeBrowsingSubresourceFilter{
 const base::Feature kFilterAdsOnAbusiveSites{"FilterAdsOnAbusiveSites",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kAdsInterventionsEnforced{
+    "AdsInterventionsEnforced", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<base::TimeDelta> kAdsInterventionDuration = {
+    &kAdsInterventionsEnforced, "kAdsInterventionDuration",
+    base::TimeDelta::FromDays(3)};
+
 // Legacy name `activation_state` is used in variation parameters.
 const char kActivationLevelParameterName[] = "activation_state";
 const char kActivationLevelDryRun[] = "dryrun";

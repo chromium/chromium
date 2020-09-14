@@ -8,6 +8,7 @@
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -37,6 +38,11 @@ class SubresourceFilterClient {
       content::NavigationHandle* navigation_handle,
       mojom::ActivationLevel initial_activation_level,
       subresource_filter::ActivationDecision* decision) = 0;
+
+  // Called on the subresource filter client when an ads violation is detected.
+  virtual void OnAdsViolationTriggered(
+      content::RenderFrameHost* rfh,
+      mojom::AdsViolation triggered_violation) = 0;
 };
 
 }  // namespace subresource_filter

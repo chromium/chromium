@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
-class SubresourceFilterContentSettingsManager;
+class SubresourceFilterProfileContext;
 
 namespace content {
 class NavigationHandle;
@@ -80,6 +80,9 @@ class ChromeSubresourceFilterClient
       content::NavigationHandle* navigation_handle,
       subresource_filter::mojom::ActivationLevel initial_activation_level,
       subresource_filter::ActivationDecision* decision) override;
+  void OnAdsViolationTriggered(
+      content::RenderFrameHost* rfh,
+      subresource_filter::mojom::AdsViolation triggered_violation) override;
 
   // Should be called by devtools in response to a protocol command to enable ad
   // blocking in this WebContents. Should only persist while devtools is
@@ -104,7 +107,7 @@ class ChromeSubresourceFilterClient
       throttle_manager_;
 
   // Owned by the profile.
-  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
+  SubresourceFilterProfileContext* profile_context_ = nullptr;
 
   bool did_show_ui_for_navigation_ = false;
 

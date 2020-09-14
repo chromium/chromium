@@ -12,6 +12,11 @@ enum ActivationLevel {
   kEnabled
 };
 
+// Enumerates which ads violations are recorded for a page.
+enum AdsViolation {
+    kMobileAdDensityByHeightAbove30,
+};
+
 struct ActivationState {
   // The degree to which subresource filtering is activated for the page load.
   ActivationLevel activation_level = kDisabled;

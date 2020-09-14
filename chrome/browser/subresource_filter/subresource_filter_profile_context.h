@@ -12,6 +12,7 @@
 
 class Profile;
 class SubresourceFilterContentSettingsManager;
+class AdsInterventionManager;
 
 // This class holds profile scoped context for subresource filtering.
 class SubresourceFilterProfileContext : public KeyedService {
@@ -23,11 +24,19 @@ class SubresourceFilterProfileContext : public KeyedService {
     return settings_manager_.get();
   }
 
+  AdsInterventionManager* ads_intervention_manager() {
+    return ads_intervention_manager_.get();
+  }
+
  private:
   // KeyedService:
   void Shutdown() override;
 
   std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
+
+  // Manages ads interventions that have been triggered on previous
+  // navigations.
+  std::unique_ptr<AdsInterventionManager> ads_intervention_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterProfileContext);
 };

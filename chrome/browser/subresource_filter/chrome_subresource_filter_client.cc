@@ -14,6 +14,7 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/subresource_filter/ads_intervention_manager.h"
 #include "chrome/browser/subresource_filter/subresource_filter_content_settings_manager.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -31,6 +32,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/ui/android/content_settings/ads_blocked_infobar_delegate.h"
@@ -40,10 +43,8 @@ ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   DCHECK(web_contents);
-  SubresourceFilterProfileContext* context =
-      SubresourceFilterProfileContextFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  settings_manager_ = context->settings_manager();
+  profile_context_ = SubresourceFilterProfileContextFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
   subresource_filter::RulesetService* ruleset_service =
       g_browser_process->subresource_filter_ruleset_service();
@@ -94,7 +95,8 @@ void ChromeSubresourceFilterClient::ShowNotification() {
     return;
 
   const GURL& top_level_url = web_contents()->GetLastCommittedURL();
-  if (settings_manager_->ShouldShowUIForSite(top_level_url)) {
+  if (profile_context_->settings_manager()->ShouldShowUIForSite(
+          top_level_url)) {
     ShowUI(top_level_url);
   } else {
     LogAction(SubresourceFilterAction::kUISuppressed);
@@ -117,8 +119,26 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
   }
 
   const GURL& url(navigation_handle->GetURL());
+
+  base::Optional<AdsInterventionManager::LastAdsIntervention>
+      last_intervention =
+          profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
+              url);
+
+  // Only activate the subresource filter if we are intervening on
+  // ads
+  if (profile_context_->settings_manager()->GetSiteActivationFromMetadata(
+          url) &&
+      last_intervention &&
+      last_intervention->duration_since <
+          subresource_filter::kAdsInterventionDuration.Get()) {
+    effective_activation_level =
+        subresource_filter::mojom::ActivationLevel::kEnabled;
+    *decision = subresource_filter::ActivationDecision::ACTIVATED;
+  }
+
   if (url.SchemeIsHTTPOrHTTPS()) {
-    settings_manager_->SetSiteMetadataBasedOnActivation(
+    profile_context_->settings_manager()->SetSiteMetadataBasedOnActivation(
         url,
         effective_activation_level ==
             subresource_filter::mojom::ActivationLevel::kEnabled,
@@ -126,19 +146,43 @@ ChromeSubresourceFilterClient::OnPageActivationComputed(
             kSafeBrowsing);
   }
 
-  if (settings_manager_->GetSitePermission(url) == CONTENT_SETTING_ALLOW) {
+  if (profile_context_->settings_manager()->GetSitePermission(url) ==
+      CONTENT_SETTING_ALLOW) {
     if (effective_activation_level ==
         subresource_filter::mojom::ActivationLevel::kEnabled) {
       *decision = subresource_filter::ActivationDecision::URL_ALLOWLISTED;
     }
     return subresource_filter::mojom::ActivationLevel::kDisabled;
   }
+
   return effective_activation_level;
+}
+
+void ChromeSubresourceFilterClient::OnAdsViolationTriggered(
+    content::RenderFrameHost* rfh,
+    subresource_filter::mojom::AdsViolation triggered_violation) {
+  // If the feature is disabled, simulate ads interventions as if we were
+  // enforcing on ads: do not record new interventions if we would be enforcing
+  // an intervention on ads already.
+  // TODO(https://crbug/1107998): Verify this behavior when violation signals
+  // and histograms are added.
+  const GURL& url = rfh->GetLastCommittedURL();
+  base::Optional<AdsInterventionManager::LastAdsIntervention>
+      last_intervention =
+          profile_context_->ads_intervention_manager()->GetLastAdsIntervention(
+              url);
+  if (last_intervention &&
+      last_intervention->duration_since <
+          subresource_filter::kAdsInterventionDuration.Get())
+    return;
+
+  profile_context_->ads_intervention_manager()
+      ->TriggerAdsInterventionForUrlOnSubsequentLoads(url, triggered_violation);
 }
 
 void ChromeSubresourceFilterClient::AllowlistByContentSettings(
     const GURL& top_level_url) {
-  settings_manager_->AllowlistSite(top_level_url);
+  profile_context_->settings_manager()->AllowlistSite(top_level_url);
 }
 
 void ChromeSubresourceFilterClient::ToggleForceActivationInCurrentWebContents(
@@ -175,7 +219,7 @@ void ChromeSubresourceFilterClient::ShowUI(const GURL& url) {
 
   LogAction(SubresourceFilterAction::kUIShown);
   did_show_ui_for_navigation_ = true;
-  settings_manager_->OnDidShowUI(url);
+  profile_context_->settings_manager()->OnDidShowUI(url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeSubresourceFilterClient)

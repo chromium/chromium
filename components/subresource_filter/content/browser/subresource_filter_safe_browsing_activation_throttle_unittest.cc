@@ -87,6 +87,9 @@ class MockSubresourceFilterClient : public SubresourceFilterClient {
 
   MOCK_METHOD0(ShowNotification, void());
   MOCK_METHOD0(ForceActivationInCurrentWebContents, bool());
+  MOCK_METHOD2(OnAdsViolationTriggered,
+               void(content::RenderFrameHost*,
+                    subresource_filter::mojom::AdsViolation));
 
   void AllowlistInCurrentWebContents(const GURL& url) {
     ASSERT_TRUE(url.SchemeIsHTTPOrHTTPS());

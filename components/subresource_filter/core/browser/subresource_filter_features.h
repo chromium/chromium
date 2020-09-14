@@ -186,6 +186,12 @@ extern const base::Feature kSafeBrowsingSubresourceFilter;
 // Enables the blocking of ads on sites that are abusive.
 extern const base::Feature kFilterAdsOnAbusiveSites;
 
+// Enables the blocking of ads on sites that have ads violations.
+extern const base::Feature kAdsInterventionsEnforced;
+
+// The duration that an ads intervention is active for.
+extern const base::FeatureParam<base::TimeDelta> kAdsInterventionDuration;
+
 // Name/values of the variation parameter controlling maximum activation level.
 extern const char kActivationLevelParameterName[];
 extern const char kActivationLevelDryRun[];

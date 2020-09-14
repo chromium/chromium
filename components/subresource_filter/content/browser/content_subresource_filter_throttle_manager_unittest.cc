@@ -309,6 +309,9 @@ class ContentSubresourceFilterThrottleManagerTest
       ActivationDecision* decision) override {
     return effective_activation_level;
   }
+  void OnAdsViolationTriggered(
+      content::RenderFrameHost* rfh,
+      mojom::AdsViolation triggered_violation) override {}
 
   ContentSubresourceFilterThrottleManager* throttle_manager() {
     return throttle_manager_.get();

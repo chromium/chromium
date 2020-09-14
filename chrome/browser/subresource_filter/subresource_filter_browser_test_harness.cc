@@ -72,9 +72,8 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto* factory = SubresourceFilterProfileContextFactory::GetForProfile(
+  profile_context_ = SubresourceFilterProfileContextFactory::GetForProfile(
       browser()->profile());
-  settings_manager_ = factory->settings_manager();
 }
 
 std::unique_ptr<TestSafeBrowsingDatabaseHelper>

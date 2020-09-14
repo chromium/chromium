@@ -64,6 +64,9 @@ class SafeBrowsingTriggeredPopupBlockerTest
       subresource_filter::ActivationDecision* decision) override {
     return initial_activation_level;
   }
+  void OnAdsViolationTriggered(
+      content::RenderFrameHost*,
+      subresource_filter::mojom::AdsViolation) override {}
 
   // content::RenderViewHostTestHarness:
   void SetUp() override {
