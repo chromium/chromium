@@ -228,7 +228,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
   return part;
 }
 
-void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
+void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
   ControlPart original_part = style.Appearance();
   style.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
@@ -262,6 +262,9 @@ void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
   DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
     return;
+  DCHECK(e);
+  // After this point, a Node must be non-null Element if
+  // EffectiveAppearance() != kNoControlPart.
 
   AdjustControlPartStyle(style);
 
@@ -269,14 +272,14 @@ void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
   // value.
   switch (part) {
     case kMenulistPart:
-      return AdjustMenuListStyle(style, e);
+      return AdjustMenuListStyle(style);
     case kMenulistButtonPart:
-      return AdjustMenuListButtonStyle(style, e);
+      return AdjustMenuListButtonStyle(style);
     case kSliderHorizontalPart:
     case kSliderVerticalPart:
     case kMediaSliderPart:
     case kMediaVolumeSliderPart:
-      return AdjustSliderContainerStyle(style, e);
+      return AdjustSliderContainerStyle(*e, style);
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
       return AdjustSliderThumbStyle(style);
@@ -469,20 +472,18 @@ void LayoutTheme::AdjustButtonStyle(ComputedStyle& style) const {}
 
 void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style, Element*) const {
+void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
   // Menulists should have visible overflow
   // https://bugs.webkit.org/show_bug.cgi?id=21287
   style.SetOverflowX(EOverflow::kVisible);
   style.SetOverflowY(EOverflow::kVisible);
 }
 
-void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&, Element*) const {}
+void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustSliderContainerStyle(ComputedStyle& style,
-                                             Element* e) const {
-  if (!e)
-    return;
-  const AtomicString& pseudo = e->ShadowPseudoId();
+void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
+                                             ComputedStyle& style) const {
+  const AtomicString& pseudo = e.ShadowPseudoId();
   if (pseudo != shadow_element_names::kPseudoMediaSliderContainer &&
       pseudo != shadow_element_names::kPseudoSliderContainer)
     return;

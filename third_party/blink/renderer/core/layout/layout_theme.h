@@ -69,7 +69,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // selection of control size based off the font, the disabling of appearance
   // when certain other properties like "border" are set, or if the appearance
   // is not supported by the theme.
-  void AdjustStyle(ComputedStyle&, Element*);
+  void AdjustStyle(const Element*, ComputedStyle&);
 
   // The remaining methods should be implemented by the platform-specific
   // portion of the theme, e.g., LayoutThemeMac.cpp for Mac OS X.
@@ -209,9 +209,9 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustButtonStyle(ComputedStyle&) const;
   virtual void AdjustInnerSpinButtonStyle(ComputedStyle&) const;
 
-  virtual void AdjustMenuListStyle(ComputedStyle&, Element*) const;
-  virtual void AdjustMenuListButtonStyle(ComputedStyle&, Element*) const;
-  virtual void AdjustSliderContainerStyle(ComputedStyle&, Element*) const;
+  virtual void AdjustMenuListStyle(ComputedStyle&) const;
+  virtual void AdjustMenuListButtonStyle(ComputedStyle&) const;
+  virtual void AdjustSliderContainerStyle(const Element&, ComputedStyle&) const;
   virtual void AdjustSliderThumbStyle(ComputedStyle&) const;
   virtual void AdjustSearchFieldStyle(ComputedStyle&) const;
   virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const;

@@ -30,6 +30,7 @@ namespace blink {
 
 class ComputedStyle;
 class Document;
+class Element;
 class IntRect;
 class LayoutObject;
 class Node;
@@ -64,76 +65,78 @@ class ThemePainter {
   void PaintSliderTicks(const LayoutObject&, const PaintInfo&, const IntRect&);
 
  protected:
-  virtual bool PaintCheckbox(const Node*,
+  virtual bool PaintCheckbox(const Element&,
                              const Document&,
                              const ComputedStyle&,
                              const PaintInfo&,
                              const IntRect&) {
     return true;
   }
-  virtual bool PaintRadio(const Node*,
+  virtual bool PaintRadio(const Element&,
                           const Document&,
                           const ComputedStyle&,
                           const PaintInfo&,
                           const IntRect&) {
     return true;
   }
-  virtual bool PaintButton(const Node*,
+  virtual bool PaintButton(const Element&,
                            const Document&,
                            const ComputedStyle&,
                            const PaintInfo&,
                            const IntRect&) {
     return true;
   }
-  virtual bool PaintInnerSpinButton(const Node*,
+  virtual bool PaintInnerSpinButton(const Element&,
                                     const ComputedStyle&,
                                     const PaintInfo&,
                                     const IntRect&) {
     return true;
   }
-  virtual bool PaintTextField(const Node*,
+  virtual bool PaintTextField(const Element&,
                               const ComputedStyle&,
                               const PaintInfo&,
                               const IntRect&) {
     return true;
   }
-  virtual bool PaintTextArea(const Node*,
+  virtual bool PaintTextArea(const Element&,
                              const ComputedStyle&,
                              const PaintInfo&,
                              const IntRect&) {
     return true;
   }
-  virtual bool PaintMenuList(const Node*,
+  virtual bool PaintMenuList(const Element&,
                              const Document&,
                              const ComputedStyle&,
                              const PaintInfo&,
                              const IntRect&) {
     return true;
   }
-  virtual bool PaintMenuListButton(const Node* node,
+  virtual bool PaintMenuListButton(const Element& element,
                                    const Document&,
                                    const ComputedStyle&,
                                    const PaintInfo&,
                                    const IntRect&) {
     return true;
   }
-  virtual bool PaintProgressBar(const LayoutObject&,
+  virtual bool PaintProgressBar(const Element& element,
+                                const LayoutObject&,
                                 const PaintInfo&,
                                 const IntRect&) {
     return true;
   }
-  virtual bool PaintSliderTrack(const LayoutObject&,
+  virtual bool PaintSliderTrack(const Element& element,
+                                const LayoutObject&,
                                 const PaintInfo&,
                                 const IntRect&) {
     return true;
   }
-  virtual bool PaintSliderThumb(const Node*,
+  virtual bool PaintSliderThumb(const Element&,
                                 const ComputedStyle&,
                                 const PaintInfo&,
                                 const IntRect&) {
     return true;
   }
-  virtual bool PaintSearchField(const Node*,
+  virtual bool PaintSearchField(const Element&,
                                 const ComputedStyle&,
                                 const PaintInfo&,
                                 const IntRect&) {

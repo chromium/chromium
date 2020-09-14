@@ -67,19 +67,18 @@ ThemePainter::ThemePainter() = default;
 #define COUNT_APPEARANCE(doc, feature) \
   doc.CountUse(WebFeature::kCSSValueAppearance##feature##Rendered)
 
-void CountAppearanceTextFieldPart(const Node* node) {
-  DCHECK(node);
-  if (auto* input = DynamicTo<HTMLInputElement>(node)) {
+void CountAppearanceTextFieldPart(const Element& element) {
+  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
     const AtomicString& type = input->type();
     if (type == input_type_names::kSearch) {
-      UseCounter::Count(node->GetDocument(),
+      UseCounter::Count(element.GetDocument(),
                         WebFeature::kCSSValueAppearanceTextFieldForSearch);
     } else if (input->IsTextField()) {
-      UseCounter::Count(node->GetDocument(),
+      UseCounter::Count(element.GetDocument(),
                         WebFeature::kCSSValueAppearanceTextFieldForTextField);
     } else if (IsMultipleFieldsTemporalInput(type)) {
       UseCounter::Count(
-          node->GetDocument(),
+          element.GetDocument(),
           WebFeature::kCSSValueAppearanceTextFieldForTemporalRendered);
     }
   }
@@ -89,26 +88,27 @@ void CountAppearanceTextFieldPart(const Node* node) {
 bool ThemePainter::Paint(const LayoutObject& o,
                          const PaintInfo& paint_info,
                          const IntRect& r) {
-  const Node* node = o.GetNode();
   Document& doc = o.GetDocument();
   const ComputedStyle& style = o.StyleRef();
   ControlPart part = o.StyleRef().EffectiveAppearance();
   // LayoutTheme::AdjustAppearanceWithElementType() ensures |node| is a
   // non-null Element.
-  DCHECK(node);
+  DCHECK(o.GetNode());
   DCHECK_NE(part, kNoControlPart);
+  const Element& element = *To<Element>(o.GetNode());
 
   if (part == kButtonPart) {
-    if (IsA<HTMLButtonElement>(node)) {
+    if (IsA<HTMLButtonElement>(element)) {
       UseCounter::Count(doc, WebFeature::kCSSValueAppearanceButtonForButton);
-    } else if (IsA<HTMLInputElement>(node) &&
-               To<HTMLInputElement>(node)->IsTextButton()) {
+    } else if (IsA<HTMLInputElement>(element) &&
+               To<HTMLInputElement>(element).IsTextButton()) {
       // Text buttons (type=button, reset, submit) has
       // -webkit-appearance:push-button by default.
       UseCounter::Count(doc,
                         WebFeature::kCSSValueAppearanceButtonForOtherButtons);
-    } else if (IsA<HTMLInputElement>(node) &&
-               To<HTMLInputElement>(node)->type() == input_type_names::kColor) {
+    } else if (IsA<HTMLInputElement>(element) &&
+               To<HTMLInputElement>(element).type() ==
+                   input_type_names::kColor) {
       //  'button' for input[type=color], of which default appearance is
       // 'square-button', is not deprecated.
     }
@@ -118,51 +118,51 @@ bool ThemePainter::Paint(const LayoutObject& o,
   switch (part) {
     case kCheckboxPart: {
       COUNT_APPEARANCE(doc, Checkbox);
-      return PaintCheckbox(node, o.GetDocument(), style, paint_info, r);
+      return PaintCheckbox(element, o.GetDocument(), style, paint_info, r);
     }
     case kRadioPart: {
       COUNT_APPEARANCE(doc, Radio);
-      return PaintRadio(node, o.GetDocument(), style, paint_info, r);
+      return PaintRadio(element, o.GetDocument(), style, paint_info, r);
     }
     case kPushButtonPart: {
       COUNT_APPEARANCE(doc, PushButton);
-      return PaintButton(node, o.GetDocument(), style, paint_info, r);
+      return PaintButton(element, o.GetDocument(), style, paint_info, r);
     }
     case kSquareButtonPart: {
       COUNT_APPEARANCE(doc, SquareButton);
-      return PaintButton(node, o.GetDocument(), style, paint_info, r);
+      return PaintButton(element, o.GetDocument(), style, paint_info, r);
     }
     case kButtonPart:
       // UseCounter for this is handled at the beginning of the function.
-      return PaintButton(node, o.GetDocument(), style, paint_info, r);
+      return PaintButton(element, o.GetDocument(), style, paint_info, r);
     case kInnerSpinButtonPart: {
       COUNT_APPEARANCE(doc, InnerSpinButton);
-      return PaintInnerSpinButton(node, style, paint_info, r);
+      return PaintInnerSpinButton(element, style, paint_info, r);
     }
     case kMenulistPart:
       COUNT_APPEARANCE(doc, MenuList);
-      return PaintMenuList(node, o.GetDocument(), style, paint_info, r);
+      return PaintMenuList(element, o.GetDocument(), style, paint_info, r);
     case kMeterPart:
       return true;
     case kProgressBarPart:
       COUNT_APPEARANCE(doc, ProgressBar);
       // Note that |-webkit-appearance: progress-bar| works only for <progress>.
-      return PaintProgressBar(o, paint_info, r);
+      return PaintProgressBar(element, o, paint_info, r);
     case kSliderHorizontalPart: {
       COUNT_APPEARANCE(doc, SliderHorizontal);
-      return PaintSliderTrack(o, paint_info, r);
+      return PaintSliderTrack(element, o, paint_info, r);
     }
     case kSliderVerticalPart: {
       COUNT_APPEARANCE(doc, SliderVertical);
-      return PaintSliderTrack(o, paint_info, r);
+      return PaintSliderTrack(element, o, paint_info, r);
     }
     case kSliderThumbHorizontalPart: {
       COUNT_APPEARANCE(doc, SliderThumbHorizontal);
-      return PaintSliderThumb(node, style, paint_info, r);
+      return PaintSliderThumb(element, style, paint_info, r);
     }
     case kSliderThumbVerticalPart: {
       COUNT_APPEARANCE(doc, SliderThumbVertical);
-      return PaintSliderThumb(node, style, paint_info, r);
+      return PaintSliderThumb(element, style, paint_info, r);
     }
     case kMediaSliderPart:
     case kMediaSliderThumbPart:
@@ -175,17 +175,17 @@ bool ThemePainter::Paint(const LayoutObject& o,
       if (!features::IsFormControlsRefreshEnabled()) {
         return true;
       }
-      CountAppearanceTextFieldPart(node);
-      return PaintTextField(node, style, paint_info, r);
+      CountAppearanceTextFieldPart(element);
+      return PaintTextField(element, style, paint_info, r);
     case kTextAreaPart:
       if (!features::IsFormControlsRefreshEnabled()) {
         return true;
       }
       COUNT_APPEARANCE(doc, TextArea);
-      return PaintTextArea(node, style, paint_info, r);
+      return PaintTextArea(element, style, paint_info, r);
     case kSearchFieldPart: {
       COUNT_APPEARANCE(doc, SearchField);
-      return PaintSearchField(node, style, paint_info, r);
+      return PaintSearchField(element, style, paint_info, r);
     }
     case kSearchFieldCancelButtonPart: {
       COUNT_APPEARANCE(doc, SearchCancel);
@@ -206,20 +206,23 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
                                    const ComputedStyle& style,
                                    const PaintInfo& paint_info,
                                    const IntRect& r) {
+  DCHECK(style.HasEffectiveAppearance());
+  DCHECK(node);
+  const Element& element = *To<Element>(node);
   // Call the appropriate paint method based off the appearance value.
   switch (style.EffectiveAppearance()) {
     case kTextFieldPart:
       if (features::IsFormControlsRefreshEnabled()) {
         return false;
       }
-      CountAppearanceTextFieldPart(node);
-      return PaintTextField(node, style, paint_info, r);
+      CountAppearanceTextFieldPart(element);
+      return PaintTextField(element, style, paint_info, r);
     case kTextAreaPart:
       if (features::IsFormControlsRefreshEnabled()) {
         return false;
       }
-      COUNT_APPEARANCE(node->GetDocument(), TextArea);
-      return PaintTextArea(node, style, paint_info, r);
+      COUNT_APPEARANCE(element.GetDocument(), TextArea);
+      return PaintTextArea(element, style, paint_info, r);
     case kMenulistButtonPart:
     case kSearchFieldPart:
     case kListboxPart:
@@ -241,7 +244,7 @@ bool ThemePainter::PaintBorderOnly(const Node* node,
       return false;
     default:
       UseCounter::Count(
-          node->GetDocument(),
+          element.GetDocument(),
           WebFeature::kCSSValueAppearanceNoImplementationSkipBorder);
       // TODO(tkent): Should do CSS border painting for non-supported
       // appearance values.
@@ -256,11 +259,13 @@ bool ThemePainter::PaintDecorations(const Node* node,
                                     const ComputedStyle& style,
                                     const PaintInfo& paint_info,
                                     const IntRect& r) {
+  DCHECK(node);
   // Call the appropriate paint method based off the appearance value.
   switch (style.EffectiveAppearance()) {
     case kMenulistButtonPart:
       COUNT_APPEARANCE(document, MenuListButton);
-      return PaintMenuListButton(node, document, style, paint_info, r);
+      return PaintMenuListButton(*To<Element>(node), document, style,
+                                 paint_info, r);
     case kTextFieldPart:
     case kTextAreaPart:
     case kCheckboxPart:
