@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +22,25 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for LocationBarModel.
@@ -40,10 +51,8 @@ public class LocationBarModelTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Before
-    public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
-    }
+    @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     /**
      * After closing all {@link Tab}s, the {@link LocationBarModel} should know that it is not
@@ -53,6 +62,7 @@ public class LocationBarModelTest {
     @Feature({"Android-Toolbar"})
     @MediumTest
     public void testClosingLastTabReflectedInModel() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         Assert.assertNotSame("No current tab", Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
         ChromeTabUtils.closeCurrentTab(
@@ -64,10 +74,12 @@ public class LocationBarModelTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testDisplayAndEditText() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestLocationBarModel model = new TestLocationBarModel();
+            boolean incognito = false;
+            TestLocationBarModel model = new TestLocationBarModel(getMockTab(incognito), incognito);
             model.mUrl = UrlConstants.NTP_URL;
             assertDisplayAndEditText(model, "", null);
 
@@ -85,6 +97,72 @@ public class LocationBarModelTest {
             model.mDisplayUrl = "foo.com";
             model.mFullUrl = "https://foo.com";
             assertDisplayAndEditText(model, "foo.com", "https://foo.com");
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testGetProfileOnNullTabInIncognito() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            boolean incognito = true;
+            TestLocationBarModel model = new TestLocationBarModel(null, incognito);
+            Profile profile = model.getProfile();
+            assertTrue(profile.isPrimaryOTRProfile());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testGetProfileOnMockTabInIncognito() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            boolean incognito = true;
+            TestLocationBarModel model = new TestLocationBarModel(getMockTab(incognito), incognito);
+            Profile profile = model.getProfile();
+            assertTrue(profile.isPrimaryOTRProfile());
+        });
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void testGetProfileOnMockTabInIncognitoCCT() throws TimeoutException {
+        IncognitoDataTestUtils.fireAndWaitForCctWarmup();
+
+        // Create an launch an incognito CCT.
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getContext(), "about:blank");
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            boolean incognito = true;
+            // Setup LocationBarModel
+            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+            TestLocationBarModel model = new TestLocationBarModel(tab, incognito);
+
+            Profile profile = model.getProfile();
+            assertFalse(profile.isPrimaryOTRProfile());
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testGetProfileOnMockTabInRegularCCT() {
+        // Create an launch a regular CCT.
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                InstrumentationRegistry.getContext(), "about:blank");
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            boolean incognito = true;
+            // Setup LocationBarModel
+            Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+            TestLocationBarModel model = new TestLocationBarModel(tab, incognito);
+
+            Profile profile = model.getProfile();
+            assertTrue(profile.isPrimaryOTRProfile());
         });
     }
 
@@ -112,27 +190,30 @@ public class LocationBarModelTest {
         return tab != null ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 
+    public static Tab getMockTab(boolean incognito) {
+        Tab tab = new MockTab(0, incognito) {
+            @Override
+            public boolean isInitialized() {
+                return true;
+            }
+
+            @Override
+            public boolean isFrozen() {
+                return false;
+            }
+        };
+        return tab;
+    }
+
     private class TestLocationBarModel extends LocationBarModel {
         private String mDisplayUrl;
         private String mFullUrl;
         private String mUrl;
 
-        public TestLocationBarModel() {
+        public TestLocationBarModel(Tab tab, boolean incognito) {
             super(ContextUtils.getApplicationContext());
             initializeWithNative();
-
-            Tab tab = new MockTab(0, false) {
-                @Override
-                public boolean isInitialized() {
-                    return true;
-                }
-
-                @Override
-                public boolean isFrozen() {
-                    return false;
-                }
-            };
-            setTab(tab, false);
+            setTab(tab, incognito);
         }
 
         @Override
