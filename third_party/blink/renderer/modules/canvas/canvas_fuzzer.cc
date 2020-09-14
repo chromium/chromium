@@ -81,6 +81,10 @@ class PageHelper {
 
 // Fuzzer for blink::ManifestParser
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // TODO(bug/1124824) Disabling CanvasFuzzer as it seems to be producing lots
+  // of false positives.
+  return 0;
+
   // We are ignoring small tests
   constexpr int minSizeHtml = 20;
   if (size < minSizeHtml)
