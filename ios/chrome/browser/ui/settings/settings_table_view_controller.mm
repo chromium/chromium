@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_coordinator.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
@@ -178,6 +178,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     PasswordCheckObserver,
+    PasswordsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
     PrefObserverDelegate,
     PrivacyCoordinatorDelegate,
@@ -224,6 +225,9 @@ NSString* kDevViewSourceKey = @"DevViewSource";
 
   // Safety Check coordinator.
   SafetyCheckCoordinator* _safetyCheckCoordinator;
+
+  // Passwords coordinator.
+  PasswordsCoordinator* _passwordsCoordinator;
 
   // Cached resized profile image.
   UIImage* _resizedImage;
@@ -955,8 +959,7 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     case ItemTypePasswords:
       base::RecordAction(
           base::UserMetricsAction("Options_ShowPasswordManager"));
-      controller =
-          [[PasswordsTableViewController alloc] initWithBrowser:_browser];
+      [self showPasswords];
       break;
     case ItemTypeAutofillCreditCard:
       base::RecordAction(base::UserMetricsAction("AutofillCreditCardsViewed"));
@@ -1110,6 +1113,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   _googleServicesSettingsCoordinator.handler = self.dispatcher;
   _googleServicesSettingsCoordinator.delegate = self;
   [_googleServicesSettingsCoordinator start];
+}
+
+- (void)showPasswords {
+  DCHECK(!_passwordsCoordinator);
+  _passwordsCoordinator = [[PasswordsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _passwordsCoordinator.delegate = self;
+  [_passwordsCoordinator start];
 }
 
 // Shows Safety Check Screen.
@@ -1337,6 +1349,10 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   [_safetyCheckCoordinator stop];
   _safetyCheckCoordinator = nil;
 
+  [_passwordsCoordinator stop];
+  _passwordsCoordinator.delegate = nil;
+  _passwordsCoordinator = nil;
+
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 
@@ -1537,6 +1553,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   [_safetyCheckCoordinator stop];
   _safetyCheckCoordinator.delegate = nil;
   _safetyCheckCoordinator = nil;
+}
+
+#pragma mark - SafetyCheckCoordinatorDelegate
+
+- (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
+  DCHECK_EQ(_passwordsCoordinator, coordinator);
+  [_passwordsCoordinator stop];
+  _passwordsCoordinator.delegate = nil;
+  _passwordsCoordinator = nil;
 }
 
 #pragma mark - PrivacyCoordinatorDelegate

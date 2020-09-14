@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/memory/scoped_refptr.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_delegate.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 class AuthenticationService;
 class IOSChromePasswordCheckManager;
@@ -19,7 +21,8 @@ class PasswordStore;
 }
 
 // This mediator fetches and organises the passwords for its consumer.
-@interface PasswordsMediator : NSObject
+@interface PasswordsMediator : NSObject <PasswordsTableViewControllerDelegate,
+                                         SuccessfulReauthTimeAccessor>
 
 - (instancetype)
     initWithPasswordStore:
@@ -33,15 +36,6 @@ class PasswordStore;
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
-
-// Returns detailed information about error if applicable.
-- (NSAttributedString*)passwordCheckErrorInfo;
-
-// Returns string containing the timestamp of the last password check. If the
-// check finished less than 1 minute ago string will look "Last check just
-// now.", otherwise "Last check X minutes/hours... ago.". If check never run
-// string will be "Check never run.".
-- (NSString*)formatElapsedTimeSinceLastCheck;
 
 @end
 

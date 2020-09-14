@@ -21,13 +21,14 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #include "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/legacy_password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_issues_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #include "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -57,7 +58,6 @@ using ::testing::Return;
 // this file working.
 @interface PasswordsTableViewController (Test) <
     UISearchBarDelegate,
-    PasswordIssuesCoordinatorDelegate,
     PasswordsConsumer>
 - (void)updateExportPasswordsButton;
 @end
@@ -111,9 +111,21 @@ class PasswordsTableViewControllerTest
 
     CreateController();
 
+    mediator_ = [[PasswordsMediator alloc]
+        initWithPasswordStore:IOSChromePasswordStoreFactory::GetForBrowserState(
+                                  browser_->GetBrowserState(),
+                                  ServiceAccessType::EXPLICIT_ACCESS)
+         passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                  GetForBrowserState(
+                                      browser_->GetBrowserState())
+                  authService:nil
+                  syncService:nil];
+
     // Inject some fake passwords to pass the loading state.
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
+    passwords_controller.delegate = mediator_;
+    mediator_.consumer = passwords_controller;
     [passwords_controller setPasswordsForms:{}];
   }
 
@@ -154,7 +166,9 @@ class PasswordsTableViewControllerTest
   void ChangePasswordCheckState(PasswordCheckUIState state) {
     PasswordsTableViewController* passwords_controller =
         static_cast<PasswordsTableViewController*>(controller());
-    [passwords_controller setPasswordCheckUIState:state];
+    NSInteger count = GetTestStore().compromised_credentials().size();
+    [passwords_controller setPasswordCheckUIState:state
+                        compromisedPasswordsCount:count];
   }
 
   // Adds a form to PasswordsTableViewController.
@@ -284,6 +298,7 @@ class PasswordsTableViewControllerTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  PasswordsMediator* mediator_;
 };
 
 // Tests default case has no saved sites and no blocked sites.
@@ -500,35 +515,6 @@ TEST_P(PasswordsTableViewControllerTest,
   EXPECT_NSEQ([UIColor colorNamed:kBlueColor], exportButton.textColor);
   EXPECT_FALSE(exportButton.accessibilityTraits &
                UIAccessibilityTraitNotEnabled);
-}
-
-TEST_P(PasswordsTableViewControllerTest, PropagateDeletionToStore) {
-  PasswordsTableViewController* passwords_controller =
-      static_cast<PasswordsTableViewController*>(controller());
-  autofill::PasswordForm form;
-  form.url = GURL("http://www.example.com/accounts/LoginAuth");
-  form.action = GURL("http://www.example.com/accounts/Login");
-  form.username_element = base::ASCIIToUTF16("Email");
-  form.username_value = base::ASCIIToUTF16("test@egmail.com");
-  form.password_element = base::ASCIIToUTF16("Passwd");
-  form.password_value = base::ASCIIToUTF16("test");
-  form.submit_element = base::ASCIIToUTF16("signIn");
-  form.signon_realm = "http://www.example.com/";
-  form.scheme = autofill::PasswordForm::Scheme::kHtml;
-  form.blocked_by_user = false;
-
-  AddPasswordForm(std::make_unique<autofill::PasswordForm>(form));
-
-  if (GetParam().password_check_enabled) {
-    autofill::PasswordForm formFromStore =
-        GetTestStore().stored_passwords().at("http://www.example.com/")[0];
-    [passwords_controller passwordDetailsTableViewController:nil
-                                              deletePassword:formFromStore];
-    RunUntilIdle();
-  } else {
-    [passwords_controller passwordDetailsTableViewController:nil
-                                              deletePassword:form];
-  }
 }
 
 // Tests filtering of items.
@@ -760,7 +746,7 @@ TEST_P(PasswordsTableViewControllerTest, PasswordIssuesDeletion) {
 
   auto password =
       GetTestStore().stored_passwords().at("http://www.example.com/").at(0);
-  EXPECT_TRUE([passwords_controller willHandlePasswordDeletion:password]);
+  [passwords_controller deletePasswordForm:password];
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
 

@@ -76,8 +76,8 @@ SetUpAndReturnMockReauthenticationModuleForExport() {
   PasswordsTableViewController* passwords_table_view_controller =
       base::mac::ObjCCastStrict<PasswordsTableViewController>(
           settings_navigation_controller.topViewController);
-  [passwords_table_view_controller
-      setReauthenticationModuleForExporter:mock_reauthentication_module];
+  passwords_table_view_controller.reauthenticationModule =
+      mock_reauthentication_module;
   return mock_reauthentication_module;
 }
 

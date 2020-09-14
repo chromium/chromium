@@ -79,6 +79,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/password",
+    "//ios/chrome/browser/ui/settings/password:password_ui",
     "//ios/chrome/browser/ui/settings/password:test_support",
     "//ios/chrome/browser/ui/tab_grid",
     "//ios/chrome/browser/ui/tabs",

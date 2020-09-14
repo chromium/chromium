@@ -7,6 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+#include <vector>
+
+namespace autofill {
+struct PasswordForm;
+}
+
 // Enum with all possible UI states of password check.
 typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
   // When no compromised passwords were detected.
@@ -27,7 +34,8 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 @protocol PasswordsConsumer <NSObject>
 
 // Displays current password check UI state on screen.
-- (void)setPasswordCheckUIState:(PasswordCheckUIState)state;
+- (void)setPasswordCheckUIState:(PasswordCheckUIState)state
+      compromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
 - (void)setPasswordsForms:

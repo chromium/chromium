@@ -16,9 +16,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -68,6 +66,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   PasswordCheckState _currentState;
 }
 
+// Object storing the time of the previous successful re-authentication.
+// This is meant to be used by the |ReauthenticationModule| for keeping
+// re-authentications valid for a certain time interval within the scope
+// of the Passwords Screen.
+@property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
+
 @end
 
 @implementation PasswordsMediator
@@ -116,8 +120,42 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
           password_manager::features::kPasswordCheck)) {
     _currentState = _passwordCheckManager->GetPasswordCheckState();
     [self.consumer setPasswordCheckUIState:
-                       [self computePasswordCheckUIStateWith:_currentState]];
+                       [self computePasswordCheckUIStateWith:_currentState]
+                 compromisedPasswordsCount:_passwordCheckManager
+                                               ->GetCompromisedCredentials()
+                                               .size()];
   }
+}
+
+#pragma mark - PasswordsTableViewControllerDelegate
+
+- (void)startPasswordCheck {
+  _passwordCheckManager->StartPasswordCheck();
+}
+
+- (NSString*)formatElapsedTimeSinceLastCheck {
+  base::Time lastCompletedCheck =
+      _passwordCheckManager->GetLastPasswordCheckTime();
+
+  // lastCompletedCheck is 0.0 in case the check never completely ran before.
+  if (lastCompletedCheck == base::Time())
+    return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
+
+  base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
+
+  NSString* timestamp;
+  // If check finished in less than |kJustCheckedTimeThresholdInMinutes| show
+  // "just now" instead of timestamp.
+  if (elapsedTime < kJustCheckedTimeThresholdInMinutes)
+    timestamp = l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
+  else
+    timestamp = base::SysUTF8ToNSString(
+        base::UTF16ToUTF8(ui::TimeFormat::SimpleWithMonthAndYear(
+            ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
+            elapsedTime, true)));
+
+  return l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
+                                 base::SysNSStringToUTF16(timestamp));
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
@@ -165,7 +203,10 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 
   DCHECK(self.consumer);
   [self.consumer
-      setPasswordCheckUIState:[self computePasswordCheckUIStateWith:state]];
+        setPasswordCheckUIState:[self computePasswordCheckUIStateWith:state]
+      compromisedPasswordsCount:_passwordCheckManager
+                                    ->GetCompromisedCredentials()
+                                    .size()];
 }
 
 - (void)compromisedCredentialsDidChange:
@@ -176,8 +217,10 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
     return;
 
   DCHECK(self.consumer);
+
   [self.consumer setPasswordCheckUIState:
-                     [self computePasswordCheckUIStateWith:_currentState]];
+                     [self computePasswordCheckUIStateWith:_currentState]
+               compromisedPasswordsCount:credentials.size()];
 }
 
 #pragma mark - Private Methods
@@ -265,29 +308,14 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
   [self.consumer setPasswordsForms:std::move(results)];
 }
 
-- (NSString*)formatElapsedTimeSinceLastCheck {
-  base::Time lastCompletedCheck =
-      _passwordCheckManager->GetLastPasswordCheckTime();
+#pragma mark SuccessfulReauthTimeAccessor
 
-  // lastCompletedCheck is 0.0 in case the check never completely ran before.
-  if (lastCompletedCheck == base::Time())
-    return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
+- (void)updateSuccessfulReauthTime {
+  _successfulReauthTime = [[NSDate alloc] init];
+}
 
-  base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
-
-  NSString* timestamp;
-  // If check finished in less than |kJustCheckedTimeThresholdInMinutes| show
-  // "just now" instead of timestamp.
-  if (elapsedTime < kJustCheckedTimeThresholdInMinutes)
-    timestamp = l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  else
-    timestamp = base::SysUTF8ToNSString(
-        base::UTF16ToUTF8(ui::TimeFormat::SimpleWithMonthAndYear(
-            ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-            elapsedTime, true)));
-
-  return l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
-                                 base::SysNSStringToUTF16(timestamp));
+- (NSDate*)lastSuccessfulReauthTime {
+  return [self successfulReauthTime];
 }
 
 @end

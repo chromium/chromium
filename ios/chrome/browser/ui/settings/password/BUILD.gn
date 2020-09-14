@@ -5,37 +5,23 @@
 source_set("password") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "legacy_password_details_table_view_controller.h",
-    "legacy_password_details_table_view_controller.mm",
-    "legacy_password_details_table_view_controller_delegate.h",
-    "password_exporter.h",
-    "password_exporter.mm",
     "password_issue_with_form.h",
     "password_issue_with_form.mm",
     "password_issues_coordinator.h",
     "password_issues_coordinator.mm",
     "password_issues_mediator.h",
     "password_issues_mediator.mm",
-    "passwords_consumer.h",
+    "passwords_coordinator.h",
+    "passwords_coordinator.mm",
     "passwords_mediator.h",
     "passwords_mediator.mm",
-    "passwords_table_view_controller.h",
-    "passwords_table_view_controller.mm",
   ]
   deps = [
-    ":password_constants",
     ":password_ui",
     "//base",
     "//components/autofill/core/common",
-    "//components/google/core/common",
-    "//components/keyed_service/core",
-    "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
-    "//components/prefs",
-    "//components/strings",
-    "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
@@ -45,6 +31,56 @@ source_set("password") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings/password/password_details",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "MobileCoreServices.framework" ]
+}
+
+source_set("password_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "legacy_password_details_table_view_controller.h",
+    "legacy_password_details_table_view_controller.mm",
+    "legacy_password_details_table_view_controller_delegate.h",
+    "password_exporter.h",
+    "password_exporter.mm",
+    "password_issue.h",
+    "password_issue_content_item.h",
+    "password_issue_content_item.mm",
+    "password_issues_consumer.h",
+    "password_issues_presenter.h",
+    "password_issues_table_view_controller.h",
+    "password_issues_table_view_controller.mm",
+    "passwords_consumer.h",
+    "passwords_settings_commands.h",
+    "passwords_table_view_controller.h",
+    "passwords_table_view_controller.mm",
+    "passwords_table_view_controller_delegate.h",
+    "passwords_table_view_controller_presentation_delegate.h",
+  ]
+  deps = [
+    ":password_constants",
+    "//base",
+    "//components/autofill/core/common",
+    "//components/google/core/common",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
@@ -53,6 +89,7 @@ source_set("password") {
     "//ios/chrome/browser/ui/settings/password/password_details",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
@@ -63,40 +100,7 @@ source_set("password") {
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//ui/base",
-    "//ui/base",
     "//ui/base/clipboard:clipboard_types",
-    "//url",
-  ]
-  frameworks = [ "MobileCoreServices.framework" ]
-}
-
-source_set("password_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "password_issue.h",
-    "password_issue_content_item.h",
-    "password_issue_content_item.mm",
-    "password_issues_consumer.h",
-    "password_issues_presenter.h",
-    "password_issues_table_view_controller.h",
-    "password_issues_table_view_controller.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/autofill/core/common",
-    "//components/password_manager/core/browser",
-    "//components/password_manager/core/common",
-    "//components/prefs",
-    "//components/strings",
-    "//components/url_formatter",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/autofill",
-    "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
   ]
 }
 
@@ -116,7 +120,7 @@ source_set("test_support") {
     "legacy_password_details_table_view_controller+testing.h",
     "password_exporter_for_testing.h",
   ]
-  deps = [ ":password" ]
+  deps = [ ":password_ui" ]
 }
 
 source_set("unit_tests") {

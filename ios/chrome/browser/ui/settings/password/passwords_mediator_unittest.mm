@@ -72,7 +72,8 @@ std::unique_ptr<KeyedService> BuildMockSyncSetupService(
 
 @implementation FakePasswordsConsumer
 
-- (void)setPasswordCheckUIState:(PasswordCheckUIState)state {
+- (void)setPasswordCheckUIState:(PasswordCheckUIState)state
+      compromisedPasswordsCount:(NSInteger)count {
 }
 
 - (void)setPasswordsForms:
