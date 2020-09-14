@@ -6325,6 +6325,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-search", flag_descriptions::kEnableTabSearchName,
      flag_descriptions::kEnableTabSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kTabSearch)},
+
+    {"enable-tab-search-fixed-entrypoint",
+     flag_descriptions::kEnableTabSearchFixedEntrypointName,
+     flag_descriptions::kEnableTabSearchFixedEntrypointDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kTabSearchFixedEntrypoint)},
 #endif  // BUILDFLAG(ENABLE_TAB_SEARCH)
 
 #if defined(OS_ANDROID)
