@@ -202,8 +202,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetricsTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapterTest.java",
-  "junit/src/org/chromium/chrome/browser/send_tab_to_self/NotificationSharedPrefManagerTest.java",
-  "junit/src/org/chromium/chrome/browser/send_tab_to_self/SendTabToSelfAndroidBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/send_tab_to_self/SendTabToSelfShareActivityTest.java",
   "junit/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/ConfirmImportSyncDataDialogTest.java",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.send_tab_to_self;
+package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import androidx.annotation.Nullable;
 
@@ -164,7 +164,7 @@ public class SendTabToSelfAndroidBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         SendTabToSelfEntry addEntry(Profile profile, String url, String title, long navigationTime,
                 String targetDeviceSyncCacheGuid);
 

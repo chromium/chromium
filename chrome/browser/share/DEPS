@@ -12,6 +12,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaViewerUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/notifications",
   "+chrome/android/java/src/org/chromium/chrome/browser/screenshot/EditorScreenshotTask.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/android/java/src/org/chromium/chrome/browser/tab/Tab.java",
@@ -19,9 +20,7 @@ include_rules = [
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/share/android",
   "+components/browser_ui/android/bottomsheet",
+  "+components/infobars/android",
   "+content/public/android/java/src/org/chromium/content_public/browser/RenderWidgetHostView.java",
   "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
-
-  # TODO(crbug/1090917): Remove this dependency once the STTS java code is moved.
-  "+chrome/android/java/src/org/chromium/chrome/browser/send_tab_to_self/SendTabToSelfCoordinator.java",
 ]

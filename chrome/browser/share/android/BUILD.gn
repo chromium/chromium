@@ -31,5 +31,11 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
     "java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfEntry.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfInfoBar.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfModelObserverBridge.java",
+    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
   ]
 }

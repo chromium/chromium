@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.send_tab_to_self;
+package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.AdditionalAnswers.answerVoid;
 import static org.mockito.Mockito.any;
@@ -27,7 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.send_tab_to_self.TargetDeviceInfo.DeviceType;
+import org.chromium.chrome.browser.share.send_tab_to_self.TargetDeviceInfo.DeviceType;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;

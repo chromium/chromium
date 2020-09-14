@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.send_tab_to_self;
+package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;

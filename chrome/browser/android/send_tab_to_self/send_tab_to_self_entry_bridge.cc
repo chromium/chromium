@@ -6,7 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/SendTabToSelfEntry_jni.h"
+#include "chrome/browser/share/android/jni_headers/SendTabToSelfEntry_jni.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
 using base::android::AttachCurrentThread;

@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeAccessorActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -24,7 +26,7 @@ public class SendTabToSelfShareActivity extends ChromeAccessorActivity {
     private static AndroidSyncSettings sAndroidSyncSettings;
 
     @Override
-    protected void handleAction(ChromeActivity triggeringActivity) {
+    public void handleAction(ChromeActivity triggeringActivity) {
         Tab tab = triggeringActivity.getActivityTabProvider().get();
         if (tab == null) return;
         NavigationEntry entry = tab.getWebContents().getNavigationController().getVisibleEntry();

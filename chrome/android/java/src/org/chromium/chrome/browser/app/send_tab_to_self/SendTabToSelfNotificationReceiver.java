@@ -12,7 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
-import org.chromium.chrome.browser.send_tab_to_self.NotificationManager;
+import org.chromium.chrome.browser.share.send_tab_to_self.NotificationManager;
 
 /** Handles changes to notifications based on user action or timeout. */
 public class SendTabToSelfNotificationReceiver extends BroadcastReceiver {

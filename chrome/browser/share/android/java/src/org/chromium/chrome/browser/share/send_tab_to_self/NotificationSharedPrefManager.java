@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.send_tab_to_self;
+package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,7 +23,6 @@ import java.util.regex.PatternSyntaxException;
  * with all previous versions.
  */
 public class NotificationSharedPrefManager {
-
     // Any time the serialization of the ActiveNotification needs to change, increment this version.
     private static final int VERSION = 1;
 

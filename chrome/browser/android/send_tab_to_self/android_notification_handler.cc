@@ -10,8 +10,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
 #include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
+#include "chrome/browser/share/android/jni_headers/NotificationManager_jni.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
 using base::android::AttachCurrentThread;

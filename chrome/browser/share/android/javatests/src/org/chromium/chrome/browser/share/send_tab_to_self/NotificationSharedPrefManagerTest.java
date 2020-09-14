@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.send_tab_to_self;
+package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.support.test.filters.SmallTest;
 
@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.send_tab_to_self.NotificationSharedPrefManager.ActiveNotification;
+import org.chromium.chrome.browser.share.send_tab_to_self.NotificationSharedPrefManager.ActiveNotification;
 
 /** Tests for NotificationSharedPrefManagerTest */
 @RunWith(BaseRobolectricTestRunner.class)
