@@ -13,7 +13,6 @@ namespace features {
 
 CC_BASE_EXPORT extern const base::Feature kImpulseScrollAnimations;
 CC_BASE_EXPORT extern const base::Feature kSynchronizedScrolling;
-CC_BASE_EXPORT extern const base::Feature kTextureLayerSkipWaitForActivation;
 
 #if !defined(OS_ANDROID)
 CC_BASE_EXPORT extern const base::Feature kImplLatencyRecovery;

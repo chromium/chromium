@@ -1454,10 +1454,6 @@ const char kNewOsSettingsSearchDescription[] =
     "Enables New OS Settings search with fuzzy matching, and disables the old "
     "OS settings search using exact string matching.";
 
-const char kTextureLayerSkipWaitForActivationName[] = "Parallelize layers";
-const char kTextureLayerSkipWaitForActivationDescription[] =
-    "Don't wait for layer activation before beginning new frame.";
-
 const char kNotificationIndicatorName[] = "Notification Indicators";
 const char kNotificationIndicatorDescription[] =
     "Enable notification indicators, which appear on shelf app icons and "

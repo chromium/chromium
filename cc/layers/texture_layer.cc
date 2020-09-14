@@ -110,11 +110,6 @@ void TextureLayer::SetTransferableResourceInternal(
     SetNeedsPushProperties();
 
   UpdateDrawsContent(HasDrawableContent());
-  // The active frame needs to be replaced and the mailbox returned before the
-  // commit is called complete.
-  if (!base::FeatureList::IsEnabled(
-          features::kTextureLayerSkipWaitForActivation))
-    SetNextCommitWaitsForActivation();
 }
 
 void TextureLayer::SetTransferableResource(
@@ -138,14 +133,8 @@ void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // If we're removed from the tree, the TextureLayerImpl will be destroyed, and
   // we will need to set the mailbox again on a new TextureLayerImpl the next
   // time we push.
-  if (!host && holder_ref_) {
+  if (!host && holder_ref_)
     needs_set_resource_ = true;
-    // The active frame needs to be replaced and the mailbox returned before the
-    // commit is called complete.
-    if (!base::FeatureList::IsEnabled(
-            features::kTextureLayerSkipWaitForActivation))
-      SetNextCommitWaitsForActivation();
-  }
   if (host) {
     // When attached to a new LayerTreeHost, all previously registered
     // SharedBitmapIds will need to be re-sent to the new TextureLayerImpl

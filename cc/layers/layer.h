@@ -733,11 +733,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // (the full tree is synced over).
   void SetNeedsFullTreeSync();
 
-  // Called when the next commit should wait until the pending tree is activated
-  // before finishing the commit and unblocking the main thread. Used to ensure
-  // unused resources on the impl thread are returned before commit completes.
-  void SetNextCommitWaitsForActivation();
-
   // Will recalculate whether the layer draws content and set draws_content_
   // appropriately.
   void UpdateDrawsContent(bool has_drawable_content);

@@ -222,13 +222,6 @@ void Layer::SetNeedsFullTreeSync() {
   layer_tree_host_->SetNeedsFullTreeSync();
 }
 
-void Layer::SetNextCommitWaitsForActivation() {
-  if (!layer_tree_host_)
-    return;
-
-  layer_tree_host_->SetNextCommitWaitsForActivation();
-}
-
 void Layer::SetNeedsPushProperties() {
   if (layer_tree_host_)
     layer_tree_host_->AddLayerShouldPushProperties(this);

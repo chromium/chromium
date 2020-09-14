@@ -5723,10 +5723,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImpulseScrollAnimationsName,
      flag_descriptions::kImpulseScrollAnimationsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kImpulseScrollAnimations)},
-    {"texture-layer-skip-wait-for-activation",
-     flag_descriptions::kTextureLayerSkipWaitForActivationName,
-     flag_descriptions::kTextureLayerSkipWaitForActivationDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kTextureLayerSkipWaitForActivation)},
+
     {"percent-based-scrolling", flag_descriptions::kPercentBasedScrollingName,
      flag_descriptions::kPercentBasedScrollingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPercentBasedScrolling)},
