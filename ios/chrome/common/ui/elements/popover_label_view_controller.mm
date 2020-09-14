@@ -19,6 +19,8 @@ constexpr CGFloat kVerticalInsetValue = 20;
 constexpr CGFloat kHorizontalInsetValue = 16;
 // Desired percentage of the width of the presented view controller.
 constexpr CGFloat kWidthProportion = 0.75;
+// Max width for the popover.
+constexpr CGFloat kMaxWidth = 300;
 // Distance between the primary text label and the secondary text label.
 constexpr CGFloat kVerticalDistance = 24;
 
@@ -220,6 +222,10 @@ constexpr CGFloat kVerticalDistance = 24;
   // Expected width of the |self.scrollView|.
   CGFloat width =
       self.presentingViewController.view.bounds.size.width * kWidthProportion;
+  // Cap max width at 300pt.
+  if (width > kMaxWidth) {
+    width = kMaxWidth;
+  }
   // |scrollView| is used here instead of |self.view|, because |self.view|
   // includes arrow size during calculation although it's being added to the
   // result size anyway.
