@@ -300,6 +300,9 @@ void FileBrowserHandlerExecutor::ExecuteDoneOnUIThread(
     std::string failure_reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (done_) {
+    // In a multiprofile session, extension handlers will open on the desktop
+    // corresponding to the profile that owns the files, so return
+    // TASK_RESULT_MESSAGE_SENT.
     std::move(done_).Run(
         success
             ? extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT

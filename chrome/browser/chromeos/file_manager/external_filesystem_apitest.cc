@@ -764,7 +764,9 @@ std::string MediaAppBoolString(const testing::TestParamInfo<bool> info) {
 // gallery.
 IN_PROC_BROWSER_TEST_P(FileSystemExtensionApiTestWithApps, OpenGalleryForPng) {
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(RunBackgroundPageTestCase("open_gallery", "testPngOpensGallery"))
+  EXPECT_TRUE(RunBackgroundPageTestCase(
+      "open_gallery", MediaAppEnabled() ? "testPngOpensGalleryReturnsOpened"
+                                        : "testPngOpensGalleryReturnsMsgSent"))
       << message_;
   histogram_tester.ExpectBucketCount(kAppLaunchMetric, kGalleryUmaBucket,
                                      MediaAppEnabled() ? 0 : 1);

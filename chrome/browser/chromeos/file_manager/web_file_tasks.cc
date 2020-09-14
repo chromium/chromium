@@ -161,8 +161,11 @@ void ExecuteWebTask(Profile* profile,
                           /* preferred_containner=*/false),
       apps::mojom::LaunchSource::kFromFileManager, std::move(launch_files));
 
-  std::move(done).Run(
-      extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
+  // In a multiprofile session, web apps always open on the current desktop,
+  // regardless of which profile owns the files being opened, so use
+  // TASK_RESULT_OPENED.
+  std::move(done).Run(extensions::api::file_manager_private::TASK_RESULT_OPENED,
+                      "");
 }
 
 }  // namespace file_tasks

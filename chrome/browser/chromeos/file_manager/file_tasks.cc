@@ -552,7 +552,9 @@ bool ExecuteFileTask(Profile* profile,
   }
 
   // Some action IDs of the file manager's file browser handlers require the
-  // files to be directly opened with the browser.
+  // files to be directly opened with the browser. In a multiprofile session
+  // this will always open on the current desktop, regardless of which profile
+  // owns the files, so return TASK_RESULT_OPENED.
   if (ShouldBeOpenedWithBrowser(task.app_id, task.action_id)) {
     const bool result =
         OpenFilesWithBrowser(profile, file_urls, task.action_id);
@@ -585,6 +587,9 @@ bool ExecuteFileTask(Profile* profile,
     DCHECK(!extension->from_bookmark());
     apps::LaunchPlatformAppWithFileHandler(extension_task_profile, extension,
                                            task.action_id, paths);
+    // In a multiprofile session, platform apps will open on the desktop
+    // corresponding to the profile that owns the files, so return
+    // TASK_RESULT_MESSAGE_SENT.
     if (!done.is_null())
       std::move(done).Run(
           extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");

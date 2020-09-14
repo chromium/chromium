@@ -152,10 +152,12 @@ enum DriveSyncErrorType {
 // Result of task execution. If changing, update the strings used in
 // ui/file_manager/file_manager/foreground/js/file_tasks.js
 enum TaskResult {
-  // The task execution succeeded and a new window/tab was opened.
+  // The task execution succeeded and a new window/tab was opened on the current
+  // desktop.
   opened,
   // The task execution succeeded and the message was sent to the proper
-  // extension.
+  // extension or app. This could result in a window being opened on a different
+  // desktop.
   message_sent,
   // The task execution failed.
   failed,

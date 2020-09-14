@@ -129,6 +129,8 @@ bool AppSupportsExtensionOfAllEntries(
 
 auto ConvertLaunchPluginVmAppResultToTaskResult(
     plugin_vm::LaunchPluginVmAppResult result) {
+  // TODO(benwells): return the correct code here, depending on how the app will
+  // be opened in multiprofile.
   namespace fmp = extensions::api::file_manager_private;
   switch (result) {
     case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
@@ -294,6 +296,8 @@ void ExecuteGuestOsTask(
                   LOG(ERROR) << "Crostini task error: " << failure_reason;
                 }
                 std::move(done).Run(
+                    // TODO(benwells): return the correct code here, depending
+                    // on how the app will be opened in multiprofile.
                     success ? extensions::api::file_manager_private::
                                   TASK_RESULT_MESSAGE_SENT
                             : extensions::api::file_manager_private::

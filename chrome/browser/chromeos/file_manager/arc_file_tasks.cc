@@ -290,6 +290,8 @@ void ExecuteArcTaskAfterContentUrlsResolved(
       ConstructOpenUrlsRequest(task, content_urls, mime_types);
   arc_file_system->OpenUrlsWithPermission(std::move(request),
                                           base::DoNothing());
+  // TODO(benwells): return the correct code here, depending on how the app
+  // will be opened in multiprofile.
   std::move(done).Run(
       extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
 

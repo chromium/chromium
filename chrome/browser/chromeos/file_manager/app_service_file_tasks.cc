@@ -137,6 +137,8 @@ void ExecuteAppServiceTask(
                           /*prefer_container=*/true),
       launch_source, file_urls, mime_types);
 
+  // TODO(benwells): return the correct code here, depending on how the app will
+  // be opened in multiprofile.
   std::move(done).Run(
       extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
 }
