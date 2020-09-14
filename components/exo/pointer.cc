@@ -346,7 +346,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
     return;
 
-  seat_->SetLastLocation(event->root_location());
+  seat_->SetLastPointerLocation(event->root_location_f());
 
   Surface* target = GetEffectiveTargetForEvent(event);
   gfx::PointF location_in_target = event->location_f();

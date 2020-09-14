@@ -5,6 +5,7 @@
 #include "components/exo/seat.h"
 
 #include <memory>
+#include "ui/gfx/geometry/point_f.h"
 
 #if defined(OS_CHROMEOS)
 #include "ash/shell.h"
@@ -98,11 +99,11 @@ void Seat::StartDrag(DataSource* source,
                      ui::mojom::DragEventSource event_source) {
   // DragDropOperation manages its own lifetime.
   drag_drop_operation_ = DragDropOperation::Create(
-      source, origin, icon, last_location_, event_source);
+      source, origin, icon, last_pointer_location_, event_source);
 }
 
-void Seat::SetLastLocation(const gfx::Point& last_location) {
-  last_location_ = last_location;
+void Seat::SetLastPointerLocation(const gfx::PointF& last_pointer_location) {
+  last_pointer_location_ = last_pointer_location;
 }
 
 void Seat::AbortPendingDragOperation() {

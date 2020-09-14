@@ -17,6 +17,9 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/transform_util.h"
 
 #if defined(OS_CHROMEOS)
@@ -79,7 +82,7 @@ base::WeakPtr<DragDropOperation> DragDropOperation::Create(
     DataSource* source,
     Surface* origin,
     Surface* icon,
-    const gfx::Point& drag_start_point,
+    const gfx::PointF& drag_start_point,
     ui::mojom::DragEventSource event_source) {
   auto* dnd_op = new DragDropOperation(source, origin, icon, drag_start_point,
                                        event_source);
@@ -89,7 +92,7 @@ base::WeakPtr<DragDropOperation> DragDropOperation::Create(
 DragDropOperation::DragDropOperation(DataSource* source,
                                      Surface* origin,
                                      Surface* icon,
-                                     const gfx::Point& drag_start_point,
+                                     const gfx::PointF& drag_start_point,
                                      ui::mojom::DragEventSource event_source)
     : SurfaceTreeHost("ExoDragDropOperation"),
       source_(std::make_unique<ScopedDataSource>(source, this)),
@@ -242,11 +245,13 @@ void DragDropOperation::StartDragDropOperation() {
   base::WeakPtr<DragDropOperation> weak_ptr = weak_ptr_factory_.GetWeakPtr();
 
   started_by_this_object_ = true;
+  gfx::Point drag_start_point = gfx::ToFlooredPoint(drag_start_point_);
+
   // This triggers a nested run loop that terminates when the drag and drop
   // operation is completed.
   int op = drag_drop_controller_->StartDragAndDrop(
       std::move(os_exchange_data_), origin_->get()->window()->GetRootWindow(),
-      origin_->get()->window(), drag_start_point_, dnd_operations,
+      origin_->get()->window(), drag_start_point, dnd_operations,
       event_source_);
 
   // The instance deleted during StartDragAndDrop's nested RunLoop.
