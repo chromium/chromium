@@ -1731,6 +1731,32 @@ var OSSettingsResetPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
+// eslint-disable-next-line no-var
+var OSSettingsEditDictionaryPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/os_language_page/os_edit_dictionary_page.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../fake_chrome_event.js',
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + 'fake_input_method_private.js',
+      BROWSER_SETTINGS_PATH + 'fake_language_settings_private.js',
+      BROWSER_SETTINGS_PATH + 'fake_settings_private.js',
+      'os_edit_dictionary_page_test.js',
+      'test_os_languages_browser_proxy.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsEditDictionaryPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 TEST_F('OSSettingsResetPageTest', 'AllJsTests', () => {
   mocha.run();
 });

@@ -728,6 +728,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_GLOBAL_SCROLL_TARGET_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/global_scroll_target_behavior.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_I18N_SETUP_JS"
            file="i18n_setup.js"
            compress="false"

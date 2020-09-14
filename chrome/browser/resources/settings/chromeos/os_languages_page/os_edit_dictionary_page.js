@@ -7,6 +7,167 @@
  * the "dictionary" of custom words used for spell check.
  */
 
+// clang-format off
+// #import {GlobalScrollTargetBehavior} from '../../global_scroll_target_behavior.m.js';
+// #import {loadTimeData} from '../../i18n_setup.js';
+// #import {PrefsBehavior} from '../../prefs/prefs_behavior.m.js';
+// #import {LanguagesBrowserProxyImpl} from '../../languages_page/languages_browser_proxy.m.js';
+// clang-format on
+
 Polymer({
   is: 'os-settings-edit-dictionary-page',
+
+  behaviors: [
+    I18nBehavior,
+    settings.GlobalScrollTargetBehavior,
+  ],
+
+  properties: {
+    /** @private */
+    newWordValue_: {
+      type: String,
+      value: '',
+    },
+
+    /**
+     * Needed for GlobalScrollTargetBehavior.
+     * @override
+     */
+    subpageRoute: {
+      type: Object,
+      value: settings.routes.OS_LANGUAGES_EDIT_DICTIONARY,
+    },
+
+    /** @private {!Array<string>} */
+    words_: {
+      type: Array,
+      value: [],
+    },
+
+    /** @private */
+    hasWords_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeHasWords_(words_.length)',
+    },
+
+    /** @private */
+    disableAddButton_: {
+      type: Boolean,
+      value: true,
+      computed: 'shouldDisableAddButton_(newWordValue_)',
+    }
+  },
+
+  /** @private {?LanguageSettingsPrivate} */
+  languageSettingsPrivate_: null,
+
+  /** @override */
+  created() {
+    this.languageSettingsPrivate_ =
+        settings.LanguagesBrowserProxyImpl.getInstance()
+            .getLanguageSettingsPrivate();
+  },
+
+  /** @override */
+  ready() {
+    this.languageSettingsPrivate_.getSpellcheckWords(words => {
+      this.words_ = words;
+    });
+
+    this.languageSettingsPrivate_.onCustomDictionaryChanged.addListener(
+        this.onCustomDictionaryChanged_.bind(this));
+
+    // Add a key handler for the new-word input.
+    this.$.keys.target = this.$.newWord;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasWords_() {
+    return this.words_.length > 0;
+  },
+
+  /**
+   * Adds the word in the new-word input to the dictionary.
+   * @private
+   */
+  addWordFromInput_() {
+    // Spaces are allowed, but removing leading and trailing whitespace.
+    const word = this.getTrimmedNewWord_();
+    this.newWordValue_ = '';
+    if (word) {
+      this.languageSettingsPrivate_.addSpellcheckWord(word);
+      settings.recordSettingChange();
+    }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldDisableAddButton_() {
+    return !this.getTrimmedNewWord_().length;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getTrimmedNewWord_() {
+    return this.newWordValue_.trim();
+  },
+
+  /**
+   * Handles tapping on the Add Word button.
+   * @private
+   */
+  onAddWordTap_() {
+    this.addWordFromInput_();
+    this.$.newWord.focus();
+  },
+
+  /**
+   * Handles updates to the word list. Additions are unshifted to the top
+   * of the list so that users can see them easily.
+   * @param {!Array<string>} added
+   * @param {!Array<string>} removed
+   * @private
+   */
+  onCustomDictionaryChanged_(added, removed) {
+    for (const word of removed) {
+      this.arrayDelete('words_', word);
+    }
+
+    for (const word of added) {
+      if (!this.words_.includes(word)) {
+        this.unshift('words_', word);
+      }
+    }
+  },
+
+  /**
+   * Handles Enter and Escape key presses for the new-word input.
+   * @param {!CustomEvent<!{key: string}>} e
+   * @private
+   */
+  onKeysPress_(e) {
+    if (e.detail.key === 'enter' && !this.disableAddButton_) {
+      this.addWordFromInput_();
+    } else if (e.detail.key === 'esc') {
+      e.detail.keyboardEvent.target.value = '';
+    }
+  },
+
+  /**
+   * Handles tapping on a "Remove word" icon button.
+   * @param {!{model: !{item: string}}} e
+   * @private
+   */
+  onRemoveWordTap_(e) {
+    this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
+    settings.recordSettingChange();
+  }
 });

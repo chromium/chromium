@@ -82,6 +82,7 @@ TEST_F('OSSettingsOsLanguagesPageV2V3Test', 'All', () => mocha.run());
  ['MultidevicePage', 'multidevice_page_tests.m.js'],
  ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
+ ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPage', 'os_languages_page_tests.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['NearbyShareSubPage', 'nearby_share_subpage_tests.m.js'],

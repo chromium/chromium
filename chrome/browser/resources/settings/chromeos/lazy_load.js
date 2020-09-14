@@ -9,6 +9,7 @@ import './date_time_page/timezone_selector.m.js';
 import './os_files_page/os_files_page.m.js';
 import './os_languages_page/input_method_options_page.m.js';
 import './os_languages_page/input_page.m.js';
+import './os_languages_page/os_edit_dictionary_page.m.js';
 import './os_languages_page/os_languages_page.m.js';
 import './os_languages_page/os_languages_page_v2.m.js';
 import './os_languages_page/os_languages_section.m.js';
