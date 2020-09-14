@@ -7679,6 +7679,44 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NavigationPredictorRendererWarmup">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Internal feature metrics for a feature that decides whether to start a spare
+    renderer on pages where Chrome heuristically determines that a cross-origin
+    page load is likely to occur based on the anchor elements on the page being
+    cross-origin and/or whether the current page is a search engine result page.
+  </summary>
+  <metric name="CrossOriginLinksRatio">
+    <summary>
+      An int in the range [0, 100] to represent a percentage of the ratio of the
+      links on a page that are cross-origin to the source document. Recorded
+      when there are 1 or more links on a page.
+    </summary>
+  </metric>
+  <metric name="DidWarmup" enum="Boolean">
+    <summary>
+      A bool that is set if a spare renderer was started. Also set on
+      counter-factual arms when the same criteria were met.
+    </summary>
+  </metric>
+  <metric name="PageIndependentStatusBitMask">
+    <summary>
+      A bitmask, recorded on every page when the feature flag is enabled. 0b0001
+      - Set if the feature is in a cooldown period following the last renderer
+      warmup. 0b0010 - Set if the browser already had a spare renderer. 0b0100 -
+      Set if the device memory is below the experiment threshold.
+    </summary>
+  </metric>
+  <metric name="WasDSESRP" enum="Boolean">
+    <summary>
+      A bool that is set if the page is a search result page for the browser's
+      default search engine
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationTiming" singular="True">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

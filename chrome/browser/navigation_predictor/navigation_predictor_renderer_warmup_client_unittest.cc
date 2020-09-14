@@ -12,6 +12,11 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -25,10 +30,11 @@ const base::Feature kNavigationPredictorRendererWarmup{
     "NavigationPredictorRendererWarmup", base::FEATURE_DISABLED_BY_DEFAULT};
 
 NavigationPredictorKeyedService::Prediction CreateValidPrediction(
+    content::WebContents* web_contents,
     const GURL& src_url,
     const std::vector<GURL>& predicted_urls) {
   return NavigationPredictorKeyedService::Prediction(
-      nullptr, src_url, base::nullopt,
+      web_contents, src_url, base::nullopt,
       NavigationPredictorKeyedService::PredictionSource::
           kAnchorElementsParsedFromWebPage,
       predicted_urls);
@@ -77,6 +83,34 @@ class NavigationPredictorRendererWarmupClientTest
     clock_.SetNowTicks(base::TimeTicks::Now());
   }
 
+  void VerifyNoUKM() {
+    auto entries = ukm_recorder_.GetEntriesByName(
+        ukm::builders::NavigationPredictorRendererWarmup::kEntryName);
+    EXPECT_TRUE(entries.empty());
+  }
+
+  void VerifyUKMEntry(const std::string& metric_name,
+                      base::Optional<int64_t> expected_value,
+                      size_t entry_index = 0) {
+    std::string format = "metric_name=%s, index=%zu";
+    SCOPED_TRACE(
+        base::StringPrintf(format.c_str(), metric_name.c_str(), entry_index));
+
+    auto entries = ukm_recorder_.GetEntriesByName(
+        ukm::builders::NavigationPredictorRendererWarmup::kEntryName);
+    ASSERT_EQ(entry_index + 1, entries.size());
+
+    const auto* entry = entries[entry_index];
+    const int64_t* value =
+        ukm::TestUkmRecorder::GetEntryMetric(entry, metric_name);
+    EXPECT_EQ(value != nullptr, expected_value.has_value());
+
+    if (!expected_value.has_value())
+      return;
+
+    EXPECT_EQ(*value, expected_value.value());
+  }
+
   TestNavigationPredictorRendererWarmupClient* client() {
     if (!client_) {
       client_ = std::make_unique<TestNavigationPredictorRendererWarmupClient>(
@@ -90,6 +124,7 @@ class NavigationPredictorRendererWarmupClientTest
  private:
   base::SimpleTestTickClock clock_;
   std::unique_ptr<TestNavigationPredictorRendererWarmupClient> client_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_Search) {
@@ -107,8 +142,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_Search) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_TRUE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_CrossOrigin) {
@@ -126,8 +167,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_CrossOrigin) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kOriginA), {GURL(kOriginB)}));
+      CreateValidPrediction(web_contents(), GURL(kOriginA), {GURL(kOriginB)}));
   EXPECT_TRUE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, 100);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_AfterCooldown) {
@@ -145,16 +192,33 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, SuccessCase_AfterCooldown) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_TRUE(client()->DidDoRendererWarmup());
+
+  // Verify first UKM entry.
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt,
+                 /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1, /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0,
+                 /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1, /*entry_index=*/0);
 
   client()->Reset();
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(101));
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_TRUE(client()->DidDoRendererWarmup());
+
+  // Verify second UKM entry.
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt,
+                 /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1, /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0,
+                 /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1, /*entry_index=*/1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, NullPrediction) {
@@ -173,6 +237,29 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, NullPrediction) {
 
   client()->OnPredictionUpdated(base::nullopt);
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  VerifyNoUKM();
+}
+
+TEST_F(NavigationPredictorRendererWarmupClientTest, NoWebContents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kNavigationPredictorRendererWarmup,
+      {
+          {"counterfactual", "false"},
+          {"mem_threshold_mb", "0"},
+          {"warmup_on_dse", "true"},
+          {"use_navigation_predictions", "true"},
+          {"examine_top_n_predictions", "10"},
+          {"prediction_crosss_origin_threshold", "0.5"},
+          {"cooldown_duration_ms", "60000"},
+      });
+
+  client()->OnPredictionUpdated(
+      CreateValidPrediction(nullptr, GURL(kOriginA), {GURL(kOriginB)}));
+  EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  VerifyNoUKM();
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, BadPredictionSrc) {
@@ -194,6 +281,8 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, BadPredictionSrc) {
       NavigationPredictorKeyedService::PredictionSource::kExternalAndroidApp,
       {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  VerifyNoUKM();
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, CoolDown) {
@@ -211,14 +300,28 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, CoolDown) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_TRUE(client()->DidDoRendererWarmup());
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt,
+                 /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1, /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0,
+                 /*entry_index=*/0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1, /*entry_index=*/0);
 
   client()->Reset();
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt,
+                 /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0, /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0b0001,
+                 /*entry_index=*/1);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1, /*entry_index=*/1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, HasSpareRenderer) {
@@ -237,8 +340,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, HasSpareRenderer) {
 
   client()->SetBrowserHasSpareRenderer(true);
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0b0010);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, FeatureOff) {
@@ -246,8 +355,10 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, FeatureOff) {
   scoped_feature_list.InitAndDisableFeature(kNavigationPredictorRendererWarmup);
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  VerifyNoUKM();
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, DSEWarmupNotEnabled) {
@@ -265,8 +376,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, DSEWarmupNotEnabled) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, NotSearchURL) {
@@ -284,8 +401,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, NotSearchURL) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL("http://test.com/"), {}));
+      CreateValidPrediction(web_contents(), GURL("http://test.com/"), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, InvalidCrossOrigins) {
@@ -303,8 +426,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, InvalidCrossOrigins) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kOriginA), {GURL()}));
+      CreateValidPrediction(web_contents(), GURL(kOriginA), {GURL()}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, 0);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, NonHTTPCrossOrigins) {
@@ -321,9 +450,15 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, NonHTTPCrossOrigins) {
           {"cooldown_duration_ms", "60000"},
       });
 
-  client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kOriginA), {GURL("ftp://test.com")}));
+  client()->OnPredictionUpdated(CreateValidPrediction(
+      web_contents(), GURL(kOriginA), {GURL("ftp://test.com")}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, 0);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest,
@@ -341,9 +476,16 @@ TEST_F(NavigationPredictorRendererWarmupClientTest,
           {"cooldown_duration_ms", "60000"},
       });
 
-  client()->OnPredictionUpdated(CreateValidPrediction(
-      GURL(kOriginA), {GURL(kOriginA), GURL(kOriginA), GURL(kOriginB)}));
+  client()->OnPredictionUpdated(
+      CreateValidPrediction(web_contents(), GURL(kOriginA),
+                            {GURL(kOriginA), GURL(kOriginA), GURL(kOriginB)}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, 33);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, CrossOriginNotEnabled) {
@@ -361,8 +503,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, CrossOriginNotEnabled) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kOriginA), {GURL(kOriginB)}));
+      CreateValidPrediction(web_contents(), GURL(kOriginA), {GURL(kOriginB)}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, 100);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 0);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, Counterfactual) {
@@ -380,8 +528,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, Counterfactual) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 1);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1);
 }
 
 TEST_F(NavigationPredictorRendererWarmupClientTest, MemThreshold) {
@@ -390,7 +544,7 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, MemThreshold) {
       kNavigationPredictorRendererWarmup,
       {
           {"counterfactual", "true"},
-          {"mem_threshold_mb", "99999999999"},
+          {"mem_threshold_mb", "999999999"},
           {"warmup_on_dse", "true"},
           {"use_navigation_predictions", "true"},
           {"examine_top_n_predictions", "10"},
@@ -399,8 +553,14 @@ TEST_F(NavigationPredictorRendererWarmupClientTest, MemThreshold) {
       });
 
   client()->OnPredictionUpdated(
-      CreateValidPrediction(GURL(kGoogleSearchURL), {}));
+      CreateValidPrediction(web_contents(), GURL(kGoogleSearchURL), {}));
   EXPECT_FALSE(client()->DidDoRendererWarmup());
+
+  using UkmEntry = ukm::builders::NavigationPredictorRendererWarmup;
+  VerifyUKMEntry(UkmEntry::kCrossOriginLinksRatioName, base::nullopt);
+  VerifyUKMEntry(UkmEntry::kDidWarmupName, 0);
+  VerifyUKMEntry(UkmEntry::kPageIndependentStatusBitMaskName, 0b0100);
+  VerifyUKMEntry(UkmEntry::kWasDSESRPName, 1);
 }
 
 }  // namespace

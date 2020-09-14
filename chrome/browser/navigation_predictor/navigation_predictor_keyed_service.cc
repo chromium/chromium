@@ -15,7 +15,7 @@
 #include "content/public/browser/web_contents.h"
 
 NavigationPredictorKeyedService::Prediction::Prediction(
-    const content::WebContents* web_contents,
+    content::WebContents* web_contents,
     const base::Optional<GURL>& source_document_url,
     const base::Optional<std::vector<std::string>>& external_app_packages_name,
     PredictionSource prediction_source,
@@ -112,7 +112,7 @@ NavigationPredictorKeyedService::Prediction::sorted_predicted_urls() const {
   return sorted_predicted_urls_;
 }
 
-const content::WebContents*
+content::WebContents*
 NavigationPredictorKeyedService::Prediction::web_contents() const {
   DCHECK_EQ(PredictionSource::kAnchorElementsParsedFromWebPage,
             prediction_source_);
@@ -141,7 +141,7 @@ NavigationPredictorKeyedService::~NavigationPredictorKeyedService() {
 }
 
 void NavigationPredictorKeyedService::OnPredictionUpdated(
-    const content::WebContents* web_contents,
+    content::WebContents* web_contents,
     const GURL& document_url,
     PredictionSource prediction_source,
     const std::vector<GURL>& sorted_predicted_urls) {

@@ -12,11 +12,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -42,6 +47,11 @@ class NavigationPredictorRendererWarmupClientBrowserTest
     scoped_feature_list_.InitAndEnableFeature(
         kNavigationPredictorRendererWarmup);
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   size_t SpareRendererCount() const {
@@ -74,8 +84,18 @@ class NavigationPredictorRendererWarmupClientBrowserTest
             {});
   }
 
+  void VerifyHasUKMEntry(const GURL& url) {
+    auto entries = ukm_recorder_->GetEntriesByName(
+        ukm::builders::NavigationPredictorRendererWarmup::kEntryName);
+    ASSERT_EQ(1U, entries.size());
+
+    const auto* entry = entries.front();
+    ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorRendererWarmupClientBrowserTest,
@@ -83,13 +103,15 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorRendererWarmupClientBrowserTest,
   // Navigate to a site so that the default renderer is used.
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
 
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  ui_test_utils::NavigateToURL(browser(), url);
   MakeEligibleNavigationPrediction();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(SpareRendererCount(), 1U);
+  VerifyHasUKMEntry(url);
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationPredictorRendererWarmupClientBrowserTest,
@@ -97,8 +119,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorRendererWarmupClientBrowserTest,
   // Navigate to a site so that the default renderer is used.
   embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+
+  ui_test_utils::NavigateToURL(browser(), url);
 
   MakeSpareRenderer();
   base::RunLoop().RunUntilIdle();
@@ -108,4 +132,5 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorRendererWarmupClientBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(SpareRendererCount(), 1U);
+  VerifyHasUKMEntry(url);
 }

@@ -18,7 +18,13 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -26,6 +32,11 @@ namespace {
 const base::Feature kNavigationPredictorRendererWarmup{
     "NavigationPredictorRendererWarmup", base::FEATURE_DISABLED_BY_DEFAULT};
 }
+
+NavigationPredictorRendererWarmupClient::PredictionMetrics::
+    PredictionMetrics() = default;
+NavigationPredictorRendererWarmupClient::PredictionMetrics::
+    ~PredictionMetrics() = default;
 
 NavigationPredictorRendererWarmupClient::
     ~NavigationPredictorRendererWarmupClient() = default;
@@ -78,6 +89,8 @@ NavigationPredictorRendererWarmupClient::
 void NavigationPredictorRendererWarmupClient::OnPredictionUpdated(
     const base::Optional<NavigationPredictorKeyedService::Prediction>
         prediction) {
+  DCHECK(!metrics_);
+
   if (!prediction) {
     return;
   }
@@ -85,6 +98,10 @@ void NavigationPredictorRendererWarmupClient::OnPredictionUpdated(
   if (prediction->prediction_source() !=
       NavigationPredictorKeyedService::PredictionSource::
           kAnchorElementsParsedFromWebPage) {
+    return;
+  }
+
+  if (!prediction->web_contents()) {
     return;
   }
 
@@ -96,14 +113,19 @@ void NavigationPredictorRendererWarmupClient::OnPredictionUpdated(
     return;
   }
 
-  if (!IsEligibleForWarmupOnCommonCriteria()) {
+  if (!base::FeatureList::IsEnabled(kNavigationPredictorRendererWarmup)) {
     return;
   }
 
-  if (IsEligibleForCrossNavigationWarmup(*prediction) ||
-      IsEligibleForDSEWarmup(*prediction)) {
-    RecordMetricsAndMaybeDoWarmup();
-  }
+  metrics_ = std::make_unique<PredictionMetrics>();
+
+  // Each of these methods will set some state in |metrics_| which is used in
+  // |RecordMetricsAndMaybeDoWarmup|.
+  CheckIsEligibleForWarmupOnCommonCriteria();
+  CheckIsEligibleForCrossNavigationWarmup(*prediction);
+  CheckIsEligibleForDSEWarmup(*prediction);
+
+  RecordMetricsAndMaybeDoWarmup(prediction->web_contents());
 }
 
 void NavigationPredictorRendererWarmupClient::DoRendererWarmpup() {
@@ -121,36 +143,26 @@ bool NavigationPredictorRendererWarmupClient::BrowserHasSpareRenderer() const {
   return false;
 }
 
-bool NavigationPredictorRendererWarmupClient::
-    IsEligibleForWarmupOnCommonCriteria() const {
-  if (!base::FeatureList::IsEnabled(kNavigationPredictorRendererWarmup)) {
-    return false;
-  }
-
+void NavigationPredictorRendererWarmupClient::
+    CheckIsEligibleForWarmupOnCommonCriteria() {
   base::TimeDelta duration_since_last_warmup =
       tick_clock_->NowTicks() - last_warmup_time_;
   if (cooldown_duration_ >= duration_since_last_warmup) {
-    return false;
-  }
-
-  if (mem_threshold_mb_ >= base::SysInfo::AmountOfPhysicalMemoryMB()) {
-    return false;
+    metrics_->page_independent_status |= 1 << 0;
   }
 
   if (BrowserHasSpareRenderer()) {
-    return false;
+    metrics_->page_independent_status |= 1 << 1;
   }
 
-  return true;
+  if (mem_threshold_mb_ >= base::SysInfo::AmountOfPhysicalMemoryMB()) {
+    metrics_->page_independent_status |= 1 << 2;
+  }
 }
 
-bool NavigationPredictorRendererWarmupClient::
-    IsEligibleForCrossNavigationWarmup(
-        const NavigationPredictorKeyedService::Prediction& prediction) const {
-  if (!use_navigation_predictions_) {
-    return false;
-  }
-
+void NavigationPredictorRendererWarmupClient::
+    CheckIsEligibleForCrossNavigationWarmup(
+        const NavigationPredictorKeyedService::Prediction& prediction) {
   url::Origin src_origin =
       url::Origin::Create(prediction.source_document_url().value());
 
@@ -159,7 +171,7 @@ bool NavigationPredictorRendererWarmupClient::
   size_t examine_n_urls =
       std::min(urls.size(), static_cast<size_t>(examine_top_n_predictions_));
   if (examine_n_urls == 0) {
-    return false;
+    return;
   }
 
   int cross_origin_count = 0;
@@ -180,26 +192,54 @@ bool NavigationPredictorRendererWarmupClient::
     }
   }
 
-  // Just in case there's very few links on a page, check against the threshold
-  // as a ratio. This may be helpful on redirector sites, like Cloudflare's DDoS
-  // checker.
-  double cross_origin_ratio = static_cast<double>(cross_origin_count) /
-                              static_cast<double>(examine_n_urls);
-  return cross_origin_ratio >= prediction_crosss_origin_threshold_;
+  // Just in case there's very few links on a page, use a ratio. This may be
+  // helpful on redirector sites, like Cloudflare's DDoS checker.
+  metrics_->cross_origin_links_ratio = static_cast<double>(cross_origin_count) /
+                                       static_cast<double>(examine_n_urls);
 }
 
-bool NavigationPredictorRendererWarmupClient::IsEligibleForDSEWarmup(
-    const NavigationPredictorKeyedService::Prediction& prediction) const {
-  if (!warmup_on_dse_) {
-    return false;
+void NavigationPredictorRendererWarmupClient::CheckIsEligibleForDSEWarmup(
+    const NavigationPredictorKeyedService::Prediction& prediction) {
+  metrics_->was_dse_srp = TemplateURLServiceFactory::GetForProfile(profile_)
+                              ->IsSearchResultsPageFromDefaultSearchProvider(
+                                  prediction.source_document_url().value());
+}
+
+void NavigationPredictorRendererWarmupClient::RecordMetricsAndMaybeDoWarmup(
+    content::WebContents* web_contents) {
+  bool eligible_on_common_criteria = metrics_->page_independent_status == 0;
+
+  bool eligible_for_cross_origin_warmup =
+      use_navigation_predictions_ &&
+      metrics_->cross_origin_links_ratio.has_value() &&
+      metrics_->cross_origin_links_ratio.value() >=
+          prediction_crosss_origin_threshold_;
+
+  bool eligible_for_dse_warmup = warmup_on_dse_ && metrics_->was_dse_srp;
+
+  bool do_warmup =
+      eligible_on_common_criteria &&
+      (eligible_for_cross_origin_warmup || eligible_for_dse_warmup);
+  metrics_->did_warmup = do_warmup;
+
+  // Record metrics in UKM.
+  ukm::builders::NavigationPredictorRendererWarmup builder(
+      web_contents->GetMainFrame()->GetPageUkmSourceId());
+  if (metrics_->cross_origin_links_ratio) {
+    builder.SetCrossOriginLinksRatio(
+        static_cast<int>(100.0 * metrics_->cross_origin_links_ratio.value()));
+  }
+  builder.SetDidWarmup(metrics_->did_warmup);
+  builder.SetPageIndependentStatusBitMask(metrics_->page_independent_status);
+  builder.SetWasDSESRP(metrics_->was_dse_srp);
+  builder.Record(ukm::UkmRecorder::Get());
+
+  metrics_.reset();
+
+  if (!do_warmup) {
+    return;
   }
 
-  return TemplateURLServiceFactory::GetForProfile(profile_)
-      ->IsSearchResultsPageFromDefaultSearchProvider(
-          prediction.source_document_url().value());
-}
-
-void NavigationPredictorRendererWarmupClient::RecordMetricsAndMaybeDoWarmup() {
   last_warmup_time_ = tick_clock_->NowTicks();
 
   if (counterfactual_) {

@@ -149,7 +149,7 @@ class IsolatedPrerenderTabHelperTest : public ChromeRenderViewHostTestHarness {
         SetDataSaverEnabledForTesting(profile()->GetPrefs(), enabled);
   }
 
-  void MakeNavigationPrediction(const content::WebContents* web_contents,
+  void MakeNavigationPrediction(content::WebContents* web_contents,
                                 const GURL& doc_url,
                                 const std::vector<GURL>& predicted_urls) {
     NavigationPredictorKeyedServiceFactory::GetForProfile(profile())
