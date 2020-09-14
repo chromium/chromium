@@ -261,7 +261,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   //    version, activates the waiting version and runs |callback| when it is
   //    activated.
   //
-  // Can be called from any thread, and the callback is called on that thread.
+  // Must be called on the core thread, and the callback is called on that
+  // thread. There is no guarantee about whether the callback is called
+  // asynchronously or synchronously.
   void FindReadyRegistrationForId(int64_t registration_id,
                                   const url::Origin& origin,
                                   FindRegistrationCallback callback);
@@ -402,7 +404,16 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                     bool include_installing_version,
                                     FindRegistrationCallback callback);
 
-  void DidFindRegistrationForFindReady(
+  // TODO(crbug.com/1127724): The *WithRunner functions should be removed.
+  // FindRegistrationCallback should only be called on the core thread, since
+  // ServiceWorkerRegistration is bound to that thread.
+  void DidFindRegistrationForFindReadyWithRunner(
+      FindRegistrationCallback callback,
+      scoped_refptr<base::TaskRunner> callback_runner,
+      blink::ServiceWorkerStatusCode status,
+      scoped_refptr<ServiceWorkerRegistration> registration);
+  void DidFindRegistrationForFindImplWithRunner(
+      bool include_installing_version,
       FindRegistrationCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner,
       blink::ServiceWorkerStatusCode status,
@@ -410,12 +421,14 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void DidFindRegistrationForFindImpl(
       bool include_installing_version,
       FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner,
       blink::ServiceWorkerStatusCode status,
+      scoped_refptr<ServiceWorkerRegistration> registration);
+  void OnStatusChangedForFindReadyRegistrationWithRunner(
+      FindRegistrationCallback callback,
+      scoped_refptr<base::TaskRunner> callback_runner,
       scoped_refptr<ServiceWorkerRegistration> registration);
   void OnStatusChangedForFindReadyRegistration(
       FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner,
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   void DidDeleteAndStartOver(blink::ServiceWorkerStatusCode status);
@@ -513,11 +526,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const GURL& scope,
       blink::TransferableMessage message,
       ResultCallback result_callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
-  void FindReadyRegistrationForIdOnCoreThread(
-      int64_t registration_id,
-      const url::Origin& origin,
-      FindRegistrationCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner);
   void FindReadyRegistrationForIdOnlyOnCoreThread(
       int64_t registration_id,
