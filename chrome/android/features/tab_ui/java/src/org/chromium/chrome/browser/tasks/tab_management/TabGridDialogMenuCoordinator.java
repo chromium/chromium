@@ -149,6 +149,11 @@ public class TabGridDialogMenuCoordinator {
         itemList.add(new ListItem(ListItemType.MENU_ITEM,
                 buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_share_group,
                         R.id.share_tab_group)));
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            itemList.add(new ListItem(ListItemType.MENU_ITEM,
+                    buildPropertyModel(context, R.string.tab_grid_dialog_toolbar_edit_group_name,
+                            R.id.edit_group_name)));
+        }
         return itemList;
     }
 

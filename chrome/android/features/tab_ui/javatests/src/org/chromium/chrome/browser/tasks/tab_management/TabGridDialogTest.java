@@ -625,6 +625,37 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", TAB_GROUP_LAUNCH_POLISH_PARAMS})
+    public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
+        // clang-format on
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        openDialogFromTabSwitcherAndVerify(cta, 2,
+                cta.getResources().getQuantityString(
+                        R.plurals.bottom_tab_grid_title_placeholder, 2, 2));
+
+        // Test title text focus in dialog in tab switcher.
+        testTitleTextFocus(cta);
+
+        // Test title text focus in dialog from tab strip.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        clickFirstTabInDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        openDialogFromStripAndVerify(cta, 2, null);
+        testTitleTextFocus(cta);
+    }
+
+    @Test
+    @MediumTest
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1035,6 +1066,11 @@ public class TabGridDialogTest {
                     // Verify if we can grab focus on the editText or not.
                     assertEquals(isEnabled, v.isFocused());
                 });
+        // Verify if the keyboard shows or not.
+        CriteriaHelper.pollUiThread(()
+                                            -> isEnabled
+                        == KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
+                                cta, cta.getCompositorViewHolder()));
     }
 
     private void openDialogToolbarMenuAndVerify(ChromeTabbedActivity cta) {
@@ -1046,11 +1082,17 @@ public class TabGridDialogTest {
                     if (noMatchException != null) throw noMatchException;
                     Assert.assertTrue(v instanceof ListView);
                     ListView listView = (ListView) v;
-                    assertEquals(2, listView.getCount());
                     verifyTabGridDialogToolbarMenuItem(listView, 0,
                             cta.getString(R.string.tab_grid_dialog_toolbar_remove_from_group));
                     verifyTabGridDialogToolbarMenuItem(listView, 1,
                             cta.getString(R.string.tab_grid_dialog_toolbar_share_group));
+                    if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                        assertEquals(3, listView.getCount());
+                        verifyTabGridDialogToolbarMenuItem(listView, 2,
+                                cta.getString(R.string.tab_grid_dialog_toolbar_edit_group_name));
+                    } else {
+                        assertEquals(2, listView.getCount());
+                    }
                 });
     }
 
@@ -1217,5 +1259,40 @@ public class TabGridDialogTest {
         onView(allOf(withId(R.id.toolbar_left_button),
                        isDescendantOfA(withId(R.id.dialog_container_view))))
                 .check((v, e) -> assertEquals(s, v.getContentDescription()));
+    }
+
+    private void testTitleTextFocus(ChromeTabbedActivity cta) throws ExecutionException {
+        // Click the text field to grab focus and click back button to lose focus.
+        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        verifyTitleTextFocus(cta, true);
+        Espresso.pressBack();
+        verifyTitleTextFocus(cta, false);
+        verifyShowingDialog(cta, 2, null);
+
+        // Use toolbar menu to grab focus and click back button to lose focus.
+        openDialogToolbarMenuAndVerify(cta);
+        selectTabGridDialogToolbarMenuItem(cta, "Edit group name");
+        verifyTitleTextFocus(cta, true);
+        Espresso.pressBack();
+        verifyTitleTextFocus(cta, false);
+        verifyShowingDialog(cta, 2, null);
+
+        // Click the text field to grab focus and click scrim to lose focus.
+        onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title))).perform(click());
+        verifyTitleTextFocus(cta, true);
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        verifyTitleTextFocus(cta, false);
+    }
+
+    private void verifyTitleTextFocus(ChromeTabbedActivity cta, boolean shouldFocus) {
+        CriteriaHelper.pollUiThread(() -> {
+            View titleTextView = cta.findViewById(R.id.tab_group_toolbar).findViewById(R.id.title);
+            KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+            boolean keyboardVisible =
+                    delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder());
+            boolean isFocused = titleTextView.isFocused();
+            return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
+        });
     }
 }

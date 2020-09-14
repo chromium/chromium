@@ -281,7 +281,6 @@ Still reading?
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_close_tab_group_button_with_group_name` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_expand_tab_group_with_group_name` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_grid_dialog_toolbar_edit_group_name` appears to be unused"/>
     <!-- Old-style and new-style WebAPKs use same resources for simplicity. Old-style WebAPKs do
          not use R.style.SplashTheme but new-style WebAPKs do.
          TODO(crbug.com/971254): Remove suppression once old-style WebAPKs are deprecated. -->
