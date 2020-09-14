@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -30,6 +29,22 @@
 namespace {
 
 constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
+
+base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
+  const CMTime cm_timestamp =
+      CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
+  const base::TimeDelta timestamp =
+      CMTIME_IS_VALID(cm_timestamp)
+          ? base::TimeDelta::FromSecondsD(CMTimeGetSeconds(cm_timestamp))
+          : media::kNoTimestamp;
+  return timestamp;
+}
+
+std::string MacFourCCToString(OSType fourcc) {
+  char arr[] = {fourcc >> 24, (fourcc >> 16) & 255, (fourcc >> 8) & 255,
+                fourcc & 255, 0};
+  return arr;
+}
 
 }  // anonymous namespace
 
@@ -120,6 +135,7 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
     return NO;
   }
   [_captureVideoDataOutput setAlwaysDiscardsLateVideoFrames:true];
+
   [_captureVideoDataOutput
       setSampleBufferDelegate:self
                         queue:dispatch_get_global_queue(
@@ -156,6 +172,9 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
     // performing MJPEG ourselves.
     best_fourcc = kCMPixelFormat_422YpCbCr8;
   }
+
+  VLOG(2) << __func__ << ": configuring '" << MacFourCCToString(best_fourcc)
+          << "' " << width << "x" << height << "@" << frameRate;
 
   // The capture output has to be configured, despite Mac documentation
   // detailing that setting the sessionPreset would be enough. The reason for
@@ -409,22 +428,69 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
   }
 }
 
-// |captureOutput| is called by the capture device to deliver a new frame.
-// AVFoundation calls from a number of threads, depending on, at least, if
-// Chrome is on foreground or background.
-- (void)captureOutput:(AVCaptureOutput*)captureOutput
-    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-           fromConnection:(AVCaptureConnection*)connection {
+- (void)processRamSample:(CMSampleBufferRef)sampleBuffer
+             baseAddress:(const void*)baseAddress
+               frameSize:(size_t)frameSize
+         pixelFormatType:(OSType)pixelFormat {
+  VLOG(3) << __func__ << ": format: " << MacFourCCToString(pixelFormat);
   const CMFormatDescriptionRef formatDescription =
       CMSampleBufferGetFormatDescription(sampleBuffer);
-  const FourCharCode fourcc =
-      CMFormatDescriptionGetMediaSubType(formatDescription);
   const CMVideoDimensions dimensions =
       CMVideoFormatDescriptionGetDimensions(formatDescription);
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), _frameRate,
-      media::FourCCToChromiumPixelFormat(fourcc));
-  gfx::ColorSpace colorSpace;
+      media::FourCCToChromiumPixelFormat(pixelFormat));
+  base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+  base::AutoLock lock(_lock);
+  if (_frameReceiver && baseAddress) {
+    gfx::ColorSpace colorSpace;
+    // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
+    // from media::VTVideoDecodeAccelerator to media/base/mac and call it
+    // here to get the color space. See https://crbug.com/959962.
+    // colorSpace = media::GetImageBufferColorSpace(videoFrame);
+    _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
+                                 frameSize, captureFormat, colorSpace, 0, 0,
+                                 timestamp);
+  }
+}
+
+- (void)processRawSample:(CMSampleBufferRef)sampleBuffer {
+  VLOG(3) << __func__;
+  // Trust |_frameReceiver| to do decompression.
+  char* baseAddress = 0;
+  size_t frameSize = 0;
+  media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
+  [self processRamSample:sampleBuffer
+             baseAddress:baseAddress
+               frameSize:frameSize
+         pixelFormatType:CMFormatDescriptionGetMediaSubType(
+                             CMSampleBufferGetFormatDescription(sampleBuffer))];
+}
+
+- (void)processSample:(CMSampleBufferRef)sampleBuffer
+      withImageBuffer:(CVImageBufferRef)videoFrame {
+  if (CVPixelBufferLockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly) !=
+      kCVReturnSuccess) {
+    return [self processRawSample:sampleBuffer];
+  }
+  void* baseAddress =
+      static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
+  size_t frameSize = CVPixelBufferGetHeight(videoFrame) *
+                     CVPixelBufferGetBytesPerRow(videoFrame);
+  [self processRamSample:sampleBuffer
+             baseAddress:baseAddress
+               frameSize:frameSize
+         pixelFormatType:CVPixelBufferGetPixelFormatType(videoFrame)];
+  CVPixelBufferUnlockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly);
+}
+
+// |captureOutput| is called by the capture device to deliver a new frame.
+// Since the callback is configured to happen on a global dispatch queue, calls
+// may enter here concurrently and on any thread.
+- (void)captureOutput:(AVCaptureOutput*)captureOutput
+    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+           fromConnection:(AVCaptureConnection*)connection {
+  VLOG(3) << __func__;
 
   // We have certain format expectation for capture output:
   // For MJPEG, |sampleBuffer| is expected to always be a CVBlockBuffer.
@@ -433,51 +499,12 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
   // plugins/virtual cameras. In order to find out whether it is CVBlockBuffer
   // or CVImageBuffer we call CMSampleBufferGetImageBuffer() and check if the
   // return value is nil.
-  char* baseAddress = 0;
-  size_t frameSize = 0;
-  CVImageBufferRef videoFrame = nil;
-  if (fourcc != kCMVideoCodecType_JPEG_OpenDML) {
-    videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
-    // Lock the frame and calculate frame size.
-    if (videoFrame &&
-        CVPixelBufferLockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly) ==
-            kCVReturnSuccess) {
-      baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
-      frameSize = CVPixelBufferGetHeight(videoFrame) *
-                  CVPixelBufferGetBytesPerRow(videoFrame);
-
-      // TODO(julien.isorce): move GetImageBufferColorSpace(CVImageBufferRef)
-      // from media::VTVideoDecodeAccelerator to media/base/mac and call it
-      // here to get the color space. See https://crbug.com/959962.
-      // colorSpace = media::GetImageBufferColorSpace(videoFrame);
-    } else {
-      videoFrame = nil;
-    }
+  CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
+  if (videoFrame) {
+    [self processSample:sampleBuffer withImageBuffer:videoFrame];
+  } else {
+    [self processRawSample:sampleBuffer];
   }
-  if (!videoFrame) {
-    media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
-  }
-
-  {
-    base::AutoLock lock(_lock);
-    const CMTime cm_timestamp =
-        CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
-    const base::TimeDelta timestamp =
-        CMTIME_IS_VALID(cm_timestamp)
-            ? base::TimeDelta::FromMicroseconds(
-                  cm_timestamp.value * base::TimeTicks::kMicrosecondsPerSecond /
-                  cm_timestamp.timescale)
-            : media::kNoTimestamp;
-
-    if (_frameReceiver && baseAddress) {
-      _frameReceiver->ReceiveFrame(reinterpret_cast<uint8_t*>(baseAddress),
-                                   frameSize, captureFormat, colorSpace, 0, 0,
-                                   timestamp);
-    }
-  }
-
-  if (videoFrame)
-    CVPixelBufferUnlockBaseAddress(videoFrame, kCVPixelBufferLock_ReadOnly);
 }
 
 - (void)onVideoError:(NSNotification*)errorNotification {
