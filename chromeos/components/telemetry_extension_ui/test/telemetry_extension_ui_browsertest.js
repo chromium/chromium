@@ -124,6 +124,15 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
       diagnosticsProxy.convertPowerStatusToEnum('disconnected'),
       acPowerStatusEnum.kDisconnected);
 
+  // Unit tests for convertNvmeSelfTestTypeToEnum
+  const nvmeSelfTestTypeEnum = chromeos.health.mojom.NvmeSelfTestTypeEnum;
+  assertEquals(
+      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('short-self-test'),
+      nvmeSelfTestTypeEnum.kShortSelfTest);
+  assertEquals(
+      diagnosticsProxy.convertNvmeSelfTestTypeToEnum('long-self-test'),
+      nvmeSelfTestTypeEnum.kLongSelfTest);
+
   testDone();
 });
 
@@ -444,6 +453,23 @@ TEST_F(
     'UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine', async () => {
       await runTestInUntrusted(
           'UntrustedDiagnosticsRequestRunNvmeWearLevelRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput',
+    async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine');
       testDone();
     });
 

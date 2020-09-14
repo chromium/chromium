@@ -59,6 +59,9 @@ std::string Convert(mojo::ScopedHandle handle);
 cros_healthd::mojom::AcPowerStatusEnum Convert(
     health::mojom::AcPowerStatusEnum input);
 
+cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
+    health::mojom::NvmeSelfTestTypeEnum input);
+
 }  // namespace converters
 }  // namespace chromeos
 

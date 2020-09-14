@@ -265,6 +265,37 @@ UNTRUSTED_TEST(
       assertDeepEquals(response, {id: 123456789, status: 'ready'});
     });
 
+// Tests that runNvmeSelfTestRoutine throws the correct error when invalid enum
+// is passed as input.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutineInvalidInput',
+    async () => {
+      let caughtError;
+      try {
+        await chromeos.diagnostics.runNvmeSelfTestRoutine(
+            'this-does-not-exist');
+      } catch (error) {
+        caughtError = error;
+      }
+
+      assertEquals(caughtError.name, 'TypeError');
+      assertEquals(
+          caughtError.message,
+          `Diagnostic NVMe self test type \'this-does-not-exist\' is unknown.`);
+    });
+
+// Tests that runNvmeSelfTestRoutine returns the correct Object.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunNvmeSelfTestRoutine', async () => {
+      const response1 =
+          await chromeos.diagnostics.runNvmeSelfTestRoutine('short-self-test');
+      assertDeepEquals(response1, {id: 123456789, status: 'ready'});
+
+      const response2 =
+          await chromeos.diagnostics.runNvmeSelfTestRoutine('long-self-test');
+      assertDeepEquals(response2, {id: 123456789, status: 'ready'});
+    });
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {

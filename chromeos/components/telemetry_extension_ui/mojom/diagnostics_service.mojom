@@ -168,6 +168,21 @@ interface DiagnosticsService {
   //                routine.
   RunNvmeWearLevelRoutine(uint32 wear_level_threshold)
       => (RunRoutineResponse response);
+
+  // Requests that the NvmeSelfTest routine is created and started on the
+  // platform. This routine launches the NVMe self-test, a tool to perform
+  // necessary tests to observe the performance and the parameters. This routine
+  // is only available if GetAvailableRoutines returned kNvmeSelfTest.
+  //
+  // The request:
+  // * |nvme_self_test_type| - specifies the type of test for short period or
+  //                           extended version.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunNvmeSelfTestRoutine(NvmeSelfTestTypeEnum nvme_self_test_type)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
@@ -280,4 +295,11 @@ struct RunRoutineResponse {
 enum AcPowerStatusEnum {
   kConnected = 0,     // Power supply is connected.
   kDisconnected = 1,  // Power supply is disconnected.
+};
+
+// Enumeration of the self-test type in nvme_self_test routine
+[Extensible]
+enum NvmeSelfTestTypeEnum {
+  kShortSelfTest = 0, // Short time self-test.
+  kLongSelfTest = 1,  // Long time self-test.
 };

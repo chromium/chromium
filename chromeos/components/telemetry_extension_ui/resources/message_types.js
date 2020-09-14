@@ -33,6 +33,8 @@ dpsl_internal.Message = {
       'DiagnosticsService.RunFloatingPointAccuraryRoutine',
   DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE:
       'DiagnosticsService.RunNvmeWearLevelRoutine',
+  DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE:
+      'DiagnosticsService.RunNvmeSelfTestRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -128,6 +130,13 @@ dpsl_internal.DiagnosticsRunFPAccuracyRoutineRequest;
  * @typedef {{ wearLevelThreshold: !number }}
  */
 dpsl_internal.DiagnosticsRunNvmeWearLevelRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run NVMe self test routine.
+ * @typedef {{ nvmeSelfTestType: !string }}
+ */
+dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

@@ -188,5 +188,19 @@ cros_healthd::mojom::AcPowerStatusEnum Convert(
       static_cast<int>(cros_healthd::mojom::AcPowerStatusEnum::kMaxValue) + 1);
 }
 
+cros_healthd::mojom::NvmeSelfTestTypeEnum Convert(
+    health::mojom::NvmeSelfTestTypeEnum input) {
+  switch (input) {
+    case health::mojom::NvmeSelfTestTypeEnum::kShortSelfTest:
+      return cros_healthd::mojom::NvmeSelfTestTypeEnum::kShortSelfTest;
+    case health::mojom::NvmeSelfTestTypeEnum::kLongSelfTest:
+      return cros_healthd::mojom::NvmeSelfTestTypeEnum::kLongSelfTest;
+  }
+  NOTREACHED();
+  return static_cast<cros_healthd::mojom::NvmeSelfTestTypeEnum>(
+      static_cast<int>(cros_healthd::mojom::NvmeSelfTestTypeEnum::kMaxValue) +
+      1);
+}
+
 }  // namespace converters
 }  // namespace chromeos

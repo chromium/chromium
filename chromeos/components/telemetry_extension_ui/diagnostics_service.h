@@ -54,6 +54,9 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   void RunNvmeWearLevelRoutine(
       uint32_t wear_level_threshold,
       RunNvmeWearLevelRoutineCallback callback) override;
+  void RunNvmeSelfTestRoutine(
+      health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+      RunNvmeSelfTestRoutineCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.

@@ -146,6 +146,23 @@ class DiagnosticsProxy {
       throw RangeError(
           'acPowerStatusToEnum_ does not contain all items from enum!');
     }
+
+    const nvmeSelfTestTypeEnum = chromeos.health.mojom.NvmeSelfTestTypeEnum;
+
+    /**
+     * @type { !Map<!string, !chromeos.health.mojom.NvmeSelfTestTypeEnum> }
+     * @const
+     */
+    this.nvmeSelfTestTypeToEnum_ = new Map([
+      ['short-self-test', nvmeSelfTestTypeEnum.kShortSelfTest],
+      ['long-self-test', nvmeSelfTestTypeEnum.kLongSelfTest],
+    ]);
+
+    if (this.nvmeSelfTestTypeToEnum_.size !==
+        nvmeSelfTestTypeEnum.MAX_VALUE + 1) {
+      throw RangeError(
+          'nvmeSelfTestTypeToEnum_ does not contain all items from enum!');
+    }
   }
 
   /**
@@ -432,6 +449,33 @@ class DiagnosticsProxy {
         (message);
     return await getOrCreateDiagnosticsService().runNvmeWearLevelRoutine(
         request.wearLevelThreshold);
+  };
+
+  /**
+   * Converts NVMe self test type string to NvmeSelfTestTypeEnum.
+   * @param { !string } nvmeSelfTestType
+   * @return { !chromeos.health.mojom.NvmeSelfTestTypeEnum }
+   */
+  convertNvmeSelfTestTypeToEnum(nvmeSelfTestType) {
+    if (!this.nvmeSelfTestTypeToEnum_.has(nvmeSelfTestType)) {
+      throw TypeError(
+          `Diagnostic NVMe self test type '${nvmeSelfTestType}' is unknown.`);
+    }
+
+    return this.nvmeSelfTestTypeToEnum_.get(nvmeSelfTestType);
+  }
+
+  /**
+   * Runs NVMe self test routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunNvmeSelfTestRoutine(message) {
+    const request =
+        /** @type {!dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest} */
+        (message);
+    return await getOrCreateDiagnosticsService().runNvmeSelfTestRoutine(
+        this.convertNvmeSelfTestTypeToEnum(request.nvmeSelfTestType));
   };
 };
 
@@ -759,6 +803,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_WEAR_LEVEL_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunNvmeWearLevelRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunNvmeSelfTestRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(

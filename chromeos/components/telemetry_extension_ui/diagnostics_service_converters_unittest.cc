@@ -76,5 +76,15 @@ TEST(DiagnosticsServiceConvertersTest, ConvertAcPowerStatusEnum) {
             cros_healthd::AcPowerStatusEnum::kDisconnected);
 }
 
+TEST(DiagnosticsServiceConvertersTest, ConvertNvmeSelfTestTypeEnum) {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+  namespace health = ::chromeos::health::mojom;
+
+  EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kShortSelfTest),
+            cros_healthd::NvmeSelfTestTypeEnum::kShortSelfTest);
+  EXPECT_EQ(Convert(health::NvmeSelfTestTypeEnum::kLongSelfTest),
+            cros_healthd::NvmeSelfTestTypeEnum::kLongSelfTest);
+}
+
 }  // namespace converters
 }  // namespace chromeos

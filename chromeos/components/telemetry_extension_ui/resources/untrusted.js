@@ -244,6 +244,28 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests NVMe self test routine to be run.
+     * @param { !string } nvmeSelfTestType
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runNvmeSelfTestRoutine(nvmeSelfTestType) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunNvmeSelfTestRoutineRequest}
+           */
+          ({nvmeSelfTestType: nvmeSelfTestType});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_NVME_SELF_TEST_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

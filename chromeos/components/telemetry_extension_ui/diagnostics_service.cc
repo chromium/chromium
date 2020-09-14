@@ -176,4 +176,18 @@ void DiagnosticsService::RunNvmeWearLevelRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunNvmeSelfTestRoutine(
+    health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
+    RunNvmeSelfTestRoutineCallback callback) {
+  GetService()->RunNvmeSelfTestRoutine(
+      converters::Convert(nvme_self_test_type),
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunNvmeSelfTestRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos
