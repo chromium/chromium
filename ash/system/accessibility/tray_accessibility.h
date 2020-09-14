@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -22,6 +21,7 @@ class TrayAccessibilityTest;
 }
 
 namespace views {
+class Button;
 class Button;
 class View;
 }  // namespace views
@@ -67,14 +67,40 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   // Add the accessibility feature list.
   void AppendAccessibilityList();
 
-  HoverHighlightView*
-      feature_views_[AccessibilityControllerImpl::FeatureType::kFeatureCount] =
-          {nullptr};
+  HoverHighlightView* spoken_feedback_view_ = nullptr;
+  HoverHighlightView* select_to_speak_view_ = nullptr;
+  HoverHighlightView* dictation_view_ = nullptr;
+  HoverHighlightView* high_contrast_view_ = nullptr;
+  HoverHighlightView* screen_magnifier_view_ = nullptr;
+  HoverHighlightView* docked_magnifier_view_ = nullptr;
+  HoverHighlightView* large_cursor_view_ = nullptr;
+  HoverHighlightView* autoclick_view_ = nullptr;
+  HoverHighlightView* virtual_keyboard_view_ = nullptr;
+  HoverHighlightView* switch_access_view_ = nullptr;
+  HoverHighlightView* mono_audio_view_ = nullptr;
+  HoverHighlightView* caret_highlight_view_ = nullptr;
+  HoverHighlightView* highlight_mouse_cursor_view_ = nullptr;
+  HoverHighlightView* highlight_keyboard_focus_view_ = nullptr;
+  HoverHighlightView* sticky_keys_view_ = nullptr;
   views::Button* help_view_ = nullptr;
   views::Button* settings_view_ = nullptr;
 
   // These exist for tests. The canonical state is stored in prefs.
-  bool features_enabled_[AccessibilityControllerImpl::kFeatureCount] = {false};
+  bool spoken_feedback_enabled_ = false;
+  bool select_to_speak_enabled_ = false;
+  bool dictation_enabled_ = false;
+  bool high_contrast_enabled_ = false;
+  bool screen_magnifier_enabled_ = false;
+  bool docked_magnifier_enabled_ = false;
+  bool large_cursor_enabled_ = false;
+  bool autoclick_enabled_ = false;
+  bool virtual_keyboard_enabled_ = false;
+  bool switch_access_enabled_ = false;
+  bool mono_audio_enabled_ = false;
+  bool caret_highlight_enabled_ = false;
+  bool highlight_mouse_cursor_enabled_ = false;
+  bool highlight_keyboard_focus_enabled_ = false;
+  bool sticky_keys_enabled_ = false;
 
   LoginStatus login_;
 

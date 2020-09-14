@@ -88,7 +88,7 @@ const FeatureData kFeatures[] = {
      &kSystemMenuAccessibilityAutoClickIcon},
     {FeatureType::kCaretHighlight, prefs::kAccessibilityCaretHighlightEnabled,
      nullptr},
-    {FeatureType::kCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
+    {FeatureType::KCursorHighlight, prefs::kAccessibilityCursorHighlightEnabled,
      nullptr},
     {FeatureType::kCursorColor, prefs::kAccessibilityCursorColorEnabled,
      nullptr},
@@ -565,14 +565,6 @@ void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
   for (auto feature_data : kFeatures) {
     DCHECK(!features_[feature_data.type]);
     auto it = dialogs.find(feature_data.type);
-
-    // Some features have custom logic.
-    if (feature_data.type == FeatureType::kSwitchAccess) {
-      features_[feature_data.type] = std::make_unique<SwitchAccessFeature>(
-          feature_data.type, feature_data.pref, feature_data.icon, this);
-      continue;
-    }
-
     if (it == dialogs.end()) {
       features_[feature_data.type] = std::make_unique<Feature>(
           feature_data.type, feature_data.pref, feature_data.icon, this);
@@ -581,8 +573,6 @@ void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
           feature_data.type, feature_data.pref, feature_data.icon, it->second,
           this);
     }
-    features_[feature_data.type]->SetConflictingFeature(
-        feature_data.conflicting_feature);
   }
 }
 
@@ -778,7 +768,7 @@ AccessibilityControllerImpl::caret_highlight() const {
 
 AccessibilityControllerImpl::Feature&
 AccessibilityControllerImpl::cursor_highlight() const {
-  return GetFeature(FeatureType::kCursorHighlight);
+  return GetFeature(FeatureType::KCursorHighlight);
 }
 
 AccessibilityControllerImpl::Feature&
@@ -854,6 +844,113 @@ AccessibilityControllerImpl::virtual_keyboard() const {
   return GetFeature(FeatureType::kVirtualKeyboard);
 }
 
+bool AccessibilityControllerImpl::IsAutoclickSettingVisibleInTray() {
+  return autoclick().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForAutoclick() {
+  return autoclick().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
+  return (IsSpokenFeedbackSettingVisibleInTray() ||
+          IsSelectToSpeakSettingVisibleInTray() ||
+          IsDictationSettingVisibleInTray() ||
+          IsHighContrastSettingVisibleInTray() ||
+          IsFullScreenMagnifierSettingVisibleInTray() ||
+          IsDockedMagnifierSettingVisibleInTray() ||
+          IsAutoclickSettingVisibleInTray() ||
+          IsVirtualKeyboardSettingVisibleInTray() ||
+          IsSwitchAccessSettingVisibleInTray());
+}
+
+bool AccessibilityControllerImpl::IsAdditionalSettingsViewVisibleInTray() {
+  return (IsLargeCursorSettingVisibleInTray() ||
+          IsMonoAudioSettingVisibleInTray() ||
+          IsCaretHighlightSettingVisibleInTray() ||
+          IsCursorHighlightSettingVisibleInTray() ||
+          IsFocusHighlightSettingVisibleInTray() ||
+          IsStickyKeysSettingVisibleInTray());
+}
+
+bool AccessibilityControllerImpl::IsAdditionalSettingsSeparatorVisibleInTray() {
+  return IsPrimarySettingsViewVisibleInTray() &&
+         IsAdditionalSettingsViewVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsCaretHighlightSettingVisibleInTray() {
+  return caret_highlight().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForCaretHighlight() {
+  return caret_highlight().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsCursorHighlightSettingVisibleInTray() {
+  return cursor_highlight().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForCursorHighlight() {
+  return cursor_highlight().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsDictationSettingVisibleInTray() {
+  return dictation().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForDictation() {
+  return dictation().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsFocusHighlightSettingVisibleInTray() {
+  return focus_highlight().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForFocusHighlight() {
+  return focus_highlight().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsFullScreenMagnifierSettingVisibleInTray() {
+  return fullscreen_magnifier().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::
+    IsEnterpriseIconVisibleForFullScreenMagnifier() {
+  return fullscreen_magnifier().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsDockedMagnifierSettingVisibleInTray() {
+  return docked_magnifier().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForDockedMagnifier() {
+  return docked_magnifier().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsHighContrastSettingVisibleInTray() {
+  return high_contrast().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForHighContrast() {
+  return high_contrast().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsLargeCursorSettingVisibleInTray() {
+  return large_cursor().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForLargeCursor() {
+  return large_cursor().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsMonoAudioSettingVisibleInTray() {
+  return mono_audio().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForMonoAudio() {
+  return mono_audio().IsEnterpriseIconVisible();
+}
+
 void AccessibilityControllerImpl::SetSpokenFeedbackEnabled(
     bool enabled,
     AccessibilityNotificationVisibility notify) {
@@ -868,6 +965,22 @@ void AccessibilityControllerImpl::SetSpokenFeedbackEnabled(
   if (enabled && actual_enabled && notify == A11Y_NOTIFICATION_SHOW)
     type = A11yNotificationType::kSpokenFeedbackEnabled;
   ShowAccessibilityNotification(type);
+}
+
+bool AccessibilityControllerImpl::IsSpokenFeedbackSettingVisibleInTray() {
+  return spoken_feedback().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForSpokenFeedback() {
+  return spoken_feedback().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsSelectToSpeakSettingVisibleInTray() {
+  return select_to_speak().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForSelectToSpeak() {
+  return select_to_speak().IsEnterpriseIconVisible();
 }
 
 void AccessibilityControllerImpl::RequestSelectToSpeakStateChange() {
@@ -902,14 +1015,21 @@ bool AccessibilityControllerImpl::IsSwitchAccessRunning() const {
   return switch_access().enabled() || switch_access_disable_dialog_showing_;
 }
 
-bool AccessibilityControllerImpl::SwitchAccessFeature::IsVisibleInTray() const {
+bool AccessibilityControllerImpl::IsSwitchAccessSettingVisibleInTray() {
   // Switch Access cannot be enabled on the sign-in page because there is no way
   // to configure switches while the device is locked.
-  if (!enabled() && Shell::Get()->session_controller()->login_status() ==
-                        ash::LoginStatus::NOT_LOGGED_IN) {
+  if (!switch_access().enabled() &&
+      Shell::Get()->session_controller()->login_status() ==
+          ash::LoginStatus::NOT_LOGGED_IN) {
     return false;
   }
-  return Feature::IsVisibleInTray();
+  return switch_access().IsVisibleInTray();
+  return IsEnterpriseIconVisibleInTrayMenu(
+      prefs::kAccessibilitySwitchAccessEnabled);
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForSwitchAccess() {
+  return switch_access().IsEnterpriseIconVisible();
 }
 
 void AccessibilityControllerImpl::SetAccessibilityEventRewriter(
@@ -950,6 +1070,22 @@ void AccessibilityControllerImpl::StartPointScanning() {
     point_scan_controller_.reset(new PointScanController());
 
   point_scan_controller_->Start();
+}
+
+bool AccessibilityControllerImpl::IsStickyKeysSettingVisibleInTray() {
+  return sticky_keys().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForStickyKeys() {
+  return sticky_keys().IsEnterpriseIconVisible();
+}
+
+bool AccessibilityControllerImpl::IsVirtualKeyboardSettingVisibleInTray() {
+  return virtual_keyboard().IsVisibleInTray();
+}
+
+bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForVirtualKeyboard() {
+  return virtual_keyboard().IsEnterpriseIconVisible();
 }
 
 void AccessibilityControllerImpl::ShowFloatingMenuIfEnabled() {
@@ -1699,7 +1835,7 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
     case FeatureType::kCaretHighlight:
       UpdateAccessibilityHighlightingFromPrefs();
       break;
-    case FeatureType::kCursorHighlight:
+    case FeatureType::KCursorHighlight:
       UpdateAccessibilityHighlightingFromPrefs();
       break;
     case FeatureType::kDictation:
