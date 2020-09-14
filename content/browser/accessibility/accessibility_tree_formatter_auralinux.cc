@@ -22,6 +22,13 @@
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
+#define CHECK_ATSPI_ERROR(error)  \
+  if (error) {                    \
+    LOG(ERROR) << error->message; \
+    g_clear_error(&error);        \
+    return nullptr;               \
+  }
+
 namespace content {
 
 class AccessibilityTreeFormatterAuraLinux
@@ -95,21 +102,13 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForPattern(
 
   GError* error = nullptr;
   int child_count = atspi_accessible_get_child_count(desktop, &error);
-  if (error) {
-    LOG(ERROR) << "Failed to get children of root accessible object"
-               << error->message;
-    g_clear_error(&error);
-    return nullptr;
-  }
+  CHECK_ATSPI_ERROR(error)
 
   std::vector<std::pair<std::string, AtspiAccessible*>> matched_children;
   for (int i = 0; i < child_count; i++) {
     AtspiAccessible* child =
         atspi_accessible_get_child_at_index(desktop, i, &error);
-    if (error) {
-      g_clear_error(&error);
-      continue;
-    }
+    CHECK_ATSPI_ERROR(error)
 
     char* name = atspi_accessible_get_name(child, &error);
     if (!error && name && base::MatchPattern(name, pattern)) {
@@ -153,9 +152,29 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTree(
 
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget window) {
-  LOG(ERROR) << "Aura Linux does not yet support building trees for window ids";
-  NOTIMPLEMENTED();
+    gfx::AcceleratedWidget pid) {
+  AtspiAccessible* desktop = atspi_get_desktop(0);
+  CHECK(desktop);
+
+  GError* error = nullptr;
+  int child_count = atspi_accessible_get_child_count(desktop, &error);
+  CHECK_ATSPI_ERROR(error)
+
+  for (int i = 0; i < child_count; i++) {
+    AtspiAccessible* child =
+        atspi_accessible_get_child_at_index(desktop, i, &error);
+    CHECK_ATSPI_ERROR(error)
+
+    uint application_pid = atspi_accessible_get_process_id(child, &error);
+    CHECK_ATSPI_ERROR(error)
+
+    if (pid == application_pid) {
+      auto dictionary_value = std::make_unique<base::DictionaryValue>();
+      RecursiveBuildAccessibilityTree(child, dictionary_value.get());
+      return dictionary_value;
+    }
+  }
+
   return nullptr;
 }
 
