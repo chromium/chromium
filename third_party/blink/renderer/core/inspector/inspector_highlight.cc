@@ -413,6 +413,10 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridHighlightConfigInfo(
     grid_config_info->setString("areaBorderColor",
                                 grid_config.area_border_color.Serialized());
   }
+  if (grid_config.grid_background_color != Color::kTransparent) {
+    grid_config_info->setString("gridBackgroundColor",
+                                grid_config.grid_background_color.Serialized());
+  }
   return grid_config_info;
 }
 
@@ -1649,6 +1653,7 @@ InspectorGridHighlightConfig InspectorHighlight::DefaultGridConfig() {
   config.row_hatch_color = Color(255, 255, 255, 0);
   config.column_hatch_color = Color(128, 128, 128, 0);
   config.area_border_color = Color(255, 0, 0, 0);
+  config.grid_background_color = Color(255, 0, 0, 0);
   config.show_grid_extension_lines = true;
   config.show_positive_line_numbers = true;
   config.show_negative_line_numbers = true;

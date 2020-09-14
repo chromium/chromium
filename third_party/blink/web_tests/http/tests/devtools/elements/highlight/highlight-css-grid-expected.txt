@@ -290,7 +290,8 @@ paddedGrid{
         "columnGapColor": "rgba(0, 0, 255, 0)",
         "rowHatchColor": "rgba(255, 255, 255, 0)",
         "columnHatchColor": "rgba(128, 128, 128, 0)",
-        "areaBorderColor": "rgba(255, 0, 0, 0)"
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
       },
       "isPrimaryGrid": true
     }
@@ -574,7 +575,8 @@ nestedGrid{
         "columnGapColor": "rgba(0, 0, 255, 0)",
         "rowHatchColor": "rgba(255, 255, 255, 0)",
         "columnHatchColor": "rgba(128, 128, 128, 0)",
-        "areaBorderColor": "rgba(255, 0, 0, 0)"
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
       },
       "isPrimaryGrid": true
     }

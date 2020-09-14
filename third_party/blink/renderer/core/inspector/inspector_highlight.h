@@ -42,6 +42,7 @@ struct CORE_EXPORT InspectorGridHighlightConfig {
   Color row_hatch_color;
   Color column_hatch_color;
   Color area_border_color;
+  Color grid_background_color;
 
   bool show_grid_extension_lines;
   bool grid_border_dash;

@@ -1489,6 +1489,8 @@ InspectorOverlayAgent::ToGridHighlightConfig(
       InspectorDOMAgent::ParseColor(config->getColumnHatchColor(nullptr));
   highlight_config->area_border_color =
       InspectorDOMAgent::ParseColor(config->getAreaBorderColor(nullptr));
+  highlight_config->grid_background_color =
+      InspectorDOMAgent::ParseColor(config->getGridBackgroundColor(nullptr));
   return highlight_config;
 }
 

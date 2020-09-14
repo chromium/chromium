@@ -5427,6 +5427,8 @@ experimental domain Overlay
       optional DOM.RGBA columnHatchColor
       # The named grid areas border color (Default: transparent).
       optional DOM.RGBA areaBorderColor
+      # The grid container background color (Default: transparent).
+      optional DOM.RGBA gridBackgroundColor
 
   # Configuration data for the highlighting of page elements.
   type HighlightConfig extends object
