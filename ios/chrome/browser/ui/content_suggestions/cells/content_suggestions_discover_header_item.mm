@@ -31,8 +31,8 @@ const CGFloat kHeaderMenuButtonInsetTopAndBottom = 2;
 const CGFloat kHeaderMenuButtonInsetSides = 2;
 // Duration for the header animation when Discover feed visibility changes.
 const CGFloat kHeaderChangeAnimationDuration = 0.3;
-// Max width for cards in iPhone, this is used to align the header to the card
-// margins. This is currently hard coded by Discover.
+// Max width for cards in non Max/Plus iPhones, this is used to align the header
+// to the card margins. This is currently hard coded by Discover.
 const CGFloat kFeedCardIPhoneWidth = 375;
 }
 
@@ -132,19 +132,23 @@ const CGFloat kFeedCardIPhoneWidth = 375;
     ]];
 
     // TODO(b/167703449): Once the card width and padding is exposed we should
-    // stop hardcodnig this for iPhone and use those values instead.
-    if (IsIPadIdiom()) {
+    // stop hardcoding this for some iPhones (the ones with a portrait width of
+    // kFeedCardIPhoneWidth) and use those values instead.
+    BOOL shouldFixWidth = IsPortrait()
+                              ? (CurrentScreenWidth() == kFeedCardIPhoneWidth)
+                              : (CurrentScreenHeight() == kFeedCardIPhoneWidth);
+    if (shouldFixWidth) {
+      [constraintsArray addObjectsFromArray:@[
+        [container.centerXAnchor
+            constraintEqualToAnchor:self.contentView.centerXAnchor],
+        [container.widthAnchor constraintEqualToConstant:kFeedCardIPhoneWidth],
+      ]];
+    } else {
       [constraintsArray addObjectsFromArray:@[
         [container.leadingAnchor
             constraintEqualToAnchor:self.contentView.leadingAnchor],
         [container.trailingAnchor
             constraintEqualToAnchor:self.contentView.trailingAnchor],
-      ]];
-    } else {
-      [constraintsArray addObjectsFromArray:@[
-        [container.centerXAnchor
-            constraintEqualToAnchor:self.contentView.centerXAnchor],
-        [container.widthAnchor constraintEqualToConstant:kFeedCardIPhoneWidth],
       ]];
     }
 
