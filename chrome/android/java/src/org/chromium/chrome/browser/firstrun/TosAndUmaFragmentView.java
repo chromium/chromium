@@ -36,7 +36,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
 
     private View mTitle;
     private View mLogo;
-    private View mLoadingSpinner;
+    private View mLoadingSpinnerContainer;
     private View mShadow;
 
     private int mLastHeight;
@@ -72,7 +72,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
 
         mTitle = findViewById(R.id.title);
         mLogo = findViewById(R.id.image);
-        mLoadingSpinner = findViewById(R.id.progress_spinner_large);
+        mLoadingSpinnerContainer = findViewById(R.id.loading_view_container);
         mShadow = findViewById(R.id.shadow);
 
         // Set up shadow.
@@ -146,7 +146,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
 
     private void setSpinnerLayoutParams(boolean useWideScreen, int width, int height) {
         LinearLayout.LayoutParams spinnerParams =
-                (LinearLayout.LayoutParams) mLoadingSpinner.getLayoutParams();
+                (LinearLayout.LayoutParams) mLoadingSpinnerContainer.getLayoutParams();
 
         // Adjust the spinner placement. If in portrait mode, the spinner is centered in the region
         // below the title; If in wide screen mode, the spinner is placed in the center of
@@ -175,7 +175,7 @@ public class TosAndUmaFragmentView extends FrameLayout {
             spinnerParams.topMargin = spinnerTopMargin;
         }
 
-        mLoadingSpinner.setLayoutParams(spinnerParams);
+        mLoadingSpinnerContainer.setLayoutParams(spinnerParams);
     }
 
     private void setLogoLayoutParams(boolean useWideScreen, int height) {

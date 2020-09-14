@@ -144,7 +144,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
 
-        setAppRestrictiosnMockInitialized(false);
+        setAppRestrictionsMockInitialized(false);
         assertUIState(FragmentState.NO_POLICY);
 
         Assert.assertEquals(1,
@@ -157,7 +157,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     // TODO(crbug.com/1120859): Test the policy check when native initializes before inflation.
     // This will be possible when FragmentScenario is available.
     public void testDialogEnabled() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
 
@@ -174,7 +174,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     public void testNotOwnedDevice() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
 
@@ -191,7 +191,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     public void testNotOwnedDevice_beforeInflation() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(false);
 
         launchFirstRunThroughCustomTab();
@@ -208,7 +208,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     public void testSkip_DeviceOwnedThenDialogPolicy() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
 
@@ -232,7 +232,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     public void testSkip_DialogPolicyThenDeviceOwned() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
 
@@ -267,7 +267,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertUIState(FragmentState.HAS_POLICY);
 
         // assertUIState will verify that exit was not called a second time.
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         assertUIState(FragmentState.HAS_POLICY);
 
         Assert.assertEquals(1,
@@ -284,7 +284,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @Test
     @SmallTest
     public void testNullOwnedState() {
-        setAppRestrictiosnMockInitialized(true);
+        setAppRestrictionsMockInitialized(true);
         setPolicyServiceMockInitializedWithDialogEnabled(false);
         launchFirstRunThroughCustomTab();
         assertUIState(FragmentState.LOADING);
@@ -367,7 +367,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                 .getHasAppRestriction(any());
     }
 
-    private void setAppRestrictiosnMockInitialized(boolean hasAppRestrictons) {
+    private void setAppRestrictionsMockInitialized(boolean hasAppRestrictons) {
         Mockito.doAnswer(invocation -> {
                    Callback<Boolean> callback = invocation.getArgument(0);
                    callback.onResult(hasAppRestrictons);

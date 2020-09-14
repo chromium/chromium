@@ -46,13 +46,26 @@
                     android:text="@string/fre_welcome"
                     style="@style/FreTitle" />
 
-                <org.chromium.components.browser_ui.widget.LoadingView
-                    android:id="@+id/progress_spinner_large"
-                    style="@style/Widget.AppCompat.ProgressBar"
+                <!-- The FrameLayout here is to facilitate adding a proper content description for
+                 the loading view. During development, it didn't seem possible to override the
+                 LoadingView contentDescription in XML, but if there's support for this at some
+                 point then we can remove the FrameLayout. -->
+                <FrameLayout
+                    android:id="@+id/loading_view_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_height="@dimen/fre_loading_spinner_size"
-                    android:layout_width="@dimen/fre_loading_spinner_size"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    android:contentDescription="@string/sync_loading">
+
+                    <org.chromium.components.browser_ui.widget.LoadingView
+                        android:id="@+id/progress_spinner_large"
+                        style="@style/Widget.AppCompat.ProgressBar"
+                        android:layout_height="@dimen/fre_loading_spinner_size"
+                        android:layout_width="@dimen/fre_loading_spinner_size"
+                        android:visibility="gone"/>
+
+                </FrameLayout>
 
                 <LinearLayout
                     android:id="@+id/fre_content_wrapper"

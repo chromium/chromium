@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +47,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     private boolean mViewCreated;
+    private View mLoadingSpinnerContainer;
     private LoadingView mLoadingSpinner;
     private CallbackController mCallbackController;
     private PolicyService.Observer mPolicyServiceObserver;
@@ -109,6 +111,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mLoadingSpinnerContainer = view.findViewById(R.id.loading_view_container);
         mLoadingSpinner = view.findViewById(R.id.progress_spinner_large);
         mViewCreated = true;
         mViewCreatedTimeMs = SystemClock.elapsedRealtime();
@@ -138,6 +141,11 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     @Override
+    public void onShowLoadingUIComplete() {
+        mLoadingSpinnerContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onHideLoadingUIComplete() {
         RecordHistogram.recordTimesHistogram("MobileFre.CctTos.LoadingDuration",
                 SystemClock.elapsedRealtime() - mViewCreatedTimeMs);
@@ -147,7 +155,14 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
         } else {
             // Else, show the UMA as the loading spinner is GONE.
             assert confirmedToShowUmaAndTos();
+
+            boolean hasAccessibilityFocus = mLoadingSpinnerContainer.isAccessibilityFocused();
+            mLoadingSpinnerContainer.setVisibility(View.GONE);
             setTosAndUmaVisible(true);
+
+            if (hasAccessibilityFocus) {
+                getToSAndPrivacyText().sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
         }
     }
 
