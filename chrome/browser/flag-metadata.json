@@ -769,6 +769,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "default-browser-setting",
+    "owners": [ "gambard", "bling-flags" ],
+    "expiry_milestone": 87
+  },
+  {
     "name": "delay-async-script-execution",
     "owners": [ "dom", "chrome-loading@google.com" ],
     "expiry_milestone": 88

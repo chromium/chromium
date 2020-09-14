@@ -695,6 +695,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserFullscreenPromoName,
      flag_descriptions::kDefaultBrowserFullscreenPromoDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserFullscreenPromo)},
+    {"default-browser-setting", flag_descriptions::kDefaultBrowserSettingsName,
+     flag_descriptions::kDefaultBrowserSettingsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDefaultBrowserSettings)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

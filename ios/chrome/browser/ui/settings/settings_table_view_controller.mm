@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -135,6 +136,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAdvanced,
   SectionIdentifierInfo,
   SectionIdentifierDebug,
+  SectionIdentifierDefaultBrowser,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -159,6 +161,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTableCellCatalog,
   ItemTypeArticlesForYou,
   ItemTypeSafetyCheck,
+  ItemTypeDefaultBrowser,
 };
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
@@ -424,6 +427,14 @@ NSString* kDevViewSourceKey = @"DevViewSource";
   [model addItem:[self googleServicesCellItem]
       toSectionWithIdentifier:SectionIdentifierAccount];
 
+  if (@available(iOS 14, *)) {
+    if (base::FeatureList::IsEnabled(kDefaultBrowserSettings)) {
+      [model addSectionWithIdentifier:SectionIdentifierDefaultBrowser];
+      [model addItem:[self defaultBrowserCellItem]
+          toSectionWithIdentifier:SectionIdentifierDefaultBrowser];
+    }
+  }
+
   // Basics section
   [model addSectionWithIdentifier:SectionIdentifierBasics];
   // Show managed UI if default search engine is managed by policy.
@@ -529,6 +540,16 @@ NSString* kDevViewSourceKey = @"DevViewSource";
       kSettingsGoogleSyncAndServicesCellId;
   [self updateGoogleServicesItem:googleServicesItem];
   return googleServicesItem;
+}
+
+- (TableViewItem*)defaultBrowserCellItem {
+  TableViewTextItem* defaultBrowser =
+      [[TableViewTextItem alloc] initWithType:ItemTypeDefaultBrowser];
+  defaultBrowser.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
+  defaultBrowser.textColor = [UIColor colorNamed:kBlueColor];
+
+  return defaultBrowser;
 }
 
 - (TableViewItem*)accountCellItem {
@@ -916,6 +937,15 @@ NSString* kDevViewSourceKey = @"DevViewSource";
     case ItemGoogleServices:
       base::RecordAction(base::UserMetricsAction("Settings.GoogleServices"));
       [self showSyncGoogleService];
+      break;
+    case ItemTypeDefaultBrowser:
+      [tableView deselectRowAtIndexPath:indexPath animated:YES];
+      base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
+      [[UIApplication sharedApplication]
+                    openURL:
+                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                    options:{}
+          completionHandler:nil];
       break;
     case ItemTypeSearchEngine:
       base::RecordAction(base::UserMetricsAction("EditSearchEngines"));

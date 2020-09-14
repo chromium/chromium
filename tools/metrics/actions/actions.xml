@@ -20568,6 +20568,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.DefaultBrowser">
+  <owner>gambard@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <description>
+    Reported when user opens DefaultBrowser screen. iOS only.
+  </description>
+</action>
+
 <action name="Settings.GoogleServices">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
