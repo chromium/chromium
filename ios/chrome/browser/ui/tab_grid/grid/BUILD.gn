@@ -28,6 +28,10 @@ source_set("grid_ui") {
     "grid_theme.h",
     "grid_view_controller.h",
     "grid_view_controller.mm",
+    "horizontal_layout.h",
+    "horizontal_layout.mm",
+    "tab_switcher_layout.h",
+    "tab_switcher_layout.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_layout.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/tab_switcher_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -76,8 +77,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, assign) CGPoint itemReorderTouchPoint;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
-// The default layout for the tab grid.
-@property(nonatomic, strong) GridLayout* defaultLayout;
+// The default layout for the tab switcher.
+@property(nonatomic, strong) TabSwitcherLayout* defaultLayout;
 // The layout used while the grid is being reordered.
 @property(nonatomic, strong) UICollectionViewLayout* reorderingLayout;
 // YES if, when reordering is enabled, the order of the cells has changed.
@@ -137,7 +138,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     collectionView.dropDelegate = self;
     collectionView.dragInteractionEnabled = YES;
   } else {
-    self.reorderingLayout = [[GridReorderingLayout alloc] init];
+    self.reorderingLayout = [[TabSwitcherReorderingLayout alloc] init];
     self.itemReorderRecognizer = [[UILongPressGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(handleItemReorderingWithGesture:)];
