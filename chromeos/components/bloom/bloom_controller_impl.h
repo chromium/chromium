@@ -20,14 +20,15 @@ namespace chromeos {
 namespace bloom {
 
 class BloomInteraction;
+class BloomScreenshotDelegate;
 class BloomServerProxy;
-class ScreenshotGrabber;
 
 class BloomControllerImpl : public BloomController {
  public:
-  BloomControllerImpl(signin::IdentityManager* identity_manager,
-                      std::unique_ptr<ScreenshotGrabber> screenshot_grabber,
-                      std::unique_ptr<BloomServerProxy> server_proxy);
+  BloomControllerImpl(
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate,
+      std::unique_ptr<BloomServerProxy> server_proxy);
   BloomControllerImpl(const BloomControllerImpl&) = delete;
   BloomControllerImpl& operator=(const BloomControllerImpl&) = delete;
   ~BloomControllerImpl() override;
@@ -43,15 +44,18 @@ class BloomControllerImpl : public BloomController {
   void ShowUI();
   void ShowResult(const std::string& result);
 
-  ScreenshotGrabber* screenshot_grabber() { return screenshot_grabber_.get(); }
+  BloomScreenshotDelegate* screenshot_delegate() {
+    return screenshot_delegate_.get();
+  }
   BloomServerProxy* server_proxy() { return server_proxy_.get(); }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
-  void SetScreenshotGrabberForTesting(std::unique_ptr<ScreenshotGrabber>);
+  void SetScreenshotDelegateForTesting(
+      std::unique_ptr<BloomScreenshotDelegate>);
 
  private:
   signin::IdentityManager* const identity_manager_;
-  std::unique_ptr<ScreenshotGrabber> screenshot_grabber_;
+  std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate_;
   std::unique_ptr<BloomServerProxy> server_proxy_;
 
   base::ObserverList<BloomInteractionObserver> interaction_observers_;

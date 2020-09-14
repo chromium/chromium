@@ -14,7 +14,6 @@ source_set("bloom") {
     "bloom_server_proxy.h",
     "bloom_server_proxy_impl.cc",
     "bloom_server_proxy_impl.h",
-    "screenshot_grabber.h",
   ]
 
   deps = [
@@ -25,6 +24,7 @@ source_set("bloom") {
     "//chromeos/services/assistant/public/shared",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
+    "//ui/gfx",
   ]
 }
 
@@ -44,5 +44,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
   ]
 }

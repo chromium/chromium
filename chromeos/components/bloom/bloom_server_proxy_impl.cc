@@ -11,7 +11,7 @@ BloomServerProxyImpl::BloomServerProxyImpl() = default;
 BloomServerProxyImpl::~BloomServerProxyImpl() = default;
 
 void BloomServerProxyImpl::AnalyzeProblem(const std::string& access_token,
-                                          const Screenshot screenshot,
+                                          const gfx::Image& screenshot,
                                           Callback callback) {
   // TODO(jeroendh): implement
 }

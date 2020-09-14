@@ -10,6 +10,7 @@ component("cpp") {
     "bloom_controller.h",
     "bloom_interaction_resolution.cc",
     "bloom_interaction_resolution.h",
+    "bloom_screenshot_delegate.h",
   ]
 
   deps = [ "//base" ]
@@ -27,6 +28,7 @@ component("bloom_controller_factory") {
   ]
 
   deps = [
+    ":cpp",
     "//base",
     "//chromeos/components/bloom",
   ]

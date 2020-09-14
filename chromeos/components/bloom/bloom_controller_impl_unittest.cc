@@ -7,13 +7,15 @@
 #include "chromeos/components/bloom/bloom_interaction_observer.h"
 #include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
-#include "chromeos/components/bloom/screenshot_grabber.h"
+#include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace chromeos {
 namespace bloom {
@@ -28,22 +30,22 @@ const char kEmail[] = "test@gmail.com";
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
 
-class ScreenshotGrabberMock : public ScreenshotGrabber {
+class ScreenshotDelegateMock : public BloomScreenshotDelegate {
  public:
-  ScreenshotGrabberMock() {
+  ScreenshotDelegateMock() {
     ON_CALL(*this, TakeScreenshot).WillByDefault([this](Callback callback) {
       // Store the callback passed to TakeScreenshot() so we can invoke it
       // later from our tests.
       this->callback_ = std::move(callback);
     });
   }
-  ~ScreenshotGrabberMock() override = default;
+  ~ScreenshotDelegateMock() override = default;
 
   MOCK_METHOD(void, TakeScreenshot, (Callback callback));
 
   // Sends the given screenshot to the callback passed to TakeScreenshot()
   void SendScreenshot(
-      const base::Optional<Screenshot>& screenshot = Screenshot()) {
+      const base::Optional<gfx::Image>& screenshot = gfx::Image()) {
     EXPECT_TRUE(callback_) << "TakeScreenshot() was never called.";
 
     if (callback_)
@@ -104,7 +106,7 @@ class BloomServerProxyMock : public BloomServerProxy {
   BloomServerProxyMock() {
     ON_CALL(*this, AnalyzeProblem)
         .WillByDefault([this](const std::string& access_token,
-                              const Screenshot screenshot, Callback callback) {
+                              const gfx::Image& screenshot, Callback callback) {
           // Store the callback passed to AnalyzeProblem() so we can invoke it
           // later from our tests.
           this->callback_ = std::move(callback);
@@ -113,7 +115,7 @@ class BloomServerProxyMock : public BloomServerProxy {
   MOCK_METHOD(void,
               AnalyzeProblem,
               (const std::string& access_token,
-               const Screenshot screenshot,
+               const gfx::Image& screenshot,
                Callback callback));
 
   void SendResponse(base::Optional<std::string> html = std::string("<html/>")) {
@@ -156,10 +158,10 @@ class BloomControllerImplTest : public testing::Test {
  protected:
   void StartInteractionAndSendAccessTokenAndScreenshot(
       std::string access_token = "<access-token>",
-      Screenshot screenshot = Screenshot()) {
+      gfx::Image screenshot = gfx::Image()) {
     controller().StartInteraction();
     IssueAccessToken(access_token);
-    screenshot_grabber_mock().SendScreenshot(screenshot);
+    screenshot_delegate_mock().SendScreenshot(screenshot);
   }
 
   // Returns the |ScopeSet| that was passed to the access token request.
@@ -178,9 +180,9 @@ class BloomControllerImplTest : public testing::Test {
 
   BloomControllerImpl& controller() { return controller_; }
 
-  ScreenshotGrabberMock& screenshot_grabber_mock() {
-    return *static_cast<ScreenshotGrabberMock*>(
-        controller_.screenshot_grabber());
+  ScreenshotDelegateMock& screenshot_delegate_mock() {
+    return *static_cast<ScreenshotDelegateMock*>(
+        controller_.screenshot_delegate());
   }
 
   BloomInteractionObserverMock* AddInteractionObserverMock() {
@@ -217,7 +219,7 @@ class BloomControllerImplTest : public testing::Test {
 
   BloomControllerImpl controller_{
       identity_test_env_.identity_manager(),
-      std::make_unique<NiceMock<ScreenshotGrabberMock>>(),
+      std::make_unique<NiceMock<ScreenshotDelegateMock>>(),
       std::make_unique<NiceMock<BloomServerProxyMock>>()};
 };
 
@@ -236,7 +238,7 @@ TEST_F(BloomControllerImplTest, ShouldFetchAccessToken) {
 }
 
 TEST_F(BloomControllerImplTest, ShouldTakeScreenshot) {
-  EXPECT_CALL(screenshot_grabber_mock(), TakeScreenshot);
+  EXPECT_CALL(screenshot_delegate_mock(), TakeScreenshot);
 
   controller().StartInteraction();
 }
@@ -245,7 +247,7 @@ TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingAccessTokenFails) {
   auto* interaction_tracker = AddInteractionTracker();
 
   controller().StartInteraction();
-  screenshot_grabber_mock().SendScreenshot();
+  screenshot_delegate_mock().SendScreenshot();
 
   FailAccessToken();
 
@@ -260,7 +262,7 @@ TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingScreenshotFails) {
   controller().StartInteraction();
   IssueAccessToken();
 
-  screenshot_grabber_mock().SendScreenshotFailed();
+  screenshot_delegate_mock().SendScreenshotFailed();
 
   EXPECT_FALSE(interaction_tracker->HasInteraction());
   EXPECT_EQ(BloomInteractionResolution::kNoScreenshot,
@@ -270,7 +272,7 @@ TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingScreenshotFails) {
 TEST_F(BloomControllerImplTest,
        ShouldPassAccessTokenAndScreenshotToBloomServer) {
   const std::string& access_token = "<the-access-token>";
-  const Screenshot screenshot{1, 2, 3, 4, 5};
+  const gfx::Image screenshot = gfx::test::CreateImage(10, 20);
 
   EXPECT_CALL(bloom_server(), AnalyzeProblem(access_token, screenshot, _));
 
@@ -312,7 +314,7 @@ TEST_F(BloomInteractionObserverTest,
 
   controller().StartInteraction();
   IssueAccessToken();
-  screenshot_grabber_mock().SendScreenshot();
+  screenshot_delegate_mock().SendScreenshot();
 }
 
 TEST_F(BloomInteractionObserverTest,
@@ -322,7 +324,7 @@ TEST_F(BloomInteractionObserverTest,
   EXPECT_NO_CALLS(*observer, OnShowUI);
 
   controller().StartInteraction();
-  screenshot_grabber_mock().SendScreenshot();
+  screenshot_delegate_mock().SendScreenshot();
 }
 
 TEST_F(BloomInteractionObserverTest,

@@ -9,12 +9,13 @@
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
 #include "chromeos/components/bloom/bloom_server_proxy.h"
+#include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/components/bloom/public/cpp/future_value.h"
-#include "chromeos/components/bloom/screenshot_grabber.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "ui/gfx/image/image.h"
 
 namespace chromeos {
 namespace bloom {
@@ -33,8 +34,10 @@ void BloomInteraction::Start() {
 }
 
 void BloomInteraction::StartAssistantInteraction(std::string&& access_token,
-                                                 Screenshot&& screenshot) {
+                                                 gfx::Image&& screenshot) {
+  DVLOG(2) << "Opening assistant UI";
   controller_->ShowUI();
+  DVLOG(2) << "Contacting Bloom server";
   controller_->server_proxy()->AnalyzeProblem(
       access_token, screenshot, Bind(&BloomInteraction::OnServerResponse));
 }
@@ -45,10 +48,13 @@ void BloomInteraction::OnServerResponse(base::Optional<std::string> html) {
     return;
   }
 
+  DVLOG(2) << "Got server response";
   controller_->ShowResult(html.value());
 }
 
 void BloomInteraction::FetchAccessTokenAsync() {
+  DVLOG(2) << "Fetching access token";
+
   signin::ScopeSet scopes;
   scopes.insert(assistant::kBloomScope);
 
@@ -64,7 +70,7 @@ void BloomInteraction::FetchAccessTokenAsync() {
 }
 
 void BloomInteraction::FetchScreenshotAsync() {
-  controller_->screenshot_grabber()->TakeScreenshot(
+  controller_->screenshot_delegate()->TakeScreenshot(
       Bind(&BloomInteraction::OnScreenshotReady));
   screenshot_future_ = std::make_unique<ScreenshotFuture>();
 }
@@ -73,20 +79,24 @@ void BloomInteraction::OnAccessTokenRequestCompleted(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
+    LOG(WARNING) << "Failed to fetch the access token";
     controller_->StopInteraction(BloomInteractionResolution::kNoAccessToken);
     return;
   }
 
+  DVLOG(2) << "Received access token";
   access_token_future_->SetValue(std::move(access_token_info.token));
 }
 
 void BloomInteraction::OnScreenshotReady(
-    base::Optional<Screenshot> screenshot) {
+    base::Optional<gfx::Image> screenshot) {
   if (!screenshot) {
+    LOG(WARNING) << "Failed to take the screenshot";
     controller_->StopInteraction(BloomInteractionResolution::kNoScreenshot);
     return;
   }
 
+  DVLOG(2) << "Received screenshot";
   screenshot_future_->SetValue(std::move(screenshot.value()));
 }
 

@@ -7,20 +7,20 @@
 #include "base/logging.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
 #include "chromeos/components/bloom/bloom_server_proxy.h"
-#include "chromeos/components/bloom/screenshot_grabber.h"
+#include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 
 namespace chromeos {
 namespace bloom {
 
 BloomControllerImpl::BloomControllerImpl(
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<ScreenshotGrabber> screenshot_grabber,
+    std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate,
     std::unique_ptr<BloomServerProxy> server_proxy)
     : identity_manager_(identity_manager),
-      screenshot_grabber_(std::move(screenshot_grabber)),
+      screenshot_delegate_(std::move(screenshot_delegate)),
       server_proxy_(std::move(server_proxy)) {
   DCHECK(identity_manager_);
-  DCHECK(screenshot_grabber_);
+  DCHECK(screenshot_delegate_);
   DCHECK(server_proxy_);
 }
 
@@ -76,10 +76,10 @@ void BloomControllerImpl::AddObserver(
   owned_interaction_observers_.push_back(std::move(observer));
 }
 
-void BloomControllerImpl::SetScreenshotGrabberForTesting(
-    std::unique_ptr<ScreenshotGrabber> screenshot_grabber) {
-  DCHECK(screenshot_grabber);
-  screenshot_grabber_ = std::move(screenshot_grabber);
+void BloomControllerImpl::SetScreenshotDelegateForTesting(
+    std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate) {
+  DCHECK(screenshot_delegate);
+  screenshot_delegate_ = std::move(screenshot_delegate);
 }
 
 }  // namespace bloom

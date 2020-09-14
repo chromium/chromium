@@ -7,7 +7,10 @@
 
 #include <string>
 #include "base/callback.h"
-#include "chromeos/components/bloom/screenshot_grabber.h"
+
+namespace gfx {
+class Image;
+}
 
 namespace chromeos {
 namespace bloom {
@@ -26,7 +29,7 @@ class BloomServerProxy {
   // Send the screenshot to the Bloom server for analysis, and send the response
   // to |callback|.
   virtual void AnalyzeProblem(const std::string& access_token,
-                              const Screenshot screenshot,
+                              const gfx::Image& screenshot,
                               Callback callback) = 0;
 };
 

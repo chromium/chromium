@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 #include "chromeos/components/bloom/public/cpp/bloom_controller.h"
 #include "chromeos/components/bloom/public/cpp/bloom_controller_factory.h"
+#include "chromeos/components/bloom/public/cpp/bloom_screenshot_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -92,7 +93,9 @@ void AssistantClientImpl::MaybeInit(Profile* profile) {
   if (chromeos::assistant::features::IsBloomEnabled()) {
     bloom_controller_ = chromeos::bloom::BloomControllerFactory::Create(
         profile->GetURLLoaderFactory(),
-        IdentityManagerFactory::GetForProfile(profile));
+        IdentityManagerFactory::GetForProfile(profile),
+        nullptr  // TODO(jeroendh): pass in real BloomScreenshotDelegate
+    );
   }
 }
 

@@ -22,13 +22,15 @@ namespace chromeos {
 namespace bloom {
 
 class BloomController;
+class BloomScreenshotDelegate;
 
 class COMPONENT_EXPORT(BLOOM) BloomControllerFactory {
  public:
   // Create the Bloom controller. Can only be invoked once.
   static std::unique_ptr<BloomController> Create(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<BloomScreenshotDelegate> screenshot_delegate);
 };
 
 }  // namespace bloom

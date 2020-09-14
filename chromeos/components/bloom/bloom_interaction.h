@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "chromeos/components/bloom/screenshot_grabber.h"
 
 class GoogleServiceAuthError;
+
+namespace gfx {
+class Image;
+}
 
 namespace signin {
 struct AccessTokenInfo;
@@ -26,7 +29,7 @@ class BloomControllerImpl;
 template <typename _Type>
 class FutureValue;
 using AccessTokenFuture = FutureValue<std::string>;
-using ScreenshotFuture = FutureValue<Screenshot>;
+using ScreenshotFuture = FutureValue<gfx::Image>;
 
 // A single Bloom interaction. This will:
 //    * Fetch the access token and screenshot.
@@ -34,7 +37,7 @@ using ScreenshotFuture = FutureValue<Screenshot>;
 //    * Fetch the Bloom response and forward it to the Assistant interaction.
 class BloomInteraction {
   using StartCallback = base::OnceCallback<void(const std::string& access_token,
-                                                Screenshot&& screenshot)>;
+                                                gfx::Image&& screenshot)>;
 
  public:
   explicit BloomInteraction(BloomControllerImpl* controller);
@@ -47,7 +50,7 @@ class BloomInteraction {
 
  private:
   void StartAssistantInteraction(std::string&& access_token,
-                                 Screenshot&& screenshot);
+                                 gfx::Image&& screenshot);
 
   void OnServerResponse(base::Optional<std::string> html);
 
@@ -56,7 +59,7 @@ class BloomInteraction {
 
   void OnAccessTokenRequestCompleted(GoogleServiceAuthError error,
                                      signin::AccessTokenInfo access_token_info);
-  void OnScreenshotReady(base::Optional<Screenshot> screenshot);
+  void OnScreenshotReady(base::Optional<gfx::Image> screenshot);
 
   template <typename _Method, typename... Args>
   auto Bind(_Method method, Args&&... args) {

@@ -16,7 +16,7 @@ class BloomServerProxyImpl : public BloomServerProxy {
   ~BloomServerProxyImpl() override;
 
   void AnalyzeProblem(const std::string& access_token,
-                      const Screenshot screenshot,
+                      const gfx::Image& screenshot,
                       Callback callback) override;
 };
 
