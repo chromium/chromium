@@ -893,6 +893,9 @@ CanvasResourceProvider::CreateSharedImageProvider(
   if (!context_provider_wrapper)
     return nullptr;
 
+  if (size.Width() <= 0 || size.Height() <= 0)
+    return nullptr;
+
   const auto& capabilities =
       context_provider_wrapper->ContextProvider()->GetCapabilities();
   bool skia_use_dawn =
