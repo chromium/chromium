@@ -73,6 +73,10 @@ function createFakeDirectoryModel() {
         opt_callback();
       }
     }
+
+    isReadOnly() {
+      return false;
+    }
   }
 
   const model = /** @type {!Object} */ (new FakeDirectoryModel());

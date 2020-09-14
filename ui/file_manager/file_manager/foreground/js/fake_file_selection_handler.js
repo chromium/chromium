@@ -31,4 +31,8 @@ class FakeFileSelectionHandler {
   addEventListener(...args) {
     return this.eventTarget_.addEventListener(...args);
   }
+
+  isAvailable() {
+    return true;
+  }
 }
