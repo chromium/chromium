@@ -572,7 +572,7 @@ ServiceWorkerContextWrapper::FinishedExternalRequest(
 }
 
 void ServiceWorkerContextWrapper::CountExternalRequestsForTest(
-    const GURL& origin,
+    const url::Origin& origin,
     CountExternalRequestsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::PostTask(
@@ -1833,7 +1833,7 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForUpdate(
 }
 
 void ServiceWorkerContextWrapper::CountExternalRequests(
-    const GURL& origin,
+    const url::Origin& origin,
     CountExternalRequestsCallback callback) {
   DCHECK_CURRENTLY_ON(GetCoreThreadId());
 
@@ -1842,7 +1842,7 @@ void ServiceWorkerContextWrapper::CountExternalRequests(
   size_t pending_external_request_count = 0;
   for (const ServiceWorkerVersionInfo& info : live_version_info) {
     ServiceWorkerVersion* version = GetLiveVersion(info.version_id);
-    if (version && version->scope().GetOrigin() == origin) {
+    if (version && version->origin() == origin) {
       pending_external_request_count =
           version->GetExternalRequestCountForTest();
       break;

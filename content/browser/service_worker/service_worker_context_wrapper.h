@@ -171,7 +171,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
   void CountExternalRequestsForTest(
-      const GURL& url,
+      const url::Origin& origin,
       CountExternalRequestsCallback callback) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
   void GetInstalledRegistrationOrigins(
@@ -436,7 +436,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       blink::ServiceWorkerStatusCode status,
       scoped_refptr<content::ServiceWorkerRegistration> registration);
 
-  void CountExternalRequests(const GURL& url,
+  void CountExternalRequests(const url::Origin& origin,
                              CountExternalRequestsCallback callback);
 
   void DidFindRegistrationForNavigationHint(

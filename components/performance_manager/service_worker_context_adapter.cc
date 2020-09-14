@@ -111,7 +111,7 @@ ServiceWorkerContextAdapter::FinishedExternalRequest(
 }
 
 void ServiceWorkerContextAdapter::CountExternalRequestsForTest(
-    const GURL& origin,
+    const url::Origin& origin,
     CountExternalRequestsCallback callback) {
   NOTIMPLEMENTED();
 }

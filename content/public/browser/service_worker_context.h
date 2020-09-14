@@ -157,7 +157,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // specified |origin| via |callback|. Must be called from the UI thread. The
   // callback is called on the UI thread.
   virtual void CountExternalRequestsForTest(
-      const GURL& origin,
+      const url::Origin& origin,
       CountExternalRequestsCallback callback) = 0;
 
   // Whether |origin| has any registrations. Uninstalling and uninstalled

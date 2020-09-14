@@ -51,7 +51,7 @@ FakeServiceWorkerContext::FinishedExternalRequest(
   return ServiceWorkerExternalRequestResult::kWorkerNotFound;
 }
 void FakeServiceWorkerContext::CountExternalRequestsForTest(
-    const GURL& url,
+    const url::Origin& origin,
     CountExternalRequestsCallback callback) {
   NOTREACHED();
 }
