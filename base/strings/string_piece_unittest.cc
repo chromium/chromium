@@ -650,6 +650,7 @@ TEST(StringPieceTest, ConstexprCtor) {
 }
 
 TEST(StringPieceTest, OutOfBoundsDeath) {
+  { ASSERT_DEATH_IF_SUPPORTED(StringPiece(nullptr), ""); }
   {
     constexpr StringPiece piece;
     ASSERT_DEATH_IF_SUPPORTED(piece[0], "");
