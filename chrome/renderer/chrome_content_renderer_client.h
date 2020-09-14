@@ -202,6 +202,12 @@ class ChromeContentRendererClient
   bool IsSafeRedirectTarget(const GURL& url) override;
   void DidSetUserAgent(const std::string& user_agent) override;
   bool RequiresWebComponentsV0(const GURL& url) override;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  void MaybeProxyURLLoaderFactory(
+      content::RenderFrame* render_frame,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver)
+      override;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   static mojo::AssociatedRemote<chrome::mojom::PluginInfoHost>&

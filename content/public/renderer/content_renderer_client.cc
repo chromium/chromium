@@ -263,4 +263,9 @@ ContentRendererClient::GetAudioRendererAlgorithmParameters(
   return base::nullopt;
 }
 
+void ContentRendererClient::MaybeProxyURLLoaderFactory(
+    RenderFrame* render_frame,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver) {
+}
+
 }  // namespace content

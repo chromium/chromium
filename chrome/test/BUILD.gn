@@ -2024,6 +2024,7 @@ if (!is_android) {
         "//components/content_settings/core/test:test_support",
         "//components/guest_view/browser:test_support",
         "//components/keep_alive_registry",
+        "//components/web_package:test_support",
         "//google_apis/drive:test_support",
 
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests target

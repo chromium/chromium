@@ -1,0 +1,25 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "url/mojom/url.mojom";
+
+// This interface is implemented in the browser process and is used by a
+// renderer process if it wants to proxy requests to URLLoaderFactory. This is
+// currently used by subresource loading for Web Bundles, so that subresource
+// requests that are served within the renderer process (from a Web Bundle) can
+// still be intercepted by Chrome extensions. This interface is implemented
+// only when ENABLE_EXTENSIONS build flag is set.
+interface UrlLoaderFactoryProxy {
+  // Get the proxied URLLoaderFactory. When there is any extension which has
+  // active WebRequest event listeners, the requests to the |proxied_factory|
+  // will be intercepted by the browser process to trigger the WebRequest event
+  // listeners. Otherwise this method just fuses |original_factory| and
+  // |proxied_factory|.
+  GetProxiedURLLoaderFactory(
+      pending_remote<network.mojom.URLLoaderFactory> original_factory,
+      pending_receiver<network.mojom.URLLoaderFactory> proxied_factory);
+};

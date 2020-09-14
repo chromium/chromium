@@ -744,6 +744,10 @@ mojom("mojo_bindings") {
     enabled_features = [ "enable_offline_pages" ]
   }
 
+  if (enable_extensions) {
+    sources += [ "url_loader_factory_proxy.mojom" ]
+  }
+
   public_deps = [
     "//components/content_settings/core/common:mojo_bindings",
     "//components/prerender/common:mojo_bindings",

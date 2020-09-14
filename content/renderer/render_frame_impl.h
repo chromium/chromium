@@ -748,6 +748,10 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::WebSetSinkIdCompleteCallback callback) override;
   std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
   void OnStopLoading() override;
+  void MaybeProxyURLLoaderFactory(
+      blink::CrossVariantMojoReceiver<
+          network::mojom::URLLoaderFactoryInterfaceBase>* factory_receiver)
+      override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
   void SubmitThroughputData(ukm::SourceId source_id,

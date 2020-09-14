@@ -201,6 +201,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/loader/url_loader_factory_proxy_impl.h"
+#include "chrome/common/url_loader_factory_proxy.mojom.h"
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"  // nogncheck
@@ -375,6 +377,12 @@ void BindBeforeUnloadControl(
     return;
   guest_view->FuseBeforeUnloadControl(std::move(receiver));
 }
+
+void BindUrlLoaderFactoryProxy(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<chrome::mojom::UrlLoaderFactoryProxy> receiver) {
+  UrlLoaderFactoryProxyImpl::Create(frame_host, std::move(receiver));
+}
 #endif
 
 void BindNetworkHintsHandler(
@@ -496,6 +504,8 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindMimeHandlerService));
   map->Add<extensions::mime_handler::BeforeUnloadControl>(
       base::BindRepeating(&BindBeforeUnloadControl));
+  map->Add<chrome::mojom::UrlLoaderFactoryProxy>(
+      base::BindRepeating(&BindUrlLoaderFactoryProxy));
 #endif
 
   map->Add<network_hints::mojom::NetworkHintsHandler>(

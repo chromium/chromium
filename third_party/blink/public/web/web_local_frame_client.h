@@ -38,6 +38,7 @@
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "media/base/speech_recognition_client.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -613,6 +614,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   }
 
   virtual void OnStopLoading() {}
+
+  virtual void MaybeProxyURLLoaderFactory(
+      blink::CrossVariantMojoReceiver<
+          network::mojom::URLLoaderFactoryInterfaceBase>* factory_receiver) {}
 
   // Accessibility Object Model -------------------------------------------
 

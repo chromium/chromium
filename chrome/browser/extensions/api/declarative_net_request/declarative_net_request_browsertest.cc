@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
@@ -54,6 +55,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/web_package/test_support/web_bundle_builder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,6 +63,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -104,8 +107,10 @@
 #include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -219,10 +224,8 @@ class DeclarativeNetRequestBrowserTest
     // Map all hosts to localhost.
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    ruleset_manager_observer_ =
-        std::make_unique<RulesetManagerObserver>(ruleset_manager());
+    CreateTempDir();
+    InitializeRulesetManagerObserver();
   }
 
   void TearDownOnMainThread() override {
@@ -562,6 +565,13 @@ class DeclarativeNetRequestBrowserTest
     rule.action->response_headers = std::move(response_headers);
 
     return rule;
+  }
+
+  void CreateTempDir() { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  void InitializeRulesetManagerObserver() {
+    ruleset_manager_observer_ =
+        std::make_unique<RulesetManagerObserver>(ruleset_manager());
   }
 
  private:
@@ -4522,6 +4532,298 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestResourceTypeBrowserTest, Test2) {
             {"block_none.com", kNone}});
 }
 
+class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestSubresourceWebBundlesBrowserTest() = default;
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
+    DeclarativeNetRequestBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    CreateTempDir();
+    InitializeRulesetManagerObserver();
+  }
+
+ protected:
+  bool TryLoadScript(const char* script_src) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    bool success = false;
+    std::string script = base::StringPrintf(R"(
+      (() => {
+        const script = document.createElement('script');
+        script.addEventListener('load', () => {
+          window.domAutomationController.send(true);
+        });
+        script.addEventListener('error', () => {
+          window.domAutomationController.send(false);
+        });
+        script.src = '%s';
+        document.body.appendChild(script);
+      })();
+                                          )",
+                                            script_src);
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+                                            script, &success));
+    return success;
+  }
+
+  // Registers a request handler for static content.
+  void RegisterRequestHandler(const std::string& relative_url,
+                              const std::string& content_type,
+                              const std::string& content) {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [relative_url, content_type,
+         content](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == relative_url) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type(content_type);
+            response->set_content(content);
+            return std::move(response);
+          }
+          return nullptr;
+        }));
+  }
+
+  // Registers a request handler for web bundle. This method takes a pointer of
+  // the content of the web bundle, because we can't create the content of the
+  // web bundle before starting the server since we need to know the port number
+  // of the test server due to the same-origin restriction (the origin of
+  // subresource which is written in the web bundle must be same as the origin
+  // of the web bundle), and we can't call
+  // EmbeddedTestServer::RegisterRequestHandler() after starting the server.
+  void RegisterWebBundleRequestHandler(const std::string& relative_url,
+                                       const std::string* web_bundle) {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [relative_url, web_bundle](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url == relative_url) {
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("application/webbundle");
+            response->set_content(*web_bundle);
+            return std::move(response);
+          }
+          return nullptr;
+        }));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Ensure DeclarativeNetRequest API can block the requests for the subresources
+// inside the web bundle.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                       RequestCanceled) {
+  TestRule rule = CreateGenericRule();
+  std::vector<TestRule> rules;
+  rule.id = kMinValidID;
+  rule.condition->url_filter = "cancel.js|";
+  rule.condition->resource_types = std::vector<std::string>({"script"});
+  rule.priority = 1;
+  rules.push_back(rule);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  const char kPageHtml[] = R"(
+        <title>Loaded</title>
+        <body>
+        <script>
+        (() => {
+          const wbn_url =
+              new URL('./web_bundle.wbn', location.href).toString();
+          const pass_js_url = new URL('./pass.js', location.href).toString();
+          const cancel_js_url =
+              new URL('./cancel.js', location.href).toString();
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = wbn_url;
+          link.resources = pass_js_url + ' ' + cancel_js_url;
+          document.body.appendChild(link);
+        })();
+        </script>
+        </body>
+      )";
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+  RegisterRequestHandler("/test.html", "text/html", kPageHtml);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a web bundle.
+  std::string pass_js_url_str =
+      embedded_test_server()->GetURL("/pass.js").spec();
+  std::string cancel_js_url_str =
+      embedded_test_server()->GetURL("/cancel.js").spec();
+  // Currently the web bundle format requires a valid GURL for the fallback URL
+  // of a web bundle. So we use |pass_js_url_str| for the fallback URL.
+  // TODO(crbug.com/966753): Stop using |pass_js_url_str| when
+  // https://github.com/WICG/webpackage/issues/590 is resolved.
+  web_package::test::WebBundleBuilder builder(pass_js_url_str, "");
+  auto pass_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'script loaded';");
+  auto cancel_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}}, "");
+  builder.AddIndexEntry(pass_js_url_str, "", {pass_js_location});
+  builder.AddIndexEntry(cancel_js_url_str, "", {cancel_js_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+
+  base::string16 expected_title = base::ASCIIToUTF16("script loaded");
+  content::TitleWatcher title_watcher(web_contents, expected_title);
+  EXPECT_TRUE(TryLoadScript("pass.js"));
+  // Check that the script in the web bundle is correctly loaded even when the
+  // extension with blocking handler intercepted the request.
+  EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+  EXPECT_FALSE(TryLoadScript("cancel.js"));
+}
+
+// Ensure DeclarativeNetRequest API can redirect the requests for the
+// subresources inside the web bundle.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                       RequestRedirected) {
+  const char kPageHtml[] = R"(
+        <title>Loaded</title>
+        <body>
+        <script>
+        (() => {
+          const wbn_url = new URL('./web_bundle.wbn', location.href).toString();
+          const redirect_js_url =
+              new URL('./redirect.js', location.href).toString();
+          const redirected_js_url =
+              new URL('./redirected.js', location.href).toString();
+          const redirect_to_unlisted_js_url =
+              new URL('./redirect_to_unlisted.js', location.href).toString();
+          const redirect_to_server =
+              new URL('./redirect_to_server.js', location.href).toString();
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = wbn_url;
+          link.resources = redirect_js_url + ' ' + redirected_js_url + ' ' +
+                           redirect_to_unlisted_js_url + ' ' +
+                           redirect_to_server;
+          document.body.appendChild(link);
+        })();
+        </script>
+        </body>
+      )";
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+  RegisterRequestHandler("/test.html", "text/html", kPageHtml);
+  RegisterRequestHandler("/redirect_to_server.js", "application/javascript",
+                         "document.title = 'redirect_to_server';");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a web bundle.
+  std::string redirect_js_url_str =
+      embedded_test_server()->GetURL("/redirect.js").spec();
+  std::string redirected_js_url_str =
+      embedded_test_server()->GetURL("/redirected.js").spec();
+  std::string redirect_to_unlisted_js_url_str =
+      embedded_test_server()->GetURL("/redirect_to_unlisted.js").spec();
+  std::string redirected_to_unlisted_js_url_str =
+      embedded_test_server()->GetURL("/redirected_to_unlisted.js").spec();
+  std::string redirect_to_server_js_url_str =
+      embedded_test_server()->GetURL("/redirect_to_server.js").spec();
+  // Currently the web bundle format requires a valid GURL for the fallback URL
+  // of a web bundle. So we use |redirect_js_url_str| for the fallback URL.
+  // TODO(crbug.com/966753): Stop using |redirect_js_url_str| when
+  // https://github.com/WICG/webpackage/issues/590 is resolved.
+  web_package::test::WebBundleBuilder builder(redirect_js_url_str, "");
+  auto redirect_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'redirect';");
+  auto redirected_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'redirected';");
+  auto redirect_to_unlisted_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'redirect_to_unlisted';");
+  auto redirected_to_unlisted_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'redirected_to_unlisted';");
+  auto redirect_to_server_js_location = builder.AddResponse(
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'redirect_to_server';");
+  builder.AddIndexEntry(redirect_js_url_str, "", {redirect_js_location});
+  builder.AddIndexEntry(redirected_js_url_str, "", {redirected_js_location});
+  builder.AddIndexEntry(redirect_to_unlisted_js_url_str, "",
+                        {redirect_to_unlisted_location});
+  builder.AddIndexEntry(redirected_to_unlisted_js_url_str, "",
+                        {redirected_to_unlisted_js_location});
+  builder.AddIndexEntry(redirect_to_server_js_url_str, "",
+                        {redirect_to_server_js_location});
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  struct {
+    std::string url_filter;
+    std::string redirect_url_path;
+  } rules_data[] = {
+      {"redirect.js|", "/redirected.js"},
+      {"redirect_to_unlisted.js|", "/redirected_to_unlisted.js"},
+      {"redirect_to_server.js|", "/redirected_to_server.js"},
+  };
+
+  std::vector<TestRule> rules;
+  int rule_id = kMinValidID;
+  int rule_priority = 1;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule();
+    rule.id = rule_id++;
+    rule.priority = rule_priority++;
+    rule.condition->url_filter = rule_data.url_filter;
+    rule.condition->resource_types = std::vector<std::string>({"script"});
+    rule.action->type = "redirect";
+    rule.action->redirect.emplace();
+    rule.action->redirect->url =
+        embedded_test_server()->GetURL(rule_data.redirect_url_path).spec();
+    rules.push_back(rule);
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      rules, "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+  {
+    base::string16 expected_title = base::ASCIIToUTF16("redirected");
+    content::TitleWatcher title_watcher(web_contents, expected_title);
+    EXPECT_TRUE(TryLoadScript("redirect.js"));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+  {
+    // In the current implementation, extensions can redirect the request to
+    // the other resource in the web bundle even if the resource is not listed
+    // in the resources attribute.
+    base::string16 expected_title =
+        base::ASCIIToUTF16("redirected_to_unlisted");
+    content::TitleWatcher title_watcher(web_contents, expected_title);
+    EXPECT_TRUE(TryLoadScript("redirect_to_unlisted.js"));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+  // In the current implementation, extensions can't redirect the request to
+  // outside the web bundle.
+  EXPECT_FALSE(TryLoadScript("redirect_to_server.js"));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -4533,6 +4835,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            ExtensionLoadType::UNPACKED));
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestResourceTypeBrowserTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 
