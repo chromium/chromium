@@ -40,6 +40,7 @@ import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.URI;
 
@@ -278,10 +279,10 @@ public class LocationBarModel implements ToolbarDataProvider, ToolbarCommonPrope
     public Profile getProfile() {
         Profile lastUsedRegularProfile = Profile.getLastUsedRegularProfile();
         if (mIsIncognito) {
+            WindowAndroid windowAndroid = (mTab != null) ? mTab.getWindowAndroid() : null;
             // If the mTab belongs to a CustomTabActivity then we return the non-primary OTR profile
             // which is associated with it. For all other cases we return the primary OTR profile.
-            Profile nonPrimaryOTRProfile =
-                    getNonPrimaryOTRProfileFromWindowAndroid(mTab.getWindowAndroid());
+            Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfileFromWindowAndroid(windowAndroid);
             if (nonPrimaryOTRProfile != null) return nonPrimaryOTRProfile;
 
             // When in overview mode with no open tabs, there has not been created an
