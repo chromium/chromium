@@ -227,7 +227,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   //    version, activates the waiting version and runs |callback| when it is
   //    activated.
   //
-  // Can be called on any thread, and the callback is called on that thread.
+  // Must be called on the core thread, and |callback| is called on that thread.
+  // There is no guarantee for whether the callback is called synchronously or
+  // asynchronously.
   void FindReadyRegistrationForClientUrl(const GURL& client_url,
                                          FindRegistrationCallback callback);
 
@@ -241,7 +243,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   //    version, activates the waiting version and runs |callback| when it is
   //    activated.
   //
-  // Can be called from any thread, and the callback is called on that thread.
+  // Must be called on the core thread, and |callback| is called on that thread.
+  // There is no guarantee for whether the callback is called synchronously or
+  // asynchronously.
   void FindReadyRegistrationForScope(const GURL& scope,
                                      FindRegistrationCallback callback);
 
@@ -282,7 +286,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   //    version, activates the waiting version and runs |callback| when it is
   //    activated.
   //
-  // Can be called from any thread, and the callback is called on that thread.
+  // Must be called on the core thread, and the callback is called on that
+  // thread. There is no guarantee about whether the callback is called
+  // synchronously or asynchronously.
   void FindReadyRegistrationForIdOnly(int64_t registration_id,
                                       FindRegistrationCallback callback);
 
@@ -407,11 +413,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // TODO(crbug.com/1127724): The *WithRunner functions should be removed.
   // FindRegistrationCallback should only be called on the core thread, since
   // ServiceWorkerRegistration is bound to that thread.
-  void DidFindRegistrationForFindReadyWithRunner(
-      FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
   void DidFindRegistrationForFindImplWithRunner(
       bool include_installing_version,
       FindRegistrationCallback callback,
@@ -527,10 +528,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       blink::TransferableMessage message,
       ResultCallback result_callback,
       scoped_refptr<base::TaskRunner> callback_runner);
-  void FindReadyRegistrationForIdOnlyOnCoreThread(
-      int64_t registration_id,
-      FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
   void DeleteForOriginOnCoreThread(
       const url::Origin& origin,
       ResultCallback callback,
@@ -544,10 +541,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const GURL& origin,
       BoolCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner) const;
-  void FindReadyRegistrationForClientUrlOnCoreThread(
-      const GURL& client_url,
-      FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
   void GetAllRegistrationsOnCoreThread(GetRegistrationsInfosCallback callback);
   void GetRegistrationUserDataOnCoreThread(int64_t registration_id,
                                            const std::vector<std::string>& keys,
