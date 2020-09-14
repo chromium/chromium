@@ -5426,7 +5426,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
   double duration1 = EvalJs(rfh_a, "timeOnFrozen;").ExtractDouble();
   double duration2 = EvalJs(rfh_a, "video.currentTime;").ExtractDouble();
   EXPECT_LE(0.0, duration2 - duration1);
-  EXPECT_GT(0.01, duration2 - duration1);
+  EXPECT_GT(0.02, duration2 - duration1);
 
   // Resume the media.
   EXPECT_TRUE(ExecJs(rfh_a, "video.play();"));
