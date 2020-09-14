@@ -424,8 +424,15 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   EXPECT_EQ(GetNumUpdatesDownloadedInLastCycle(), initial_updates_downloaded);
 }
 
+// Flakiness spike on Windows, see crbug.com/1111227.
+#if defined(OS_WIN)
+#define MAYBE_DoesNotRedownloadAfterKeepData \
+  DISABLED_DoesNotRedownloadAfterKeepData
+#else
+#define MAYBE_DoesNotRedownloadAfterKeepData DoesNotRedownloadAfterKeepData
+#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       DoesNotRedownloadAfterKeepData) {
+                       MAYBE_DoesNotRedownloadAfterKeepData) {
   ASSERT_TRUE(SetupClients());
   ASSERT_FALSE(bookmarks_helper::GetBookmarkModel(0)->IsBookmarked(
       GURL(kSyncedBookmarkURL)));
