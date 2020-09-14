@@ -510,7 +510,8 @@ TEST_F('CrSettingsAdvancedPageV3Test', 'MAYBE_Load', function() {
  ['PrefUtil', 'pref_util_tests.m.js'],
  ['ProtocolHandlers', 'protocol_handlers_tests.js'],
  ['RecentSitePermissions', 'recent_site_permissions_test.js'],
- ['ResetPage', 'reset_page_test.js'],
+ // Flaky on all OSes. TODO(crbug.com/1127733): Enable the test.
+ ['ResetPage', 'reset_page_test.js', 'DISABLED_All'],
  ['ResetProfileBanner', 'reset_profile_banner_test.js'],
  ['SearchEngines', 'search_engines_page_test.js'],
  ['SearchPage', 'search_page_test.js'],
