@@ -73,6 +73,7 @@ base::Optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
+    bool was_signed_in_request,
     base::Time current_time);
 
 std::vector<feedstore::DataOperation> TranslateDismissData(

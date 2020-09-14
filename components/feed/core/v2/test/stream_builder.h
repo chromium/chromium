@@ -52,7 +52,10 @@ feedstore::Record MakeRecord(feedstore::StreamData stream_data);
 std::vector<feedstore::DataOperation> MakeTypicalStreamOperations();
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     int first_cluster_id = 0,
-    base::Time last_added_time = kTestTimeEpoch);
+    base::Time last_added_time = kTestTimeEpoch,
+    bool signed_in = true,
+    bool logging_enabled = true,
+    bool privacy_notice_fulfilled = true);
 // Root
 // |-Cluster 2
 // |  |-Content 2
@@ -60,7 +63,10 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
 //    |-Content 3
 std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     int page_number = 2,
-    base::Time last_added_time = kTestTimeEpoch);
+    base::Time last_added_time = kTestTimeEpoch,
+    bool signed_in = true,
+    bool logging_enabled = true,
+    bool privacy_notice_fulfilled = true);
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_TEST_STREAM_BUILDER_H_

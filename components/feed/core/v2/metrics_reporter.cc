@@ -461,6 +461,12 @@ void MetricsReporter::OnUploadActions(UploadActionsStatus status) {
                                 status);
 }
 
+void MetricsReporter::ActivityLoggingEnabled(
+    bool response_has_logging_enabled) {
+  base::UmaHistogramBoolean("ContentSuggestions.Feed.ActivityLoggingEnabled",
+                            response_has_logging_enabled);
+}
+
 void MetricsReporter::NoticeCardFulfilled(bool response_has_notice_card) {
   base::UmaHistogramBoolean("ContentSuggestions.Feed.NoticeCardFulfilled",
                             response_has_notice_card);

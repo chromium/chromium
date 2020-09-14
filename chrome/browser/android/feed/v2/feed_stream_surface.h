@@ -66,6 +66,11 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
   void SurfaceClosed(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
 
+  // Is activity Loggine enabled (ephemeral).
+  bool IsActivityLoggingEnabled(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   // Event reporting functions. These have no side-effect beyond recording
   // metrics. See |FeedStreamApi| for definitions.
   void ReportSliceViewed(JNIEnv* env,

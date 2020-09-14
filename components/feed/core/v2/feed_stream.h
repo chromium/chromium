@@ -79,6 +79,7 @@ class FeedStream : public FeedStreamApi,
     virtual RefreshResponseData TranslateWireResponse(
         feedwire::Response response,
         StreamModelUpdateRequest::Source source,
+        bool was_signed_in_request,
         base::Time current_time) const;
   };
 
@@ -121,6 +122,7 @@ class FeedStream : public FeedStreamApi,
 
   // FeedStreamApi.
 
+  bool IsActivityLoggingEnabled() const override;
   void AttachSurface(SurfaceInterface*) override;
   void DetachSurface(SurfaceInterface*) override;
   void SetArticlesListVisible(bool is_visible) override;
@@ -270,6 +272,9 @@ class FeedStream : public FeedStreamApi,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Re-evaluate whether or not activity logging should currently be enabled.
+  void UpdateIsActivityLoggingEnabled();
+
   void GetPrefetchSuggestions(
       base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>
           suggestions_callback);
@@ -325,6 +330,7 @@ class FeedStream : public FeedStreamApi,
   std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks_;
   Metadata metadata_;
   int unload_on_detach_sequence_number_ = 0;
+  bool is_activity_logging_enabled_ = false;
 
   // To allow tests to wait on task queue idle.
   base::RepeatingClosure idle_callback_;

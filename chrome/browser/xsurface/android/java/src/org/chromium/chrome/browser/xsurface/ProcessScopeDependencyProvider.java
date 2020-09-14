@@ -19,16 +19,19 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the account name of the signed-in user, or the empty string. */
+    @Deprecated
     default String getAccountName() {
         return "";
     }
 
     /** Returns the client instance id for this chrome. */
+    @Deprecated
     default String getClientInstanceId() {
         return "";
     }
 
     /** Returns the collection of currently active experiment ids. */
+    @Deprecated
     default int[] getExperimentIds() {
         return new int[0];
     }

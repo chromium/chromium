@@ -119,6 +119,7 @@ class MetricsReporter {
   static void OnUploadActionsBatch(UploadActionsBatchStatus status);
   virtual void OnUploadActions(UploadActionsStatus status);
 
+  static void ActivityLoggingEnabled(bool response_has_logging_enabled);
   static void NoticeCardFulfilled(bool response_has_notice_card);
 
  private:

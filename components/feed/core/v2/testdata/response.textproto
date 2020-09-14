@@ -476,6 +476,7 @@ feed_response {
     #response_time_ms: 1587056924
     chrome_feed_response_metadata {
       privacy_notice_fulfilled: true
+      waa_on: true
     }
   }
 }

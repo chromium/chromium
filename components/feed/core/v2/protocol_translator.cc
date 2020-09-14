@@ -18,6 +18,7 @@
 #include "components/feed/core/proto/v2/wire/request_schedule.pb.h"
 #include "components/feed/core/proto/v2/wire/stream_structure.pb.h"
 #include "components/feed/core/proto/v2/wire/token.pb.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 
 namespace feed {
@@ -254,6 +255,7 @@ base::Optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
+    bool was_signed_in_request,
     base::Time current_time) {
   if (response.response_version() != feedwire::Response::FEED_RESPONSE)
     return {};
@@ -296,6 +298,17 @@ RefreshResponseData TranslateWireResponse(
         result->shared_states.front().content_id();
   }
   feedstore::SetLastAddedTime(current_time, result->stream_data);
+
+  const auto& response_metadata =
+      feed_response->feed_response_metadata().chrome_feed_response_metadata();
+  result->stream_data.set_signed_in(was_signed_in_request);
+  result->stream_data.set_logging_enabled(response_metadata.logging_enabled());
+  result->stream_data.set_privacy_notice_fulfilled(
+      response_metadata.privacy_notice_fulfilled());
+
+  MetricsReporter::ActivityLoggingEnabled(response_metadata.logging_enabled());
+  MetricsReporter::NoticeCardFulfilled(
+      response_metadata.privacy_notice_fulfilled());
 
   RefreshResponseData response_data;
   response_data.model_update_request = std::move(result);
