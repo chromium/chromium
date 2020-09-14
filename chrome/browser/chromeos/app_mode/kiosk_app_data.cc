@@ -360,7 +360,6 @@ void KioskAppData::SetStatus(Status status) {
 
   switch (status_) {
     case STATUS_INIT:
-      break;
     case STATUS_LOADING:
     case STATUS_LOADED:
       delegate_->OnKioskAppDataChanged(app_id());
@@ -457,6 +456,7 @@ void KioskAppData::OnWebstoreParseSuccess(
 }
 
 void KioskAppData::OnWebstoreParseFailure() {
+  LOG(WARNING) << "Webstore request parse failure for app_id=" << app_id();
   SetStatus(STATUS_ERROR);
 }
 
@@ -563,16 +563,14 @@ void KioskAppData::OnCrxLoadFinished(const CrxLoader* crx_loader) {
     return;
 
   if (!crx_loader->success()) {
-    // If we did get some data before in from Local State, but the extentension
-    // file got corrupted, we should notify the ExternalCache to remove it and
-    // redownload it upon next session start(kiosk or login).
-    if (status() == STATUS_LOADED) {
-      // Our cache is corrupted, we need to notify ExternalCache about that.
-      if (delegate_)
-        delegate_->OnExternalCacheDamaged(app_id());
-    } else {
-      SetStatus(STATUS_ERROR);
-    }
+    LOG(ERROR) << "Failed to load cached extension data for app_id="
+               << app_id();
+    // If after unpacking the cached extension we received an error, schedule a
+    // redownload upon next session start(kiosk or login).
+    if (delegate_)
+      delegate_->OnExternalCacheDamaged(app_id());
+
+    SetStatus(STATUS_INIT);
     return;
   }
 
