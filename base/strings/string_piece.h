@@ -30,7 +30,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/strings/char_traits.h"
 #include "base/strings/string16.h"
@@ -159,13 +158,25 @@ template <typename STRING_TYPE> class BasicStringPiece {
   // in a "const char*" or a "string" wherever a "StringPiece" is
   // expected (likewise for char16, string16, StringPiece16).
   constexpr BasicStringPiece() : ptr_(nullptr), length_(0) {}
+  // TODO(crbug.com/1049498): Construction from nullptr is not allowed for
+  // std::basic_string_view, so remove the special handling for it.
   // Note: This doesn't just use STRING_TYPE::traits_type::length(), since that
-  // isn't constexpr until C++17. Furthermore, this CHECKs `str`, since passing
-  // a nullptr to std::basic_string_view is undefined behavior. In order to
-  // ensure we don't pass nullptr to CharTraits::length we perform the CHECK
-  // during the initialization of `length_`.
+  // isn't constexpr until C++17.
   constexpr BasicStringPiece(const value_type* str)
-      : ptr_(str), length_((CHECK(str), CharTraits<value_type>::length(str))) {}
+      : ptr_(str), length_(!str ? 0 : CharTraits<value_type>::length(str)) {}
+  // Explicitly disallow construction from nullptr. Note that this does not
+  // catch construction from runtime strings that might be null.
+  // Note: The following is just a more elaborate way of spelling
+  // `BasicStringPiece(nullptr_t) = delete`, but unfortunately the terse form is
+  // not supported by the PNaCl toolchain.
+  // TODO(crbug.com/1049498): Remove once we CHECK(str) in the constructor
+  // above.
+  template <class T, class = std::enable_if_t<std::is_null_pointer<T>::value>>
+  BasicStringPiece(T) {
+    static_assert(sizeof(T) == 0,  // Always false.
+                  "StringPiece does not support construction from nullptr, use "
+                  "the default constructor instead.");
+  }
   BasicStringPiece(const STRING_TYPE& str)
       : ptr_(str.data()), length_(str.size()) {}
   constexpr BasicStringPiece(const value_type* offset, size_type len)
