@@ -21,9 +21,4 @@ component("renderer") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
   ]
-
-  visibility = [
-    "//chromecast/renderer/*",
-    "//fuchsia/engine:web_engine_core",
-  ]
 }

@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/blink/public/common/messaging",
+  "+ui/base/resource",
+]

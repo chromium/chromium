@@ -2,7 +2,7 @@
   <head><title>bindings</title></head>
   <body>
     <script>
-      var testChannel = cast.__platform__.PortConnector.bind('hello');
+      var testChannel = cast.__platform__.PortConnector.bind('echo');
       testChannel.onmessage = function(msg) {
         testChannel.postMessage('ack ' + msg.data);
         return true;

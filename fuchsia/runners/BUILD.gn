@@ -62,16 +62,21 @@ source_set("cast_runner_core") {
     "cast/cast_runner.h",
     "cast/cast_streaming.cc",
     "cast/cast_streaming.h",
-    "cast/named_message_port_connector.cc",
-    "cast/named_message_port_connector.h",
+    "cast/named_message_port_connector_fuchsia.cc",
+    "cast/named_message_port_connector_fuchsia.h",
     "cast/pending_cast_component.cc",
     "cast/pending_cast_component.h",
   ]
-  data_deps = [ "//chromecast/bindings:named_message_port_connector_resources" ]
-  data = [ "cast/data" ]
+  data = [
+    "cast/data/receiver.html",
+    "${root_gen_dir}/components/cast/named_message_port_connector/named_message_port_connector_resources.pak",
+  ]
   deps = [
     "//base",
+    "//components/cast/named_message_port_connector:named_message_port_connector",
+    "//components/cast/named_message_port_connector:resources",
     "//fuchsia/base",
+    "//fuchsia/base:message_port",
     "//fuchsia/base:modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
@@ -95,7 +100,10 @@ executable("cast_runner_exe") {
     ":common",
     "//base",
     "//fuchsia/base",
+    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when MPP lands.
+    "//ui/base",
   ]
+  data_deps = [ ":cast_runner_core" ]
   visibility = [ ":*" ]
 }
 
@@ -157,7 +165,9 @@ test("cast_runner_integration_tests") {
     ":cast_runner_test_core",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/cast/named_message_port_connector:resources",
     "//fuchsia/base:test_support",
+    "//mojo/core/embedder",  # TODO(crbug.com/1126571): Remove when MPP lands.
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
@@ -165,7 +175,9 @@ test("cast_runner_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//ui/base",
   ]
+  data_deps = [ ":cast_runner_core" ]
   package_deps = [ [
         "//fuchsia/engine:web_engine",
         "web_engine",
@@ -175,7 +187,7 @@ test("cast_runner_integration_tests") {
 test("cast_runner_browsertests") {
   sources = [
     "cast/api_bindings_client_browsertest.cc",
-    "cast/named_message_port_connector_browsertest.cc",
+    "cast/named_message_port_connector_fuchsia_browsertest.cc",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   data = [ "cast/testdata" ]
@@ -186,6 +198,7 @@ test("cast_runner_browsertests") {
     "//content/public/browser",
     "//content/test:test_support",
     "//fuchsia/base",
+    "//fuchsia/base:message_port",
     "//fuchsia/base:test_support",
     "//fuchsia/engine:browsertest_core",
     "//testing/gmock",

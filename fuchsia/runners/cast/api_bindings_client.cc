@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
+#include "fuchsia/base/message_port.h"
 
 namespace {
 
@@ -35,7 +36,7 @@ ApiBindingsClient::ApiBindingsClient(
 
 ApiBindingsClient::~ApiBindingsClient() {
   if (connector_ && frame_) {
-    connector_->Register({});
+    connector_->RegisterPortHandler({});
 
     // Remove all injected scripts using their automatically enumerated IDs.
     for (uint64_t i = 0; i < bindings_->size(); ++i)
@@ -43,9 +44,10 @@ ApiBindingsClient::~ApiBindingsClient() {
   }
 }
 
-void ApiBindingsClient::AttachToFrame(fuchsia::web::Frame* frame,
-                                      NamedMessagePortConnector* connector,
-                                      base::OnceClosure on_error_callback) {
+void ApiBindingsClient::AttachToFrame(
+    fuchsia::web::Frame* frame,
+    cast_api_bindings::NamedMessagePortConnector* connector,
+    base::OnceClosure on_error_callback) {
   DCHECK(!frame_) << "AttachToFrame() was called twice.";
   DCHECK(frame);
   DCHECK(connector);
@@ -62,8 +64,8 @@ void ApiBindingsClient::AttachToFrame(fuchsia::web::Frame* frame,
     std::move(on_error_callback).Run();
   });
 
-  connector_->Register(base::BindRepeating(&ApiBindingsClient::OnPortConnected,
-                                           base::Unretained(this)));
+  connector_->RegisterPortHandler(base::BindRepeating(
+      &ApiBindingsClient::OnPortConnected, base::Unretained(this)));
 
   // Enumerate and inject all scripts in |bindings|.
   uint64_t bindings_id = kBindingsIdStart;
@@ -87,11 +89,15 @@ bool ApiBindingsClient::HasBindings() const {
   return bindings_.has_value();
 }
 
-void ApiBindingsClient::OnPortConnected(
-    base::StringPiece port_name,
-    fidl::InterfaceHandle<fuchsia::web::MessagePort> port) {
-  if (bindings_service_)
-    bindings_service_->Connect(port_name.as_string(), std::move(port));
+bool ApiBindingsClient::OnPortConnected(base::StringPiece port_name,
+                                        blink::WebMessagePort port) {
+  if (!bindings_service_)
+    return false;
+
+  bindings_service_->Connect(
+      port_name.as_string(),
+      cr_fuchsia::FidlMessagePortFromBlink(std::move(port)));
+  return true;
 }
 
 void ApiBindingsClient::OnBindingsReceived(

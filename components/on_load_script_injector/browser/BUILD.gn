@@ -20,10 +20,4 @@ component("browser") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
   ]
-
-  visibility = [
-    "//chromecast/bindings:bindings_manager_cast",
-    "//chromecast/browser:browser",
-    "//fuchsia/engine:web_engine_core",
-  ]
 }
