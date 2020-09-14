@@ -203,11 +203,7 @@ public class ShareSheetPropertyModelBuilder {
         }
         mBottomSheetController.hideContent(bottomSheet, true);
         // Fire intent through ShareHelper.
-        if (params.getScreenshotUri() != null) {
-            ShareHelper.shareImage(window, component, params.getScreenshotUri());
-        } else {
-            ShareHelper.shareDirectly(params, component);
-        }
+        ShareHelper.shareDirectly(params, component);
     }
 
     /**

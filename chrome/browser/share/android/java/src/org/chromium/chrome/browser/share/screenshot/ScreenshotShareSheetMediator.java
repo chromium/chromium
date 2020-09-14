@@ -18,6 +18,9 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * ScreenshotShareSheetMediator is in charge of calculating and setting values for
  * ScreenshotShareSheetViewProperties.
@@ -85,20 +88,19 @@ class ScreenshotShareSheetMediator {
         Bitmap bitmap = mModel.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP);
 
         WindowAndroid window = mTab.getWindowAndroid();
+        // TODO(1124799): Change title to screenshot title.
         String title = mTab.getTitle();
-        String visibleUrl = mTab.getUrlString();
         Callback<Uri> callback = (bitmapUri) -> {
-            ShareParams params = new ShareParams.Builder(window, title, visibleUrl)
-                                         .setScreenshotUri(bitmapUri)
-                                         .build();
+            ShareParams params =
+                    new ShareParams.Builder(window, title, /*url=*/"")
+                            .setFileUris(new ArrayList<>(Collections.singletonList(bitmapUri)))
+                            .setFileContentType(
+                                    window.getApplicationContext().getContentResolver().getType(
+                                            bitmapUri))
+                            .build();
 
-            ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder()
-                                                          .setSaveLastUsed(false)
-                                                          .setShareDirectly(false)
-                                                          .setIsUrlOfVisiblePage(false)
-                                                          .build();
             mChromeOptionShareCallback.showThirdPartyShareSheet(
-                    params, chromeShareExtras, System.currentTimeMillis());
+                    params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
         };
 
         generateTemporaryUriFromBitmap(mContext, title, bitmap, callback);
