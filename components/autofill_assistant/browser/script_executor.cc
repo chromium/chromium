@@ -588,11 +588,11 @@ void ScriptExecutor::SetFieldValue(
 }
 
 void ScriptExecutor::SetAttribute(
-    const Selector& selector,
-    const std::vector<std::string>& attribute,
+    const ElementFinder::Result& element,
+    const std::vector<std::string>& attributes,
     const std::string& value,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SetAttribute(selector, attribute, value,
+  delegate_->GetWebController()->SetAttribute(element, attributes, value,
                                               std::move(callback));
 }
 

@@ -268,6 +268,7 @@ source_set("unit_tests") {
     "actions/prompt_action_unittest.cc",
     "actions/save_generated_password_action_unittest.cc",
     "actions/select_option_action_unittest.cc",
+    "actions/set_attribute_action_unittest.cc",
     "actions/set_form_field_value_action_unittest.cc",
     "actions/show_details_action_unittest.cc",
     "actions/show_generic_ui_action_unittest.cc",

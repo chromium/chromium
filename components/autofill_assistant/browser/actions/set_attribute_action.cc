@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -44,11 +46,22 @@ void SetAttributeAction::OnWaitForElement(ProcessActionCallback callback,
     return;
   }
 
-  delegate_->SetAttribute(
-      selector, ExtractVector(proto_.set_attribute().attribute()),
-      proto_.set_attribute().value(),
+  ActionDelegateUtil::FindElementAndPerform(
+      delegate_, selector,
+      base::BindOnce(&SetAttributeAction::PerformSetAttribute,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ExtractVector(proto_.set_attribute().attribute()),
+                     proto_.set_attribute().value()),
       base::BindOnce(&SetAttributeAction::OnSetAttribute,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SetAttributeAction::PerformSetAttribute(
+    const std::vector<std::string>& attributes,
+    const std::string& value,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->SetAttribute(element, attributes, value, std::move(callback));
 }
 
 void SetAttributeAction::OnSetAttribute(ProcessActionCallback callback,

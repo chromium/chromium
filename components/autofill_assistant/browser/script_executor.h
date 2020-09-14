@@ -191,8 +191,8 @@ class ScriptExecutor : public ActionDelegate,
       int key_press_delay_in_millisecond,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SetAttribute(
-      const Selector& selector,
-      const std::vector<std::string>& attribute,
+      const ElementFinder::Result& element,
+      const std::vector<std::string>& attributes,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SendKeyboardInput(

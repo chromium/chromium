@@ -162,10 +162,10 @@ class WebController {
       int key_press_delay_in_millisecond,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Set the |value| of the |attribute| of the element given by |selector|.
+  // Set the |value| of all the |attributes| of the |element|.
   virtual void SetAttribute(
-      const Selector& selector,
-      const std::vector<std::string>& attribute,
+      const ElementFinder::Result& element,
+      const std::vector<std::string>& attributes,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
@@ -442,15 +442,6 @@ class WebController {
       const ElementFinder::Result& element,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback);
-  void OnFindElementForSetAttribute(
-      const std::vector<std::string>& attribute,
-      const std::string& value,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
-  void OnSetAttribute(base::OnceCallback<void(const ClientStatus&)> callback,
-                      const DevtoolsClient::ReplyStatus& reply_status,
-                      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnFindElementForGetOuterHtml(
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback,

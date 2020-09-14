@@ -204,7 +204,7 @@ class MockActionDelegate : public ActionDelegate {
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 
   MOCK_METHOD4(SetAttribute,
-               void(const Selector& selector,
+               void(const ElementFinder::Result& element,
                     const std::vector<std::string>& attribute,
                     const std::string& value,
                     base::OnceCallback<void(const ClientStatus&)> callback));

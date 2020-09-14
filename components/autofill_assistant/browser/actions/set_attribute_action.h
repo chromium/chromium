@@ -11,6 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -28,6 +31,11 @@ class SetAttributeAction : public Action {
   void OnWaitForElement(ProcessActionCallback callback,
                         const Selector& selector,
                         const ClientStatus& element_status);
+  void PerformSetAttribute(
+      const std::vector<std::string>& attributes,
+      const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
   void OnSetAttribute(ProcessActionCallback callback,
                       const ClientStatus& status);
 

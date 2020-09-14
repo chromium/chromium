@@ -1267,40 +1267,20 @@ void WebController::SetValueAttribute(
 }
 
 void WebController::SetAttribute(
-    const Selector& selector,
-    const std::vector<std::string>& attribute,
+    const ElementFinder::Result& element,
+    const std::vector<std::string>& attributes,
     const std::string& value,
     base::OnceCallback<void(const ClientStatus&)> callback) {
 #ifdef NDEBUG
-  VLOG(3) << __func__ << " " << selector
-          << ", attribute=(redacted), value=(redacted)";
+  VLOG(3) << __func__ << " attributes=(redacted), value=(redacted)";
 #else
-  DVLOG(3) << __func__ << " " << selector << ", attribute=["
-           << base::JoinString(attribute, ",") << "], value=" << value;
+  DVLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
+           << "], value=" << value;
 #endif
 
-  DCHECK(!selector.empty());
-  DCHECK_GT(attribute.size(), 0u);
-  FindElement(selector,
-              /* strict_mode= */ true,
-              base::BindOnce(&WebController::OnFindElementForSetAttribute,
-                             weak_ptr_factory_.GetWeakPtr(), attribute, value,
-                             std::move(callback)));
-}
-
-void WebController::OnFindElementForSetAttribute(
-    const std::vector<std::string>& attribute,
-    const std::string& value,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    std::move(callback).Run(status);
-    return;
-  }
-
+  DCHECK_GT(attributes.size(), 0u);
   base::Value::ListStorage attribute_values;
-  for (const std::string& string : attribute) {
+  for (const std::string& string : attributes) {
     attribute_values.emplace_back(base::Value(string));
   }
 
@@ -1309,21 +1289,13 @@ void WebController::OnFindElementForSetAttribute(
   AddRuntimeCallArgument(value, &arguments);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element_result->object_id)
+          .SetObjectId(element.object_id)
           .SetArguments(std::move(arguments))
           .SetFunctionDeclaration(std::string(kSetAttributeScript))
           .Build(),
-      element_result->node_frame_id,
-      base::BindOnce(&WebController::OnSetAttribute,
+      element.node_frame_id,
+      base::BindOnce(&WebController::OnJavaScriptResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::OnSetAttribute(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  std::move(callback).Run(
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__));
 }
 
 void WebController::SendKeyboardInput(

@@ -572,24 +572,41 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
   }
 
   ClientStatus SetAttribute(const Selector& selector,
-                            const std::vector<std::string>& attribute,
+                            const std::vector<std::string>& attributes,
                             const std::string& value) {
     base::RunLoop run_loop;
     ClientStatus result;
-    web_controller_->SetAttribute(
-        selector, attribute, value,
-        base::BindOnce(&WebControllerBrowserTest::OnSetAttribute,
-                       base::Unretained(this), run_loop.QuitClosure(),
-                       &result));
+
+    web_controller_->FindElement(
+        selector, /* strict_mode= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindSetAttributeElementCallback,
+            base::Unretained(this), attributes, value, run_loop.QuitClosure(),
+            &result));
+
     run_loop.Run();
     return result;
   }
 
-  void OnSetAttribute(base::OnceClosure done_callback,
-                      ClientStatus* result_output,
-                      const ClientStatus& status) {
-    *result_output = status;
-    std::move(done_callback).Run();
+  void FindSetAttributeElementCallback(
+      const std::vector<std::string>& attributes,
+      const std::string& value,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    if (!status.ok()) {
+      *result_output = status;
+      std::move(done_callback).Run();
+      return;
+    }
+
+    ASSERT_TRUE(element_result != nullptr);
+    web_controller_->SetAttribute(
+        *element_result, attributes, value,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element_result),
+                       std::move(done_callback), result_output));
   }
 
   bool GetElementPosition(const Selector& selector, RectF* rect_output) {

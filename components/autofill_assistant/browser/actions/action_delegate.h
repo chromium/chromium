@@ -237,10 +237,10 @@ class ActionDelegate {
       int key_press_delay_in_millisecond,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Set the |value| of the |attribute| of the element given by |selector|.
+  // Set the |value| of all the |attributes| of the |element|.
   virtual void SetAttribute(
-      const Selector& selector,
-      const std::vector<std::string>& attribute,
+      const ElementFinder::Result& element,
+      const std::vector<std::string>& attributes,
       const std::string& value,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 

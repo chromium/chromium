@@ -13,18 +13,6 @@
 #include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
-namespace {
-
-void PerformSelectOption(
-    ActionDelegate* delegate,
-    const std::string& value,
-    DropdownSelectStrategy select_strategy,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate->SelectOption(element, value, select_strategy, std::move(callback));
-}
-
-}  // namespace
 
 SelectOptionAction::SelectOptionAction(ActionDelegate* delegate,
                                        const ActionProto& proto)
@@ -68,11 +56,20 @@ void SelectOptionAction::OnWaitForElement(ProcessActionCallback callback,
 
   ActionDelegateUtil::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&PerformSelectOption, delegate_,
+      base::BindOnce(&SelectOptionAction::PerformSelectOption,
+                     weak_ptr_factory_.GetWeakPtr(),
                      proto_.select_option().selected_option(),
                      proto_.select_option().select_strategy()),
       base::BindOnce(&SelectOptionAction::OnSelectOption,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SelectOptionAction::PerformSelectOption(
+    const std::string& value,
+    DropdownSelectStrategy select_strategy,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  delegate_->SelectOption(element, value, select_strategy, std::move(callback));
 }
 
 void SelectOptionAction::OnSelectOption(ProcessActionCallback callback,
