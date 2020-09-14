@@ -47,6 +47,9 @@ class CGaiaCredentialProviderModule
   // once even if the function is called multiple times.
   void InitializeCrashReporting();
 
+  // Logs the details of the module such as version, loading process.
+  void LogProcessDetails();
+
  private:
   std::unique_ptr<base::AtExitManager> exit_manager_;
   bool is_testing_ = false;

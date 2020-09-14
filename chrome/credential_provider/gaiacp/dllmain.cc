@@ -67,6 +67,9 @@ STDAPI DllCanUnloadNow(void) {
 
 // Returns a class factory to create an object of the requested type.
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
+  // This is performed in here to avoid from doing substantial work in DLLMain.
+  _AtlModule.LogProcessDetails();
+
   // Check to see if the credential provider has crashed too much recently.
   // If it has then do not allow it to create any credential providers.
   if (!credential_provider::WriteToStartupSentinel()) {
