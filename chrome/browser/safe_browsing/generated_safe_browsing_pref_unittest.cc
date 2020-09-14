@@ -163,39 +163,18 @@ const std::vector<SafeBrowsingManagementTestCase> kManagedTestCases = {
      {SafeBrowsingSetting::STANDARD, SafeBrowsingSetting::DISABLED}},
 };
 
-// Sets |pref_name| to |pref_setting|, using the appropriate store in |prefs|
-// for |source|.
-void SetPrefFromSource(sync_preferences::TestingPrefServiceSyncable* prefs,
-                       const std::string& pref_name,
-                       settings_private::PrefSetting pref_setting,
-                       settings_private::PrefSource source) {
-  if (pref_setting == settings_private::PrefSetting::kNotSet) {
-    return;
-  }
-  auto pref_value = std::make_unique<base::Value>(
-      pref_setting == settings_private::PrefSetting::kRecommendedOn ||
-      pref_setting == settings_private::PrefSetting::kEnforcedOn);
-  if (source == settings_private::PrefSource::kExtension) {
-    prefs->SetExtensionPref(pref_name, std::move(pref_value));
-  } else if (source == settings_private::PrefSource::kDevicePolicy) {
-    prefs->SetManagedPref(pref_name, std::move(pref_value));
-  } else if (source == settings_private::PrefSource::kRecommended) {
-    prefs->SetRecommendedPref(pref_name, std::move(pref_value));
-  }
-}
-
 void SetupManagedTestConditions(
     sync_preferences::TestingPrefServiceSyncable* prefs,
     const SafeBrowsingManagementTestCase& test_case) {
-  SetPrefFromSource(prefs, prefs::kSafeBrowsingEnabled,
-                    test_case.safe_browsing_enabled,
-                    test_case.enabled_enhanced_preference_source);
-  SetPrefFromSource(prefs, prefs::kSafeBrowsingEnhanced,
-                    test_case.safe_browsing_enhanced,
-                    test_case.enabled_enhanced_preference_source);
-  SetPrefFromSource(prefs, prefs::kSafeBrowsingScoutReportingEnabled,
-                    test_case.safe_browsing_reporting,
-                    test_case.reporting_preference_source);
+  extensions::settings_private::SetPrefFromSource(
+      prefs, prefs::kSafeBrowsingEnabled, test_case.safe_browsing_enabled,
+      test_case.enabled_enhanced_preference_source);
+  extensions::settings_private::SetPrefFromSource(
+      prefs, prefs::kSafeBrowsingEnhanced, test_case.safe_browsing_enhanced,
+      test_case.enabled_enhanced_preference_source);
+  extensions::settings_private::SetPrefFromSource(
+      prefs, prefs::kSafeBrowsingScoutReportingEnabled,
+      test_case.safe_browsing_reporting, test_case.reporting_preference_source);
 }
 
 void ValidateManagedPreference(

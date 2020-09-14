@@ -14,37 +14,11 @@
 #include "components/prefs/pref_service.h"
 
 namespace settings_api = extensions::api::settings_private;
+namespace settings_private = extensions::settings_private;
 
 namespace content_settings {
 
 namespace {
-
-settings_api::ControlledBy GetControlledByForContentSettingSource(
-    SettingSource source) {
-  switch (source) {
-    case SETTING_SOURCE_POLICY:
-      return settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
-    case SETTING_SOURCE_EXTENSION:
-      return settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
-    case SETTING_SOURCE_SUPERVISED:
-      return settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
-    default:
-      NOTREACHED();
-      return settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
-  }
-}
-
-// Adds the provided |value| to the user selectable values of |pref_object|,
-// creating the base::Value vector if required.
-void AddUserSelectableValue(settings_api::PrefObject* pref_object,
-                            CookiePrimarySetting value) {
-  if (!pref_object->user_selectable_values) {
-    pref_object->user_selectable_values =
-        std::make_unique<std::vector<std::unique_ptr<base::Value>>>();
-  }
-  pref_object->user_selectable_values->push_back(
-      std::make_unique<base::Value>(static_cast<int>(value)));
-}
 
 bool IsDefaultCookieContentSettingUserControlled(HostContentSettingsMap* map) {
   std::string content_setting_provider;
@@ -251,15 +225,15 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
   if (content_setting_enforced && content_setting == CONTENT_SETTING_BLOCK) {
     // Preference is fully managed by the content setting.
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->controlled_by =
-        GetControlledByForContentSettingSource(content_setting_source);
+    settings_private::GeneratedPref::ApplyControlledByFromContentSettingSource(
+        pref_object, content_setting_source);
     return;
   }
 
   if (content_setting_enforced && cookie_controls_mode_enforced) {
     // Preference is considered fully managed by the third party preference.
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
+    settings_private::GeneratedPref::ApplyControlledByFromPref(
         pref_object, cookie_controls_mode_pref);
     return;
   }
@@ -286,12 +260,14 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
   // you can choose between the selected cookie controls setting and "BLOCK"
   if (cookie_controls_mode_enforced) {
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
+    settings_private::GeneratedPref::ApplyControlledByFromPref(
         pref_object, cookie_controls_mode_pref);
     auto value = static_cast<CookieControlsMode>(
         cookie_controls_mode_pref->GetValue()->GetInt());
-    AddUserSelectableValue(pref_object, ToCookiePrimarySetting(value));
-    AddUserSelectableValue(pref_object, CookiePrimarySetting::BLOCK_ALL);
+    settings_private::GeneratedPref::AddUserSelectableValue(
+        pref_object, static_cast<int>(ToCookiePrimarySetting(value)));
+    settings_private::GeneratedPref::AddUserSelectableValue(
+        pref_object, static_cast<int>(CookiePrimarySetting::BLOCK_ALL));
     return;
   }
 
@@ -300,14 +276,16 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
     DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
            content_setting == CONTENT_SETTING_SESSION_ONLY);
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->controlled_by =
-        GetControlledByForContentSettingSource(content_setting_source);
+    settings_private::GeneratedPref::ApplyControlledByFromContentSettingSource(
+        pref_object, content_setting_source);
 
-    AddUserSelectableValue(pref_object, CookiePrimarySetting::ALLOW_ALL);
-    AddUserSelectableValue(pref_object,
-                           CookiePrimarySetting::BLOCK_THIRD_PARTY);
-    AddUserSelectableValue(pref_object,
-                           CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO);
+    settings_private::GeneratedPref::AddUserSelectableValue(
+        pref_object, static_cast<int>(CookiePrimarySetting::ALLOW_ALL));
+    settings_private::GeneratedPref::AddUserSelectableValue(
+        pref_object, static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY));
+    settings_private::GeneratedPref::AddUserSelectableValue(
+        pref_object,
+        static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO));
   }
 }
 

@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
 
 namespace base {
@@ -68,6 +69,19 @@ class GeneratedPref {
   static void ApplyControlledByFromPref(
       api::settings_private::PrefObject* pref_object,
       const PrefService::Preference* pref);
+
+  // Sets controlled_by for |pref_object| base on provided |setting_source|
+  // for a limited subset of controlled_by sources relevant for content
+  // settings.
+  static void ApplyControlledByFromContentSettingSource(
+      api::settings_private::PrefObject* pref_object,
+      content_settings::SettingSource setting_source);
+
+  // Adds the provided |value| to the user selectable values of |pref_object|,
+  // creating the base::Value vector if required.
+  static void AddUserSelectableValue(
+      extensions::api::settings_private::PrefObject* pref_object,
+      int value);
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

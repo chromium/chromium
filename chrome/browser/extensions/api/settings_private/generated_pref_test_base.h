@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +36,13 @@ enum class PrefSource {
   kRecommended,
   kNone,
 };
+
+// Sets |pref_name| to |pref_setting|, using the appropriate store in |prefs|
+// for |source|.
+void SetPrefFromSource(sync_preferences::TestingPrefServiceSyncable* prefs,
+                       const std::string& pref_name,
+                       settings_private::PrefSetting pref_setting,
+                       settings_private::PrefSource source);
 
 class TestGeneratedPrefObserver : public GeneratedPref::Observer {
  public:

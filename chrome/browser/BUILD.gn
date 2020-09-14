@@ -3152,6 +3152,8 @@ static_library("browser") {
       "component_updater/soda_ja_jp_component_installer.h",
       "content_settings/generated_cookie_prefs.cc",
       "content_settings/generated_cookie_prefs.h",
+      "content_settings/generated_notification_pref.cc",
+      "content_settings/generated_notification_pref.h",
       "custom_handlers/register_protocol_handler_permission_request.cc",
       "custom_handlers/register_protocol_handler_permission_request.h",
       "device_identity/device_identity_provider.cc",
