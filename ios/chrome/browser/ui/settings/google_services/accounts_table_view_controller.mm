@@ -498,6 +498,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)showSignOutWithClearData:(BOOL)forceClearData
                         itemView:(UIView*)itemView {
+  if (_authenticationOperationInProgress || [_alertCoordinator isVisible] ||
+      self != [self.navigationController topViewController]) {
+    // An action is already in progress, ignore user's request.
+    return;
+  }
+
   NSString* alertMessage = nil;
   NSString* signOutTitle = nil;
   UIAlertActionStyle actionStyle = UIAlertActionStyleDefault;
@@ -537,51 +543,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_alertCoordinator start];
 }
 
-- (void)showSignOut {
-  if (_authenticationOperationInProgress || [_alertCoordinator isVisible] ||
-      self != [self.navigationController topViewController]) {
-    // An action is already in progress, ignore user's request.
-    return;
-  }
-
-  NSString* title = nil;
-  NSString* message = nil;
-  NSString* continueButtonTitle = nil;
-
-  if ([self authService] -> IsAuthenticatedIdentityManaged()) {
-    title =
-        l10n_util::GetNSString(IDS_IOS_MANAGED_DISCONNECT_DIALOG_TITLE_UNITY);
-    message = l10n_util::GetNSStringF(
-        IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY, self.hostedDomain);
-    continueButtonTitle =
-        l10n_util::GetNSString(IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY);
-  } else {
-    title = l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_TITLE_UNITY);
-    message =
-        l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_INFO_MOBILE_UNITY);
-    continueButtonTitle = l10n_util::GetNSString(
-        IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
-  }
-
-  _alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self
-                                                   browser:_browser
-                                                     title:title
-                                                   message:message];
-
-  __weak AccountsTableViewController* weakSelf = self;
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:nil
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator addItemWithTitle:continueButtonTitle
-                               action:^{
-                                 [weakSelf handleSignOutWithForceClearData:NO];
-                               }
-                                style:UIAlertActionStyleDefault];
-
-  [_alertCoordinator start];
-}
-
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
   AuthenticationService* authService = [self authService];
   if (authService->IsAuthenticated()) {
@@ -590,10 +551,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     authService->SignOut(
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
           [self allowUserInteraction];
-          _authenticationOperationInProgress = NO;
-          [base::mac::ObjCCastStrict<SettingsNavigationController>(
-              self.navigationController)
-              popViewControllerOrCloseSettingsAnimated:YES];
+          [self handleAuthenticationOperationDidFinish];
         });
     // Get UMA metrics on the usage of different options for signout available
     // for users with non-managed accounts.

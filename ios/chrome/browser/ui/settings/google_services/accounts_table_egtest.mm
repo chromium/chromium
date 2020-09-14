@@ -256,6 +256,23 @@ id<GREYMatcher> NoBookmarksLabel() {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that given two accounts A and B that are available on the device -
+// signing in and out from account A, then signing in to account B, properly
+// identifies the user with account B.
+- (void)testSwitchingAccountsWithClearedData {
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
 // Tests that the user isn't signed out and the UI is correct when the
 // disconnect is cancelled in the Account Settings screen.
 #if !TARGET_IPHONE_SIMULATOR
