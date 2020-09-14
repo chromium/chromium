@@ -589,8 +589,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
   EXPECT_TRUE(main_frame_host()->is_mhtml_document());
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL(main_frame_host()->GetLastCommittedURL().spec() + "#foo")));
-  // TODO(https://crbug.com/1126391): This should be true instead.
-  EXPECT_FALSE(main_frame_host()->is_mhtml_document());
+  EXPECT_TRUE(main_frame_host()->is_mhtml_document());
 }
 
 // Check RenderFrameHostImpl::is_mhtml_document() is correctly set for history

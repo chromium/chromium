@@ -8311,17 +8311,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   if (!is_same_document_navigation)
     UpdateRenderProcessHostFramePriorities();
 
-  // Set the state whether this navigation is to an MHTML document, since there
-  // are certain security checks that we cannot apply to subframes in MHTML
-  // documents. Do not trust renderer data when determining that, rather use
-  // the |navigation_request|, which was generated and stays browser side.
-  //
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation is NOT correct. This should be moved to DidCommitNewDocument().
-  is_mhtml_document_ =
-      (navigation_request->GetMimeType() == "multipart/related" ||
-       navigation_request->GetMimeType() == "message/rfc822");
-
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation might not be right. Should this be moved to
   // DidCommitNewDocument()?
@@ -8482,6 +8471,14 @@ void RenderFrameHostImpl::DidCommitNewDocument(
         base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
   }
+
+  // Set the state whether this navigation is to an MHTML document, since there
+  // are certain security checks that we cannot apply to subframes in MHTML
+  // documents. Do not trust renderer data when determining that, rather use
+  // the |navigation_request|, which was generated and stays browser side.
+  is_mhtml_document_ =
+      navigation_request->GetMimeType() == "multipart/related" ||
+      navigation_request->GetMimeType() == "message/rfc822";
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
