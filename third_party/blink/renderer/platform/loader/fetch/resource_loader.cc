@@ -470,10 +470,7 @@ bool ResourceLoader::ShouldFetchCodeCache() {
 void ResourceLoader::Start() {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
   ActivateCacheAwareLoadingIfNeeded(request);
-  // TODO(yoichio): Have CreateURLLoader take a ResourceRequestHead, not
-  // ResourceRequest.
-  loader_ =
-      fetcher_->CreateURLLoader(ResourceRequest(request), resource_->Options());
+  loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
   task_runner_for_body_loader_ = loader_->GetTaskRunner();
   DCHECK_EQ(ResourceLoadScheduler::kInvalidClientId, scheduler_client_id_);
   auto throttle_option = ResourceLoadScheduler::ThrottleOption::kThrottleable;
@@ -611,8 +608,7 @@ void ResourceLoader::Release(
 
 void ResourceLoader::Restart(const ResourceRequestHead& request) {
   CHECK_EQ(resource_->Options().synchronous_policy, kRequestAsynchronously);
-  loader_ =
-      fetcher_->CreateURLLoader(ResourceRequest(request), resource_->Options());
+  loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
   task_runner_for_body_loader_ = loader_->GetTaskRunner();
   StartWith(request);
 }

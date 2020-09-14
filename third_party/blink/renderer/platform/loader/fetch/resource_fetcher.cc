@@ -1242,7 +1242,7 @@ void ResourceFetcher::InitializeRevalidation(
 }
 
 std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
-    const ResourceRequest& request,
+    const ResourceRequestHead& request,
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());
   DCHECK(loader_factory_);
@@ -1253,9 +1253,13 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     new_options.url_loader_factory = base::MakeRefCounted<base::RefCountedData<
         mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>>(
         bundle->GetURLLoaderFactory());
-    return loader_factory_->CreateURLLoader(request, new_options, task_runner_);
+    // TODO(yoichio): CreateURLLoader take a ResourceRequestHead instead of
+    // ResourceRequest.
+    return loader_factory_->CreateURLLoader(ResourceRequest(request),
+                                            new_options, task_runner_);
   }
-  return loader_factory_->CreateURLLoader(request, options, task_runner_);
+  return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
+                                          task_runner_);
 }
 
 std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {
