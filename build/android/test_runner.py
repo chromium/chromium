@@ -227,6 +227,12 @@ def AddCommonOptions(parser):
       dest='run_disabled', action='store_true',
       help='Also run disabled tests if applicable.')
 
+  # This is currently only implemented for gtests.
+  parser.add_argument('--isolated-script-test-output',
+                      help='If present, store test results on this path.')
+  parser.add_argument('--isolated-script-test-perf-output',
+                      help='If present, store chartjson results on this path.')
+
   AddTestLauncherOptions(parser)
 
 
@@ -348,9 +354,6 @@ def AddGTestOptions(parser):
       '--app-data-file-dir',
       help='Host directory to which app data files will be'
            ' saved. Used with --app-data-file.')
-  parser.add_argument(
-      '--isolated-script-test-perf-output',
-      help='If present, store chartjson results on this path.')
   parser.add_argument(
       '--delete-stale-data',
       dest='delete_stale_data', action='store_true',
@@ -835,6 +838,8 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
     finally:
       if args.json_results_file and os.path.exists(json_file.name):
         shutil.move(json_file.name, args.json_results_file)
+      elif args.isolated_script_test_output and os.path.exists(json_file.name):
+        shutil.move(json_file.name, args.isolated_script_test_output)
       else:
         os.remove(json_file.name)
 
@@ -846,10 +851,16 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
       global_results_tags.add('UNRELIABLE_RESULTS')
       raise
     finally:
-      json_results.GenerateJsonResultsFile(
-          all_raw_results, json_file.name,
-          global_tags=list(global_results_tags),
-          indent=2)
+      if args.isolated_script_test_output:
+        json_results.GenerateJsonTestResultFormatFile(all_raw_results,
+                                                      json_file.name,
+                                                      indent=2)
+      else:
+        json_results.GenerateJsonResultsFile(
+            all_raw_results,
+            json_file.name,
+            global_tags=list(global_results_tags),
+            indent=2)
 
   @contextlib.contextmanager
   def upload_logcats_file():
@@ -953,7 +964,8 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
                          str(tot_tests),
                          str(iteration_count))
 
-    if args.local_output or not local_utils.IsOnSwarming():
+    if (args.local_output or not local_utils.IsOnSwarming()
+        ) and not args.isolated_script_test_output:
       with out_manager.ArchivedTempfile(
           'test_results_presentation.html',
           'test_results_presentation',

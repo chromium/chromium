@@ -202,6 +202,40 @@ class JsonResultsTest(unittest.TestCase):
     self.assertTrue('output_snippet_base64' in test_iteration_result)
     self.assertEquals('', test_iteration_result['output_snippet_base64'])
 
+  def testGenerateJsonTestResultFormatDict_passedResult(self):
+    result = base_test_result.BaseTestResult('test.package.TestName',
+                                             base_test_result.ResultType.PASS)
+
+    all_results = base_test_result.TestRunResults()
+    all_results.AddResult(result)
+
+    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results])
+    self.assertEquals(1, len(results_dict['tests']))
+    self.assertEquals(1, len(results_dict['tests']['test']))
+    self.assertEquals(1, len(results_dict['tests']['test']['package']))
+    self.assertEquals(
+        'PASS',
+        results_dict['tests']['test']['package']['TestName']['expected'])
+    self.assertEquals(
+        'PASS', results_dict['tests']['test']['package']['TestName']['actual'])
+
+  def testGenerateJsonTestResultFormatDict_failedResult(self):
+    result = base_test_result.BaseTestResult('test.package.TestName',
+                                             base_test_result.ResultType.FAIL)
+
+    all_results = base_test_result.TestRunResults()
+    all_results.AddResult(result)
+
+    results_dict = json_results.GenerateJsonTestResultFormatDict([all_results])
+    self.assertEquals(1, len(results_dict['tests']))
+    self.assertEquals(1, len(results_dict['tests']['test']))
+    self.assertEquals(1, len(results_dict['tests']['test']['package']))
+    self.assertEquals(
+        'PASS',
+        results_dict['tests']['test']['package']['TestName']['expected'])
+    self.assertEquals(
+        'FAIL', results_dict['tests']['test']['package']['TestName']['actual'])
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

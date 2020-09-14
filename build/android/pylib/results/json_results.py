@@ -6,6 +6,7 @@ import collections
 import itertools
 import json
 import logging
+import time
 
 from pylib.base import base_test_result
 
@@ -111,6 +112,58 @@ def GenerateResultsDict(test_run_results, global_tags=None):
   }
 
 
+def GenerateJsonTestResultFormatDict(test_run_results):
+  """Create a results dict from |test_run_results| suitable for writing to JSON.
+
+  Args:
+    test_run_results: a list of base_test_result.TestRunResults objects.
+  Returns:
+    A results dict that mirrors the standard JSON Test Results Format.
+  """
+
+  tests = {}
+  pass_count = 0
+  fail_count = 0
+
+  for test_run_result in test_run_results:
+    if isinstance(test_run_result, list):
+      results_iterable = itertools.chain(*(t.GetAll() for t in test_run_result))
+    else:
+      results_iterable = test_run_result.GetAll()
+
+    for r in results_iterable:
+      element = tests
+      for key in r.GetName().split('.'):
+        if key not in element:
+          element[key] = {}
+        element = element[key]
+
+      element['expected'] = 'PASS'
+
+      if r.GetType() == base_test_result.ResultType.PASS:
+        element['actual'] = 'PASS'
+        pass_count += 1
+      else:
+        element['actual'] = 'FAIL'
+        fail_count += 1
+
+      if r.GetDuration() != 0:
+        element['time'] = r.GetDuration()
+
+  # Fill in required fields.
+  return {
+      'interrupted': False,
+      'num_failures_by_type': {
+          'FAIL': fail_count,
+          'PASS': pass_count,
+      },
+      'path_delimiter': '.',
+      'seconds_since_epoch': time.time(),
+      'tests': tests,
+      'version': 3,
+  }
+
+
 def GenerateJsonResultsFile(test_run_result, file_path, global_tags=None,
                             **kwargs):
   """Write |test_run_result| to JSON.
@@ -126,6 +179,21 @@ def GenerateJsonResultsFile(test_run_result, file_path, global_tags=None,
     json_result_file.write(json.dumps(
         GenerateResultsDict(test_run_result, global_tags=global_tags),
         **kwargs))
+    logging.info('Generated json results file at %s', file_path)
+
+
+def GenerateJsonTestResultFormatFile(test_run_result, file_path, **kwargs):
+  """Write |test_run_result| to JSON.
+
+  This uses the official Chromium Test Results Format.
+
+  Args:
+    test_run_result: a base_test_result.TestRunResults object.
+    file_path: The path to the JSON file to write.
+  """
+  with open(file_path, 'w') as json_result_file:
+    json_result_file.write(
+        json.dumps(GenerateJsonTestResultFormatDict(test_run_result), **kwargs))
     logging.info('Generated json results file at %s', file_path)
 
 

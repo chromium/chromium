@@ -621,10 +621,15 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       tombstones.ClearAllTombstones(device)
     test_perf_output_filename = next(self._test_perf_output_filenames)
 
+    if self._test_instance.isolated_script_test_output:
+      suffix = '.json'
+    else:
+      suffix = '.xml'
+
     with device_temp_file.DeviceTempFile(
         adb=device.adb,
         dir=self._delegate.ResultsDirectory(device),
-        suffix='.xml') as device_tmp_results_file:
+        suffix=suffix) as device_tmp_results_file:
       with contextlib_ext.Optional(
           device_temp_file.NamedDeviceTemporaryDirectory(
               adb=device.adb, dir='/sdcard/'),
@@ -641,9 +646,13 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           if self._test_instance.gs_test_artifacts_bucket:
             flags.append('--test_artifacts_dir=%s' % test_artifacts_dir.name)
 
+          if self._test_instance.isolated_script_test_output:
+            flags.append('--isolated-script-test-output=%s' %
+                         device_tmp_results_file.name)
+
           if test_perf_output_filename:
-            flags.append('--isolated_script_test_perf_output=%s'
-                         % isolated_script_test_perf_output.name)
+            flags.append('--isolated-script-test-perf-output=%s' %
+                         isolated_script_test_perf_output.name)
 
           logging.info('flags:')
           for f in flags:
@@ -658,24 +667,27 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
           if self._test_instance.enable_xml_result_parsing:
             try:
-              gtest_xml = device.ReadFile(
-                  device_tmp_results_file.name,
-                  as_root=True)
-            except device_errors.CommandFailedError as e:
-              logging.warning(
-                  'Failed to pull gtest results XML file %s: %s',
-                  device_tmp_results_file.name,
-                  str(e))
+              gtest_xml = device.ReadFile(device_tmp_results_file.name)
+            except device_errors.CommandFailedError:
+              logging.exception('Failed to pull gtest results XML file %s',
+                                device_tmp_results_file.name)
               gtest_xml = None
+
+          if self._test_instance.isolated_script_test_output:
+            try:
+              gtest_json = device.ReadFile(device_tmp_results_file.name)
+            except device_errors.CommandFailedError:
+              logging.exception('Failed to pull gtest results JSON file %s',
+                                device_tmp_results_file.name)
+              gtest_json = None
 
           if test_perf_output_filename:
             try:
               device.PullFile(isolated_script_test_perf_output.name,
                               test_perf_output_filename)
-            except device_errors.CommandFailedError as e:
-              logging.warning(
-                  'Failed to pull chartjson results %s: %s',
-                  isolated_script_test_perf_output.name, str(e))
+            except device_errors.CommandFailedError:
+              logging.exception('Failed to pull chartjson results %s',
+                                isolated_script_test_perf_output.name)
 
           test_artifacts_url = self._UploadTestArtifacts(device,
                                                          test_artifacts_dir)
@@ -695,6 +707,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     # TODO(jbudorick): Transition test scripts away from parsing stdout.
     if self._test_instance.enable_xml_result_parsing:
       results = gtest_test_instance.ParseGTestXML(gtest_xml)
+    elif self._test_instance.isolated_script_test_output:
+      results = gtest_test_instance.ParseGTestJSON(gtest_json)
     else:
       results = gtest_test_instance.ParseGTestOutput(
           output, self._test_instance.symbolizer, device.product_cpu_abi)
