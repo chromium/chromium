@@ -47,7 +47,7 @@
   // SceneActivationLevelForegroundActive. Show the UI if user has met the
   // qualifications to be shown the promo.
   if (level == SceneActivationLevelForegroundActive &&
-      appState.shouldShowDefaultBrowserPromo && appState.currentUIBlocker) {
+      appState.shouldShowDefaultBrowserPromo && !appState.currentUIBlocker) {
     [HandlerForProtocol(self.dispatcher, WhatsNewCommands)
         showDefaultBrowserFullscreenPromo];
     appState.shouldShowDefaultBrowserPromo = NO;
