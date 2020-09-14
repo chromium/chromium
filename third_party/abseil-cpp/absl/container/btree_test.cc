@@ -2580,6 +2580,40 @@ TEST(Btree, NodeHandleMutableKeyAccess) {
 }
 #endif
 
+struct MultiKey {
+  int i1;
+  int i2;
+};
+
+struct MultiKeyComp {
+  using is_transparent = void;
+  bool operator()(const MultiKey a, const MultiKey b) const {
+    if (a.i1 != b.i1) return a.i1 < b.i1;
+    return a.i2 < b.i2;
+  }
+  bool operator()(const int a, const MultiKey b) const { return a < b.i1; }
+  bool operator()(const MultiKey a, const int b) const { return a.i1 < b; }
+};
+
+// Test that when there's a heterogeneous comparator that behaves differently
+// for some heterogeneous operators, we get equal_range() right.
+TEST(Btree, MultiKeyEqualRange) {
+  absl::btree_set<MultiKey, MultiKeyComp> set;
+
+  for (int i = 0; i < 100; ++i) {
+    for (int j = 0; j < 100; ++j) {
+      set.insert({i, j});
+    }
+  }
+
+  for (int i = 0; i < 100; ++i) {
+    auto equal_range = set.equal_range(i);
+    EXPECT_EQ(equal_range.first->i1, i);
+    EXPECT_EQ(equal_range.first->i2, 0);
+    EXPECT_EQ(std::distance(equal_range.first, equal_range.second), 100) << i;
+  }
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

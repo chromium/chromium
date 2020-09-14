@@ -137,15 +137,14 @@ struct StringBtreeDefaultGreater {
 };
 
 // A helper class to convert a boolean comparison into a three-way "compare-to"
-// comparison that returns a negative value to indicate less-than, zero to
-// indicate equality and a positive value to indicate greater-than. This helper
+// comparison that returns an `absl::weak_ordering`. This helper
 // class is specialized for less<std::string>, greater<std::string>,
 // less<string_view>, greater<string_view>, less<absl::Cord>, and
 // greater<absl::Cord>.
 //
 // key_compare_to_adapter is provided so that btree users
 // automatically get the more efficient compare-to code when using common
-// google string types with common comparison functors.
+// Abseil string types with common comparison functors.
 // These string-like specializations also turn on heterogeneous lookup by
 // default.
 template <typename Compare>
@@ -189,6 +188,9 @@ struct common_params {
   // If Compare is a common comparator for a string-like type, then we adapt it
   // to use heterogeneous lookup and to be a key-compare-to comparator.
   using key_compare = typename key_compare_to_adapter<Compare>::type;
+  // True when key_compare has been adapted to StringBtreeDefault{Less,Greater}.
+  using is_key_compare_adapted =
+      absl::negation<std::is_same<key_compare, Compare>>;
   // A type which indicates if we have a key-compare-to functor or a plain old
   // key-compare functor.
   using is_key_compare_to = btree_is_key_compare_to<key_compare, Key>;
@@ -1015,6 +1017,8 @@ class btree {
   using is_key_compare_to = typename Params::is_key_compare_to;
   using init_type = typename Params::init_type;
   using field_type = typename node_type::field_type;
+  using is_multi_container = typename Params::is_multi_container;
+  using is_key_compare_adapted = typename Params::is_key_compare_adapted;
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
   // in order to avoid branching in begin()/end().
@@ -1164,15 +1168,13 @@ class btree {
   }
 
   // Finds the range of values which compare equal to key. The first member of
-  // the returned pair is equal to lower_bound(key). The second member pair of
-  // the pair is equal to upper_bound(key).
+  // the returned pair is equal to lower_bound(key). The second member of the
+  // pair is equal to upper_bound(key).
   template <typename K>
-  std::pair<iterator, iterator> equal_range(const K &key) {
-    return {lower_bound(key), upper_bound(key)};
-  }
+  std::pair<iterator, iterator> equal_range(const K &key);
   template <typename K>
   std::pair<const_iterator, const_iterator> equal_range(const K &key) const {
-    return {lower_bound(key), upper_bound(key)};
+    return const_cast<btree *>(this)->equal_range(key);
   }
 
   // Inserts a value into the btree only if it does not already exist. The
@@ -1888,6 +1890,40 @@ template <typename P>
 btree<P>::btree(const btree &other)
     : btree(other.key_comp(), other.allocator()) {
   copy_or_move_values_in_order(&other);
+}
+
+template <typename P>
+template <typename K>
+auto btree<P>::equal_range(const K &key) -> std::pair<iterator, iterator> {
+  const iterator lower = lower_bound(key);
+  // TODO(ezb): we should be able to avoid this comparison when there's a
+  // three-way comparator.
+  if (lower == end() || compare_keys(key, lower.key())) return {lower, lower};
+
+  const iterator next = std::next(lower);
+  // When the comparator is heterogeneous, we can't assume that comparison with
+  // non-`key_type` will be equivalent to `key_type` comparisons so there
+  // could be multiple equivalent keys even in a unique-container. But for
+  // heterogeneous comparisons from the default string adapted comparators, we
+  // don't need to worry about this.
+  if (!is_multi_container::value &&
+      (std::is_same<K, key_type>::value || is_key_compare_adapted::value)) {
+    // The next iterator after lower must point to a key greater than `key`.
+    // Note: if this assert fails, then it may indicate that the comparator does
+    // not meet the equivalence requirements for Compare
+    // (see https://en.cppreference.com/w/cpp/named_req/Compare).
+    assert(next == end() || compare_keys(key, next.key()));
+    return {lower, next};
+  }
+  // Try once more to avoid the call to upper_bound() if there's only one
+  // equivalent key. This should prevent all calls to upper_bound() in cases of
+  // unique-containers with heterogeneous comparators in which all comparison
+  // operators are equivalent.
+  if (next == end() || compare_keys(key, next.key())) return {lower, next};
+
+  // In this case, we need to call upper_bound() to avoid worst case O(N)
+  // behavior if we were to iterate over equal keys.
+  return {lower, upper_bound(key)};
 }
 
 template <typename P>

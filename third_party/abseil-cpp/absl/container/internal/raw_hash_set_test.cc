@@ -1796,7 +1796,7 @@ TEST(TableDeathTest, EraseOfEndAsserts) {
   EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()), kDeathMsg);
 }
 
-#if defined(ABSL_HASHTABLEZ_SAMPLE)
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 TEST(RawHashSamplerTest, Sample) {
   // Enable the feature even if the prod default is off.
   SetHashtablezEnabled(true);
@@ -1817,7 +1817,7 @@ TEST(RawHashSamplerTest, Sample) {
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
               0.01, 0.005);
 }
-#endif  // ABSL_HASHTABLEZ_SAMPLER
+#endif  // ABSL_INTERNAL_HASHTABLEZ_SAMPLE
 
 TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
   // Enable the feature even if the prod default is off.

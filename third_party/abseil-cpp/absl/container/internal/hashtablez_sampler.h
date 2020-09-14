@@ -139,6 +139,11 @@ inline void RecordEraseSlow(HashtablezInfo* info) {
 HashtablezInfo* SampleSlow(int64_t* next_sample);
 void UnsampleSlow(HashtablezInfo* info);
 
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
+#error ABSL_INTERNAL_HASHTABLEZ_SAMPLE cannot be directly set
+#endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
+
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 class HashtablezInfoHandle {
  public:
   explicit HashtablezInfoHandle() : info_(nullptr) {}
@@ -190,9 +195,22 @@ class HashtablezInfoHandle {
   friend class HashtablezInfoHandlePeer;
   HashtablezInfo* info_;
 };
+#else
+// Ensure that when Hashtablez is turned off at compile time, HashtablezInfo can
+// be removed by the linker, in order to reduce the binary size.
+class HashtablezInfoHandle {
+ public:
+  explicit HashtablezInfoHandle() = default;
+  explicit HashtablezInfoHandle(std::nullptr_t) {}
 
-#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-#error ABSL_INTERNAL_HASHTABLEZ_SAMPLE cannot be directly set
+  inline void RecordStorageChanged(size_t /*size*/, size_t /*capacity*/) {}
+  inline void RecordRehash(size_t /*total_probe_length*/) {}
+  inline void RecordInsert(size_t /*hash*/, size_t /*distance_from_desired*/) {}
+  inline void RecordErase() {}
+
+  friend inline void swap(HashtablezInfoHandle& /*lhs*/,
+                          HashtablezInfoHandle& /*rhs*/) {}
+};
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

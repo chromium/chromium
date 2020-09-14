@@ -16,6 +16,6 @@
 # Test scripts should source this file to get the identifiers.
 
 readonly LINUX_ALPINE_CONTAINER="gcr.io/google.com/absl-177019/alpine:20191016"
-readonly LINUX_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20200710"
-readonly LINUX_GCC_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20200710"
+readonly LINUX_CLANG_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20200909"
+readonly LINUX_GCC_LATEST_CONTAINER="gcr.io/google.com/absl-177019/linux_hybrid-latest:20200909"
 readonly LINUX_GCC_49_CONTAINER="gcr.io/google.com/absl-177019/linux_gcc-4.9:20191018"

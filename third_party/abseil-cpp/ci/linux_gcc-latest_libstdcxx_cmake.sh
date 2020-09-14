@@ -27,7 +27,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
-  ABSL_CMAKE_CXX_STANDARDS="11 14 17"
+  ABSL_CMAKE_CXX_STANDARDS="11 14 17 20"
 fi
 
 if [[ -z ${ABSL_CMAKE_BUILD_TYPES:-} ]]; then

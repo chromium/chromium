@@ -38,6 +38,7 @@ constexpr int kProbeLength = 8;
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 class HashtablezInfoHandlePeer {
  public:
   static bool IsSampled(const HashtablezInfoHandle& h) {
@@ -46,6 +47,13 @@ class HashtablezInfoHandlePeer {
 
   static HashtablezInfo* GetInfo(HashtablezInfoHandle* h) { return h->info_; }
 };
+#else
+class HashtablezInfoHandlePeer {
+ public:
+  static bool IsSampled(const HashtablezInfoHandle&) { return false; }
+  static HashtablezInfo* GetInfo(HashtablezInfoHandle*) { return nullptr; }
+};
+#endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 namespace {
 using ::absl::synchronization_internal::ThreadPool;
@@ -172,7 +180,7 @@ TEST(HashtablezInfoTest, RecordRehash) {
   EXPECT_EQ(info.num_rehashes.load(), 1);
 }
 
-#if defined(ABSL_HASHTABLEZ_SAMPLE)
+#if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 TEST(HashtablezSamplerTest, SmallSampleParameter) {
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(100);
@@ -216,7 +224,6 @@ TEST(HashtablezSamplerTest, Sample) {
   }
   EXPECT_NEAR(sample_rate, 0.01, 0.005);
 }
-#endif
 
 TEST(HashtablezSamplerTest, Handle) {
   auto& sampler = HashtablezSampler::Global();
@@ -246,6 +253,8 @@ TEST(HashtablezSamplerTest, Handle) {
   });
   EXPECT_FALSE(found);
 }
+#endif
+
 
 TEST(HashtablezSamplerTest, Registration) {
   HashtablezSampler sampler;

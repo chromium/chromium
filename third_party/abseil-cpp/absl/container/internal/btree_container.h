@@ -314,6 +314,8 @@ class btree_set_container : public btree_container<Tree> {
   }
 
   // Deletion routines.
+  // TODO(ezb): we should support heterogeneous comparators that have different
+  // behavior for K!=key_type.
   template <typename K = key_type>
   size_type erase(const key_arg<K> &key) {
     return this->tree_.erase_unique(key);
