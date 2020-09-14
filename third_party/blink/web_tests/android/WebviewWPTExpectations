@@ -573,7 +573,7 @@ crbug.com/1050754 external/wpt/cookies/samesite/form-post-blank-reload.https.htm
 crbug.com/1050754 external/wpt/cookies/samesite/form-post-blank.https.html [ Failure ]
 crbug.com/1050754 external/wpt/cookies/samesite/iframe-reload.https.html [ Failure ]
 crbug.com/1050754 external/wpt/cookies/samesite/iframe-reload.https.html?legacy-samesite [ Failure ]
-crbug.com/1050754 external/wpt/cookies/samesite/iframe.document.html [ Failure ]
+crbug.com/1050754 external/wpt/cookies/samesite/iframe.document.https.html [ Failure ]
 crbug.com/1050754 external/wpt/cookies/samesite/iframe.https.html [ Failure ]
 crbug.com/1050754 external/wpt/cookies/samesite/iframe.https.html?legacy-samesite [ Failure ]
 crbug.com/1050754 external/wpt/cookies/samesite/img.https.html [ Failure ]
