@@ -1,0 +1,11 @@
+This directory contains AndroidX's DialogFragment.java, copied from commit
+88c22bfb, with c07daa2 merged in, which removes a problematic
+Fragment.getActivity() call.
+
+To pull in these changes, we exclude DialogFragment from the
+androidx_fragment_fragment library in CIPD (which is from an official
+release), and add a dependency from that library to a prebuilt jar file
+containing our customized DialogFragment.java.
+
+Note that this customization can be removed once we start pulling our
+AndroidX dependencies from master.

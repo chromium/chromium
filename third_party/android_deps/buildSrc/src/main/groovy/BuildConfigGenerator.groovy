@@ -299,8 +299,16 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_proguard_configs = true\n')
                 break
             case 'androidx_fragment_fragment':
-                sb.append('\n')
-                sb.append('  ignore_proguard_configs = true\n')
+                sb.append("""\
+                |  deps += [ "//third_party/android_deps/local_modifications/androidx_fragment_fragment:androidx_fragment_fragment_prebuilt_java" ]
+                |  # Omit this file since we use our own copy, included above.
+                |  # We can remove this once we migrate to AndroidX master for all libraries.
+                |  jar_excluded_patterns = [
+                |    "androidx/fragment/app/DialogFragment.java",
+                |  ]
+                |
+                |  ignore_proguard_configs = true
+                |""".stripMargin())
                 break
             case 'androidx_media_media':
             case 'androidx_versionedparcelable_versionedparcelable':
