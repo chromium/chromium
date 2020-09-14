@@ -52,7 +52,7 @@ source_set("libc++abi") {
     sources += [ "trunk/src/cxa_demangle.cpp" ]
   }
 
-  if (is_fuchsia || (is_posix && !is_mac && !is_ios)) {
+  if (is_fuchsia || (is_posix && !is_apple)) {
     sources += [ "trunk/src/cxa_thread_atexit.cpp" ]
   }
 

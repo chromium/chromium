@@ -353,7 +353,7 @@ if (!is_ios) {
     "*\bios/*",
   ]
 }
-if (!is_mac && !is_ios) {
+if (!is_apple) {
   sources_assignment_filter += [ "*.mm" ]
 }
 if (!is_linux && !is_chromeos) {

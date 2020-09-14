@@ -175,9 +175,8 @@ declare_args() {
 }
 
 if (use_debug_fission == "default") {
-  use_debug_fission =
-      is_debug && !is_android && !is_fuchsia && !is_ios && !is_mac && !is_win &&
-      (use_gold || use_lld) && cc_wrapper == ""
+  use_debug_fission = is_debug && !is_android && !is_fuchsia && !is_apple &&
+                      !is_win && (use_gold || use_lld) && cc_wrapper == ""
 }
 
 if (is_win || is_android || (is_chromeos && is_chromeos_device)) {
@@ -295,7 +294,7 @@ config("compiler") {
     }
 
     # Linker warnings.
-    if (fatal_linker_warnings && !is_mac && !is_ios && current_os != "aix") {
+    if (fatal_linker_warnings && !is_apple && current_os != "aix") {
       ldflags += [ "-Wl,--fatal-warnings" ]
     }
     if (fatal_linker_warnings && is_apple &&
@@ -1772,7 +1771,7 @@ config("thin_archive") {
   # Mac and iOS use the mac-specific "libtool" command, not ar, which doesn't
   # have a "thin archive" mode (it does accept -T, but it means truncating
   # archive names to 16 characters, which is not what we want).
-  if ((is_posix && !is_nacl && !is_mac && !is_ios) || is_fuchsia) {
+  if ((is_posix && !is_nacl && !is_apple) || is_fuchsia) {
     arflags = [ "-T" ]
   } else if (is_win && use_lld) {
     arflags = [ "/llvmlibthin" ]
@@ -1987,7 +1986,7 @@ config("default_stack_frames") {
       # Omit frame pointers for leaf functions on x86, otherwise building libyuv
       # gives clang's register allocator issues, see llvm.org/PR15798 /
       # crbug.com/233709
-      if (is_clang && current_cpu == "x86" && !is_mac && !is_ios) {
+      if (is_clang && current_cpu == "x86" && !is_apple) {
         cflags += [ "-momit-leaf-frame-pointer" ]
       }
     } else {
@@ -2242,8 +2241,8 @@ config("afdo") {
 # include as sub-config.
 config("win_pdbaltpath") {
   visibility = [
-    ":symbols",
     ":minimal_symbols",
+    ":symbols",
   ]
 
   # /DEBUG causes the linker to generate a pdb file, and to write the absolute
@@ -2309,7 +2308,7 @@ config("symbols") {
     }
 
     # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
-    if (is_clang && !is_nacl && !use_xcode_clang && !is_mac && !is_ios) {
+    if (is_clang && !is_nacl && !use_xcode_clang && !is_apple) {
       cflags += [
         "-Xclang",
         "-debug-info-kind=constructor",
@@ -2349,7 +2348,7 @@ config("symbols") {
     # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
     # DWARF info may be corrupt; offsets in a range list entry are in different
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    if (!is_mac && !is_ios && !is_nacl && current_cpu != "x86" &&
+    if (!is_apple && !is_nacl && current_cpu != "x86" &&
         (use_gold || use_lld)) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,

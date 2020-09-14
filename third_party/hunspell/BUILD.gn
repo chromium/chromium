@@ -89,7 +89,7 @@ static_library("hunspell") {
     ]
   }
 
-  if (is_posix && !is_mac && !is_ios && !is_clang) {
+  if (is_posix && !is_apple && !is_clang) {
     cflags += [
       # affentry.hxx has NULL as default parameter for a FLAG in two
       # places.

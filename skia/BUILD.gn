@@ -268,7 +268,7 @@ component("skia") {
     "ext/skia_utils_base.cc",
     "ext/skia_utils_base.h",
   ]
-  if (!is_mac && !is_ios) {
+  if (!is_apple) {
     sources += [
       "ext/fontmgr_default.cc",
       "ext/fontmgr_default.h",

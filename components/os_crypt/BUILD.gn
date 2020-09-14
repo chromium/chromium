@@ -53,7 +53,7 @@ component("os_crypt") {
 
   defines = [ "IS_OS_CRYPT_IMPL" ]
 
-  if ((is_posix || is_fuchsia) && !is_mac && !is_ios &&
+  if ((is_posix || is_fuchsia) && !is_apple &&
       (!is_desktop_linux || is_chromecast)) {
     sources += [ "os_crypt_posix.cc" ]
   }

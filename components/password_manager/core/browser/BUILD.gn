@@ -333,7 +333,7 @@ static_library("browser") {
     ]
   }
 
-  if ((is_posix && !is_mac && !is_ios) || is_fuchsia) {
+  if ((is_posix && !is_apple) || is_fuchsia) {
     sources += [ "login_database_posix.cc" ]
   }
 

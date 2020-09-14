@@ -304,7 +304,7 @@ component("gfx") {
     "//third_party/zlib",
   ]
 
-  if (!is_mac && !is_ios) {
+  if (!is_apple) {
     sources += [
       "platform_font_skia.cc",
       "platform_font_skia.h",
@@ -796,7 +796,7 @@ test("gfx_unittests") {
     deps += [ "//ui/resources:ui_test_pak_bundle_data" ]
   }
 
-  if (!is_mac && !is_ios) {
+  if (!is_apple) {
     sources += [
       "interpolated_transform_unittest.cc",
       "transform_unittest.cc",

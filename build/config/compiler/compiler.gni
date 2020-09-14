@@ -185,7 +185,7 @@ enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
   # Set to true to use lld, the LLVM linker.
-  use_lld = is_clang && (!is_ios && !is_mac)
+  use_lld = is_clang && !is_apple
 }
 
 declare_args() {

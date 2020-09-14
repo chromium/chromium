@@ -884,7 +884,7 @@ component("base") {
       "timer/hi_res_timer_manager_posix.cc",
     ]
 
-    if (!is_nacl && !is_mac && !is_ios) {
+    if (!is_nacl && !is_apple) {
       sources += [
         "cpu_affinity_posix.cc",
         "cpu_affinity_posix.h",
@@ -2055,7 +2055,7 @@ component("base") {
     sources += [ "memory/platform_shared_memory_region_posix.cc" ]
   }
 
-  if (is_posix && !is_mac && !is_ios) {
+  if (is_posix && !is_apple) {
     sources += [
       "time/time_conversion_posix.cc",
       "time/time_exploded_icu.cc",  # See note below.
@@ -2072,15 +2072,14 @@ component("base") {
     deps += [ "//third_party/icu:icui18n" ]
   }
 
-  if (is_posix && !is_mac && !is_ios && !is_nacl) {
+  if (is_posix && !is_apple && !is_nacl) {
     sources += [
       "posix/can_lower_nice_to.cc",
       "posix/can_lower_nice_to.h",
     ]
   }
 
-  if ((is_posix && !is_mac && !is_ios && !is_android && !is_chromeos) ||
-      is_fuchsia) {
+  if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {
     sources += [ "power_monitor/power_monitor_device_source_stub.cc" ]
   }
 
@@ -3084,7 +3083,7 @@ test("base_unittests") {
       "posix/unix_domain_socket_unittest.cc",
       "task/thread_pool/task_tracker_posix_unittest.cc",
     ]
-    if (!is_nacl && !is_mac && !is_ios) {
+    if (!is_nacl && !is_apple) {
       sources += [
         "cpu_affinity_posix_unittest.cc",
         "profiler/stack_copier_signal_unittest.cc",

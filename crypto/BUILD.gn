@@ -77,7 +77,7 @@ component("crypto") {
 
   public_deps = [ "//third_party/boringssl" ]
 
-  if (!is_mac && !is_ios) {
+  if (!is_apple) {
     sources -= [
       "apple_keychain.h",
       "mock_apple_keychain.cc",
