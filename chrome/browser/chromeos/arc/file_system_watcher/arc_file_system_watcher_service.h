@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_FILE_SYSTEM_WATCHER_ARC_FILE_SYSTEM_WATCHER_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_FILE_SYSTEM_WATCHER_ARC_FILE_SYSTEM_WATCHER_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/file_system.mojom-forward.h"
 #include "components/arc/session/connection_observer.h"
+#include "components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
@@ -33,7 +36,8 @@ class ArcBridgeService;
 // Android MediaProvider.
 class ArcFileSystemWatcherService
     : public KeyedService,
-      public ConnectionObserver<mojom::FileSystemInstance> {
+      public ConnectionObserver<mojom::FileSystemInstance>,
+      public ArcVolumeMounterBridge::Delegate {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -49,15 +53,25 @@ class ArcFileSystemWatcherService
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
+  // ArcVolumeMounterBridge::Delegate overrides.
+  void StartWatchingRemovableMedia(const std::string& fs_uuid,
+                                   const std::string& mount_path,
+                                   base::OnceClosure callback) override;
+
+  void StopWatchingRemovableMedia(const std::string& fs_uuid) override;
+
  private:
   class FileSystemWatcher;
 
   void StartWatchingFileSystem();
-  void StopWatchingFileSystem();
+  void StopWatchingFileSystem(base::OnceClosure);
+
+  void TriggerSendAllMountEvents() const;
 
   std::unique_ptr<FileSystemWatcher> CreateAndStartFileSystemWatcher(
       const base::FilePath& cros_path,
-      const base::FilePath& android_path);
+      const base::FilePath& android_path,
+      base::OnceClosure callback);
   void OnFileSystemChanged(const std::vector<std::string>& paths);
 
   content::BrowserContext* const context_;
@@ -65,7 +79,9 @@ class ArcFileSystemWatcherService
 
   std::unique_ptr<FileSystemWatcher> downloads_watcher_;
   std::unique_ptr<FileSystemWatcher> myfiles_watcher_;
-  std::unique_ptr<FileSystemWatcher> removable_media_watcher_;
+  // A map from UUID to watcher.
+  std::map<std::string, std::unique_ptr<FileSystemWatcher>>
+      removable_media_watchers_;
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 

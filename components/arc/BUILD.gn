@@ -118,6 +118,7 @@ static_library("arc") {
     "//components/exo",
     "//components/google/core/common",
     "//components/guest_os",
+    "//components/keyed_service/core",
     "//components/onc",
     "//components/prefs",
 
