@@ -230,7 +230,7 @@ ALWAYS_INLINE void MarkingVisitor::TraceMarkedBackingStore(const void* value) {
 class PLATFORM_EXPORT ConcurrentMarkingVisitor : public MarkingVisitorBase {
  public:
   ConcurrentMarkingVisitor(ThreadState*, MarkingMode, int);
-  ~ConcurrentMarkingVisitor() override = default;
+  ~ConcurrentMarkingVisitor() override;
 
   virtual void FlushWorklists();
 

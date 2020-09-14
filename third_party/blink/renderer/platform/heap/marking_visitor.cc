@@ -304,6 +304,11 @@ ConcurrentMarkingVisitor::ConcurrentMarkingVisitor(ThreadState* state,
   DCHECK_NE(WorklistTaskId::MutatorThread, task_id);
 }
 
+ConcurrentMarkingVisitor::~ConcurrentMarkingVisitor() {
+  // ConcurrentMarkingVisitor should report all its marked_bytes before dying.
+  DCHECK_EQ(marked_bytes_, last_marked_bytes_);
+}
+
 void ConcurrentMarkingVisitor::FlushWorklists() {
   // Flush marking worklists for further marking on the mutator thread.
   marking_worklist_.FlushToGlobal();

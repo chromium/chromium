@@ -313,11 +313,15 @@ bool DrainWorklist(Worklist* worklist,
                    Callback callback,
                    YieldPredicate should_yield,
                    int task_id) {
-  size_t processed_callback_count = 0;
+  // For concurrent markers, should_yield also reports marked bytes.
+  if (should_yield()) {
+    return false;
+  }
+  size_t processed_callback_count = kDeadlineCheckInterval;
   typename Worklist::EntryType item;
   while (worklist->Pop(task_id, &item)) {
     callback(item);
-    if (processed_callback_count-- == 0) {
+    if (--processed_callback_count == 0) {
       if (should_yield()) {
         return false;
       }

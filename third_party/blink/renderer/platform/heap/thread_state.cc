@@ -1746,6 +1746,9 @@ void ThreadState::PerformConcurrentMark(base::JobDelegate* job) {
   Heap().AdvanceConcurrentMarking(concurrent_visitor.get(), job,
                                   marking_scheduling_.get());
 
+  marking_scheduling_->AddConcurrentlyMarkedBytes(
+      concurrent_visitor->RecentlyMarkedBytes());
+
   concurrent_visitor->FlushWorklists();
 }
 
