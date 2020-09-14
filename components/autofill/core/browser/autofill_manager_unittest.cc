@@ -8688,7 +8688,8 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form;
   test::CreateTestAddressFormData(&form);
 
-  autofill_client_.set_page_language("test_lang");
+  // Set up language state mock.
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("test_lang");
 
   FormStructure* parsed_form = autofill_manager_->ParseFormForTest(form);
 

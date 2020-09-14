@@ -37,6 +37,7 @@ class AutofillClientImpl
   autofill::AddressNormalizer* GetAddressNormalizer() override;
   const GURL& GetLastCommittedURL() override;
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
+  const translate::LanguageState* GetLanguageState() override;
 
   void ShowAutofillSettings(bool show_credit_card_settings) override;
   void ShowUnmaskPrompt(

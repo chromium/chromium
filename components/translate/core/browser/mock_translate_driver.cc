@@ -64,6 +64,10 @@ ukm::SourceId MockTranslateDriver::GetUkmSourceId() {
   return ukm::kInvalidSourceId;
 }
 
+LanguageState& MockTranslateDriver::GetLanguageState() {
+  return language_state_;
+}
+
 bool MockTranslateDriver::HasCurrentPage() {
   return true;
 }

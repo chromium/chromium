@@ -194,16 +194,16 @@ ChromeAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
   return security_state::GetSecurityLevelForWebState(web_state_);
 }
 
-std::string ChromeAutofillClientIOS::GetPageLanguage() const {
+const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   // TODO(crbug.com/912597): iOS vs other platforms extracts language from
   // the top level frame vs whatever frame directly holds the form.
   auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
   if (translate_client) {
     auto* translate_manager = translate_client->GetTranslateManager();
     if (translate_manager)
-      return translate_manager->GetLanguageState().original_language();
+      return &translate_manager->GetLanguageState();
   }
-  return std::string();
+  return nullptr;
 }
 
 std::string ChromeAutofillClientIOS::GetVariationConfigCountryCode() const {

@@ -598,7 +598,11 @@ bool FormDataImporter::ImportAddressProfileForSection(
         // match the |app_locale|. Try setting the value again using the
         // language of the page. Note, there should be a locale associated with
         // every language code.
-        std::string page_language = client_->GetPageLanguage();
+        std::string page_language;
+        const translate::LanguageState* language_state =
+            client_->GetLanguageState();
+        if (language_state)
+          page_language = language_state->original_language();
         // Retry to set the country of there is known page language.
         if (!page_language.empty()) {
           candidate_profile.SetInfoWithVerificationStatus(

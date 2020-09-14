@@ -80,8 +80,8 @@ TestAutofillClient::GetSecurityLevelForUmaHistograms() {
   return security_level_;
 }
 
-std::string TestAutofillClient::GetPageLanguage() const {
-  return page_language_;
+translate::LanguageState* TestAutofillClient::GetLanguageState() {
+  return &mock_translate_driver_.GetLanguageState();
 }
 
 #if !defined(OS_IOS)

@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/language_usage_metrics/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -2449,13 +2450,26 @@ void AutofillMetrics::LogAddressFormImportStatustMetric(
 }
 
 // static
+void AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(bool metric) {
+  base::UmaHistogramBoolean("Autofill.ParsedFieldTypesWasPageTranslated",
+                            metric);
+}
+
+// static
+void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
+    base::StringPiece locale) {
+  base::UmaHistogramSparse(
+      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
+      language_usage_metrics::LanguageUsageMetrics::ToLanguageCode(locale));
+}
+
+// static
 void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
     ukm::UkmRecorder* recorder,
     ukm::SourceId source_id,
     uint32_t phone_collection_metric_state) {
-  // UKM recording is not supported for WebViews.
-  if (!recorder || source_id == ukm::kInvalidSourceId)
-    return;
+  DCHECK(recorder);
+  DCHECK_NE(source_id, ukm::kInvalidSourceId);
 
   ukm::builders::WebOTPImpact builder(source_id);
   builder.SetPhoneCollection(phone_collection_metric_state);

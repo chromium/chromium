@@ -1510,6 +1510,9 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   test::CreateTestFormField("Country:", "country", "Armenien", "text", &field);
   form.fields.push_back(field);
 
+  // Set up language state mock.
+  autofill_client_->GetLanguageState()->SetOriginalLanguage("");
+
   // Verify that the country code is not determined from the country value if
   // the page language is not set.
   FormStructure form_structure(form);
@@ -1518,10 +1521,9 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
 
   ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
   ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
-  ASSERT_EQ(autofill_client_->GetPageLanguage(), std::string());
 
   // Set the page language to match the localized country value and try again.
-  autofill_client_->set_page_language("de");
+  autofill_client_->GetLanguageState()->SetOriginalLanguage("de");
 
   // TODO(crbug.com/1075604): Remove test with disabled feature.
   // Verify that nothing is changed if using the page language feature is not
@@ -1541,7 +1543,6 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   // There should be no imported address profile.
   ASSERT_EQ(0U, personal_data_manager_->GetProfiles().size());
   ASSERT_EQ(0U, personal_data_manager_->GetCreditCards().size());
-  ASSERT_EQ(autofill_client_->GetPageLanguage(), std::string("de"));
 
   // Enable the feature and to test if the profile can now be imported.
   scoped_feature_list_.Reset();

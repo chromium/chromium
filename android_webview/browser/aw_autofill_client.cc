@@ -109,6 +109,10 @@ AwAutofillClient::GetSecurityLevelForUmaHistograms() {
   return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
 }
 
+const translate::LanguageState* AwAutofillClient::GetLanguageState() {
+  return nullptr;
+}
+
 void AwAutofillClient::ShowAutofillSettings(bool show_credit_card_settings) {
   NOTIMPLEMENTED();
 }

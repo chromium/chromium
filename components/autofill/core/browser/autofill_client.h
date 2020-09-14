@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/security_state/core/security_state.h"
+#include "components/translate/core/browser/language_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -282,8 +283,8 @@ class AutofillClient : public RiskDataLoader {
   // context if possible, SECURITY_LEVEL_COUNT otherwise.
   virtual security_state::SecurityLevel GetSecurityLevelForUmaHistograms() = 0;
 
-  // Returns the current best guess as to the page's display language.
-  virtual std::string GetPageLanguage() const;
+  // Returns the language state, if available.
+  virtual const translate::LanguageState* GetLanguageState() = 0;
 
   // Retrieves the country code of the user from Chrome variation service.
   // If the variation service is not available, return an empty string.

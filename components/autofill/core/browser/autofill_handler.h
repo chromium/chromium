@@ -212,7 +212,7 @@ class AutofillHandler {
                            const FormStructure* cached_form);
 
   // Returns the page language, if available.
-  virtual base::Optional<std::string> GetPageLanguage() const;
+  virtual std::string GetPageLanguage() const;
 
   bool value_from_dynamic_change_form_ = false;
 

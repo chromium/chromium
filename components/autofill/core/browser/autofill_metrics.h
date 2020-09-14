@@ -1601,6 +1601,12 @@ class AutofillMetrics {
   static void LogAddressFormImportStatustMetric(
       AddressProfileImportStatusMetric metric);
 
+  // Records if the page was translated upon form submission.
+  static void LogFieldParsingPageTranslationStatusMetric(bool metric);
+
+  // Records the visible page language upon form submission.
+  static void LogFieldParsingTranslatedFormLanguageMetric(base::StringPiece);
+
   static const char* GetMetricsSyncStateSuffix(
       AutofillSyncSigninState sync_state);
 

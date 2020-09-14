@@ -40,6 +40,7 @@ class MockTranslateDriver : public TranslateDriver {
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;
   ukm::SourceId GetUkmSourceId() override;
+  LanguageState& GetLanguageState();
   bool HasCurrentPage() override;
   void OpenUrlInNewTab(const GURL& url) override {}
 

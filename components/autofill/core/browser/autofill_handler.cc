@@ -292,9 +292,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
       value_from_dynamic_change_form_ = true;
   }
 
-  base::Optional<std::string> page_language = GetPageLanguage();
-  if (page_language)
-    form_structure->set_page_language(page_language.value());
+  form_structure->set_page_language(GetPageLanguage());
 
   form_structure->DetermineHeuristicTypes(log_manager_);
 
@@ -313,8 +311,8 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   return parsed_form_structure;
 }
 
-base::Optional<std::string> AutofillHandler::GetPageLanguage() const {
-  return base::nullopt;
+std::string AutofillHandler::GetPageLanguage() const {
+  return std::string();
 }
 
 void AutofillHandler::Reset() {

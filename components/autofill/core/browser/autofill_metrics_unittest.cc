@@ -11387,4 +11387,47 @@ TEST_F(AutofillMetricsTest, GetFieldTypeUserEditStatusMetric) {
   EXPECT_EQ(expected_result, actual_result);
 }
 
+// Validate that correct page language values are taken from
+// |AutofillClient| and logged upon form submission.
+TEST_F(AutofillMetricsTest, PageLanguageMetricsExpectedCase) {
+  FormData form;
+  CreateSimpleForm(autofill_client_.form_origin(), form);
+
+  // Set up language state.
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("ub");
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("ub");
+  int language_code = 'u' * 256 + 'b';
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  autofill_manager_->OnFormSubmitted(form, false,
+                                     SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage", language_code, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ParsedFieldTypesWasPageTranslated", false, 1);
+}
+
+// Validate that invalid language codes (with disallowed symbols in this case)
+// get logged as invalid.
+TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
+  FormData form;
+  CreateSimpleForm(autofill_client_.form_origin(), form);
+
+  // Set up language state.
+  autofill_client_.GetLanguageState()->SetOriginalLanguage("!ab");
+  autofill_client_.GetLanguageState()->SetCurrentLanguage("other");
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  autofill_manager_->OnFormSubmitted(form, false,
+                                     SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ParsedFieldTypesWasPageTranslated", true, 1);
+}
+
 }  // namespace autofill

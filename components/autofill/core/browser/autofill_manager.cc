@@ -222,6 +222,15 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
+void LogLanguageMetrics(const translate::LanguageState* language_state) {
+  if (language_state) {
+    AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
+        language_state->current_language());
+    AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(
+        language_state->IsPageTranslated());
+  }
+}
+
 bool IsAddressForm(FieldTypeGroup field_type_group) {
   switch (field_type_group) {
     case NAME:
@@ -677,6 +686,9 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
+  // Always upload page language metrics.
+  LogLanguageMetrics(client_->GetLanguageState());
+
   // Always let the value patterns metric upload data.
   LogValuePatternsMetric(form);
 
@@ -782,7 +794,9 @@ bool AutofillManager::MaybeStartVoteUploadProcess(
     copied_credit_cards.push_back(*card);
 
   // Annotate the form with the source language of the page.
-  form_structure->set_page_language(client_->GetPageLanguage());
+  base::Optional<std::string> page_language = GetPageLanguage();
+  if (page_language)
+    form_structure->set_page_language(page_language.value());
 
   // Attach the Randomized Encoder.
   form_structure->set_randomized_encoder(
@@ -2759,9 +2773,12 @@ FormEventLoggerBase* AutofillManager::GetEventFormLogger(
   return nullptr;
 }
 
-base::Optional<std::string> AutofillManager::GetPageLanguage() const {
+std::string AutofillManager::GetPageLanguage() const {
   DCHECK(client_);
-  return base::make_optional(client_->GetPageLanguage());
+  const translate::LanguageState* language_state = client_->GetLanguageState();
+  if (language_state)
+    return language_state->original_language();
+  return std::string();
 }
 
 }  // namespace autofill

@@ -80,6 +80,10 @@ AutofillClientImpl::GetSecurityLevelForUmaHistograms() {
   return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
 }
 
+const translate::LanguageState* AutofillClientImpl::GetLanguageState() {
+  return nullptr;
+}
+
 void AutofillClientImpl::ShowAutofillSettings(bool show_credit_card_settings) {
   NOTREACHED();
 }
