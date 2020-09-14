@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.ErrorCodeConversionHelper;
+import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
@@ -76,8 +76,8 @@ public class ClientOnReceivedErrorTest {
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(ErrorCodeConversionHelper.ERROR_UNSUPPORTED_SCHEME,
-                onReceivedErrorHelper.getErrorCode());
+        Assert.assertEquals(
+                WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, onReceivedErrorHelper.getErrorCode());
         Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getDescription());
     }
@@ -110,8 +110,7 @@ public class ClientOnReceivedErrorTest {
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(
-                ErrorCodeConversionHelper.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
         Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getDescription());
     }
@@ -127,8 +126,7 @@ public class ClientOnReceivedErrorTest {
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(
-                ErrorCodeConversionHelper.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
         Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
         Assert.assertNotNull(onReceivedErrorHelper.getDescription());
     }
@@ -146,8 +144,7 @@ public class ClientOnReceivedErrorTest {
         mActivityTestRule.loadUrlAsync(mAwContents, url);
 
         onReceivedErrorHelper.waitForCallback(onReceivedErrorCallCount);
-        Assert.assertEquals(
-                ErrorCodeConversionHelper.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, onReceivedErrorHelper.getErrorCode());
         Assert.assertEquals(url, onReceivedErrorHelper.getFailingUrl());
         Assert.assertFalse(onReceivedErrorHelper.getDescription().isEmpty());
     }

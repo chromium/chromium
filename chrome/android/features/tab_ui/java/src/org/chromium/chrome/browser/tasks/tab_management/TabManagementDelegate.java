@@ -37,7 +37,8 @@ import java.lang.annotation.RetentionPolicy;
 @ModuleInterface(module = "tab_management",
         impl = "org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateImpl")
 public interface TabManagementDelegate {
-    @IntDef({TabSwitcherType.GRID, TabSwitcherType.CAROUSEL, TabSwitcherType.SINGLE})
+    @IntDef({TabSwitcherType.GRID, TabSwitcherType.CAROUSEL, TabSwitcherType.SINGLE,
+            TabSwitcherType.NONE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSwitcherType {
         int GRID = 0;

@@ -49,7 +49,7 @@ import java.util.ArrayList;
 @JNINamespace("weblayer")
 public class ContentViewRenderView extends RelativeLayout {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MODE_SURFACE_VIEW, MODE_SURFACE_VIEW})
+    @IntDef({MODE_SURFACE_VIEW, MODE_TEXTURE_VIEW})
     public @interface Mode {}
     public static final int MODE_SURFACE_VIEW = 0;
     public static final int MODE_TEXTURE_VIEW = 1;

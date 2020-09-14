@@ -99,7 +99,7 @@ public class AwWebContentsObserver extends WebContentsObserver {
     @Override
     public void didFinishNavigation(NavigationHandle navigation) {
         String url = navigation.getUrl();
-        if (navigation.errorCode() != 0 && !navigation.isDownload()) {
+        if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
             didFailLoad(navigation.isInMainFrame(), navigation.errorCode(), url);
         }
 

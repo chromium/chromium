@@ -58,7 +58,8 @@ public class TabContentManager {
     // These are used for UMA logging, so append only. Please update the
     // GridTabSwitcherThumbnailFetchingResult enum in enums.xml if these change.
     @IntDef({ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1,
-            ThumbnailFetchingResult.GOT_NOTHING})
+            ThumbnailFetchingResult.GOT_NOTHING,
+            ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ThumbnailFetchingResult {
         int GOT_JPEG = 0;

@@ -16,6 +16,8 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.text.format.DateUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -155,7 +157,8 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
         PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, taskExecutor::execute);
     }
 
-    private boolean networkRequirementsMet(Context context, int taskId, int requiredNetworkType) {
+    private boolean networkRequirementsMet(Context context, int taskId,
+            @Nullable @TaskInfo.NetworkType Integer requiredNetworkType) {
         if (requiredNetworkType == TaskInfo.NetworkType.NONE) return true;
 
         ConnectivityManager connectivityManager =
@@ -188,7 +191,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
                 || status == BatteryManager.BATTERY_STATUS_FULL;
     }
 
-    private @TaskInfo.NetworkType int convertToTaskInfoNetworkType(
+    private @Nullable @TaskInfo.NetworkType Integer convertToTaskInfoNetworkType(
             ScheduledTaskProto.ScheduledTask.RequiredNetworkType networkType) {
         switch (networkType) {
             case NONE:
@@ -199,7 +202,7 @@ public class BackgroundTaskBroadcastReceiver extends BroadcastReceiver {
                 return TaskInfo.NetworkType.UNMETERED;
             default:
                 assert false : "Incorrect value of RequiredNetworkType";
-                return -1;
+                return null;
         }
     }
 }

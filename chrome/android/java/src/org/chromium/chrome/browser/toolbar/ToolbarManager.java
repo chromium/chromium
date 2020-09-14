@@ -99,6 +99,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.NetError;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
@@ -475,7 +476,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                 // If the load failed due to a different navigation, there is no need to reset the
                 // location bar animations.
-                if (navigation.errorCode() != 0 && navigation.isInMainFrame()
+                if (navigation.errorCode() != NetError.OK && navigation.isInMainFrame()
                         && !hasPendingNonNtpNavigation(tab)) {
                     NewTabPage ntp = mLocationBarModel.getNewTabPageForCurrentTab();
                     if (ntp == null) return;

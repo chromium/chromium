@@ -232,12 +232,16 @@ def _RunLint(lint_binary_path,
   env['JAVA_HOME'] = build_utils.JAVA_HOME
   # This is necessary so that lint errors print stack traces in stdout.
   env['LINT_PRINT_STACKTRACE'] = 'true'
+  if baseline and not os.path.exists(baseline):
+    # Generating new baselines is only done locally, and requires more memory to
+    # avoid OOMs.
+    env['LINT_OPTS'] = '-Xmx4g'
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
   stdout_filter = lambda x: build_utils.FilterLines(x, 'No issues found')
 
   start = time.time()
-  logging.debug('Lint command %s', cmd)
+  logging.debug('Lint command %s', ' '.join(cmd))
   failed = True
   try:
     failed = bool(

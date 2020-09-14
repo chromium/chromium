@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.SysUtils;
+import org.chromium.components.browser_ui.media.MediaSessionUma.MediaSessionActionSource;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
@@ -411,18 +412,18 @@ public class MediaSessionHelper implements MediaImageCallback {
      *               {@link MediaNotificationListener} interface.
      * @return the corresponding histogram value.
      */
-    public static @MediaSessionUma.MediaSessionActionSource int convertMediaActionSourceToUMA(
+    public static @Nullable @MediaSessionActionSource Integer convertMediaActionSourceToUMA(
             int source) {
         if (source == MediaNotificationListener.ACTION_SOURCE_MEDIA_NOTIFICATION) {
-            return MediaSessionUma.MediaSessionActionSource.MEDIA_NOTIFICATION;
+            return MediaSessionActionSource.MEDIA_NOTIFICATION;
         } else if (source == MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION) {
-            return MediaSessionUma.MediaSessionActionSource.MEDIA_SESSION;
+            return MediaSessionActionSource.MEDIA_SESSION;
         } else if (source == MediaNotificationListener.ACTION_SOURCE_HEADSET_UNPLUG) {
-            return MediaSessionUma.MediaSessionActionSource.HEADSET_UNPLUG;
+            return MediaSessionActionSource.HEADSET_UNPLUG;
         }
 
         assert false;
-        return MediaSessionUma.MediaSessionActionSource.NUM_ENTRIES;
+        return null;
     }
 
     private Activity getActivity() {

@@ -17,6 +17,7 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
@@ -240,7 +241,7 @@ public class TabThemeColorHelper extends EmptyTabObserver implements UserData {
 
     @Override
     public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-        if (navigation.errorCode() != 0) updateIfNeeded(true);
+        if (navigation.errorCode() != NetError.OK) updateIfNeeded(true);
     }
 
     @Override

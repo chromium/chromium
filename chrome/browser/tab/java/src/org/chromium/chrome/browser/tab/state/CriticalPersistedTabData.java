@@ -244,7 +244,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return "Critical";
     }
 
-    private static @TabLaunchType int getLaunchType(
+    private static @Nullable @TabLaunchType Integer getLaunchType(
             CriticalPersistedTabDataProto.LaunchTypeAtCreation protoLaunchType) {
         switch (protoLaunchType) {
             case FROM_LINK:
@@ -279,7 +279,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 assert false : "Unexpected deserialization of LaunchAtCreationType: "
                                + protoLaunchType;
                 // shouldn't happen
-                return -1;
+                return null;
         }
     }
 

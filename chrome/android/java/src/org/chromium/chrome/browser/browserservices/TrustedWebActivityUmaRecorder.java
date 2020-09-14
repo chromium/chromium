@@ -49,7 +49,7 @@ public class TrustedWebActivityUmaRecorder {
         int NUM_ENTRIES = 2;
     }
 
-    @IntDef({PermissionChanged.NULL_TO_TRUE, PermissionChanged.NULL_TO_TRUE,
+    @IntDef({PermissionChanged.NULL_TO_TRUE, PermissionChanged.NULL_TO_FALSE,
             PermissionChanged.TRUE_TO_FALSE, PermissionChanged.FALSE_TO_TRUE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PermissionChanged {
@@ -183,8 +183,9 @@ public class TrustedWebActivityUmaRecorder {
     public void recordPermissionChangedUma(
             @ContentSettingsType int type, Boolean last, boolean enabled) {
         if (type == ContentSettingsType.GEOLOCATION) {
+            @Nullable
             @PermissionChanged
-            int change = PermissionChanged.NUM_ENTRIES;
+            Integer change = null;
             if (last == null) {
                 if (enabled) {
                     change = PermissionChanged.NULL_TO_TRUE;
@@ -195,7 +196,7 @@ public class TrustedWebActivityUmaRecorder {
                 if (last && !enabled) change = PermissionChanged.TRUE_TO_FALSE;
                 if (!last && enabled) change = PermissionChanged.FALSE_TO_TRUE;
             }
-            if (change != PermissionChanged.NUM_ENTRIES) {
+            if (change != null) {
                 RecordHistogram.recordEnumeratedHistogram(
                         "TrustedWebActivity.LocationPermissionChanged", change,
                         PermissionChanged.NUM_ENTRIES);

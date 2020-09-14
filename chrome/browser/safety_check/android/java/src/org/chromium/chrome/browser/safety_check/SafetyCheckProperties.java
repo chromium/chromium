@@ -73,7 +73,7 @@ class SafetyCheckProperties {
                 assert false : "Unknown PasswordCheckUIStatus value.";
         }
         // Never reached.
-        return 0;
+        return PasswordsState.UNCHECKED;
     }
 
     static @PasswordsStatus int passwordsStateToNative(@PasswordsState int state) {
@@ -135,12 +135,12 @@ class SafetyCheckProperties {
                 return SafeBrowsingState.DISABLED_BY_ADMIN;
             case SafeBrowsingStatus.DISABLED_BY_EXTENSION:
                 assert false : "Safe Browsing cannot be disabled by extension on Android.";
-                return 0;
+                return SafeBrowsingState.UNCHECKED;
             default:
                 assert false : "Unknown SafeBrowsingStatus value.";
         }
         // Never reached.
-        return 0;
+        return SafeBrowsingState.UNCHECKED;
     }
 
     @IntDef({UpdatesState.UNCHECKED, UpdatesState.CHECKING, UpdatesState.UPDATED,

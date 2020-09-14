@@ -120,7 +120,7 @@ public class DownloadLaterDialogHelper implements DownloadLaterDialogController 
     public void onDownloadLaterDialogCanceled() {
         if (mCallback == null) return;
 
-        recordDialogMetrics(false /*complete*/, -1);
+        recordDialogMetrics(false /*complete*/, DownloadLaterDialogChoice.CANCELLED);
         mCallback.onResult(null);
         mCallback = null;
     }

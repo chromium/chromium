@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.media;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -25,18 +26,24 @@ public class MediaSessionUma {
         int NUM_ENTRIES = 3;
     }
 
-    public static void recordPlay(@MediaSessionActionSource int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Media.Session.Play", action, MediaSessionActionSource.NUM_ENTRIES);
+    public static void recordPlay(@Nullable @MediaSessionActionSource Integer action) {
+        if (action != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Media.Session.Play", action, MediaSessionActionSource.NUM_ENTRIES);
+        }
     }
 
-    public static void recordPause(@MediaSessionActionSource int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Media.Session.Pause", action, MediaSessionActionSource.NUM_ENTRIES);
+    public static void recordPause(@Nullable @MediaSessionActionSource Integer action) {
+        if (action != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Media.Session.Pause", action, MediaSessionActionSource.NUM_ENTRIES);
+        }
     }
 
-    public static void recordStop(@MediaSessionActionSource int action) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Media.Session.Stop", action, MediaSessionActionSource.NUM_ENTRIES);
+    public static void recordStop(@Nullable @MediaSessionActionSource Integer action) {
+        if (action != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Media.Session.Stop", action, MediaSessionActionSource.NUM_ENTRIES);
+        }
     }
 }

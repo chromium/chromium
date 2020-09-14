@@ -11,7 +11,7 @@ import androidx.annotation.IntDef;
  *  Keep in sync with DownloadLaterDialogChoice in enums.xml.
  */
 @IntDef({DownloadLaterDialogChoice.DOWNLOAD_NOW, DownloadLaterDialogChoice.ON_WIFI,
-        DownloadLaterDialogChoice.DOWNLOAD_LATER})
+        DownloadLaterDialogChoice.DOWNLOAD_LATER, DownloadLaterDialogChoice.CANCELLED})
 public @interface DownloadLaterDialogChoice {
     /**
      * Download will be started right away.
@@ -25,6 +25,10 @@ public @interface DownloadLaterDialogChoice {
      * Download will be started in the future..
      */
     int DOWNLOAD_LATER = 2;
+    /**
+     * Download dialog was cancelled.
+     */
+    int CANCELLED = 3;
 
-    int COUNT = 3;
+    int COUNT = 4;
 }

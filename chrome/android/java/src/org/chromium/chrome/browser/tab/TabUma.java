@@ -98,14 +98,12 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     /**
      * Records the tab restore result into several UMA histograms.
-     * @param succeeded Whether or not the tab restore succeeded.
      * @param time The time taken to perform the tab restore.
      * @param perceivedTime The perceived time taken to perform the tab restore.
-     * @param errorCode The error code, on failure (as denoted by the |succeeded| parameter).
+     * @param errorCode The error code, NetError.OK on success.
      */
-    private void recordTabRestoreResult(
-            boolean succeeded, long time, long perceivedTime, @NetError int errorCode) {
-        if (succeeded) {
+    private void recordTabRestoreResult(long time, long perceivedTime, @NetError int errorCode) {
+        if (errorCode == NetError.OK) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tab.RestoreResult", TAB_RESTORE_RESULT_SUCCESS, TAB_RESTORE_RESULT_COUNT);
             RecordHistogram.recordCountHistogram("Tab.RestoreTime", (int) time);
@@ -270,17 +268,18 @@ public class TabUma extends EmptyTabObserver implements UserData {
             long now = SystemClock.elapsedRealtime();
             long restoreTime = now - mRestoreStartedAtMillis;
             long perceivedRestoreTime = now - mLastShownTimestamp;
-            recordTabRestoreResult(true, restoreTime, perceivedRestoreTime, -1);
+            recordTabRestoreResult(restoreTime, perceivedRestoreTime, NetError.OK);
         }
         mRestoreStartedAtMillis = -1;
     }
 
     /** Called when the corresponding tab fails a page load. */
     @Override
-    public void onPageLoadFailed(Tab tab, int errorCode) {
+    public void onPageLoadFailed(Tab tab, @NetError int errorCode) {
         if (mRestoreStartedAtMillis != -1 && mLastShownTimestamp >= mRestoreStartedAtMillis) {
             // Load time is ignored for failed loads.
-            recordTabRestoreResult(false, -1, -1, errorCode);
+            assert errorCode != NetError.OK;
+            recordTabRestoreResult(-1, -1, errorCode);
         }
         mRestoreStartedAtMillis = -1;
     }

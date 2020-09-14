@@ -23,7 +23,8 @@ import java.util.Locale;
 public class TestDummyImpl implements TestDummy {
     private static final String TAG = "TestDummyImpl";
 
-    @IntDef({TestCase.EXECUTE_JAVA, TestCase.EXECUTE_NATIVE})
+    @IntDef({TestCase.EXECUTE_JAVA, TestCase.EXECUTE_NATIVE, TestCase.LOAD_JAVA_RESOURCE,
+            TestCase.LOAD_NATIVE_RESOURCE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface TestCase {
         int EXECUTE_JAVA = 0;

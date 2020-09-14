@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.ErrorCodeConversionHelper;
+import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
@@ -123,7 +123,7 @@ public class ClientOnReceivedError2Test {
         AwWebResourceError error = onReceivedError2Helper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -157,7 +157,7 @@ public class ClientOnReceivedError2Test {
         AwWebResourceError error = onReceivedError2Helper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -184,7 +184,7 @@ public class ClientOnReceivedError2Test {
         AwWebResourceError error = onReceivedError2Helper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -222,7 +222,7 @@ public class ClientOnReceivedError2Test {
         AwWebResourceError error = onReceivedError2Helper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -250,7 +250,7 @@ public class ClientOnReceivedError2Test {
         AwWebResourceError error = onReceivedError2Helper.getError();
         // The particular error code that is returned depends on the configuration of the device
         // (such as existence of a proxy) so we don't test for it.
-        assertNotEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        assertNotEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -275,7 +275,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertFalse(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedError2Helper.getError();
-        Assert.assertEquals(ErrorCodeConversionHelper.ERROR_UNSUPPORTED_SCHEME, error.errorCode);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNSUPPORTED_SCHEME, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -302,7 +302,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertFalse(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedError2Helper.getError();
-        Assert.assertEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -329,7 +329,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertFalse(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedError2Helper.getError();
-        Assert.assertEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 
@@ -356,7 +356,7 @@ public class ClientOnReceivedError2Test {
         Assert.assertFalse(request.isMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         AwWebResourceError error = onReceivedError2Helper.getError();
-        Assert.assertEquals(ErrorCodeConversionHelper.ERROR_UNKNOWN, error.errorCode);
+        Assert.assertEquals(WebviewErrorCode.ERROR_UNKNOWN, error.errorCode);
         Assert.assertNotNull(error.description);
     }
 

@@ -16,7 +16,8 @@ import com.google.protobuf.ByteString;
  */
 public final class ModelError {
     /** Defines errors are exposed through the ModelProvider to the Stream. */
-    @IntDef({ErrorType.UNKNOWN, ErrorType.NO_CARDS_ERROR, ErrorType.PAGINATION_ERROR})
+    @IntDef({ErrorType.UNKNOWN, ErrorType.NO_CARDS_ERROR, ErrorType.PAGINATION_ERROR,
+            ErrorType.SYNTHETIC_TOKEN_ERROR})
     public @interface ErrorType {
         // An unknown error, this is not expected to ever be used.
         int UNKNOWN = 0;

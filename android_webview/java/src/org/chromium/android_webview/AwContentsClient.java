@@ -151,7 +151,7 @@ public abstract class AwContentsClient {
      * Parameters for {@link AwContentsClient#onReceivedError} method.
      */
     public static class AwWebResourceError {
-        public int errorCode = ErrorCodeConversionHelper.ERROR_UNKNOWN;
+        public @WebviewErrorCode int errorCode = WebviewErrorCode.ERROR_UNKNOWN;
         public String description;
     }
 

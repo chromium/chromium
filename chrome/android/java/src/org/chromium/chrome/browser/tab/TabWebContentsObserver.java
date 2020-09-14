@@ -28,6 +28,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.net.NetError;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -289,7 +290,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 observers.next().onDidFinishNavigation(mTab, navigation);
             }
 
-            if (navigation.errorCode() != 0) {
+            if (navigation.errorCode() != NetError.OK) {
                 if (navigation.isInMainFrame()) mTab.didFailPageLoad(navigation.errorCode());
 
                 recordErrorInPolicyAuditor(
