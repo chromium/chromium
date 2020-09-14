@@ -231,8 +231,16 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   EXPECT_EQ(GetRegistrar(GetProfile(1)).GetAppShortName(app_id), "Test name 2");
 }
 
+// Flaky, see crbug.com/1126404.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_SyncDoubleInstallationDifferentUserDisplayMode \
+  DISABLED_SyncDoubleInstallationDifferentUserDisplayMode
+#else
+#define MAYBE_SyncDoubleInstallationDifferentUserDisplayMode \
+  SyncDoubleInstallationDifferentUserDisplayMode
+#endif
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
-                       SyncDoubleInstallationDifferentUserDisplayMode) {
+                       MAYBE_SyncDoubleInstallationDifferentUserDisplayMode) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
