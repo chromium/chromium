@@ -14,7 +14,6 @@ import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.View;
@@ -406,7 +405,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         } else if (mDelegate.getOfflinePageConnectionMessage() != null) {
             messageBuilder.append(mDelegate.getOfflinePageConnectionMessage());
         } else {
-            if (!TextUtils.equals(summary, details)) {
+            if (!summary.isEmpty()) {
                 connectionInfoParams.summary = summary;
             }
             messageBuilder.append(details);
