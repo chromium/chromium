@@ -13,6 +13,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/i18n/i18n_constants.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/json/json_reader.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -465,9 +467,16 @@ std::unique_ptr<Object> GetRawHeaders(
   for (const auto& header : headers) {
     std::string value;
     bool merge_with_another = headers_dict->getString(header->key, &value);
+    std::string header_value;
+    if (!base::ConvertToUtf8AndNormalize(header->value, base::kCodepageLatin1,
+                                         &header_value)) {
+      // For response headers, the encoding could be anything, so conversion
+      // might fail; in that case this is the most useful thing we can do.
+      header_value = header->value;
+    }
     headers_dict->setString(header->key, merge_with_another
-                                             ? value + '\n' + header->value
-                                             : header->value);
+                                             ? value + '\n' + header_value
+                                             : header_value);
   }
   return Object::fromValue(headers_dict.get(), nullptr);
 }
