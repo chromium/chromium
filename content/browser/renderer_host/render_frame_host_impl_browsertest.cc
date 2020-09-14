@@ -83,8 +83,9 @@
 #endif  // defined(OS_ANDROID)
 
 namespace content {
-
 namespace {
+
+using ::testing::EndsWith;
 
 // Implementation of ContentBrowserClient that overrides
 // OverridePageVisibilityState() and allows consumers to set a value.
@@ -3886,6 +3887,40 @@ IN_PROC_BROWSER_TEST_F(
       }
     }
   }
+}
+
+// This test verifies that when the right feature is enabled, iframe requests:
+//  - from an insecure page with the "treat-as-public-address" CSP directive
+//  - to a local IP address
+// are blocked.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithInsecurePrivateNetworkRequestsBlocked,
+    IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
+  // Unfortunately for us, http://localhost is considered secure. Fortunately,
+  // the host resolver in these tests is set to resolve anything to 127.0.0.1.
+  // We use http://foo.test, which is not considered secure.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL(
+          "foo.test",
+          "/set-header?Content-Security-Policy: treat-as-public-address")));
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Check that the child iframe failed to fetch.
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  auto* child_frame = root_frame_host()->child_at(0)->current_frame_host();
+  // TODO(crbug.com/1124346): Expect 0 once the load fails.
+  EXPECT_EQ(200, child_frame->last_http_status_code());
+  // TODO(crbug.com/1124346): Expect an empty URL once the load fails.
+  EXPECT_THAT(child_frame->last_successful_url().spec(),
+              EndsWith("/empty.html"));
 }
 
 namespace {
