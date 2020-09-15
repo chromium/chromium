@@ -17,6 +17,7 @@
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -113,42 +114,35 @@ AccountInfo EnsureAccountExists(AccountTrackerService* account_tracker_service,
 }  // namespace
 
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
-                                  const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount());
-  PrimaryAccountManager* primary_account_manager =
-      identity_manager->GetPrimaryAccountManager();
-  DCHECK(!primary_account_manager->IsAuthenticated());
+                                  const std::string& email,
+                                  ConsentLevel consent_level) {
+  // TODO(https://crbug.com/1046746): Change this to ConsentLevel::kNotRequired
+  //                                  after fixing all callers.
+  DCHECK(!identity_manager->HasPrimaryAccount(consent_level));
 
   AccountInfo account_info =
       EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
   DCHECK(!account_info.gaia.empty());
 
-  primary_account_manager->SignIn(email);
+  PrimaryAccountMutator* primary_account_mutator =
+      identity_manager->GetPrimaryAccountMutator();
+  // TODO(https://crbug.com/1046746): Refactor PrimaryAccountMutator API and
+  //                                  pass ConsentLevel directly there.
+  switch (consent_level) {
+    case ConsentLevel::kSync:
+      DCHECK(
+          primary_account_mutator->SetPrimaryAccount(account_info.account_id));
+      break;
+    case ConsentLevel::kNotRequired:
+      primary_account_mutator->SetUnconsentedPrimaryAccount(
+          account_info.account_id);
+      break;
+  }
 
-  DCHECK(primary_account_manager->IsAuthenticated());
-  DCHECK(identity_manager->HasPrimaryAccount());
-  return identity_manager->GetPrimaryAccountInfo();
-}
-
-CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
-                                             const std::string& email) {
-  DCHECK(!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
-
-  AccountInfo account_info =
-      EnsureAccountExists(identity_manager->GetAccountTrackerService(), email);
-  DCHECK(!account_info.gaia.empty());
-
-  PrimaryAccountManager* primary_account_manager =
-      identity_manager->GetPrimaryAccountManager();
-  primary_account_manager->SetUnconsentedPrimaryAccountInfo(account_info);
-
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
+  DCHECK(identity_manager->HasPrimaryAccount(consent_level));
   DCHECK_EQ(account_info.gaia,
-            identity_manager
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
-                .gaia);
-  return identity_manager->GetPrimaryAccountInfo(
-      signin::ConsentLevel::kNotRequired);
+            identity_manager->GetPrimaryAccountInfo(consent_level).gaia);
+  return identity_manager->GetPrimaryAccountInfo(consent_level);
 }
 
 void SetRefreshTokenForPrimaryAccount(IdentityManager* identity_manager,

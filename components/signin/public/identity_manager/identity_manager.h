@@ -491,7 +491,8 @@ class IdentityManager : public KeyedService,
  private:
   // These test helpers need to use some of the private methods below.
   friend CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
-                                           const std::string& email);
+                                           const std::string& email,
+                                           ConsentLevel consent_level);
   friend CoreAccountInfo SetUnconsentedPrimaryAccount(
       IdentityManager* identity_manager,
       const std::string& email);
