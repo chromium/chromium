@@ -845,7 +845,7 @@ by a child template that "extends" this file.
         </activity>
 
         <receiver
-            android:name="org.chromium.chrome.browser.browserservices.trustedwebactivityui.DisclosureAcceptanceBroadcastReceiver"
+            android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
             android:exported="false" />
 
         <!-- Service for decoding images in a sandboxed process. -->

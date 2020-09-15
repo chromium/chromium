@@ -897,10 +897,10 @@
         <data android:scheme="package"/>
       </intent-filter>  # DIFF-ANCHOR: e5bb6a36
     </receiver>  # DIFF-ANCHOR: 3e596004
-    <receiver  # DIFF-ANCHOR: 3a086f97
+    <receiver  # DIFF-ANCHOR: a31e6ce5
         android:exported="false"
-        android:name="org.chromium.chrome.browser.browserservices.trustedwebactivityui.DisclosureAcceptanceBroadcastReceiver">
-    </receiver>  # DIFF-ANCHOR: 3a086f97
+        android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver">
+    </receiver>  # DIFF-ANCHOR: a31e6ce5
     <receiver  # DIFF-ANCHOR: bccc7d87
         android:exported="false"
         android:name="org.chromium.chrome.browser.locale.LocaleChangedBroadcastReceiver">
