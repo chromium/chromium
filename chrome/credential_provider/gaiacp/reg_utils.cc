@@ -59,6 +59,9 @@ constexpr wchar_t kDefaultCredProviderPath[] =
     L"Software\\Policies\\Microsoft\\Windows\\System";
 constexpr wchar_t kDefaultCredProviderKey[] = L"DefaultCredentialProvider";
 
+constexpr wchar_t kEnrollmentRegKey[] = L"SOFTWARE\\Google\\Enrollment";
+constexpr wchar_t kDmTokenRegKey[] = L"dmtoken";
+
 HRESULT SetMachineRegDWORD(const base::string16& key_name,
                            const base::string16& name,
                            DWORD value) {
@@ -88,6 +91,30 @@ HRESULT SetMachineRegString(const base::string16& key_name,
       sts = ERROR_SUCCESS;
   } else {
     sts = key.WriteValue(name.c_str(), value.c_str());
+  }
+
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  return S_OK;
+}
+
+HRESULT SetMachineRegBinaryInternal(const base::string16& key_name,
+                                    const base::string16& name,
+                                    const std::string& value,
+                                    REGSAM sam_desired) {
+  base::win::RegKey key;
+  LONG sts = key.Create(HKEY_LOCAL_MACHINE, key_name.c_str(), sam_desired);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  if (value.empty()) {
+    sts = key.DeleteValue(name.c_str());
+    if (sts == ERROR_FILE_NOT_FOUND)
+      sts = ERROR_SUCCESS;
+  } else {
+    sts =
+        key.WriteValue(name.c_str(), value.c_str(), value.length(), REG_BINARY);
   }
 
   if (sts != ERROR_SUCCESS)
@@ -165,6 +192,41 @@ HRESULT GetMachineRegString(const base::string16& key_name,
 
   value[local_length] = 0;
   *length = local_length;
+  return S_OK;
+}
+
+HRESULT GetMachineRegBinaryInternal(const base::string16& key_name,
+                                    const base::string16& name,
+                                    std::string* val,
+                                    REGSAM sam_desired) {
+  DCHECK(val);
+
+  base::win::RegKey key;
+  LONG sts = key.Open(HKEY_LOCAL_MACHINE, key_name.c_str(), sam_desired);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  DWORD type;
+  DWORD size = 0;
+
+  sts = key.ReadValue(name.c_str(), nullptr, &size, &type);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  if (type != REG_BINARY)
+    return HRESULT_FROM_WIN32(ERROR_CANTREAD);
+
+  std::vector<char> buffer(size);
+
+  sts = key.ReadValue(name.c_str(), const_cast<char*>(buffer.data()), &size,
+                      &type);
+  if (sts != ERROR_SUCCESS) {
+    if (sts == ERROR_MORE_DATA)
+      return HRESULT_FROM_WIN32(sts);
+  }
+
+  val->assign(buffer.data(), buffer.size());
+
   return S_OK;
 }
 
@@ -423,6 +485,20 @@ HRESULT SetMachineGuidForTesting(const base::string16& machine_guid) {
   return SetMachineRegString(kMicrosoftCryptographyRegKey,
                              kMicrosoftCryptographyMachineGuidRegKey,
                              machine_guid);
+}
+
+HRESULT GetDmToken(std::string* dm_token) {
+  DCHECK(dm_token);
+
+  return GetMachineRegBinaryInternal(kEnrollmentRegKey, kDmTokenRegKey,
+                                     dm_token, KEY_READ | KEY_WOW64_32KEY);
+}
+
+HRESULT SetDmTokenForTesting(const std::string& dm_token) {
+  // Set a debug dm token for the machine so that unit tests that override the
+  // registry can run properly.
+  return SetMachineRegBinaryInternal(kEnrollmentRegKey, kDmTokenRegKey,
+                                     dm_token, KEY_WRITE | KEY_WOW64_32KEY);
 }
 
 }  // namespace credential_provider

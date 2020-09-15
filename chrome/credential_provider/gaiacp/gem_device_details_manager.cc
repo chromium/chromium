@@ -53,6 +53,7 @@ const char kUploadDeviceDetailsResponseDeviceResourceIdParameterName[] =
 const char kOsVersion[] = "os_edition";
 const char kBuiltInAdminNameParameterName[] = "built_in_admin_name";
 const char kAdminGroupNameParameterName[] = "admin_group_name";
+const char kDmToken[] = "dm_token";
 
 // Maximum number of retries if a HTTP call to the backend fails.
 constexpr unsigned int kMaxNumHttpRetries = 3;
@@ -111,12 +112,33 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   base::string16 admin_group_name = L"";
   hr = LookupLocalizedNameForWellKnownSid(WinBuiltinAdministratorsSid,
                                           &admin_group_name);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "LookupLocalizedNameForWellKnownSid  hr=" << putHR(hr);
+    hr = S_OK;
+  }
+
   base::string16 built_in_admin_name = L"";
   hr = GetLocalizedNameBuiltinAdministratorAccount(&built_in_admin_name);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "GetLocalizedNameBuiltinAdministratorAccount  hr="
+                 << putHR(hr);
+    hr = S_OK;
+  }
 
   base::Value mac_address_value_list(base::Value::Type::LIST);
   for (const std::string& mac_address : mac_addresses)
     mac_address_value_list.Append(base::Value(mac_address));
+
+  std::string dm_token = "";
+  std::string encoded_dm_token = "";
+  hr = GetDmToken(&dm_token);
+  if (FAILED(hr)) {
+    LOGFN(WARNING) << "DM token is required to execute periodic tasks hr="
+                 << putHR(hr);
+    hr = S_OK;
+  } else {
+    base::Base64Encode(dm_token, &encoded_dm_token);
+  }
 
   request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
   request_dict_->SetStringKey(
@@ -139,6 +161,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   request_dict_->SetStringKey(kBuiltInAdminNameParameterName,
                               built_in_admin_name);
   request_dict_->SetStringKey(kAdminGroupNameParameterName, admin_group_name);
+  request_dict_->SetStringKey(kDmToken, encoded_dm_token);
 
   base::string16 known_resource_id = GetUserDeviceResourceId(sid);
   if (!known_resource_id.empty()) {

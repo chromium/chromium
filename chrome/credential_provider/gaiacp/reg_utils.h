@@ -162,6 +162,14 @@ HRESULT SetMachineGuidForTesting(const base::string16& machine_guid);
 // Set corresponding registry entry that would make GCPW as the default
 // credential provider.
 HRESULT MakeGcpwDefaultCP();
+
+// The token which is written to Windows registry as a result of exchanging
+// enrollment token.
+HRESULT GetDmToken(std::string* dm_token);
+
+// Sets  HKLM\SOFTWARE\Google\Enrollment\dm_token registry for testing.
+HRESULT SetDmTokenForTesting(const std::string& dm_token);
+
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_REG_UTILS_H_

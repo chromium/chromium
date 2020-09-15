@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/base_paths_win.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
@@ -2895,7 +2896,9 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
   base::string16 domain = L"domain";
   base::string16 machine_guid = L"machine_guid";
+  std::string dm_token = "dm_token";
   SetMachineGuidForTesting(machine_guid);
+  SetDmTokenForTesting(dm_token);
 
   std::vector<std::string> mac_addresses;
   mac_addresses.push_back("mac_address_1");
@@ -2992,6 +2995,9 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_TRUE(request_dict.FindBoolKey("is_ad_joined_user").has_value());
   ASSERT_EQ(request_dict.FindBoolKey("is_ad_joined_user").value(), true);
   ASSERT_TRUE(request_dict.FindKey("wlan_mac_addr")->is_list());
+  std::string encoded_dm_token;
+  base::Base64Encode(dm_token, &encoded_dm_token);
+  ASSERT_EQ(*request_dict.FindStringKey("dm_token"), encoded_dm_token);
 
   std::vector<std::string> actual_mac_address_list;
   for (const base::Value& value :
