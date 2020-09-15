@@ -198,10 +198,10 @@
 
       <!-- Overlay detected dialog -->
       <message name="IDS_OVERLAY_DETECTED_DIALOG_TITLE" desc="Title of the dialog that informs the user about detected overlay window that prevents interaction with permissions.">
-        Another app is displaying over <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
+        This site can’t ask for your permission
       </message>
       <message name="IDS_OVERLAY_DETECTED_DIALOG_MESSAGE" desc="Dialog message that informs the user about detected overlay window that prevents interaction with permissions.">
-        To change the permission for this site, close the other app and try again.\n\nIf you can’t close the app, turn off the app’s permission to “Display over other apps” in Android settings.
+        Close any bubbles or overlays from other apps. Then, try again.
       </message>
     </messages>
   </release>
