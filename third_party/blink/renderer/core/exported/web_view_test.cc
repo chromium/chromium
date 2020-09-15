@@ -4115,8 +4115,7 @@ class FakeFrameWidgetHost : public mojom::blink::FrameWidgetHost {
   mojo::PendingAssociatedRemote<mojom::blink::FrameWidgetHost>
   BindNewFrameWidgetInterfaces() {
     frame_widget_host_receiver_.reset();
-    return frame_widget_host_receiver_
-        .BindNewEndpointAndPassDedicatedRemoteForTesting();
+    return frame_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
 
   int GetAndResetHasTouchEventHandlerCallCount(bool state) {

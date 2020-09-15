@@ -129,15 +129,15 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     widget_host_->BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         widget_.GetNewRemote());
 
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
     auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     widget_host_->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         frame_widget.Unbind());
 
     blink::ScreenInfo screen_info;

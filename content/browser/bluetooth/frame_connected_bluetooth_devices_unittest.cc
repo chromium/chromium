@@ -43,7 +43,7 @@ constexpr char kDeviceName1[] = "Device1";
 mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient>
 CreateServerClient() {
   mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client;
-  ignore_result(client.BindNewEndpointAndPassDedicatedReceiverForTesting());
+  ignore_result(client.BindNewEndpointAndPassDedicatedReceiver());
   return client;
 }
 

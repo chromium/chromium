@@ -1159,7 +1159,7 @@ over one end of the primary interface, or over one end of another associated
 interface which itself already has a primary interface.
 
 If you want to test an associated interface endpoint without first
-associating it, you can use `AssociatedRemote::BindNewEndpointAndPassDedicatedReceiverForTesting`.
+associating it, you can use `AssociatedRemote::BindNewEndpointAndPassDedicatedReceiver`.
 This will create working associated interface endpoints which are not actually
 associated with anything else.
 

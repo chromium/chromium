@@ -56,8 +56,7 @@ class MockChromeClient : public EmptyChromeClient {
     EmptyChromeClient::InstallSupplements(frame);
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(frame.DomWindow());
-    ignore_result(
-        screen_orientation.BindNewEndpointAndPassDedicatedReceiverForTesting());
+    ignore_result(screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
     ScreenOrientationController::From(*frame.DomWindow())
         ->SetScreenOrientationAssociatedRemoteForTests(
             std::move(screen_orientation));

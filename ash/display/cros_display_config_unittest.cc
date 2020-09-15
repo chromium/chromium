@@ -230,8 +230,7 @@ TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   TestObserver observer;
   mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
   mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
-      &observer,
-      observer_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+      &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
   cros_display_config()->AddObserver(observer_remote.Unbind());
   base::RunLoop().RunUntilIdle();
 
@@ -751,8 +750,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   TestObserver observer;
   mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
   mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
-      &observer,
-      observer_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+      &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
   cros_display_config()->AddObserver(observer_remote.Unbind());
   base::RunLoop().RunUntilIdle();
 

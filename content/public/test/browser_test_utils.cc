@@ -688,12 +688,11 @@ BindFakeFrameWidgetInterfaces(RenderFrameHost* frame) {
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
   auto blink_frame_widget_host_receiver =
-      blink_frame_widget_host
-          .BindNewEndpointAndPassDedicatedReceiverForTesting();
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
   auto blink_frame_widget_receiver =
-      blink_frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   render_widget_host_impl->BindFrameWidgetInterfaces(
       std::move(blink_frame_widget_host_receiver), blink_frame_widget.Unbind());

@@ -210,23 +210,21 @@ class RenderWidgetUnittest : public testing::Test {
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget_remote;
     mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
         frame_widget_receiver =
-            frame_widget_remote
-                .BindNewEndpointAndPassDedicatedReceiverForTesting();
+            frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
         frame_widget_host_receiver =
-            frame_widget_host
-                .BindNewEndpointAndPassDedicatedReceiverForTesting();
+            frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<blink::mojom::Widget> widget_remote;
     mojo::PendingAssociatedReceiver<blink::mojom::Widget> widget_receiver =
-        widget_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
         widget_host_receiver =
-            widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+            widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
     web_view_ = blink::WebView::Create(/*client=*/&web_view_client_,
                                        /*is_hidden=*/false,

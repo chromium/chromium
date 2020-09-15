@@ -115,7 +115,7 @@ class WebIDBCursorImplTest : public testing::Test {
   WebIDBCursorImplTest() : null_key_(IDBKey::CreateNone()) {
     mojo::AssociatedRemote<mojom::blink::IDBCursor> remote;
     mock_cursor_ = std::make_unique<MockCursorImpl>(
-        remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+        remote.BindNewEndpointAndPassDedicatedReceiver());
     cursor_ = std::make_unique<WebIDBCursorImpl>(
         remote.Unbind(), 1,
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());

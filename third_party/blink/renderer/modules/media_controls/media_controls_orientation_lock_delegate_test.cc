@@ -113,7 +113,7 @@ class MockChromeClientForOrientationLockDelegate final
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(frame.DomWindow());
     ScreenOrientationClient().BindPendingReceiver(
-        screen_orientation.BindNewEndpointAndPassDedicatedReceiverForTesting());
+        screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
     ScreenOrientationController::From(*frame.DomWindow())
         ->SetScreenOrientationAssociatedRemoteForTests(
             std::move(screen_orientation));

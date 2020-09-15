@@ -366,10 +366,10 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                              std::make_unique<FrameTokenMessageQueue>()) {
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     auto frame_widget_host_receiver =
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
     auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
                               frame_widget.Unbind());
 
@@ -500,10 +500,10 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
         process_host_->GetNextRoutingID()));
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     auto frame_widget_host_receiver =
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
     auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     host_->BindFrameWidgetInterfaces(std::move(frame_widget_host_receiver),
                                      frame_widget.Unbind());
     host_->set_owner_delegate(&mock_owner_delegate_);

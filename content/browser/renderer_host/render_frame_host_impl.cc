@@ -1699,8 +1699,8 @@ RenderFrameHostImpl::GetRemoteAssociatedInterfaces() {
     } else {
       // The channel may not be initialized in some tests environments. In this
       // case we set up a dummy interface provider.
-      ignore_result(remote_interfaces
-                        .BindNewEndpointAndPassDedicatedReceiverForTesting());
+      ignore_result(
+          remote_interfaces.BindNewEndpointAndPassDedicatedReceiver());
     }
     remote_associated_interfaces_ =
         std::make_unique<blink::AssociatedInterfaceProvider>(

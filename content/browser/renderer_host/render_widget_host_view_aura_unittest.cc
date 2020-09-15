@@ -432,7 +432,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     lastWheelOrTouchEventLatencyInfo = ui::LatencyInfo();
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         widget_.GetNewRemote());
   }
 
@@ -556,11 +556,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>
         parent_frame_widget_host;
     auto parent_frame_widget_host_receiver =
-        parent_frame_widget_host
-            .BindNewEndpointAndPassDedicatedReceiverForTesting();
+        parent_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
     mojo::AssociatedRemote<blink::mojom::FrameWidget> parent_frame_widget;
     auto parent_frame_widget_receiver =
-        parent_frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        parent_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     parent_host_->BindFrameWidgetInterfaces(
         std::move(parent_frame_widget_host_receiver),
         parent_frame_widget.Unbind());
@@ -575,10 +574,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     widget_host_ = static_cast<MockRenderWidgetHostImpl*>(view_->host());
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     auto frame_widget_host_receiver =
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
     auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     widget_host_->BindFrameWidgetInterfaces(
         std::move(frame_widget_host_receiver), frame_widget.Unbind());
     // Set the mouse_wheel_phase_handler_ timer timeout to 100ms.
@@ -6132,11 +6131,10 @@ TEST_F(InputMethodResultAuraTest, ChangeTextDirectionAndLayoutAlignment) {
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost>
         blink_frame_widget_host;
     auto blink_frame_widget_host_receiver =
-        blink_frame_widget_host
-            .BindNewEndpointAndPassDedicatedReceiverForTesting();
+        blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
     mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
     auto blink_frame_widget_receiver =
-        blink_frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
     static_cast<RenderWidgetHostImpl*>(views_[index]->GetRenderWidgetHost())
         ->BindFrameWidgetInterfaces(std::move(blink_frame_widget_host_receiver),

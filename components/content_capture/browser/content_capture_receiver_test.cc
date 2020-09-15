@@ -47,8 +47,7 @@ class FakeContentCaptureSender {
 
   mojo::PendingAssociatedReceiver<mojom::ContentCaptureReceiver>
   GetPendingAssociatedReceiver() {
-    return content_capture_receiver_
-        .BindNewEndpointAndPassDedicatedReceiverForTesting();
+    return content_capture_receiver_.BindNewEndpointAndPassDedicatedReceiver();
   }
 
  private:

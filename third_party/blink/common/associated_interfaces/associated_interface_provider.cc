@@ -20,7 +20,7 @@ class AssociatedInterfaceProvider::LocalProvider
   explicit LocalProvider(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     associated_interface_provider_receiver_.Bind(
-        remote_.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        remote_.BindNewEndpointAndPassDedicatedReceiver(),
         std::move(task_runner));
   }
 

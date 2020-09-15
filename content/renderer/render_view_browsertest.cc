@@ -1262,14 +1262,12 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
       blink_frame_widget_receiver =
-          blink_frame_widget
-              .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetHost>
       blink_frame_widget_host_receiver =
-          blink_frame_widget_host
-              .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   widget_params->frame_widget = std::move(blink_frame_widget_receiver);
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();

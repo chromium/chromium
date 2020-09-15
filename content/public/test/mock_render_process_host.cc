@@ -412,8 +412,8 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
   if (!renderer_interface_) {
     renderer_interface_ =
         std::make_unique<mojo::AssociatedRemote<mojom::Renderer>>();
-    ignore_result(renderer_interface_
-                      ->BindNewEndpointAndPassDedicatedReceiverForTesting());
+    ignore_result(
+        renderer_interface_->BindNewEndpointAndPassDedicatedReceiver());
   }
   return renderer_interface_->get();
 }

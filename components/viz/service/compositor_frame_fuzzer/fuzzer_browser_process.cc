@@ -100,15 +100,15 @@ FuzzerBrowserProcess::BuildRootCompositorFrameSinkParams() {
   params->gpu_compositing = false;
   params->compositor_frame_sink =
       root_compositor_frame_sink_remote_
-          .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          .BindNewEndpointAndPassDedicatedReceiver();
   params->compositor_frame_sink_client =
       root_compositor_frame_sink_client_.BindInterfaceRemote();
   params->display_private =
-      display_private_.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      display_private_.BindNewEndpointAndPassDedicatedReceiver();
   params->display_client = display_client_.BindRemote();
   params->external_begin_frame_controller =
       external_begin_frame_controller_remote_
-           .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          .BindNewEndpointAndPassDedicatedReceiver();
   return params;
 }
 

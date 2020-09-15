@@ -18,9 +18,8 @@ FakeRenderWidgetHost::BindNewFrameWidgetInterfaces() {
   frame_widget_host_receiver_.reset();
   frame_widget_remote_.reset();
   return std::make_pair(
-      frame_widget_host_receiver_
-          .BindNewEndpointAndPassDedicatedRemoteForTesting(),
-      frame_widget_remote_.BindNewEndpointAndPassDedicatedReceiverForTesting());
+      frame_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
+      frame_widget_remote_.BindNewEndpointAndPassDedicatedReceiver());
 }
 
 std::pair<mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>,
@@ -29,8 +28,8 @@ FakeRenderWidgetHost::BindNewWidgetInterfaces() {
   widget_host_receiver_.reset();
   widget_remote_.reset();
   return std::make_pair(
-      widget_host_receiver_.BindNewEndpointAndPassDedicatedRemoteForTesting(),
-      widget_remote_.BindNewEndpointAndPassDedicatedReceiverForTesting());
+      widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
+      widget_remote_.BindNewEndpointAndPassDedicatedReceiver());
 }
 
 void FakeRenderWidgetHost::AnimateDoubleTapZoomInMainFrame(

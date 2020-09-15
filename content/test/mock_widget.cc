@@ -12,7 +12,7 @@ MockWidget::~MockWidget() = default;
 
 mojo::PendingAssociatedRemote<blink::mojom::Widget> MockWidget::GetNewRemote() {
   blink_widget_.reset();
-  return blink_widget_.BindNewEndpointAndPassDedicatedRemoteForTesting();
+  return blink_widget_.BindNewEndpointAndPassDedicatedRemote();
 }
 
 const std::vector<blink::VisualProperties>&

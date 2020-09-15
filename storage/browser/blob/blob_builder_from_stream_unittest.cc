@@ -416,8 +416,7 @@ TEST_P(BlobBuilderFromStreamTest, ProgressEvents) {
   mojo::AssociatedRemote<blink::mojom::ProgressClient> progress_client_remote;
   mojo::AssociatedReceiver<blink::mojom::ProgressClient> progress_receiver(
       &progress_client,
-      progress_client_remote
-          .BindNewEndpointAndPassDedicatedReceiverForTesting());
+      progress_client_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   mojo::DataPipe pipe;
   base::RunLoop loop;

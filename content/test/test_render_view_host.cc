@@ -280,17 +280,17 @@ bool TestRenderViewHost::CreateRenderView(
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
     auto blink_widget_receiver =
-        blink_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        blink_widget.BindNewEndpointAndPassDedicatedReceiver();
     GetWidget()->BindWidgetInterfaces(
-        blink_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         blink_widget.Unbind());
 
     mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
     mojo::AssociatedRemote<blink::mojom::FrameWidget> frame_widget;
     auto frame_widget_receiver =
-        frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+        frame_widget.BindNewEndpointAndPassDedicatedReceiver();
     GetWidget()->BindFrameWidgetInterfaces(
-        frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+        frame_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
         frame_widget.Unbind());
 
     main_frame->SetRenderFrameCreated(true);

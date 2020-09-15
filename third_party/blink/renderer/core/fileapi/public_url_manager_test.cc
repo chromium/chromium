@@ -77,7 +77,7 @@ class PublicURLManagerTest : public testing::Test {
 
     HeapMojoAssociatedRemote<BlobURLStore> url_store_remote(execution_context_);
     url_store_receiver_.Bind(
-        url_store_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+        url_store_remote.BindNewEndpointAndPassDedicatedReceiver());
     url_manager().SetURLStoreForTesting(std::move(url_store_remote));
   }
 

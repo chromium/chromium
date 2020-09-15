@@ -84,8 +84,7 @@ class CdmStorageAdapterTest : public testing::Test {
         });
     cdm_storage_adapter_ = std::make_unique<CdmStorageAdapter>(
         mock_frame_interface_factory_.get(),
-        daemon_storage_mojo_
-            .BindNewEndpointAndPassDedicatedReceiverForTesting());
+        daemon_storage_mojo_.BindNewEndpointAndPassDedicatedReceiver());
     task_environment_.RunUntilIdle();
   }
 

@@ -257,17 +257,16 @@ WebLocalFrameImpl* CreateProvisional(WebRemoteFrame& old_frame,
   mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
       frame_widget_receiver =
-          frame_widget_remote
-              .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
       frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   // Create a local root, if necessary.
   if (!frame->Parent()) {
@@ -346,17 +345,16 @@ WebLocalFrameImpl* CreateLocalChild(WebRemoteFrame& parent,
   mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
       frame_widget_receiver =
-          frame_widget_remote
-              .BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
       frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   WebFrameWidget* frame_widget = WebFrameWidget::CreateForChildLocalRoot(
       widget_client, frame, frame_widget_host.Unbind(),
@@ -434,16 +432,16 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   mojo::AssociatedRemote<mojom::blink::FrameWidget> frame_widget;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidget>
       frame_widget_receiver =
-          frame_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::FrameWidgetHost> frame_widget_host;
   mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>
       frame_widget_host_receiver =
-          frame_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting();
+          frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<mojom::blink::Widget> widget_remote;
   mojo::PendingAssociatedReceiver<mojom::blink::Widget> widget_receiver =
-      widget_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   // TODO(dcheng): The main frame widget currently has a special case.
   // Eliminate this once WebView is no longer a WebWidget.
@@ -760,7 +758,7 @@ ScreenInfo TestWebWidgetClient::GetInitialScreenInfo() {
 mojo::PendingAssociatedRemote<mojom::blink::WidgetHost>
 TestWebWidgetClient::BindNewWidgetHost() {
   receiver_.reset();
-  return receiver_.BindNewEndpointAndPassDedicatedRemoteForTesting();
+  return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
 bool TestWebWidgetClient::HaveScrollEventHandlers() const {

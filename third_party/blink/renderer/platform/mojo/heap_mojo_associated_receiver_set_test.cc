@@ -131,7 +131,7 @@ TEST_F(HeapMojoAssociatedReceiverSetGCWithContextObserverTest,
   auto& associated_receiver_set = owner()->associated_receiver_set();
   mojo::AssociatedRemote<sample::blink::Service> associated_remote;
   auto associated_receiver =
-      associated_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      associated_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::ReceiverId rid = associated_receiver_set.Add(
       std::move(associated_receiver), task_runner());
@@ -148,7 +148,7 @@ TEST_F(HeapMojoAssociatedReceiverSetGCWithoutContextObserverTest,
   auto& associated_receiver_set = owner()->associated_receiver_set();
   mojo::AssociatedRemote<sample::blink::Service> associated_remote;
   auto associated_receiver =
-      associated_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      associated_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::ReceiverId rid = associated_receiver_set.Add(
       std::move(associated_receiver), task_runner());
@@ -167,7 +167,7 @@ TEST_F(HeapMojoAssociatedReceiverSetGCWithContextObserverTest,
 
   mojo::AssociatedRemote<sample::blink::Service> associated_remote;
   auto associated_receiver =
-      associated_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      associated_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::ReceiverId rid = owner()->associated_receiver_set().Add(
       std::move(associated_receiver), task_runner());
@@ -188,7 +188,7 @@ TEST_F(HeapMojoAssociatedReceiverSetGCWithContextObserverTest,
   auto& associated_receiver_set = owner()->associated_receiver_set();
   mojo::AssociatedRemote<sample::blink::Service> associated_remote;
   auto associated_receiver =
-      associated_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      associated_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::ReceiverId rid = associated_receiver_set.Add(
       std::move(associated_receiver), task_runner());
@@ -205,7 +205,7 @@ TEST_F(HeapMojoAssociatedReceiverSetGCWithoutContextObserverTest,
   auto& associated_receiver_set = owner()->associated_receiver_set();
   mojo::AssociatedRemote<sample::blink::Service> associated_remote;
   auto associated_receiver =
-      associated_remote.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      associated_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::ReceiverId rid = associated_receiver_set.Add(
       std::move(associated_receiver), task_runner());

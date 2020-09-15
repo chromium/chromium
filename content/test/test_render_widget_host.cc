@@ -33,9 +33,9 @@ TestRenderWidgetHost::TestRenderWidgetHost(
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   auto blink_widget_receiver =
-      blink_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
   BindWidgetInterfaces(
-      blink_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+      blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
       blink_widget.Unbind());
 }
 

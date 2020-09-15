@@ -180,8 +180,8 @@ class AssociatedRemote {
   //
   // For testing, where the returned request is bound to e.g. a mock and there
   // are no other interfaces involved.
-  PendingAssociatedReceiver<Interface>
-  BindNewEndpointAndPassDedicatedReceiverForTesting() WARN_UNUSED_RESULT {
+  PendingAssociatedReceiver<Interface> BindNewEndpointAndPassDedicatedReceiver()
+      WARN_UNUSED_RESULT {
     MessagePipe pipe;
     scoped_refptr<internal::MultiplexRouter> router0 =
         new internal::MultiplexRouter(

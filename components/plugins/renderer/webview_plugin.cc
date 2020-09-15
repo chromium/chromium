@@ -278,11 +278,8 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
           blink::mojom::FrameWidgetHostInterfaceBase>(),
       blink::CrossVariantMojoAssociatedReceiver<
           blink::mojom::FrameWidgetInterfaceBase>(),
-      // TODO(dtapuska): https://crbug.com/1085031. Have the suffix ForTesting
-      // removed.
-      blink_widget_host_receiver_
-          .BindNewEndpointAndPassDedicatedRemoteForTesting(),
-      blink_widget_.BindNewEndpointAndPassDedicatedReceiverForTesting());
+      blink_widget_host_receiver_.BindNewEndpointAndPassDedicatedRemote(),
+      blink_widget_.BindNewEndpointAndPassDedicatedReceiver());
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call

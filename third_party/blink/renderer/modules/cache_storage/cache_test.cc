@@ -267,8 +267,7 @@ class CacheStorageTest : public PageTestBase {
     cache_ = std::move(cache);
     receiver_ = std::make_unique<
         mojo::AssociatedReceiver<mojom::blink::CacheStorageCache>>(
-        cache_.get(),
-        cache_remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+        cache_.get(), cache_remote.BindNewEndpointAndPassDedicatedReceiver());
     return MakeGarbageCollected<Cache>(
         fetcher, cache_remote.Unbind(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());

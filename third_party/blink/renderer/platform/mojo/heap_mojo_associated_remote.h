@@ -64,9 +64,9 @@ class HeapMojoAssociatedRemote {
         std::move(task_runner));
   }
   mojo::PendingAssociatedReceiver<Interface>
-  BindNewEndpointAndPassDedicatedReceiverForTesting() WARN_UNUSED_RESULT {
+  BindNewEndpointAndPassDedicatedReceiver() WARN_UNUSED_RESULT {
     return wrapper_->associated_remote()
-        .BindNewEndpointAndPassDedicatedReceiverForTesting();
+        .BindNewEndpointAndPassDedicatedReceiver();
   }
   void Bind(mojo::PendingAssociatedRemote<Interface> pending_associated_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {

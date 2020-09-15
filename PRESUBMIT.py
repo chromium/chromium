@@ -1200,7 +1200,7 @@ _DEPRECATED_MOJO_TYPES = (
       (
         'mojo::MakeRequest is deprecated.',
         'Use mojo::AssociatedRemote::'
-        'BindNewEndpointAndPassDedicatedReceiverForTesting() instead.',
+        'BindNewEndpointAndPassDedicatedReceiver() instead.',
       ),
     ),
     (

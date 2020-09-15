@@ -145,8 +145,8 @@ class AssociatedReceiver {
   //
   // For testing, where the returned request is bound to e.g. a mock and there
   // are no other interfaces involved.
-  PendingAssociatedRemote<Interface>
-  BindNewEndpointAndPassDedicatedRemoteForTesting() WARN_UNUSED_RESULT {
+  PendingAssociatedRemote<Interface> BindNewEndpointAndPassDedicatedRemote()
+      WARN_UNUSED_RESULT {
     DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
 
     MessagePipe pipe;

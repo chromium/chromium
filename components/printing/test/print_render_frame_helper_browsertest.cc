@@ -167,7 +167,7 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   ~FakePrintPreviewUI() override = default;
 
   mojo::PendingAssociatedRemote<mojom::PrintPreviewUI> BindReceiver() {
-    return receiver_.BindNewEndpointAndPassDedicatedRemoteForTesting();
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
   }
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);

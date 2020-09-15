@@ -412,7 +412,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     std::unique_ptr<BackendDatabaseWithMockedClose> mock_database =
         std::make_unique<BackendDatabaseWithMockedClose>(
-            remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+            remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(*mock_database, Close()).Times(1);
 
     auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
@@ -435,7 +435,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     mojo::AssociatedRemote<mojom::blink::IDBDatabase> remote;
     std::unique_ptr<BackendDatabaseWithMockedClose> mock_database =
         std::make_unique<BackendDatabaseWithMockedClose>(
-            remote.BindNewEndpointAndPassDedicatedReceiverForTesting());
+            remote.BindNewEndpointAndPassDedicatedReceiver());
     EXPECT_CALL(*mock_database, Close()).Times(1);
 
     auto transaction_backend = std::make_unique<MockWebIDBTransaction>(

@@ -44,7 +44,7 @@ MockRenderWidgetHost* MockRenderWidgetHost::Create(
     int32_t routing_id) {
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   auto blink_widget_receiver =
-      blink_widget.BindNewEndpointAndPassDedicatedReceiverForTesting();
+      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
   return new MockRenderWidgetHost(delegate, agent_scheduling_group, routing_id,
                                   blink_widget.Unbind());
 }
@@ -83,7 +83,7 @@ MockRenderWidgetHost::MockRenderWidgetHost(
   acked_touch_event_type_ = blink::WebInputEvent::Type::kUndefined;
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
   BindWidgetInterfaces(
-      blink_widget_host.BindNewEndpointAndPassDedicatedReceiverForTesting(),
+      blink_widget_host.BindNewEndpointAndPassDedicatedReceiver(),
       std::move(pending_blink_widget));
 }
 

@@ -63,8 +63,7 @@ class ScreenOrientationControllerTest : public PageTestBase {
     PageTestBase::SetUp(IntSize());
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(GetFrame().DomWindow());
-    ignore_result(
-        screen_orientation.BindNewEndpointAndPassDedicatedReceiverForTesting());
+    ignore_result(screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
     Controller()->SetScreenOrientationAssociatedRemoteForTests(
         std::move(screen_orientation));
   }

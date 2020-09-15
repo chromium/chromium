@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest, OverrideForTesting) {
       ->OnAssociatedInterfaceRequest(
           web_contents->GetMainFrame(),
           mojom::BrowserAssociatedInterfaceTestDriver::Name_,
-          override_client.BindNewEndpointAndPassDedicatedReceiverForTesting()
+          override_client.BindNewEndpointAndPassDedicatedReceiver()
               .PassHandle());
   run_loop.Run();
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest,
       ->OnAssociatedInterfaceRequest(
           web_contents->GetMainFrame(),
           mojom::WebContentsFrameReceiverSetTest::Name_,
-          override_client.BindNewEndpointAndPassDedicatedReceiverForTesting()
+          override_client.BindNewEndpointAndPassDedicatedReceiver()
               .PassHandle());
 
   base::RunLoop run_loop;

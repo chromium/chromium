@@ -130,7 +130,7 @@ class ContentDecryptionModuleAdapterTest : public testing::Test {
   ContentDecryptionModuleAdapterTest() {
     mojo::AssociatedRemote<cdm::mojom::ContentDecryptionModule> daemon_cdm_mojo;
     mock_daemon_cdm_ = std::make_unique<MockDaemonCdm>(
-        daemon_cdm_mojo.BindNewEndpointAndPassDedicatedReceiverForTesting());
+        daemon_cdm_mojo.BindNewEndpointAndPassDedicatedReceiver());
     cdm_adapter_ = base::WrapRefCounted<ContentDecryptionModuleAdapter>(
         new ContentDecryptionModuleAdapter(
             nullptr /* storage */, std::move(daemon_cdm_mojo),
