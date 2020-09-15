@@ -260,7 +260,6 @@ class InterfacePtrState : public InterfacePtrStateBase {
             Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_,
             std::make_unique<typename Interface::ResponseValidator_>(),
             Interface::Name_)) {
-      router()->SetPrimaryInterfaceName(Interface::Name_);
       proxy_ = std::make_unique<Proxy>(endpoint_client());
     }
   }

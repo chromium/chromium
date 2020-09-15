@@ -89,7 +89,8 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
   SimpleWatcher(const base::Location& from_here,
                 ArmingPolicy arming_policy,
                 scoped_refptr<base::SequencedTaskRunner> runner =
-                    base::SequencedTaskRunnerHandle::Get());
+                    base::SequencedTaskRunnerHandle::Get(),
+                const char* heap_profiler_tag = nullptr);
   ~SimpleWatcher();
 
   // Indicates if the SimpleWatcher is currently watching a handle.
@@ -178,12 +179,6 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
 
   Handle handle() const { return handle_; }
   ReadyCallbackWithState ready_callback() const { return callback_; }
-
-  // Sets the tag used by the heap profiler.
-  // |tag| must be a const string literal.
-  void set_heap_profiler_tag(const char* heap_profiler_tag) {
-    heap_profiler_tag_ = heap_profiler_tag;
-  }
 
  private:
   class Context;

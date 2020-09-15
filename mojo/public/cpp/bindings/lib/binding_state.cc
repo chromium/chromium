@@ -120,8 +120,7 @@ void BindingStateBase::BindInternal(
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
   router_ = new MultiplexRouter(std::move(receiver_state->pipe), config, false,
-                                sequenced_runner);
-  router_->SetPrimaryInterfaceName(interface_name);
+                                sequenced_runner, interface_name);
   router_->SetConnectionGroup(std::move(receiver_state->connection_group));
 
   endpoint_client_.reset(new InterfaceEndpointClient(

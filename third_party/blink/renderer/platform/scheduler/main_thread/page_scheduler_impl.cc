@@ -68,6 +68,9 @@ constexpr base::TimeDelta kDefaultDelayForBackgroundAndNetworkIdleTabFreezing =
 constexpr base::TimeDelta kThrottledWakeUpDuration =
     base::TimeDelta::FromMilliseconds(3);
 
+constexpr base::TimeDelta kDefaultDelayForTrackingIPCsPostedToCachedFrames =
+    base::TimeDelta::FromSeconds(15);
+
 // Values coming from the field trial config are interpreted as follows:
 //   -1 is "not set". Scheduler should use a reasonable default.
 //   0 corresponds to base::nullopt.
@@ -143,6 +146,21 @@ base::TimeDelta GetDelayForBackgroundAndNetworkIdleTabFreezing() {
                                .InMilliseconds())};
   return base::TimeDelta::FromMilliseconds(
       kDelayForBackgroundAndNetworkIdleTabFreezingMillis.Get());
+}
+
+base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
+  if (base::FeatureList::IsEnabled(
+          features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments)) {
+    static const base::FeatureParam<int>
+        kDelayForLoggingUnexpectedIPCPostedToBckForwardCacheMillis{
+            &features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
+            "delay_before_tracking_ms",
+            static_cast<int>(kDefaultDelayForTrackingIPCsPostedToCachedFrames
+                                 .InMilliseconds())};
+    return base::TimeDelta::FromMilliseconds(
+        kDelayForLoggingUnexpectedIPCPostedToBckForwardCacheMillis.Get());
+  }
+  return kDefaultDelayForTrackingIPCsPostedToCachedFrames;
 }
 
 }  // namespace
@@ -340,7 +358,7 @@ void PageSchedulerImpl::SetPageBackForwardCached(
         *main_thread_scheduler_->ControlTaskRunner(), FROM_HERE,
         base::BindRepeating(&PageSchedulerImpl::SetUpIPCTaskDetection,
                             GetWeakPtr()),
-        base::TimeDelta::FromSeconds(15));
+        GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache());
   }
 }
 

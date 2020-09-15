@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/scoped_defer_task_posting.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/time/time.h"
 #include "base/trace_event/blame_context.h"
@@ -718,7 +719,7 @@ void FrameSchedulerImpl::ReportActiveSchedulerTrackedFeatures() {
 }
 
 base::WeakPtr<FrameSchedulerImpl>
-FrameSchedulerImpl::GetInvalidingOnBFCacheRestoreWeakPtr() {
+FrameSchedulerImpl::GetInvalidatingOnBFCacheRestoreWeakPtr() {
   return invalidating_on_bfcache_restore_weak_factory_.GetWeakPtr();
 }
 
@@ -1228,18 +1229,18 @@ void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
           // Only log IPC tasks. IPC tasks are only logged currently as IPC
           // hash can be mapped back to a function name, and IPC tasks may
           // potentially post sensitive information.
-          if (!task.ipc_hash) {
+          if (!task.ipc_hash && !task.ipc_interface_name) {
             return;
           }
           base::ScopedDeferTaskPosting::PostOrDefer(
               task_runner, FROM_HERE,
               base::BindOnce(
                   &FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache,
-                  frame_scheduler, task.ipc_hash, task.posted_from),
+                  frame_scheduler, task.ipc_hash, task.ipc_interface_name),
               base::TimeDelta());
         },
         main_thread_scheduler_->DefaultTaskRunner(),
-        GetInvalidingOnBFCacheRestoreWeakPtr()));
+        GetInvalidatingOnBFCacheRestoreWeakPtr()));
   }
 }
 
@@ -1254,7 +1255,20 @@ void FrameSchedulerImpl::DetachOnIPCTaskPostedWhileInBackForwardCacheHandler() {
 
 void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
     uint32_t ipc_hash,
-    const base::Location& task_from) {
+    const char* ipc_interface_name) {
+  // IPC tasks may have an IPC interface name in addition to, or instead of an
+  // IPC hash. IPC hash is known from the mojo Accept method. When IPC hash is
+  // 0, then the IPC hash must be calculated from the IPC interface name
+  // instead.
+  if (!ipc_hash) {
+    // base::HashMetricName produces a uint64; however, the MD5 hash calculation
+    // for an IPC interface name is always calculated as uint32; the IPC hash on
+    // a task is also a uint32. The calculation here is meant to mimic the
+    // calculation used in base::MD5Hash32Constexpr.
+    ipc_hash = base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+        ipc_interface_name);
+  }
+
   DCHECK(parent_page_scheduler_->IsStoredInBackForwardCache());
   base::UmaHistogramSparse(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."

@@ -37,6 +37,7 @@ include_rules = [
   "+base/synchronization/cancellation_flag.h",
   "+base/synchronization/lock.h",
   "+base/task/common/scoped_defer_task_posting.h",
+  "+base/task/common/task_annotator.h",
   "+base/task/sequence_manager/lazy_now.h",
   "+base/task/sequence_manager/sequence_manager.h",
   "+base/task/sequence_manager/task_queue.h",

@@ -142,7 +142,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   base::WeakPtr<FrameScheduler> GetWeakPtr() override;
   base::WeakPtr<const FrameSchedulerImpl> GetWeakPtr() const;
-  base::WeakPtr<FrameSchedulerImpl> GetInvalidingOnBFCacheRestoreWeakPtr();
+  base::WeakPtr<FrameSchedulerImpl> GetInvalidatingOnBFCacheRestoreWeakPtr();
 
   void ReportActiveSchedulerTrackedFeatures() override;
 
@@ -184,7 +184,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetOnIPCTaskPostedWhileInBackForwardCacheHandler();
   void DetachOnIPCTaskPostedWhileInBackForwardCacheHandler();
   void OnIPCTaskPostedWhileInBackForwardCache(uint32_t ipc_hash,
-                                              const base::Location& task_from);
+                                              const char* ipc_interface_name);
 
   // Returns the list of active features which currently tracked by the
   // scheduler for back-forward cache metrics.

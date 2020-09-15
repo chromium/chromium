@@ -144,13 +144,15 @@ void Connector::ActiveDispatchTracker::NotifyBeginNesting() {
 
 Connector::Connector(ScopedMessagePipeHandle message_pipe,
                      ConnectorConfig config,
-                     scoped_refptr<base::SequencedTaskRunner> runner)
+                     scoped_refptr<base::SequencedTaskRunner> runner,
+                     const char* heap_profiler_tag)
     : message_pipe_(std::move(message_pipe)),
       task_runner_(std::move(runner)),
       error_(false),
       force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
+      heap_profiler_tag_(heap_profiler_tag),
       nesting_observer_(RunLoopNestingObserver::GetForThread()) {
   if (config == MULTI_THREADED_SEND)
     lock_.emplace();
@@ -351,14 +353,6 @@ void Connector::AllowWokenUpBySyncWatchOnSameThread() {
   sync_watcher_->AllowWokenUpBySyncWatchOnSameThread();
 }
 
-void Connector::SetWatcherHeapProfilerTag(const char* tag) {
-  if (tag) {
-    heap_profiler_tag_ = tag;
-    if (handle_watcher_)
-      handle_watcher_->set_heap_profiler_tag(tag);
-  }
-}
-
 void Connector::SetMessageQuotaChecker(
     scoped_refptr<internal::MessageQuotaChecker> checker) {
   DCHECK(checker && !quota_checker_);
@@ -414,9 +408,9 @@ void Connector::WaitToReadMore() {
   DCHECK(!handle_watcher_);
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  handle_watcher_.reset(new SimpleWatcher(
-      FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL, task_runner_));
-  handle_watcher_->set_heap_profiler_tag(heap_profiler_tag_);
+  handle_watcher_ = std::make_unique<SimpleWatcher>(
+      FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL, task_runner_,
+      heap_profiler_tag_);
   MojoResult rv = handle_watcher_->Watch(
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnWatcherHandleReady,

@@ -90,13 +90,14 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
   DCHECK(runner_->RunsTasksInCurrentSequence());
-  router_ = new MultiplexRouter(std::move(handle_), config, true, runner_);
-  endpoint_client_.reset(new InterfaceEndpointClient(
+  router_ = new MultiplexRouter(std::move(handle_), config, true, runner_,
+                                interface_name);
+  endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), nullptr,
       std::move(payload_validator), false, std::move(runner_),
       // The version is only queried from the client so the value passed here
       // will not be used.
-      0u, interface_name));
+      0u, interface_name);
   return true;
 }
 

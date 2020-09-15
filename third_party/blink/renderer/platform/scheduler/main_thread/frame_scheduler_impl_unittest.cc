@@ -1263,6 +1263,58 @@ TEST_F(FrameSchedulerImplTest, SubesourceLoadingPaused) {
       worker_throttled_count, worker_stopped_count);
 }
 
+TEST_F(FrameSchedulerImplTest, LogIpcsPostedToFramesInBackForwardCache) {
+  base::HistogramTester histogram_tester;
+
+  // Create the task queue implicitly.
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(TaskType::kInternalTest);
+
+  StorePageInBackForwardCache();
+
+  // Run the tasks so that they are recorded in the histogram
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
+
+  // Post IPC tasks, accounting for delay for when tracking starts.
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(1);
+    task_runner->PostTask(FROM_HERE, base::DoNothing());
+  }
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash_2(2);
+    task_runner->PostTask(FROM_HERE, base::DoNothing());
+  }
+  task_environment_.RunUntilIdle();
+
+  // Once the page is restored from the cache, IPCs should no longer be
+  // recorded.
+  RestorePageFromBackForwardCache();
+
+  // Start posting tasks immediately - will not be recorded
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash_3(3);
+    task_runner->PostTask(FROM_HERE, base::DoNothing());
+  }
+  {
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash_4(4);
+    task_runner->PostTask(FROM_HERE, base::DoNothing());
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "BackForwardCache.Experimental."
+          "UnexpectedIPCMessagePostedToCachedFrame.MethodHash"),
+      testing::UnorderedElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+
+  // TimeUntilIPCReceived should have values in the 300000 bucket corresponding
+  // with the hour delay in task_environment_.FastForwardBy.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "BackForwardCache.Experimental."
+          "UnexpectedIPCMessagePostedToCachedFrame.TimeUntilIPCReceived"),
+      testing::UnorderedElementsAre(base::Bucket(300000, 2)));
+}
+
 TEST_F(FrameSchedulerImplTest,
        LogIpcsFromMultipleThreadsPostedToFramesInBackForwardCache) {
   base::HistogramTester histogram_tester;
@@ -1282,7 +1334,7 @@ TEST_F(FrameSchedulerImplTest,
       base::BindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
             base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(1);
-            task_runner->PostTask(FROM_HERE, base::BindOnce([]() {}));
+            task_runner->PostTask(FROM_HERE, base::DoNothing());
           },
           task_runner));
   task_environment_.RunUntilIdle();
@@ -1298,7 +1350,7 @@ TEST_F(FrameSchedulerImplTest,
              base::RepeatingClosure restore_from_cache_callback) {
             {
               base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(2);
-              task_runner->PostTask(FROM_HERE, base::BindOnce([]() {}));
+              task_runner->PostTask(FROM_HERE, base::DoNothing());
             }
             {
               // Once the page is restored from the cache, ensure that the IPC
@@ -1308,7 +1360,7 @@ TEST_F(FrameSchedulerImplTest,
             }
             {
               base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(4);
-              task_runner->PostTask(FROM_HERE, base::BindOnce([]() {}));
+              task_runner->PostTask(FROM_HERE, base::DoNothing());
             }
           },
           task_runner, restore_from_cache_callback));
@@ -1320,7 +1372,7 @@ TEST_F(FrameSchedulerImplTest,
       base::BindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
             base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(5);
-            task_runner->PostTask(FROM_HERE, base::BindOnce([]() {}));
+            task_runner->PostTask(FROM_HERE, base::DoNothing());
           },
           task_runner));
   task_environment_.RunUntilIdle();
@@ -1330,16 +1382,16 @@ TEST_F(FrameSchedulerImplTest,
       base::BindOnce(
           [](scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
             base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(6);
-            task_runner->PostTask(FROM_HERE, base::BindOnce([]() {}));
+            task_runner->PostTask(FROM_HERE, base::DoNothing());
           },
           task_runner));
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "BackForwardCache.Experimental."
-                  "UnexpectedIPCMessagePostedToCachedFrame.MethodHash"),
-              testing::UnorderedElementsAreArray(
-                  {base::Bucket(1, 1), base::Bucket(2, 1)}));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "BackForwardCache.Experimental."
+          "UnexpectedIPCMessagePostedToCachedFrame.MethodHash"),
+      testing::UnorderedElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
 }
 
 // TODO(farahcharab) Move priority testing to MainThreadTaskQueueTest after

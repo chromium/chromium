@@ -79,16 +79,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   MultiplexRouter(ScopedMessagePipeHandle message_pipe,
                   Config config,
                   bool set_interface_id_namespace_bit,
-                  scoped_refptr<base::SequencedTaskRunner> runner);
+                  scoped_refptr<base::SequencedTaskRunner> runner,
+                  const char* primary_interface_name = "unknown interface");
 
   // Sets a MessageReceiver which can filter a message after validation but
   // before dispatch.
   void SetIncomingMessageFilter(std::unique_ptr<MessageFilter> filter);
-
-  // Sets the primary interface name for this router. Only used when reporting
-  // message header or control message validation errors.
-  // |name| must be a string literal.
-  void SetPrimaryInterfaceName(const char* name);
 
   // Adds this object to a ConnectionGroup identified by |ref|. All receiving
   // pipe endpoints decoded from inbound messages on this MultiplexRouter will

@@ -315,6 +315,8 @@ extern const char kBackForwardCacheABExperimentGroup[];
 
 BLINK_COMMON_EXPORT extern const base::Feature kPreferCompositingToLCDText;
 
+BLINK_COMMON_EXPORT extern const base::Feature
+    kLogUnexpectedIPCPostedToBackForwardCachedDocuments;
 }  // namespace features
 }  // namespace blink
 

@@ -84,7 +84,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // The Connector takes ownership of |message_pipe|.
   Connector(ScopedMessagePipeHandle message_pipe,
             ConnectorConfig config,
-            scoped_refptr<base::SequencedTaskRunner> runner);
+            scoped_refptr<base::SequencedTaskRunner> runner,
+            const char* heap_profiler_tag = "unknown interface");
   ~Connector() override;
 
   // Sets outgoing serialization mode.
@@ -192,10 +193,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   }
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
-
-  // Sets the tag used by the heap profiler.
-  // |tag| must be a const string literal.
-  void SetWatcherHeapProfilerTag(const char* tag);
 
   // Sets the quota checker.
   void SetMessageQuotaChecker(

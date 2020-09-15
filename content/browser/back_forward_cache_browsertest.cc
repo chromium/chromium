@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/system/sys_info.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -78,6 +79,7 @@
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 
@@ -152,6 +154,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(
         features::kBackForwardCache, "skip_same_site_if_unload_exists",
         skip_same_site_if_unload_exists_ ? "true" : "false");
+    EnableFeatureAndSetParams(
+        blink::features::kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
+        "delay_before_tracking_ms", "0");
 #if defined(OS_ANDROID)
     EnableFeatureAndSetParams(features::kBackForwardCache,
                               "process_binding_strength", "NORMAL");
@@ -2330,6 +2335,46 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
   ExpectBlocklistedFeature(
       blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, LogIpcPostedToCachedFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate away. The first page should be in the cache.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // 3) Post IPC tasks to the page, testing both mojo remote and associated
+  // remote objects.
+
+  // TODO(hbolaria) - implement non-frame-associated tracking, which will be
+  // used by the code below.
+
+  // Post a non-associated interface. Will be routed to a frame-specific task
+  // queue with IPC set in SimpleWatcher.
+  base::RunLoop run_loop;
+  rfh_a->GetHighPriorityLocalFrame()->DispatchBeforeUnload(
+      false,
+      base::BindOnce([](base::RepeatingClosure quit_closure, bool proceed,
+                        base::TimeTicks start_time,
+                        base::TimeTicks end_time) { quit_closure.Run(); },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // 4) Check the histogram.
+  FetchHistogramsFromChildProcesses();
+  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+      base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
+          "blink.mojom.HighPriorityLocalFrame"));
+  histogram_tester_.ExpectUniqueSample(
+      "BackForwardCache.Experimental."
+      "UnexpectedIPCMessagePostedToCachedFrame.MethodHash",
+      sample, 1);
 }
 
 class MockAppBannerService : public blink::mojom::AppBannerService {

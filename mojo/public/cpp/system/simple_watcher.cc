@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/common/task_annotator.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event.h"
@@ -30,9 +31,10 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
       MojoHandleSignals signals,
       MojoTriggerCondition condition,
       int watch_id,
-      MojoResult* result) {
+      MojoResult* result,
+      const char* heap_profiler_tag) {
     scoped_refptr<Context> context =
-        new Context(watcher, task_runner, watch_id);
+        new Context(watcher, task_runner, watch_id, heap_profiler_tag);
 
     // If MojoAddTrigger succeeds, it effectively assumes ownership of a
     // reference to |context|. In that case, this reference is balanced in
@@ -67,10 +69,12 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
 
   Context(base::WeakPtr<SimpleWatcher> weak_watcher,
           scoped_refptr<base::SequencedTaskRunner> task_runner,
-          int watch_id)
+          int watch_id,
+          const char* heap_profiler_tag)
       : weak_watcher_(weak_watcher),
         task_runner_(task_runner),
-        watch_id_(watch_id) {}
+        watch_id_(watch_id),
+        heap_profiler_tag_(heap_profiler_tag) {}
 
   ~Context() = default;
 
@@ -87,28 +91,37 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
       // the default task runner for the IO thread.
       weak_watcher_->OnHandleReady(watch_id_, result, state);
     } else {
-      task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&SimpleWatcher::OnHandleReady,
-                                    weak_watcher_, watch_id_, result, state));
+      {
+        // Annotate the posted task with |heap_profiler_tag_| as the IPC
+        // interface.
+        base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(
+            heap_profiler_tag_);
+        task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&SimpleWatcher::OnHandleReady,
+                                      weak_watcher_, watch_id_, result, state));
+      }
     }
   }
 
   const base::WeakPtr<SimpleWatcher> weak_watcher_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const int watch_id_;
+  const char* heap_profiler_tag_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 SimpleWatcher::SimpleWatcher(const base::Location& from_here,
                              ArmingPolicy arming_policy,
-                             scoped_refptr<base::SequencedTaskRunner> runner)
+                             scoped_refptr<base::SequencedTaskRunner> runner,
+                             const char* heap_profiler_tag)
     : arming_policy_(arming_policy),
       task_runner_(std::move(runner)),
       is_default_task_runner_(base::ThreadTaskRunnerHandle::IsSet() &&
                               task_runner_ ==
                                   base::ThreadTaskRunnerHandle::Get()),
-      heap_profiler_tag_(from_here.file_name()) {
+      heap_profiler_tag_(heap_profiler_tag ? heap_profiler_tag
+                                           : from_here.file_name()) {
   MojoResult rv = CreateTrap(&Context::CallNotify, &trap_handle_);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -139,7 +152,7 @@ MojoResult SimpleWatcher::Watch(Handle handle,
   MojoResult result = MOJO_RESULT_UNKNOWN;
   context_ = Context::Create(weak_factory_.GetWeakPtr(), task_runner_,
                              trap_handle_.get(), handle_, signals, condition,
-                             watch_id_, &result);
+                             watch_id_, &result, heap_profiler_tag_);
   if (!context_) {
     handle_.set_value(kInvalidHandleValue);
     callback_.Reset();
@@ -216,10 +229,15 @@ void SimpleWatcher::ArmOrNotify() {
     return;
 
   DCHECK_EQ(MOJO_RESULT_FAILED_PRECONDITION, rv);
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SimpleWatcher::OnHandleReady, weak_factory_.GetWeakPtr(),
-                     watch_id_, ready_result, ready_state));
+  {
+    // Annotate the posted task with |heap_profiler_tag_| as the IPC interface.
+    base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(
+        heap_profiler_tag_);
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&SimpleWatcher::OnHandleReady,
+                                          weak_factory_.GetWeakPtr(), watch_id_,
+                                          ready_result, ready_state));
+  }
 }
 
 void SimpleWatcher::OnHandleReady(int watch_id,
@@ -263,5 +281,4 @@ void SimpleWatcher::OnHandleReady(int watch_id,
       ArmOrNotify();
   }
 }
-
 }  // namespace mojo

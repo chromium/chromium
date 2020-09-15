@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/pending_task.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -71,11 +72,22 @@ class BASE_EXPORT TaskAnnotator {
 class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
  public:
   explicit ScopedSetIpcHash(uint32_t ipc_hash);
+
+  // Compile-time-const string identifying the current IPC context. Not always
+  // available due to binary size constraints, so IPC hash might be set instead.
+  explicit ScopedSetIpcHash(const char* ipc_interface_name);
   ~ScopedSetIpcHash();
 
+  uint32_t GetIpcHash() const { return ipc_hash_; }
+  const char* GetIpcInterfaceName() const { return ipc_interface_name_; }
+
+  static uint32_t MD5HashMetricName(base::StringPiece name);
+
  private:
-  std::unique_ptr<PendingTask> dummy_pending_task_;
-  uint32_t old_ipc_hash_ = 0;
+  ScopedSetIpcHash(uint32_t ipc_hash, const char* ipc_interface_name);
+  ScopedSetIpcHash* old_scoped_ipc_hash_ = nullptr;
+  uint32_t ipc_hash_ = 0;
+  const char* ipc_interface_name_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSetIpcHash);
 };

@@ -771,5 +771,8 @@ const char kBackForwardCacheABExperimentGroup[] =
 const base::Feature kPreferCompositingToLCDText = {
     "PreferCompositingToLCDText", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
+    "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink

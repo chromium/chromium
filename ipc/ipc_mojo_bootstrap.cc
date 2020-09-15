@@ -165,15 +165,14 @@ class ChannelAssociatedGroupController
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(task_runner_->BelongsToCurrentThread());
 
-    connector_.reset(new mojo::Connector(
-        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
-        task_runner_));
+    connector_ = std::make_unique<mojo::Connector>(
+        std::move(handle), mojo::Connector::SINGLE_THREADED_SEND, task_runner_,
+        "IPC Channel");
     connector_->set_incoming_receiver(&dispatcher_);
     connector_->set_connection_error_handler(
         base::BindOnce(&ChannelAssociatedGroupController::OnPipeError,
                        base::Unretained(this)));
     connector_->set_enforce_errors_from_incoming_receiver(false);
-    connector_->SetWatcherHeapProfilerTag("IPC Channel");
     if (quota_checker_)
       connector_->SetMessageQuotaChecker(quota_checker_);
 

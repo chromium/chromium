@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
@@ -315,14 +316,16 @@ MultiplexRouter::MultiplexRouter(
     ScopedMessagePipeHandle message_pipe,
     Config config,
     bool set_interface_id_namespace_bit,
-    scoped_refptr<base::SequencedTaskRunner> runner)
+    scoped_refptr<base::SequencedTaskRunner> runner,
+    const char* primary_interface_name)
     : set_interface_id_namespace_bit_(set_interface_id_namespace_bit),
       task_runner_(runner),
       dispatcher_(this),
       connector_(std::move(message_pipe),
                  config == MULTI_INTERFACE ? Connector::MULTI_THREADED_SEND
                                            : Connector::SINGLE_THREADED_SEND,
-                 std::move(runner)),
+                 std::move(runner),
+                 primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -352,6 +355,14 @@ MultiplexRouter::MultiplexRouter(
       std::make_unique<MessageHeaderValidator>();
   header_validator_ = header_validator.get();
   dispatcher_.SetValidator(std::move(header_validator));
+
+  if (primary_interface_name) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    header_validator_->SetDescription(base::JoinString(
+        {primary_interface_name, "[primary] MessageHeaderValidator"}, " "));
+    control_message_handler_.SetDescription(base::JoinString(
+        {primary_interface_name, "[primary] PipeControlMessageHandler"}, " "));
+  }
 }
 
 MultiplexRouter::~MultiplexRouter() {
@@ -367,15 +378,6 @@ MultiplexRouter::~MultiplexRouter() {
 void MultiplexRouter::SetIncomingMessageFilter(
     std::unique_ptr<MessageFilter> filter) {
   dispatcher_.SetFilter(std::move(filter));
-}
-
-void MultiplexRouter::SetPrimaryInterfaceName(const char* name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  header_validator_->SetDescription(std::string(name) +
-                                    " [primary] MessageHeaderValidator");
-  control_message_handler_.SetDescription(
-      std::string(name) + " [primary] PipeControlMessageHandler");
-  connector_.SetWatcherHeapProfilerTag(name);
 }
 
 void MultiplexRouter::SetConnectionGroup(ConnectionGroup::Ref ref) {
