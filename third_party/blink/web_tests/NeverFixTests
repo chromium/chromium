@@ -428,6 +428,13 @@ external/wpt/css/css-text/letter-spacing/letter-spacing-104.html [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-105.html [ Skip ]
 external/wpt/css/css-text/letter-spacing/letter-spacing-106.html [ Skip ]
 
+# No browsers implemented the spec behavior, not web compatible, no consensus.
+# https://github.com/w3c/csswg-drafts/issues/1518
+external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-003.xht [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-004.xht [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-005.xht [ Skip ]
+external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-003.xht [ Skip ]
+
 # CSS Text features that are not planned to implement.
 external/wpt/css/css-text/parsing/word-boundary-detection-computed.html [ Skip ]
 external/wpt/css/css-text/parsing/word-boundary-detection-invalid.html [ Skip ]
@@ -462,12 +469,8 @@ external/wpt/css/css-text/line-breaking/line-breaking-replaced-003.html [ Skip ]
 # Undefined behavior without any implementations.
 external/wpt/css/css-text/white-space/seg-break-transformation-019.html [ Skip ]
 
-# No browsers implemented the spec behavior, not web compatible, no consensus.
-# https://github.com/w3c/csswg-drafts/issues/1518
-external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-003.xht [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-004.xht [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-bidi-005.xht [ Skip ]
-external/wpt/css/css-text/letter-spacing/letter-spacing-nesting-003.xht [ Skip ]
+# UAX#9 L1 is not implemented yet.
+crbug.com/316409 external/wpt/css/css-text/white-space/eol-spaces-bidi-002.html [ Skip ]
 
 external/wpt/css/CSS2/linebox/inline-formatting-context-010b.xht [ Skip ]
 external/wpt/css/CSS2/normal-flow/inline-block-replaced-height-008.xht [ Skip ]
