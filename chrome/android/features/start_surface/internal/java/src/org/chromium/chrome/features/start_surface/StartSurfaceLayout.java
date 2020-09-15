@@ -200,7 +200,7 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
             return;
         }
 
-        shrinkTab(() -> mTabListDelegate.getThumbnailLocationOfCurrentTab(false));
+        shrinkTab(animate, () -> mTabListDelegate.getThumbnailLocationOfCurrentTab(false));
     }
 
     @Override
@@ -290,11 +290,16 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
 
     /**
      * Animate shrinking a tab to a target {@link Rect} area.
+     * @param animate Whether to play an entry animation.
      * @param target The target {@link Rect} area.
      */
-    private void shrinkTab(Supplier<Rect> target) {
-        forceAnimationToFinish();
+    private void shrinkTab(boolean animate, Supplier<Rect> target) {
+        if (target.get() == null) {
+            mController.showOverview(animate);
+            return;
+        }
 
+        forceAnimationToFinish();
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
         CompositorAnimationHandler handler = getAnimationHandler();
         Collection<Animator> animationList = new ArrayList<>(5);
