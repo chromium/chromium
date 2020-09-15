@@ -152,12 +152,14 @@ class VIEWS_EXPORT FlexSpecification {
   int weight() const { return weight_; }
   int order() const { return order_; }
   LayoutAlignment alignment() const { return alignment_; }
+  bool unlimited_main_axis_size() const { return unlimited_main_axis_size_; }
 
  private:
   FlexRule rule_;
   int order_ = 1;
   int weight_ = 0;
   LayoutAlignment alignment_ = LayoutAlignment::kStretch;
+  bool unlimited_main_axis_size_ = false;
 };
 
 // Represents insets in a single dimension.

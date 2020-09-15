@@ -3033,6 +3033,20 @@ TEST_F(NestedFlexLayoutTest, UsingDefaultFlexRule) {
   EXPECT_FALSE(grandchild(2, 2)->GetVisible());
 }
 
+TEST_F(NestedFlexLayoutTest, UnboundedZeroSize) {
+  AddChildren(1);
+  child(1)->SetProperty(views::kFlexBehaviorKey, kUnboundedScaleToZero);
+
+  AddGrandchild(1, gfx::Size(0, 5));
+  grandchild(1, 1)->SetProperty(views::kFlexBehaviorKey, kUnboundedScaleToZero);
+
+  EXPECT_EQ(5, child(1)->GetPreferredSize().height());
+  host_->SetSize(gfx::Size(100, 5));
+  EXPECT_EQ(5, child(1)->GetPreferredSize().height());
+  host_->Layout();
+  EXPECT_EQ(5, child(1)->height());
+}
+
 namespace {
 
 struct DirectionalFlexRuleTestParamRules {

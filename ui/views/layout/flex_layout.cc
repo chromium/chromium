@@ -525,7 +525,8 @@ void FlexLayout::InitializeChildData(
 
     // Keep track of non-hidden flex controls.
     if (flex_child.flex.weight() > 0 ||
-        flex_child.current_size.main() < flex_child.preferred_size.main())
+        flex_child.current_size.main() < flex_child.preferred_size.main() ||
+        flex_child.flex.unlimited_main_axis_size())
       (*flex_order_to_index)[flex_child.flex.order()].push_back(view_index);
 
     child_layout.visible = flex_child.current_size.main() > 0;
@@ -837,10 +838,13 @@ void FlexLayout::AllocateFlexSpace(
       const NormalizedSizeBounds available(
           child_spacing->GetMaxSize(view_index, current_size, flex_amount),
           GetCrossAxis(orientation(), child_layout.available_size));
+      const bool desires_unlimited_size =
+          !available.main().is_bounded() &&
+          flex_child.flex.unlimited_main_axis_size();
 
       NormalizedSize desired_size = GetCurrentSizeForRule(
           flex_child.flex.rule(), child_layout.child_view, available);
-      if (desired_size.main() <= 0)
+      if (desired_size.main() <= 0 && !desires_unlimited_size)
         continue;
 
       // Limit the expansion of views past their preferred size in the first
@@ -848,9 +852,11 @@ void FlexLayout::AllocateFlexSpace(
       // them to |expandable_views| so that the remaining space can be allocated
       // later.
       if (expandable_views &&
-          desired_size.main() > flex_child.preferred_size.main()) {
+          (desired_size.main() > flex_child.preferred_size.main() ||
+           desires_unlimited_size)) {
         (*expandable_views)[flex_order].push_back(view_index);
-        desired_size.set_main(flex_child.preferred_size.main());
+        desired_size.set_main(
+            std::min(flex_child.preferred_size.main(), desired_size.main()));
       }
 
       // Increasing the child size should not result in a net total size
@@ -864,7 +870,7 @@ void FlexLayout::AllocateFlexSpace(
       DCHECK_GE(to_deduct, 0);
       // If the desired size increases (but is still within bounds), we can make
       // the control visible and allocate the additional space.
-      if (to_deduct > 0 && to_deduct <= remaining) {
+      if ((to_deduct > 0 && to_deduct <= remaining) || desires_unlimited_size) {
         flex_child.current_size = desired_size;
         child_layout.visible = true;
         remaining -= to_deduct;
