@@ -650,33 +650,32 @@ void LocationBarView::Layout() {
 
   // If rich autocompletion is enabled, split |location_bounds| for the
   // |omnibox_view_| and |omnibox_additional_text_view_|.
-  if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
-    if (OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox()) {
-      // Split vertically.
-      auto omnibox_bounds = location_bounds;
-      omnibox_bounds.set_height(location_bounds.height() / 2);
-      omnibox_view_->SetBoundsRect(omnibox_bounds);
-      auto omnibox_additional_text_bounds = omnibox_bounds;
-      omnibox_additional_text_bounds.set_x(location_bounds.x() + 3);
-      omnibox_additional_text_bounds.set_y(omnibox_bounds.bottom());
-      omnibox_additional_text_view_->SetBoundsRect(
-          omnibox_additional_text_bounds);
+  if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
+      OmniboxFieldTrial::RichAutocompletionTwoLineOmnibox()) {
+    // Split vertically.
+    auto omnibox_bounds = location_bounds;
+    omnibox_bounds.set_height(location_bounds.height() / 2);
+    omnibox_view_->SetBoundsRect(omnibox_bounds);
+    auto omnibox_additional_text_bounds = omnibox_bounds;
+    omnibox_additional_text_bounds.set_x(location_bounds.x() + 3);
+    omnibox_additional_text_bounds.set_y(omnibox_bounds.bottom());
+    omnibox_additional_text_view_->SetBoundsRect(
+        omnibox_additional_text_bounds);
 
-    } else if (!omnibox_view_->GetText().empty()) {
-      // Split horizontally.
-      auto omnibox_bounds = location_bounds;
-      omnibox_bounds.set_width(std::min(
-          omnibox_view_->GetUnelidedTextWidth() + 10, location_bounds.width()));
-      omnibox_view_->SetBoundsRect(omnibox_bounds);
-      auto omnibox_additional_text_bounds = location_bounds;
-      omnibox_additional_text_bounds.set_x(omnibox_bounds.x() +
-                                           omnibox_bounds.width());
-      omnibox_additional_text_bounds.set_width(
-          std::max(location_bounds.width() - omnibox_bounds.width(), 0));
-      omnibox_additional_text_view_->SetBoundsRect(
-          omnibox_additional_text_bounds);
-    }
-
+  } else if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
+             !omnibox_view_->GetText().empty()) {
+    // Split horizontally.
+    auto omnibox_bounds = location_bounds;
+    omnibox_bounds.set_width(std::min(
+        omnibox_view_->GetUnelidedTextWidth() + 10, location_bounds.width()));
+    omnibox_view_->SetBoundsRect(omnibox_bounds);
+    auto omnibox_additional_text_bounds = location_bounds;
+    omnibox_additional_text_bounds.set_x(omnibox_bounds.x() +
+                                         omnibox_bounds.width());
+    omnibox_additional_text_bounds.set_width(
+        std::max(location_bounds.width() - omnibox_bounds.width(), 0));
+    omnibox_additional_text_view_->SetBoundsRect(
+        omnibox_additional_text_bounds);
   } else {
     omnibox_view_->SetBoundsRect(location_bounds);
   }
