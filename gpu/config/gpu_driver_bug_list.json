@@ -3543,6 +3543,22 @@
       "features": [
         "reset_vp_when_colorspace_changes"
       ]
+    },
+    {
+      "id": 351,
+      "cr_bugs": [1079393],
+      "description": "Some Intel GPUs have NV12 overlay support, but aren't advertised.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x5906", "0x5913", "0x5916", "0x5921", "0x5926", "0x590e",
+                    "0x5915", "0x591e", "0x5902", "0x5917", "0x590b", "0x5908",
+                    "0x591b", "0x593b", "0x590a", "0x591a", "0x591d", "0x5923",
+                    "0x5927", "0x5932", "0x592b", "0x592a", "0x593a", "0x593d"],
+      "features": [
+        "force_nv12_overlay_support"
+      ]
     }
   ]
 }

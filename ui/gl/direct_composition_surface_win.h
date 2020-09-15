@@ -100,6 +100,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   // unsupported. So allow manually enabling BGRA8 overlay support.
   static void EnableBGRA8OverlaysWithYUVOverlaySupport();
 
+  // Forces to enable NV12 overlay support regardless of the query results from
+  // IDXGIOutput3::CheckOverlaySupport().
+  static void ForceNV12OverlaySupport();
+
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;

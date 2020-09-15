@@ -38,6 +38,8 @@ bool g_overlay_caps_valid = false;
 bool g_supports_overlays = false;
 // Whether the DecodeSwapChain is disabled or not.
 bool g_decode_swap_chain_disabled = false;
+// Whether to force the nv12 overlay support.
+bool g_force_nv12_overlay_support = false;
 
 // The lock to guard g_overlay_caps_valid and g_supports_overlays.
 base::Lock& GetOverlayLock() {
@@ -294,6 +296,12 @@ void UpdateOverlaySupport() {
       &nv12_overlay_support_flags, &yuy2_overlay_support_flags,
       &bgra8_overlay_support_flags, &rgb10a2_overlay_support_flags,
       &overlay_monitor_size);
+
+  if (g_force_nv12_overlay_support) {
+    supports_overlays = true;
+    nv12_overlay_support_flags = DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
+    overlay_format_used = DXGI_FORMAT_NV12;
+  }
 
   if (supports_overlays != SupportsOverlays() ||
       overlay_format_used != g_overlay_format_used) {
@@ -637,6 +645,13 @@ void DirectCompositionSurfaceWin::EnableBGRA8OverlaysWithYUVOverlaySupport() {
   // This has to be set before initializing overlay caps.
   DCHECK(!OverlayCapsValid());
   g_enable_bgra8_overlays_with_yuv_overlay_support = true;
+}
+
+// static
+void DirectCompositionSurfaceWin::ForceNV12OverlaySupport() {
+  // This has to be set before initializing overlay caps.
+  DCHECK(!OverlayCapsValid());
+  g_force_nv12_overlay_support = true;
 }
 
 bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
