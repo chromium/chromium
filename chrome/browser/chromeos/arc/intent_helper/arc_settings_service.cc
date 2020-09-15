@@ -170,6 +170,7 @@ class ArcSettingsServiceImpl
   void SyncAccessibilityLargeMouseCursorEnabled() const;
   void SyncAccessibilityVirtualKeyboardEnabled() const;
   void SyncBackupEnabled() const;
+  void SyncDockedMagnifierEnabled() const;
   void SyncFocusHighlightEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
@@ -178,6 +179,7 @@ class ArcSettingsServiceImpl
   void SyncProxySettingsForSystemProxy() const;
   void SyncReportingConsent(bool initial_sync) const;
   void SyncPictureInPictureEnabled() const;
+  void SyncScreenMagnifierEnabled() const;
   void SyncSelectToSpeakEnabled() const;
   void SyncSpokenFeedbackEnabled() const;
   void SyncSwitchAccessEnabled() const;
@@ -273,6 +275,8 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncFocusHighlightEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityLargeCursorEnabled) {
     SyncAccessibilityLargeMouseCursorEnabled();
+  } else if (pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled) {
+    SyncScreenMagnifierEnabled();
   } else if (pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled) {
     SyncSelectToSpeakEnabled();
   } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
@@ -281,6 +285,8 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     SyncSwitchAccessEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     SyncAccessibilityVirtualKeyboardEnabled();
+  } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
+    SyncDockedMagnifierEnabled();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
     SyncLocale();
@@ -344,10 +350,12 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   // Keep these lines ordered lexicographically.
   AddPrefToObserve(ash::prefs::kAccessibilityFocusHighlightEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityLargeCursorEnabled);
+  AddPrefToObserve(ash::prefs::kAccessibilityScreenMagnifierEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilitySelectToSpeakEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilitySpokenFeedbackEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilitySwitchAccessEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
+  AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
   AddPrefToObserve(::prefs::kResolveTimezoneByGeolocationMethod);
   AddPrefToObserve(::prefs::kSystemProxyUserTrafficHostAndPort);
   AddPrefToObserve(::prefs::kUse24HourClock);
@@ -390,10 +398,12 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // Keep these lines ordered lexicographically.
   SyncAccessibilityLargeMouseCursorEnabled();
   SyncAccessibilityVirtualKeyboardEnabled();
+  SyncDockedMagnifierEnabled();
   SyncFocusHighlightEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
+  SyncScreenMagnifierEnabled();
   SyncSelectToSpeakEnabled();
   SyncSpokenFeedbackEnabled();
   SyncSwitchAccessEnabled();
@@ -455,6 +465,18 @@ void ArcSettingsServiceImpl::SyncFocusHighlightEnabled() const {
   SendBoolPrefSettingsBroadcast(
       ash::prefs::kAccessibilityFocusHighlightEnabled,
       "org.chromium.arc.intent_helper.SET_FOCUS_HIGHLIGHT_ENABLED");
+}
+
+void ArcSettingsServiceImpl::SyncScreenMagnifierEnabled() const {
+  SendBoolPrefSettingsBroadcast(
+      ash::prefs::kAccessibilityScreenMagnifierEnabled,
+      "org.chromium.arc.intent_helper.SET_SCREEN_MAGNIFIER_ENABLED");
+}
+
+void ArcSettingsServiceImpl::SyncDockedMagnifierEnabled() const {
+  SendBoolPrefSettingsBroadcast(
+      ash::prefs::kDockedMagnifierEnabled,
+      "org.chromium.arc.intent_helper.SET_DOCKED_MAGNIFIER_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncLocale() const {

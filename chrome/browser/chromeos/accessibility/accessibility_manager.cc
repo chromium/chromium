@@ -507,9 +507,14 @@ void AccessibilityManager::OnLocaleChanged() {
   EnableSpokenFeedback(true);
 }
 
-void AccessibilityManager::OnViewFocusedInArc(
-    const gfx::Rect& bounds_in_screen) {
+void AccessibilityManager::OnViewFocusedInArc(const gfx::Rect& bounds_in_screen,
+                                              bool is_editable) {
   ash::AccessibilityController::Get()->SetFocusHighlightRect(bounds_in_screen);
+
+  MagnificationManager* magnification_manager = MagnificationManager::Get();
+  if (magnification_manager)
+    magnification_manager->HandleFocusedRectChangedIfEnabled(bounds_in_screen,
+                                                             is_editable);
 }
 
 bool AccessibilityManager::PlayEarcon(int sound_key, PlaySoundOption option) {

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/chromeos/arc/accessibility/geometry_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,7 +97,10 @@ void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
       node_data->bounds_in_screen,
       views::Widget::GetWidgetForNativeView(active_window)));
 
-  accessibility_manager->OnViewFocusedInArc(bounds_in_screen);
+  bool is_editable = arc::GetBooleanProperty(
+      node_data, arc::mojom::AccessibilityBooleanProperty::EDITABLE);
+
+  accessibility_manager->OnViewFocusedInArc(bounds_in_screen, is_editable);
 }
 
 void SetChildAxTreeIDForWindow(aura::Window* window,
@@ -613,7 +617,10 @@ arc::mojom::AccessibilityFilterType
 ArcAccessibilityHelperBridge::GetFilterTypeForProfile(Profile* profile) {
   chromeos::AccessibilityManager* accessibility_manager =
       chromeos::AccessibilityManager::Get();
-  if (!accessibility_manager)
+  const chromeos::MagnificationManager* magnification_manager =
+      chromeos::MagnificationManager::Get();
+
+  if (!accessibility_manager || !magnification_manager)
     return arc::mojom::AccessibilityFilterType::OFF;
 
   // TODO(yawano): Support the case where primary user is in background.
@@ -626,8 +633,12 @@ ArcAccessibilityHelperBridge::GetFilterTypeForProfile(Profile* profile) {
     return arc::mojom::AccessibilityFilterType::ALL;
   }
 
-  if (accessibility_manager->IsFocusHighlightEnabled())
+  if (magnification_manager->IsMagnifierEnabled() ||
+      magnification_manager->IsDockedMagnifierEnabled() ||
+      accessibility_manager->IsFocusHighlightEnabled()) {
     return arc::mojom::AccessibilityFilterType::FOCUS;
+  }
+
   return arc::mojom::AccessibilityFilterType::OFF;
 }
 
@@ -694,7 +705,11 @@ void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
       event_details.notification_type !=
           chromeos::ACCESSIBILITY_TOGGLE_SPOKEN_FEEDBACK &&
       event_details.notification_type !=
-          chromeos::ACCESSIBILITY_TOGGLE_SWITCH_ACCESS) {
+          chromeos::ACCESSIBILITY_TOGGLE_SWITCH_ACCESS &&
+      event_details.notification_type !=
+          chromeos::ACCESSIBILITY_TOGGLE_DOCKED_MAGNIFIER &&
+      event_details.notification_type !=
+          chromeos::ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFIER) {
     return;
   }
 
@@ -708,27 +723,33 @@ void ArcAccessibilityHelperBridge::OnAccessibilityStatusChanged(
 }
 
 void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
-  arc::mojom::AccessibilityFilterType new_filter_type_ =
+  arc::mojom::AccessibilityFilterType new_filter_type =
       GetFilterTypeForProfile(profile_);
   // Clear trees when filter type is changed to non-ALL.
-  if (filter_type_ != new_filter_type_ &&
-      new_filter_type_ != arc::mojom::AccessibilityFilterType::ALL) {
+
+  if (filter_type_ != new_filter_type &&
+      new_filter_type != arc::mojom::AccessibilityFilterType::ALL) {
     trees_.clear();
   }
-  filter_type_ = new_filter_type_;
+  filter_type_ = new_filter_type;
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->accessibility_helper(), SetFilter);
   if (instance)
     instance->SetFilter(filter_type_);
 
-  chromeos::AccessibilityManager* accessibility_manager =
+  const chromeos::AccessibilityManager* accessibility_manager =
       chromeos::AccessibilityManager::Get();
-  if (!accessibility_manager)
+  const chromeos::MagnificationManager* magnification_manager =
+      chromeos::MagnificationManager::Get();
+
+  if (!accessibility_manager || !magnification_manager)
     return;
 
-  is_focus_highlight_enabled_ =
-      accessibility_manager->IsFocusHighlightEnabled();
+  is_focus_event_enabled_ = magnification_manager->IsMagnifierEnabled() ||
+                            magnification_manager->IsDockedMagnifierEnabled() ||
+                            accessibility_manager->IsFocusHighlightEnabled();
+
   use_full_focus_mode_ = accessibility_manager->IsSwitchAccessEnabled() ||
                          accessibility_manager->IsSpokenFeedbackEnabled();
 
@@ -923,7 +944,7 @@ void ArcAccessibilityHelperBridge::HandleFilterTypeAllEvent(
     UpdateWindowProperties(GetActiveWindow());
   }
 
-  if (is_focus_highlight_enabled_ &&
+  if (is_focus_event_enabled_ &&
       event_data->event_type ==
           arc::mojom::AccessibilityEventType::VIEW_FOCUSED) {
     for (size_t i = 0; i < event_data->node_data.size(); ++i) {
