@@ -713,6 +713,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   managedItem.detailText = GetNSString(detailStringID);
   managedItem.statusText = status ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   return managedItem;
 }
 

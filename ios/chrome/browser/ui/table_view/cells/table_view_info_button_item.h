@@ -27,6 +27,9 @@
 // The status text string.
 @property(nonatomic, copy) NSString* statusText;
 
+// The accessibility hint text string.
+@property(nonatomic, copy) NSString* accessibilityHint;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_INFO_BUTTON_ITEM_H_

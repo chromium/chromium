@@ -160,6 +160,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [_disablePopupsSetting value]
           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  blockPopupsManagedItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   blockPopupsManagedItem.accessibilityIdentifier =
       @"blockPopupsContentView_managed";
   return blockPopupsManagedItem;

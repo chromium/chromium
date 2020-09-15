@@ -33,6 +33,9 @@
     [cell updatePaddingForDetailText:NO];
   }
   cell.statusTextLabel.text = self.statusText;
+  if (self.accessibilityHint) {
+    cell.accessibilityHint = self.accessibilityHint;
+  }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   // Update the icon image, if one is present.

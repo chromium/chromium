@@ -147,6 +147,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [self.dataSource translateEnabled]
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    translateManagedItem.accessibilityHint = l10n_util::GetNSString(
+        IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+
     [model addItem:translateManagedItem
         toSectionWithIdentifier:SectionIdentifierTranslate];
   } else {

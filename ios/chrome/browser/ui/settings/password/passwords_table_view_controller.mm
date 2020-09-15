@@ -537,6 +537,8 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
       [_passwordManagerEnabled value]
           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedSavePasswordItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   managedSavePasswordItem.accessibilityIdentifier =
       @"savePasswordsItem_managed";
   return managedSavePasswordItem;

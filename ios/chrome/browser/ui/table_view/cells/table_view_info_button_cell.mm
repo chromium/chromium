@@ -313,8 +313,10 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 }
 
 - (NSString*)accessibilityHint {
-  return l10n_util::GetNSString(
-      IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  if (self.accessibilityHint.length) {
+    return self.accessibilityHint;
+  }
+  return l10n_util::GetNSString(IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT);
 }
 
 - (NSString*)accessibilityLabel {

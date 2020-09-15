@@ -218,6 +218,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_LABEL);
   // The status could only be off when the pref is managed.
   cardManagedItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  cardManagedItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   cardManagedItem.accessibilityIdentifier = kAutofillCreditCardManagedViewId;
   return cardManagedItem;
 }

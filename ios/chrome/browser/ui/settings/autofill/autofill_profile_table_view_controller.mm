@@ -173,6 +173,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL);
   // The status could only be off when the pref is managed.
   managedAddressItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedAddressItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   managedAddressItem.accessibilityIdentifier = @"addressItem_managed";
   return managedAddressItem;
 }
