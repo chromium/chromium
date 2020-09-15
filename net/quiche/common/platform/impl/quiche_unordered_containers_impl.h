@@ -7,20 +7,16 @@
 
 #include <unordered_map>
 
+#include "third_party/abseil-cpp/absl/container/node_hash_map.h"
+
 namespace quiche {
 
 // The default hasher used by hash tables.
 template <typename Key>
-using QuicheDefaultHasherImpl = std::hash<Key>;
+using QuicheDefaultHasherImpl = absl::Hash<Key>;
 
-template <typename Key,
-          typename Value,
-          typename Hash,
-          typename Eq =
-              typename std::unordered_map<Key, Value, Hash>::key_equal,
-          typename Alloc =
-              typename std::unordered_map<Key, Value, Hash>::allocator_type>
-using QuicheUnorderedMapImpl = std::unordered_map<Key, Value, Hash, Eq, Alloc>;
+template <typename Key, typename Value, typename Hash, typename Eq>
+using QuicheUnorderedMapImpl = absl::node_hash_map<Key, Value, Hash, Eq>;
 
 }  // namespace quiche
 
