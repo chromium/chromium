@@ -111,6 +111,8 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
         break;
       case browsing_data::BrowsingDataType::PASSWORDS:
         remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
+        remove_mask |=
+            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS;
         break;
       case browsing_data::BrowsingDataType::FORM_DATA:
         remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;

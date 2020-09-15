@@ -279,6 +279,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         break;
       case BrowsingDataType::PASSWORDS:
         remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
+        remove_mask |=
+            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS;
         break;
       case BrowsingDataType::FORM_DATA:
         remove_mask |= ChromeBrowsingDataRemoverDelegate::DATA_TYPE_FORM_DATA;

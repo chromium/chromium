@@ -2036,6 +2036,26 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
       .WillOnce(Return(password_manager::PasswordStoreChangeList()));
 
+  // Only DATA_TYPE_PASSWORDS is cleared. Accounts passwords are not affected.
+  EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
+      .Times(0);
+
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       RemoveAccountPasswordsByTimeOnly_WithAccountStore) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kEnablePasswordsAccountStorage);
+
+  RemovePasswordsTester tester(GetProfile());
+
+  EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
+      .Times(0);
+
   EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
       .WillOnce(Return(password_manager::PasswordStoreChangeList()));
   // For the account store, the remover delegate also waits until all the
@@ -2046,11 +2066,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS, false);
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemovePasswordsByTimeOnly_WithAccountStore_Failure) {
+       RemoveAccountPasswordsByTimeOnly_WithAccountStore_Failure) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kEnablePasswordsAccountStorage);
@@ -2058,7 +2078,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   RemovePasswordsTester tester(GetProfile());
 
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
-      .WillOnce(Return(password_manager::PasswordStoreChangeList()));
+      .Times(0);
 
   EXPECT_CALL(*tester.account_store(), RemoveLoginsByURLAndTimeImpl(_, _, _))
       .WillOnce(Return(password_manager::PasswordStoreChangeList()));
@@ -2073,9 +2093,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   uint64_t failed_data_types = BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS, false);
   EXPECT_EQ(failed_data_types,
-            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
+            ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS);
 }
 
 // Disabled, since passwords are not yet marked as a filterable datatype.
@@ -2145,7 +2165,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       RemoveCompromisedCredentialsByTimeOnly_WithAccountStore) {
+       RemoveCompromisedAccountCredentialsByTimeOnly_WithAccountStore) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       password_manager::features::kEnablePasswordsAccountStorage);
@@ -2153,10 +2173,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter;
 
-  EXPECT_CALL(
-      *tester.profile_store(),
-      RemoveCompromisedCredentialsByUrlAndTimeImpl(
-          ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
+  EXPECT_CALL(*tester.profile_store(),
+              RemoveCompromisedCredentialsByUrlAndTimeImpl(_, _, _))
+      .Times(0);
 
   EXPECT_CALL(
       *tester.account_store(),
@@ -2165,7 +2184,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS, false);
 }
 
 // TODO(crbug.com/589586): Disabled, since history is not yet marked as
@@ -3233,18 +3252,18 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       password_manager::features::kEnablePasswordsAccountStorage);
 
   auto* delegate = GetProfile()->GetBrowsingDataRemoverDelegate();
+
   auto domains = delegate->GetDomainsForDeferredCookieDeletion(
-      ChromeBrowsingDataRemoverDelegate::ALL_DATA_TYPES);
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS);
   EXPECT_EQ(domains.size(), 1u);
   EXPECT_EQ(domains[0], "google.com");
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS);
-  EXPECT_EQ(domains.size(), 1u);
-  EXPECT_EQ(domains[0], "google.com");
+  EXPECT_EQ(domains.size(), 0u);
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES);
+      ChromeBrowsingDataRemoverDelegate::ALL_DATA_TYPES);
   EXPECT_EQ(domains.size(), 0u);
 }
 

@@ -76,6 +76,7 @@ class ChromeBrowsingDataRemoverDelegate
     DATA_TYPE_CONTENT_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 9,
     DATA_TYPE_BOOKMARKS = DATA_TYPE_EMBEDDER_BEGIN << 10,
     DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 11,
+    DATA_TYPE_ACCOUNT_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 12,
 
     // Group datatypes.
 
@@ -106,11 +107,14 @@ class ChromeBrowsingDataRemoverDelegate
 
     // Datatypes with account-scoped data that needs to be removed
     // before Google cookies are deleted.
-    DEFERRED_COOKIE_DELETION_DATA_TYPES = DATA_TYPE_PASSWORDS,
+    DEFERRED_COOKIE_DELETION_DATA_TYPES = DATA_TYPE_ACCOUNT_PASSWORDS,
 
     // Includes all the available remove options. Meant to be used by clients
     // that wish to wipe as much data as possible from a Profile, to make it
-    // look like a new Profile.
+    // look like a new Profile. Does not delete account-scoped data like
+    // passwords but will remove access to account-scoped data by signing the
+    // user out.
+
     ALL_DATA_TYPES = DATA_TYPE_SITE_DATA |  //
                      content::BrowsingDataRemover::DATA_TYPE_CACHE |
                      content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
@@ -160,6 +164,10 @@ class ChromeBrowsingDataRemoverDelegate
                     0,
                 "Deferred deletion is currently not implemented for filterable "
                 "data types");
+
+  static_assert((DEFERRED_COOKIE_DELETION_DATA_TYPES & WIPE_PROFILE) == 0,
+                "Account data should not be included in deletions that remove "
+                "all local data");
 
   explicit ChromeBrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);

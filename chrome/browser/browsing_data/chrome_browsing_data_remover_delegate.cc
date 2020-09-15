@@ -812,21 +812,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
               TracingDataType::kCompromisedCredentials));
     }
 
-    auto account_store = AccountPasswordStoreFactory::GetForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS);
-
-    if (account_store) {
-      account_store->RemoveLoginsByURLAndTime(
-          filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
-          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
-                                       DATA_TYPE_PASSWORDS));
-      account_store->RemoveCompromisedCredentialsByUrlAndTime(
-          nullable_filter, delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(
-              TracingDataType::kAccountCompromisedCredentials));
-    }
-
     BrowserContext::GetDefaultStoragePartition(profile_)
         ->GetNetworkContext()
         ->ClearHttpAuthCache(delete_begin_,
@@ -855,6 +840,23 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             TouchIdAuthenticatorConfigForProfile(profile_))
         .DeleteCredentials(delete_begin_, delete_end_);
 #endif  // defined(OS_MAC)
+  }
+
+  if (remove_mask & DATA_TYPE_ACCOUNT_PASSWORDS) {
+    auto account_store = AccountPasswordStoreFactory::GetForProfile(
+        profile_, ServiceAccessType::EXPLICIT_ACCESS);
+
+    if (account_store) {
+      account_store->RemoveLoginsByURLAndTime(
+          filter, delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
+          CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
+                                       DATA_TYPE_ACCOUNT_PASSWORDS));
+      account_store->RemoveCompromisedCredentialsByUrlAndTime(
+          nullable_filter, delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(
+              TracingDataType::kAccountCompromisedCredentials));
+    }
   }
 
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {

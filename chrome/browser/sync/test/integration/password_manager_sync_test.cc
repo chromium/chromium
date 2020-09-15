@@ -836,13 +836,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
 
-  // Clear all data including cookies and passwords.
+  // Clear cookies and account passwords.
   content::BrowsingDataRemover* remover =
       content::BrowserContext::GetBrowsingDataRemover(GetProfile(0));
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::ALL_DATA_TYPES,
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_SITE_DATA |
+          ChromeBrowsingDataRemoverDelegate::DATA_TYPE_ACCOUNT_PASSWORDS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
   observer.BlockUntilCompletion();
 
