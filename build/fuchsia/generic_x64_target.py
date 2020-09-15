@@ -14,10 +14,10 @@ from common import SDK_ROOT, EnsurePathExists, \
 
 
 def GetTargetType():
-  return GenericX64Target
+  return GenericX64PavedDeviceTarget
 
 
-class GenericX64Target(device_target.DeviceTarget):
+class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
   """In addition to the functionality provided by DeviceTarget, this class
   automatically handles paving of x64 devices that use generic Fuchsia build.
 
@@ -59,7 +59,7 @@ class GenericX64Target(device_target.DeviceTarget):
                                     self._GetTargetSdkArch(),
                                     boot_data.TARGET_TYPE_GENERIC)),
         EnsurePathExists(
-            boot_data.GetBootImage(self._output_dir, self._GetTargetSdkArch(),
+            boot_data.GetBootImage(self._out_dir, self._GetTargetSdkArch(),
                                    boot_data.TARGET_TYPE_GENERIC))
     ]
 
@@ -67,7 +67,7 @@ class GenericX64Target(device_target.DeviceTarget):
       bootserver_command += ['-n', self._node_name]
 
     bootserver_command += ['--']
-    bootserver_command += boot_data.GetKernelArgs(self._output_dir)
+    bootserver_command += boot_data.GetKernelArgs(self._out_dir)
 
     logging.debug(' '.join(bootserver_command))
     _, stdout = SubprocessCallWithTimeout(bootserver_command,

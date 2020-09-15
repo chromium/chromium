@@ -60,10 +60,17 @@ class DeviceTarget(target.Target):
   If |_host| is set:
     Deploy to a device at the host IP address as-is."""
 
-  def __init__(self, output_dir, target_cpu, host=None, node_name=None,
-               port=None, ssh_config=None, fuchsia_out_dir=None,
-               os_check='update', system_log_file=None):
-    """output_dir: The directory which will contain the files that are
+  def __init__(self,
+               out_dir,
+               target_cpu,
+               host=None,
+               node_name=None,
+               port=None,
+               ssh_config=None,
+               fuchsia_out_dir=None,
+               os_check='update',
+               system_log_file=None):
+    """out_dir: The directory which will contain the files that are
                    generated to support the deployment.
     target_cpu: The CPU architecture of the deployment target. Can be
                 "x64" or "arm64".
@@ -78,7 +85,7 @@ class DeviceTarget(target.Target):
                   mismatch.
               If 'ignore', the target's SDK version is ignored."""
 
-    super(DeviceTarget, self).__init__(output_dir, target_cpu)
+    super(DeviceTarget, self).__init__(out_dir, target_cpu)
 
     self._port = port if port else 22
     self._system_log_file = system_log_file
@@ -110,8 +117,8 @@ class DeviceTarget(target.Target):
 
     else:
       # Default to using an automatically generated SSH config and keys.
-      boot_data.ProvisionSSH(output_dir)
-      self._ssh_config_path = boot_data.GetSSHConfigPath(output_dir)
+      boot_data.ProvisionSSH(out_dir)
+      self._ssh_config_path = boot_data.GetSSHConfigPath(out_dir)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -138,7 +145,7 @@ class DeviceTarget(target.Target):
                              'Equivalent to setting --ssh_config and '
                              '--os-check=ignore')
     device_args.add_argument(
-        '--os_check',
+        '--os-check',
         choices=['check', 'update', 'ignore'],
         default='update',
         help="Sets the OS version enforcement policy. If 'check', then the "

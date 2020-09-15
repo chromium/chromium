@@ -40,10 +40,9 @@ def GetTargetType():
 class QemuTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'qemu'
 
-  def __init__(self, output_dir, target_cpu, system_log_file, cpu_cores,
+  def __init__(self, out_dir, target_cpu, system_log_file, cpu_cores,
                require_kvm, ram_size_mb):
-    super(QemuTarget, self).__init__(output_dir, target_cpu,
-                                     system_log_file)
+    super(QemuTarget, self).__init__(out_dir, target_cpu, system_log_file)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
@@ -75,29 +74,37 @@ class QemuTarget(emu_target.EmuTarget):
     boot_data.AssertBootImagesExist(self._GetTargetSdkArch(), 'qemu')
 
     emu_command = [
-        '-kernel', EnsurePathExists(
+        '-kernel',
+        EnsurePathExists(
             boot_data.GetTargetFile('qemu-kernel.kernel',
                                     self._GetTargetSdkArch(),
                                     boot_data.TARGET_TYPE_QEMU)),
-        '-initrd', EnsurePathExists(
-            boot_data.GetBootImage(self._output_dir, self._GetTargetSdkArch(),
+        '-initrd',
+        EnsurePathExists(
+            boot_data.GetBootImage(self._out_dir, self._GetTargetSdkArch(),
                                    boot_data.TARGET_TYPE_QEMU)),
-        '-m', str(self._ram_size_mb),
-        '-smp', str(self._cpu_cores),
+        '-m',
+        str(self._ram_size_mb),
+        '-smp',
+        str(self._cpu_cores),
 
         # Attach the blobstore and data volumes. Use snapshot mode to discard
         # any changes.
         '-snapshot',
-        '-drive', 'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
-                    _EnsureBlobstoreQcowAndReturnPath(self._output_dir,
-                                                      self._GetTargetSdkArch()),
-        '-device', 'virtio-blk-pci,drive=blobstore',
+        '-drive',
+        'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
+        _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
+                                          self._GetTargetSdkArch()),
+        '-device',
+        'virtio-blk-pci,drive=blobstore',
 
         # Use stdio for the guest OS only; don't attach the QEMU interactive
         # monitor.
-        '-serial', 'stdio',
-        '-monitor', 'none',
-      ]
+        '-serial',
+        'stdio',
+        '-monitor',
+        'none',
+    ]
 
     # Configure the machine to emulate, based on the target architecture.
     if self._target_cpu == 'arm64':
@@ -141,7 +148,7 @@ class QemuTarget(emu_target.EmuTarget):
 
     emu_command.extend(kvm_command)
 
-    kernel_args = boot_data.GetKernelArgs(self._output_dir)
+    kernel_args = boot_data.GetKernelArgs(self._out_dir)
 
     # TERM=dumb tells the guest OS to not emit ANSI commands that trigger
     # noisy ANSI spew from the user's terminal emulator.
@@ -178,7 +185,7 @@ def _ComputeFileHash(filename):
   return hasher.hexdigest()
 
 
-def _EnsureBlobstoreQcowAndReturnPath(output_dir, target_arch):
+def _EnsureBlobstoreQcowAndReturnPath(out_dir, target_arch):
   """Returns a file containing the Fuchsia blobstore in a QCOW format,
   with extra buffer space added for growth."""
 
@@ -187,11 +194,11 @@ def _EnsureBlobstoreQcowAndReturnPath(output_dir, target_arch):
   fvm_tool = common.GetHostToolPathFromPlatform('fvm')
   blobstore_path = boot_data.GetTargetFile('storage-full.blk', target_arch,
                                            'qemu')
-  qcow_path = os.path.join(output_dir, 'gen', 'blobstore.qcow')
+  qcow_path = os.path.join(out_dir, 'gen', 'blobstore.qcow')
 
   # Check a hash of the blobstore to determine if we can re-use an existing
   # extended version of it.
-  blobstore_hash_path = os.path.join(output_dir, 'gen', 'blobstore.hash')
+  blobstore_hash_path = os.path.join(out_dir, 'gen', 'blobstore.hash')
   current_blobstore_hash = _ComputeFileHash(blobstore_path)
 
   if os.path.exists(blobstore_hash_path) and os.path.exists(qcow_path):

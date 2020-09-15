@@ -60,8 +60,8 @@ class FuchsiaTargetException(Exception):
 class Target(object):
   """Base class representing a Fuchsia deployment target."""
 
-  def __init__(self, output_dir, target_cpu):
-    self._output_dir = output_dir
+  def __init__(self, out_dir, target_cpu):
+    self._out_dir = out_dir
     self._started = False
     self._dry_run = False
     self._target_cpu = target_cpu
@@ -72,9 +72,8 @@ class Target(object):
     common_args = arg_parser.add_argument_group(
         'target', 'Arguments that apply to all targets.')
     common_args.add_argument(
-        '--output-dir',
+        '--out-dir',
         type=os.path.realpath,
-        default=os.getcwd(),
         help=('Path to the directory in which build files are located. '
               'Defaults to current directory.'))
     common_args.add_argument('--system-log-file',

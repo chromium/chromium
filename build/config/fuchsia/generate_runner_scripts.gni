@@ -152,7 +152,7 @@ template("fuchsia_package_runner") {
     }
 
     executable_args += [
-      "--output-dir",
+      "--out-dir",
       "@WrappedPath(.)",
       "--target-cpu",
       target_cpu,

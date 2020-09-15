@@ -20,9 +20,9 @@ def GetTargetType():
 class AemuTarget(qemu_target.QemuTarget):
   EMULATOR_NAME = 'aemu'
 
-  def __init__(self, output_dir, target_cpu, system_log_file, cpu_cores,
+  def __init__(self, out_dir, target_cpu, system_log_file, cpu_cores,
                require_kvm, ram_size_mb, enable_graphics, hardware_gpu):
-    super(AemuTarget, self).__init__(output_dir, target_cpu, system_log_file,
+    super(AemuTarget, self).__init__(out_dir, target_cpu, system_log_file,
                                      cpu_cores, require_kvm, ram_size_mb)
 
     # TODO(crbug.com/1000907): Enable AEMU for arm64.

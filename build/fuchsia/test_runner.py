@@ -57,7 +57,7 @@ def main():
                       type=int,
                       help='Sets the limit of test batch to run in a single '
                       'process.')
-  # --test-launcher-filter-file is specified relative to --output-dir,
+  # --test-launcher-filter-file is specified relative to --out-dir,
   # so specifying type=os.path.* will break it.
   parser.add_argument('--test-launcher-filter-file',
                       default=None,
@@ -81,9 +81,9 @@ def main():
                       help='Arguments for the test process.')
   args = parser.parse_args()
 
-  # Flag output_dir is required for tests launched with this script.
-  if not args.output_dir:
-    raise ValueError("output-dir must be specified.")
+  # Flag out_dir is required for tests launched with this script.
+  if not args.out_dir:
+    raise ValueError("out-dir must be specified.")
 
   ConfigureLogging(args)
 
@@ -157,7 +157,7 @@ def main():
                                       args.package_name)
 
       run_package_args = RunPackageArgs.FromCommonArgs(args)
-      returncode = RunPackage(args.output_dir, target, args.package,
+      returncode = RunPackage(args.out_dir, target, args.package,
                               args.package_name, child_args, run_package_args)
 
       if test_server:

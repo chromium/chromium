@@ -130,7 +130,7 @@ class _TargetHost(object):
             self._amber_repo = None
             self._target = None
             target_args = {
-                'output_dir': build_path,
+                'out_dir': build_path,
                 'target_cpu': 'x64',
                 'system_log_file': None,
                 'cpu_cores': CPU_CORES,
