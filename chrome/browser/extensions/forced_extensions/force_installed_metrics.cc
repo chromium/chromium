@@ -65,6 +65,70 @@ ForceInstalledMetrics::UserType ConvertUserType(
 }
 #endif  // defined(OS_CHROMEOS)
 
+// Reports time taken for force installed extension during different
+// installation stages.
+void ReportInstallationStageTimes(
+    const ExtensionId& extension_id,
+    const InstallStageTracker::InstallationData& installation) {
+  if (installation.download_manifest_finish_time &&
+      installation.download_manifest_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.DownloadingStartTo."
+        "ManifestDownloadComplete",
+        installation.download_manifest_finish_time.value() -
+            installation.download_manifest_started_time.value());
+  }
+  // Report the download time for CRX only when
+  // installation.download_CRX_started_time is set because in other case CRX
+  // is fetched from cache and the download was not started.
+  if (installation.download_CRX_finish_time &&
+      installation.download_CRX_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.ManifestDownloadCompleteTo."
+        "CRXDownloadComplete",
+        installation.download_CRX_finish_time.value() -
+            installation.download_CRX_started_time.value());
+  }
+  if (installation.copying_started_time) {
+    DCHECK(installation.verification_started_time);
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.VerificationStartTo.CopyingStart",
+        installation.copying_started_time.value() -
+            installation.verification_started_time.value());
+  }
+  if (installation.unpacking_started_time &&
+      installation.copying_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.CopyingStartTo.UnpackingStart",
+        installation.unpacking_started_time.value() -
+            installation.copying_started_time.value());
+  }
+  if (installation.checking_expectations_started_time &&
+      installation.unpacking_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.UnpackingStartTo."
+        "CheckingExpectationsStart",
+        installation.checking_expectations_started_time.value() -
+            installation.unpacking_started_time.value());
+  }
+  if (installation.finalizing_started_time &&
+      installation.checking_expectations_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.CheckingExpectationsStartTo."
+        "FinalizingStart",
+        installation.finalizing_started_time.value() -
+            installation.checking_expectations_started_time.value());
+  }
+  if (installation.installation_complete_time &&
+      installation.finalizing_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.FinalizingStartTo."
+        "CRXInstallComplete",
+        installation.installation_complete_time.value() -
+            installation.finalizing_started_time.value());
+  }
+}
+
 }  // namespace
 
 ForceInstalledMetrics::ForceInstalledMetrics(
@@ -127,63 +191,7 @@ void ForceInstalledMetrics::ReportMetrics() {
     } else {
       InstallStageTracker::InstallationData installation =
           install_stage_tracker->Get(extension.first);
-      if (installation.download_manifest_finish_time &&
-          installation.download_manifest_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.DownloadingStartTo."
-            "ManifestDownloadComplete",
-            installation.download_manifest_finish_time.value() -
-                installation.download_manifest_started_time.value());
-      }
-      // Report the download time for CRX only when
-      // installation.download_CRX_started_time is set because in other case CRX
-      // is fetched from cache and the download was not started.
-      if (installation.download_CRX_finish_time &&
-          installation.download_CRX_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.ManifestDownloadCompleteTo."
-            "CRXDownloadComplete",
-            installation.download_CRX_finish_time.value() -
-                installation.download_CRX_started_time.value());
-      }
-      if (installation.copying_started_time) {
-        DCHECK(installation.verification_started_time);
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.VerificationStartTo.CopyingStart",
-            installation.copying_started_time.value() -
-                installation.verification_started_time.value());
-      }
-      if (installation.unpacking_started_time &&
-          installation.copying_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.CopyingStartTo.UnpackingStart",
-            installation.unpacking_started_time.value() -
-                installation.copying_started_time.value());
-      }
-      if (installation.checking_expectations_started_time &&
-          installation.unpacking_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.UnpackingStartTo."
-            "CheckingExpectationsStart",
-            installation.checking_expectations_started_time.value() -
-                installation.unpacking_started_time.value());
-      }
-      if (installation.finalizing_started_time &&
-          installation.checking_expectations_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.CheckingExpectationsStartTo."
-            "FinalizingStart",
-            installation.finalizing_started_time.value() -
-                installation.checking_expectations_started_time.value());
-      }
-      if (installation.installation_complete_time &&
-          installation.finalizing_started_time) {
-        base::UmaHistogramLongTimes(
-            "Extensions.ForceInstalledTime.FinalizingStartTo."
-            "CRXInstallComplete",
-            installation.installation_complete_time.value() -
-                installation.finalizing_started_time.value());
-      }
+      ReportInstallationStageTimes(extension.first, installation);
     }
   }
   if (missing_forced_extensions.empty()) {
