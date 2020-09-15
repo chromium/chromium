@@ -55,6 +55,9 @@ class BleMedium : public api::BleMedium,
   void DeviceChanged(bluetooth::mojom::DeviceInfoPtr device) override;
   void DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) override;
 
+  // A bluetooth::mojom::Advertisement message pipe was destroyed.
+  void AdvertisementReleased(const device::BluetoothUUID& service_uuid);
+
   // Query if any service IDs are being scanned for.
   bool IsScanning();
 
@@ -71,6 +74,10 @@ class BleMedium : public api::BleMedium,
   // |adapter_observer_| is only set and bound during active discovery so that
   // events we don't care about outside of discovery don't pile up.
   mojo::Receiver<bluetooth::mojom::AdapterObserver> adapter_observer_{this};
+
+  // Keyed by service UUID of the advertisement.
+  std::map<device::BluetoothUUID, mojo::Remote<bluetooth::mojom::Advertisement>>
+      registered_advertisements_map_;
 
   // Keyed by requested service UUID. Discovery is active as long as this map is
   // non-empty.

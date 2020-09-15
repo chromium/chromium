@@ -126,6 +126,11 @@ BluetoothInternalsTest.prototype = {
         this.methodCalled('addObserver', observer);
       }
 
+      async registerAdvertisement() {
+        this.methodCalled('registerAdvertisement');
+        return {advertisement: null};
+      }
+
       async setDiscoverable() {
         this.methodCalled('setDiscoverable');
         return {success: true};

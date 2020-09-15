@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -37,6 +38,9 @@ class Adapter : public mojom::Adapter,
   void GetInfo(GetInfoCallback callback) override;
   void AddObserver(mojo::PendingRemote<mojom::AdapterObserver> observer,
                    AddObserverCallback callback) override;
+  void RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
+                             const std::vector<uint8_t>& service_data,
+                             RegisterAdvertisementCallback callback) override;
   void SetDiscoverable(bool discoverable,
                        SetDiscoverableCallback callback) override;
   void SetName(const std::string& name, SetNameCallback callback) override;
@@ -73,6 +77,13 @@ class Adapter : public mojom::Adapter,
       std::unique_ptr<device::BluetoothGattConnection> connection);
   void OnConnectError(ConnectToDeviceCallback callback,
                       device::BluetoothDevice::ConnectErrorCode error_code);
+
+  void OnRegisterAdvertisement(
+      RegisterAdvertisementCallback callback,
+      scoped_refptr<device::BluetoothAdvertisement> advertisement);
+  void OnRegisterAdvertisementError(
+      RegisterAdvertisementCallback callback,
+      device::BluetoothAdvertisement::ErrorCode error_code);
 
   void OnSetDiscoverable(SetDiscoverableCallback callback);
   void OnSetDiscoverableError(SetDiscoverableCallback callback);

@@ -31,6 +31,10 @@ const char kDeviceAddress[] = "DeviceAddress";
 const char kDeviceServiceData1Str[] = "Device_Advertisement1";
 const char kDeviceServiceData2Str[] = "Device_Advertisement2";
 
+std::vector<uint8_t> GetByteVector(const std::string& str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
 }  // namespace
 
 class BleMediumTest : public testing::Test {
@@ -132,10 +136,6 @@ class BleMediumTest : public testing::Test {
     run_loop.Run();
   }
 
-  std::vector<uint8_t> GetByteVector(const std::string& str) {
-    return std::vector<uint8_t>(str.begin(), str.end());
-  }
-
   void VerifyByteArrayEquals(const ByteArray& byte_array,
                              const std::string& expected_value) {
     EXPECT_EQ(expected_value,
@@ -219,7 +219,48 @@ class BleMediumTest : public testing::Test {
 };
 
 TEST_F(BleMediumTest, TestAdvertising) {
-  // TODO(b/154845685): Write test.
+  ASSERT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId1)));
+  ASSERT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId2)));
+
+  ble_medium_->StartAdvertising(kServiceId1, ByteArray(kDeviceServiceData1Str));
+  EXPECT_EQ(GetByteVector(kDeviceServiceData1Str),
+            *fake_adapter_->GetRegisteredAdvertisementServiceData(
+                device::BluetoothUUID(kServiceId1)));
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId2)));
+
+  ble_medium_->StartAdvertising(kServiceId2, ByteArray(kDeviceServiceData2Str));
+  EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId1)));
+  EXPECT_EQ(GetByteVector(kDeviceServiceData2Str),
+            *fake_adapter_->GetRegisteredAdvertisementServiceData(
+                device::BluetoothUUID(kServiceId2)));
+
+  {
+    base::RunLoop run_loop;
+    fake_adapter_->SetAdvertisementDestroyedCallback(run_loop.QuitClosure());
+    ble_medium_->StopAdvertising(kServiceId1);
+    run_loop.Run();
+  }
+
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId1)));
+  EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId2)));
+
+  {
+    base::RunLoop run_loop;
+    fake_adapter_->SetAdvertisementDestroyedCallback(run_loop.QuitClosure());
+    ble_medium_->StopAdvertising(kServiceId2);
+    run_loop.Run();
+  }
+
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId1)));
+  EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
+      device::BluetoothUUID(kServiceId2)));
 }
 
 TEST_F(BleMediumTest, TestScanning_OneService) {

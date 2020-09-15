@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "device/bluetooth/advertisement.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/device.h"
 #include "device/bluetooth/discovery_session.h"
@@ -84,6 +85,31 @@ void Adapter::AddObserver(mojo::PendingRemote<mojom::AdapterObserver> observer,
                           AddObserverCallback callback) {
   observers_.Add(std::move(observer));
   std::move(callback).Run();
+}
+
+void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
+                                    const std::vector<uint8_t>& service_data,
+                                    RegisterAdvertisementCallback callback) {
+  auto advertisement_data =
+      std::make_unique<device::BluetoothAdvertisement::Data>(
+          device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
+
+  auto uuid_list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
+  uuid_list->push_back(service_uuid.value());
+  advertisement_data->set_service_uuids(std::move(uuid_list));
+
+  auto service_data_map =
+      std::make_unique<device::BluetoothAdvertisement::ServiceData>();
+  service_data_map->emplace(service_uuid.value(), service_data);
+  advertisement_data->set_service_data(std::move(service_data_map));
+
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  adapter_->RegisterAdvertisement(
+      std::move(advertisement_data),
+      base::BindOnce(&Adapter::OnRegisterAdvertisement,
+                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
+      base::BindOnce(&Adapter::OnRegisterAdvertisementError,
+                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
 }
 
 void Adapter::SetDiscoverable(bool discoverable,
@@ -203,6 +229,23 @@ void Adapter::OnConnectError(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   std::move(callback).Run(mojo::ConvertTo<mojom::ConnectResult>(error_code),
                           /*device=*/mojo::NullRemote());
+}
+
+void Adapter::OnRegisterAdvertisement(
+    RegisterAdvertisementCallback callback,
+    scoped_refptr<device::BluetoothAdvertisement> advertisement) {
+  mojo::PendingRemote<mojom::Advertisement> pending_advertisement;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<Advertisement>(std::move(advertisement)),
+      pending_advertisement.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(pending_advertisement));
+}
+
+void Adapter::OnRegisterAdvertisementError(
+    RegisterAdvertisementCallback callback,
+    device::BluetoothAdvertisement::ErrorCode error_code) {
+  DLOG(ERROR) << "Failed to register advertisement, error code: " << error_code;
+  std::move(callback).Run(/*advertisement=*/mojo::NullRemote());
 }
 
 void Adapter::OnSetDiscoverable(SetDiscoverableCallback callback) {

@@ -36,6 +36,8 @@ source_set("deprecated_experimental_mojo") {
     "//device/bluetooth/public/mojom/gatt_result_type_converter.h",
     "adapter.cc",
     "adapter.h",
+    "advertisement.cc",
+    "advertisement.h",
     "device.cc",
     "device.h",
     "discovery_session.cc",

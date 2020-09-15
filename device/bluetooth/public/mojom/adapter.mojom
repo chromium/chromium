@@ -49,6 +49,22 @@ struct AdapterInfo {
   bool discovering;
 };
 
+// Represents an ongoing BLE advertisement. Releasing it will release the
+// underlying object and stop the advertisement, but callers should prefer to
+// let a call to Unregister() to finish first.
+// Note: Methods which are declared [Sync] are for use by
+// //chrome/services/sharing/nearby; all other usage of their synchronous
+// signatures is strongly discouraged.
+interface Advertisement {
+  // Use to gracefully stop advertising before destroying the message pipe. The
+  // reply callback can be used to synchronize an attempt to re-register an
+  // advertisement; attempting to register an advertisement without first
+  // releasing limited advertisement slots in the hardware may fail with a
+  // busy error.
+  [Sync]
+  Unregister() => ();
+};
+
 // Represents a request to discover nearby devices.
 // Note: Methods which are declared [Sync] are for use by
 // //chrome/services/sharing/nearby; all other usage of their synchronous
@@ -127,6 +143,22 @@ interface Adapter {
   // Adds an observer that listens for the adapter's events.
   [Sync]
   AddObserver(pending_remote<AdapterObserver> observer) => ();
+
+  // Requests the adapter to broadcast a BLE advertisement on |service_id| with
+  // the associated packet |service_data|. Returns null if advertisement is not
+  // registered successfully.
+  // Important notes:
+  // * This method registers a "non-connectable" advertisement. Any future
+  //   effort to allow this API to support "connectable" advertisements would
+  //   also require the addition of an API to support hosting a GATT server.
+  // * Bluetooth chips generally can only broadcast a few advertisements,
+  //   sometimes even only one, simultaneously. This can be mitigated by
+  //   operating systems "rotating" advertisements in the higher software layer,
+  //   as Chrome OS does. Non-Chrome OS clients of this API are responsible for
+  //   understanding their host OS's and/or hardware's limitations.
+  [Sync]
+  RegisterAdvertisement(UUID service_id, array<uint8> service_data) =>
+      (pending_remote<Advertisement>? advertisement);
 
   // Requests the local device to make itself discoverable to nearby remote
   // devices.

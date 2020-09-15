@@ -12,19 +12,48 @@ namespace chrome {
 
 BleMedium::BleMedium(bluetooth::mojom::Adapter* adapter) : adapter_(adapter) {}
 
-BleMedium::~BleMedium() = default;
+BleMedium::~BleMedium() {
+  for (auto& it : registered_advertisements_map_) {
+    // Note: this call is blocking.
+    it.second->Unregister();
+  }
+}
 
 bool BleMedium::StartAdvertising(const std::string& service_id,
                                  const ByteArray& advertisement) {
-  // TODO(b/154845685): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+  StopAdvertising(service_id);
+
+  auto service_uuid = device::BluetoothUUID(service_id);
+  mojo::PendingRemote<bluetooth::mojom::Advertisement> pending_advertisement;
+  bool success = adapter_->RegisterAdvertisement(
+      service_uuid,
+      std::vector<uint8_t>(advertisement.data(),
+                           advertisement.data() + advertisement.size()),
+      &pending_advertisement);
+
+  if (!success || !pending_advertisement.is_valid())
+    return false;
+
+  auto& remote_advertisement =
+      registered_advertisements_map_
+          .emplace(service_uuid, std::move(pending_advertisement))
+          .first->second;
+  remote_advertisement.set_disconnect_handler(base::BindOnce(
+      &BleMedium::AdvertisementReleased, base::Unretained(this), service_uuid));
+
+  return true;
 }
 
 bool BleMedium::StopAdvertising(const std::string& service_id) {
-  // TODO(b/154845685): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+  auto it =
+      registered_advertisements_map_.find(device::BluetoothUUID(service_id));
+  if (it == registered_advertisements_map_.end())
+    return true;
+
+  bool success = it->second->Unregister();
+  registered_advertisements_map_.erase(it);
+
+  return success;
 }
 
 bool BleMedium::StartScanning(const std::string& service_id,
@@ -207,6 +236,11 @@ void BleMedium::DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) {
   }
 
   discovered_ble_peripherals_map_.erase(address);
+}
+
+void BleMedium::AdvertisementReleased(
+    const device::BluetoothUUID& service_uuid) {
+  registered_advertisements_map_.erase(service_uuid);
 }
 
 bool BleMedium::IsScanning() {
