@@ -93,8 +93,11 @@ void OutputPresenter::Image::EndWriteSkia() {
         .fSignalSemaphores = end_semaphores_.data(),
     };
     scoped_skia_write_access_->surface()->flush(flush_info);
-    DCHECK(scoped_skia_write_access_->surface()->getContext());
-    scoped_skia_write_access_->surface()->getContext()->submit();
+    auto* direct_context = scoped_skia_write_access_->surface()
+                               ->recordingContext()
+                               ->asDirectContext();
+    DCHECK(direct_context);
+    direct_context->submit();
   }
   scoped_skia_write_access_.reset();
   end_semaphores_.clear();
