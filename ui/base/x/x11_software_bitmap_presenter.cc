@@ -199,7 +199,7 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
   if (ShmPoolReady()) {
     // TODO(thomasanderson): Investigate direct rendering with DRI3 to avoid any
     // unnecessary X11 IPC or buffer copying.
-    connection_->shm().PutImage({
+    x11::Shm::PutImageRequest put_image_request{
         .drawable = widget_,
         .gc = gc_,
         .total_width = shm_pool_->CurrentBitmap().width(),
@@ -215,7 +215,8 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
         .send_event = enable_multibuffering_,
         .shmseg = shm_pool_->CurrentSegment(),
         .offset = 0,
-    });
+    };
+    connection_->shm().PutImage(put_image_request);
     needs_swap_ = true;
     // Flush now to ensure the X server gets the request as early as
     // possible to reduce frame-to-frame latency.
