@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 
@@ -31,6 +33,11 @@ bool AudioManagerFuchsia::HasAudioInputDevices() {
 
 void AudioManagerFuchsia::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioInput)) {
+    return;
+  }
+
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API for device
   // enumeration. Update this method when that functionality is implemented.
   *device_names = {AudioDeviceName::CreateDefault()};
@@ -38,6 +45,11 @@ void AudioManagerFuchsia::GetAudioInputDeviceNames(
 
 void AudioManagerFuchsia::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioOutput)) {
+    return;
+  }
+
   // TODO(crbug.com/852834): Fuchsia currently doesn't provide an API for device
   // enumeration. Update this method when that functionality is implemented.
   *device_names = {AudioDeviceName::CreateDefault()};

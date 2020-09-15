@@ -78,6 +78,7 @@ const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
 const char kForceProtectedVideoOutputBuffers[] =
     "force-protected-video-output-buffers";
 
+const char kDisableAudioInput[] = "disable-audio-input";
 #endif  // defined(OS_FUCHSIA)
 
 #if defined(USE_CRAS)

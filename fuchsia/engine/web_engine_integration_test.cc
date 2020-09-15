@@ -128,13 +128,12 @@ class WebEngineIntegrationTest : public testing::Test {
     // service.
     fuchsia::web::CreateContextParams create_params =
         ContextParamsWithFilteredServiceDirectory();
+    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
 
     fake_audio_consumer_service_ =
         std::make_unique<media::FakeAudioConsumerService>(
             filtered_service_directory_->outgoing_directory()
                 ->GetOrCreateDirectory("svc"));
-
-    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
 
     return create_params;
   }
@@ -524,6 +523,32 @@ TEST_F(WebEngineIntegrationTest, PlayAudio) {
             kTestMediaSessionId);
   EXPECT_EQ(fake_audio_consumer_service_->instance(0)->volume(), 1.0);
   EXPECT_FALSE(fake_audio_consumer_service_->instance(0)->is_muted());
+}
+
+// Check that audio cannot play when the AUDIO ContextFeatureFlag is not
+// provided.
+TEST_F(WebEngineIntegrationTest, PlayAudio_NoFlag) {
+  StartWebEngine();
+
+  // Both FilteredServiceDirectory and test data are needed.
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithFilteredServiceDirectory();
+  create_params.mutable_content_directories()->push_back(
+      CreateTestDataDirectoryProvider());
+  CreateContextAndFrame(std::move(create_params));
+
+  bool is_requested = false;
+  filtered_service_directory_->outgoing_directory()->AddPublicService(
+      std::make_unique<vfs::Service>(
+          [&is_requested](zx::channel channel, async_dispatcher_t* dispatcher) {
+            is_requested = true;
+          }),
+      fuchsia::media::SessionAudioConsumerFactory::Name_);
+
+  LoadUrlWithUserActivation("fuchsia-dir://testdata/play_audio.html");
+
+  navigation_listener_->RunUntilTitleEquals("error");
+  EXPECT_FALSE(is_requested);
 }
 
 TEST_F(WebEngineIntegrationTest, PlayVideo) {

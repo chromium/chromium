@@ -19,6 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/switches.h"
+#include "media/base/media_switches.h"
 #include "media/base/provision_fetcher.h"
 #include "media/fuchsia/cdm/service/fuchsia_cdm_manager.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
@@ -81,6 +82,14 @@ void MediaResourceProviderImpl::CreateCdm(
 
 void MediaResourceProviderImpl::CreateAudioConsumer(
     fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioOutput)) {
+    LOG(WARNING)
+        << "Could not create AudioConsumer because audio output feature flag "
+           "was not enabled.";
+    return;
+  }
+
   auto factory = base::ComponentContextForProcess()
                      ->svc()
                      ->Connect<fuchsia::media::SessionAudioConsumerFactory>();
@@ -91,6 +100,14 @@ void MediaResourceProviderImpl::CreateAudioConsumer(
 
 void MediaResourceProviderImpl::CreateAudioCapturer(
     fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAudioInput)) {
+    LOG(WARNING)
+        << "Could not create AudioCapturer because audio input feature flag "
+           "was not enabled.";
+    return;
+  }
+
   if (FrameImpl::FromRenderFrameHost(render_frame_host())
           ->permission_controller()
           ->GetPermissionState(content::PermissionType::AUDIO_CAPTURE,

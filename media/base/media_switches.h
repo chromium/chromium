@@ -51,6 +51,7 @@ MEDIA_EXPORT extern const char kWaveOutBuffers[];
 #if defined(OS_FUCHSIA)
 MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
 MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
+MEDIA_EXPORT extern const char kDisableAudioInput[];
 #endif
 
 #if defined(OS_CHROMEOS)

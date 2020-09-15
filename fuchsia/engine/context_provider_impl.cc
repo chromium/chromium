@@ -447,6 +447,15 @@ void ContextProviderImpl::Create(
                                       key_system);
   }
 
+  bool enable_audio = (features & fuchsia::web::ContextFeatureFlags::AUDIO) ==
+                      fuchsia::web::ContextFeatureFlags::AUDIO;
+  if (!enable_audio) {
+    // TODO(fxbug.dev/58902): Split up audio input and output in
+    // ContextFeatureFlags.
+    launch_command.AppendSwitch(switches::kDisableAudioOutput);
+    launch_command.AppendSwitch(switches::kDisableAudioInput);
+  }
+
   zx::channel cdm_data_directory_channel;
   if (enable_widevine || enable_playready) {
     DCHECK(params.has_cdm_data_directory());

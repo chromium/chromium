@@ -6,6 +6,9 @@
       mediaSource = new MediaSource();
       audio.src = URL.createObjectURL(mediaSource);
 
+      audio.onended = function() { document.title = 'ended'; }
+      audio.onerror = function() { document.title = 'error'; }
+
       // Play two files with different sample rate to force mid-stream
       // re-initialization.
       var files = ["bear-44.1kHz.webm", "bear-48kHz.webm"];
@@ -40,7 +43,6 @@
       }
 
       audio.play();
-      audio.onended = function() { document.title = 'ended'; }
     </script>
   </body>
 </html>
