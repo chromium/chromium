@@ -449,7 +449,7 @@ const base::Feature kShowBluetoothDebugLogToggle{
 // Enables or disables showing the battery level in the System Tray and Settings
 // UI for supported Bluetooth Devices.
 const base::Feature kShowBluetoothDeviceBattery{
-    "ShowBluetoothDeviceBattery", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ShowBluetoothDeviceBattery", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Shows the Play Store icon in Demo Mode.
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
