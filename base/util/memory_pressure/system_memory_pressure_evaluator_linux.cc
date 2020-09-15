@@ -32,7 +32,7 @@ int GetAvailableSystemMemoryMiB(const base::SystemMemoryInfoKB& mem_info) {
 }  // namespace
 
 namespace util {
-namespace linux {
+namespace os_linux {
 
 const base::TimeDelta SystemMemoryPressureEvaluator::kModeratePressureCooldown =
     base::TimeDelta::FromSeconds(10);
@@ -153,5 +153,5 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 
-}  // namespace linux
+}  // namespace os_linux
 }  // namespace util

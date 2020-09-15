@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace util {
-namespace linux {
+namespace os_linux {
 
 namespace {
 
@@ -257,5 +257,5 @@ TEST_F(LinuxSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   testing::Mock::VerifyAndClearExpectations(&evaluator);
 }
 
-}  // namespace linux
+}  // namespace os_linux
 }  // namespace util

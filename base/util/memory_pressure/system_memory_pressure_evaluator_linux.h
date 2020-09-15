@@ -13,7 +13,7 @@
 #include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace util {
-namespace linux {
+namespace os_linux {
 
 // Linux memory pressure voter. Because there is no OS provided signal this
 // polls at a low frequency, and applies internal hysteresis.
@@ -106,7 +106,7 @@ class SystemMemoryPressureEvaluator
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace linux
+}  // namespace os_linux
 }  // namespace util
 
 #endif  // BASE_UTIL_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_LINUX_H_

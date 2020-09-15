@@ -46,7 +46,7 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   }
   return evaluator;
 #elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  return std::make_unique<util::linux::SystemMemoryPressureEvaluator>(
+  return std::make_unique<util::os_linux::SystemMemoryPressureEvaluator>(
       monitor->CreateVoter());
 #endif
   return nullptr;
