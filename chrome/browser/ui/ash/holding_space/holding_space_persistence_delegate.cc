@@ -21,11 +21,12 @@ HoldingSpacePersistenceDelegate::HoldingSpacePersistenceDelegate(
     HoldingSpaceModel* model,
     HoldingSpaceThumbnailLoader* thumbnail_loader,
     ItemRestoredCallback item_restored_callback,
-    ModelRestoredCallback model_restored_callback)
+    PersistenceRestoredCallback persistence_restored_callback)
     : HoldingSpaceKeyedServiceDelegate(profile, model),
       thumbnail_loader_(thumbnail_loader),
       item_restored_callback_(item_restored_callback),
-      model_restored_callback_(std::move(model_restored_callback)) {}
+      persistence_restored_callback_(std::move(persistence_restored_callback)) {
+}
 
 HoldingSpacePersistenceDelegate::~HoldingSpacePersistenceDelegate() = default;
 
@@ -44,7 +45,7 @@ void HoldingSpacePersistenceDelegate::Init() {
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
-  if (is_restoring())
+  if (is_restoring_persistence())
     return;
 
   // `kDownload` type holding space items have their own persistence mechanism.
@@ -58,7 +59,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemAdded(
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
-  if (is_restoring())
+  if (is_restoring_persistence())
     return;
 
   // `kDownload` type holding space items have their own persistence mechanism.
@@ -73,7 +74,6 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemRemoved(
   });
 }
 
-// TODO(dmblack): Restore download holding space items.
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   DCHECK(model()->items().empty());
 
@@ -81,9 +81,9 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
       profile()->GetPrefs()->GetList(kPersistencePath);
 
   // If persistent storage is empty we can immediately notify the callback of
-  // model restoration completion and quit early.
+  // persistence restoration completion and quit early.
   if (persisted_holding_space_items->GetList().empty()) {
-    std::move(model_restored_callback_).Run();
+    std::move(persistence_restored_callback_).Run();
     return;
   }
 
@@ -128,8 +128,8 @@ void HoldingSpacePersistenceDelegate::RestoreModelByExistence(
     });
   }
 
-  // Notify the callback of model restoration completion.
-  std::move(model_restored_callback_).Run();
+  // Notify completion of persistence restoration.
+  std::move(persistence_restored_callback_).Run();
 }
 
 }  // namespace ash

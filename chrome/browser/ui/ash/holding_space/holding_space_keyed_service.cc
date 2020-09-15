@@ -7,6 +7,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "chrome/browser/browser_process.h"
@@ -36,6 +37,14 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
       account_id_(account_id),
       holding_space_client_(profile),
       thumbnail_loader_(profile) {
+  // Model restoration is a multi-step process, currently consisting of a
+  // restoration from persistence followed by a restoration of downloads. Once
+  // all steps have indicated completion, `OnModelFullyRestored()` is invoked.
+  on_model_partially_restored_callback_ = base::BarrierClosure(
+      /*number_of_steps_before_fully_restored=*/2,
+      base::BindOnce(&HoldingSpaceKeyedService::OnModelFullyRestored,
+                     base::Unretained(this)));
+
   // The associated profile may not be ready yet. If it is, we can immediately
   // proceed with profile dependent initialization.
   ProfileManager* const profile_manager = GetProfileManager();
@@ -43,6 +52,7 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
     OnProfileReady();
     return;
   }
+
   // Otherwise we need to wait for the profile to be added.
   profile_manager_observer_.Add(profile_manager);
 }
@@ -139,9 +149,13 @@ void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
 void HoldingSpaceKeyedService::OnProfileReady() {
   // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
   delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
-      profile_, &holding_space_model_, /*item_downloaded_callback=*/
+      profile_, &holding_space_model_,
+      /*item_downloaded_callback=*/
       base::BindRepeating(&HoldingSpaceKeyedService::AddDownload,
-                          weak_factory_.GetWeakPtr())));
+                          weak_factory_.GetWeakPtr()),
+      /*downloads_restored_callback=*/
+      base::BindOnce(&HoldingSpaceKeyedService::OnDownloadsRestored,
+                     weak_factory_.GetWeakPtr())));
 
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
@@ -156,8 +170,8 @@ void HoldingSpaceKeyedService::OnProfileReady() {
       /*item_restored_callback=*/
       base::BindRepeating(&HoldingSpaceKeyedService::AddItem,
                           weak_factory_.GetWeakPtr()),
-      /*model_restored_callback=*/
-      base::BindOnce(&HoldingSpaceKeyedService::OnModelRestored,
+      /*persistence_restored_callback=*/
+      base::BindOnce(&HoldingSpaceKeyedService::OnPersistenceRestored,
                      weak_factory_.GetWeakPtr())));
 
   // Initialize all delegates only after they have been added to our collection.
@@ -176,10 +190,19 @@ void HoldingSpaceKeyedService::OnFileRemoved(const base::FilePath& file_path) {
       std::cref(file_path)));
 }
 
-void HoldingSpaceKeyedService::OnModelRestored() {
+void HoldingSpaceKeyedService::OnDownloadsRestored() {
   for (auto& delegate : delegates_)
-    delegate->NotifyHoldingSpaceModelRestored();
+    delegate->NotifyDownloadsRestored();
+  on_model_partially_restored_callback_.Run();
+}
 
+void HoldingSpaceKeyedService::OnPersistenceRestored() {
+  for (auto& delegate : delegates_)
+    delegate->NotifyPersistenceRestored();
+  on_model_partially_restored_callback_.Run();
+}
+
+void HoldingSpaceKeyedService::OnModelFullyRestored() {
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id_, &holding_space_client_, &holding_space_model_);
 }

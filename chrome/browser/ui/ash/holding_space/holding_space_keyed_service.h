@@ -102,8 +102,15 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Invoked when the specified `file_path` is removed.
   void OnFileRemoved(const base::FilePath& file_path);
 
-  // Invoked when the holding space model has been restored from persistence.
-  void OnModelRestored();
+  // Invoked when all downloads have been restored to holding space.
+  void OnDownloadsRestored();
+
+  // Invoked when holding space persistence has been restored.
+  void OnPersistenceRestored();
+
+  // Invoked when the holding space model has been fully restored. This includes
+  // both holding space items restored from persistence as well as downloads.
+  void OnModelFullyRestored();
 
   Profile* const profile_;
   const AccountId account_id_;
@@ -117,6 +124,12 @@ class HoldingSpaceKeyedService : public KeyedService,
   // each tasked with an independent area of responsibility on behalf of the
   // service. They operate autonomously of one another.
   std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
+
+  // A `base::BarrierClosure` that is run when the holding space model has been
+  // partially restored. This will occur multiple times, after restoration from
+  // persistence and after restoration of downloads. Once all restoration steps
+  // have indicated completion, `OnModelFullyRestored()` is invoked.
+  base::RepeatingClosure on_model_partially_restored_callback_;
 
   ScopedObserver<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

@@ -18,9 +18,11 @@ content::DownloadManager* download_manager_for_testing = nullptr;
 HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     Profile* profile,
     HoldingSpaceModel* model,
-    ItemDownloadedCallback item_downloaded_callback)
+    ItemDownloadedCallback item_downloaded_callback,
+    DownloadsRestoredCallback downloads_restored_callback)
     : HoldingSpaceKeyedServiceDelegate(profile, model),
-      item_downloaded_callback_(item_downloaded_callback) {}
+      item_downloaded_callback_(item_downloaded_callback),
+      downloads_restored_callback_(std::move(downloads_restored_callback)) {}
 
 HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
@@ -41,7 +43,7 @@ void HoldingSpaceDownloadsDelegate::Shutdown() {
   RemoveObservers();
 }
 
-void HoldingSpaceDownloadsDelegate::OnHoldingSpaceModelRestored() {
+void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   content::DownloadManager* download_manager =
       download_manager_for_testing
           ? download_manager_for_testing
@@ -52,7 +54,7 @@ void HoldingSpaceDownloadsDelegate::OnHoldingSpaceModelRestored() {
 }
 
 void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
-  if (is_restoring())
+  if (is_restoring_persistence())
     return;
 
   content::DownloadManager* download_manager =
@@ -79,6 +81,9 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
         break;
     }
   }
+
+  // Notify completion of downloads restoration.
+  std::move(downloads_restored_callback_).Run();
 }
 
 void HoldingSpaceDownloadsDelegate::ManagerGoingDown(
@@ -110,7 +115,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
     download::DownloadItem* item) {
-  if (!is_restoring())
+  if (!is_restoring_persistence())
     item_downloaded_callback_.Run(item->GetFullPath());
 }
 

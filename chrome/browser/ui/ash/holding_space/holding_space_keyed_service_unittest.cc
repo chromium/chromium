@@ -161,9 +161,12 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
       : fake_user_manager_(new chromeos::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
+        download_manager_(
+            std::make_unique<testing::NiceMock<MockDownloadManager>>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
   }
+
   HoldingSpaceKeyedServiceTest(const HoldingSpaceKeyedServiceTest& other) =
       delete;
   HoldingSpaceKeyedServiceTest& operator=(
@@ -295,9 +298,48 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return result;
   }
 
+  std::unique_ptr<download::MockDownloadItem> CreateMockDownloadItem(
+      base::FilePath full_file_path) {
+    auto item =
+        std::make_unique<testing::NiceMock<download::MockDownloadItem>>();
+    ON_CALL(*item, GetId()).WillByDefault(testing::Return(1));
+    ON_CALL(*item, GetGuid())
+        .WillByDefault(testing::ReturnRefOfCopy(
+            std::string("14CA04AF-ECEC-4B13-8829-817477EFAB83")));
+    ON_CALL(*item, GetFullPath())
+        .WillByDefault(testing::ReturnRefOfCopy(full_file_path));
+    ON_CALL(*item, GetURL())
+        .WillByDefault(testing::ReturnRefOfCopy(GURL("foo/bar")));
+    ON_CALL(*item, GetMimeType()).WillByDefault(testing::Return(std::string()));
+    content::DownloadItemUtils::AttachInfo(item.get(), GetProfile(), nullptr);
+    return item;
+  }
+
+  MockDownloadManager* download_manager() { return download_manager_.get(); }
+
  private:
+  // BrowserWithTestWindowTest:
+  void SetUp() override {
+    SetUpDownloadManager();
+    BrowserWithTestWindowTest::SetUp();
+  }
+
+  void SetUpDownloadManager() {
+    // The `content::DownloadManager` needs to be set prior to initialization
+    // of the `HoldingSpaceDownloadsDelegate`. This must happen before the
+    // `HoldingSpaceKeyedService` is created for the profile under test.
+    MockDownloadManager* mock_download_manager = download_manager();
+    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
+        mock_download_manager);
+
+    // Spoof initialization of the `mock_download_manager`.
+    ON_CALL(*mock_download_manager, IsManagerInitialized)
+        .WillByDefault(testing::Return(true));
+  }
+
   chromeos::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
+  std::unique_ptr<MockDownloadManager> download_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -309,6 +351,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
   // Create a test downloads mount point.
   ScopedDownloadsMountPoint downloads_mount(GetProfile());
   ASSERT_TRUE(downloads_mount.IsValid());
+
+  // Wait for the holding space model.
+  HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
 
   // Verify that the holding space model gets set even if the holding space
   // keyed service is not explicitly created.
@@ -560,56 +605,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
             persisted_holding_space_items_after_restoration);
 }
 
-class HoldingSpaceKeyedServiceDownloadsTest
-    : public HoldingSpaceKeyedServiceTest {
- public:
-  HoldingSpaceKeyedServiceDownloadsTest()
-      : download_manager_(
-            std::make_unique<testing::NiceMock<MockDownloadManager>>()) {}
-
-  std::unique_ptr<download::MockDownloadItem> CreateMockDownloadItem(
-      base::FilePath full_file_path) {
-    auto item =
-        std::make_unique<testing::NiceMock<download::MockDownloadItem>>();
-    ON_CALL(*item, GetId()).WillByDefault(testing::Return(1));
-    ON_CALL(*item, GetGuid())
-        .WillByDefault(testing::ReturnRefOfCopy(
-            std::string("14CA04AF-ECEC-4B13-8829-817477EFAB83")));
-    ON_CALL(*item, GetFullPath())
-        .WillByDefault(testing::ReturnRefOfCopy(full_file_path));
-    ON_CALL(*item, GetURL())
-        .WillByDefault(testing::ReturnRefOfCopy(GURL("foo/bar")));
-    ON_CALL(*item, GetMimeType()).WillByDefault(testing::Return(std::string()));
-    content::DownloadItemUtils::AttachInfo(item.get(), GetProfile(), nullptr);
-    return item;
-  }
-
-  MockDownloadManager* download_manager() { return download_manager_.get(); }
-
- private:
-  // HoldingSpaceKeyedServiceTest:
-  void SetUp() override {
-    SetUpDownloadManager();
-    HoldingSpaceKeyedServiceTest::SetUp();
-  }
-
-  void SetUpDownloadManager() {
-    // The `content::DownloadManager` needs to be set prior to initialization
-    // of the `HoldingSpaceDownloadsDelegate`. This must happen before the
-    // `HoldingSpaceKeyedService` is created for the profile under test.
-    MockDownloadManager* mock_download_manager = download_manager();
-    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
-        mock_download_manager);
-
-    // Spoof initialization of the `mock_download_manager`.
-    ON_CALL(*mock_download_manager, IsManagerInitialized)
-        .WillByDefault(testing::Return(true));
-  }
-
-  std::unique_ptr<MockDownloadManager> download_manager_;
-};
-
-TEST_F(HoldingSpaceKeyedServiceDownloadsTest, RetrieveHistory) {
+TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
   ScopedDownloadsMountPoint downloads_mount(profile);
@@ -678,7 +674,7 @@ TEST_F(HoldingSpaceKeyedServiceDownloadsTest, RetrieveHistory) {
     delete download_items_mock[i];
 }
 
-TEST_F(HoldingSpaceKeyedServiceDownloadsTest, AddDownloadItem) {
+TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
   ScopedDownloadsMountPoint downloads_mount(profile);

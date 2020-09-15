@@ -26,14 +26,18 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
                                       public download::DownloadItem::Observer {
  public:
   // Callback to be invoked when a download is completed. Note that this
-  // callback will only be invoked after the holding space model is restored.
+  // callback will only be invoked after holding space persistence is restored.
   using ItemDownloadedCallback =
       base::RepeatingCallback<void(const base::FilePath&)>;
+
+  // Callback to invoke when all downloads have been restored to holding space.
+  using DownloadsRestoredCallback = base::OnceClosure;
 
   HoldingSpaceDownloadsDelegate(
       Profile* profile,
       HoldingSpaceModel* model,
-      ItemDownloadedCallback item_downloaded_callback);
+      ItemDownloadedCallback item_downloaded_callback,
+      DownloadsRestoredCallback downloads_restored_callback);
   HoldingSpaceDownloadsDelegate(const HoldingSpaceDownloadsDelegate&) = delete;
   HoldingSpaceDownloadsDelegate& operator=(
       const HoldingSpaceDownloadsDelegate&) = delete;
@@ -48,7 +52,7 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   // HoldingSpaceKeyedServiceDelegate:
   void Init() override;
   void Shutdown() override;
-  void OnHoldingSpaceModelRestored() override;
+  void OnPersistenceRestored() override;
 
   // content::DownloadManager::Observer:
   void OnManagerInitialized() override;
@@ -67,6 +71,9 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
 
   // Callback to invoke when a download is completed.
   ItemDownloadedCallback item_downloaded_callback_;
+
+  // Callback to invoke when all downloads have been restored to holding space.
+  DownloadsRestoredCallback downloads_restored_callback_;
 
   ScopedObserver<content::DownloadManager, content::DownloadManager::Observer>
       download_manager_observer_{this};

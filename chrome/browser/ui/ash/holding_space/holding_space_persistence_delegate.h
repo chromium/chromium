@@ -37,15 +37,15 @@ class HoldingSpacePersistenceDelegate
   using ItemRestoredCallback =
       base::RepeatingCallback<void(HoldingSpaceItemPtr)>;
 
-  // Callback to invoke when the model has been restored from persistence.
-  using ModelRestoredCallback = base::OnceClosure;
+  // Callback to invoke when holding space persistence has been restored.
+  using PersistenceRestoredCallback = base::OnceClosure;
 
   HoldingSpacePersistenceDelegate(
       Profile* profile,
       HoldingSpaceModel* model,
       HoldingSpaceThumbnailLoader* thumbnail_loader,
       ItemRestoredCallback item_restored_callback,
-      ModelRestoredCallback model_restored_callback);
+      PersistenceRestoredCallback persistence_restored_callback);
   HoldingSpacePersistenceDelegate(const HoldingSpacePersistenceDelegate&) =
       delete;
   HoldingSpacePersistenceDelegate& operator=(
@@ -73,8 +73,8 @@ class HoldingSpacePersistenceDelegate
   // Callback to invoke when an item has been restored from persistence.
   ItemRestoredCallback item_restored_callback_;
 
-  // Callback to invoke when the model has been restored from persistence.
-  ModelRestoredCallback model_restored_callback_;
+  // Callback to invoke when holding space persistence has been restored.
+  PersistenceRestoredCallback persistence_restored_callback_;
 
   base::WeakPtrFactory<HoldingSpacePersistenceDelegate> weak_factory_{this};
 };
