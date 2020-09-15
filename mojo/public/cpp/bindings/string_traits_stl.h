@@ -13,16 +13,6 @@ namespace mojo {
 
 template <>
 struct StringTraits<std::string> {
-  static bool IsNull(const std::string& input) {
-    // std::string is always converted to non-null mojom string.
-    return false;
-  }
-
-  static void SetToNull(std::string* output) {
-    // std::string doesn't support null state. Set it to empty instead.
-    output->clear();
-  }
-
   static const std::string& GetUTF8(const std::string& input) { return input; }
 
   static bool Read(StringDataView input, std::string* output) {

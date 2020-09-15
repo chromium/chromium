@@ -9,11 +9,14 @@
 #include <stdint.h>
 
 #include <queue>
+#include <type_traits>
 
 #include "base/logging.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_context.h"
+#include "mojo/public/cpp/bindings/lib/serialization_forward.h"
+#include "mojo/public/cpp/bindings/lib/template_util.h"
 
 namespace mojo {
 namespace internal {
@@ -71,10 +74,61 @@ template <typename Traits,
           typename std::enable_if<!HasSetToNullMethod<Traits>::value>::type* =
               nullptr>
 bool CallSetToNullIfExists(UserType* output) {
-  LOG(ERROR) << "A null value is received. But the Struct/Array/StringTraits "
-             << "class doesn't define a SetToNull() function and therefore is "
-             << "unable to deserialize the value.";
-  return false;
+  // Note that it is not considered an error to attempt to read a null value
+  // into a non-nullable `output` object. In such cases, the caller must have
+  // used a DataView's corresponding MaybeRead[FieldName] method, thus
+  // explicitly choosing to ignore null values without affecting `output`.
+  //
+  // If instead a caller unwittingly attempts to use a corresponding
+  // Read[FieldName] method to read an optional value into the same non-nullable
+  // UserType, it will result in a compile-time error. As such, we don't need to
+  // account for that case here.
+  return true;
+}
+
+template <typename MojomType, typename UserType, typename = void>
+struct TraitsFinder {
+  using Traits = StructTraits<MojomType, UserType>;
+};
+
+template <typename MojomType, typename UserType>
+struct TraitsFinder<
+    MojomType,
+    UserType,
+    std::enable_if_t<BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>> {
+  using Traits = UnionTraits<MojomType, UserType>;
+};
+
+template <typename UserType>
+struct TraitsFinder<StringDataView, UserType> {
+  using Traits = StringTraits<UserType>;
+};
+
+template <typename UserType, typename ElementType>
+struct TraitsFinder<ArrayDataView<ElementType>, UserType> {
+  using Traits = ArrayTraits<UserType>;
+};
+
+template <typename UserType, typename KeyType, typename ValueType>
+struct TraitsFinder<MapDataView<KeyType, ValueType>, UserType> {
+  using Traits = MapTraits<UserType>;
+};
+
+template <typename MojomType,
+          typename UserType,
+          typename std::enable_if<IsOptionalWrapper<UserType>::value>::type* =
+              nullptr>
+constexpr bool IsValidUserTypeForOptionalValue() {
+  return true;
+}
+
+template <typename MojomType,
+          typename UserType,
+          typename std::enable_if<!IsOptionalWrapper<UserType>::value>::type* =
+              nullptr>
+constexpr bool IsValidUserTypeForOptionalValue() {
+  using Traits = typename TraitsFinder<MojomType, UserType>::Traits;
+  return HasSetToNullMethod<Traits>::value;
 }
 
 template <typename T, typename MaybeConstUserType>

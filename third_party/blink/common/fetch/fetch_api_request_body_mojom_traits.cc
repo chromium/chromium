@@ -26,11 +26,13 @@ bool StructTraits<
     blink::mojom::FetchAPIDataElementDataView,
     network::DataElement>::Read(blink::mojom::FetchAPIDataElementDataView data,
                                 network::DataElement* out) {
+  base::Optional<std::string> blob_uuid;
   if (!data.ReadPath(&out->path_) || !data.ReadFile(&out->file_) ||
-      !data.ReadBlobUuid(&out->blob_uuid_) ||
+      !data.ReadBlobUuid(&blob_uuid) ||
       !data.ReadExpectedModificationTime(&out->expected_modification_time_)) {
     return false;
   }
+  out->blob_uuid_ = std::move(blob_uuid).value_or(std::string());
   if (data.type() == network::mojom::DataElementType::kBytes) {
     if (!data.ReadBuf(&out->buf_))
       return false;

@@ -24,8 +24,10 @@ bool StructTraits<media::mojom::StatusDataView, media::Status>::Read(
   if (media::StatusCode::kOk == code)
     return true;
 
-  if (!data.ReadMessage(&message))
+  base::Optional<std::string> optional_message;
+  if (!data.ReadMessage(&optional_message))
     return false;
+  message = std::move(optional_message).value_or(std::string());
 
   output->data_ =
       std::make_unique<media::Status::StatusInternal>(code, std::move(message));
@@ -36,8 +38,10 @@ bool StructTraits<media::mojom::StatusDataView, media::Status>::Read(
   if (!data.ReadCauses(&output->data_->causes))
     return false;
 
-  if (!data.ReadData(&output->data_->data))
+  base::Optional<base::Value> optional_data;
+  if (!data.ReadData(&optional_data))
     return false;
+  output->data_->data = std::move(optional_data).value_or(base::Value());
 
   return true;
 }

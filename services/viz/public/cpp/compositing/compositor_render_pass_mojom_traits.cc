@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
@@ -60,11 +61,13 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     // Read the SharedQuadState.
     viz::mojom::SharedQuadStateDataView sqs_data_view;
     quad_data_view.GetSqsDataView(&sqs_data_view);
-    // If there is no seralized SharedQuadState then used the last deseriaized
+    // If there is no serialized SharedQuadState then use the last deserialized
     // one.
     if (!sqs_data_view.is_null()) {
+      using SqsTraits = StructTraits<viz::mojom::SharedQuadStateDataView,
+                                     viz::SharedQuadState>;
       last_sqs = (*out)->CreateAndAppendSharedQuadState();
-      if (!quad_data_view.ReadSqs(last_sqs))
+      if (!SqsTraits::Read(sqs_data_view, last_sqs))
         return false;
     }
     quad->shared_quad_state = last_sqs;

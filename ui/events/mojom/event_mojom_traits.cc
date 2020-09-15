@@ -477,11 +477,11 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
   if (!event.ReadLatency((*out)->latency()))
     return false;
 
-  ui::Event::Properties properties;
+  base::Optional<ui::Event::Properties> properties;
   if (!event.ReadProperties(&properties))
     return false;
-  if (!properties.empty())
-    (*out)->SetProperties(properties);
+  if (properties && !properties->empty())
+    (*out)->SetProperties(std::move(*properties));
 
   return true;
 }

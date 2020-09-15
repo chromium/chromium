@@ -197,13 +197,14 @@ struct StructTraits<viz::mojom::FilterOperationDataView, cc::FilterOperation> {
         return true;
       }
       case cc::FilterOperation::COLOR_MATRIX: {
-        // TODO(fsamuel): It would be nice to modify cc::FilterOperation to
-        // avoid this extra copy.
-        cc::FilterOperation::Matrix matrix_buffer = {};
-        base::span<float> matrix(matrix_buffer);
-        if (!data.ReadMatrix(&matrix))
-          return false;
-        out->set_matrix(matrix_buffer);
+        mojo::ArrayDataView<float> matrix;
+        data.GetMatrixDataView(&matrix);
+        if (!matrix.is_null()) {
+          // Guaranteed by prior validation of the FilterOperation struct
+          // because this array specifies a fixed size in the mojom.
+          DCHECK_EQ(matrix.size(), 20u);
+          out->set_matrix(base::make_span<20>(matrix));
+        }
         return true;
       }
       case cc::FilterOperation::ZOOM: {

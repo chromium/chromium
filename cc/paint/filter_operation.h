@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -210,7 +211,7 @@ class CC_PAINT_EXPORT FilterOperation {
     image_filter_ = std::move(image_filter);
   }
 
-  void set_matrix(const Matrix& matrix) {
+  void set_matrix(base::span<const SkScalar, 20> matrix) {
     DCHECK_EQ(type_, COLOR_MATRIX);
     for (unsigned i = 0; i < 20; ++i)
       matrix_[i] = matrix[i];

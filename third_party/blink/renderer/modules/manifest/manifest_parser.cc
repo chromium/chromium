@@ -152,7 +152,7 @@ base::Optional<String> ManifestParser::ParseString(const JSONObject* object,
     return base::nullopt;
 
   String value;
-  if (!json_value->AsString(&value)) {
+  if (!json_value->AsString(&value) || value.IsNull()) {
     AddErrorInfo("property '" + key + "' ignored, type " + "string expected.");
     return base::nullopt;
   }

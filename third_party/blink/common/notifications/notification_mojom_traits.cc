@@ -101,10 +101,11 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
   // platform_notification_data.data once it stores a vector of ints not chars.
   std::vector<uint8_t> data;
 
+  base::Optional<std::string> lang;
   if (!notification_data.ReadTitle(&platform_notification_data->title) ||
       !notification_data.ReadDirection(
           &platform_notification_data->direction) ||
-      !notification_data.ReadLang(&platform_notification_data->lang) ||
+      !notification_data.ReadLang(&lang) ||
       !notification_data.ReadBody(&platform_notification_data->body) ||
       !notification_data.ReadTag(&platform_notification_data->tag) ||
       !notification_data.ReadImage(&platform_notification_data->image) ||
@@ -118,6 +119,8 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
           &platform_notification_data->show_trigger_timestamp)) {
     return false;
   }
+
+  platform_notification_data->lang = std::move(lang).value_or(std::string());
 
   platform_notification_data->data.assign(data.begin(), data.end());
 

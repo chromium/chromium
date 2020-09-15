@@ -1,3 +1,5 @@
+{%- import "struct_macros.tmpl" as struct_macros %}
+
 class {{struct.name}}DataView {
  public:
   {{struct.name}}DataView() {}
@@ -22,6 +24,7 @@ class {{struct.name}}DataView {
 
   template <typename UserType>
   WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+    {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
 {%-     if pf.min_version != 0 %}
     auto* pointer = data_->header_.version >= {{pf.min_version}} && !data_->{{name}}.is_null()
                     ? &data_->{{name}} : nullptr;
@@ -38,6 +41,7 @@ class {{struct.name}}DataView {
 
   template <typename UserType>
   WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+    {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
 {%-     if pf.min_version != 0 %}
     auto* pointer = data_->header_.version >= {{pf.min_version}}
                     ? data_->{{name}}.Get() : nullptr;

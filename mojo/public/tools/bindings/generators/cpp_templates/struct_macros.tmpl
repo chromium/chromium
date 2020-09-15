@@ -125,3 +125,18 @@
 {%-     endif %}
 {%-   endfor %}
 {%- endmacro %}
+
+{%- macro assert_nullable_output_type_if_necessary(kind, name) -%}
+{%-   if kind|is_nullable_kind and not kind|is_native_only_kind %}
+static_assert(
+    mojo::internal::IsValidUserTypeForOptionalValue<
+        {{kind|unmapped_type_for_serializer}}, UserType>(),
+    "Attempting to read the optional `{{name}}` field into a type which "
+    "cannot represent a null value. Either wrap the destination object "
+    "with base::Optional, ensure that any corresponding "
+    "{Struct/Union/Array/String}Traits define the necessary IsNull and "
+    "SetToNull methods, or use `MaybeRead{{name|under_to_camel}}` instead "
+    "of `Read{{name|under_to_camel}} if you're fine with null values being "
+    "silently ignored in this case.");
+{%-   endif %}
+{%- endmacro %}

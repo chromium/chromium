@@ -16,10 +16,6 @@ template <typename T, size_t Extent>
 struct ArrayTraits<base::span<T, Extent>> {
   using Element = T;
 
-  // There is no concept of a null span, as it is indistinguishable from the
-  // empty span.
-  static bool IsNull(const base::span<T>& input) { return false; }
-
   static size_t GetSize(const base::span<T>& input) { return input.size(); }
 
   static T* GetData(base::span<T>& input) { return input.data(); }

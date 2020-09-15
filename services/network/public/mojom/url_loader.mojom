@@ -423,7 +423,7 @@ struct DataElement {
   mojo_base.mojom.File? file;
   // For kBlob
   // TODO(richard.li): Deprecate this once NetworkService is fully shipped.
-  string? blob_uuid;
+  string blob_uuid;
   // For kDataPipe
   pending_remote<network.mojom.DataPipeGetter>? data_pipe_getter;
   // For kChunkedDataPipe

@@ -1,3 +1,5 @@
+{%- import "struct_macros.tmpl" as struct_macros %}
+
 class {{union.name}}DataView {
  public:
   using Tag = internal::{{union.name}}_Data::{{union.name}}_Tag;
@@ -32,6 +34,7 @@ class {{union.name}}DataView {
 
   template <typename UserType>
   WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+    {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
     DCHECK(is_{{name}}());
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
         data_->data.f_{{name}}.Get(), output, context_);

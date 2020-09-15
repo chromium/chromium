@@ -162,8 +162,10 @@ bool StructTraits<blink::mojom::ManifestRelatedApplicationDataView,
     return false;
   out->platform = std::move(string.string);
 
-  if (!data.ReadUrl(&out->url))
+  base::Optional<GURL> url;
+  if (!data.ReadUrl(&url))
     return false;
+  out->url = std::move(url).value_or(GURL());
 
   if (!data.ReadId(&string))
     return false;
