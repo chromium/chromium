@@ -40,5 +40,5 @@
         android:src="@drawable/ic_settings_gear_24dp"
         android:contentDescription="@string/accessibility_ntp_feed_menu_button"
         app:menuMaxWidth="@dimen/feed_header_menu_max_width"
-        app:tint="@color/default_icon_color_tint_list" />
+        app:tint="@null" />
 </org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>
