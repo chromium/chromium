@@ -39,7 +39,11 @@ MockPermissionPrompt::MockPermissionPrompt(MockPermissionPromptFactory* factory,
     // The actual prompt will call these, so test they're sane.
     EXPECT_FALSE(request->GetMessageTextFragment().empty());
 #if defined(OS_ANDROID)
-    EXPECT_FALSE(request->GetMessageText().empty());
+    // For STORAGE_ACCESS, the prompt itself calculates the message text.
+    if (request->GetContentSettingsType() !=
+        ContentSettingsType::STORAGE_ACCESS) {
+      EXPECT_FALSE(request->GetMessageText().empty());
+    }
     EXPECT_NE(0, request->GetIconId());
 #else
     EXPECT_FALSE(request->GetIconId().is_empty());

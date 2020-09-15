@@ -108,9 +108,10 @@
   <message name="IDS_AR_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to use AR. Follows a prompt: 'This site would like to:">
     Create a 3D map of your surroundings and track camera position
   </message>
-  <message name="IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site needs access to its data while it is embedded into another site. Follows a prompt: 'This site would like to:">
+  <message name="IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site needs access to its data while it is embedded into another site. Follows a prompt: 'This site would like to:'">
     Access cookies and site data.
-
+  </message>
+  <message name="IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION" desc="Explanation of the permission request shown if the user is visiting a site needs access to its data while it is embedded into another site. Follows this text: 'This site would like to: Access cookies and site data.'">
 Do you want to allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use cookies and site data on <ph name="TOP_LEVEL_URL">$2<ex>content_domain.site</ex></ph>?
 
 This will otherwise be blocked by your privacy settings. This will allow the content you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to track your activity.

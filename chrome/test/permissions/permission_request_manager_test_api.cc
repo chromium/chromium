@@ -26,8 +26,8 @@ class TestPermissionRequestOwner {
     bool user_gesture = true;
     auto decided = [](ContentSetting) {};
     request_ = std::make_unique<permissions::PermissionRequestImpl>(
-        GURL("https://embedder_example.test"), GURL("https://example.com"), type,
-        user_gesture, base::BindOnce(decided),
+        GURL("https://example.com"), type, user_gesture,
+        base::BindOnce(decided),
         base::BindOnce(&TestPermissionRequestOwner::DeleteThis,
                        base::Unretained(this)));
   }

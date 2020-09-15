@@ -370,8 +370,7 @@ void PermissionContextBase::DecidePermission(
 
   std::unique_ptr<PermissionRequest> request_ptr =
       std::make_unique<PermissionRequestImpl>(
-          embedding_origin, requesting_origin, content_settings_type_,
-          user_gesture,
+          requesting_origin, content_settings_type_, user_gesture,
           base::BindOnce(&PermissionContextBase::PermissionDecided,
                          weak_factory_.GetWeakPtr(), id, requesting_origin,
                          embedding_origin, std::move(callback)),

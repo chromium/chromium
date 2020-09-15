@@ -83,6 +83,27 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
 
   for (permissions::PermissionRequest* request : visible_requests_)
     AddPermissionRequestLine(request);
+
+  base::Optional<base::string16> extra_text = GetExtraText();
+  if (extra_text.has_value()) {
+    auto* extra_text_label =
+        AddChildView(std::make_unique<views::Label>(extra_text.value()));
+    extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    extra_text_label->SetMultiLine(true);
+  }
+
+  if (visible_requests_[0]->GetContentSettingsType() ==
+      ContentSettingsType::PLUGINS) {
+    auto learn_more_button = views::CreateVectorImageButton(this);
+    learn_more_button->SetFocusForPlatform();
+    learn_more_button->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+    SkColor text_color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_LabelEnabledColor);
+    views::SetImageFromVectorIcon(learn_more_button.get(),
+                                  vector_icons::kHelpOutlineIcon, text_color);
+    SetExtraView(std::move(learn_more_button));
+  }
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
@@ -161,40 +182,6 @@ void PermissionPromptBubbleView::AddPermissionRequestLine(
       std::make_unique<views::Label>(request->GetMessageTextFragment()));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
-
-  // Text that warns the user that flash will be deprecated. This text is only
-  // shown for flash and should be empty for all other permissions.
-  // TODO (crbug.com/1058401): Remove the warning text once flash is deprecated.
-  const auto warning_text = request->GetMessageTextWarningFragment();
-
-  if (warning_text.empty())
-    return;
-
-  // Should only be reached if the permission required is for flash.
-  DCHECK(request->GetContentSettingsType() == ContentSettingsType::PLUGINS);
-
-  auto* warning_line_container = AddChildView(std::make_unique<views::View>());
-  warning_line_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, provider->GetDistanceMetric(
-                         DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-
-  auto* warning_label = warning_line_container->AddChildView(
-      std::make_unique<views::Label>(std::move(warning_text)));
-  warning_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  warning_label->SetMultiLine(true);
-
-  auto learn_more_button = views::CreateVectorImageButton(this);
-  learn_more_button->SetFocusForPlatform();
-  learn_more_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  SkColor text_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_LabelEnabledColor);
-  learn_more_button_ = learn_more_button.get();
-  views::SetImageFromVectorIcon(learn_more_button_,
-                                vector_icons::kHelpOutlineIcon, text_color);
-
-  SetExtraView(std::move(learn_more_button));
 }
 
 void PermissionPromptBubbleView::UpdateAnchorPosition() {
@@ -272,14 +259,14 @@ gfx::Size PermissionPromptBubbleView::CalculatePreferredSize() const {
 
 void PermissionPromptBubbleView::ButtonPressed(views::Button* sender,
                                                const ui::Event& event) {
-  if (sender == learn_more_button_)
-    chrome::AddSelectedTabWithURL(browser_,
-                                  GURL(chrome::kFlashDeprecationLearnMoreURL),
-                                  ui::PAGE_TRANSITION_LINK);
+  DCHECK_EQ(sender, GetExtraView());
+  chrome::AddSelectedTabWithURL(browser_,
+                                GURL(chrome::kFlashDeprecationLearnMoreURL),
+                                ui::PAGE_TRANSITION_LINK);
 }
 
 PermissionPromptBubbleView::DisplayNameOrOrigin
-PermissionPromptBubbleView::GetDisplayNameOrOrigin() {
+PermissionPromptBubbleView::GetDisplayNameOrOrigin() const {
   DCHECK(!visible_requests_.empty());
   GURL origin_url = visible_requests_[0]->GetOrigin();
 
@@ -301,6 +288,27 @@ PermissionPromptBubbleView::GetDisplayNameOrOrigin() {
   return {url_formatter::FormatUrlForSecurityDisplay(
               origin_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
           true /* is_origin */};
+}
+
+base::Optional<base::string16> PermissionPromptBubbleView::GetExtraText()
+    const {
+  switch (visible_requests_[0]->GetContentSettingsType()) {
+    case ContentSettingsType::PLUGINS:
+      // TODO(crbug.com/1058401): Remove this warning text once flash is
+      // deprecated.
+      return l10n_util::GetStringUTF16(IDS_FLASH_PERMISSION_WARNING_FRAGMENT);
+    case ContentSettingsType::STORAGE_ACCESS:
+      return l10n_util::GetStringFUTF16(
+          IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
+          url_formatter::FormatUrlForSecurityDisplay(
+              visible_requests_[0]->GetOrigin(),
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
+          url_formatter::FormatUrlForSecurityDisplay(
+              delegate_->GetEmbeddingOrigin(),
+              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+    default:
+      return base::nullopt;
+  }
 }
 
 void PermissionPromptBubbleView::AcceptPermission() {

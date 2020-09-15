@@ -24,15 +24,6 @@ base::string16 PermissionRequest::GetChipText() const {
 }
 #endif
 
-base::string16 PermissionRequest::GetMessageTextWarningFragment() const {
-  return base::string16();
-}
-
-GURL PermissionRequest::GetEmbeddingOrigin() const {
-  NOTREACHED();
-  return GURL();
-}
-
 #if defined(OS_ANDROID)
 base::string16 PermissionRequest::GetQuietTitleText() const {
   return base::string16();

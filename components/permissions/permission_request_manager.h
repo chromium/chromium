@@ -130,6 +130,7 @@ class PermissionRequestManager
 
   // PermissionPrompt::Delegate:
   const std::vector<PermissionRequest*>& Requests() override;
+  GURL GetEmbeddingOrigin() const override;
   void Accept() override;
   void Deny() override;
   void Closing() override;

@@ -13,10 +13,6 @@
 
 class Browser;
 
-namespace views {
-class ImageButton;
-}
-
 // Bubble that prompts the user to grant or deny a permission request from a
 // website.
 class PermissionPromptBubbleView : public views::ButtonListener,
@@ -61,7 +57,10 @@ class PermissionPromptBubbleView : public views::ButtonListener,
 
   // Returns the origin to be displayed in the permission prompt. May return
   // a non-origin, e.g. extension URLs use the name of the extension.
-  DisplayNameOrOrigin GetDisplayNameOrOrigin();
+  DisplayNameOrOrigin GetDisplayNameOrOrigin() const;
+
+  // Get extra information to display for the permission, if any.
+  base::Optional<base::string16> GetExtraText() const;
 
   // Record UMA Permissions.Prompt.TimeToDecision metric.
   void RecordDecision();
@@ -74,8 +73,6 @@ class PermissionPromptBubbleView : public views::ButtonListener,
 
   // The requesting domain's name or origin.
   const DisplayNameOrOrigin name_or_origin_;
-
-  views::ImageButton* learn_more_button_ = nullptr;
 
   base::TimeTicks permission_requested_time_;
 

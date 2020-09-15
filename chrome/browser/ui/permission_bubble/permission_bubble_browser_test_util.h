@@ -34,6 +34,8 @@ class TestPermissionBubbleViewDelegate
 
   const std::vector<permissions::PermissionRequest*>& Requests() override;
 
+  GURL GetEmbeddingOrigin() const override;
+
   void Accept() override {}
   void Deny() override {}
   void Closing() override {}

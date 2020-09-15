@@ -206,7 +206,8 @@ class PermissionDialogTest
   void SetUpOnMainThread() override {
     // Skip super: It will install a mock permission UI factory, but for this
     // test we want to show "real" UI.
-    ui_test_utils::NavigateToURL(browser(), GetUrl());
+    ui_test_utils::NavigateToURL(browser(),
+                                 GURL("https://toplevel.example.com"));
   }
 
   GURL GetUrl() { return GURL("https://example.com"); }
@@ -261,7 +262,7 @@ permissions::PermissionRequest* PermissionDialogTest::MakePermissionRequest(
   auto cleanup = [] {};  // Leave cleanup to test harness destructor.
   owned_requests_.push_back(
       std::make_unique<permissions::PermissionRequestImpl>(
-          GetUrl(), GetUrl(), permission, user_gesture, base::BindOnce(decided),
+          GetUrl(), permission, user_gesture, base::BindOnce(decided),
           base::BindOnce(cleanup)));
   return owned_requests_.back().get();
 }
@@ -280,6 +281,7 @@ void PermissionDialogTest::ShowUi(const std::string& name) {
       {"camera", ContentSettingsType::MEDIASTREAM_CAMERA},
       {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS},
       {"midi", ContentSettingsType::MIDI_SYSEX},
+      {"storage_access", ContentSettingsType::STORAGE_ACCESS},
       {kMultipleName, ContentSettingsType::DEFAULT}};
   const auto* it = std::begin(kNameToType);
   for (; it != std::end(kNameToType); ++it) {
@@ -311,6 +313,7 @@ void PermissionDialogTest::ShowUi(const std::string& name) {
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:  // ChromeOS only.
     case ContentSettingsType::PPAPI_BROKER:
     case ContentSettingsType::PLUGINS:  // Flash.
+    case ContentSettingsType::STORAGE_ACCESS:
       manager->AddRequest(source_frame, MakePermissionRequest(it->type));
       break;
     case ContentSettingsType::DEFAULT:
@@ -996,6 +999,11 @@ IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_protocol_handlers) {
 
 // Host wants to use your MIDI devices.
 IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_midi) {
+  ShowAndVerifyUi();
+}
+
+// Host wants to access storage from the site in which it's embedded.
+IN_PROC_BROWSER_TEST_F(PermissionDialogTest, InvokeUi_storage_access) {
   ShowAndVerifyUi();
 }
 

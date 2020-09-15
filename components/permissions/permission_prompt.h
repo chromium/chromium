@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string16.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -47,6 +48,10 @@ class PermissionPrompt {
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
     virtual const std::vector<PermissionRequest*>& Requests() = 0;
+
+    // Get the top-level origin currently displayed in the address bar
+    // associated with the requests.
+    virtual GURL GetEmbeddingOrigin() const = 0;
 
     virtual void Accept() = 0;
     virtual void Deny() = 0;

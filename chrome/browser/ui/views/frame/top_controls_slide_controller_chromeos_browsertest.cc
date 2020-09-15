@@ -1362,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   // request bubble resulting in top chrome unhiding.
   auto decided = [](ContentSetting) {};
   permissions::PermissionRequestImpl permission_request(
-      url, url, ContentSettingsType::GEOLOCATION, true /* user_gesture */,
+      url, ContentSettingsType::GEOLOCATION, true /* user_gesture */,
       base::BindOnce(decided), base::DoNothing() /* delete_callback */);
   auto* permission_manager =
       permissions::PermissionRequestManager::FromWebContents(active_contents);

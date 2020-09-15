@@ -338,6 +338,10 @@ const std::vector<PermissionRequest*>& PermissionRequestManager::Requests() {
   return requests_;
 }
 
+GURL PermissionRequestManager::GetEmbeddingOrigin() const {
+  return web_contents()->GetLastCommittedURL().GetOrigin();
+}
+
 void PermissionRequestManager::Accept() {
   if (deleting_bubble_)
     return;

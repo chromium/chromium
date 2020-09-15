@@ -29,11 +29,13 @@ TestPermissionBubbleViewDelegate::Requests() {
   return requests_;
 }
 
-PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() {
+GURL TestPermissionBubbleViewDelegate::GetEmbeddingOrigin() const {
+  return GURL("https://embedder.example.com");
 }
 
-PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() {
-}
+PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
+
+PermissionBubbleBrowserTest::~PermissionBubbleBrowserTest() = default;
 
 void PermissionBubbleBrowserTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
