@@ -140,6 +140,8 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                 return result;
             }
         };
+        int yInsetPx =
+                getResources().getDimensionPixelOffset(R.dimen.text_bubble_menu_anchor_y_inset);
         helper.requestShowIPH(new IPHCommandBuilder(mMenuView.getContext().getResources(),
                 FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
                 R.string.accessibility_ntp_feed_menu_iph)
@@ -147,7 +149,7 @@ public class SectionHeaderView extends LinearLayout implements View.OnClickListe
                                       .setCircleHighlight(true)
                                       .setShouldHighlight(true)
                                       .setDismissOnTouch(false)
-                                      .setInsetRect(new Rect(0, 0, 0, 0))
+                                      .setInsetRect(new Rect(0, 0, 0, -yInsetPx))
                                       .setAutoDismissTimeout(5 * 1000)
                                       .setViewRectProvider(rectProvider)
                                       .build());
