@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_BACKGROUND_H_
 
 #include "chrome/browser/vr/elements/ui_element.h"
-#include "chrome/browser/vr/gl_bindings.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
+#include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkBitmap;

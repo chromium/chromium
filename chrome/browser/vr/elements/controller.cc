@@ -10,7 +10,7 @@
 #include "cc/animation/keyframed_animation_curve.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace vr {

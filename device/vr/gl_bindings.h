@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_GL_BINDINGS_H_
-#define CHROME_BROWSER_VR_GL_BINDINGS_H_
+#ifndef DEVICE_VR_GL_BINDINGS_H_
+#define DEVICE_VR_GL_BINDINGS_H_
 
 #if defined(VR_USE_COMMAND_BUFFER)
 
@@ -23,4 +23,4 @@
 
 #endif  // defined(VR_USE_COMMAND_BUFFER)
 
-#endif  // CHROME_BROWSER_VR_GL_BINDINGS_H_
+#endif  // DEVICE_VR_GL_BINDINGS_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_VR_VR_GL_UTIL_H_
-#define CHROME_BROWSER_VR_VR_GL_UTIL_H_
+#ifndef DEVICE_VR_VR_GL_UTIL_H_
+#define DEVICE_VR_VR_GL_UTIL_H_
 
 #include <array>
 #include <string>
 
-#include "chrome/browser/vr/gl_bindings.h"
-#include "chrome/browser/vr/vr_base_export.h"
+#include "base/component_export.h"
+#include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 #define SHADER(Src) "#version 100\n" #Src
@@ -23,31 +23,34 @@ class Transform;
 
 namespace vr {
 
-VR_BASE_EXPORT std::array<float, 16> MatrixToGLArray(
-    const gfx::Transform& matrix);
+COMPONENT_EXPORT(DEVICE_VR_BASE)
+std::array<float, 16> MatrixToGLArray(const gfx::Transform& matrix);
 
 // Compile a shader. This is intended for browser-internal shaders only,
 // don't use this for user-supplied arbitrary shaders since data is handed
 // directly to the GL driver without further sanity checks.
-VR_BASE_EXPORT GLuint CompileShader(GLenum shader_type,
-                                    const std::string& shader_source,
-                                    std::string& error);
+COMPONENT_EXPORT(DEVICE_VR_BASE)
+GLuint CompileShader(GLenum shader_type,
+                     const std::string& shader_source,
+                     std::string& error);
 
 // Compile and link a program.
-VR_BASE_EXPORT GLuint CreateAndLinkProgram(GLuint vertex_shader_handle,
-                                           GLuint fragment_shader_handle,
-                                           std::string& error);
+COMPONENT_EXPORT(DEVICE_VR_BASE)
+GLuint CreateAndLinkProgram(GLuint vertex_shader_handle,
+                            GLuint fragment_shader_handle,
+                            std::string& error);
 
 // Sets default texture parameters given a texture type.
-VR_BASE_EXPORT void SetTexParameters(GLenum texture_type);
+COMPONENT_EXPORT(DEVICE_VR_BASE) void SetTexParameters(GLenum texture_type);
 
 // Sets color uniforms given an SkColor.
-VR_BASE_EXPORT void SetColorUniform(GLuint handle, SkColor c);
+COMPONENT_EXPORT(DEVICE_VR_BASE) void SetColorUniform(GLuint handle, SkColor c);
 
 // Sets color uniforms (but not alpha) given an SkColor. The alpha is assumed to
 // be 1.0 in this case.
-VR_BASE_EXPORT void SetOpaqueColorUniform(GLuint handle, SkColor c);
+COMPONENT_EXPORT(DEVICE_VR_BASE)
+void SetOpaqueColorUniform(GLuint handle, SkColor c);
 
 }  // namespace vr
 
-#endif  // CHROME_BROWSER_VR_VR_GL_UTIL_H_
+#endif  // DEVICE_VR_VR_GL_UTIL_H_

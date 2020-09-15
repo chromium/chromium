@@ -9,7 +9,7 @@
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 
 namespace vr {
 

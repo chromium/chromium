@@ -5,7 +5,7 @@
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 
 #include "base/stl_util.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "ui/gfx/transform.h"
 
 namespace vr {

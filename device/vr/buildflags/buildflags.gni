@@ -14,6 +14,8 @@ declare_args() {
 
   enable_windows_mr = is_win
 
+  use_command_buffer = is_win
+
   # To build with OpenXR support, the OpenXR Loader needs to be pulled to
   # third_party/openxr.
   enable_openxr = checkout_openxr && is_win

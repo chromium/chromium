@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/vr/gl_bindings.h"
+#include "device/vr/gl_bindings.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gl {

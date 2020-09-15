@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/renderers/external_textured_quad_renderer.h"
 
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "ui/gfx/transform.h"
 
 namespace vr {

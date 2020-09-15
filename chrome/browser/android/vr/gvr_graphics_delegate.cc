@@ -14,7 +14,7 @@
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/vr_geometry_util.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/angle_conversions.h"

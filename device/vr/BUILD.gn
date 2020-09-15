@@ -8,12 +8,33 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
+config("vr_gl_mode") {
+  if (use_command_buffer) {
+    defines = [
+      "VR_USE_COMMAND_BUFFER",
+      "GL_GLEXT_PROTOTYPES",
+    ]
+  } else {
+    defines = [ "VR_USE_NATIVE_GL" ]
+  }
+}
+
+source_set("vr_gl_bindings") {
+  sources = [ "gl_bindings.h" ]
+  public_configs = [ ":vr_gl_mode" ]
+  if (use_command_buffer) {
+    public_deps = [ "//gpu/command_buffer/client:gles2_c_lib" ]
+  } else {
+    public_deps = [ "//ui/gl" ]
+  }
+}
+
 if (enable_vr) {
   # TODO(https://crbug.com/1073113): Flesh out and cleanup this target.
   component("vr_base") {
     visibility = [
       # TODO(https://crbug.com/843374): Move arcore_device
-      "//chrome/browser/android/vr/*",
+      "//chrome/browser/*",
       "//content/services/isolated_xr_device/*",
       "//device/vr/*",
     ]
@@ -25,9 +46,13 @@ if (enable_vr) {
       "vr_device.h",
       "vr_device_base.cc",
       "vr_device_base.h",
+      "vr_gl_util.cc",
+      "vr_gl_util.h",
     ]
 
+    public_configs = [ ":vr_gl_mode" ]
     public_deps = [
+      ":vr_gl_bindings",
       "//device/vr/public/cpp",
       "//device/vr/public/mojom",
     ]

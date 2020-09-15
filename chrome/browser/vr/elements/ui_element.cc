@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/camera_model.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/angle_conversions.h"

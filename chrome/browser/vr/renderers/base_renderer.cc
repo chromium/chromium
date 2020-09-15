@@ -7,7 +7,7 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 
 namespace vr {
 

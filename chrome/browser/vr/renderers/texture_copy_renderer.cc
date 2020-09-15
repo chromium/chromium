@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/renderers/texture_copy_renderer.h"
 
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 
 namespace vr {
 

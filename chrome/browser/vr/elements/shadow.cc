@@ -6,7 +6,7 @@
 
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace vr {

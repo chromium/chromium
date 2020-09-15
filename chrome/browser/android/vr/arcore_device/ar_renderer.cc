@@ -5,7 +5,7 @@
 #include "chrome/browser/android/vr/arcore_device/ar_renderer.h"
 
 #include "base/stl_util.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/vr_gl_util.h"
 
 namespace device {
 

@@ -9,6 +9,8 @@ include_rules = [
   "+third_party/gvr-android-sdk/src",
   "+third_party/libovr/src",
   "+third_party/openvr/src/headers/openvr.h",
+  "+third_party/skia/include/core/SkColor.h",
   "+ui/display",
   "+ui/gfx",
+  "+ui/gl/gl_bindings.h",
 ]
