@@ -48,6 +48,7 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
 
   // views::MdTextButton:
   void UpdateBackgroundColor() override;
+  void OnThemeChanged() override;
 
   const base::Optional<base::string16>& placeholder() const {
     return placeholder_;
@@ -59,8 +60,11 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
     return label()->GetEnabledColor();
   }
 
+  void OverrideTextColor(base::Optional<SkColor> text_color);
+
  private:
   base::Optional<base::string16> placeholder_;
+  base::Optional<SkColor> text_color_;
 };
 
 // CompactTitleMessageView shows notification title and message in a single
@@ -266,6 +270,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   void ToggleExpanded();
   void UpdateViewForExpandedState(bool expanded);
   void ToggleInlineSettings(const ui::Event& event);
+  void UpdateHeaderViewBackgroundColor();
+  SkColor GetNotificationHeaderViewBackgroundColor() const;
+  void UpdateActionButtonsRowBackground();
 
   // Returns the list of children which need to have their layers created or
   // destroyed when the ink drop is visible.

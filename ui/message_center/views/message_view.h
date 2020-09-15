@@ -191,6 +191,8 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   views::FocusRing* focus_ring() { return focus_ring_; }
 
+  int bottom_radius() const { return bottom_radius_; }
+
  private:
   friend class test::MessagePopupCollectionTest;
 

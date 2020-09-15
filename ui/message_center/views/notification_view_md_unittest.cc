@@ -15,6 +15,8 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -36,7 +38,7 @@
 
 namespace message_center {
 
-/* Test fixture ***************************************************************/
+namespace {
 
 // Used to fill bitmaps returned by CreateBitmap().
 static const SkColor kBitmapColor = SK_ColorGREEN;
@@ -104,6 +106,17 @@ class DummyEvent : public ui::Event {
   DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
   ~DummyEvent() override = default;
 };
+
+SkColor DeriveMinContrastColor(SkColor foreground, SkColor background) {
+  SkColor contrast_color =
+      color_utils::BlendForMinContrast(foreground, background).color;
+  float contrast_ratio =
+      color_utils::GetContrastRatio(background, contrast_color);
+  EXPECT_GE(contrast_ratio, color_utils::kMinimumReadableContrastRatio);
+  return contrast_color;
+}
+
+}  // namespace
 
 class NotificationViewMDTest : public views::InkDropObserver,
                                public views::ViewsTestBase,
@@ -978,8 +991,13 @@ TEST_F(NotificationViewMDTest, ExpandLongMessage) {
 }
 
 TEST_F(NotificationViewMDTest, TestAccentColor) {
-  constexpr SkColor kActionButtonTextColor = gfx::kGoogleBlue600;
-  constexpr SkColor kCustomAccentColor = gfx::kGoogleYellow900;
+  const SkColor kNotificationBackgroundColor = SK_ColorWHITE;
+  const SkColor kActionButtonBackgroundColor = SkColorSetRGB(0xEE, 0xEE, 0xEE);
+  const SkColor kActionButtonTextColor =
+      DeriveMinContrastColor(gfx::kGoogleBlue600, kActionButtonBackgroundColor);
+
+  const SkColor kDarkCustomAccentColor = SkColorSetRGB(0x0D, 0x65, 0x2D);
+  const SkColor kBrightCustomAccentColor = SkColorSetRGB(0x34, 0xA8, 0x53);
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_buttons(CreateButtons(2));
@@ -1018,19 +1036,40 @@ TEST_F(NotificationViewMDTest, TestAccentColor) {
 
   // If custom accent color is set, the header and the buttons should have the
   // same accent color.
-  notification->set_accent_color(kCustomAccentColor);
+  notification->set_accent_color(kDarkCustomAccentColor);
   UpdateNotificationViews(*notification);
   auto accent_color =
       notification_view()->header_row_->accent_color_for_testing();
   ASSERT_TRUE(accent_color.has_value());
-  EXPECT_EQ(kCustomAccentColor, accent_color.value());
+  EXPECT_EQ(kDarkCustomAccentColor, accent_color.value());
   EXPECT_EQ(
-      kCustomAccentColor,
+      kDarkCustomAccentColor,
       notification_view()->action_buttons_[0]->enabled_color_for_testing());
   EXPECT_EQ(
-      kCustomAccentColor,
+      kDarkCustomAccentColor,
       notification_view()->action_buttons_[1]->enabled_color_for_testing());
-  EXPECT_TRUE(app_icon_color_matches(kCustomAccentColor));
+  EXPECT_TRUE(app_icon_color_matches(kDarkCustomAccentColor));
+
+  // If the custom accent color is too bright, we expect it to be darkened so
+  // text and icons are still readable.
+  SkColor expected_color_title = DeriveMinContrastColor(
+      kBrightCustomAccentColor, kNotificationBackgroundColor);
+  // Action buttons have a darker background.
+  SkColor expected_color_actions = DeriveMinContrastColor(
+      kBrightCustomAccentColor, kActionButtonBackgroundColor);
+
+  notification->set_accent_color(kBrightCustomAccentColor);
+  UpdateNotificationViews(*notification);
+  accent_color = notification_view()->header_row_->accent_color_for_testing();
+  ASSERT_TRUE(accent_color.has_value());
+  EXPECT_EQ(kBrightCustomAccentColor, accent_color.value());
+  EXPECT_EQ(
+      expected_color_actions,
+      notification_view()->action_buttons_[0]->enabled_color_for_testing());
+  EXPECT_EQ(
+      expected_color_actions,
+      notification_view()->action_buttons_[1]->enabled_color_for_testing());
+  EXPECT_TRUE(app_icon_color_matches(expected_color_title));
 }
 
 TEST_F(NotificationViewMDTest, UseImageAsIcon) {

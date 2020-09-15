@@ -20,6 +20,7 @@
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -116,7 +117,7 @@ constexpr int kTextFontSizeDelta = 1;
 
 // In progress notification, if both the title and the message are long, the
 // message would be prioritized and the title would be elided.
-// However, it is not perferable that we completely omit the title, so
+// However, it is not preferable that we completely omit the title, so
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
 
@@ -166,7 +167,6 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   title->SetFontList(font_list);
   title->SetCollapseWhenHidden(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetAutoColorReadabilityEnabled(false);
   view->AddChildView(title);
 
   views::Label* message = view->AddChildView(std::make_unique<views::Label>(
@@ -177,7 +177,6 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   message->SetFontList(font_list);
   message->SetCollapseWhenHidden(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message->SetAutoColorReadabilityEnabled(false);
   return view;
 }
 
@@ -342,6 +341,21 @@ void NotificationMdTextButton::UpdateBackgroundColor() {
   // Overridden as no-op so we don't draw any background or border.
 }
 
+void NotificationMdTextButton::OnThemeChanged() {
+  views::MdTextButton::OnThemeChanged();
+  SetEnabledTextColors(text_color_);
+  label()->SetAutoColorReadabilityEnabled(true);
+  label()->SetBackgroundColor(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_NotificationActionsRowBackground));
+}
+
+void NotificationMdTextButton::OverrideTextColor(
+    base::Optional<SkColor> text_color) {
+  text_color_ = std::move(text_color);
+  SetEnabledTextColors(text_color_);
+  label()->SetAutoColorReadabilityEnabled(true);
+}
+
 BEGIN_METADATA(NotificationMdTextButton, views::MdTextButton)
 END_METADATA
 
@@ -482,6 +496,7 @@ class InlineSettingsRadioButton : public views::RadioButton {
   void OnThemeChanged() override {
     RadioButton::OnThemeChanged();
     SetEnabledTextColors(GetTextColor());
+    label()->SetAutoColorReadabilityEnabled(true);
     label()->SetBackgroundColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_NotificationInlineSettingsBackground));
   }
@@ -689,7 +704,7 @@ void NotificationViewMD::Layout() {
   if (actions_row_->GetVisible()) {
     constexpr SkScalar kCornerRadius = SkIntToScalar(kNotificationCornerRadius);
 
-    // Use vertically larger clip path, so that actions row's top coners will
+    // Use vertically larger clip path, so that actions row's top corners will
     // not be rounded.
     SkPath path;
     gfx::Rect bounds = actions_row_->GetLocalBounds();
@@ -1078,12 +1093,18 @@ void NotificationViewMD::CreateOrUpdateIconView(
 
 void NotificationViewMD::CreateOrUpdateSmallIconView(
     const Notification& notification) {
+  SkColor accent_color =
+      notification.accent_color().value_or(GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_NotificationDefaultAccentColor));
+  SkColor icon_color =
+      color_utils::BlendForMinContrast(
+          accent_color, GetNotificationHeaderViewBackgroundColor())
+          .color;
+
   // TODO(knollr): figure out if this has a performance impact and
   // cache images if so. (crbug.com/768748)
-  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
-      kSmallImageSizeMD,
-      notification.accent_color().value_or(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_NotificationDefaultAccentColor)));
+  gfx::Image masked_small_icon =
+      notification.GenerateMaskedSmallIcon(kSmallImageSizeMD, icon_color);
 
   if (masked_small_icon.IsEmpty()) {
     header_row_->ClearAppIcon();
@@ -1162,7 +1183,7 @@ void NotificationViewMD::CreateOrUpdateActionButtonViews(
     }
 
     // Change action button color to the accent color.
-    action_buttons_[i]->SetEnabledTextColors(notification.accent_color());
+    action_buttons_[i]->OverrideTextColor(notification.accent_color());
   }
 
   // Inherit mouse hover state when action button views reset.
@@ -1364,6 +1385,7 @@ void NotificationViewMD::ToggleInlineSettings(const ui::Event& event) {
   else
     RemoveBackgroundAnimation();
 
+  UpdateHeaderViewBackgroundColor();
   Layout();
   SchedulePaint();
 
@@ -1373,13 +1395,36 @@ void NotificationViewMD::ToggleInlineSettings(const ui::Event& event) {
     MessageCenter::Get()->DisableNotification(notification_id());
 }
 
-void NotificationViewMD::UpdateCornerRadius(int top_radius, int bottom_radius) {
-  MessageView::UpdateCornerRadius(top_radius, bottom_radius);
+void NotificationViewMD::UpdateHeaderViewBackgroundColor() {
+  SkColor header_background_color = GetNotificationHeaderViewBackgroundColor();
+  header_row_->SetBackgroundColor(header_background_color);
+  control_buttons_view_->SetBackgroundColor(header_background_color);
+
+  auto* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(notification_id());
+  if (notification)
+    CreateOrUpdateSmallIconView(*notification);
+}
+
+SkColor NotificationViewMD::GetNotificationHeaderViewBackgroundColor() const {
+  bool inline_settings_visible = settings_row_ && settings_row_->GetVisible();
+  return GetNativeTheme()->GetSystemColor(
+      inline_settings_visible
+          ? ui::NativeTheme::kColorId_NotificationInlineSettingsBackground
+          : ui::NativeTheme::kColorId_NotificationDefaultBackground);
+}
+
+void NotificationViewMD::UpdateActionButtonsRowBackground() {
   action_buttons_row_->SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
-          0, bottom_radius,
+          /*top_radius=*/0, bottom_radius(),
           GetNativeTheme()->GetSystemColor(
               ui::NativeTheme::kColorId_NotificationActionsRowBackground))));
+}
+
+void NotificationViewMD::UpdateCornerRadius(int top_radius, int bottom_radius) {
+  MessageView::UpdateCornerRadius(top_radius, bottom_radius);
+  UpdateActionButtonsRowBackground();
   highlight_path_generator_->set_top_radius(top_radius);
   highlight_path_generator_->set_bottom_radius(bottom_radius);
 }
@@ -1422,16 +1467,8 @@ void NotificationViewMD::OnSettingsButtonPressed(const ui::Event& event) {
 
 void NotificationViewMD::OnThemeChanged() {
   MessageView::OnThemeChanged();
-  bool inline_settings_visible = settings_row_ && !settings_row_->GetVisible();
-  header_row_->SetBackgroundColor(GetNativeTheme()->GetSystemColor(
-      inline_settings_visible
-          ? ui::NativeTheme::kColorId_NotificationInlineSettingsBackground
-          : ui::NativeTheme::kColorId_NotificationDefaultBackground));
-
-  auto* notification =
-      MessageCenter::Get()->FindVisibleNotificationById(notification_id());
-  if (notification)
-    CreateOrUpdateSmallIconView(*notification);
+  UpdateHeaderViewBackgroundColor();
+  UpdateActionButtonsRowBackground();
 }
 
 void NotificationViewMD::Activate() {

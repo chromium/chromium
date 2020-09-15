@@ -6,8 +6,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace message_center {
@@ -50,6 +55,23 @@ class NotificationControlButtonsTest : public testing::Test {
     return message_view_->GetControlButtonsView();
   }
 
+  bool MatchesIcon(PaddedButton* button,
+                   const gfx::VectorIcon& icon,
+                   SkColor color) {
+    SkBitmap expected = *gfx::CreateVectorIcon(icon, color).bitmap();
+    SkBitmap actual = *button->GetImage(views::Button::STATE_NORMAL).bitmap();
+    return gfx::test::AreBitmapsEqual(expected, actual);
+  }
+
+  void ExpectIconColor(SkColor color) {
+    EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
+                            kNotificationCloseButtonIcon, color));
+    EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
+                            kNotificationSettingsButtonIcon, color));
+    EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
+                            kNotificationSnoozeButtonIcon, color));
+  }
+
  private:
   std::unique_ptr<TestMessageView> message_view_;
 
@@ -76,6 +98,39 @@ TEST_F(NotificationControlButtonsTest, TestShowAndHideButtons) {
   EXPECT_EQ(nullptr, buttons_view()->close_button());
   EXPECT_EQ(nullptr, buttons_view()->settings_button());
   EXPECT_EQ(nullptr, buttons_view()->snooze_button());
+}
+
+TEST_F(NotificationControlButtonsTest, IconColor_NoContrastEnforcement) {
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // Default icon color.
+  ExpectIconColor(gfx::kChromeIconGrey);
+
+  // Without setting a background color we won't enforce contrast ratios.
+  buttons_view()->SetButtonIconColors(SK_ColorWHITE);
+  ExpectIconColor(SK_ColorWHITE);
+  buttons_view()->SetButtonIconColors(SK_ColorBLACK);
+  ExpectIconColor(SK_ColorBLACK);
+}
+
+TEST_F(NotificationControlButtonsTest, IconColor_ContrastEnforcement) {
+  buttons_view()->ShowCloseButton(true);
+  buttons_view()->ShowSettingsButton(true);
+  buttons_view()->ShowSnoozeButton(true);
+
+  // A bright background should enforce dark enough icons.
+  buttons_view()->SetBackgroundColor(SK_ColorWHITE);
+  buttons_view()->SetButtonIconColors(SK_ColorWHITE);
+  ExpectIconColor(
+      color_utils::BlendForMinContrast(SK_ColorWHITE, SK_ColorWHITE).color);
+
+  // A dark background should enforce bright enough icons.
+  buttons_view()->SetBackgroundColor(SK_ColorBLACK);
+  buttons_view()->SetButtonIconColors(SK_ColorBLACK);
+  ExpectIconColor(
+      color_utils::BlendForMinContrast(SK_ColorBLACK, SK_ColorBLACK).color);
 }
 
 }  // namespace message_center
