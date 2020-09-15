@@ -6,29 +6,21 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/test/icu_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
-#include "url/native_j_unittests_jni_headers/GURLJavaTest_jni.h"
+#include "url/gurl_j_test_jni_headers/GURLJavaTestHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 
 namespace url {
 
-class GURLAndroidTest : public ::testing::Test {
- public:
-  GURLAndroidTest()
-      : j_test_(Java_GURLJavaTest_Constructor(AttachCurrentThread())) {}
+static void JNI_GURLJavaTestHelper_InitializeICU(JNIEnv* env) {
+  base::test::InitializeICUForTesting();
+}
 
-  const base::android::ScopedJavaGlobalRef<jobject>& j_test() {
-    return j_test_;
-  }
-
- private:
-  base::android::ScopedJavaGlobalRef<jobject> j_test_;
-};
-
-TEST_F(GURLAndroidTest, TestGURLEquivalence) {
+static void JNI_GURLJavaTestHelper_TestGURLEquivalence(JNIEnv* env) {
   const char* cases[] = {
       // Common Standard URLs.
       "https://www.google.com",
@@ -62,17 +54,14 @@ TEST_F(GURLAndroidTest, TestGURLEquivalence) {
       // Invalid URLs.
       "foobar",
   };
-  JNIEnv* env = AttachCurrentThread();
   for (const char* uri : cases) {
     GURL gurl(uri);
     base::android::ScopedJavaLocalRef<jobject> j_gurl =
-        Java_GURLJavaTest_createGURL(
-            env, j_test(), base::android::ConvertUTF8ToJavaString(env, uri));
+        Java_GURLJavaTestHelper_createGURL(
+            env, base::android::ConvertUTF8ToJavaString(env, uri));
     std::unique_ptr<GURL> gurl2 = GURLAndroid::ToNativeGURL(env, j_gurl);
     EXPECT_EQ(gurl, *gurl2);
   }
 }
-
-JAVA_TESTS(GURLAndroidTest, j_test())
 
 }  // namespace url

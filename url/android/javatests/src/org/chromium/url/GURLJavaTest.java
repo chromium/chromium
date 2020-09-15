@@ -7,12 +7,18 @@ package org.chromium.url;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.net.URISyntaxException;
 
@@ -21,18 +27,18 @@ import java.net.URISyntaxException;
  * the logic is tested there. This test is primarily to make sure everything is plumbed through
  * correctly.
  */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class GURLJavaTest {
     @Mock
     GURL.Natives mGURLMocks;
 
-    @CalledByNative
-    private GURLJavaTest() {
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
 
-    @CalledByNative
-    public GURL createGURL(String uri) {
-        return new GURL(uri);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        GURLJavaTestHelper.nativeInitializeICU();
     }
 
     private void deepAssertEquals(GURL expected, GURL actual) {
@@ -51,8 +57,15 @@ public class GURLJavaTest {
         return Integer.toString(serialization.length()) + GURL.SERIALIZER_DELIMITER + serialization;
     }
 
+    @SmallTest
+    @Test
+    public void testGURLEquivalence() {
+        GURLJavaTestHelper.nativeTestGURLEquivalence();
+    }
+
     // Equivalent of GURLTest.Components
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     @SuppressWarnings(value = "AuthLeak")
     public void testComponents() {
         GURL empty = new GURL("");
@@ -85,7 +98,8 @@ public class GURLJavaTest {
     }
 
     // Equivalent of GURLTest.Empty
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testEmpty() {
         GURLJni.TEST_HOOKS.setInstanceForTesting(mGURLMocks);
         doThrow(new RuntimeException("Should not need to parse empty URL"))
@@ -107,7 +121,8 @@ public class GURLJavaTest {
     }
 
     // Test that GURL and URI return the correct Origin.
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     @SuppressWarnings(value = "AuthLeak")
     public void testOrigin() throws URISyntaxException {
         final String kExpectedOrigin1 = "http://google.com:21/";
@@ -122,12 +137,13 @@ public class GURLJavaTest {
         Assert.assertEquals(kExpectedOrigin1, origin.getSpec());
     }
 
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testWideInput() throws URISyntaxException {
         final String kExpectedSpec = "http://xn--1xa.com/";
 
         GURL url = new GURL("http://\u03C0.com");
-        Assert.assertEquals("http://xn--1xa.com/", url.getSpec());
+        Assert.assertEquals(kExpectedSpec, url.getSpec());
         Assert.assertEquals("http", url.getScheme());
         Assert.assertEquals("", url.getUsername());
         Assert.assertEquals("", url.getPassword());
@@ -138,7 +154,8 @@ public class GURLJavaTest {
         Assert.assertEquals("", url.getRef());
     }
 
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     @SuppressWarnings(value = "AuthLeak")
     public void testSerialization() {
         GURL cases[] = {
@@ -194,7 +211,8 @@ public class GURLJavaTest {
      * Tests that we re-parse the URL from the spec, which must always be the last token in the
      * serialization, if the serialization version differs.
      */
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testSerializationWithVersionSkew() {
         GURL url = new GURL("https://www.google.com");
         String serialization = (GURL.SERIALIZER_VERSION + 1)
@@ -208,7 +226,8 @@ public class GURLJavaTest {
     /**
      * Tests that fields that aren't visible to java code are correctly serialized.
      */
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testSerializationOfPrivateFields() {
         String serialization = GURL.SERIALIZER_VERSION
                 + ",true,"
@@ -226,7 +245,8 @@ public class GURLJavaTest {
     /**
      * Tests serialized GURL truncated by storage.
      */
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testTruncatedDeserialization() {
         String serialization = "123,1,true,1,2,3,4,5,6,7,8,9,10";
         serialization = serialization.replace(',', GURL.SERIALIZER_DELIMITER);
@@ -237,7 +257,8 @@ public class GURLJavaTest {
     /**
      * Tests serialized GURL truncated by storage.
      */
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testCorruptedSerializations() {
         String serialization = new GURL("https://www.google.ca").serialize();
         // Replace the scheme length (5) with an extra delimiter.

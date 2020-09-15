@@ -222,15 +222,6 @@ test("url_unittests") {
       "//url/mojom:test_url_mojom_gurl",
     ]
   }
-  if (is_android) {
-    sources += [ "android/gurl_android_unittest.cc" ]
-    deps += [
-      ":gurl_android",
-      ":gurl_java",
-      ":gurl_javatests",
-      ":native_j_unittests_jni_headers",
-    ]
-  }
 }
 
 test("url_perftests") {
@@ -258,17 +249,42 @@ fuzzer_test("gurl_fuzzer") {
 }
 
 if (is_android) {
-  android_library("gurl_javatests") {
+  source_set("gurl_android_test_helper") {
     testonly = true
-    sources = [
-      "android/native_java_unittests/src/org/chromium/url/GURLJavaTest.java",
+    sources = [ "android/gurl_java_test_helper.cc" ]
+    deps = [
+      ":gurl_android",
+      ":gurl_j_test_jni_headers",
+      ":url",
+      "//base/test:test_support",
+      "//testing/gtest",
     ]
+  }
+
+  android_library("gurl_android_test_helper_java") {
+    testonly = true
+    sources =
+        [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
     deps = [
       ":gurl_java",
-      ":gurl_jni_headers",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",
+    ]
+  }
+
+  android_library("gurl_javatests") {
+    testonly = true
+    sources = [ "android/javatests/src/org/chromium/url/GURLJavaTest.java" ]
+    deps = [
+      ":gurl_android_test_helper_java",
+      ":gurl_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:jni_java",
+      "//content/public/test/android:content_java_test_support",
+      "//third_party/android_deps:androidx_core_core_java",
+      "//third_party/android_deps:androidx_test_runner_java",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/junit",
@@ -279,10 +295,9 @@ if (is_android) {
 
   # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
   # can't put 'java' in the name here.
-  generate_jni("native_j_unittests_jni_headers") {
+  generate_jni("gurl_j_test_jni_headers") {
     testonly = true
-    sources = [
-      "android/native_java_unittests/src/org/chromium/url/GURLJavaTest.java",
-    ]
+    sources =
+        [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
   }
 }
