@@ -34,8 +34,6 @@ class WindowCycleList;
 // order.
 class ASH_EXPORT WindowCycleController {
  public:
-  using WindowList = std::vector<aura::Window*>;
-
   enum Direction { FORWARD, BACKWARD };
 
   WindowCycleController();
@@ -62,10 +60,6 @@ class ASH_EXPORT WindowCycleController {
   void CompleteCycling();
   void CancelCycling();
 
-  // If the window cycle list is open, re-construct it. Do nothing if not
-  // cycling.
-  void MaybeResetCycleList();
-
   // Skip window cycle list directly to |window|.
   void StepToWindow(aura::Window* window);
 
@@ -78,16 +72,6 @@ class ASH_EXPORT WindowCycleController {
   }
 
  private:
-  // Gets a list of windows from the currently open windows, removing windows
-  // with transient roots already in the list. The returned list of windows
-  // is used to populate the window cycle list.
-  WindowList CreateWindowList();
-
-  // Populates |active_desk_container_id_before_cycle_| and
-  // |active_window_before_window_cycle_| when the window cycle list is
-  // initialized.
-  void SaveCurrentActiveDeskAndWindow(const WindowList& window_list);
-
   // Cycles to the next or previous window based on |direction|.
   void Step(Direction direction);
 
