@@ -1352,8 +1352,10 @@ int Element::clientHeight() {
 
 LayoutBox* Element::GetLayoutBoxForScrolling() const {
   LayoutBox* box = GetLayoutBox();
-  if (!box || !box->HasNonVisibleOverflow())
+  if (!box || (!box->HasNonVisibleOverflow() &&
+               !box->StyleRef().ScrollbarGutterIsForce())) {
     return nullptr;
+  }
   return box;
 }
 

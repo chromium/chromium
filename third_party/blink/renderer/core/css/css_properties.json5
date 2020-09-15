@@ -3104,7 +3104,7 @@
     {
       name: "scrollbar-gutter",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      inherited: true,
+      inherited: false,
       field_size: 4,
       field_template: "primitive",
       default_value: "kScrollbarGutterAuto",

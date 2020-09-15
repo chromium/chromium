@@ -299,6 +299,9 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
   if (HasNonVisibleOverflow())
     return kOverflowClipPaintLayer;
 
+  if (StyleRef().ScrollbarGutterIsForce())
+    return kNormalPaintLayer;
+
   return kNoPaintLayer;
 }
 
@@ -817,7 +820,7 @@ int LayoutBox::PixelSnappedOffsetHeight(const Element*) const {
 }
 
 LayoutUnit LayoutBox::ScrollWidth() const {
-  if (HasNonVisibleOverflow())
+  if (HasNonVisibleOverflow() || StyleRef().ScrollbarGutterIsForce())
     return GetScrollableArea()->ScrollWidth();
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
@@ -828,7 +831,7 @@ LayoutUnit LayoutBox::ScrollWidth() const {
 }
 
 LayoutUnit LayoutBox::ScrollHeight() const {
-  if (HasNonVisibleOverflow())
+  if (HasNonVisibleOverflow() || StyleRef().ScrollbarGutterIsForce())
     return GetScrollableArea()->ScrollHeight();
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
@@ -1334,12 +1337,14 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
 
   if (orientation == kVerticalScrollbar) {
     EOverflow overflow = StyleRef().OverflowY();
-    return (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
+    return (StyleRef().ScrollbarGutterIsForce() ||
+            overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            StyleRef().IsHorizontalWritingMode() &&
            !(is_stable && UsesOverlayScrollbars());
   } else {
     EOverflow overflow = StyleRef().OverflowX();
-    return (overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
+    return (StyleRef().ScrollbarGutterIsForce() ||
+            overflow == EOverflow::kAuto || overflow == EOverflow::kScroll) &&
            !StyleRef().IsHorizontalWritingMode() &&
            !(is_stable && UsesOverlayScrollbars());
   }

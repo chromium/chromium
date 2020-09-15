@@ -3084,12 +3084,32 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
       #always_both {
         scrollbar-gutter: always both;
       }
+      #stable_force {
+        overflow: visible;
+        scrollbar-gutter: stable force;
+      }
+      #stable_both_force {
+        overflow: hidden;
+        scrollbar-gutter: stable both force;
+      }
+      #always_force {
+        overflow: visible;
+        scrollbar-gutter: always force;
+      }
+      #always_both_force {
+        overflow: hidden;
+        scrollbar-gutter: always both force;
+      }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
     <div id="stable_both"></div>
     <div id="always"></div>
     <div id="always_both"></div>
+    <div id="stable_force"></div>
+    <div id="stable_both_force"></div>
+    <div id="always_force"></div>
+    <div id="always_both_force"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3143,6 +3163,34 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   EXPECT_EQ(box_always_both_scrollbars.bottom, 0);
   EXPECT_EQ(box_always_both_scrollbars.left, 15);
   EXPECT_EQ(box_always_both_scrollbars.right, 15);
+
+  auto* stable_force = GetDocument().getElementById("stable_force");
+  LayoutBox* box_stable_force = ToLayoutBox(stable_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_force->ClientWidth(), 85);
+  EXPECT_EQ(box_stable_force->ComputeScrollbars(), box_stable_scrollbars);
+
+  auto* stable_both_force = GetDocument().getElementById("stable_both_force");
+  LayoutBox* box_stable_both_force =
+      ToLayoutBox(stable_both_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_both_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both_force->ClientWidth(), 70);
+  EXPECT_EQ(box_stable_both_force->ComputeScrollbars(),
+            box_stable_both_scrollbars);
+
+  auto* always_force = GetDocument().getElementById("always_force");
+  LayoutBox* box_always_force = ToLayoutBox(always_force->GetLayoutObject());
+  EXPECT_EQ(box_always_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_always_force->ClientWidth(), 85);
+  EXPECT_EQ(box_always_force->ComputeScrollbars(), box_always_scrollbars);
+
+  auto* always_both_force = GetDocument().getElementById("always_both_force");
+  LayoutBox* box_always_both_force =
+      ToLayoutBox(always_both_force->GetLayoutObject());
+  EXPECT_EQ(box_always_both_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_always_both_force->ClientWidth(), 70);
+  EXPECT_EQ(box_always_both_force->ComputeScrollbars(),
+            box_always_both_scrollbars);
 }
 
 // Test scrollbar-gutter values with classic scrollbars and vertical-rl text.
@@ -3177,12 +3225,32 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
       #always_both {
         scrollbar-gutter: always both;
       }
+      #stable_force {
+        overflow: hidden;
+        scrollbar-gutter: stable force;
+      }
+      #stable_both_force {
+        overflow: visible;
+        scrollbar-gutter: stable both force;
+      }
+      #always_force {
+        overflow: hidden;
+        scrollbar-gutter: always force;
+      }
+      #always_both_force {
+        overflow: visible;
+        scrollbar-gutter: always both force;
+      }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
     <div id="stable_both"></div>
     <div id="always"></div>
     <div id="always_both"></div>
+    <div id="stable_force"></div>
+    <div id="stable_both_force"></div>
+    <div id="always_force"></div>
+    <div id="always_both_force"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3236,6 +3304,34 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   EXPECT_EQ(box_always_both_scrollbars.bottom, 15);
   EXPECT_EQ(box_always_both_scrollbars.left, 0);
   EXPECT_EQ(box_always_both_scrollbars.right, 0);
+
+  auto* stable_force = GetDocument().getElementById("stable_force");
+  LayoutBox* box_stable_force = ToLayoutBox(stable_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_force->ClientHeight(), 85);
+  EXPECT_EQ(box_stable_force->ComputeScrollbars(), box_stable_scrollbars);
+
+  auto* stable_both_force = GetDocument().getElementById("stable_both_force");
+  LayoutBox* box_stable_both_force =
+      ToLayoutBox(stable_both_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_both_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both_force->ClientHeight(), 70);
+  EXPECT_EQ(box_stable_both_force->ComputeScrollbars(),
+            box_stable_both_scrollbars);
+
+  auto* always_force = GetDocument().getElementById("always_force");
+  LayoutBox* box_always_force = ToLayoutBox(always_force->GetLayoutObject());
+  EXPECT_EQ(box_always_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_always_force->ClientHeight(), 85);
+  EXPECT_EQ(box_always_force->ComputeScrollbars(), box_always_scrollbars);
+
+  auto* always_both_force = GetDocument().getElementById("always_both_force");
+  LayoutBox* box_always_both_force =
+      ToLayoutBox(always_both_force->GetLayoutObject());
+  EXPECT_EQ(box_always_both_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_always_both_force->ClientHeight(), 70);
+  EXPECT_EQ(box_always_both_force->ComputeScrollbars(),
+            box_always_both_scrollbars);
 }
 
 // Test scrollbar-gutter values with overlay scrollbars and horizontal-tb text.
@@ -3271,12 +3367,32 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
       #always_both {
         scrollbar-gutter: always both;
       }
+      #stable_force {
+        overflow: hidden;
+        scrollbar-gutter: stable force;
+      }
+      #stable_both_force {
+        overflow: visible;
+        scrollbar-gutter: stable both force;
+      }
+      #always_force {
+        overflow: hidden;
+        scrollbar-gutter: always force;
+      }
+      #always_both_force {
+        overflow: visible;
+        scrollbar-gutter: always both force;
+      }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
     <div id="stable_both"></div>
     <div id="always"></div>
     <div id="always_both"></div>
+    <div id="stable_force"></div>
+    <div id="stable_both_force"></div>
+    <div id="always_force"></div>
+    <div id="always_both_force"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3335,6 +3451,35 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   // scrollbar gutters
   EXPECT_GT(box_always_both_scrollbars.left, 0);
   EXPECT_GT(box_always_both_scrollbars.right, 0);
+
+  auto* stable_force = GetDocument().getElementById("stable_force");
+  LayoutBox* box_stable_force = ToLayoutBox(stable_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_force->ClientWidth(), 100);
+  EXPECT_EQ(box_stable_force->ComputeScrollbars(), box_stable_scrollbars);
+
+  auto* stable_both_force = GetDocument().getElementById("stable_both_force");
+  LayoutBox* box_stable_both_force =
+      ToLayoutBox(stable_both_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_both_force->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both_force->ClientWidth(), 100);
+  EXPECT_EQ(box_stable_both_force->ComputeScrollbars(),
+            box_stable_both_scrollbars);
+
+  auto* always_force = GetDocument().getElementById("always_force");
+  LayoutBox* box_always_force = ToLayoutBox(always_force->GetLayoutObject());
+  EXPECT_EQ(box_always_force->OffsetWidth(), 100);
+  EXPECT_LT(box_always_force->ClientWidth(), box_auto->ClientWidth());
+  EXPECT_EQ(box_always_force->ComputeScrollbars(), box_always_scrollbars);
+
+  auto* always_both_force = GetDocument().getElementById("always_both_force");
+  LayoutBox* box_always_both_force =
+      ToLayoutBox(always_both_force->GetLayoutObject());
+  EXPECT_EQ(box_always_both_force->OffsetWidth(), 100);
+  EXPECT_LT(box_always_both_force->ClientWidth(),
+            box_always_force->ClientWidth());
+  EXPECT_EQ(box_always_both_force->ComputeScrollbars(),
+            box_always_both_scrollbars);
 }
 
 // Test scrollbar-gutter values with overlay scrollbars and vertical-rl text.
@@ -3370,12 +3515,32 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
       #always_both {
         scrollbar-gutter: always both;
       }
+      #stable_force {
+        overflow: visible;
+        scrollbar-gutter: stable force;
+      }
+      #stable_both_force {
+        overflow: hidden;
+        scrollbar-gutter: stable both force;
+      }
+      #always_force {
+        overflow: visible;
+        scrollbar-gutter: always force;
+      }
+      #always_both_force {
+        overflow: hidden;
+        scrollbar-gutter: always both force;
+      }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
     <div id="stable_both"></div>
     <div id="always"></div>
     <div id="always_both"></div>
+    <div id="stable_force"></div>
+    <div id="stable_both_force"></div>
+    <div id="always_force"></div>
+    <div id="always_both_force"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3431,6 +3596,36 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   EXPECT_GT(box_always_both_scrollbars.bottom, 0);
   EXPECT_EQ(box_always_both_scrollbars.left, 0);
   EXPECT_EQ(box_always_both_scrollbars.right, 0);
+
+  auto* stable_force = GetDocument().getElementById("stable_force");
+  LayoutBox* box_stable_force = ToLayoutBox(stable_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_force->ClientHeight(), 100);
+  EXPECT_EQ(box_stable_force->ComputeScrollbars(), box_stable_scrollbars);
+
+  auto* stable_both_force = GetDocument().getElementById("stable_both_force");
+  LayoutBox* box_stable_both_force =
+      ToLayoutBox(stable_both_force->GetLayoutObject());
+  EXPECT_EQ(box_stable_both_force->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both_force->ClientHeight(), 100);
+  EXPECT_EQ(box_stable_both_force->ComputeScrollbars(),
+            box_stable_both_scrollbars);
+
+  // TODO this fails because overflow is "visible"
+  auto* always_force = GetDocument().getElementById("always_force");
+  LayoutBox* box_always_force = ToLayoutBox(always_force->GetLayoutObject());
+  EXPECT_EQ(box_always_force->OffsetHeight(), 100);
+  EXPECT_LT(box_always_force->ClientHeight(), box_auto->ClientHeight());
+  EXPECT_EQ(box_always_force->ComputeScrollbars(), box_always_scrollbars);
+
+  auto* always_both_force = GetDocument().getElementById("always_both_force");
+  LayoutBox* box_always_both_force =
+      ToLayoutBox(always_both_force->GetLayoutObject());
+  EXPECT_EQ(box_always_both_force->OffsetHeight(), 100);
+  EXPECT_LT(box_always_both_force->ClientHeight(),
+            box_always_force->ClientHeight());
+  EXPECT_EQ(box_always_both_force->ComputeScrollbars(),
+            box_always_both_scrollbars);
 }
 
 }  // namespace blink

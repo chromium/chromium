@@ -1566,6 +1566,10 @@ bool PaintLayer::RequiresScrollableArea() const {
   // PaintLayerScrollableArea.
   if (GetLayoutBox()->CanResize())
     return true;
+  // When scrollbar-gutter is "force" we need a PaintLayerScrollableArea
+  // in order to calculate the size of scrollbar gutters.
+  if (GetLayoutObject().StyleRef().ScrollbarGutterIsForce())
+    return true;
   return false;
 }
 
