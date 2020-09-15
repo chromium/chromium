@@ -10605,7 +10605,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
    <!-- Guest Profile Menu bubble. -->
     <message name="IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON" desc="The text of the button offering to close all guest windows.">
-      Close guest
+      {0, plural,
+        =1 {Close guest}
+        other {Close guest}
+      }
     </message>
 
     <!-- User happiness tracking survey UI -->

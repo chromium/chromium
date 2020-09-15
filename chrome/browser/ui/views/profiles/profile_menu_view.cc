@@ -593,14 +593,15 @@ void ProfileMenuView::BuildFeatureButtons() {
 #endif
   }
 
+  int window_count = CountBrowsersFor(profile);
   if (base::FeatureList::IsEnabled(features::kNewProfilePicker) && is_guest) {
     AddFeatureButton(
-        l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON),
+        l10n_util::GetPluralStringFUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON,
+                                         window_count),
         base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
                             base::Unretained(this)),
         vector_icons::kCloseIcon);
   } else {
-    int window_count = CountBrowsersFor(profile);
     if (window_count > 1) {
       AddFeatureButton(
           l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
