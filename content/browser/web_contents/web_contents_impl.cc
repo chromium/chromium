@@ -4235,10 +4235,13 @@ void WebContentsImpl::SetNotWaitingForResponse() {
     return;
 
   waiting_for_response_ = false;
-  if (delegate_)
-    delegate_->LoadingStateChanged(this, is_load_to_different_document_);
   observers_.ForEachObserver(
       [&](WebContentsObserver* observer) { observer->DidReceiveResponse(); });
+
+  // LoadingStateChanged must be called last in case it triggers deletion of
+  // |this| due to recursive message pumps.
+  if (delegate_)
+    delegate_->LoadingStateChanged(this, is_load_to_different_document_);
 }
 
 void WebContentsImpl::SendScreenRects() {
@@ -5309,6 +5312,8 @@ void WebContentsImpl::ReadyToCommitNavigation(
             : false);
   }
 
+  // LoadingStateChanged must be called last in case it triggers deletion of
+  // |this| due to recursive message pumps.
   SetNotWaitingForResponse();
 }
 
