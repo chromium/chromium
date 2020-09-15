@@ -33,6 +33,11 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
   builder->AddF("userCreationTitle", IDS_OOBE_USER_CREATION_TITLE,
                 ui::GetChromeOSDeviceName());
   builder->Add("userCreationSubtitle", IDS_OOBE_USER_CREATION_SUBTITLE);
+  builder->AddF("userCreationAddPersonTitle",
+                IDS_OOBE_USER_CREATION_ADD_PERSON_TITLE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("userCreationAddPersonSubtitle",
+               IDS_OOBE_USER_CREATION_ADD_PERSON_SUBTITLE);
   builder->Add("createForSelfLabel", IDS_OOBE_USER_CREATION_SELF_BUTTON_LABEL);
   builder->Add("createForSelfDescription",
                IDS_OOBE_USER_CREATION_SELF_BUTTON_DESCRIPTION);

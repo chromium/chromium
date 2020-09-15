@@ -62,12 +62,23 @@ Polymer({
     },
 
     /**
-     * Is the back button visible on the first step of the screen
+     * Is the back button visible on the first step of the screen. Back button
+     * is visible iff we are in the add person flow.
      */
     isBackButtonVisible_: {
       type: Boolean,
       value: true,
-    }
+    },
+
+    titleKey_: {
+      type: String,
+      value: '',
+    },
+
+    subtitleKey_: {
+      type: String,
+      value: '',
+    },
 
   },
 
@@ -82,6 +93,11 @@ Polymer({
   onBeforeShow() {
     this.selectedUserType = UserType.SELF;
     this.selectedSignInMethod = '';
+    this.titleKey_ = this.isBackButtonVisible_ ? 'userCreationAddPersonTitle' :
+                                                 'userCreationTitle';
+    this.subtitleKey_ = this.isBackButtonVisible_ ?
+        'userCreationAddPersonSubtitle' :
+        'userCreationSubtitle';
     if (this.uiStep === UIState.CHILD) {
       chrome.send('updateOobeUIState', [OOBE_UI_STATE.GAIA_SIGNIN]);
     }

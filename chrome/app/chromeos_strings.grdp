@@ -762,6 +762,12 @@
   <message name="IDS_OOBE_USER_CREATION_SUBTITLE" desc="Subtitle of the screen which allows users to choose whom the device is set up for.">
     You can always add more people after setup. Each person can personalize their account and keep data private.
   </message>
+  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_TITLE" desc="Title of the screen which allows users to add person to the device.">
+    Who would you like to add to this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>?
+  </message>
+  <message name="IDS_OOBE_USER_CREATION_ADD_PERSON_SUBTITLE" desc="Subtitle of the screen which allows users to add person to the device.">
+    Each person can personalize their account and keep data private.
+  </message>
   <message name="IDS_OOBE_USER_CREATION_SELF_BUTTON_LABEL" desc="The label of the button that leads to set up device for self.">
     You
   </message>
