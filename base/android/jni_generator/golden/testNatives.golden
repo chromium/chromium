@@ -213,7 +213,4 @@ JNI_GENERATOR_EXPORT jthrowable Java_org_chromium_TestJni_nativeMessWithJavaExce
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_TestJni_JNI

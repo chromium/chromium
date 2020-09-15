@@ -68,7 +68,4 @@ static void Java_Foo_calledByNative(JNIEnv* env, const base::android::JavaRef<jo
           call_context.base.method_id, callback1.obj(), callback2.obj());
 }
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_foo_Foo_JNI

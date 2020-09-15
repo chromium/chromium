@@ -175,10 +175,6 @@ class CalledByNative(object):
     self.env_call = GetEnvCall(self.is_constructor, self.static,
                                self.return_type)
     self.static_cast = GetStaticCastForReturnType(self.return_type)
-    self.gen_test_method = kwargs.get('gen_test_method', False)
-    self.test_disabled = kwargs.get('test_disabled', False)
-    self.enabled_features = kwargs.get('enabled_features', None)
-    self.disabled_features = kwargs.get('disabled_features', None)
 
 
 class ConstantField(object):
@@ -670,100 +666,31 @@ def MangleCalledByNatives(jni_params, called_by_natives, always_mangle):
 # Regex to match the JNI types that should be wrapped in a JavaRef.
 RE_SCOPED_JNI_TYPES = re.compile('jobject|jclass|jstring|jthrowable|.*Array')
 
-# Regex to match a string like "@Annotation public void foo(int bar)".
+# Regex to match a string like "@CalledByNative public void foo(int bar)".
 RE_CALLED_BY_NATIVE = re.compile(
-    # Capture all annotations.
-    r'(?P<annotations>'
-    # Optimization: Match the first annotation that could be relevant to
-    # CalledByNative.
-    r'(?:@(?:(?:Disabled)?(?:CalledByNative|NativeJavaTestFeatures|Features\.)'
-    r'[^\(\n ]*(?:\([^\)]*\)[\n ]|[\n ])\s*)'
-    # Match the rest of the annotations.
-    r'(?:@[^\(\n ]+(?:\([^\)]*\)[\n ]|[\n ])\s*)*)'
-    r')'
-    r'(?P<prefix>(?:'
-    r'(?:private|protected|public|static|abstract|final|default|synchronized)'
+    r'@CalledByNative(?P<Unchecked>(?:Unchecked)?)(?:\("(?P<annotation>.*)"\))?'
+    r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
+    r'\s+(?P<prefix>('
+    r'(private|protected|public|static|abstract|final|default|synchronized)'
     r'\s*)*)'
     r'(?:\s*@\w+)?'  # Ignore annotations in return types.
     r'\s*(?P<return_type>\S*?)'
     r'\s*(?P<name>\w+)'
     r'\s*\((?P<params>[^\)]*)\)')
 
-# Regex to match a string like "CalledByNative".
-RE_CALLED_BY_NATIVE_ANNOTATION = re.compile(
-    r'(?P<Disabled>(?:Disabled)?)CalledByNative'
-    r'(?P<Unchecked>(?:Unchecked)?)(?P<JavaTest>(?:JavaTest)?)'
-    r'(?:\("(?P<annotation>.*)"\))?')
-
-RE_ENABLED_FEATURES = re.compile(
-    r'NativeJavaTestFeatures\.Enable\((?P<features>[^\)]*)\)')
-
-RE_DISABLED_FEATURES = re.compile(
-    r'NativeJavaTestFeatures\.Disable\((?P<features>[^\)]*)\)')
-
-RE_BANNED_FEATURES = re.compile(r'^Features\.')
-
-RE_BANNED_IMPORTS = re.compile(r'(import (?:'
-                               r'org\.junit\.Rule|'
-                               r'org\.junit\.Test|'
-                               r'org\.junit\.runner|'
-                               r'org\.junit\.Before|'
-                               r'org\.junit\.After|'
-                               r'org\.robolectric))')
-
-RE_FEATURE_STRING = r'[^"]*"(.*)";'
 
 # Removes empty lines that are indented (i.e. start with 2x spaces).
 def RemoveIndentedEmptyLines(string):
   return re.sub('^(?: {2})+$\n', '', string, flags=re.MULTILINE)
 
 
-def _StripChars(chars, string):
-  ret = string
-  for char in chars:
-    ret = ret.replace(char, '')
-  return ret
-
-
-def _GetFeaturesString(features_match, feature_list_file):
-  if not features_match:
-    return None
-  features = features_match.group('features')
-  features_list = _StripChars(" {}\n", features)
-  if not features_list:
-    return None
-  if not feature_list_file:
-    raise ParseError('Your generate_jni target must specify a feature_list_file'
-                     ' in order to support feature annotations.')
-
-  with open(feature_list_file) as f:
-    contents = f.read()
-  features_split = features_list.split(',')
-  feature_strings = []
-  for feature in features_split:
-    regex = feature.split('.')[-1] + RE_FEATURE_STRING
-    match = re.search(re.compile(regex), contents)
-    if not match:
-      raise ParseError('Feature not found in {}.'.format(feature_list_file),
-                       feature)
-    feature_strings.append(match.group(1))
-
-  return (',').join(feature_strings)
-
-
-def ExtractCalledByNatives(jni_params,
-                           contents,
-                           always_mangle,
-                           feature_list_file=None,
-                           fully_qualified_class=""):
+def ExtractCalledByNatives(jni_params, contents, always_mangle):
   """Parses all methods annotated with @CalledByNative.
 
   Args:
     jni_params: JniParams object.
     contents: the contents of the java file.
     always_mangle: See MangleCalledByNatives.
-    feature_list_file: A file containing the feature constants used by the build
-        target.
 
   Returns:
     A list of dict with information about the annotated methods.
@@ -773,44 +700,7 @@ def ExtractCalledByNatives(jni_params,
     ParseError: if unable to parse.
   """
   called_by_natives = []
-  checked_banned_imports = False
   for match in re.finditer(RE_CALLED_BY_NATIVE, contents):
-    cbn = None
-    enabled_features = None
-    disabled_features = None
-    for value in match.group('annotations').split('@'):
-      if not cbn:
-        cbn = re.match(RE_CALLED_BY_NATIVE_ANNOTATION, value)
-      if not enabled_features:
-        enabled_features = re.match(RE_ENABLED_FEATURES, value)
-      if not disabled_features:
-        disabled_features = re.match(RE_DISABLED_FEATURES, value)
-      if re.match(RE_BANNED_FEATURES, value):
-        raise ParseError(
-            '@Features.EnableFeatures will not work, please use '
-            '@NativeJavaTestFeatures.Enable("MyFeature") instead.',
-            fully_qualified_class, value)
-    if not cbn:
-      continue
-    java_test = 'JavaTest' in cbn.group('JavaTest')
-    if java_test and not checked_banned_imports:
-      checked_banned_imports = True
-      imports = re.search(RE_BANNED_IMPORTS, contents)
-      if imports:
-        raise ParseError(
-            'Most junit and robolectric features do not work for native java '
-            'unittests (asserts are okay).', fully_qualified_class,
-            imports.group(1))
-
-
-    enabled_string = _GetFeaturesString(enabled_features, feature_list_file)
-    disabled_string = _GetFeaturesString(disabled_features, feature_list_file)
-
-    if not java_test and (enabled_string or disabled_string):
-      raise ParseError(
-          '@NativeJavaTestFeatures requires @CalledByNativeJavaTest to work.',
-          fully_qualified_class, match.group('annotations'))
-
     return_type = match.group('return_type')
     name = match.group('name')
     if not return_type:
@@ -821,26 +711,21 @@ def ExtractCalledByNatives(jni_params,
       is_constructor = False
 
     called_by_natives += [
-        CalledByNative(
-            system_class=False,
-            unchecked='Unchecked' in cbn.group('Unchecked'),
-            static='static' in match.group('prefix'),
-            java_class_name=cbn.group('annotation') or '',
-            return_type=return_type,
-            name=name,
-            is_constructor=is_constructor,
-            params=JniParams.Parse(match.group('params')),
-            gen_test_method=java_test,
-            test_disabled='Disabled' in cbn.group('Disabled'),
-            enabled_features=enabled_string,
-            disabled_features=disabled_string),
+        CalledByNative(system_class=False,
+                       unchecked='Unchecked' in match.group('Unchecked'),
+                       static='static' in match.group('prefix'),
+                       java_class_name=match.group('annotation') or '',
+                       return_type=return_type,
+                       name=name,
+                       is_constructor=is_constructor,
+                       params=JniParams.Parse(match.group('params')))
     ]
   # Check for any @CalledByNative occurrences that weren't matched.
   unmatched_lines = re.sub(RE_CALLED_BY_NATIVE, '', contents).split('\n')
   for line1, line2 in zip(unmatched_lines, unmatched_lines[1:]):
     if '@CalledByNative' in line1:
       raise ParseError('could not parse @CalledByNative method signature',
-                       fully_qualified_class, line1, line2)
+                       line1, line2)
   return MangleCalledByNatives(jni_params, called_by_natives, always_mangle)
 
 
@@ -1052,9 +937,8 @@ class JNIFromJavaSource(object):
     self.jni_params.ExtractImportsAndInnerClasses(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
     natives = ExtractNatives(contents, options.ptr_type)
-    called_by_natives = ExtractCalledByNatives(
-        self.jni_params, contents, options.always_mangle,
-        options.feature_list_file, fully_qualified_class)
+    called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
+                                               options.always_mangle)
 
     natives += ProxyHelpers.ExtractStaticProxyNatives(
         fully_qualified_class, contents, options.ptr_type,
@@ -1230,9 +1114,6 @@ $CONSTANT_FIELDS\
 // Step 3: Method stubs.
 $METHOD_STUBS
 
-// Step 4: Generated test functions (optional).
-$TEST_METHODS
-
 #endif  // ${HEADER_GUARD}
 """)
     values = {
@@ -1243,7 +1124,6 @@ $TEST_METHODS
         'METHOD_STUBS': self.GetMethodStubsString(),
         'HEADER_GUARD': self.header_guard,
         'INCLUDES': self.GetIncludesString(),
-        'TEST_METHODS': self.GetTestMethodsString(),
     }
     open_namespace = self.GetOpenNamespaceString()
     if open_namespace:
@@ -1285,17 +1165,6 @@ $TEST_METHODS
         self.GetLazyCalledByNativeMethodStub(called_by_native)
         for called_by_native in self.called_by_natives
     ]
-
-  def GetTestMethodsString(self):
-    strings = []
-    for called_by_native in self.called_by_natives:
-      if not called_by_native.gen_test_method:
-        continue
-      strings += [self.GetTestMethodString(called_by_native)]
-    if strings:
-      strings.insert(0, "#define JAVA_TESTS(test_fixture, java_test_object)\\")
-    ret = '\n'.join(strings)
-    return ret[:-1]  # Drop trailing '\'.
 
   def GetIncludesString(self):
     if not self.options.includes:
@@ -1577,40 +1446,6 @@ ${PROFILING_LEAVING_NATIVE}\
       values['TRACE_EVENT'] = ''
     return RemoveIndentedEmptyLines(template.substitute(values))
 
-  def GetTestMethodString(self, called_by_native):
-    method_template = Template("""\
-  TEST_F(test_fixture, ${DISABLED}${METHOD_ID_VAR_NAME_UPPERCASE}) { \\
-${FEATURES}    JNIEnv* env = base::android::AttachCurrentThread(); \\
-    Java_${JAVA_CLASS_ONLY}_${METHOD_ID_VAR_NAME}(\\
-        env, java_test_object); \\
-  }\\""")
-
-    features_template = Template("""\
-    base::test::ScopedFeatureList feature_list; \\
-    feature_list.InitFromCommandLine( \\
-        \"${ENABLED}\", \"${DISABLED}\"); \\
-""")
-    values = self.GetCalledByNativeValues(called_by_native)
-
-    if called_by_native.enabled_features or called_by_native.disabled_features:
-      features_values = {
-          'ENABLED': called_by_native.enabled_features or '',
-          'DISABLED': called_by_native.disabled_features or ''
-      }
-      values['FEATURES'] = features_template.substitute(features_values)
-    else:
-      values['FEATURES'] = ''
-
-    method_name = values['METHOD_ID_VAR_NAME']
-    values['METHOD_ID_VAR_NAME_UPPERCASE'] = method_name[0].upper(
-    ) + method_name[1:]
-    if called_by_native.test_disabled:
-      values['DISABLED'] = 'DISABLED_'
-    else:
-      values['DISABLED'] = ''
-    return RemoveIndentedEmptyLines(method_template.substitute(values))
-
-
   def GetTraceEventForNameTemplate(self, name_template, values):
     name = Template(name_template).substitute(values)
     return '  TRACE_EVENT0("jni", "%s");\n' % name
@@ -1618,16 +1453,10 @@ ${FEATURES}    JNIEnv* env = base::android::AttachCurrentThread(); \\
 
 def WrapOutput(output):
   ret = []
-  is_preprocessor_directive = False
   for line in output.splitlines():
-    if line and line[0] == '#':
-      is_preprocessor_directive = True
     # Do not wrap preprocessor directives or comments.
-    if (len(line) < _WRAP_LINE_LENGTH or is_preprocessor_directive
-        or line.startswith('//')):
+    if len(line) < _WRAP_LINE_LENGTH or line[0] == '#' or line.startswith('//'):
       ret.append(line)
-      if not line or line[-1] != '\\':
-        is_preprocessor_directive = False
     else:
       # Assumes that the line is not already indented as a continuation line,
       # which is not always true (oh well).
@@ -1747,11 +1576,6 @@ See SampleForTests.java for more details.
       action='store_true',
       help='Hashes the native declaration of methods used '
       'in @JniNatives interface.')
-  parser.add_argument(
-      '--feature_list_file',
-      default='',
-      help='Optional path to a Java file containing the list of possible '
-      'features to be used for validation.')
   args = parser.parse_args()
   input_files = args.input_files
   output_files = args.output_files

@@ -97,7 +97,4 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeCallWithQualifiedObjec
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_foo_Foo_JNI

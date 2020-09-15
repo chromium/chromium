@@ -220,10 +220,6 @@ if (enable_java_templates) {
       if (enable_jni_tracing) {
         args += [ "--enable_tracing" ]
       }
-      if (defined(invoker.feature_list_file)) {
-        file_path = rebase_path(invoker.feature_list_file, root_build_dir)
-        args += [ "--feature_list_file=$file_path" ]
-      }
     }
   }
 

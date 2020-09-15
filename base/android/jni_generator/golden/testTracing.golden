@@ -103,7 +103,4 @@ static void Java_Foo_callbackFromNative(JNIEnv* env, const base::android::JavaRe
 }  // namespace chromium_foo
 }  // namespace org
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_foo_Foo_JNI

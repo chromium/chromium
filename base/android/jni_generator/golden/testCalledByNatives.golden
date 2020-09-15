@@ -475,7 +475,4 @@ static base::android::ScopedJavaLocalRef<jobject> Java_TestJni_getCompressFormat
   return base::android::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_TestJni_JNI

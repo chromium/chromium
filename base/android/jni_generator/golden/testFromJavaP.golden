@@ -273,7 +273,4 @@ static base::android::ScopedJavaLocalRef<jobject> Java_InputStream_Constructor(J
 
 }  // namespace JNI_InputStream
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // java_io_InputStream_JNI

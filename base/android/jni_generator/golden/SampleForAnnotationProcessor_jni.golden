@@ -280,7 +280,4 @@ JNI_GENERATOR_EXPORT jobjectArray
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_example_jni_generator_SampleForAnnotationProcessor_JNI

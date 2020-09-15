@@ -60,7 +60,4 @@ JNI_GENERATOR_EXPORT jstring
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_example_SampleProxyJni_JNI

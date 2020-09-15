@@ -209,57 +209,6 @@ For other objects - use smart pointers to store them:
  * `JavaParamRef<>` - Use to accept any of the above as a parameter to a
    function without creating a redundant registration.
 
-### Native Java Unittests and @CalledByNativeJavaTest
-
-Native Java Unittests are Java unit tests that run on Android (not on the host
-machine). Unlike junit and robolectric, these tests can use the native library,
-and real Android APIs. Unlike unit tests in ChromePublicTestApk and similar, the
-Activity is not restarted between tests, so the tests run much faster (and you
-must be careful not to leave state behind). Example tests may be found in
-chrome/android/native_java_unittests/.
-
-The @CalledByNativeJavaTest annotation causes the JNI generator to generate
-C++ test methods that simply call out to the Java test methods.
-
-For Example:
-```java
-class FooTest {
-  @CalledByNative public FooTest() {}
-  @CalledByNativeJavaTest public void testFoo() { ... }
-  @CalledByNativeJavaTest public void testOtherFoo() { ... }
-}
-```
-```c++
-class FooTest : public ::testing::Test {
-  FooTest() : j_test_(Java_FooTest_Constructor(AttachCurrentThread())) {}
-  const ScopedJavaGlobalRef<jobject>& j_test() { return j_test_; }
- private:
-  ScopedJavaGlobalRef<jobject> j_test_;
-}
-JAVA_TESTS(AndroidPaymentAppFinderUnitTest, j_test())
-```
-
-In some cases you may want to run custom C++ code before running the Java test,
-in which case, use CalledByNative instead of CalledByNativeJavaTest and call the
-test method yourself. eg. Java_FooTest_testFancyFoo(env, j_test());
-
-#### Disabling @CalledByNativeJavaTest tests
-In order to disabled a Native Java Unittest, replace the @CalledByNativeJavaTest
-annotation with @DisabledCalledByNativeJavaTest. This will generate a native
-test prefixed with DISABLED_.
-
-Please note that unlike @DisabledTest, you should not provide a message in the
-annotation as to why the test is disabled, as this will be interpreted as the
-inner class name by the CalledByNative jni generator.
-
-#### Feature flag support in @CalledByNativeJavaTest tests
-Features may be enabled/disabled for the Java test methods by using the
-@NativeJavaTestFeatures.Enabled or @NativeJavaTestFeatures.Disabled annotations.
-
-Note that these annotations will re-initialize the feature list given they
-initialize through the command line approach, and so will clear any features
-set by, say, test setup.
-
 ### Additional Guidelines / Advice
 
 Minimize the surface API between the two sides. Rather than calling multiple

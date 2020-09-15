@@ -262,7 +262,4 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPpCU1l5(
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_example_jni_generator_SampleForAnnotationProcessor_JNI

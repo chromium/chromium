@@ -46,7 +46,4 @@ JNI_GENERATOR_EXPORT void Java_foo_bar_nativeSyncSetupEnded(
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // foo_bar_JNI

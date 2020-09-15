@@ -2317,7 +2317,4 @@ static void Java_MotionEvent_writeToParcel(JNIEnv* env, const base::android::Jav
 
 }  // namespace JNI_MotionEvent
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // android_view_MotionEvent_JNI

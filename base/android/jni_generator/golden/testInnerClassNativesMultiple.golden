@@ -80,7 +80,4 @@ JNI_GENERATOR_EXPORT jint Java_org_chromium_TestJni_00024MyOtherInnerClass_nativ
 }
 
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_TestJni_JNI

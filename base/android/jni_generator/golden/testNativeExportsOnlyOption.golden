@@ -226,7 +226,4 @@ static base::android::ScopedJavaLocalRef<jstring>
   return base::android::ScopedJavaLocalRef<jstring>(env, ret);
 }
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // org_chromium_example_jni_generator_SampleForTests_JNI

@@ -84,7 +84,4 @@ static base::android::ScopedJavaLocalRef<jclass> Java_HashSet_getClass(JNIEnv* e
 
 }  // namespace JNI_HashSet
 
-// Step 4: Generated test functions (optional).
-
-
 #endif  // java_util_HashSet_JNI
