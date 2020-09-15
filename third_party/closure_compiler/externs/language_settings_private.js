@@ -52,6 +52,7 @@ chrome.languageSettingsPrivate.SpellcheckDictionaryStatus;
  *   id: string,
  *   displayName: string,
  *   languageCodes: !Array<string>,
+ *   tags: !Array<string>,
  *   enabled: (boolean|undefined),
  *   hasOptionsPage: (boolean|undefined),
  *   isProhibitedByPolicy: (boolean|undefined)

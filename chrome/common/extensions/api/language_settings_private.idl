@@ -62,6 +62,9 @@ namespace languageSettingsPrivate {
     // The language codes this input method supports.
     DOMString[] languageCodes;
 
+    // The search terms for the input method.
+    DOMString[] tags;
+
     // True if the input method is enabled.
     boolean? enabled;
 

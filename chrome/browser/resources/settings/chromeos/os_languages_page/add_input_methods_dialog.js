@@ -93,9 +93,9 @@ Polymer({
       if (this.languageHelper.isInputMethodEnabled(inputMethod.id)) {
         return false;
       }
-      // Show input methods whose name matches the query.
-      return inputMethod.displayName.toLocaleLowerCase().includes(
-          this.lowercaseQueryString_);
+      // Show input methods whose tags match the query.
+      return inputMethod.tags.some(
+          tag => tag.toLocaleLowerCase().includes(this.lowercaseQueryString_));
     });
   },
 

@@ -144,30 +144,38 @@ cr.define('settings', function() {
           id: '_comp_ime_jkghodnilhceideoidjikpgommlajknkxkb:us::eng',
           displayName: 'US keyboard',
           languageCodes: ['en', 'en-US'],
+          tags: ['US keyboard', 'English', 'English(United States)'],
           enabled: true,
         },
         {
           id: '_comp_ime_fgoepimhcoialccpbmpnnblemnepkkaoxkb:us:dvorak:eng',
           displayName: 'US Dvorak keyboard',
           languageCodes: ['en', 'en-US'],
+          tags: ['US Dvorak keyboard', 'English', 'English(United States)'],
           enabled: true,
         },
         {
           id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw',
           displayName: 'Swahili keyboard',
           languageCodes: ['sw', 'tk'],
+          tags: ['Swahili keyboard', 'Swahili', 'Turkmen'],
           enabled: false,
         },
         {
           id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw',
           displayName: 'US Swahili keyboard',
           languageCodes: ['en', 'en-US', 'sw'],
+          tags: [
+            'US Swahili keyboard', 'English', 'English(United States)',
+            'Swahili'
+          ],
           enabled: false,
         },
         {
           id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:vi:vi',
           displayName: 'Vietnamese keyboard',
           languageCodes: ['vi'],
+          tags: ['Vietnamese keyboard', 'Vietnamese'],
           enabled: false,
         },
       ];

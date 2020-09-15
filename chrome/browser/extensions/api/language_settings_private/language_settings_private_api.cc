@@ -190,6 +190,17 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
   return ime_list;
 }
 
+std::vector<std::string> GetInputMethodTags(
+    language_settings_private::InputMethod* input_method) {
+  std::vector<std::string> tags = {input_method->display_name};
+  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  for (const auto& language_code : input_method->language_codes) {
+    tags.push_back(base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
+        language_code, app_locale, /*is_for_ui=*/true)));
+  }
+  return tags;
+}
+
 }  // namespace
 #endif  // defined(OS_CHROMEOS)
 
@@ -620,6 +631,7 @@ void PopulateInputMethodListFromDescriptors(
     input_method.id = descriptor.id();
     input_method.display_name = util->GetLocalizedDisplayName(descriptor);
     input_method.language_codes = descriptor.language_codes();
+    input_method.tags = GetInputMethodTags(&input_method);
     if (active_ids.count(input_method.id) > 0)
       input_method.enabled.reset(new bool(true));
     if (descriptor.options_page_url().is_valid())

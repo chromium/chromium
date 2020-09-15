@@ -291,6 +291,12 @@ suite('input page', () => {
       Polymer.dom.flush();
       assertEquals(1, getItems().length);
       assertTrue(getItems()[0].textContent.includes('Vietnamese'));
+
+      // Search input methods' language
+      searchInput.setValue('Turkmen');
+      Polymer.dom.flush();
+      assertEquals(1, getItems().length);
+      assertTrue(getItems()[0].textContent.includes('Swahili keyboard'));
     });
 
     test('has escape key behavior working correctly', function() {
