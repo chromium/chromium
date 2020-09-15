@@ -26,7 +26,7 @@
                use_base_dir="false" compress="false" type="BINDATA" />
       <include name="IDR_BOOKMARKS_ITEM_JS"
                file="${root_gen_dir}/chrome/browser/resources/bookmarks/item.js"
-               use_base_dir="false" compress="false" type="BINDATA" />
+               use_base_dir="false" compress="false" type="BINDATA" preprocess="true" />
       <include name="IDR_BOOKMARKS_LIST_JS"
                file="${root_gen_dir}/chrome/browser/resources/bookmarks/list.js"
                use_base_dir="false" compress="false" type="BINDATA" />

@@ -51,12 +51,16 @@
 
     .folder-icon {
       content: url(chrome://theme/IDR_FOLDER_CLOSED);
-      height: 20px;
-      min-width: 20px;
-      width: 20px;
+      height: var(--folder-icon-size);
+      min-width: var(--folder-icon-size);
+      width: var(--folder-icon-size);
     }
 
 <if expr="is_macosx">
+    .folder-icon {
+      --folder-icon-size: 16px;
+    }
+
     @media (prefers-color-scheme: dark) {
       .folder-icon {
          content: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
@@ -65,6 +69,10 @@
 </if>
 
 <if expr="not is_macosx">
+    .folder-icon {
+      --folder-icon-size: 20px;
+    }
+
     .folder-icon[open] {
       content: url(chrome://theme/IDR_FOLDER_OPEN);
     }
