@@ -112,6 +112,10 @@
   }
 
   _presentingModalOverlay = presentingModalOverlay;
+
+  if (!presentingModalOverlay) {
+    [self.observers sceneStateDidHideModalOverlay:self];
+  }
 }
 
 - (void)setURLContextsToOpen:(NSSet<UIOpenURLContext*>*)URLContextsToOpen {

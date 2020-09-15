@@ -494,11 +494,20 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                       connectionInformation:self
                          startupInformation:self.mainController
                                browserState:self.currentInterface.browserState];
-  // It is necessary to reset the pendingUserActivity after handling it.
-  // Handle the reset asynchronously to avoid interfering with other observers.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.sceneState.pendingUserActivity = nil;
-  });
+  if (sceneIsActive) {
+    // It is necessary to reset the pendingUserActivity after handling it.
+    // Handle the reset asynchronously to avoid interfering with other
+    // observers.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.sceneState.pendingUserActivity = nil;
+    });
+  }
+}
+
+- (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
+  if (self.sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
+    [self handleExternalIntents];
+  }
 }
 
 #pragma mark - AppStateObserver
