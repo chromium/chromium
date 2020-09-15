@@ -260,6 +260,10 @@ class MODULES_EXPORT AXObjectCacheImpl
       const HeapVector<Member<Element>>& attr_associated_elements,
       HeapVector<Member<AXObject>>& owned_children);
 
+  // Adds |object| to |fixed_or_sticky_node_ids_| if it has a fixed or sticky
+  // position.
+  void AddToFixedOrStickyNodeList(const AXObject* object);
+
   bool MayHaveHTMLLabel(const HTMLElement& elem);
 
   // Synchronously returns whether or not we currently have permission to
@@ -479,6 +483,12 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram();
 
+  // Invalidates the bounding boxes of fixed or sticky positioned objects which
+  // should be updated when the scroll offset is changed. Like
+  // InvalidateBoundingBox, it can be later retrieved by
+  // GetAllObjectsWithChangedBounds.
+  void InvalidateBoundingBoxForFixedOrStickyPosition();
+
   // Whether the user has granted permission for the user to install event
   // listeners for accessibility events using the AOM.
   mojom::PermissionStatus accessibility_event_permission_;
@@ -508,6 +518,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The set of node IDs whose bounds has changed since the last time
   // GetAllObjectsWithChangedBounds was called.
   HashSet<AXID> changed_bounds_ids_;
+
+  // The list of node IDs whose position is fixed or sticky.
+  HashSet<AXID> fixed_or_sticky_node_ids_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

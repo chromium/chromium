@@ -3603,6 +3603,11 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   if (!layout_object)
     return;
 
+  if (layout_object->IsFixedPositioned() ||
+      layout_object->IsStickyPositioned()) {
+    AXObjectCache().AddToFixedOrStickyNodeList(this);
+  }
+
   if (clips_children) {
     if (IsWebArea())
       *clips_children = true;

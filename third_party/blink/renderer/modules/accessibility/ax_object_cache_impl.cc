@@ -755,6 +755,12 @@ AXID AXObjectCacheImpl::GenerateAXID() const {
   return obj_id;
 }
 
+void AXObjectCacheImpl::AddToFixedOrStickyNodeList(const AXObject* object) {
+  DCHECK(object);
+  DCHECK(!object->IsDetached());
+  fixed_or_sticky_node_ids_.insert(object->AXObjectID());
+}
+
 AXID AXObjectCacheImpl::GetOrCreateAXID(AXObject* obj) {
   // check for already-assigned ID
   const AXID existing_axid = obj->AXObjectID();
@@ -775,6 +781,8 @@ AXID AXObjectCacheImpl::GetOrCreateAXID(AXObject* obj) {
 void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   if (!object)
     return;
+
+  fixed_or_sticky_node_ids_.clear();
 
   if (active_aria_modal_dialog_ == object)
     active_aria_modal_dialog_ = nullptr;
@@ -817,6 +825,11 @@ void AXObjectCacheImpl::UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram() {
   UMA_HISTOGRAM_COUNTS_100000(
       "Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout",
       tree_update_callback_queue_.size());
+}
+
+void AXObjectCacheImpl::InvalidateBoundingBoxForFixedOrStickyPosition() {
+  for (AXID id : fixed_or_sticky_node_ids_)
+    changed_bounds_ids_.insert(id);
 }
 
 void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
@@ -2216,6 +2229,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
     LocalFrameView* frame_view) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*frame_view->GetFrame().GetDocument());
 
+  InvalidateBoundingBoxForFixedOrStickyPosition();
   AXObject* target_ax_object = GetOrCreate(document_);
   PostNotification(target_ax_object, ax::mojom::Event::kScrollPositionChanged);
 }
@@ -2223,6 +2237,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 void AXObjectCacheImpl::HandleScrollPositionChanged(
     LayoutObject* layout_object) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(layout_object->GetDocument());
+  InvalidateBoundingBoxForFixedOrStickyPosition();
   PostNotification(GetOrCreate(layout_object),
                    ax::mojom::Event::kScrollPositionChanged);
 }

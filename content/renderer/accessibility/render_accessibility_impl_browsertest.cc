@@ -180,9 +180,19 @@ class RenderAccessibilityHostInterceptor
     std::move(callback).Run();
   }
 
+  void HandleAXLocationChanges(
+      std::vector<mojom::LocationChangesPtr> changes) override {
+    for (auto& change : changes)
+      location_changes_.emplace_back(std::move(change));
+  }
+
   ui::AXTreeUpdate& last_update() {
     CHECK_GE(handled_updates_.size(), 1U);
     return handled_updates_.back();
+  }
+
+  std::vector<mojom::LocationChangesPtr>& location_changes() {
+    return location_changes_;
   }
 
   void ClearHandledUpdates() { handled_updates_.clear(); }
@@ -196,6 +206,7 @@ class RenderAccessibilityHostInterceptor
       local_frame_host_remote_;
 
   std::vector<::ui::AXTreeUpdate> handled_updates_;
+  std::vector<mojom::LocationChangesPtr> location_changes_;
 };
 
 class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
@@ -227,6 +238,10 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
 
   void ClearHandledUpdates() {
     render_accessibility_host_->ClearHandledUpdates();
+  }
+
+  std::vector<mojom::LocationChangesPtr>& LocationChanges() {
+    return render_accessibility_host_->location_changes();
   }
 
  private:
@@ -357,6 +372,11 @@ class RenderAccessibilityImplTest : public RenderViewTest {
   void ClearHandledUpdates() {
     return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
         ->ClearHandledUpdates();
+  }
+
+  std::vector<mojom::LocationChangesPtr>& GetLocationChanges() {
+    return static_cast<RenderAccessibilityTestRenderFrame*>(frame())
+        ->LocationChanges();
   }
 
   int CountAccessibilityNodesSentToBrowser() {
@@ -591,6 +611,133 @@ TEST_F(RenderAccessibilityImplTest, ShowAccessibilityObject) {
   EXPECT_EQ(node_a.AxID(), update.nodes[0].id);
   EXPECT_EQ(node_b.AxID(), update.nodes[1].id);
   EXPECT_EQ(2, CountAccessibilityNodesSentToBrowser());
+}
+
+// Tests if the bounds of the fixed positioned node is updated after scrolling.
+TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
+  constexpr char html[] = R"HTML(
+      <div id="positioned" style="position:fixed; top:10px; font-size:40px;"
+        aria-label="first">title</div>
+      <div style="padding-top: 50px; font-size:40px;">
+        <h2>Heading #1</h2>
+        <h2>Heading #2</h2>
+        <h2>Heading #3</h2>
+        <h2>Heading #4</h2>
+        <h2>Heading #5</h2>
+        <h2>Heading #6</h2>
+        <h2>Heading #7</h2>
+        <h2>Heading #8</h2>
+      </div>
+      )HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  int scroll_offset_y = 50;
+
+  int32_t expected_id;
+  ui::AXRelativeBounds expected_bounds;
+
+  // Prepare the expected information from the tree.
+  ui::AXTreeUpdate update = GetLastAccUpdate();
+  for (ui::AXNodeData& node : update.nodes) {
+    std::string name;
+    if (node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name) &&
+        name == "first") {
+      expected_id = node.id;
+      expected_bounds = node.relative_bounds;
+      expected_bounds.bounds.set_y(expected_bounds.bounds.y() +
+                                   scroll_offset_y);
+      break;
+    }
+  }
+
+  ClearHandledUpdates();
+
+  // Simulate scrolling down using JS.
+  std::string js("window.scrollTo(0, " + base::NumberToString(scroll_offset_y) +
+                 ");");
+  ExecuteJavaScriptForTests(js.c_str());
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->HandleAXEvent(
+      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kScrollPositionChanged));
+  SendPendingAccessibilityEvents();
+
+  EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
+
+  // Make sure it's the root object that was updated for scrolling.
+  update = GetLastAccUpdate();
+  EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
+
+  // Make sure that a location change is sent for the fixed-positioned node.
+  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  EXPECT_EQ(changes.size(), 1u);
+  EXPECT_EQ(changes[0]->id, expected_id);
+  EXPECT_EQ(changes[0]->new_location, expected_bounds);
+}
+
+// Tests if the bounds are updated when it has multiple fixed nodes.
+TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
+  constexpr char html[] = R"HTML(
+    <div id="positioned" style="position:fixed; top:10px; font-size:40px;"
+      aria-label="first">title1</div>
+    <div id="positioned" style="position:fixed; top:50px; font-size:40px;"
+      aria-label="second">title2</div>
+    <div style="padding-top: 50px; font-size:40px;">
+      <h2>Heading #1</h2>
+      <h2>Heading #2</h2>
+      <h2>Heading #3</h2>
+      <h2>Heading #4</h2>
+      <h2>Heading #5</h2>
+      <h2>Heading #6</h2>
+      <h2>Heading #7</h2>
+      <h2>Heading #8</h2>
+    </div>)HTML";
+  LoadHTMLAndRefreshAccessibilityTree(html);
+
+  int scroll_offset_y = 50;
+
+  std::map<int32_t, ui::AXRelativeBounds> expected;
+
+  // Prepare the expected information from the tree.
+  ui::AXTreeUpdate update = GetLastAccUpdate();
+  for (ui::AXNodeData& node : update.nodes) {
+    std::string name;
+    node.GetStringAttribute(ax::mojom::StringAttribute::kName, &name);
+    if (name == "first" || name == "second") {
+      ui::AXRelativeBounds ax_bounds = node.relative_bounds;
+      ax_bounds.bounds.set_y(ax_bounds.bounds.y() + scroll_offset_y);
+      expected[node.id] = ax_bounds;
+    }
+  }
+
+  ClearHandledUpdates();
+
+  // Simulate scrolling down using JS.
+  std::string js("window.scrollTo(0, " + base::NumberToString(scroll_offset_y) +
+                 ");");
+  ExecuteJavaScriptForTests(js.c_str());
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebAXObject root_obj = WebAXObject::FromWebDocument(document);
+  GetRenderAccessibilityImpl()->HandleAXEvent(
+      ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kScrollPositionChanged));
+  SendPendingAccessibilityEvents();
+
+  EXPECT_EQ(1, CountAccessibilityNodesSentToBrowser());
+
+  // Make sure it's the root object that was updated for scrolling.
+  update = GetLastAccUpdate();
+  EXPECT_EQ(root_obj.AxID(), update.nodes[0].id);
+
+  // Make sure that a location change is sent for the fixed-positioned node.
+  std::vector<mojom::LocationChangesPtr>& changes = GetLocationChanges();
+  EXPECT_EQ(changes.size(), 2u);
+  for (auto& change : changes) {
+    auto search = expected.find(change->id);
+    EXPECT_NE(search, expected.end());
+    EXPECT_EQ(search->second, change->new_location);
+  }
 }
 
 class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {

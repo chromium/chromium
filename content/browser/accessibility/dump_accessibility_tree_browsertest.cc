@@ -1306,6 +1306,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessiblitiyBoundsFixed) {
   RunHtmlTest(FILE_PATH_LITERAL("bounds-fixed.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessiblitiyBoundsFixedScrolling) {
+  RunHtmlTest(FILE_PATH_LITERAL("bounds-fixed-scrolling.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityBR) {
   RunHtmlTest(FILE_PATH_LITERAL("br.html"));
 }

@@ -781,8 +781,9 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   std::vector<DirtyObject> dirty_objects = dirty_objects_;
   dirty_objects_.clear();
 
-  // If there's a layout complete message, we need to send location changes.
-  bool had_layout_complete_messages = false;
+  // If there's a layout complete or a scroll changed message, we need to send
+  // location changes.
+  bool need_to_send_location_changes = false;
 
   // If there's a load complete message, we need to change the event schedule
   // mode.
@@ -796,8 +797,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
   // Loop over each event and generate an updated event message.
   for (ui::AXEvent& event : src_events) {
-    if (event.event_type == ax::mojom::Event::kLayoutComplete)
-      had_layout_complete_messages = true;
+    if (event.event_type == ax::mojom::Event::kLayoutComplete ||
+        event.event_type == ax::mojom::Event::kScrollPositionChanged) {
+      need_to_send_location_changes = true;
+    }
 
     if (event.event_type == ax::mojom::Event::kLoadComplete)
       had_load_complete_messages = true;
@@ -952,7 +955,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
                      weak_factory_for_pending_events_.GetWeakPtr()));
   reset_token_ = 0;
 
-  if (had_layout_complete_messages)
+  if (need_to_send_location_changes)
     SendLocationChanges();
 
   if (had_load_complete_messages) {
@@ -1004,6 +1007,9 @@ void RenderAccessibilityImpl::SendLocationChanges() {
     // Save the new location.
     tree_source_->SetCachedBoundingBox(id, new_location);
   }
+
+  if (changes.empty())
+    return;
 
   // Ensure that the number of cached bounding boxes doesn't exceed the
   // number of nodes in the tree, that would indicate the cache could
