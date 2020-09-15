@@ -10,8 +10,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 using TP = ThemeProperties;
 
