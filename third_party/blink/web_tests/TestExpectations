@@ -1625,10 +1625,12 @@ crbug.com/441840 external/wpt/css/css-shapes/shape-outside/values/shape-outside-
 crbug.com/441840 external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html [ Failure ]
 crbug.com/441840 [ Win ] external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html [ Failure ]
 
-crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-import.html [ Failure ]
-crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-delayed.html [ Timeout ]
-crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-immediate-promise.html [ Timeout ]
-crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-promise.html [ Timeout ]
+# Fix once top-level-await is enabled
+crbug.com/1022182 external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-4-tla.html [ Skip ]
+crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-delayed.html [ Skip ]
+crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-immediate-promise.html [ Skip ]
+crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-import.html [ Skip ]
+crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-promise.html [ Skip ]
 
 crbug.com/676270 [ Mac ] external/wpt/css/css-text/hyphens/hyphens-auto-001.html [ Failure ]
 crbug.com/1022415 [ Mac ] external/wpt/css/css-text/hyphens/hyphens-auto-010.html [ Failure ]
