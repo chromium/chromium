@@ -474,6 +474,7 @@ if (is_chromeos) {
       "options/options_test.js",
       "panel/i_search_test.js",
       "panel/panel_test.js",
+      "panel/tutorial_test.js",
     ]
     gen_include_files = [
       "../common/testing/assert_additions.js",
