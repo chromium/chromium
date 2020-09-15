@@ -73,8 +73,7 @@ constexpr gfx::Size kActionButtonMinSize(0, 32);
 // and merge with contradicting |kNotificationIconSize|.
 constexpr gfx::Size kIconViewSize(36, 36);
 constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
-constexpr gfx::Size kLargeImageMinSize(328, 0);
-constexpr gfx::Size kLargeImageMaxSize(328, 218);
+constexpr int kLargeImageMaxHeight = 218;
 constexpr gfx::Insets kLeftContentPadding(2, 4, 0, 4);
 constexpr gfx::Insets kLeftContentPaddingWithIcon(2, 4, 0, 12);
 constexpr gfx::Insets kInputTextfieldPadding(16, 16, 16, 0);
@@ -265,15 +264,16 @@ void CompactTitleMessageView::set_message(const base::string16& message) {
 
 // LargeImageView //////////////////////////////////////////////////////////////
 
-LargeImageView::LargeImageView() = default;
+LargeImageView::LargeImageView(const gfx::Size& max_size)
+    : max_size_(max_size), min_size_(max_size_.width(), /*height=*/0) {}
 
 LargeImageView::~LargeImageView() = default;
 
 void LargeImageView::SetImage(const gfx::ImageSkia& image) {
   image_ = image;
   gfx::Size preferred_size = GetResizedImageSize();
-  preferred_size.SetToMax(kLargeImageMinSize);
-  preferred_size.SetToMin(kLargeImageMaxSize);
+  preferred_size.SetToMax(min_size_);
+  preferred_size.SetToMin(max_size_);
   SetPreferredSize(preferred_size);
   SchedulePaint();
   Layout();
@@ -284,7 +284,7 @@ void LargeImageView::OnPaint(gfx::Canvas* canvas) {
 
   gfx::Size resized_size = GetResizedImageSize();
   gfx::Size drawn_size = resized_size;
-  drawn_size.SetToMin(kLargeImageMaxSize);
+  drawn_size.SetToMin(max_size_);
   gfx::Rect drawn_bounds = GetContentsBounds();
   drawn_bounds.ClampToCenteredSize(drawn_size);
 
@@ -309,19 +309,18 @@ void LargeImageView::OnThemeChanged() {
 }
 
 // Returns expected size of the image right after resizing.
-// The GetResizedImageSize().width() <= kLargeImageMaxSize.width() holds, but
-// GetResizedImageSize().height() may be larger than kLargeImageMaxSize.height()
+// The GetResizedImageSize().width() <= max_size_.width() holds, but
+// GetResizedImageSize().height() may be larger than max_size_.height().
 // In this case, the overflown part will be just cutted off from the view.
 gfx::Size LargeImageView::GetResizedImageSize() {
   gfx::Size original_size = image_.size();
-  if (original_size.width() <= kLargeImageMaxSize.width())
+  if (original_size.width() <= max_size_.width())
     return image_.size();
 
   const double proportion =
       original_size.height() / static_cast<double>(original_size.width());
   gfx::Size resized_size;
-  resized_size.SetSize(kLargeImageMaxSize.width(),
-                       kLargeImageMaxSize.width() * proportion);
+  resized_size.SetSize(max_size_.width(), max_size_.width() * proportion);
   return resized_size;
 }
 
@@ -517,7 +516,8 @@ class NotificationInkDropImpl : public views::InkDropImpl {
 class NotificationViewMD::NotificationViewMDPathGenerator
     : public views::HighlightPathGenerator {
  public:
-  NotificationViewMDPathGenerator() = default;
+  explicit NotificationViewMDPathGenerator(gfx::Insets insets)
+      : insets_(std::move(insets)) {}
   NotificationViewMDPathGenerator(const NotificationViewMDPathGenerator&) =
       delete;
   NotificationViewMDPathGenerator& operator=(
@@ -528,6 +528,7 @@ class NotificationViewMD::NotificationViewMDPathGenerator
     gfx::RectF bounds = rect;
     if (!preferred_size_.IsEmpty())
       bounds.set_size(gfx::SizeF(preferred_size_));
+    bounds.Inset(insets_);
     gfx::RoundedCornersF corner_radius(top_radius_, top_radius_, bottom_radius_,
                                        bottom_radius_);
     return gfx::RRectF(bounds, corner_radius);
@@ -540,6 +541,7 @@ class NotificationViewMD::NotificationViewMDPathGenerator
  private:
   int top_radius_ = 0;
   int bottom_radius_ = 0;
+  gfx::Insets insets_;
 
   // This custom PathGenerator is used for the ink drop clipping bounds. By
   // setting |preferred_size_| we set the correct clip bounds in
@@ -581,6 +583,8 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
 
   // |header_row_| contains app_icon, app_name, control buttons, etc...
   header_row_ = new NotificationHeaderView(this);
+  header_row_->SetPreferredSize(header_row_->GetPreferredSize() -
+                                gfx::Size(GetInsets().width(), 0));
   control_buttons_view_ = header_row_->AddChildView(
       std::make_unique<NotificationControlButtonsView>(this));
   AddChildView(header_row_);
@@ -639,7 +643,7 @@ NotificationViewMD::NotificationViewMD(const Notification& notification)
   AddPreTargetHandler(click_activator_.get());
 
   auto highlight_path_generator =
-      std::make_unique<NotificationViewMDPathGenerator>();
+      std::make_unique<NotificationViewMDPathGenerator>(GetInsets());
   highlight_path_generator_ = highlight_path_generator.get();
   views::HighlightPathGenerator::Install(this,
                                          std::move(highlight_path_generator));
@@ -1105,7 +1109,10 @@ void NotificationViewMD::CreateOrUpdateImageView(
         std::make_unique<views::FillLayout>());
     image_container_view_->SetBorder(
         views::CreateEmptyBorder(kLargeImageContainerPadding));
-    image_container_view_->AddChildView(new LargeImageView());
+    int max_width = kNotificationWidth - kLargeImageContainerPadding.width() -
+                    GetInsets().width();
+    image_container_view_->AddChildView(std::make_unique<LargeImageView>(
+        gfx::Size(max_width, kLargeImageMaxHeight)));
 
     // Insert the created image container just after the |content_row_|.
     AddChildViewAt(image_container_view_, GetIndexOf(content_row_) + 1);

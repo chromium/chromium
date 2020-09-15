@@ -23,7 +23,9 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
+#include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -1226,6 +1228,42 @@ TEST_F(NotificationViewMDTest, InlineSettingsInkDropAnimation) {
 
   // The ink drop animation should still be running.
   EXPECT_FALSE(ink_drop_stopped());
+}
+
+TEST_F(NotificationViewMDTest, PreferredSize) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
+  UpdateNotificationViews(*notification);
+
+  // Collapsed preferred width is determined by the header view.
+  notification_view()->SetExpanded(false);
+  EXPECT_EQ(kNotificationWidth,
+            notification_view()->GetPreferredSize().width());
+
+  // Ensure expanded preferred width is not extended by the image view.
+  notification_view()->SetExpanded(true);
+  EXPECT_EQ(kNotificationWidth,
+            notification_view()->GetPreferredSize().width());
+}
+
+TEST_F(NotificationViewMDTest, InkDropClipRect) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
+  UpdateNotificationViews(*notification);
+
+  // Toggle inline settings to show ink drop background.
+  notification_view()->ToggleInlineSettings(DummyEvent());
+
+  auto* ink_drop =
+      static_cast<views::InkDropImpl*>(notification_view()->GetInkDrop());
+  views::test::InkDropImplTestApi ink_drop_test_api(ink_drop);
+  gfx::Rect clip_rect = ink_drop_test_api.GetRootLayer()->clip_rect();
+
+  // Expect clip rect to honor the insets to draw the shadow.
+  gfx::Insets insets = notification_view()->GetInsets();
+  EXPECT_EQ(notification_view()->GetPreferredSize() - insets.size(),
+            clip_rect.size());
+  EXPECT_EQ(gfx::Point(insets.left(), insets.top()), clip_rect.origin());
 }
 
 TEST_F(NotificationViewMDTest, TestClick) {

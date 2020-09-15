@@ -87,7 +87,7 @@ class CompactTitleMessageView : public views::View {
 
 class LargeImageView : public views::View {
  public:
-  LargeImageView();
+  explicit LargeImageView(const gfx::Size& max_size);
   ~LargeImageView() override;
 
   void SetImage(const gfx::ImageSkia& image);
@@ -99,6 +99,8 @@ class LargeImageView : public views::View {
  private:
   gfx::Size GetResizedImageSize();
 
+  gfx::Size max_size_;
+  gfx::Size min_size_;
   gfx::ImageSkia image_;
 
   DISALLOW_COPY_AND_ASSIGN(LargeImageView);
@@ -209,6 +211,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameWebNotification);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, CreateOrUpdateTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, ExpandLongMessage);
+  FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, InkDropClipRect);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, InlineSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest,
                            InlineSettingsInkDropAnimation);
