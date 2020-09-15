@@ -466,39 +466,6 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="        boolean isRouteInRecord = mRoutes.containsKey(routeId);"
-        errorLine2="                                  ~~~~~~~">
-        <location
-            file="../../chrome/android/features/media_router/java/src/org/chromium/chrome/browser/media/router/caf/CafMediaRouteProvider.java"
-            line="86"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        if (!mRoutes.containsKey(routeId)) {"
-        errorLine2="             ~~~~~~~">
-        <location
-            file="../../chrome/android/features/media_router/java/src/org/chromium/chrome/browser/media/router/caf/CafMediaRouteProvider.java"
-            line="105"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        if (!mRoutes.containsKey(routeId)) return null;"
-        errorLine2="             ~~~~~~~">
-        <location
-            file="../../chrome/android/features/media_router/java/src/org/chromium/chrome/browser/media/router/caf/remoting/CafRemotingMediaRouteProvider.java"
-            line="66"
-            column="14"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
         errorLine1="        mPartnerBrowserRefreshNeeded = !PartnerBrowserCustomizations.getInstance().isInitialized();"
         errorLine2="                                                                                   ~~~~~~~~~~~~~">
         <location
