@@ -441,9 +441,6 @@
     <dimen name="custom_tabs_screenshot_height">300dp</dimen>
     <dimen name="custom_tabs_screenshot_width">190dp</dimen>
 
-    <!-- Contact Picker dimensions -->
-    <dimen name="contact_picker_icon_size">36dp</dimen>
-
     <!-- Account chooser dialog dimensions -->
     <dimen name="account_chooser_dialog_margin">24dp</dimen>
     <dimen name="account_chooser_dialog_item_margin">24dp</dimen>

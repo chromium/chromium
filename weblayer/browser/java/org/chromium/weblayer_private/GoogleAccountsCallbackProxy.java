@@ -4,7 +4,9 @@
 
 package org.chromium.weblayer_private;
 
+import android.graphics.Bitmap;
 import android.os.RemoteException;
+import android.webkit.ValueCallback;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -12,6 +14,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.weblayer_private.interfaces.GoogleAccountServiceType;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountsCallbackClient;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * Owns the C++ GoogleAccountsCallbackProxy which is responsible for forwarding all calls to this
@@ -48,8 +51,22 @@ public final class GoogleAccountsCallbackProxy {
     }
 
     @CalledByNative
-    private String getGaiaId() throws RemoteException {
+    String getGaiaId() throws RemoteException {
         return mClient.getGaiaId();
+    }
+
+    String getFullName() throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() >= 87) {
+            return mClient.getFullName();
+        }
+
+        return null;
+    }
+
+    void getAvatar(int targetSize, ValueCallback<Bitmap> avatarLoaded) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() >= 87) {
+            mClient.getAvatar(targetSize, ObjectWrapper.wrap(avatarLoaded));
+        }
     }
 
     @GoogleAccountServiceType

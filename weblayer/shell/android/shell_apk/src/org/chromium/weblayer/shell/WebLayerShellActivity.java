@@ -12,8 +12,11 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.webkit.ValueCallback;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,6 +53,8 @@ import org.chromium.weblayer.FaviconCallback;
 import org.chromium.weblayer.FaviconFetcher;
 import org.chromium.weblayer.FindInPageCallback;
 import org.chromium.weblayer.FullscreenCallback;
+import org.chromium.weblayer.GoogleAccountsCallback;
+import org.chromium.weblayer.GoogleAccountsParams;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NewTabCallback;
@@ -551,6 +557,30 @@ public class WebLayerShellActivity extends AppCompatActivity {
             public boolean onBackToSafety() {
                 fragment.getActivity().onBackPressed();
                 return true;
+            }
+        });
+        tab.setGoogleAccountsCallback(new GoogleAccountsCallback() {
+            @Override
+            public void onGoogleAccountsRequest(GoogleAccountsParams params) {}
+
+            @Override
+            public String getGaiaId() {
+                return "example.user@gmail.com";
+            }
+
+            @Override
+            public String getFullName() {
+                return "Jill Doe";
+            }
+
+            @Override
+            public void getAvatar(int desiredSize, ValueCallback<Bitmap> avatarLoadedCallback) {
+                // Simulate a delayed load.
+                final Handler handler = new Handler(Looper.getMainLooper());
+                handler.postDelayed(() -> {
+                    avatarLoadedCallback.onReceiveValue(BitmapFactory.decodeResource(
+                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses));
+                }, 3000);
             }
         });
         mTabToFaviconFetcher.put(tab, tab.createFaviconFetcher(new FaviconCallback() {

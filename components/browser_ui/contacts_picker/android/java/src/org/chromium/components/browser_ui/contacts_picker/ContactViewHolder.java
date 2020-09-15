@@ -71,7 +71,7 @@ public class ContactViewHolder
             mItemView.initialize(contact, bitmap);
         } else {
             Bitmap icon = mCategoryView.getIconCache().getBitmap(mContact.getId());
-            if (icon == null) {
+            if (icon == null && !contact.getId().equals(ContactDetails.SELF_CONTACT_ID)) {
                 mWorkerTask = new FetchIconWorkerTask(mContact.getId(), mContentResolver, this);
                 mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }

@@ -43,9 +43,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
-import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
@@ -276,18 +274,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                         boolean includeTel, boolean includeAddresses, boolean includeIcons,
                         String formattedOrigin) -> {
                     ContactsPickerDialog dialog = new ContactsPickerDialog(windowAndroid,
-                            // TODO(estade): implement owner email.
-                            new PickerAdapter() {
-                                @Override
-                                protected String findOwnerEmail() {
-                                    return null;
-                                }
-                                @Override
-                                protected void addOwnerInfoToContacts(
-                                        ArrayList<ContactDetails> contacts) {}
-                            },
-                            listener, allowMultiple, includeNames, includeEmails, includeTel,
-                            includeAddresses, includeIcons, formattedOrigin);
+                            new ContactsPickerAdapter(windowAndroid), listener, allowMultiple,
+                            includeNames, includeEmails, includeTel, includeAddresses, includeIcons,
+                            formattedOrigin);
                     dialog.show();
                     return dialog;
                 });

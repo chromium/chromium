@@ -67,6 +67,10 @@ public class FragmentWindowAndroid extends IntentWindowAndroid {
         mModalDialogManager = modalDialogManager;
     }
 
+    public BrowserImpl getBrowser() {
+        return mFragment.getBrowser();
+    }
+
     @Override
     @TargetApi(Build.VERSION_CODES.O)
     public void setWideColorEnabled(boolean enabled) {

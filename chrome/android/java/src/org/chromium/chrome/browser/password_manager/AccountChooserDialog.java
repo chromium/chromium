@@ -32,7 +32,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.ProfileDataCache;
+import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
@@ -267,7 +267,7 @@ public class AccountChooserDialog
         if (mIsDestroyed) return;
         assert index >= 0 && index < mCredentials.length;
         assert mCredentials[index] != null;
-        Drawable avatar = ProfileDataCache.makeRoundAvatar(
+        Drawable avatar = AvatarGenerator.makeRoundAvatar(
                 mContext.getResources(), avatarBitmap, avatarBitmap.getHeight());
         mCredentials[index].setAvatar(avatar);
         ListView view = mDialog.getListView();

@@ -12,6 +12,8 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.components.browser_ui.styles.R;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
@@ -142,6 +144,11 @@ public class BrowserFragmentImpl extends RemoteFragmentImpl {
     public void onPause() {
         super.onPause();
         mBrowser.onFragmentPause();
+    }
+
+    @Nullable
+    public BrowserImpl getBrowser() {
+        return mBrowser;
     }
 
     public IBrowserFragment asIBrowserFragment() {

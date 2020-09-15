@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/util/AvatarGenerator.java",
     "java/src/org/chromium/components/browser_ui/util/BitmapCache.java",
     "java/src/org/chromium/components/browser_ui/util/BrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegate.java",

@@ -248,10 +248,10 @@ public class ProcessInitializationHandler {
                         boolean allowMultiple, boolean includeNames, boolean includeEmails,
                         boolean includeTel, boolean includeAddresses, boolean includeIcons,
                         String formattedOrigin) -> {
-                    ContactsPickerDialog dialog =
-                            new ContactsPickerDialog(windowAndroid, new ChromePickerAdapter(),
-                                    listener, allowMultiple, includeNames, includeEmails,
-                                    includeTel, includeAddresses, includeIcons, formattedOrigin);
+                    ContactsPickerDialog dialog = new ContactsPickerDialog(windowAndroid,
+                            new ChromePickerAdapter(windowAndroid.getContext().get()), listener,
+                            allowMultiple, includeNames, includeEmails, includeTel,
+                            includeAddresses, includeIcons, formattedOrigin);
                     dialog.getWindow().getAttributes().windowAnimations =
                             R.style.PickerDialogAnimation;
                     dialog.show();

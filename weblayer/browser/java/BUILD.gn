@@ -30,6 +30,7 @@ android_resources("weblayer_resources") {
   deps = [
     ":weblayer_strings_grd",
     "//components/blocked_content/android:java_resources",
+    "//components/browser_ui/contacts_picker/android:java_resources",
     "//components/browser_ui/http_auth/android:java_resources",
     "//components/browser_ui/media/android:java_resources",
     "//components/browser_ui/settings/android:java_resources",
@@ -95,6 +96,7 @@ android_library("java") {
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserViewController.java",
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
+    "org/chromium/weblayer_private/ContactsPickerAdapter.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
     "org/chromium/weblayer_private/CookieManagerImpl.java",
     "org/chromium/weblayer_private/CrashReporterControllerImpl.java",

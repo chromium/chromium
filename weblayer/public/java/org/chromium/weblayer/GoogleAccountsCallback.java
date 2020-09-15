@@ -4,6 +4,9 @@
 
 package org.chromium.weblayer;
 
+import android.graphics.Bitmap;
+import android.webkit.ValueCallback;
+
 import androidx.annotation.NonNull;
 
 /**
@@ -24,4 +27,24 @@ public abstract class GoogleAccountsCallback {
      * be provided on a best effort basis if the ID is not available immediately.
      */
     public abstract @NonNull String getGaiaId();
+
+    /**
+     * Returns the full name of the signed-in user, or empty if the user is signed out. This can
+     * be provided on a best effort basis if the name is not available immediately.
+     * @since 87
+     */
+    public @NonNull String getFullName() {
+        return new String();
+    }
+
+    /**
+     * Called to retrieve the signed-in user's avatar.
+     * @param desiredSize the size the avatar will be displayed at, in raw pixels. If a different
+     *         size avatar is returned, WebLayer will scale the returned image.
+     * @param avatarLoadedCallback to be called with the avatar when it is available (synchronously
+     *         or asynchronously). Until such time that it's called, WebLayer will fall back to a
+     *         monogram based on {@link getFullName()}, e.g. encircled "JD" for "Jill Doe".
+     * @since 87
+     */
+    public void getAvatar(int desiredSize, @NonNull ValueCallback<Bitmap> avatarLoadedCallback) {}
 }

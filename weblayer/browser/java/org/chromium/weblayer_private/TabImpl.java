@@ -550,6 +550,10 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         }
     }
 
+    public GoogleAccountsCallbackProxy getGoogleAccountsCallbackProxy() {
+        return mGoogleAccountsCallbackProxy;
+    }
+
     @Override
     public IFaviconFetcher createFaviconFetcher(IFaviconFetcherClient client) {
         StrictModeWorkaround.apply();

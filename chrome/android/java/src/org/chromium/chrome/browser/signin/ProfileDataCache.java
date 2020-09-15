@@ -13,9 +13,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -29,6 +27,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
 
@@ -272,28 +271,6 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
     }
 
     /**
-     * Rescales avatar image and crops it into a circle.
-     */
-    public static Drawable makeRoundAvatar(Resources resources, Bitmap bitmap, int imageSize) {
-        if (bitmap == null) return null;
-
-        Bitmap output = Bitmap.createBitmap(imageSize, imageSize, Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-        // Fill the canvas with transparent color.
-        canvas.drawColor(Color.TRANSPARENT);
-        // Draw a white circle.
-        float radius = (float) imageSize / 2;
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle(radius, radius, radius, paint);
-        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
-        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, null, new Rect(0, 0, imageSize, imageSize), paint);
-        return new BitmapDrawable(resources, output);
-    }
-
-    /**
      * Returns a profile data cache object without a badge.The badge is put with respect to
      * R.dimen.user_picture_size. So this method only works with the user avatar of this size.
      * @param context Context of the application to extract resources from
@@ -338,7 +315,7 @@ public class ProfileDataCache implements ProfileDownloader.Observer, ProfileData
 
     private Drawable prepareAvatar(Bitmap bitmap) {
         Drawable croppedAvatar = bitmap != null
-                ? makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
+                ? AvatarGenerator.makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
                 : mPlaceholderImage;
         if (mBadgeConfig == null || mBadgeConfig.getBadge() == null) {
             return croppedAvatar;
