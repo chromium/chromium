@@ -16,9 +16,9 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 
 class GURL;
-class NotificationPlatformBridge;
 class Profile;
 
 namespace user_prefs {
@@ -52,7 +52,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   // received and dispatched to the right consumer depending on the type of
   // notification. Consumers include, service workers, pages, extensions...
   //
-  // TODO(peter): Remove this in favor of multiple targetted methods.
+  // TODO(peter): Remove this in favor of multiple targeted methods.
   virtual void ProcessNotificationOperation(
       NotificationCommon::Operation operation,
       NotificationHandler::Type notification_type,
@@ -93,21 +93,21 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     Profile* profile);
 
  private:
-  // Called when the NotificationPlatformBridge may have been initialized.
-  void OnNotificationPlatformBridgeReady(bool success);
+  // Called when the NotificationPlatformBridgeDelegator has been initialized.
+  void OnNotificationPlatformBridgeReady();
 
   Profile* profile_;
 
-  // Bridge responsible for displaying notifications on the platform. The
-  // message center's bridge is maintained for platforms where it is available.
-  std::unique_ptr<NotificationPlatformBridge> message_center_bridge_;
-  NotificationPlatformBridge* bridge_;
+  // This NotificationPlatformBridgeDelegator delegates to either the native
+  // bridge or to the MessageCenter if there is no native bridge or it does not
+  // support certain notification types.
+  std::unique_ptr<NotificationPlatformBridgeDelegator> bridge_delegator_;
 
   // Tasks that need to be run once the display bridge has been initialized.
   base::queue<base::OnceClosure> actions_;
 
-  // Boolean tracking whether the |bridge_| has been initialized for use.
-  bool bridge_initialized_ = false;
+  // Boolean tracking whether the |bridge_delegator_| has been initialized.
+  bool bridge_delegator_initialized_ = false;
 
   // Map containing the notification handlers responsible for processing events.
   std::map<NotificationHandler::Type, std::unique_ptr<NotificationHandler>>

@@ -916,6 +916,8 @@ static_library("browser") {
     "notifications/notification_permission_context.h",
     "notifications/notification_platform_bridge.cc",
     "notifications/notification_platform_bridge.h",
+    "notifications/notification_platform_bridge_delegator.cc",
+    "notifications/notification_platform_bridge_delegator.h",
     "notifications/notification_trigger_scheduler.cc",
     "notifications/notification_trigger_scheduler.h",
     "notifications/notification_ui_manager.h",
