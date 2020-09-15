@@ -8,14 +8,21 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.js';
 import './print_preview_vars_css.js';
+// <if expr="chromeos">
+import './printer_status_icon_cros.js';
+// </if>
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
+// <if expr="chromeos">
+import {IconLocation} from '../data/printer_status_cros.js';
+// </if>
 
 import {updateHighlights} from './highlight_utils.js';
 
@@ -50,6 +57,13 @@ Polymer({
     /** @private {string} */
     searchHint_: String,
 
+    /** @private */
+    isDestinationCrosLocal_: {
+      type: Boolean,
+      computed: 'computeIsDestinationCrosLocal_(destination)',
+      reflectToAttribute: true,
+    },
+
     // <if expr="chromeos">
     /** @private {!DestinationConfigStatus} */
     configurationStatus_: {
@@ -61,9 +75,27 @@ Polymer({
      * Mirroring the enum so that it can be used from HTML bindings.
      * @private
      */
+    iconLocation_: {
+      type: Object,
+      value: IconLocation,
+    },
+
+    /**
+     * Mirroring the enum so that it can be used from HTML bindings.
+     * @private
+     */
     statusEnum_: {
       type: Object,
       value: DestinationConfigStatus,
+    },
+
+    /** @private */
+    printerStatusFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showPrinterStatusInDialog');
+      },
+      readOnly: true,
     },
     // </if>
   },
@@ -152,5 +184,25 @@ Polymer({
     }
     return loadTimeData.getStringF(
         'extensionDestinationIconTooltip', this.destination.extensionName);
+  },
+
+  /**
+   * True when the destination is a CrOS local printer.
+   * @return {boolean}
+   * @private
+   */
+  computeIsDestinationCrosLocal_: function() {
+    if (!isChromeOS) {
+      return false;
+    }
+
+    // <if expr="chromeos">
+    if (!this.printerStatusFlagEnabled_) {
+      return false;
+    }
+
+    return this.destination &&
+        this.destination.origin === DestinationOrigin.CROS;
+    // </if>
   },
 });

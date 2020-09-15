@@ -65,8 +65,21 @@
       :host([stale_]) :-webkit-any(iron-icon, .name, .connection-status) {
         opacity: 0.4;
       }
+
+<if expr="chromeos">
+      printer-status-icon-cros {
+        padding-inline-end: 12px;
+      }
+</if>
     </style>
-    <iron-icon icon$="[[destination.icon]]"></iron-icon>
+    <iron-icon icon$="[[destination.icon]]"
+        hidden="[[isDestinationCrosLocal_]]">
+    </iron-icon>
+<if expr="chromeos">
+    <printer-status-icon-cros icon-location="[[iconLocation_.DROPDOWN]]"
+        hidden="[[!isDestinationCrosLocal_]]">
+    </printer-status-icon-cros>
+</if>
     <span class="name searchable">[[destination.displayName]]</span>
     <span class="search-hint searchable">[[searchHint_]]</span>
     <span class="connection-status"
