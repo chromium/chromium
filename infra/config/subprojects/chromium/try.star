@@ -1255,10 +1255,6 @@ try_.chromium_mac_ios_builder(
 )
 
 try_.chromium_mac_ios_builder(
-    name = "ios-simulator-eg",
-)
-
-try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:chromium_trybot",
