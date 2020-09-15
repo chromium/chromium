@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -23,7 +24,7 @@ class ASH_EXPORT HoldingSpaceItemContextMenu
     : public views::ContextMenuController,
       public ui::SimpleMenuModel::Delegate {
  public:
-  HoldingSpaceItemContextMenu();
+  explicit HoldingSpaceItemContextMenu(const HoldingSpaceItem* item);
   HoldingSpaceItemContextMenu(const HoldingSpaceItemContextMenu&) = delete;
   HoldingSpaceItemContextMenu& operator=(const HoldingSpaceItemContextMenu&) =
       delete;
@@ -42,6 +43,9 @@ class ASH_EXPORT HoldingSpaceItemContextMenu
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+
+  // The holding space item that this context menu's actions will effect.
+  const HoldingSpaceItem* const item_;
 };
 
 }  // namespace ash

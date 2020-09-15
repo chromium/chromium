@@ -18,6 +18,7 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -136,6 +137,7 @@ void HoldingSpaceTray::ShowBubble(bool show_by_click) {
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
   init_params.anchor_view = GetBubbleAnchor();
+  init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceWidth;
   init_params.close_on_deactivate = true;

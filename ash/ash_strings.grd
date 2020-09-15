@@ -952,6 +952,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_IN_FOLDER" desc="Title of the option to show item in its folder in the holding space item context menu.">
         Show in folder
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN" desc="Title of the unpin option in the holding space item context menu.">
+        Unpin
+      </message>
 
       <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">

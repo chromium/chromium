@@ -13,10 +13,11 @@ namespace ash {
 
 // Context menu commands.
 enum HoldingSpaceCommandId {
-  kTogglePinItem,
+  kPinItem,
   kCopyToClipboard,
   kShowInFolder,
-  kMaxValue = kShowInFolder
+  kUnpinItem,
+  kMaxValue = kUnpinItem
 };
 
 // Appearance.

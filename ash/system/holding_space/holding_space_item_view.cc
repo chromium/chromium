@@ -19,7 +19,7 @@ namespace ash {
 
 HoldingSpaceItemView::HoldingSpaceItemView(const HoldingSpaceItem* item)
     : item_(item),
-      context_menu_(std::make_unique<HoldingSpaceItemContextMenu>()) {
+      context_menu_(std::make_unique<HoldingSpaceItemContextMenu>(item_)) {
   set_context_menu_controller(context_menu_.get());
 
   SetPaintToLayer();
