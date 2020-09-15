@@ -39,7 +39,6 @@ namespace {
 // Constants for the credit card.
 const int kDefaultCardExpMonth = 8;
 const int kDefaultCardExpYear = 2087;
-const int kDefaultInstrumentId = 123;
 const char kDefaultCardLastFour[] = "1234";
 const char kDefaultCardName[] = "Patrick Valenzuela";
 const sync_pb::WalletMaskedCreditCard_WalletCardType kDefaultCardType =
@@ -369,7 +368,6 @@ sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
   credit_card->set_name_on_card(kDefaultCardName);
   credit_card->set_status(sync_pb::WalletMaskedCreditCard::VALID);
   credit_card->set_type(kDefaultCardType);
-  credit_card->set_instrument_id(kDefaultInstrumentId);
   if (!billing_address_id.empty()) {
     credit_card->set_billing_address_id(billing_address_id);
   }

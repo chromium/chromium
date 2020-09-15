@@ -2447,7 +2447,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, ASCIIToUTF16("1"));
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, ASCIIToUTF16("2020"));
   inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("4111111111111111"));
-  inputs[0].set_instrument_id(321);
 
   inputs.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b456"));
   inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("Rick Roman"));
@@ -2459,7 +2458,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   base::string16 nickname = ASCIIToUTF16("Grocery card");
   inputs[1].SetNickname(nickname);
   inputs[1].set_card_issuer(CreditCard::Issuer::GOOGLE);
-  inputs[1].set_instrument_id(123);
 
   test::SetServerCreditCards(table_.get(), inputs);
 
@@ -2490,9 +2488,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
 
   EXPECT_EQ(CreditCard::Issuer::ISSUER_UNKNOWN, outputs[0]->card_issuer());
   EXPECT_EQ(CreditCard::Issuer::GOOGLE, outputs[1]->card_issuer());
-
-  EXPECT_EQ(321, outputs[0]->instrument_id());
-  EXPECT_EQ(123, outputs[1]->instrument_id());
 }
 
 TEST_F(AutofillTableTest, SetGetRemoveServerCardMetadata) {
@@ -2702,7 +2697,6 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].SetNetworkForMaskedCard(kVisaCard);
   inputs[0].SetServerStatus(CreditCard::EXPIRED);
   inputs[0].SetNickname(ASCIIToUTF16("Grocery card"));
-  inputs[0].set_instrument_id(1);
   table_->SetServerCardsData(inputs);
 
   // Make sure the card was added correctly.
