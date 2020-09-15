@@ -52,6 +52,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1291286136605998134">Etengailua</translation>
 <translation id="1299774449519412690">Zeru-urdin argia</translation>
 <translation id="1303806948938513162">Sakatu lau hatzekin ChromeVox menuetan sartzeko</translation>
+<translation id="1313373992684326101">Joan aurreko atalera; adibidez, egoera-erretilura edo abiarazlera.</translation>
 <translation id="1325363694295259631">Desautatuta dago <ph name="NAME" />, menuko aukeraren aukera-botoia</translation>
 <translation id="1325946044405407859">Brontze-kolorekoa</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1506187449813838456">Igo tonua</translation>
 <translation id="151784044608172266">Hurrengo esaldia</translation>
 <translation id="1524531499102321782">Idatzi braillez hurrengo lerroa</translation>
+<translation id="1542513807034338907">Joan aurreko orrira</translation>
 <translation id="1546370775711804143">Korritze-barra</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1559739829547075274">Egin atzera</translation>
@@ -485,6 +487,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">lehenetsia</translation>
 <translation id="4772771694153161212">Ez dago azpimarratuta</translation>
+<translation id="4780458943471935919">Joan hurrengo orrira</translation>
 <translation id="4784215347943747396">Etengailu bat edo bi erabilita kontrolatu ahal izango duzu gailua</translation>
 <translation id="4786285211967466855">Ez dago lehenengo mailako beste goibururik honen aurretik</translation>
 <translation id="4787577491510559358">Iragarri uneko elementuaren formatua</translation>
@@ -819,6 +822,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Aldatu tonua elementu motak eta komatxoen artean aipatutako, ezabatutako, loditutako, parentesi artean idatzitako edo letra larriz idatzitako testua ozen irakurtzen denean.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Joan hurrengo atalera; adibidez, egoera-erretilura edo abiarazlera.</translation>
 <translation id="7505149250476994901">Esan "maiuskula" hizkia baino lehen</translation>
 <translation id="7518543783849163354">Aldi batez ChromeVox-ek hitz egiteari utz diezaion, sakatu Kontrol tekla.</translation>
 <translation id="7533226154149229506">Urre-kolore horixka argikoa</translation>

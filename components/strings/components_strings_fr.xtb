@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Version du micrologiciel</translation>
 <translation id="1988881251331415125">S'il n'y a pas d'erreur, essayez de <ph name="BEGIN_LINK" />faire un diagnostic sur la connectivité<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Accéder aux cookies et aux données de site.
-
-Souhaitez-vous autoriser le site <ph name="EMBEDDED_URL" /> à utiliser les cookies et les données de site sur <ph name="TOP_LEVEL_URL" /> ?
-
-Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialité. Si vous l'autorisez, les contenus avec lesquels vous avez interagi fonctionneront correctement, mais il se pourrait que le site <ph name="EMBEDDED_URL" /> puisse suivre votre activité.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre ordinateur local</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>

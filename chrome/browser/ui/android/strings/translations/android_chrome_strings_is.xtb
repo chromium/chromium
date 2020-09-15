@@ -106,7 +106,6 @@
 <translation id="1853692000353488670">Nýr huliðsflipi</translation>
 <translation id="1856325424225101786">Viltu endurstilla léttútgáfu?</translation>
 <translation id="1868024384445905608">Chrome er nú fljótara að sækja skrár</translation>
-<translation id="1874760110381325409">Þú verður skráð(ur) inn á Google reikninginn þinn\n(þetta mun ekki kveikja á Chrome samstillingu)</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
 <translation id="1925021887439448749">Færðu inn sérsniðna vefslóð</translation>
@@ -893,7 +892,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7930998711684428189">Vara við ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er úrelt.</translation>
 <translation id="7947953824732555851">Samþykkja og skrá inn</translation>
-<translation id="7961926449547174351">Þú slökktir á aðgangi að geymslurými, opnaðu stillingar og kveiktu á honum.</translation>
+<translation id="7961926449547174351">Þú lokaðir fyrir aðgang að geymslurými. Farðu í stillingar og leyfðu aðgang.</translation>
 <translation id="7963646190083259054">Framleiðandi:</translation>
 <translation id="7967911570373677897">Til að skanna QR-kóða skaltu breyta stillingunum svo að Chrome geti notað myndavélina þína</translation>
 <translation id="7971136598759319605">Virkt fyrir 1 degi</translation>

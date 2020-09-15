@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">زر التبديل</translation>
 <translation id="1299774449519412690">أزرق سماوي فاتح</translation>
 <translation id="1303806948938513162">‏النقر بأربعة أصابع للدخول إلى قوائم ChromeVox</translation>
+<translation id="1313373992684326101">الانتقال إلى القسم السابق تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
 <translation id="1325363694295259631">تم إلغاء اختيار الزر الخاص باختيار عنصر القائمة <ph name="NAME" />.</translation>
 <translation id="1325946044405407859">أسمر مصفر</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> من <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">زيادة درجة الصوت</translation>
 <translation id="151784044608172266">الجملة التالية</translation>
 <translation id="1524531499102321782">السطر التالي بطريقة برايل</translation>
+<translation id="1542513807034338907">التمرير إلى الصفحة السابقة</translation>
 <translation id="1546370775711804143">شريط التمرير</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1559739829547075274">الانتقال للخلف</translation>
@@ -486,6 +488,7 @@
 <translation id="4763480195061959176">فيديو</translation>
 <translation id="4764692524839457597">تلقائي</translation>
 <translation id="4772771694153161212">بدون تسطير</translation>
+<translation id="4780458943471935919">التمرير إلى الصفحة التالية</translation>
 <translation id="4784215347943747396">تسمح بالتحكُّم في الجهاز باستخدام مفتاح تبديل واحد أو مفتاحَين.</translation>
 <translation id="4786285211967466855">ليس هناك عنوان سابق من المستوى الأول.</translation>
 <translation id="4787577491510559358">الإعلان عن تنسيق عنصر حالي</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">تغيير درجة الصوت عند نطق أنواع العناصر والنصوص المُقتبَسة أو المحذوفة أو النصوص الغامقة أو الظاهرة بين أقواس أو بأحرف كبيرة</translation>
 <translation id="7491962110804786152">علامة تبويب</translation>
+<translation id="7492497529767769458">الانتقال إلى القسم التالي تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
 <translation id="7505149250476994901">قُل "حرف كبير" قبل كتابة الحرف</translation>
 <translation id="7518543783849163354">‏لإيقاف ChromeVox مؤقتًا عن التحدث، اضغط على مفتاح Control.</translation>
 <translation id="7533226154149229506">أصفر ذهبي فاتح</translation>

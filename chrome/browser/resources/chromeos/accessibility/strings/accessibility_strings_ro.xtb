@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Buton de comutare</translation>
 <translation id="1299774449519412690">Albastru deschis ca cerul</translation>
 <translation id="1303806948938513162">Atingeți cu patru degete ca să intrați în meniurile ChromeVox</translation>
+<translation id="1313373992684326101">Treci la secțiunea anterioară. Printre exemple se numără Bara de stare și Lansatorul.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butonul radio al elementului de meniu este deselectat</translation>
 <translation id="1325946044405407859">Bronz</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> din <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Creșteți înălțimea sunetului</translation>
 <translation id="151784044608172266">Propoziția următoare</translation>
 <translation id="1524531499102321782">Rândul Braille următor</translation>
+<translation id="1542513807034338907">Derulează la pagina anterioară</translation>
 <translation id="1546370775711804143">Bară de defilare</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="1559739829547075274">Navigați înapoi</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">prestabilit</translation>
 <translation id="4772771694153161212">Fără subliniere</translation>
+<translation id="4780458943471935919">Derulează la pagina următoare</translation>
 <translation id="4784215347943747396">Controlează dispozitivul doar cu unul sau două comutatoare</translation>
 <translation id="4786285211967466855">Nu există un titlu de nivel 1 anterior</translation>
 <translation id="4787577491510559358">Anunță formatarea pentru elementul actual</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">parolă</translation>
 <translation id="7484805699335881122">Modifică tonalitatea atunci când rostești tipuri de elemente și text citat, șters, cu caractere aldine, între paranteze sau cu majuscule.</translation>
 <translation id="7491962110804786152">filă</translation>
+<translation id="7492497529767769458">Treci la secțiunea următoare. Printre exemple se numără Bara de stare și Lansatorul.</translation>
 <translation id="7505149250476994901">Rostește „majusculă” înaintea literei</translation>
 <translation id="7518543783849163354">Pentru a opri temporar feedbackul rostit din ChromeVox, apasă pe tasta Ctrl.</translation>
 <translation id="7533226154149229506">Galben auriu</translation>

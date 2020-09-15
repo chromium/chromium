@@ -106,7 +106,6 @@
 <translation id="1853692000353488670">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="1856325424225101786">هل ترغب في إعادة ضبط الوضع البسيط؟</translation>
 <translation id="1868024384445905608">‏يُنزِّل Chrome الآن الملفات بشكلٍ أسرع.</translation>
-<translation id="1874760110381325409">‏سيتمّ تسجيل دخولك باستخدام حسابك على Google\n(لن يُفعِّل هذا الإجراء ميزة "مزامنة Chrome").</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
 <translation id="1925021887439448749">إدخال عنوان الويب المُخصص</translation>
@@ -893,7 +892,7 @@
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قديم.</translation>
 <translation id="7947953824732555851">قبول وتسجيل الدخول</translation>
-<translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين"، يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>
+<translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين". يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>
 <translation id="7963646190083259054">المورّد:</translation>
 <translation id="7967911570373677897">‏لمسح رمز استجابة سريعة ضوئيًا، يُرجى تغيير الإعدادات ليتمكّن Chrome من استخدام الكاميرا.</translation>
 <translation id="7971136598759319605">نشط قبل يوم واحد</translation>

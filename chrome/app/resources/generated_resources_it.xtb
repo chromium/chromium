@@ -1139,7 +1139,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2340263603246777781">Il sito <ph name="ORIGIN" /> desidera accoppiarsi</translation>
 <translation id="2342740338116612727">Preferiti aggiunti</translation>
 <translation id="2343747224442182863">Imposta stato attivo su questa scheda</translation>
-<translation id="2344686470986284227">Avvio del controller della macchina virtuale</translation>
 <translation id="2345723121311404059">1 pagina con <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">L'utilizzo di Hangouts e Cast for Education è regolato dalle Norme sulla privacy di Google.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1287,6 +1286,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2505127913256479918">Questo account supervisionato verrà rimosso a breve</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Schermo #}other{Schermo #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> di <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Dispositivi nelle vicinanze quando la funzionalità Condivisione nelle vicinanze è attiva sul loro dispositivo</translation>
 <translation id="250704661983564564">Disposizione del display</translation>
 <translation id="2507253002925770350">Richiesta rimossa</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> in sospeso</translation>
@@ -2839,7 +2839,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4390000551125140321">{0,plural, =1{Navigazione in incognito}other{# finestre di navigazione in incognito aperte}}</translation>
 <translation id="439266289085815679">Configurazione Bluetooth controllata da <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifica il file di configurazione</translation>
-<translation id="4393691030048716353"><ph name="DOMAIN" /> ha disattivato il debug ADB. Dopo il riavvio del dispositivo <ph name="DEVICE_TYPE" /> non potrai installare app tramite sideload.</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> ha disattivato il debug ADB. Dopo il riavvio del <ph name="DEVICE_TYPE" /> non potrai installare app tramite sideload.</translation>
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="439817266247065935">Il dispositivo non è stato spento correttamente. Riavvia Linux per usare le relative app.</translation>
 <translation id="4400367121200150367">I siti che non salvano mai le password verranno visualizzati qui</translation>
@@ -3138,6 +3138,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4762718786438001384">Lo spazio sul disco del dispositivo sta per esaurirsi</translation>
 <translation id="4763408175235639573">Durante la visualizzazione della pagina sono stati impostati i seguenti cookie</translation>
 <translation id="4765582662863429759">Consenti ad Android Messaggi di trasmettere gli SMS dal telefono al Chromebook</translation>
+<translation id="476598255842811483">Nessuno, a meno che non attivi la funzionalità Condivisione nelle vicinanze sul tuo dispositivo</translation>
 <translation id="4768332406694066911">Hai certificati da queste organizzazioni che ti identificano</translation>
 <translation id="477647109558161443">Crea un collegamento sul desktop</translation>
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5668,6 +5669,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="786073089922909430">Servizio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Download</translation>
 <translation id="7864539943188674973">Disattiva Bluetooth</translation>
+<translation id="7866352732146932341">Dispositivi nelle vicinanze quando la funzionalità Condivisione nelle vicinanze è attiva sul tuo dispositivo</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />, accoppiato</translation>
 <translation id="7870730066603611552">Controlla le opzioni di sincronizzazione dopo la configurazione</translation>
 <translation id="7870790288828963061">Nessuna app kiosk con versione più recente trovata. Non c'è nulla da aggiornare. Rimuovi la chiavetta USB.</translation>
@@ -6163,7 +6165,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8467326454809944210">Seleziona un'altra lingua</translation>
 <translation id="8470214316007448308">Altre persone</translation>
 <translation id="8470513973197838199">Password salvate per il sito <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> disattiverà il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> disattiverà il debug ADB. Tra 24 ore il tuo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="8472623782143987204">basato sull'hardware</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8475313423285172237">Un altro programma sul computer ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.</translation>

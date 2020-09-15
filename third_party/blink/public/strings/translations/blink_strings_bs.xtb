@@ -13,7 +13,7 @@
 <translation id="1211441953136645838">završna napomena</translation>
 <translation id="1281252709823657822">dijaloški okvir</translation>
 <translation id="1306460908038601864">Isključeno</translation>
-<translation id="1311894908970423688">Vrijednost mora biti <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1311894908970423688">Vrijednost mora biti u formatu <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">zahvale</translation>
 <translation id="1342835525016946179">članak</translation>
 <translation id="1359897965706325498">oglasni natpis</translation>
@@ -186,7 +186,7 @@
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="668171684555832681">Drugo…</translation>
 <translation id="6692633176391053278">steper</translation>
-<translation id="6709093583001123835">Vrijednost mora biti <ph name="VALUE" />.</translation>
+<translation id="6709093583001123835">Vrijednost mora biti u formatu <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Slab kvalitet reprodukcije</translation>
 <translation id="6755330956360078551">savjet u vezi s alatom</translation>
 <translation id="6790428901817661496">Pokreni</translation>

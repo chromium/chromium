@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Унтраах/асаах товч</translation>
 <translation id="1299774449519412690">Тод цэнхэр</translation>
 <translation id="1303806948938513162">ChromeVox-н цэсэд орохын тулд 4 хуруугаараа товшино уу</translation>
+<translation id="1313373992684326101">Өмнөх хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, цэсийн зүйл болох радио товчлуурын сонголтыг болиулсан</translation>
 <translation id="1325946044405407859">Бүдэг бор</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />-ын <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Дууны өнгийг нэмэх</translation>
 <translation id="151784044608172266">Дараагийн өгүүлбэр</translation>
 <translation id="1524531499102321782">Брайлийн дараагийн мөр</translation>
+<translation id="1542513807034338907">Өмнөх хуудас руу гүйлгэх</translation>
 <translation id="1546370775711804143">Гүйлгэх цонх</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1559739829547075274">Навигацийг буцаах</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="4764692524839457597">өгөгдмөл</translation>
 <translation id="4772771694153161212">Доогуур нь зураагүй байна</translation>
+<translation id="4780458943471935919">Дараагийн хуудас руу гүйлгэх</translation>
 <translation id="4784215347943747396">Төхөөрөмжийг зөвхөн 1 эсвэл 2 сэлгэлтээр хянах</translation>
 <translation id="4786285211967466855">Өмнөх 1-р түвшний гарчиг алга байна</translation>
 <translation id="4787577491510559358">Одоо байгаа зүйлийн форматчлалыг зарлах</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Элементийн төрөл болон эш татсан, устгасан, тодруулсан, хаалтад оруулсан эсвэл том үсгээр бичсэн текстийг хэлж байх үед ярианы өнгийг өөрчилнө үү.</translation>
 <translation id="7491962110804786152">цонх</translation>
+<translation id="7492497529767769458">Дараагийн хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
 <translation id="7505149250476994901">Үсгийн өмнө "том" гэж хэлнэ үү</translation>
 <translation id="7518543783849163354">ChromeVox-н яриаг түр зогсоохын тулд Control түлхүүрийг дарна уу.</translation>
 <translation id="7533226154149229506">Бага зэргийн алтан шаргал туяатай цайвар саарал</translation>

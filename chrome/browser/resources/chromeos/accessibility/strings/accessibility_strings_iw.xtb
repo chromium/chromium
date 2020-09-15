@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">לחצן החלפת מצב</translation>
 <translation id="1299774449519412690">כחול שמיים בהיר</translation>
 <translation id="1303806948938513162">‏מקישים עם 4 אצבעות כדי לעבור אל התפריטים של ChromeVox</translation>
+<translation id="1313373992684326101">חזרה לקטע הקודם. הדוגמאות כוללות את מגש הסטטוס ואת מרכז האפליקציות.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ביטלת את הסימון בלחצן הבחירה של האפשרות בתפריט</translation>
 <translation id="1325946044405407859">חום צהבהב</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> מתוך <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">הגבר את גובה הצליל</translation>
 <translation id="151784044608172266">המשפט הבא</translation>
 <translation id="1524531499102321782">השורה הבאה בברייל</translation>
+<translation id="1542513807034338907">גלילה אל הדף הקודם</translation>
 <translation id="1546370775711804143">סרגל גלילה</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1559739829547075274">נווט לאחור</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">סרטוני וידאו</translation>
 <translation id="4764692524839457597">ברירת מחדל</translation>
 <translation id="4772771694153161212">ללא קו תחתון</translation>
+<translation id="4780458943471935919">גלילה לדף הבא</translation>
 <translation id="4784215347943747396">אפשר לשלוט במכשיר בעזרת מתג אחד או שניים בלבד</translation>
 <translation id="4786285211967466855">אין כותרת קודמת מרמה 1</translation>
 <translation id="4787577491510559358">הקראת הפורמט של הפריט הנוכחי</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">שינוי גובה הצליל בעת אמירת סוגי אלמנטים, כמו גם בהקראה של טקסט מועתק במירכאות, מחוק, מודגש, בסוגריים או באותיות גדולות.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">מעבר לקטע הבא. הדוגמאות כוללות את מגש הסטטוס ואת מרכז האפליקציות.</translation>
 <translation id="7505149250476994901">יש לומר "גדולה" אחרי האות</translation>
 <translation id="7518543783849163354">‏כדי להפסיק באופן זמני את המשוב בדיבור של ChromeVox, הקש על Control.</translation>
 <translation id="7533226154149229506">צהוב מטה-זהב בהיר</translation>

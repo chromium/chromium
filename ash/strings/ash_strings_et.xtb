@@ -169,6 +169,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2706462751667573066">Üles</translation>
 <translation id="2718395828230677721">Öövalgus</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
+<translation id="2743387203779672305">Kopeeri lõikelauale</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
 <translation id="2825224105325558319">Üksus <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -587,6 +588,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="742594950370306541">Kaamera on kasutusel.</translation>
 <translation id="742608627846767349">Tere hommikust!</translation>
 <translation id="743058460480092004">Kaamera ja mikrofon on kasutusel.</translation>
+<translation id="7461924472993315131">Kinnita</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>

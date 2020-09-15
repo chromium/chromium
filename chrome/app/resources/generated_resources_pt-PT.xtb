@@ -1139,7 +1139,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2340263603246777781"><ph name="ORIGIN" /> pretende sincronizar</translation>
 <translation id="2342740338116612727">Marcadores adicionados</translation>
 <translation id="2343747224442182863">Focar este separador</translation>
-<translation id="2344686470986284227">A iniciar o controlador da máquina virtual…</translation>
 <translation id="2345723121311404059">1 página para <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">A utilização do Hangouts e do Cast for Education é regida pela Política de Privacidade da Google.</translation>
 <translation id="2348176352564285430">Aplicação: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1287,6 +1286,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2505127913256479918">Esta conta supervisionada será removida brevemente</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ecrã #}other{Ecrãs #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Dispositivos perto de si quando a funcionalidade Partilhar com Nearby estiver aberta nos dispositivos dessas pessoas.</translation>
 <translation id="250704661983564564">Posicionamento do ecrã</translation>
 <translation id="2507253002925770350">Permissão removida</translation>
 <translation id="2507397597949272797">A aplicação <ph name="NAME" /> foi colocada em pausa</translation>
@@ -3139,6 +3139,7 @@ Pretende pará-lo?</translation>
 <translation id="4762718786438001384">Espaço em disco do dispositivo criticamente baixo</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
 <translation id="4765582662863429759">Permite às Mensagens Android retransmitir as mensagens de texto do telemóvel para o Chromebook.</translation>
+<translation id="476598255842811483">Ninguém, exceto se abrir a funcionalidade Partilhar com Nearby no seu dispositivo.</translation>
 <translation id="4768332406694066911">Tem certificados destas entidades que o identificam</translation>
 <translation id="477647109558161443">Criar um atalho no ambiente de trabalho</translation>
 <translation id="4776917500594043016">Palavra-passe para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5670,6 +5671,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Transferências</translation>
 <translation id="7864539943188674973">Desativar Bluetooth</translation>
+<translation id="7866352732146932341">Dispositivos perto de si quando a funcionalidade Partilhar com Nearby estiver aberta no seu dispositivo.</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – sincronizado</translation>
 <translation id="7870730066603611552">Rever opções de sincronização após a configuração</translation>
 <translation id="7870790288828963061">Nenhuma aplicação do Quiosque encontrada com uma versão mais recente. Nada a atualizar. Remova a pen USB.</translation>

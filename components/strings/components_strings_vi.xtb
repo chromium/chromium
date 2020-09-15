@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Phiên bản chương trình cơ sở</translation>
 <translation id="1988881251331415125">Nếu đúng chính tả, hãy <ph name="BEGIN_LINK" />thử chạy Chẩn đoán kết nối<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Truy cập vào cookie và dữ liệu trang web.
-
-Bạn có muốn cho phép <ph name="EMBEDDED_URL" /> sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /> không?
-
-Nếu bạn từ chối, các tùy chọn cài đặt quyền riêng tư của bạn sẽ chặn không cho trang web này truy cập. Nếu bạn cho phép, nội dung bạn đã tương tác sẽ hoạt động đúng cách, nhưng <ph name="EMBEDDED_URL" /> có thể theo dõi được hoạt động của bạn.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> muốn lưu trữ vĩnh viễn một lượng lớn dữ liệu trên máy tính cục bộ của bạn</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{và 1 ứng dụng khác}other{và # ứng dụng khác}}</translation>
 <translation id="2003709556000175978">Đặt lại mật khẩu của bạn ngay bây giờ</translation>

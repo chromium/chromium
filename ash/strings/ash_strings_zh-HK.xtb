@@ -48,6 +48,7 @@
 <translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1391102559483454063">已開啟</translation>
+<translation id="1407069428457324124">深色主題背景</translation>
 <translation id="1419738280318246476">解鎖裝置即可執行有關通知的動作</translation>
 <translation id="1420408895951708260">切換「夜燈模式」。<ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">已擷取螢幕擷圖，並儲存至剪貼簿</translation>
@@ -65,6 +66,7 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1570871743947603115">切換藍牙。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
+<translation id="1611993646327628135">開啟</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1667964833127753507">中性色調模式不會使用從桌布擷取的顏色，而是改用一組中性的淺色或深色調。</translation>
@@ -79,6 +81,7 @@
 <translation id="1761222317188459878">切換網絡連線。<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1782199038061388045">翻譯</translation>
+<translation id="1787955149152357925">關閉</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1812997170047690955">我嘅畫面上面有咩？</translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
@@ -166,6 +169,7 @@
 <translation id="2706462751667573066">向上鍵</translation>
 <translation id="2718395828230677721">夜燈模式</translation>
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
+<translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
@@ -201,6 +205,7 @@
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">打開選單</translation>
 <translation id="3087734570205094154">下方</translation>
+<translation id="3090989381251959936">切換<ph name="FEATURE_NAME" />功能。<ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">移動游標</translation>
 <translation id="3098580329624789136">取得「<ph name="QUERY" />」的<ph name="INTENT" /></translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
@@ -233,6 +238,7 @@
 <translation id="3371140690572404006">USB-C 裝置 (右側前方連接埠)</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3400357268283240774">其他設定</translation>
+<translation id="3410336247007142655">顯示深色主題背景設定</translation>
 <translation id="3413817803639110246">目前尚未有任何通知</translation>
 <translation id="3428447136709161042">中斷同<ph name="NETWORK_NAME" />嘅連線</translation>
 <translation id="3430396595145920809">從螢幕右側向左滑動即可返回</translation>
@@ -326,6 +332,7 @@
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4379531060876907730">這是您的觸控筆工具</translation>
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
@@ -345,6 +352,7 @@
 <translation id="4570957409596482333">「選取以朗讀」按鈕</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">停止投放到不明嘅接收器</translation>
+<translation id="4596144739579517758">深色主題背景已關閉</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4659419629803378708">已啟用 ChromeVox</translation>
@@ -387,6 +395,7 @@
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5207949376430453814">突顯文字插入符號</translation>
+<translation id="5208059991603368177">開啟</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="523505283826916779">協助工具設定</translation>
 <translation id="5260676007519551770">桌面 4</translation>
@@ -398,6 +407,7 @@
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
+<translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這位使用者的使用情況和記錄。</translation>
 <translation id="5400461572260843123">快速設定，㩒一下搜尋鍵 + 向左鍵就可以存取通知中心。</translation>
@@ -434,6 +444,7 @@
 <translation id="5769373120130404283">私隱保護畫面</translation>
 <translation id="5777841717266010279">停止共用畫面？</translation>
 <translation id="5790085346892983794">成功</translation>
+<translation id="579415080077680903">靜音</translation>
 <translation id="5820394555380036790">Chromium 作業系統</translation>
 <translation id="5837036133683224804">停止喺<ph name="RECEIVER_NAME" />投放 <ph name="ROUTE_TITLE" /></translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -444,6 +455,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5957083217255311415">流動數據已關閉。</translation>
@@ -468,6 +480,7 @@
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
 <translation id="6164005077879661055">將這位受管使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機數據。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6192859646269780503">尋找手機</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +552,7 @@
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="698231206551913481">移除這位使用者後，系統便會永久刪除所有與該使用者相關的檔案和本機數據。</translation>
 <translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
+<translation id="7013005189539051442">啟用熱點</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結至您的手機</translation>
 <translation id="7026338066939101231">減少</translation>
@@ -573,6 +587,7 @@
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
+<translation id="7461924472993315131">Pin</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
@@ -611,6 +626,7 @@
 <translation id="7842569679327885685">警告：實驗性功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7868900307798234037">用緊指紋解鎖</translation>
+<translation id="7872786842639831132">關閉</translation>
 <translation id="7886169021410746335">調整私隱權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除您的互聯網工作階段。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">傳送電郵</translation>
@@ -715,6 +731,7 @@
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="885387440427703469">已停用擷取螢幕畫面的功能</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
+<translation id="8871580645200179206">切換深色主題背景。<ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8877788021141246043">設定提醒</translation>
 <translation id="8878886163241303700">延伸螢幕</translation>

@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">catatan akhir</translation>
 <translation id="1281252709823657822">dialog</translation>
 <translation id="1306460908038601864">Nonaktif</translation>
+<translation id="1311894908970423688">Nilai harus <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">daftar penghargaan</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">spanduk</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="668171684555832681">Lainnya...</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6709093583001123835">Nilai harus <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Kualitas pemutaran buruk</translation>
 <translation id="6755330956360078551">keterangan alat</translation>
 <translation id="6790428901817661496">Putar</translation>

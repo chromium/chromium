@@ -261,11 +261,6 @@
 <translation id="1978555033938440688">韌體版本</translation>
 <translation id="1988881251331415125">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">存取 Cookie 和網站資料。
-
-你要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
-
-如果不選取，你的隱私權設定會予以封鎖。這項設定可讓你所互動的內容正常運作，但可能會允許 <ph name="EMBEDDED_URL" /> 追蹤你的活動。</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 要求在你的本機電腦上永久儲存大量資料</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 個應用程式}other{以及另外 # 個應用程式}}</translation>
 <translation id="2003709556000175978">立即重設你的密碼</translation>

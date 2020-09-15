@@ -1139,7 +1139,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2342740338116612727">Додадени се обележувачи</translation>
 <translation id="2343747224442182863">Фокусирајте ја картичкава</translation>
-<translation id="2344686470986284227">Се стартува контролерот на виртуелната машина</translation>
 <translation id="2345723121311404059">1 страница на <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">Користењето на Hangouts и „Cast за образование“ е регулирано со „Политиката за приватност на Google“.</translation>
 <translation id="2348176352564285430">Апликација: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -6167,7 +6166,7 @@
 <translation id="8467326454809944210">Изберете друг јазик</translation>
 <translation id="8470214316007448308">Други луѓе</translation>
 <translation id="8470513973197838199">Зачувани лозинки за <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> го оневозможува отстранувањето грешки на ADB. Ова ќе го ресетира вашиот <ph name="DEVICE_TYPE" /> по 24 часа. Направете бекап на сите датотеките што сакате да ги задржите.</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> го оневозможува отстранувањето грешки на ADB. Ова ќе го ресетира вашиот <ph name="DEVICE_TYPE" /> по 24 часа. Направете бекап на датотеките што сакате да ги задржите.</translation>
 <translation id="8472623782143987204">со резервни копии од хардвер</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8475313423285172237">Друга програма на компјутерот додаде наставка која може да промени како работи Chrome.</translation>

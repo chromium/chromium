@@ -1139,7 +1139,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2340263603246777781">O <ph name="ORIGIN" /> deseja realizar o pareamento</translation>
 <translation id="2342740338116612727">Favoritos adicionados</translation>
 <translation id="2343747224442182863">Focar esta guia</translation>
-<translation id="2344686470986284227">Abrindo controle da máquina virtual</translation>
 <translation id="2345723121311404059">1 página para <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">O uso do Hangouts e do Cast for Education é regido pela Política de Privacidade do Google.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1288,6 +1287,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2505127913256479918">Esta conta supervisionada será removida em breve</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Tela #}one{Tela #}other{Tela #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Dispositivos perto de você que estejam com o recurso "Compartilhar por proximidade" aberto</translation>
 <translation id="250704661983564564">Disposição da tela</translation>
 <translation id="2507253002925770350">Tíquete removido</translation>
 <translation id="2507397597949272797">O <ph name="NAME" /> está pausado</translation>
@@ -3140,6 +3140,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4762718786438001384">Dispositivo com espaço em disco criticamente baixo</translation>
 <translation id="4763408175235639573">Os cookies a seguir foram definidos quando você visualizou esta página</translation>
 <translation id="4765582662863429759">Permite que o Android Mensagens transmita mensagens de texto do smartphone para o Chromebook</translation>
+<translation id="476598255842811483">Ninguém, a menos que você abra o recurso "Compartilhar por proximidade"</translation>
 <translation id="4768332406694066911">Você tem certificados das seguintes empresas que identificam você</translation>
 <translation id="477647109558161443">Criar um atalho na área de trabalho</translation>
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3969,7 +3970,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5794700615121138172">Pastas compartilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todos os aplicativos do Google Chrome</translation>
 <translation id="5797070761912323120">O Google pode usar seu histórico para personalizar a Pesquisa, os anúncios e outros serviços que ele oferece</translation>
-<translation id="5798301976526354562">Tamanho do texto (também se aplica ao recurso Legenda instantânea)</translation>
+<translation id="5798301976526354562">Tamanho do texto (também será usado com a Legenda instantânea)</translation>
 <translation id="579915268381781820">Sua chave de segurança foi removida.</translation>
 <translation id="5799508265798272974">Máquina virtual Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">O arquivo de destino foi truncado ou removido desde o último download.</translation>
@@ -5672,6 +5673,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7864539943188674973">Desativar bluetooth</translation>
+<translation id="7866352732146932341">Dispositivos perto de você quando o recurso "Compartilhar por proximidade" estiver aberto no seu aparelho</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: pareado</translation>
 <translation id="7870730066603611552">Revisar as opções de sincronização após a configuração</translation>
 <translation id="7870790288828963061">Nenhum aplicativo de quiosque com versão mais recente foi encontrado. Não há nada para ser atualizado. Remova o pendrive.</translation>

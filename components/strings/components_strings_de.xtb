@@ -261,11 +261,6 @@
 <translation id="1978555033938440688">Firmwareversion</translation>
 <translation id="1988881251331415125">Wenn die URL keinen Tippfehler enthält, <ph name="BEGIN_LINK" />können Sie die Verbindungsdiagnose durchführen<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Auf Cookies und Websitedaten zugreifen.
-
-Möchten Sie <ph name="EMBEDDED_URL" /> erlauben, auf <ph name="TOP_LEVEL_URL" /> Cookies und Websitedaten zu verwenden?
-
-Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies und Websitedaten verwendet werden dürfen, funktionieren die gewünschten Inhalte erwartungsgemäß, <ph name="EMBEDDED_URL" /> kann dadurch aber möglicherweise Ihre Aktivitäten verfolgen.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> möchte umfangreiche Daten dauerhaft auf Ihrem lokalen Computer speichern</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
 <translation id="2003709556000175978">Jetzt Passwort zurücksetzen</translation>

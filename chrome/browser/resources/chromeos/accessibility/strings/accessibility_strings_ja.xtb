@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">切り替えボタン</translation>
 <translation id="1299774449519412690">ライト スカイブルー</translation>
 <translation id="1303806948938513162">ChromeVox メニューを開くには 4 本の指でタップします</translation>
+<translation id="1313373992684326101">前のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>
 <translation id="1325363694295259631"><ph name="NAME" />、選択されていないメニュー項目のラジオボタン</translation>
 <translation id="1325946044405407859">タン</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> 分 の <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">ピッチを上げる</translation>
 <translation id="151784044608172266">次の文</translation>
 <translation id="1524531499102321782">ブライユ点字の次の行</translation>
+<translation id="1542513807034338907">前のページにスクロールします</translation>
 <translation id="1546370775711804143">スクロールバー</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1559739829547075274">逆方向にナビゲート</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">動画</translation>
 <translation id="4764692524839457597">デフォルト</translation>
 <translation id="4772771694153161212">下線オフ</translation>
+<translation id="4780458943471935919">次のページにスクロールします</translation>
 <translation id="4784215347943747396">1～2 個のスイッチだけでデバイスを制御します</translation>
 <translation id="4786285211967466855">前のレベル 1 の見出しはありません</translation>
 <translation id="4787577491510559358">現在のアイテムの書式設定を読み上げる</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">パスワードを編集</translation>
 <translation id="7484805699335881122">要素タイプと引用符付き、削除済み、太字、カッコ付き、または大文字のテキストを読み上げるときにピッチを変更する。</translation>
 <translation id="7491962110804786152">タブ</translation>
+<translation id="7492497529767769458">次のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>
 <translation id="7505149250476994901">「大文字の」と言ってから文字を読み上げる</translation>
 <translation id="7518543783849163354">ChromeVox の読み上げを一時的に停止するには、Ctrl キーを押します。</translation>
 <translation id="7533226154149229506">ライト ゴールデン ロッドイエロー</translation>

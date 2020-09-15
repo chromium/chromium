@@ -2185,6 +2185,11 @@
           如果此政策未设置，“插入符号突出显示”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
 <translation id="4183229833636799228">默认 <ph name="FLASH_PLUGIN_NAME" /> 设置</translation>
 <translation id="4192388905594723944">验证远程访问客户端身份验证令牌时使用的网址</translation>
+<translation id="4196466220333757818">此政策旨在以列表形式指定：哪些扩展程序能够使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数 <ph name="CHALLENGE_USER_KEY_FUNCTION" /> 进行远程认证。只有添加到此列表中的扩展程序才能使用该 API。
+
+          如果扩展程序不在此列表中，或者未设置此列表，则会导致无法调用该 API，并返回错误代码。
+
+          此政策已被弃用，请改用 <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="4203389617541558220">安排自动重启以限制设备的正常运行时间。
 
       如果设置此政策，则会指定设备正常运行的时间，并安排之后自动重启。
@@ -3182,6 +3187,9 @@
 
       如果未设置此政策，默认情况下，受企业管理的用户不能使用即时网络共享功能，不受管理的用户则能够使用即时网络共享功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 位置信息服务</translation>
+<translation id="5585568978223984334">此政策旨在以列表形式指定：哪些扩展程序能够使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函数进行远程认证。只有添加到此列表中的扩展程序才能使用该 API。
+
+          如果扩展程序不在此列表中，或者未设置此列表，则会导致无法调用该 API，并返回错误代码。</translation>
 <translation id="5586942249556966598">不执行任何操作</translation>
 <translation id="5590494712401018042">指定当设备处于演示模式时系统会对屏幕变暗延迟时间应用的调整幅度（百分比）。
 
@@ -5037,7 +5045,7 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
-<translation id="8284296539558710573">跨源 HTTP 身份验证提示</translation>
+<translation id="8284296539558710573">跨域 HTTP 身份验证提示</translation>
 <translation id="8285435910062771358">已启用全屏放大镜</translation>
 <translation id="8288199156259560552">启用 Android Google 位置信息服务</translation>
 <translation id="8290875622178450531">启用“语音输入”无障碍功能。

@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Versiune de firmware</translation>
 <translation id="1988881251331415125">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea de conectivitate<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">să acceseze cookie-urile și datele privind site-urile.
-
-Permiți ca <ph name="EMBEDDED_URL" /> să folosească cookie-uri și date privind site-urile pe <ph name="TOP_LEVEL_URL" />?
-
-În caz contrar, adresa va fi blocată de setările de confidențialitate. Astfel, conținutul cu care ai interacționat va funcționa corect, dar este posibil ca <ph name="EMBEDDED_URL" /> să-ți urmărească activitatea.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> dorește să stocheze permanent cantități mari de date pe computer</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
 <translation id="2003709556000175978">Resetează parola acum</translation>

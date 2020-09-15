@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">note de fin</translation>
 <translation id="1281252709823657822">boîte de dialogue</translation>
 <translation id="1306460908038601864">Désactivé</translation>
+<translation id="1311894908970423688">Veuillez indiquer la valeur <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">crédits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bannière</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="668171684555832681">Autre...</translation>
 <translation id="6692633176391053278">curseur</translation>
+<translation id="6709093583001123835">Veuillez indiquer la valeur <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>
 <translation id="6755330956360078551">info-bulle</translation>
 <translation id="6790428901817661496">Lire</translation>

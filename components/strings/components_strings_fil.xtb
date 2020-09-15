@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Bersyon ng Firmware</translation>
 <translation id="1988881251331415125">Kung tama ang pagbabaybay, <ph name="BEGIN_LINK" />subukang patakbuhin ang Mga Diagnostic sa Pagkakakonekta<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">I-access ang mga cookie at data ng site.
-
-Gusto mo bang payagan ang <ph name="EMBEDDED_URL" /> na gamitin ang mga cookie at data ng site sa <ph name="TOP_LEVEL_URL" />?
-
-Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang content na nakaugnayan mo na gumana nang maayos, pero posible nitong payagan ang <ph name="EMBEDDED_URL" /> na i-track ang iyong aktibidad.</translation>
 <translation id="1997484222658892567">Gusto ng <ph name="URL" /> na permanenteng mag-store ng malaking data sa iyong lokal na computer</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
 <translation id="2003709556000175978">I-reset na ang iyong password</translation>

@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">ປຸ່ມເປີດປິດ</translation>
 <translation id="1299774449519412690">ສີຟ້າທ້ອງຟ້າອ່ອນ</translation>
 <translation id="1303806948938513162">ແຕະດ້ວຍ 4 ນິ້ວມືເພື່ອເຂົ້າຫາເມນູຂອງ ChromeVox</translation>
+<translation id="1313373992684326101">ຍ້າຍໄປພາກສ່ວນກ່ອນໜ້າ. ຕົວຢ່າງ: ຖາດສະຖານະ ແລະ ຕົວເປີດໃຊ້.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ຍົກເລີກການເລືອກປຸ່ມຕົວເລືອກລາຍການໃນເມນູແລ້ວ</translation>
 <translation id="1325946044405407859">ສີແທນ</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> ໃນ <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">ເພີ່ມ​ລະດັບສຽງ</translation>
 <translation id="151784044608172266">ປະໂຫຍກ​ຕໍ່​ໄປ</translation>
 <translation id="1524531499102321782">ແຖວຕໍ່ໄປຕົວໜັງສືນູນ</translation>
+<translation id="1542513807034338907">ເລື່ອນໄປຍັງໜ້າກ່ອນໜ້າ່</translation>
 <translation id="1546370775711804143">ແຖບ​ເລື່ອນ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1559739829547075274">ກັບຄືນທາງຫຼັງ</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
 <translation id="4764692524839457597">ຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="4772771694153161212">ບໍ່ແມ່ນຂີດກ້ອງ</translation>
+<translation id="4780458943471935919">ເລື່ອນໄປຍັງໜ້າຕໍ່ໄປ</translation>
 <translation id="4784215347943747396">ຄວບຄຸມອຸປະກອນດ້ວຍ 1 ຫຼື 2 ປຸ່ມເທົ່ານັ້ນ</translation>
 <translation id="4786285211967466855">ບໍ່ມີຫົວຂໍ້ລະດັບ 1 ກ່ອນໜ້າ</translation>
 <translation id="4787577491510559358">ປະກາດການຈັດຮູບແບບສຳລັບລາຍການປັດຈຸບັນ</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ປ່ຽນລະດັບສຽງເມື່ອເວົ້າປະເພດອົງປະກອບ ແລະ ຂໍ້ຄວາມທີ່ອ້າງອີງ, ຖືກລຶບ, ເປັນໂຕໜາ, ຢູ່ໃນວົງເລັບ ຫຼື ເປັນອັກສອນຕົວໃຫຍ່.</translation>
 <translation id="7491962110804786152">ແຖບ</translation>
+<translation id="7492497529767769458">ຍ້າຍໄປພາກສ່ວນຕໍ່ໄປ. ຕົວຢ່າງ: ຖາດສະຖານະ ແລະ ຕົວເປີດໃຊ້.</translation>
 <translation id="7505149250476994901">ເວົ້າ "ຕົວພິມໃຫຍ່" ກ່ອນຕົວອັກສອນ</translation>
 <translation id="7518543783849163354">ເພື່ອຢຸດ ChromeVox ຈາກການເວົ້າໄວ້ຊົ່ວຄາວ, ໃຫ້ກົດປຸ່ມ Control.</translation>
 <translation id="7533226154149229506">ສີເຫຼືອງໂກນເດິນຣອດອ່ອນ</translation>

@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Botón de activación/desactivación</translation>
 <translation id="1299774449519412690">Azul celeste claro</translation>
 <translation id="1303806948938513162">Toca con 4 dedos para acceder aos menús de ChromeVox</translation>
+<translation id="1313373992684326101">Ir á sección anterior. Exemplos: bandexa de estado, menú de aplicacións etc.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botón de opción do elemento do menú non seleccionado</translation>
 <translation id="1325946044405407859">Bronceado</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Sube o ton</translation>
 <translation id="151784044608172266">Seguinte frase</translation>
 <translation id="1524531499102321782">Seguinte liña en braille</translation>
+<translation id="1542513807034338907">Desprazarse á páxina anterior</translation>
 <translation id="1546370775711804143">Barra de desprazamento</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559739829547075274">Navega cara atrás</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4764692524839457597">predeterminado</translation>
 <translation id="4772771694153161212">Texto sen subliñado</translation>
+<translation id="4780458943471935919">Desprazarse á páxina seguinte</translation>
 <translation id="4784215347943747396">Controla o dispositivo con só 1 ou 2 interruptores</translation>
 <translation id="4786285211967466855">Non hai ningunha cabeceira anterior de nivel 1</translation>
 <translation id="4787577491510559358">Anuncia o formato do elemento actual</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Cambiar de ton ao pronunciar tipos de elementos e texto entre comiñas, eliminado, en letra grosa, entre parénteses ou en maiúsculas.</translation>
 <translation id="7491962110804786152">pestana</translation>
+<translation id="7492497529767769458">Ir á seguinte sección. Exemplos: bandexa de estado, menú de aplicacións etc.</translation>
 <translation id="7505149250476994901">Di "maiúsculo" despois da letra</translation>
 <translation id="7518543783849163354">Para que ChromeVox deixe de falar temporalmente, preme a tecla Control.</translation>
 <translation id="7533226154149229506">Amarelo dourado claro</translation>

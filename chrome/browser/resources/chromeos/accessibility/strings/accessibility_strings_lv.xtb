@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Pārslēgšanas poga</translation>
 <translation id="1299774449519412690">Gaiši debeszila</translation>
 <translation id="1303806948938513162">Pieskarieties ar četriem pirkstiem, lai ievadītu ChromeVox izvēlni</translation>
+<translation id="1313373992684326101">Pārejiet uz iepriekšējo sadaļu. Piemēri: “Statusa josla” un “Palaidējs”.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, izvēlnes vienuma poga nav atlasīta</translation>
 <translation id="1325946044405407859">Gaiši brūna</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> no <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Palielināt augstumu</translation>
 <translation id="151784044608172266">Nākamais teikums</translation>
 <translation id="1524531499102321782">Nākamā rindiņa Braila rakstā</translation>
+<translation id="1542513807034338907">Ritināt līdz iepriekšējai lapai</translation>
 <translation id="1546370775711804143">Ritjosla</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1559739829547075274">Pārvietoties atpakaļ</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">noklusējums</translation>
 <translation id="4772771694153161212">Nav pasvītrojuma</translation>
+<translation id="4780458943471935919">Ritināt līdz nākamajai lapai</translation>
 <translation id="4784215347943747396">Kontrolējiet ierīci, izmantojot tikai 1–2 slēdžus.</translation>
 <translation id="4786285211967466855">Nav iepriekšējā 1. līmeņa virsraksta.</translation>
 <translation id="4787577491510559358">Paziņot pašreizējā vienuma formatējumu</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">parole</translation>
 <translation id="7484805699335881122">Mainīt runas skaņas augstumu, izrunājot elementu tipus, citētu vai izdzēstu tekstu, kā arī tekstu, kas ir iekavās vai rakstīts treknrakstā vai ar lielo sākumburtu.</translation>
 <translation id="7491962110804786152">cilne</translation>
+<translation id="7492497529767769458">Pārejiet uz nākamo sadaļu. Piemēri: “Statusa josla” un “Palaidējs”.</translation>
 <translation id="7505149250476994901">Pirms burta pasakiet “cap” (lielais burts).</translation>
 <translation id="7518543783849163354">Lai īslaicīgi pārtrauktu ChromeVox balss komentārus, nospiediet vadības taustiņu.</translation>
 <translation id="7533226154149229506">Gaiši zeltgalvīšu dzeltena</translation>

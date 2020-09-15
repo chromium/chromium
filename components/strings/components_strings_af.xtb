@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Fermwareweergawe</translation>
 <translation id="1988881251331415125">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Konnektiwiteitdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Kry toegang tot webkoekies en werfdata.
-
-Wil jy <ph name="EMBEDDED_URL" /> toelaat om webkoekies en werfdata te gebruik op <ph name="TOP_LEVEL_URL" />?
-
-Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die inhoud waarmee jy interaksie gehad het, in staat stel om reg te werk, maar kan <ph name="EMBEDDED_URL" /> toelaat om jou aktiwiteit na te spoor.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> wil groot data permanent op jou plaaslike rekenaar berg</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2003709556000175978">Stel jou wagwoord nou terug</translation>

@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">amaierako oharra</translation>
 <translation id="1281252709823657822">leihoa</translation>
 <translation id="1306460908038601864">Desaktibatuta</translation>
+<translation id="1311894908970423688">Balioak <ph name="VALUE_DATE_OR_TIME" /> izan behar du.</translation>
 <translation id="1335095011850992622">kredituak</translation>
 <translation id="1342835525016946179">artikulua</translation>
 <translation id="1359897965706325498">iragarki-banda</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="668171684555832681">Beste bat…</translation>
 <translation id="6692633176391053278">sekuentzia-hautatzailea</translation>
+<translation id="6709093583001123835">Balioak <ph name="VALUE" /> izan behar du.</translation>
 <translation id="6709570249143506788">Erreprodukzio-kalitate txarra</translation>
 <translation id="6755330956360078551">argibidea</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>

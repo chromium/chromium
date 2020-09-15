@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">концевая сноска</translation>
 <translation id="1281252709823657822">диалоговое окно</translation>
 <translation id="1306460908038601864">ВЫКЛ</translation>
+<translation id="1311894908970423688">Необходимое значение: <ph name="VALUE_DATE_OR_TIME" /></translation>
 <translation id="1335095011850992622">выходные сведения</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">баннер</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="668171684555832681">Другой...</translation>
 <translation id="6692633176391053278">счетчик</translation>
+<translation id="6709093583001123835">Необходимое значение: <ph name="VALUE" /></translation>
 <translation id="6709570249143506788">Плохое качество воспроизведения</translation>
 <translation id="6755330956360078551">подсказка</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>

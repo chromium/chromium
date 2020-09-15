@@ -106,7 +106,6 @@
 <translation id="1853692000353488670">Nowa karta incognito</translation>
 <translation id="1856325424225101786">Zresetować wersję uproszczoną?</translation>
 <translation id="1868024384445905608">Chrome pobiera pliki jeszcze szybciej</translation>
-<translation id="1874760110381325409">Zalogujesz się na swoje konto Google\n(to nie spowoduje uruchomienia Synchronizacji Chrome)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1883903952484604915">Moje pliki</translation>
 <translation id="1925021887439448749">Wpisz niestandardowy adres internetowy</translation>
@@ -893,7 +892,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7930998711684428189">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł.</translation>
 <translation id="7942131818088350342">Przeglądarka <ph name="PRODUCT_NAME" /> jest nieaktualna.</translation>
 <translation id="7947953824732555851">Zaakceptuj i zaloguj się</translation>
-<translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia iwłącz go.</translation>
+<translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia i włącz go.</translation>
 <translation id="7963646190083259054">Dostawca:</translation>
 <translation id="7967911570373677897">Aby zeskanować kod QR, otwórz ustawienia i zezwól Chrome na używanie aparatu</translation>
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>

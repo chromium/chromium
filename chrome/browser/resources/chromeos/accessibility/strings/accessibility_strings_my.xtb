@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">အဖွင့်အပိတ်ခလုတ်</translation>
 <translation id="1299774449519412690">ကောင်းကင်ပြာ အနု</translation>
 <translation id="1303806948938513162">ChromeVox မီနူးများသို့ ဝင်ရန် လက်ချောင်း ၄ ချောင်းဖြင့် တို့ပါ</translation>
+<translation id="1313373992684326101">ယခင်အပိုင်းသို့ ရွှေ့သည်။ ဥပမာများတွင် 'အခြေအနေပြဗန်း' နှင့် Launcher တို့ ပါဝင်သည်။</translation>
 <translation id="1325363694295259631"><ph name="NAME" />၊ မီနူး အကြောင်းအရာ ရေဒီယိုခလုတ်ကို ပြန်ဖြုတ်ထားသည်</translation>
 <translation id="1325946044405407859">အညို</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />ထဲက <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">အသံကို မြှင့်ပေးရန်</translation>
 <translation id="151784044608172266">နောက် ဝါကျ</translation>
 <translation id="1524531499102321782">မျက်မမြင်စာ နောက်တစ်လိုင်း</translation>
+<translation id="1542513807034338907">ယခင်စာမျက်နှာသို့ လှိမ့်သည်</translation>
 <translation id="1546370775711804143">လှိမ့် ဘား</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1559739829547075274">နောက်သို့ သွားရန်</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ဗီဒီယို</translation>
 <translation id="4764692524839457597">မူရင်း</translation>
 <translation id="4772771694153161212">အောက်မျဉ်းသားမထားပါ</translation>
+<translation id="4780458943471935919">နောက်စာမျက်နှာသို့ လှိမ့်ရန်</translation>
 <translation id="4784215347943747396">စက်ပစ္စည်းကို ခလုတ် ၁ ခု သို့မဟုတ် ၂ ခုဖြင့်သာ ထိန်းချုပ်ခြင်း</translation>
 <translation id="4786285211967466855">ယခင် အဆင့် ၁ ခေါင်းစီး မရှိပါ</translation>
 <translation id="4787577491510559358">လက်ရှိအရာအတွက် ဖော်မက်ကို ကြေညာရန်</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">အကြောင်းအရာအမျိုးအစားနှင့် မျက်တောင်အဖွင့်အပိတ်ပါသော၊ ဖျက်ထားသော၊ ထင်ရှားအောင်ပြုလုပ်ထားသော၊ ကွင်းစကွင်းပိတ်ပါသော သို့မဟုတ် စာလုံးကြီးပြုလုပ်ထားသော စာသားကိုပြောသည့်အခါ အသံအနေအထားပြောင်းပါ။</translation>
 <translation id="7491962110804786152">တဘ်</translation>
+<translation id="7492497529767769458">နောက်အပိုင်းသို့ ရွှေ့သည်။ ဥပမာများတွင် 'အခြေအနေပြဗန်း' နှင့် Launcher တို့ ပါဝင်သည်။</translation>
 <translation id="7505149250476994901">စကားလုံးရှေ့တွင် "ကက်ပ်" ဟု ပြောပါ</translation>
 <translation id="7518543783849163354">ChromeVox စကားပြောခြင်းမှ ခေတ္တရပ်ရန် Control ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="7533226154149229506">ရွှေချောင်းဝါ အနု</translation>

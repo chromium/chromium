@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">尾註</translation>
 <translation id="1281252709823657822">對話框</translation>
 <translation id="1306460908038601864">關閉</translation>
+<translation id="1311894908970423688">數值必須為 <ph name="VALUE_DATE_OR_TIME" />。</translation>
 <translation id="1335095011850992622">參與名單</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1359897965706325498">橫額</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="668171684555832681">其他顏色…</translation>
 <translation id="6692633176391053278">步進器</translation>
+<translation id="6709093583001123835">數值必須為 <ph name="VALUE" />。</translation>
 <translation id="6709570249143506788">播放品質欠佳</translation>
 <translation id="6755330956360078551">提示</translation>
 <translation id="6790428901817661496">播放</translation>

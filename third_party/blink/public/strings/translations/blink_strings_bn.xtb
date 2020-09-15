@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">এন্ডনোট</translation>
 <translation id="1281252709823657822">ডায়ালগ</translation>
 <translation id="1306460908038601864">বন্ধ করা আছে</translation>
+<translation id="1311894908970423688">তারিখ অবশ্যই <ph name="VALUE_DATE_OR_TIME" /> হতে হবে।</translation>
 <translation id="1335095011850992622">ক্রেডিট</translation>
 <translation id="1342835525016946179">নিবন্ধ</translation>
 <translation id="1359897965706325498">ব্যানার</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="668171684555832681">অন্যান্য...</translation>
 <translation id="6692633176391053278">পদক্ষেপকারী</translation>
+<translation id="6709093583001123835">মান অবশ্যই <ph name="VALUE" /> হতে হবে।</translation>
 <translation id="6709570249143506788">প্লেব্যাকের গুণমান খারাপ</translation>
 <translation id="6755330956360078551">সরঞ্জামটিপ</translation>
 <translation id="6790428901817661496">চালু করুন</translation>

@@ -85,7 +85,7 @@
 <translation id="1094607894174825014">पढ्ने वा लेख्ने कार्य अमान्य अफसेटसहित "<ph name="DEVICE_NAME" />" मा अनुरोध गरिएको थियो</translation>
 <translation id="109647177154844434">Parallels Desktop अनइन्स्टल गर्नुले तपाईंको Windows इमेज मेटाउने छ। यसमा Windows का एप, सेटिङ र डेटा समावेश हुन्छन्। तपाईंले Parallels Desktop अनइन्स्टल गर्न खोज्नुभएकै हो?</translation>
 <translation id="1097515232094183876">{COUNT,plural, =1{एउटा लिंक}other{# वटा लिंक}}</translation>
-<translation id="1097658378307015415">साइन इन गर्नु अघि, कृपया सञ्जाल <ph name="NETWORK_ID" /> सक्रिय गर्नको लागि पाहुनाको रूपमा प्रवेश गर्नुहोस्</translation>
+<translation id="1097658378307015415">साइन इन गर्नुअघि, कृपया सञ्जाल <ph name="NETWORK_ID" /> सक्रिय गर्नको लागि पाहुनाको रूपमा प्रवेश गर्नुहोस्</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> बाट छवि कपी गरियो</translation>
 <translation id="1102187190604780492">तपाईंको सहायकलाई तपाईंको स्क्रिनमा भएका कुरासँग सम्बन्धित जानकारी सक्रियतापूर्वक देखाउन दिनुहोस्</translation>
 <translation id="1103523840287552314">सँधै अनुवाद गर्नुहोस् <ph name="LANGUAGE" /></translation>
@@ -554,7 +554,7 @@
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ले Linux का एपहरूमा अझै काम गर्दैन</translation>
 <translation id="1640283014264083726">RSA इन्क्रिप्शनको साथमा PKCS #1 MD4</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
-<translation id="1642494467033190216">अन्य डिबगिङ सुविधाहरू सक्षम गर्नु अघि rootfs संरक्षण हटाउनु र रिस्टार्ट गर्नु आवश्यक छ।</translation>
+<translation id="1642494467033190216">अन्य डिबगिङ सुविधाहरू सक्षम गर्नुअघि rootfs संरक्षण हटाउनु र रिस्टार्ट गर्नु आवश्यक छ।</translation>
 <translation id="1643072738649235303">SHA-1 सहितको X9.62 ECDSA हस्ताक्षर</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645516838734033527">तपाईंको <ph name="DEVICE_TYPE" /> सुरक्षित राख्न Smart Lock का लागि तपाईंको फोनमा एक स्क्रिन लक अनिवार्य छ।</translation>
@@ -1135,7 +1135,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडा बनाउन चाहन्छ</translation>
 <translation id="2342740338116612727">पुस्तक चिन्हहरू थपिए</translation>
 <translation id="2343747224442182863">यो ट्याबमा केन्द्रित गर्नुहोस्</translation>
-<translation id="2344686470986284227">भर्चुअल मेसिन कन्ट्रोलर सुरु हुँदै छ</translation>
 <translation id="2345723121311404059"><ph name="PRINTER_NAME" /> का लागि १ पृष्ठ</translation>
 <translation id="2347644257713614136">Hangouts र शिक्षाका लागि Cast को प्रयोगलाई Google को गोपनीयता नीतिले नियन्त्रण गर्छ।</translation>
 <translation id="2348176352564285430">एप: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1471,6 +1470,7 @@
 <translation id="2731700343119398978">कृपया प्रतिक्षा गर्नुहोस्...</translation>
 <translation id="2731710757838467317">तपाईंको निरीक्षण प्रयोगकर्ता सिर्जना गर्दै । यसले केही समय लिन सक्छ।</translation>
 <translation id="2731971182069536520">तपाईंले अर्को पटक आफ्नो यन्त्र पुनः सुचारु गर्दा तपाईंका प्रशासकले एक पटके अद्यावधिक गर्ने छन् जसका कारण तपाईंको स्थानीय डेटा मेटिने छ।</translation>
+<translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> अन्तर्गतका साइटहरूलाई पनि रिसेट गरिने छ।</translation>
 <translation id="2735712963799620190">समय तालिका</translation>
 <translation id="2737363922397526254">मासिनु...</translation>
@@ -3118,6 +3118,7 @@
 <translation id="4735803855089279419">प्रणालीले यो यन्त्रका यान्त्रिक पहिचानकर्ताहरू निर्धारण गर्न सकेन।</translation>
 <translation id="4736292055110123391">तपाईंका सबै यन्त्रहरूमा तपाईंका पुस्तक चिन्ह, पासवर्ड, इतिहाससम्बन्धी जानकारी र थप कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
+<translation id="473936925429402449">चयन गरियो, <ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
 <translation id="4739639199548674512">टिकटहरू</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />एपहरू अद्यावधिक गर्ने तरिका सिक्नुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
@@ -3396,7 +3397,7 @@
 <translation id="5111646998522066203">इन्कोग्निटो मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क व्यवस्थापक</translation>
 <translation id="5112577000029535889">&amp;विकासकर्ता उपकरणहरू</translation>
-<translation id="5113739826273394829">यदि तपाईं यो प्रतिमामा क्लिक गर्नुहुन्छ भने, तपाईंले म्यानुअल तरिकाले यस <ph name="DEVICE_TYPE" /> लक गर्नुहुने छ। अर्को समय, तपाईंले प्रविष्ट गर्नु अघि आफ्नो पासवर्ड टाइप गर्न आवश्यक छ।</translation>
+<translation id="5113739826273394829">यदि तपाईं यो प्रतिमामा क्लिक गर्नुहुन्छ भने, तपाईंले म्यानुअल तरिकाले यस <ph name="DEVICE_TYPE" /> लक गर्नुहुने छ। अर्को समय, तपाईंले प्रविष्ट गर्नुअघि आफ्नो पासवर्ड टाइप गर्न आवश्यक छ।</translation>
 <translation id="51143538739122961">आफ्नो सुरक्षा साँचो प्रविष्टि गर्नुहोस् र यसलाई छोएर सक्रिय गर्नुहोस्</translation>
 <translation id="5115309401544567011">कृपया आफ्नो <ph name="DEVICE_TYPE" /> लाई पावर स्रोतमा जोड्नुहोस्‌।</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -3833,7 +3834,7 @@
 <translation id="5632566673632479864">तपाईंको खाता <ph name="EMAIL" /> लाई अब उप्रान्त प्राथमिक खाताका रूपमा अनुमति दिइँदैन। यो खाताको व्यवस्थापन <ph name="DOMAIN" /> ले गर्ने हुनाले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू यस यन्त्रबाट खाली गरिने छ।</translation>
 <translation id="5632592977009207922">डाउनलोड गर्दै, <ph name="PERCENT_REMAINING" />% बाँकी</translation>
 <translation id="563371367637259496">मोबाइल</translation>
-<translation id="563535393368633106">पहुँच गर्नु अघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
+<translation id="563535393368633106">पहुँच गर्नुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> प्रयोग गर्नको लागि तपाइँले पहिले <ph name="LINK_START" />सञ्जालको साइन-इन पृष्ठ भ्रमण गर्न<ph name="LINK_END" /> आवश्यक छ, जुन केही सेकेन्डमा स्वचालित रूपमा खोलिनेछ। यदि यसो भएन भने, सञ्जाल प्रयोग गर्न सकिन्न।</translation>
 <translation id="5637476008227280525">मोबाइल डेटा सक्षम पार्ने</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome वेब स्टोर<ph name="END_LINK" /> मा विस्तार तथा विषयवस्तुहरू फेला पार्नुहोस्</translation>
@@ -4138,6 +4139,7 @@
 <translation id="6011449291337289699">साइट सम्बन्धी डेटा खाली गर्नुहोस्</translation>
 <translation id="6015266928248016057">अमान्य PUK। बाँकी प्रयास: <ph name="RETRIES" />।</translation>
 <translation id="6015796118275082299">वर्ष</translation>
+<translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्रीमा जानुहोस्</translation>
 <translation id="6016551720757758985">अघिल्लो संस्करणमा फिर्तीसँग Powerwash पुष्टि गर्नुहोस्</translation>
 <translation id="6016972670657536680">भाषा र किबोर्डको बटन चयन गर्नुहोस्। हाल <ph name="LANGUAGE" /> भाषा चयन गरिएको छ।</translation>
 <translation id="6017514345406065928">हरियो</translation>
@@ -4710,7 +4712,7 @@
 <translation id="671928215901716392">स्क्रिन लक गर्नुहोस्</translation>
 <translation id="6721678857435001674">आफ्नो सुरक्षा साँचोको ब्रान्डको नाम र मोडेल हेर्नुहोस्</translation>
 <translation id="6721972322305477112">&amp;फाइल</translation>
-<translation id="672213144943476270">कृपया एक अतिथिको रूपमा ब्राउज गर्नु अघि आफ्नो प्रोफाइललाई अनलक गर्नुहोस्।</translation>
+<translation id="672213144943476270">कृपया एक अतिथिको रूपमा ब्राउज गर्नुअघि आफ्नो प्रोफाइललाई अनलक गर्नुहोस्।</translation>
 <translation id="6723661294526996303">पृष्ठमञ्जूषाहरू र सेटिङहरू आयात गर्नुहोस्...</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6725073593266469338">UI सम्बन्धी सेवा</translation>
@@ -6156,7 +6158,7 @@
 <translation id="8467326454809944210">अर्को भाषा छनौट गर्नुहोस्</translation>
 <translation id="8470214316007448308">अन्य मान्छेहरू</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> का सुरक्षित गरिएका पासवर्डहरू</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पार्दै छ। परिणाम स्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> ले ADB डिबग प्रक्रिया असक्षम पार्दै छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="8472623782143987204">हार्डवेयरद्वारा समर्थित</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
 <translation id="8475313423285172237">तपाईंको कम्प्युटरमा रहेको अर्को प्रोग्रामले एउटा एक्स्टेन्स थपेको छ जसले Chrome को काम गर्ने तरिकालाई परिवर्तन गर्न सक्छ।</translation>
@@ -6443,6 +6445,7 @@
 <translation id="8811862054141704416">Crostini लाई माइक्रोफोन प्रयोग गर्न दिने सेटिङ</translation>
 <translation id="8812552797690463522">यो नेटवर्क तपाईंसँग सेयर गरिएको छ।</translation>
 <translation id="8812593354822910461">ब्राउजिङ डेटा (<ph name="URL" />) पनि हटाउनुहोस्। यस कार्यले तपाईंलाई <ph name="DOMAIN" /> बाट साइन आउट गराउने छ। <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">मलाई पछि सम्झाउनुहोस्</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> मा साइन इन गर्न सकिँदैन</translation>
 <translation id="8813872945700551674">अभिभावकलाई "<ph name="EXTENSION_NAME" />" अनुमोदन गर्न अनुरोध गर्नुहोस्</translation>
 <translation id="8813969267212093033">प्रणालीको सन्देश यो भाषामा देखाइन्छ</translation>
@@ -6473,6 +6476,7 @@
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">ह्यामबर्गर</translation>
 <translation id="883911313571074303">छविलाई एनोटेट गर्नुहोस्</translation>
+<translation id="8841843049738266382">श्वेतसूचीमा राखिएका प्रयोगकर्ताका नाम रिड गर्ने र बदल्ने</translation>
 <translation id="8842594465773264717">यो फिंगरप्रिन्ट मेट्नुहोस्</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8846132060409673887">यो कम्प्युटरका निर्माता र मोडेल पढ्नुहोस्</translation>
@@ -6715,7 +6719,7 @@
 <translation id="9131487537093447019">ब्लूटुथ यन्त्रहरूबाट सन्देश पठाउनुहोस् र प्राप्त गर्नुहोस्।</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9137157311132182254">मन पराइएको खोज इन्जिन</translation>
-<translation id="9137248913990643158">यस एपको प्रयोग गर्नु अघि कृपया Chrome सुरु गरी साइन इन गर्नुहोस्।</translation>
+<translation id="9137248913990643158">यस एपको प्रयोग गर्नुअघि कृपया Chrome सुरु गरी साइन इन गर्नुहोस्।</translation>
 <translation id="9137916601698928395"><ph name="USER" /> को रूपमा लिंक खोल्नुहोस्</translation>
 <translation id="9138978632494473300">निम्न ठाउँमा सर्टकटहरू थप्नुहोस्:</translation>
 <translation id="9139988741193276691">Linux कन्फिगर गर्दै</translation>

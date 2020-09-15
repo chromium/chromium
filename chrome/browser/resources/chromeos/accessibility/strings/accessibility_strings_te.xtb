@@ -52,6 +52,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1291286136605998134">టోగుల్ బటన్</translation>
 <translation id="1299774449519412690">లేత ఆకాశ నీలం</translation>
 <translation id="1303806948938513162">ChromeVox మెనూలలోకి వెళ్లడం కోసం 4 వేళ్లతో నొక్కండి</translation>
+<translation id="1313373992684326101">మునుపటి విభాగానికి వెళ్లండి. ఉదాహరణలలో స్టేటస్ ట్రే, లాంచర్ ఉంటాయి.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, మెనూ అంశం రేడియో బటన్ ఎంపిక రద్దు చేయబడింది</translation>
 <translation id="1325946044405407859">లేత సింధూర రంగు</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />లో <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1506187449813838456">స్వర స్థాయిని పెంచండి</translation>
 <translation id="151784044608172266">తరువాత వాక్యం</translation>
 <translation id="1524531499102321782">బ్రెయిలీ తరువాత పంక్తి</translation>
+<translation id="1542513807034338907">మునుపటి పేజీకి స్క్రోల్ చేయండి</translation>
 <translation id="1546370775711804143">స్క్రోల్ బార్</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1559739829547075274">వెనుకకు నావిగేట్ చేయండి</translation>
@@ -486,6 +488,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4763480195061959176">వీడియో</translation>
 <translation id="4764692524839457597">డిఫాల్ట్</translation>
 <translation id="4772771694153161212">కింది గీత వద్దు</translation>
+<translation id="4780458943471935919">తర్వాతి పేజీకి స్క్రోల్ చేయండి</translation>
 <translation id="4784215347943747396">కేవలం 1 లేదా 2 స్వివ్‌లతో పరికరాన్ని నియంత్రించండి</translation>
 <translation id="4786285211967466855">మునుపటి స్థాయి 1 శీర్షిక లేదు</translation>
 <translation id="4787577491510559358">ప్రస్తుత అంశం యొక్క ఫార్మాటింగ్‌ను ప్రకటిస్తుంది</translation>
@@ -821,6 +824,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ఎలిమెంట్ రకాలు అలాగే కోట్ చేసిన, తొలగించబడిన, బోల్డ్‌గా చేసిన, బ్రాకెట్‌లలో ఉన్న, క్యాపిటల్ లెటర్స్ గల టెక్స్ట్‌ను మాట్లాడేటప్పుడు పిచ్‌ను మార్చండి.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">తర్వాతి విభాగానికి వెళ్లండి. ఉదాహరణలలో స్టేటస్ ట్రే, లాంచర్ ఉంటాయి.</translation>
 <translation id="7505149250476994901">క్యాపిటల్ అక్షరాన్ని పలికే ముందు "క్యాపిటల్" అని అనండి</translation>
 <translation id="7518543783849163354">ChromeVoxలో చదివి వినిపించే మోడ్‌ను తాత్కాలికంగా ఆపివేయడానికి, Control కీని నొక్కండి.</translation>
 <translation id="7533226154149229506">లేత బంగారం కడ్డీ పసుపు</translation>

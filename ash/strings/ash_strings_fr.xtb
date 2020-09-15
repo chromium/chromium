@@ -48,6 +48,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1391102559483454063">Activé</translation>
+<translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1419738280318246476">Déverrouiller l'appareil pour effectuer l'action de notification</translation>
 <translation id="1420408895951708260">Activer/Désactiver la fonctionnalité Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Capture d'écran effectuée et enregistrée dans le presse-papiers</translation>
@@ -65,6 +66,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1550523713251050646">Cliquez pour obtenir plus d'options.</translation>
 <translation id="1570871743947603115">Activer/Désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
+<translation id="1611993646327628135">Activé</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas des couleurs issues du fond d'écran : il les remplace par une gamme de tonalités neutres (claires ou sombres).</translation>
@@ -79,6 +81,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1761222317188459878">Activer/Désactiver la connexion réseau. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Vers la droite</translation>
 <translation id="1782199038061388045">traduction</translation>
+<translation id="1787955149152357925">Désactivé</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="1812997170047690955">Éléments affichés à l'écran</translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
@@ -166,6 +169,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2706462751667573066">Haut</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
+<translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place.</translation>
@@ -201,6 +205,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
 <translation id="3087734570205094154">En bas</translation>
+<translation id="3090989381251959936">Activer/Désactiver <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Curseur de déplacement</translation>
 <translation id="3098580329624789136">Trouvez la <ph name="INTENT" /> de "<ph name="QUERY" />"</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +238,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3371140690572404006">Appareil USB de type C (port situé sur la droite de l'appareil, à l'avant)</translation>
 <translation id="3386978599540877378">la loupe plein écran</translation>
 <translation id="3400357268283240774">Autres paramètres</translation>
+<translation id="3410336247007142655">Afficher les paramètres du thème sombre</translation>
 <translation id="3413817803639110246">Aucune notification</translation>
 <translation id="3428447136709161042">Se déconnecter de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Faites glisser votre doigt de droite à gauche pour revenir en arrière</translation>
@@ -326,6 +332,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4378551569595875038">Connexion</translation>
 <translation id="4379531060876907730">Voici vos outils de stylet</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci clavier de la loupe ancrée. Voulez-vous l'activer ?</translation>
+<translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
 <translation id="4421231901400348175">Partager le contrôle de votre écran avec <ph name="HELPER_NAME" /> via l'assistance à distance</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
@@ -345,6 +352,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4570957409596482333">Bouton "Sélectionner pour prononcer"</translation>
 <translation id="4577274620589681794">Temps écoulé · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Arrêter la diffusion vers un destinataire inconnu</translation>
+<translation id="4596144739579517758">Le thème sombre est désactivé</translation>
 <translation id="4623167406982293031">Vérifiez le compte</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
@@ -387,6 +395,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
+<translation id="5208059991603368177">Activé</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
@@ -398,6 +407,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement d'écran effectué</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
+<translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut consulter les actions effectuées cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
 <translation id="5400461572260843123">Fenêtre de configuration rapide, appuyez sur la touche de recherche et la flèche de gauche pour accéder au centre de notifications.</translation>
@@ -434,6 +444,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5769373120130404283">Écran de confidentialité</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran ?</translation>
 <translation id="5790085346892983794">Succès</translation>
+<translation id="579415080077680903">Silencieux</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> vers <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -444,6 +455,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le son du micro est coupé.</translation>
+<translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
 <translation id="5957083217255311415">Les données mobiles sont désactivées.</translation>
@@ -468,6 +480,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="615957422585914272">Afficher le clavier à l'écran</translation>
 <translation id="6164005077879661055">Tous les fichiers et les données locales associés à l'utilisateur supervisé seront définitivement supprimés en même temps que cet utilisateur. Le gestionnaire peut toujours accéder aux sites Web consultés par l'utilisateur supervisé et aux paramètres de celui-ci à l'adresse <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
+<translation id="6192859646269780503">Localiser le téléphone</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +552,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">L'ensemble des données locales et des fichiers associés à cet utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
 <translation id="7007983414944123363">Impossible de valider votre code ou votre mot de passe. Réessayez.</translation>
+<translation id="7013005189539051442">Activer le point d'accès</translation>
 <translation id="7015766095477679451">Revenez à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Associer votre <ph name="DEVICE_NAME" /> à votre téléphone</translation>
 <translation id="7026338066939101231">Diminuer</translation>
@@ -573,6 +587,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
+<translation id="7461924472993315131">Épingler</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
@@ -611,6 +626,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7842569679327885685">Avertissement : Fonctionnalité expérimentale</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7868900307798234037">Déverrouillage en cours avec votre empreinte digitale</translation>
+<translation id="7872786842639831132">Désactivé</translation>
 <translation id="7886169021410746335">Régler les paramètres de confidentialité</translation>
 <translation id="7886277072580235377">Votre session Internet est effacée lorsque vous vous déconnectez. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Envoie un e-mail</translation>
@@ -715,6 +731,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="885387440427703469">Capture d'écran désactivée</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
+<translation id="8871580645200179206">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8878886163241303700">Extension de l'écran</translation>

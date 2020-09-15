@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">záró jegyzet</translation>
 <translation id="1281252709823657822">párbeszédpanel</translation>
 <translation id="1306460908038601864">Ki</translation>
+<translation id="1311894908970423688">Ilyen érték szükséges: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">készítők</translation>
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1359897965706325498">szalaghirdetés</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="668171684555832681">Egyéb...</translation>
 <translation id="6692633176391053278">léptető</translation>
+<translation id="6709093583001123835">Ilyen érték szükséges: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Gyenge lejátszási minőség</translation>
 <translation id="6755330956360078551">elemleírás</translation>
 <translation id="6790428901817661496">Lejátszás</translation>

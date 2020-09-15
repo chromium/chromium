@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Versión de firmware</translation>
 <translation id="1988881251331415125">Si está escrito correctamente, <ph name="BEGIN_LINK" />prueba a ejecutar el diagnóstico de conexión<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Acceder a cookies y datos de sitios web.
-
-¿Quieres permitir que <ph name="EMBEDDED_URL" /> use tus cookies y datos de sitios web en <ph name="TOP_LEVEL_URL" />?
-
-De lo contrario, tu configuración de privacidad lo impedirá. Permitirá que el contenido con el que interactúes funcione correctamente, pero se concederá permiso a <ph name="EMBEDDED_URL" /> para que pueda monitorizar tu actividad.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu ordenador local</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{y una más}other{y # más}}</translation>
 <translation id="2003709556000175978">Cambia tu contraseña ahora</translation>

@@ -1139,7 +1139,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2342740338116612727">加咗書籤</translation>
 <translation id="2343747224442182863">將焦點移至此分頁</translation>
-<translation id="2344686470986284227">正在啟動虛擬機器控制器</translation>
 <translation id="2345723121311404059">將 1 頁傳送至「<ph name="PRINTER_NAME" />」列印</translation>
 <translation id="2347644257713614136">Hangouts 和 Cast for Education 的使用受《Google 私隱權政策》管限。</translation>
 <translation id="2348176352564285430">應用程式：<ph name="ARC_PROCESS_NAME" /></translation>
@@ -1287,6 +1286,7 @@
 <translation id="2505127913256479918">此受監管帳戶即將被移除</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{螢幕 #}other{螢幕 #}}</translation>
 <translation id="2505402373176859469">已收到 <ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">您附近已開啟「咫尺共享」的裝置</translation>
 <translation id="250704661983564564">顯示安排</translation>
 <translation id="2507253002925770350">已移除票證</translation>
 <translation id="2507397597949272797">「<ph name="NAME" />」已暫停</translation>
@@ -1474,6 +1474,7 @@
 <translation id="2731700343119398978">請稍後…</translation>
 <translation id="2731710757838467317">正在建立受管使用者。這可能需要幾分鐘的時間。</translation>
 <translation id="2731971182069536520">系統管理員會在您下次重新啟動裝置時執行一次性更新，而此更新會刪除您的本機資料。</translation>
+<translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="2734760316755174687">屬於「<ph name="SITE_GROUP_NAME" />」的網站將會重設。</translation>
 <translation id="2735712963799620190">設定時段</translation>
 <translation id="2737363922397526254">收合…</translation>
@@ -3121,6 +3122,7 @@
 <translation id="4735803855089279419">糟糕！系統無法確定此裝置的裝置識別碼。</translation>
 <translation id="4736292055110123391">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="473936925429402449">已選取，第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="4739639199548674512">票證</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{將單一網站取消靜音}other{將多個網站取消靜音}}</translation>
@@ -3136,6 +3138,7 @@
 <translation id="4762718786438001384">裝置磁碟的儲存空間嚴重不足</translation>
 <translation id="4763408175235639573">系統在您瀏覽此網頁時已設定下列 Cookie</translation>
 <translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
+<translation id="476598255842811483">除非您在裝置上開啟「咫尺共享」，否則沒有人可與您分享內容</translation>
 <translation id="4768332406694066911">您具備下列組織的識別憑證</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
@@ -4142,6 +4145,7 @@
 <translation id="6011449291337289699">清除網站資料</translation>
 <translation id="6015266928248016057">PUK 無效。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="6015796118275082299">年</translation>
+<translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
 <translation id="6017514345406065928">綠色</translation>
@@ -5665,6 +5669,7 @@
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7866352732146932341">您的裝置開啟「咫尺共享」時，位處附近的裝置</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步選項</translation>
 <translation id="7870790288828963061">找不到較新版本的 Kiosk 應用程式，無需更新。請移除 USB 記憶體。</translation>
@@ -6447,6 +6452,7 @@
 <translation id="8811862054141704416">Crostini 的麥克風存取權</translation>
 <translation id="8812552797690463522">此網絡已經與你共用。</translation>
 <translation id="8812593354822910461">一併清除瀏覽資料 (<ph name="URL" />) 會將您登出 <ph name="DOMAIN" />。<ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">要求家長核准安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="8813969267212093033">系統文字會以此語言顯示</translation>
@@ -6477,6 +6483,7 @@
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡包</translation>
 <translation id="883911313571074303">為圖片加入註釋</translation>
+<translation id="8841843049738266382">讀取及變更許可名單上的使用者</translation>
 <translation id="8842594465773264717">刪除此指紋</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8846132060409673887">閱讀此電腦的生產商和型號資訊</translation>

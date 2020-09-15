@@ -264,11 +264,6 @@
 <translation id="1978555033938440688">Versioni i firmuerit</translation>
 <translation id="1988881251331415125">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e lidhshmërisë"<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Të ketë qasje në kukit dhe të dhënat e sajtit.
-
-Dëshiron ta lejosh <ph name="EMBEDDED_URL" /> të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" />?
-
-Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta lejojë përmbajtjen me të cilën ndërveprove që të funksionojë në rregull, por mund të lejojë që <ph name="EMBEDDED_URL" /> të monitorojë aktivitetin tënd.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> kërkon të ruajë të dhëna të mëdha në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>

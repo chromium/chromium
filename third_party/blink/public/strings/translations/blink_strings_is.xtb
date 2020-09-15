@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">aftanmálsgrein</translation>
 <translation id="1281252709823657822">gluggi</translation>
 <translation id="1306460908038601864">Slökkt</translation>
+<translation id="1311894908970423688">Gildi verður að vera <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">samstarfsaðilar</translation>
 <translation id="1342835525016946179">grein</translation>
 <translation id="1359897965706325498">borði</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="668171684555832681">Annað...</translation>
 <translation id="6692633176391053278">skrefastýring</translation>
+<translation id="6709093583001123835">Gildi verður að vera <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Léleg spilunargæði</translation>
 <translation id="6755330956360078551">ábending</translation>
 <translation id="6790428901817661496">Spila</translation>

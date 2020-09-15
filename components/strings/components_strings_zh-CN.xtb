@@ -261,11 +261,6 @@
 <translation id="1978555033938440688">固件版本</translation>
 <translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">访问 Cookie 和网站数据。
-
-您想允许 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和网站数据吗？
-
-如果不允许，您的隐私设置便会禁止此网站这样做。授予该权限会使得您在进行操作的内容正常运行，但可能会允许 <ph name="EMBEDDED_URL" /> 跟踪您的活动。</translation>
 <translation id="1997484222658892567"><ph name="URL" /> 想在您的本地计算机上永久存储大量数据</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 个应用}other{以及另外 # 个应用}}</translation>
 <translation id="2003709556000175978">立即重置您的密码</translation>

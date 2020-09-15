@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Verzija firmvera</translation>
 <translation id="1988881251331415125">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite dijagnostiku povezivanja<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">pristupa kolačićima i podacima o sajtovima.
-
-Želite li da dozvolite da <ph name="EMBEDDED_URL" /> koristi kolačiće i podatke o sajtovima na <ph name="TOP_LEVEL_URL" />?
-
-To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa kojim ste imali interakciju ispravno radi, ali može da omogući i da <ph name="EMBEDDED_URL" /> prati vaše aktivnosti.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi da trajno skladišti veliku količinu podataka na vašem lokalnom računaru</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2003709556000175978">Resetujte lozinku</translation>

@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">巻末注</translation>
 <translation id="1281252709823657822">ダイアログ</translation>
 <translation id="1306460908038601864">オフ</translation>
+<translation id="1311894908970423688">値は <ph name="VALUE_DATE_OR_TIME" /> とする必要があります。</translation>
 <translation id="1335095011850992622">クレジット</translation>
 <translation id="1342835525016946179">記事</translation>
 <translation id="1359897965706325498">バナー</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="668171684555832681">その他...</translation>
 <translation id="6692633176391053278">ステッパー</translation>
+<translation id="6709093583001123835">値は <ph name="VALUE" /> とする必要があります。</translation>
 <translation id="6709570249143506788">低再生画質</translation>
 <translation id="6755330956360078551">ツールチップ</translation>
 <translation id="6790428901817661496">再生</translation>

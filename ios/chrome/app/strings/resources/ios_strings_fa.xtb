@@ -14,6 +14,7 @@
 <translation id="1084365883616172403">‏پست Facebook ارسال شد.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
 <translation id="1104948393051856124">پذیرش و ادامه</translation>
+<translation id="110724200315609752">رفتن به پنجره باز</translation>
 <translation id="1112015203684611006">چاپ انجام نشد.</translation>
 <translation id="1125564390852150847">ایجاد برگه جدید</translation>
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
@@ -58,7 +59,7 @@
 <translation id="1523341279170789507">مجازبودن همه کوکی‌ها</translation>
 <translation id="1535268707340844072">ممکن است تنظیم فعلی موجب خرابی برخی از سایت‌ها شود. برای مدیریت کردن کوکی‌ها برای همه سایت‌ها، به <ph name="BEGIN_LINK" />تنظیمات کوکی‌ها<ph name="END_LINK" /> بروید.</translation>
 <translation id="1540800554400757039">آدرس ۱</translation>
-<translation id="1545749641540134597">‏اسکن کد QR</translation>
+<translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="1552525382687785070">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="1554477036522844996">پنجره جدید</translation>
 <translation id="1580783302095112590">نامه ارسال شد.</translation>
@@ -108,7 +109,7 @@
 <translation id="213900355088104901">برای مرور خصوصی، برگه ناشناسی باز کنید</translation>
 <translation id="2139867232736819575">جستجوی نوشتاری که کپی کرده‌اید</translation>
 <translation id="2149973817440762519">ویرایش نشانک</translation>
-<translation id="2175927920773552910">‏کد QR</translation>
+<translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="2198757192731523470">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو، آگهی‌ها، و سایر سرویس‌های Google استفاده کند.</translation>
 <translation id="2218443599109088993">کوچک کردن</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
@@ -176,7 +177,7 @@
 <translation id="288655811176831528">بستن برگه</translation>
 <translation id="2898963176829412617">پوشه جدید…</translation>
 <translation id="2916171785467530738">تکمیل خودکار جستجوها و نشانی‌های وب</translation>
-<translation id="291754862089661335">‏کد QR یا بارکد را در این قاب قرار دهید</translation>
+<translation id="291754862089661335">رمزینه پاسخ‌سریع یا بارکد را در این قاب قرار دهید</translation>
 <translation id="2921219216347069551">امکان اشتراک‌گذاری صفحه وجود ندارد</translation>
 <translation id="2923448633003185837">جای‌گذاری و رفتن</translation>
 <translation id="292639812446257861">علامت‌گذاری به‌‌عنوان خوانده‌نشده</translation>
@@ -287,7 +288,7 @@
 <translation id="4181841719683918333">زبان‌ها</translation>
 <translation id="424315890655130736">عبارت ورود را وارد کنید</translation>
 <translation id="4263576668337963058">نمایش کنش‌های موجود صفحه</translation>
-<translation id="4272631900155121838">‏برای اسکن کردن کد QR، دوربین را در تنظیمات فعال کنید</translation>
+<translation id="4272631900155121838">برای اسکن کردن رمزینه پاسخ‌سریع، دوربین را در تنظیمات فعال کنید</translation>
 <translation id="4276041135170112053">اکنون مشکل رفع شود.</translation>
 <translation id="4277990410970811858">مرور ایمن</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
@@ -296,7 +297,7 @@
 <translation id="4334428914252001502">۱ مقاله خوانده‌نشده.</translation>
 <translation id="4338650699862464074">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند.</translation>
 <translation id="4359125752503270327">این صفحه در برنامه دیگری باز می‌شود.</translation>
-<translation id="4375040482473363939">‏جستجوی کد QR</translation>
+<translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4389019817280890563">برای تغییر زبان، ضربه بزنید.</translation>
 <translation id="441868831736628555">اعلامیه حریم خصوصی</translation>
@@ -424,7 +425,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5869029295770560994">بله متوجه شدم</translation>
 <translation id="5871497086027727873">۱ مورد منتقل شد</translation>
 <translation id="5897956970858271241">به پیوندی که کپی کرده‌اید بروید</translation>
-<translation id="5899314093904173337">‏برای هم‌رسانی کردن با افراد حاضر در اطراف، به‌آن‌ها اجازه دهید این کد QR را با دوربین خود یا برنامه اسکنر QR اسکن کنند</translation>
+<translation id="5899314093904173337">‏برای هم‌رسانی کردن با افراد حاضر در اطراف، به‌آن‌ها اجازه دهید این رمزینه پاسخ‌سریع را با دوربین خود یا برنامه اسکنر QR اسکن کنند</translation>
 <translation id="5911030830365207728">‏‫مترجم Google‬</translation>
 <translation id="5913600720976431809">گزینه‌های ترجمه صفحه</translation>
 <translation id="5938160824633642847">دستگاهتان تقریباً پر است. فضا آزاد کنید و دوباره امتحان کنید.</translation>
@@ -509,7 +510,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6639730758971422557">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />همگام‌سازی و سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» ضربه بزنید.</translation>
 <translation id="6642362222295953972">رفتن به برگه موجود</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
-<translation id="6645899968535965230">‏کد QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6645899968535965230">رمزینه پاسخ‌سریع: <ph name="PAGE_TITLE" /></translation>
 <translation id="6656103420185847513">ویرایش پوشه</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6668619169535738264">ویرایش نشانک</translation>
@@ -528,7 +529,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6841409746189899007">پیوند به نوشتار</translation>
 <translation id="6851516051005285358">درخواست سایت میزکار</translation>
 <translation id="6858855187367714033">اسکن‌شده</translation>
-<translation id="6859944681507688231">‏برای اسکن کردن کد QR یا کارت اعتباری، دوربین را در تنظیمات فعال کنید.</translation>
+<translation id="6859944681507688231">برای اسکن کردن رمزینه پاسخ‌سریع یا کارت اعتباری، دوربین را در تنظیمات فعال کنید.</translation>
 <translation id="6869389390665537774">‏می‌توانید صفحه‌هایی را که از آن‌‎ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه پاک کنید</translation>
 <translation id="6873263987691478642">نمای تقسیم</translation>
 <translation id="6888009575607455378">مطمئن هستید می‌خواهید از تغییراتتان صرف‌نظر کنید؟</translation>
@@ -715,7 +716,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9094033019050270033">به‌روزرسانی گذرواژه</translation>
 <translation id="9100610230175265781">عبارت عبور لازم است</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>
-<translation id="9152539721251340337">‏ایجاد کد QR</translation>
+<translation id="9152539721251340337">ایجاد رمزینه پاسخ‌سریع</translation>
 <translation id="9157836665414082580">توقف نمایش کادرهای گفتگو</translation>
 <translation id="9188680907066685419">خروج از حساب مدیریت‌شده</translation>
 <translation id="9203116392574189331">Handoff</translation>

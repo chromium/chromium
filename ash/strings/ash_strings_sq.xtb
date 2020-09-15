@@ -48,6 +48,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1391102559483454063">Aktiv</translation>
+<translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1419738280318246476">Shkyç pajisjen për të kryer veprimin e njoftimit</translation>
 <translation id="1420408895951708260">Ndrysho "Dritën e natës". <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Pamja e ekranit u shkrep dhe u ruajt te kujtesa e fragmenteve</translation>
@@ -65,6 +66,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1570871743947603115">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
+<translation id="1611993646327628135">Aktive</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
 <translation id="1667964833127753507">Modaliteti me ngjyra neutrale nuk përdor ngjyrat e nxjerra nga imazhi i sfondit, duke i zëvendësuar me një grupim me nuanca me tonalitet të çelur ose të errët.</translation>
@@ -79,6 +81,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1761222317188459878">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1782199038061388045">përkthimi</translation>
+<translation id="1787955149152357925">Joaktive</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
@@ -166,6 +169,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2706462751667573066">Lart</translation>
 <translation id="2718395828230677721">Drita e natës</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
+<translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -201,6 +205,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Zgjero menynë</translation>
 <translation id="3087734570205094154">Në fund</translation>
+<translation id="3090989381251959936">Aktivizo/çaktivizo <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Zhvendos kursorin</translation>
 <translation id="3098580329624789136">Merr <ph name="INTENT" /> për "<ph name="QUERY" />"</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +238,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3371140690572404006">Pajisja USB-C (porta e përparme, djathtas)</translation>
 <translation id="3386978599540877378">zmadhuesi në ekran të plotë</translation>
 <translation id="3400357268283240774">Cilësimet shtesë</translation>
+<translation id="3410336247007142655">Shfaq cilësimet e "Temës së errët"</translation>
 <translation id="3413817803639110246">Nuk ka ende asgjë për të parë</translation>
 <translation id="3428447136709161042">Shkëputu nga <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Rrëshqit nga e djathta për t'u kthyer prapa</translation>
@@ -326,6 +332,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4378551569595875038">Po lidhet...</translation>
 <translation id="4379531060876907730">Këto janë veglat e tua të stilolapsit</translation>
 <translation id="4389184120735010762">Ke shtypur shkurtoren e tastierës për zmadhuesin me puthitje. Dëshiron ta aktivizosh?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
 <translation id="4421231901400348175">Po ndan kontrollin e ekranit me <ph name="HELPER_NAME" /> përmes "Ndihmës në distancë".</translation>
 <translation id="4430019312045809116">Volumi</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
@@ -345,6 +352,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4570957409596482333">Butoni i "Zgjidh që të thuhet"</translation>
 <translation id="4577274620589681794">Koha mbaroi · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
+<translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4623167406982293031">Verifiko llogarinë</translation>
 <translation id="4628757576491864469">Pajisjet</translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
@@ -387,6 +395,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
+<translation id="5208059991603368177">Aktive</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5260676007519551770">Tavolina e punës 4</translation>
@@ -398,6 +407,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5313326810920013265">Cilësimet e Bluetooth-it</translation>
 <translation id="5314219114274263156">Regjistrimi i ekranit përfundoi</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
+<translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
 <translation id="5397578532367286026">Përdorimi dhe historiku i këtij përdoruesi mund të rishikohen nga menaxheri (<ph name="MANAGER_EMAIL" />) në chrome.com.</translation>
 <translation id="5400461572260843123">Cilësimet e shpejta, shtyp "kërko" + tastin "majtas" për të pasur qasje te qendra e njoftimeve.</translation>
@@ -434,6 +444,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5769373120130404283">Ekrani i privatësisë</translation>
 <translation id="5777841717266010279">Dëshiron të ndalosh ndarjen e ekranit?</translation>
 <translation id="5790085346892983794">Me sukses</translation>
+<translation id="579415080077680903">Heshtja</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
@@ -444,6 +455,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofoni është i çaktivizuar.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> është aktive.</translation>
 <translation id="5947494881799873997">Riktheje</translation>
 <translation id="595202126637698455">Gjurmimi i rendimentit u aktivizua</translation>
 <translation id="5957083217255311415">Të dhënat celulare janë çaktivizuar.</translation>
@@ -468,6 +480,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="615957422585914272">Shfaq tastierën në ekran</translation>
 <translation id="6164005077879661055">Të gjithë skedarët dhe të dhënat lokale të lidhura me përdoruesin e kontrolluar do të fshihen përgjithmonë pasi të hiqet përdoruesi i kontrolluar. Sajtet e uebit të vizituara dhe cilësimet për këtë përdorues të kontrolluar mund të jenë akoma të dukshme nga menaxheri në <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
+<translation id="6192859646269780503">Gjej telefonin</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6236290670123303279">Menaxho cilësimet</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +552,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
 <translation id="7007983414944123363">Kod yt PIN ose fjalëkalimi nuk mund të verifikoheshin. Provo përsëri.</translation>
+<translation id="7013005189539051442">Aktivizo zonën e qasjes për internet</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Lidhe <ph name="DEVICE_NAME" /> me telefonin tënd</translation>
 <translation id="7026338066939101231">Zvogëlim</translation>
@@ -573,6 +587,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="742594950370306541">Kamera është në përdorim.</translation>
 <translation id="742608627846767349">Mirëmëngjesi,</translation>
 <translation id="743058460480092004">Kamera dhe mikrofoni janë në përdorim</translation>
+<translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="7466449121337984263">Prek sensorin</translation>
 <translation id="7477793887173910789">Kontrollo muzikën, videot e tua etj.</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
@@ -611,6 +626,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7842569679327885685">Paralajmërim: Funksion eksperimental</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7868900307798234037">Po shkyçet me gjurmën e gishtit</translation>
+<translation id="7872786842639831132">Joaktive</translation>
 <translation id="7886169021410746335">Të rregullojë cilësimet e privatësisë</translation>
 <translation id="7886277072580235377">Seanca jote e internetit do të spastrohet kur të dalësh. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Dërgo një email</translation>
@@ -715,6 +731,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="885387440427703469">Regjistrimi i ekranit u çaktivizua</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
+<translation id="8871580645200179206">Aktivizo/çaktivizo "Temën e errët". <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8878886163241303700">Ekran i zgjeruar</translation>

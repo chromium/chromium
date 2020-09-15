@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">shënim fundor</translation>
 <translation id="1281252709823657822">dialog</translation>
 <translation id="1306460908038601864">Joaktiv</translation>
+<translation id="1311894908970423688">Vlera duhet të jetë <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">kredite</translation>
 <translation id="1342835525016946179">artikull</translation>
 <translation id="1359897965706325498">banderolë</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="668171684555832681">Tjetër...</translation>
 <translation id="6692633176391053278">pulsant</translation>
+<translation id="6709093583001123835">Vlera duhet të jetë <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Cilësi e dobët e luajtjes</translation>
 <translation id="6755330956360078551">informacion për veglën</translation>
 <translation id="6790428901817661496">Luaj</translation>

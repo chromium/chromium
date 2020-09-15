@@ -2226,6 +2226,11 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật dấu chèn sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="4183229833636799228">Cài đặt <ph name="FLASH_PLUGIN_NAME" /> mặc định</translation>
 <translation id="4192388905594723944">URL để xác thực mã thông báo xác thực ứng dụng truy cập từ xa</translation>
+<translation id="4196466220333757818">Chính sách này nêu rõ các tiện ích được phép sử dụng hàm <ph name="CHALLENGE_USER_KEY_FUNCTION" /> của <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> để chứng thực từ xa. Các tiện ích phải được thêm vào danh sách này thì mới sử dụng được API.
+
+          Nếu một tiện ích không có trong danh sách hoặc nếu bạn không đặt danh sách này, thì lệnh gọi đến API sẽ không thực hiện được kèm theo mã lỗi.
+
+          Chính sách này không còn dùng nữa, vui lòng sử dụng <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="4203389617541558220">Giới hạn thời gian hoạt động của thiết bị bằng cách lên lịch tự động khởi động lại.
 
       Khi chính sách này được đặt, chính sách chỉ định lượng thời gian hoạt động của thiết bị mà sau lượng thời gian đó, khởi động lại tự động sẽ được lên lịch.
@@ -3248,6 +3253,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn không đặt chính sách này, tùy chọn cài đặt mặc định sẽ là không được phép đối với người dùng do doanh nghiệp quản lý và được phép đối với người dùng không được quản lý.</translation>
 <translation id="5584132346604748282">Kiểm soát các dịch vụ vị trí của Google trên thiết bị Android</translation>
+<translation id="5585568978223984334">Chính sách này nêu rõ các tiện ích được phép sử dụng các hàm của <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> để chứng thực từ xa. Các tiện ích phải được thêm vào danh sách này thì mới sử dụng được API.
+
+          Nếu một tiện ích không có trong danh sách hoặc nếu bạn không đặt danh sách này, thì lệnh gọi đến API sẽ không thực hiện được kèm theo mã lỗi.</translation>
 <translation id="5586942249556966598">Không làm gì</translation>
 <translation id="5590494712401018042">Chỉ định tỷ lệ phần trăm mà theo đó độ trễ giảm độ sáng màn hình sẽ thay đổi khi thiết bị ở chế độ thuyết trình.
 

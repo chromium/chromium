@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">전환 버튼</translation>
 <translation id="1299774449519412690">라이트 스카이 블루</translation>
 <translation id="1303806948938513162">ChromeVox 메뉴로 들어가려면 네 손가락으로 탭하세요.</translation>
+<translation id="1313373992684326101">이전 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, 메뉴 항목 라디오 버튼 선택 해제됨</translation>
 <translation id="1325946044405407859">탠</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">음조 높임</translation>
 <translation id="151784044608172266">다음 문장</translation>
 <translation id="1524531499102321782">점자 다음 행으로 이동</translation>
+<translation id="1542513807034338907">이전 페이지로 스크롤</translation>
 <translation id="1546370775711804143">스크롤바</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1559739829547075274">뒤로 탐색</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">동영상</translation>
 <translation id="4764692524839457597">기본값</translation>
 <translation id="4772771694153161212">밑줄 아님</translation>
+<translation id="4780458943471935919">다음 페이지로 스크롤</translation>
 <translation id="4784215347943747396">스위치 1~2개로 기기를 제어합니다.</translation>
 <translation id="4786285211967466855">이전 수준 1 제목이 없습니다</translation>
 <translation id="4787577491510559358">현재 항목의 서식을 음성으로 안내합니다.</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">요소 유형을 말하거나 인용, 삭제, 굵게 표시되거나 괄호에 묶이거나 대문자로 된 텍스트를 말할 때는 음높이를 변경합니다.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">다음 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
 <translation id="7505149250476994901">문자 전에 "대문자"라고 말하기</translation>
 <translation id="7518543783849163354">일시적으로 ChromeVox의 음성 안내를 중지하려면 Control 키를 누릅니다.</translation>
 <translation id="7533226154149229506">라이트 골든로드 옐로우</translation>

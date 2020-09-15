@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Bouton d'activation</translation>
 <translation id="1299774449519412690">Bleu ciel clair</translation>
 <translation id="1303806948938513162">Appuyez avec quatre doigts pour accéder aux menus ChromeVox</translation>
+<translation id="1313373992684326101">Passer à la section précédente. Exemples : barre d'état et Lanceur d'applications.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, case d'option désélectionnée de l'élément de menu</translation>
 <translation id="1325946044405407859">Brun clair</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> sur <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Augmenter le timbre de la voix</translation>
 <translation id="151784044608172266">Phrase suivante</translation>
 <translation id="1524531499102321782">Ligne suivante (braille)</translation>
+<translation id="1542513807034338907">Faire défiler jusqu'à la page précédente</translation>
 <translation id="1546370775711804143">Barre de défilement</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1559739829547075274">Navigation vers le haut</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">vidéo</translation>
 <translation id="4764692524839457597">par défaut</translation>
 <translation id="4772771694153161212">Non souligné</translation>
+<translation id="4780458943471935919">Faire défiler jusqu'à la page suivante</translation>
 <translation id="4784215347943747396">Contrôler l'appareil avec seulement un ou deux contacteurs</translation>
 <translation id="4786285211967466855">Aucun titre de niveau 1 précédent</translation>
 <translation id="4787577491510559358">Annoncer la mise en forme de l'élément actuel</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Changez de ton en fonction du contenu prononcé : types d'élément et texte entre guillemets, supprimé, mis en gras, entre parenthèses ou en majuscules.</translation>
 <translation id="7491962110804786152">tabulation</translation>
+<translation id="7492497529767769458">Passer à la section suivante. Exemples : barre d'état et Lanceur d'applications.</translation>
 <translation id="7505149250476994901">Dire "maj" après la lettre</translation>
 <translation id="7518543783849163354">Pour arrêter temporairement les commentaires audio ChromeVox, appuyez sur la touche Ctrl.</translation>
 <translation id="7533226154149229506">Jaune paille clair</translation>

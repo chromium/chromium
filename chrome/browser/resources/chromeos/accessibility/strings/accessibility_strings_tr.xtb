@@ -52,6 +52,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1291286136605998134">Açma/Kapatma Düğmesi</translation>
 <translation id="1299774449519412690">Açık Gök Mavisi</translation>
 <translation id="1303806948938513162">ChromeVox menülerine girmek için 4 parmağınızla dokunun</translation>
+<translation id="1313373992684326101">Önceki bölüme git. Örneğin, Durum Tepsisi ve Başlatıcı.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menü öğesi radyo düğmesi seçili değil</translation>
 <translation id="1325946044405407859">Ten Rengi</translation>
 <translation id="1331702245475014624">toplam: <ph name="TOTAL" />, öğe: <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="1506187449813838456">Sesi incelt</translation>
 <translation id="151784044608172266">Sonraki Cümle</translation>
 <translation id="1524531499102321782">Braille sonraki Satır</translation>
+<translation id="1542513807034338907">Önceki sayfaya kaydırın</translation>
 <translation id="1546370775711804143">Kaydırma çubuğu</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1559739829547075274">Geri git</translation>
@@ -485,6 +487,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">varsayılan</translation>
 <translation id="4772771694153161212">Altı çizili değil</translation>
+<translation id="4780458943471935919">Sonraki sayfaya kaydırın</translation>
 <translation id="4784215347943747396">Cihazı yalnızca 1 veya 2 anahtarla kontrol edin</translation>
 <translation id="4786285211967466855">Önceki 1. düzey başlık yok</translation>
 <translation id="4787577491510559358">Mevcut öğenin biçimini söyler</translation>
@@ -819,6 +822,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Öğe türlerini ve alıntılanan, silinen, kalın harfli yapılan, parantez içine alınan veya büyük harfli yapılan metni seslendirirken ses tonunu değiştirin.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Sonraki bölüme git. Örneğin, Durum Tepsisi ve Başlatıcı.</translation>
 <translation id="7505149250476994901">Harften önce "büyük harf" olduğunu söyleyin</translation>
 <translation id="7518543783849163354">ChromeVox'un konuşmasını geçici olarak durdurmak için Control tuşuna basın.</translation>
 <translation id="7533226154149229506">Açık Altın Başak Sarısı</translation>

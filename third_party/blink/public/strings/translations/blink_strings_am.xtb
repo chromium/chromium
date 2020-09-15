@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">የግርጌ ማስታወሻ</translation>
 <translation id="1281252709823657822">መገናኛ</translation>
 <translation id="1306460908038601864">ጠፍቷል</translation>
+<translation id="1311894908970423688">እሴት <ph name="VALUE_DATE_OR_TIME" /> መሆን አለበት።</translation>
 <translation id="1335095011850992622">ክሬዲቶች</translation>
 <translation id="1342835525016946179">ጽሑፍ</translation>
 <translation id="1359897965706325498">ሰንደቅ</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="668171684555832681">ሌላ…</translation>
 <translation id="6692633176391053278">አስኪያጅ</translation>
+<translation id="6709093583001123835">እሴት <ph name="VALUE" /> መሆን አለበት።</translation>
 <translation id="6709570249143506788">ደካማ የመልሶ ማጫወት ጥራት</translation>
 <translation id="6755330956360078551">ጠቃሚ የመሣሪያ ምክር</translation>
 <translation id="6790428901817661496">አጫውት</translation>

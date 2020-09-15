@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Бутон за превключване</translation>
 <translation id="1299774449519412690">светло небесносиньо</translation>
 <translation id="1303806948938513162">Докоснете с 4 пръста, за да влезете в менютата на ChromeVox</translation>
+<translation id="1313373992684326101">Преминаване към предишната секция, например областта за състоянието и стартовия панел.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, немаркиран бутон за избор на елемент от меню</translation>
 <translation id="1325946044405407859">бледокафяво</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> от <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Увеличаване на височината на звука</translation>
 <translation id="151784044608172266">Следващото изречение</translation>
 <translation id="1524531499102321782">Следващият ред на брайловото писмо</translation>
+<translation id="1542513807034338907">Превъртане към предишната страница</translation>
 <translation id="1546370775711804143">Лента за превъртане</translation>
 <translation id="1555130319947370107">синьо</translation>
 <translation id="1559739829547075274">Навигация назад</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="4764692524839457597">по подразбиране</translation>
 <translation id="4772771694153161212">Неподчертан текст</translation>
+<translation id="4780458943471935919">Превъртане към следващата страница</translation>
 <translation id="4784215347943747396">Управлявайте устройството само с 1 или 2 превключвателя</translation>
 <translation id="4786285211967466855">Няма предишно заглавие от първо ниво</translation>
 <translation id="4787577491510559358">Съобщаване на форматирането за текущия елемент</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Промяна на височината на гласа при изговаряне на типове елементи и текст, който е цитиран, изтрит, удебелен, в скоби или с главни букви.</translation>
 <translation id="7491962110804786152">раздел</translation>
+<translation id="7492497529767769458">Преминаване към следващата секция, например областта за състоянието и стартовия панел.</translation>
 <translation id="7505149250476994901">Кажете „Главна буква“ преди буквата</translation>
 <translation id="7518543783849163354">За да спрете временно говора на ChromeVox, натиснете клавиша Control.</translation>
 <translation id="7533226154149229506">светлозлатисто</translation>

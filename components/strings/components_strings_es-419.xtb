@@ -261,11 +261,6 @@
 <translation id="1978555033938440688">Versión de firmware</translation>
 <translation id="1988881251331415125">Si no hay errores, <ph name="BEGIN_LINK" />prueba ejecutar el diagnóstico de conectividad<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Accede a las cookies y los datos de sitios.
-
-¿Deseas permitir que <ph name="EMBEDDED_URL" /> use cookies y datos de sitios en <ph name="TOP_LEVEL_URL" />?
-
-De lo contrario, la configuración de privacidad bloqueará esta acción. Esto permitirá que el contenido con el que interactuaste funcione correctamente, pero es posible que <ph name="EMBEDDED_URL" /> haga un seguimiento de tu actividad.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> desea almacenar de forma permanente los datos de gran tamaño en tu computadora local</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{y 1 más}other{y # más}}</translation>
 <translation id="2003709556000175978">Restablecer tu contraseña ahora</translation>

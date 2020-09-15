@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Nút bật/tắt</translation>
 <translation id="1299774449519412690">Màu xanh da trời nhạt</translation>
 <translation id="1303806948938513162">Nhấn bằng 4 ngón tay để vào menu ChromeVox</translation>
+<translation id="1313373992684326101">Chuyển về phần trước. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="1325363694295259631">Đã bỏ chọn nút chọn cho mục trong trình đơn <ph name="NAME" /></translation>
 <translation id="1325946044405407859">Màu nâu vàng</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Tăng độ cao</translation>
 <translation id="151784044608172266">Câu tiếp theo</translation>
 <translation id="1524531499102321782">Dòng chữ nổi tiếp theo</translation>
+<translation id="1542513807034338907">Chuyển về trang trước</translation>
 <translation id="1546370775711804143">Thanh cuộn</translation>
 <translation id="1555130319947370107">Xanh lam</translation>
 <translation id="1559739829547075274">Điều hướng lui</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">mặc định</translation>
 <translation id="4772771694153161212">Không gạch chân</translation>
+<translation id="4780458943471935919">Chuyển đến trang tiếp theo</translation>
 <translation id="4784215347943747396">Điều khiển thiết bị chỉ bằng 1 hoặc 2 công tắc</translation>
 <translation id="4786285211967466855">Không có tiêu đề cấp 1 nào trước đó</translation>
 <translation id="4787577491510559358">Cho biết định dạng của mục hiện có</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Thay đổi cao độ khi nói các loại thành phần và văn bản được trích dẫn, bị xóa, được in đậm, nằm trong ngoặc đơn hoặc viết hoa.</translation>
 <translation id="7491962110804786152">thẻ</translation>
+<translation id="7492497529767769458">Chuyển đến phần tiếp theo. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="7505149250476994901">Nói "hoa" sau chữ cái</translation>
 <translation id="7518543783849163354">Để ChromeVox tạm thời ngừng nói, nhấn phím Control.</translation>
 <translation id="7533226154149229506">Màu vàng nghệ nhạt</translation>

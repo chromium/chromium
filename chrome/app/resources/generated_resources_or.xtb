@@ -1133,7 +1133,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2342740338116612727">ବୁକ୍‌ମାର୍କ ଯୋଗ କରାଗଲା</translation>
 <translation id="2343747224442182863">ଏହି ଟାବ୍ ପ୍ରତି ଧ୍ୟାନ ଦିଅନ୍ତୁ</translation>
-<translation id="2344686470986284227">ଭର୍ଚୁଆଲ୍ ମେସିନ୍ କଣ୍ଟ୍ରୋଲର୍ ଆରମ୍ଭ କରାଯାଉଛି</translation>
 <translation id="2345723121311404059"><ph name="PRINTER_NAME" />ରେ 1ଟି ପୃଷ୍ଠା</translation>
 <translation id="2347644257713614136">Hangouts ଏବଂ ଶିକ୍ଷା ପାଇଁ କାଷ୍ଟର ବ୍ୟବହାର Google ଗୋପନୀୟତା ନୀତି ଦ୍ଵାରା ସଞ୍ଚାଳିତ ହୁଏ।</translation>
 <translation id="2348176352564285430">ଆପ୍: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -3521,7 +3520,7 @@
 <translation id="5265797726250773323">ଇନ୍‌ଷ୍ଟଲ୍ ହେବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="5266113311903163739">ସର୍ଟିଫିକେଟ୍‌ ଅଥୋରିଟି ତ୍ରୁଟି ଇମ୍ପୋର୍ଟ କରିଛନ୍ତି</translation>
 <translation id="5269977353971873915">ପ୍ରିଣ୍ଟ ହେଲାନାହିଁ</translation>
-<translation id="5274738462757057090">Chrome ବ୍ରାଉଜରରେ ମିଡିଆ ପାଇଁ ସ୍ୱଚାଳିତ ଭାବେ କ୍ଯାପ୍ସନଗୁଡ଼ିକୁ ତିଆରି କରେ (ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀରେ ଉପଲବ୍ଧ ଅଛି)</translation>
+<translation id="5274738462757057090">Chrome ବ୍ରାଉଜରରେ ମିଡିଆ ପାଇଁ ସ୍ୱଚାଳିତ ଭାବେ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ତିଆରି କରେ (ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀରେ ଉପଲବ୍ଧ ଅଛି)</translation>
 <translation id="5275352920323889391">ଶ୍ୱାନ</translation>
 <translation id="527605982717517565">ସର୍ବଦା <ph name="HOST" />ରେ JavaScriptକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5278823018825269962">ସ୍ଥିତି Id</translation>
@@ -3957,7 +3956,7 @@
 <translation id="5794700615121138172">Linux ଦ୍ୱାରା ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ</translation>
 <translation id="5794786537412027208">ସମସ୍ତ Chrome ଆପ୍ସ ପରିତ୍ୟାଗ କରନ୍ତୁ</translation>
 <translation id="5797070761912323120">ଆପଣ କରୁଥିବା ସର୍ଚ୍ଚ, ଦେଖୁଥିବା ବିଜ୍ଞାପନ, ଏବଂ ଅନ୍ୟାନ୍ୟ Google ସେବାକୁ ବ୍ୟକ୍ତିଗତକରଣ କରିବା ପାଇଁ Google ଆପଣଙ୍କର ଇତିବୃତ୍ତିକୁ ବ୍ୟବହାର କରିପାରେ</translation>
-<translation id="5798301976526354562">ଟେକ୍ସଟର ଆକାର (ଲାଇଭ୍ କ୍ଯାପ୍ସନରେ ମଧ୍ୟ ଲାଗୁ ହୋଇଥାଏ)</translation>
+<translation id="5798301976526354562">ଟେକ୍ସଟର ଆକାର (ଲାଇଭ୍ କ୍ୟାପ୍ସନରେ ମଧ୍ୟ ଲାଗୁ ହୋଇଥାଏ)</translation>
 <translation id="579915268381781820">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀକୁ କାଢ଼ି ଦିଆଯାଇଛି।</translation>
 <translation id="5799508265798272974">Linux ଭର୍ଚୁଆଲ୍‌ ମେସିନ୍‌: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">ଶେଷ ଡାଉନ୍‌ଲୋଡ୍ ପରେ ଗନ୍ତବ୍ୟ ଫାଇଲ୍‌କୁ ଖଣ୍ଡ ଖଣ୍ଡ କରି ଛୋଟ କରିଦିଆଯାଇଛି ବା କାଢ଼ି ଦିଆଯାଇଛି।</translation>
@@ -6153,7 +6152,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8467326454809944210">ଅନ୍ୟ ଏକ ଭାଷା ବାଛନ୍ତୁ</translation>
 <translation id="8470214316007448308">ଅନ୍ୟ ବ୍ୟକ୍ତି</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> ପାଇଁ ପାସ୍‍ୱର୍ଡ ସେଭ୍ କରାଯାଇଛି</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରୁଛି। ଏହା ଦ୍ୱାରା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> 24 ଘଣ୍ଟାରେ ରିସେଟ୍ ହୋଇଯିବ। ଆପଣ ରଖିବାକୁ ଚାହୁଁଥିବା ଯେକୌଣସି ଫାଇଲର ବ୍ଯାକଅପ୍ ନିଅନ୍ତୁ।</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> ADB ଡିବଗିଂକୁ ଅକ୍ଷମ କରୁଛି। ଏହା ଦ୍ୱାରା ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> 24 ଘଣ୍ଟାରେ ରିସେଟ୍ ହୋଇଯିବ। ଆପଣ ରଖିବାକୁ ଚାହୁଁଥିବା ଯେକୌଣସି ଫାଇଲର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="8472623782143987204">ହାର୍ଡୱେର୍-ସମର୍ଥିତ</translation>
 <translation id="8473863474539038330">ଠିକଣାଗୁଡ଼ିକ ଏବଂ ଅଧିକ</translation>
 <translation id="8475313423285172237">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ରେ ଥିବା ପ୍ରୋଗ୍ରାମ୍‌ ଅନ୍ୟ ଏକ ଏକ୍ସଟେନ୍‍ସନ୍‌ ଯୋଗ କରିଛି ଯାହା Chrome ଯେପରି କାର୍ଯ୍ୟ କରେ ସେଥିରେ ପରିବର୍ତ୍ତନ କରିପାରେ।</translation>

@@ -1139,7 +1139,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> இணைய விரும்புகிறது</translation>
 <translation id="2342740338116612727">புக்மார்க்குகள் சேர்க்கப்பட்டன</translation>
 <translation id="2343747224442182863">இந்தத் தாவலை மையப்படுத்து</translation>
-<translation id="2344686470986284227">விர்ச்சுவல் மெஷின் கன்ட்ரோலரைத் தொடங்குகிறது</translation>
 <translation id="2345723121311404059">1 பக்கம் - <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">Hangouts மற்றும் Cast for Education ஆகியவற்றின் பயன்பாடு, Google தனியுரிமைக் கொள்கையால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="2348176352564285430">ஆப்ஸ்: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1475,6 +1474,7 @@
 <translation id="2731700343119398978">காத்திருக்கவும்...</translation>
 <translation id="2731710757838467317">உங்கள் மேற்பார்வையிடப்படும் பயனரை உருவாக்குகிறது. இதற்கு ஒரு சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="2731971182069536520">அடுத்தமுறை சாதனத்தை ரீஸ்டார்ட் செய்யும்போது உங்களின் அகத் தரவை நீக்குவதற்கான 'ஒருமுறை செய்யும் புதுப்பிப்பை' நிர்வாகி மேற்கொள்வார்.</translation>
+<translation id="2732134891301408122">கூடுதல் உள்ளடக்கம் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> குழுவில் உள்ள எல்லா தளங்களும் மீட்டமைக்கப்படும்.</translation>
 <translation id="2735712963799620190">திட்ட அட்டவணை</translation>
 <translation id="2737363922397526254">சுருக்கு...</translation>
@@ -3122,6 +3122,7 @@
 <translation id="4735803855089279419">இந்தச் சாதனத்திற்கான சாதன அடையாளங்காட்டிகளை சிஸ்டத்தால் தீர்மானிக்க முடியவில்லை.</translation>
 <translation id="4736292055110123391">உங்கள் எல்லாச் சாதனங்களிலும் உங்கள் புக்மார்க்குகள், கடவுச்சொற்கள், வரலாறு, மேலும் பலவற்றை ஒத்திசைக்கலாம்</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
+<translation id="473936925429402449">தேர்ந்தெடுக்கப்பட்டது, கூடுதல் உள்ளடக்கம் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="4739639199548674512">டிக்கெட்டுகள்</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />பயன்பாடுகளைப் புதுப்பிப்பது எப்படி என்பதை அறிக<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{தளத்தின் ஒலியை இயக்கு}other{தளங்களின் ஒலியை இயக்கு}}</translation>
@@ -4144,6 +4145,7 @@
 <translation id="6011449291337289699">தளத் தரவை அழி</translation>
 <translation id="6015266928248016057">தவறான PUK. இன்னும் <ph name="RETRIES" /> முறை முயலலாம்.</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
+<translation id="6016178549409952427">கூடுதல் உள்ளடக்கத்திற்குச் செல்லும் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">முந்தைய பதிப்பிற்கு மாற, பவர்வாஷை உறுதிப்படுத்தவும்</translation>
 <translation id="6016972670657536680">மொழி மற்றும் விசைப்பலகைப் பொத்தானைத் தேர்ந்தெடுக்கவும். தற்போது தேர்ந்தெடுத்த மொழி: <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">பச்சை</translation>
@@ -6450,6 +6452,7 @@
 <translation id="8811862054141704416">Crostini மைக்ரோஃபோன் அணுகல்</translation>
 <translation id="8812552797690463522">இந்த நெட்வொர்க் உங்களுடன் பகிரப்பட்டது.</translation>
 <translation id="8812593354822910461">உலாவிய தரவையும் (<ph name="URL" />) அழி. இது உங்களை <ph name="DOMAIN" /> கணக்கில் இருந்து வெளியேற்றும். <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">பின்னர் நினைவூட்டு</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> இல் உள்நுழைய முடியவில்லை</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />" நீட்டிப்பிற்கு பெற்றோரிடம் அனுமதி வாங்குங்கள்</translation>
 <translation id="8813969267212093033">சிஸ்டத்தின் உரை இந்த மொழியில் காட்டப்பட்டது</translation>
@@ -6480,6 +6483,7 @@
 <translation id="8838601485495657486">ஒளிபுகாத்தன்மை</translation>
 <translation id="8838770651474809439">ஹம்பர்கர்</translation>
 <translation id="883911313571074303">படத்தைக் குறிப்பிடு</translation>
+<translation id="8841843049738266382">ஏற்புப் பட்டியலில் உள்ள பயனர் கணக்குகளைப் படிக்கலாம் மாற்றலாம்</translation>
 <translation id="8842594465773264717">இந்தக் கைரேகையை நீக்கு</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
 <translation id="8846132060409673887">இந்தக் கம்ப்யூட்டரின் உற்பத்தியாளர் பற்றிய தகவலையும் மாடலையும் படிக்கலாம்</translation>

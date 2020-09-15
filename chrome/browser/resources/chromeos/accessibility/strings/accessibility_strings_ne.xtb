@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">टगल गर्ने बटन</translation>
 <translation id="1299774449519412690">हल्का आकासे निलो</translation>
 <translation id="1303806948938513162">ChromeVox का मेनुहरूमा प्रवेश गर्न ४ औँलाले ट्याप गर्नुहोस्</translation>
+<translation id="1313373992684326101">सारेर अघिल्लो खण्डमा लैजानुहोस्। उदाहरणका लागि: स्ट्याटस ट्रे, लन्चर आदि।</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, मेनु आइटम रेडियो बटनको चयन रद्द गरिएको छ।</translation>
 <translation id="1325946044405407859">फुस्रो</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> को <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">पिच वृद्धि गर्नु</translation>
 <translation id="151784044608172266">अर्को वाक्य</translation>
 <translation id="1524531499102321782">ब्रेली अर्को रेखा</translation>
+<translation id="1542513807034338907">स्क्रोल गरी अघिल्लो पृष्ठमा जानुहोस्</translation>
 <translation id="1546370775711804143">स्क्रोल बार</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1559739829547075274">पछाडि नेभिगेट गर्नुहोस्</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">भिडियो</translation>
 <translation id="4764692524839457597">पूर्वनिर्धारित मान</translation>
 <translation id="4772771694153161212">अधोरेखाङ्कन होइन</translation>
+<translation id="4780458943471935919">स्क्रोल गरी अर्को पृष्ठमा जानुहोस्</translation>
 <translation id="4784215347943747396">केवल १ वा २ स्विचहरूको प्रयोग गरी यन्त्र नियन्त्रण गर्नुहोस्</translation>
 <translation id="4786285211967466855">अघिल्लो कुनै पनि लेभल १ शीर्षक छैन</translation>
 <translation id="4787577491510559358">वस्तुको हालको ढाँचा कस्तो छ भनेर सुनाउनुहोस्</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">विभिन्न प्रकारका एलिमेन्टका साथै उद्धृत गरिएका, मेटाइएका, बाक्लो पारिएका, कोष्ठकमा लेखिएका वा ठूलो अक्षरमा लेखिएका पाठ बोल्ने समयमा आवाजको पिच परिवर्तन गरियोस्।</translation>
 <translation id="7491962110804786152">ट्याब</translation>
+<translation id="7492497529767769458">सारेर अर्को खण्डमा लैजानुहोस्। उदाहरणका लागि: स्ट्याटस ट्रे, लन्चर आदि।</translation>
 <translation id="7505149250476994901">अक्षर पढ्नुअघि "ठूला अक्षर" भन्नुहोस्</translation>
 <translation id="7518543783849163354">ChromeVox लाई बोल्नबाट अस्थायी रूपमा रोक्न कन्ट्रोल कुञ्जी थिच्नुहोस्।</translation>
 <translation id="7533226154149229506">सुनौलो रड जस्तो हल्का पहेँलो</translation>

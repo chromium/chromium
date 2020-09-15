@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">미주</translation>
 <translation id="1281252709823657822">대화상자</translation>
 <translation id="1306460908038601864">꺼짐</translation>
+<translation id="1311894908970423688">값이 <ph name="VALUE_DATE_OR_TIME" />여야 합니다.</translation>
 <translation id="1335095011850992622">저작권 표시</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">배너</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="668171684555832681">기타...</translation>
 <translation id="6692633176391053278">증감자</translation>
+<translation id="6709093583001123835">값이 <ph name="VALUE" />여야 합니다.</translation>
 <translation id="6709570249143506788">재생 품질 나쁨</translation>
 <translation id="6755330956360078551">도움말</translation>
 <translation id="6790428901817661496">재생</translation>

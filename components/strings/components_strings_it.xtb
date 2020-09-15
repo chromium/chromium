@@ -265,11 +265,6 @@
 <translation id="1978555033938440688">Versione firmware</translation>
 <translation id="1988881251331415125">Se l'ortografia è corretta, <ph name="BEGIN_LINK" />prova a eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Accedere a cookie e dati del sito.
-
-Vuoi consentire al sito <ph name="EMBEDDED_URL" /> di usare cookie e dati del sito su <ph name="TOP_LEVEL_URL" />?
-
-In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I contenuti con cui hai interagito funzioneranno correttamente, ma il sito <ph name="EMBEDDED_URL" /> potrebbe monitorare la tua attività.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vuole memorizzare in modo definitivo grandi quantità di dati sul computer locale</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{e un'altra}other{e altre #}}</translation>
 <translation id="2003709556000175978">Reimposta ora la password</translation>

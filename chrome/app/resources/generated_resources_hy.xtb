@@ -1139,7 +1139,6 @@
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
 <translation id="2342740338116612727">Էջանիշներն ավելացվեցին</translation>
 <translation id="2343747224442182863">Ֆոկուսավորել այս ներդիրը</translation>
-<translation id="2344686470986284227">Վիրտուալ մեքենայի կարգավորիչը գործարկվում է</translation>
 <translation id="2345723121311404059">1 էջ <ph name="PRINTER_NAME" /> տպիչով</translation>
 <translation id="2347644257713614136">Hangouts-ի և Cast for Education-ի օգտագործումը կարգավորվում է Google-ի գաղտնիության քաղաքականությամբ:</translation>
 <translation id="2348176352564285430">Հավելված՝ <ph name="ARC_PROCESS_NAME" /></translation>
@@ -3532,7 +3531,7 @@
 <translation id="5265797726250773323">Չհաջողվեց տեղադրել</translation>
 <translation id="5266113311903163739">Հավաստագրման կենտրոնի ներմուծման սխալ</translation>
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
-<translation id="5274738462757057090">Chrome դիտարկիչում ավտոմատ ստեղծում է ենթագրեր մեդիա ֆայլի համար (այս պահին հասանելի է միայն անգլերեն լեզվով)</translation>
+<translation id="5274738462757057090">Chrome դիտարկիչում ավտոմատ ստեղծում է ենթագրեր մեդիա ֆայլերի համար (այս պահին հասանելի է միայն անգլերեն լեզվով)</translation>
 <translation id="5275352920323889391">Շուն</translation>
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
 <translation id="5278823018825269962">Կարգավիճակի նույնացուցիչ</translation>

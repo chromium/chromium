@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">ਟੌਗਲ ਬਟਨ</translation>
 <translation id="1299774449519412690">ਹਲਕਾ ਅਸਮਾਨੀ</translation>
 <translation id="1303806948938513162">ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਲਈ 4 ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
+<translation id="1313373992684326101">ਪਿਛਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ਮੀਨੂ ਆਈਟਮ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਅਣਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1325946044405407859">ਤਾਂਬੇ ਰੰਗਾ</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ਦਾ <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">ਪਿਚ ਵਧਾਓ</translation>
 <translation id="151784044608172266">ਅਗਲਾ ਵਾਕ</translation>
 <translation id="1524531499102321782">ਬਰੇਲ ਲਿਪੀ ਅਗਲੀ ਲਾਈਨ</translation>
+<translation id="1542513807034338907">ਪਿਛਲੇ ਪੰਨੇ 'ਤੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="1546370775711804143">ਸਕ੍ਰੋਲ ਬਾਰ</translation>
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1559739829547075274">ਪਿੱਛੇ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ਵੀਡਿਓ</translation>
 <translation id="4764692524839457597">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="4772771694153161212">ਕੋਈ ਅੰਡਰਲਾਈਨ ਲਿਖਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="4780458943471935919">ਅਗਲੇ ਪੰਨੇ 'ਤੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="4784215347943747396">ਬਸ 1 ਜਾਂ 2 ਸਵਿੱਚਾਂ ਨਾਲ ਡੀਵਾਈਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="4786285211967466855">ਕੋਈ ਪਿਛਲਾ ਪੱਧਰ 1 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
 <translation id="4787577491510559358">ਮੌਜੂਦ ਆਈਟਮ ਦੀ ਫਾਰਮੈਟਿੰਗ ਦੱਸੋ</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ਤੱਤ ਕਿਸਮਾਂ ਅਤੇ ਉਤਕਥਨ, ਕੱਟੀ ਗਈ ਲਿਖਤ, ਗੂੜ੍ਹੀ ਕੀਤੀ ਲਿਖਤ, ਬਰੈਕਟਦਾਰ ਜਾਂ ਵੱਡੇ ਅੱਖਰਾਂ ਵਾਲੀ ਲਿਖਤ ਨੂੰ ਬੋਲਣ ਵੇਲੇ ਪਿੱਚ ਬਦਲੋ।</translation>
 <translation id="7491962110804786152">ਟੈਬ</translation>
+<translation id="7492497529767769458">ਅਗਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="7505149250476994901">ਅੱਖਰ ਤੋਂ ਪਹਿਲਾਂ "ਵੱਡਾ" ਬੋਲੋ</translation>
 <translation id="7518543783849163354">ਅਸਥਾਈ ਤੌਰ 'ਤੇ ChromeVox ਦਾ ਬੋਲਣਾ ਬੰਦ ਕਰਨ ਲਈ, ਕੰਟਰੋਲ ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="7533226154149229506">ਹਲਕਾ ਸੁਨਿਹਰੀ ਪੀਲਾ</translation>

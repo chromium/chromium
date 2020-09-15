@@ -261,11 +261,6 @@
 <translation id="1978555033938440688">펌웨어 버전</translation>
 <translation id="1988881251331415125">철자가 올바르다면 <ph name="BEGIN_LINK" />연결 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">쿠키 및 사이트 데이터에 액세스합니다.
-
-<ph name="EMBEDDED_URL" />에서 <ph name="TOP_LEVEL_URL" />의 쿠키와 사이트 데이터를 사용하도록 허용하시겠습니까?
-
-쿠키와 사이트 데이터 사용은 현재 개인정보 보호 설정에 따라 차단되어 있습니다. 사용을 허용하면 이전에 상호작용했던 콘텐츠를 정상적으로 이용할 수 있지만, <ph name="EMBEDDED_URL" />에서 내 활동을 추적하게 될 수도 있습니다.</translation>
 <translation id="1997484222658892567"><ph name="URL" />에서 로컬 컴퓨터에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>

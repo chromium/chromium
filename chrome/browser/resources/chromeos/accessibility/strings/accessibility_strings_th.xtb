@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">ปุ่มเปิด-ปิด</translation>
 <translation id="1299774449519412690">สีฟ้าท้องฟ้าอ่อน</translation>
 <translation id="1303806948938513162">ใช้ 4 นิ้วแตะเพื่อเข้าสู่เมนู ChromeVox</translation>
+<translation id="1313373992684326101">ไปที่ส่วนก่อนหน้า เช่น ถาดสถานะและ Launcher</translation>
 <translation id="1325363694295259631">ยกเลิกการเลือกปุ่มตัวเลือกรายการในเมนู <ph name="NAME" /> แล้ว</translation>
 <translation id="1325946044405407859">สีแทน</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> จาก <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">เพิ่มระดับเสียง</translation>
 <translation id="151784044608172266">ประโยคถัดไป</translation>
 <translation id="1524531499102321782">เบรลล์บรรทัดถัดไป</translation>
+<translation id="1542513807034338907">เลื่อนไปที่หน้าก่อนหน้านี้</translation>
 <translation id="1546370775711804143">แถบเลื่อน</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1559739829547075274">นำทางกลับหลัง</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">วิดีโอ</translation>
 <translation id="4764692524839457597">ค่าเริ่มต้น</translation>
 <translation id="4772771694153161212">ไม่ขีดเส้นใต้</translation>
+<translation id="4780458943471935919">เลื่อนไปที่หน้าถัดไป</translation>
 <translation id="4784215347943747396">ควบคุมอุปกรณ์ด้วยสวิตช์เพียง 1 หรือ 2 ปุ่ม</translation>
 <translation id="4786285211967466855">ไม่มีส่วนหัวระดับ 1 ก่อนหน้า</translation>
 <translation id="4787577491510559358">ประกาศการจัดรูปแบบของรายการปัจจุบัน</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">เปลี่ยนระดับเสียงสูงต่ำเมื่อพูดประเภทขององค์ประกอบและข้อความในเครื่องหมายคำพูด ข้อความที่ถูกลบ เป็นตัวหนา อยู่ในวงเล็บ หรือเป็นตัวพิมพ์ใหญ่</translation>
 <translation id="7491962110804786152">แท็บ</translation>
+<translation id="7492497529767769458">ไปที่ส่วนถัดไป เช่น ถาดสถานะและ Launcher</translation>
 <translation id="7505149250476994901">พูด "ตัวพิมพ์ใหญ่" ต่อจากตัวอักษร</translation>
 <translation id="7518543783849163354">หากต้องการหยุดคำอธิบายของ ChromeVox ชั่วคราว ให้กดปุ่ม Control</translation>
 <translation id="7533226154149229506">สีเหลืองโกลเด้นร็อดอ่อน</translation>

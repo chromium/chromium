@@ -262,11 +262,6 @@
 <translation id="1978555033938440688">Donanım Yazılımı Sürümü</translation>
 <translation id="1988881251331415125">Yazım doğruysa <ph name="BEGIN_LINK" />Bağlantı Teşhisi'ni çalıştırmayı deneyin<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Çerezlere ve site verilerine erişmek.
-
-<ph name="EMBEDDED_URL" /> sitesinin, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmasına izin vermek istiyor musunuz?
-
-Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin vermek etkileşimde bulunduğunuz içeriğin doğru çalışmasını sağlar, ancak <ph name="EMBEDDED_URL" /> sitesinin etkinliğinizi izlemesine de imkan verebilir.</translation>
 <translation id="1997484222658892567"><ph name="URL" />, yerel bilgisiayarınızda büyük miktarda veri depolamak istiyor</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ve 1 uygulama daha}other{ve # uygulama daha}}</translation>
 <translation id="2003709556000175978">Şifrenizi şimdi sıfırlayın</translation>

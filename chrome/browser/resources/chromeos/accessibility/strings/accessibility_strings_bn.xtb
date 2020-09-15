@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">এই বোতাম টগল করা যায়</translation>
 <translation id="1299774449519412690">হালকা আকাশী</translation>
 <translation id="1303806948938513162">ChromeVox মেনুতে প্রবেশ করার জন্য ৪টি আঙ্গুল দিয়ে ট্যাপ করুন</translation>
+<translation id="1313373992684326101">আগের বিভাগে যান। যেমন স্ট্যাটাস ট্রে ও লঞ্চার।</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, মেনু আইটেম রেডিও বোতাম বেছে নেওয়া অবস্থায় নেই</translation>
 <translation id="1325946044405407859">তামাটে</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />-এর <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">পিচ বাড়ান</translation>
 <translation id="151784044608172266">পরবর্তী বাক্য</translation>
 <translation id="1524531499102321782">ব্রেইল পরবর্তী লাইন</translation>
+<translation id="1542513807034338907">স্ক্রোল করে আগের পৃষ্ঠায় যান</translation>
 <translation id="1546370775711804143">স্ক্রল বার</translation>
 <translation id="1555130319947370107">নীল</translation>
 <translation id="1559739829547075274">পিছনের দিকে নেভিগেট করুন</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ভিডিও</translation>
 <translation id="4764692524839457597">ডিফল্ট</translation>
 <translation id="4772771694153161212">নিচে আন্ডারলাইন দেওয়া নেই</translation>
+<translation id="4780458943471935919">স্ক্রোল করে পরের পৃষ্ঠায় যান</translation>
 <translation id="4784215347943747396">১টি বা ২টি সুইচের মাধ্যমে ডিভাইস নিয়ন্ত্রণ করুন</translation>
 <translation id="4786285211967466855">কোনও পূর্ববর্তী লেভেল ১ শিরোনাম নেই</translation>
 <translation id="4787577491510559358">বর্তমান আইটেমের ফরম্যাটিং নিয়ে বলুন</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">আপনার কথোপকথন টাইপ, কোট, মুছে ফেলা, মোটা করে লেখা, প্রথম ব্র্যাকেটে লেখা বা শব্দের প্রথম অক্ষর বড় হাতে লেখার সময় স্বরের নিক্ষেপ পরিবর্তন করুন।</translation>
 <translation id="7491962110804786152">ট্যাব</translation>
+<translation id="7492497529767769458">পরের বিভাগে যান। যেমন স্ট্যাটাস ট্রে ও লঞ্চার।</translation>
 <translation id="7505149250476994901">অক্ষর লেখার আগে "বড় হাতের অক্ষর" বলুন</translation>
 <translation id="7518543783849163354">ChromeVox কে সাময়িকভাবে কথা বলা বন্ধ করার জন্য, কন্ট্রোল কী চাপুন।</translation>
 <translation id="7533226154149229506">হালকা সোনালী রড হলুদ</translation>

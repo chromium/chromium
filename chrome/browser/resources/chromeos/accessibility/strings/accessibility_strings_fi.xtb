@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Päälle/pois-painike</translation>
 <translation id="1299774449519412690">Vaalea taivaansininen</translation>
 <translation id="1303806948938513162">Avaa ChromeVox-valikot napauttamalla neljällä sormella</translation>
+<translation id="1313373992684326101">Siirry edelliseen osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, valikkokohteen painikkeen valinta poistettu</translation>
 <translation id="1325946044405407859">Kellanruskea</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Lisää äänenkorkeutta</translation>
 <translation id="151784044608172266">Seuraava lause</translation>
 <translation id="1524531499102321782">Pistekirjoituksen seuraava rivi</translation>
+<translation id="1542513807034338907">Vieritä edelliselle sivulle</translation>
 <translation id="1546370775711804143">Vierityspalkki</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1559739829547075274">Siirry taaksepäin</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">oletus</translation>
 <translation id="4772771694153161212">Ei alleviivausta</translation>
+<translation id="4780458943471935919">Vieritä seuraavalle sivulle</translation>
 <translation id="4784215347943747396">Ohjaa laitetta vain 1–2 kytkimellä</translation>
 <translation id="4786285211967466855">Ei edellisiä tason 1 otsikoita</translation>
 <translation id="4787577491510559358">Sano nykyisen kohteen muotoilu</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Muuta äänenkorkeutta, kun ääneen luetaan elementtityyppejä ja lainattua, poistettua, lihavoitua, sulkeissa olevaa tai isolla kirjoitettua tekstiä.</translation>
 <translation id="7491962110804786152">sarkain</translation>
+<translation id="7492497529767769458">Siirry seuraavaan osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>
 <translation id="7505149250476994901">Sano "iso kirjain" ennen kirjainta</translation>
 <translation id="7518543783849163354">Mykistä ChromeVox väliaikaisesti Control-näppäimellä.</translation>
 <translation id="7533226154149229506">Vaalea kultapiisku</translation>

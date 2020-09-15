@@ -2180,6 +2180,11 @@
           如果不設定這項政策，系統會在初次顯示登入畫面時停用插入點醒目顯示，但使用者隨時可以啟用。</translation>
 <translation id="4183229833636799228"><ph name="FLASH_PLUGIN_NAME" /> 預設設定</translation>
 <translation id="4192388905594723944">用於驗證遠端存取用戶端驗證憑證的網址</translation>
+<translation id="4196466220333757818">這項政策會指定允許使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函式 <ph name="CHALLENGE_USER_KEY_FUNCTION" /> 進行遠端驗證的擴充功能。只有加入這份清單的擴充功能可以使用該 API。
+
+          如果擴充功能未列入清單，或是未設定清單，API 呼叫作業會失敗，並傳回錯誤代碼。
+
+          這項政策已遭淘汰，請改用 <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="4203389617541558220">安排自動重新啟動，藉此限制裝置運作時間。
 
       如果你設定這項政策，表示系統會在經過指定的裝置運作時間長度之後安排自動重新啟動。
@@ -3185,6 +3190,9 @@
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用即時網路共用功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 定位服務</translation>
+<translation id="5585568978223984334">這項政策會指定允許使用 <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> 函式進行遠端驗證的擴充功能。只有加入這份清單的擴充功能可以使用該 API。
+
+          如果擴充功能未列入清單，或是未設定清單，API 呼叫作業會失敗，並傳回錯誤代碼。</translation>
 <translation id="5586942249556966598">不要處理</translation>
 <translation id="5590494712401018042">指定當裝置處於簡報模式時，要將螢幕調暗延遲時間延長多少百分比。
 

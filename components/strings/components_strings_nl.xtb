@@ -262,11 +262,6 @@
 <translation id="1978555033938440688">Firmwareversie</translation>
 <translation id="1988881251331415125">Als de spelling klopt, <ph name="BEGIN_LINK" />voer je een verbindingsdiagnose uit<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
-<translation id="1992796205810278279">Toegang krijgen tot cookies en sitegegevens.
-
-Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
-
-Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de content die je hebt gebruikt correct, maar kan <ph name="EMBEDDED_URL" /> mogelijk je activiteit bijhouden.</translation>
 <translation id="1997484222658892567"><ph name="URL" /> vraagt toestemming om permanent grote gegevens op je lokale computer op te slaan</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{en 1 andere}other{en # andere}}</translation>
 <translation id="2003709556000175978">Stel je wachtwoord nu opnieuw in</translation>

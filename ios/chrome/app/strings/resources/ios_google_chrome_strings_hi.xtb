@@ -37,16 +37,16 @@
 <translation id="424864128008805179">Chrome से साइन आउट करें?</translation>
 <translation id="4249068189593983585">Chrome इस्तेमाल करने के लिए सलाह. ज़्यादा टैब विकल्पों के लिए, टूलबार में 'टैब दिखाएं' बटन को दबाकर रखें. यह बटन आपकी स्क्रीन के सबसे नीचे या सबसे ऊपर मिलेगा.</translation>
 <translation id="4523886039239821078">कुछ ऐड-ऑन के कारण Chrome बंद हो जा रहा है. कृपया उन्हें अनइंस्टॉल करें:</translation>
-<translation id="4633328489441962921">Chrome अपडेट की जांच नहीं कर सकता</translation>
+<translation id="4633328489441962921">Chrome अपडेट की जांच नहीं कर सका</translation>
 <translation id="4698415050768537821">Chrome सभी पासवर्ड की जांच नहीं कर सका. कल कोशिश करें या <ph name="BEGIN_LINK" />अपने Google खाते में सेव किए गए पासवर्ड की जांच करें.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">यह ऐप्लिकेशन Chrome के बीटा वर्शन पर काम नहीं करता</translation>
 <translation id="5030102366287574140">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रखने में मदद कर सकता है.</translation>
-<translation id="5162467219239570114">Chrome का यह वर्शन पुराना हो गया है. अगर <ph name="BEGIN_LINK" />ऐप स्टोर<ph name="END_LINK" /> में कोई अपडेट उपलब्ध नहीं है, तो हो सकता है कि आपका डिवाइस अब Chrome के नए वर्शन के साथ काम नहीं करता.</translation>
+<translation id="5162467219239570114">Chrome का यह वर्शन पुराना हो गया है. अगर <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> में कोई अपडेट उपलब्ध नहीं है, तो हो सकता है कि आपका डिवाइस अब Chrome के नए वर्शन के साथ काम नहीं करता.</translation>
 <translation id="5389212809648216794">Google Chrome आपके कैमरे का उपयोग नहीं कर सकता क्योंकि दूसरा ऐप्लिकेशन उसका उपयोग कर रहा है</translation>
 <translation id="5639704535586432836">सेटिंग &gt; निजता &gt; कैमरा &gt; Google Chrome खोलें और कैमरा चालू करें.</translation>
 <translation id="5642200033778930880">Google Chrome स्प्लिट व्यू मोड में आपके कैमरे का इस्तेमाल नहीं कर सकता</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="571296537125272375">Chrome अपडेट की जांच नहीं कर सकता, क्योंकि आप ऑफ़लाइन हैं</translation>
+<translation id="571296537125272375">Chrome अपडेट की जांच नहीं कर सका, क्योंकि आप ऑफ़लाइन हैं</translation>
 <translation id="5854621639439811139">Chrome के लिए सलाह. 'वापस जाएं', 'आगे जाएं' और 'खोजें' जैसे कुछ बटन अब आपकी स्क्रीन के सबसे नीचे मिलेंगे.</translation>
 <translation id="6036420186814142909">Google Chrome में ऐसी सुविधाएं हैं जो आपको अपने इंटरनेट डेटा को प्रबंधित करने और वेबपृष्ठों को तेज़ी से लोड करने में आपकी सहायता करती हैं. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
 <translation id="6573431926118603307">  अपने अन्य डिवाइस पर खोले गए टैब यहां दिखाई देंगे.</translation>
@@ -69,7 +69,7 @@
 <translation id="7698568245838009292">Chrome आपका कैमरा ऐक्सेस करना चाहता है</translation>
 <translation id="7855730255114109580">Google Chrome अप टू डेट है</translation>
 <translation id="8045508249136869751">Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करने के लिए, Settings खोलें, डिफ़ॉल्ट ब्राउज़र ऐप्लिकेशन पर टैप करें, और Chrome को चुनें.</translation>
-<translation id="8160472928944011082">Chrome को अपडेट नहीं किया जा सकता</translation>
+<translation id="8160472928944011082">Chrome को अपडेट नहीं किया जा सका</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="840168496893712993">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करके देखें.</translation>
 <translation id="8459495907675268833">चयनित डेटा Chrome और समन्वयित डिवाइस से निकाल दिया गया है. हो सकता है कि आपके Google खाते में अन्य प्रकार के ब्राउज़िंग इतिहास जैसे खोज और history.google.com पर अन्य Google सेवाओं की गतिविधि हो.</translation>

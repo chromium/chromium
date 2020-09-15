@@ -1139,7 +1139,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2342740338116612727">Bookmarks added</translation>
 <translation id="2343747224442182863">Focus This Tab</translation>
-<translation id="2344686470986284227">Starting the virtual machine controller</translation>
 <translation id="2345723121311404059">1 page to <ph name="PRINTER_NAME" /></translation>
 <translation id="2347644257713614136">Use of Hangouts and Cast for Education is governed by the Google Privacy Policy.</translation>
 <translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -1288,6 +1287,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2505127913256479918">This supervised account will be removed soon</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Screen #}other{Screen #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> of <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Devices near you when Nearby Share is open on their device</translation>
 <translation id="250704661983564564">Display arrangement</translation>
 <translation id="2507253002925770350">Ticket removed</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> is paused</translation>
@@ -3139,6 +3139,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4762718786438001384">Device disk space critically low</translation>
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
+<translation id="476598255842811483">No one unless you open Nearby Share on your device</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
 <translation id="477647109558161443">Create a desktop shortcut</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -5669,6 +5670,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7864539943188674973">Disable Bluetooth</translation>
+<translation id="7866352732146932341">Devices near you when Nearby Share is open on your device</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Paired</translation>
 <translation id="7870730066603611552">Review sync options following setup</translation>
 <translation id="7870790288828963061">No Kiosk apps with newer version found. Nothing to update. Please remove the USB stick.</translation>
