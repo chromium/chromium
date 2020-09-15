@@ -20,7 +20,6 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -185,33 +184,36 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      * {@link AccountPickerBottomSheetProperties#ON_CONTINUE_AS_CLICKED}.
      */
     private void onContinueAsClicked() {
-        if (mSelectedAccountName == null) {
+        @ViewState
+        int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+        if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
+                || viewState == ViewState.SIGNIN_GENERAL_ERROR) {
+            signIn();
+        } else if (viewState == ViewState.NO_ACCOUNTS) {
             addAccount();
-        } else {
-            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
-            new AsyncTask<String>() {
-                @Override
-                protected String doInBackground() {
-                    return mAccountManagerFacade.getAccountGaiaId(mSelectedAccountName);
-                }
-
-                @Override
-                protected void onPostExecute(String accountGaiaId) {
-                    CoreAccountInfo coreAccountInfo = new CoreAccountInfo(
-                            new CoreAccountId(accountGaiaId), mSelectedAccountName, accountGaiaId);
-                    mAccountPickerDelegate.signIn(
-                            coreAccountInfo, AccountPickerBottomSheetMediator.this::onSignInError);
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
-    private void onSignInError(GoogleServiceAuthError error) {
-        if (error.getState() == State.INVALID_GAIA_CREDENTIALS) {
-            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_AUTH_ERROR);
-        } else {
-            mModel.set(
-                    AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
-        }
+    private void signIn() {
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
+        new AsyncTask<String>() {
+            @Override
+            protected String doInBackground() {
+                return mAccountManagerFacade.getAccountGaiaId(mSelectedAccountName);
+            }
+
+            @Override
+            protected void onPostExecute(String accountGaiaId) {
+                CoreAccountInfo coreAccountInfo = new CoreAccountInfo(
+                        new CoreAccountId(accountGaiaId), mSelectedAccountName, accountGaiaId);
+                mAccountPickerDelegate.signIn(coreAccountInfo, error -> {
+                    @ViewState
+                    int newViewState = error.getState() == State.INVALID_GAIA_CREDENTIALS
+                            ? ViewState.SIGNIN_AUTH_ERROR
+                            : ViewState.SIGNIN_GENERAL_ERROR;
+                    mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, newViewState);
+                });
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }
