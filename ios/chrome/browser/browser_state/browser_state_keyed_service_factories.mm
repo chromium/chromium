@@ -42,6 +42,7 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#import "ios/chrome/browser/screen_time/features.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
@@ -63,6 +64,10 @@
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+#import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -138,4 +143,12 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   if (IsURLBlocklistEnabled()) {
     PolicyBlocklistServiceFactory::GetInstance();
   }
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    if (IsScreenTimeIntegrationEnabled()) {
+      ScreenTimeHistoryDeleterFactory::GetInstance();
+    }
+  }
+#endif  // __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 }

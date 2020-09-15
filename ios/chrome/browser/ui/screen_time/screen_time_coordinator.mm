@@ -6,6 +6,7 @@
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_mediator.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -34,6 +35,9 @@
   self.mediator = [[ScreenTimeMediator alloc]
         initWithWebStateList:self.browser->GetWebStateList()
       suppressUsageRecording:self.browser->GetBrowserState()->IsOffTheRecord()];
+
+  ScreenTimeHistoryDeleterFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 }
 
 - (void)stop {

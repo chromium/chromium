@@ -2,6 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/ios_sdk.gni")
+
+source_set("screen_time") {
+  # TODO(crbug.com/1123704): remove when it is recommended to build Chromium
+  # with version 12.0 or later of Xcode.
+  if (xcode_version_int >= 1200) {
+    sources = [
+      "screen_time_history_deleter.h",
+      "screen_time_history_deleter.mm",
+      "screen_time_history_deleter_factory.h",
+      "screen_time_history_deleter_factory.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      "//base",
+      "//components/history/core/browser",
+      "//components/keyed_service/core",
+      "//components/keyed_service/ios",
+      "//ios/chrome/browser/browser_state",
+      "//ios/chrome/browser/history",
+      "//net",
+    ]
+  }
+}
+
 source_set("feature_flags") {
   sources = [
     "features.h",
