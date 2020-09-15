@@ -1234,6 +1234,18 @@
       },
     },
 
+    'easwa_browser_tests' : {
+      'easwa_browser_tests': {
+        'args': [
+          '--gtest-filter=*HelpApp*:*MediaApp*'
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+        'test': 'browser_tests',
+      }
+    },
+
     'fieldtrial_browser_tests': {
       'no_fieldtrial_browser_tests': {
         'args': [

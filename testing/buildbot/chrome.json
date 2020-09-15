@@ -3040,6 +3040,39 @@
       }
     ]
   },
+  "linux-chromeos-chrome-easwa": {
+    "additional_compile_targets": [
+      "chrome",
+      "chrome_sandbox",
+      "linux_symbols",
+      "symupload"
+    ],
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest-filter=*HelpApp*:*MediaApp*"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "easwa_browser_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests",
+              "ssd": "0"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      }
+    ]
+  },
   "mac-chrome": {
     "additional_compile_targets": [
       "chrome"
