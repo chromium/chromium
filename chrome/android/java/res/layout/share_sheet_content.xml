@@ -3,44 +3,49 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="@dimen/min_touch_target_size"
-    android:orientation="vertical">
-  <TextView
-    android:id="@+id/message"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="48dp"
-    android:paddingStart="16dp"
-    android:gravity="center_vertical"
-    android:background="@color/default_bg_color_blue"
-    android:textAppearance="@style/TextAppearance.TextSmall.Primary.Inverse"
-    android:visibility="gone"/>
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/share_sheet_scrollview"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+  <LinearLayout
+      xmlns:tools="http://schemas.android.com/tools"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:orientation="vertical">
+    <TextView
+      android:id="@+id/message"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:minHeight="48dp"
+      android:paddingStart="16dp"
+      android:gravity="center_vertical"
+      android:background="@color/default_bg_color_blue"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary.Inverse"
+      android:visibility="gone"/>
 
-  <RelativeLayout
-    android:id="@+id/preview_header"
-    android:layout_gravity="center"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="20dp"
-    android:paddingStart="16dp"
-    android:paddingTop="24dp">
+    <RelativeLayout
+      android:id="@+id/preview_header"
+      android:layout_gravity="center"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingBottom="20dp"
+      android:paddingStart="16dp"
+      android:paddingTop="24dp">
 
       <org.chromium.components.browser_ui.widget.RoundedCornerImageView
-        android:id="@+id/image_preview"
-        android:layout_height="@dimen/sharing_hub_preview_monogram_size"
-        android:layout_width="@dimen/sharing_hub_preview_monogram_size"
-        android:scaleType="fitCenter"
-        app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
-        tools:ignore="ContentDescription"/>
+          android:id="@+id/image_preview"
+          android:layout_height="@dimen/sharing_hub_preview_monogram_size"
+          android:layout_width="@dimen/sharing_hub_preview_monogram_size"
+          android:scaleType="fitCenter"
+          app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+          app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius"
+          tools:ignore="ContentDescription"/>
 
       <TextView
         android:id="@+id/title_preview"
@@ -69,38 +74,39 @@
         android:paddingStart="12dp"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
-  </RelativeLayout>
+    </RelativeLayout>
 
-  <View
-    android:id="@+id/preview_divider"
-    android:background="@color/divider_line_bg_color"
-    android:layout_height="1dp"
-    android:layout_width="match_parent"/>
+    <View
+      android:id="@+id/preview_divider"
+      android:background="@color/divider_line_bg_color"
+      android:layout_height="1dp"
+      android:layout_width="match_parent"/>
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/share_sheet_other_apps"
-    android:clipToPadding="false"
-    android:layout_width="wrap_content"
-    android:layout_height="113dp"
-    android:minHeight="@dimen/min_touch_target_size"
-    android:orientation="horizontal"
-    android:paddingEnd="16dp" />
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/share_sheet_other_apps"
+      android:clipToPadding="false"
+      android:layout_width="wrap_content"
+      android:layout_height="113dp"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:orientation="horizontal"
+      android:paddingEnd="16dp" />
 
-  <View
-    android:id="@+id/share_sheet_divider"
-    android:background="@color/divider_line_bg_color"
-    android:layout_height="1dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    android:layout_width="match_parent"
-    android:visibility="gone" />
+    <View
+      android:id="@+id/share_sheet_divider"
+      android:background="@color/divider_line_bg_color"
+      android:layout_height="1dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_width="match_parent"
+      android:visibility="gone" />
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/share_sheet_chrome_apps"
-    android:clipToPadding="false"
-    android:layout_width="wrap_content"
-    android:layout_height="113dp"
-    android:minHeight="@dimen/min_touch_target_size"
-    android:paddingEnd="16dp"
-    android:visibility="gone" />
-</LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/share_sheet_chrome_apps"
+      android:clipToPadding="false"
+      android:layout_width="wrap_content"
+      android:layout_height="113dp"
+      android:minHeight="@dimen/min_touch_target_size"
+      android:paddingEnd="16dp"
+      android:visibility="gone" />
+  </LinearLayout>
+</ScrollView>

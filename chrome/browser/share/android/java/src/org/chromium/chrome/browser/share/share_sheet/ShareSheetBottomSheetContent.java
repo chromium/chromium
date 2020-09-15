@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -55,6 +56,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private ViewGroup mContentView;
     private ShareParams mParams;
     private String mUrl;
+    private ScrollView mContentScrollableView;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
@@ -76,6 +78,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private void createContentView() {
         mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.share_sheet_content, null);
+        mContentScrollableView = mContentView.findViewById(R.id.share_sheet_scrollview);
     }
 
     /*
@@ -315,6 +318,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     @Override
     public int getVerticalScrollOffset() {
+        if (mContentScrollableView != null) {
+            return mContentScrollableView.getScrollY();
+        }
+
         return 0;
     }
 
