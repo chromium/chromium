@@ -19,6 +19,8 @@ class Label;
 
 namespace ash {
 
+class GlanceableInfoView;
+
 // AmbientBackgroundImageView--------------------------------------------------
 // A custom ImageView to display photo image and details information on ambient.
 // It also handles specific mouse/gesture events to dismiss ambient when user
@@ -49,11 +51,15 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View {
  private:
   void InitLayout();
 
+  void UpdateGlanceableInfoPosition();
+
   // Owned by |AmbientController| and should always outlive |this|.
   AmbientViewDelegate* delegate_ = nullptr;
 
   // View to display the current image on ambient. Owned by the view hierarchy.
   views::ImageView* image_view_ = nullptr;
+
+  GlanceableInfoView* glanceable_info_view_ = nullptr;
 
   // Label to show details text, i.e. attribution, to be displayed for the
   // current image. Owned by the view hierarchy.

@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "base/rand_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/image_view.h"
@@ -21,13 +23,21 @@ namespace ash {
 namespace {
 
 // Appearance.
-constexpr int kHorizontalMarginDip = 16;
-constexpr int kVerticalMarginDip = 43;
+constexpr int kMarginDip = 16;
+constexpr int kSpacingDip = 8;
 
 // Typography.
 constexpr SkColor kTextColor = SK_ColorWHITE;
 constexpr int kDefaultFontSizeDip = 64;
 constexpr int kDetailsFontSizeDip = 13;
+
+// The dicretion to translate glanceable info views in the x/y coordinates.  `1`
+// means positive translate, `-1` negative.
+int translate_x_direction = 1;
+int translate_y_direction = -1;
+// The current x/y translation of glanceable info views in Dip.
+int current_x_translation = 0;
+int current_y_translation = 0;
 
 }  // namespace
 
@@ -57,6 +67,8 @@ void AmbientBackgroundImageView::OnGestureEvent(ui::GestureEvent* event) {
 
 void AmbientBackgroundImageView::UpdateImage(const gfx::ImageSkia& img) {
   image_view_->SetImage(img);
+
+  UpdateGlanceableInfoPosition();
 }
 
 void AmbientBackgroundImageView::UpdateImageDetails(
@@ -78,16 +90,29 @@ void AmbientBackgroundImageView::InitLayout() {
   // Inits the image view. This view should have the same size of the screen.
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
 
+  gfx::Insets shadow_insets =
+      gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues());
+
   // Inits the attribution view. It also has a full-screen size and is
   // responsible for layout the details label at its bottom left corner.
   views::View* attribution_view = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* attribution_layout =
       attribution_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
+          views::BoxLayout::Orientation::kVertical));
   attribution_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  attribution_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
   attribution_layout->set_inside_border_insets(
-      gfx::Insets(0, kHorizontalMarginDip, kVerticalMarginDip, 0));
+      gfx::Insets(0, kMarginDip + shadow_insets.left(),
+                  kMarginDip + shadow_insets.bottom(), 0));
+
+  attribution_layout->set_between_child_spacing(
+      kSpacingDip + shadow_insets.top() + shadow_insets.bottom());
+
+  glanceable_info_view_ = attribution_view->AddChildView(
+      std::make_unique<GlanceableInfoView>(delegate_));
+  glanceable_info_view_->SetPaintToLayer();
 
   // Inits the details label.
   details_label_ =
@@ -98,11 +123,45 @@ void AmbientBackgroundImageView::InitLayout() {
       ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
           kDetailsFontSizeDip - kDefaultFontSizeDip));
   details_label_->SetShadows(ambient::util::GetTextShadowValues());
-  details_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  details_label_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_BOTTOM);
+  details_label_->SetPaintToLayer();
+  details_label_->layer()->SetFillsBoundsOpaquely(false);
 }
 
-BEGIN_METADATA(AmbientBackgroundImageView, views::ImageView)
+void AmbientBackgroundImageView::UpdateGlanceableInfoPosition() {
+  constexpr int kStepDP = 5;
+  constexpr int kMaxTranslationDip = 20;
+
+  // Move the translation point randomly one step on each x/y direction.
+  int x_increment = kStepDP * base::RandInt(0, 1);
+  int y_increment = x_increment == 0 ? kStepDP : kStepDP * base::RandInt(0, 1);
+  current_x_translation += translate_x_direction * x_increment;
+  current_y_translation += translate_y_direction * y_increment;
+
+  // If the translation point is out of bounds, reset it within bounds and
+  // reverse the direction.
+  if (current_x_translation < 0) {
+    translate_x_direction = 1;
+    current_x_translation = 0;
+  } else if (current_x_translation > kMaxTranslationDip) {
+    translate_x_direction = -1;
+    current_x_translation = kMaxTranslationDip;
+  }
+
+  if (current_y_translation > 0) {
+    translate_y_direction = -1;
+    current_y_translation = 0;
+  } else if (current_y_translation < -kMaxTranslationDip) {
+    translate_y_direction = 1;
+    current_y_translation = -kMaxTranslationDip;
+  }
+
+  gfx::Transform transform;
+  transform.Translate(current_x_translation, current_y_translation);
+  glanceable_info_view_->layer()->SetTransform(transform);
+  details_label_->layer()->SetTransform(transform);
+}
+
+BEGIN_METADATA(AmbientBackgroundImageView, views::View)
 END_METADATA
 
 }  // namespace ash

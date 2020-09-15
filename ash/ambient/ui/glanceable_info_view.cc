@@ -16,6 +16,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_view.h"
+#include "ash/system/tray/tray_constants.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -57,15 +58,13 @@ gfx::FontList GetWeatherTemperatureFontList() {
       temperature_font_size_delta);
 }
 
-// Returns the border insets for |weather_info_| to be aligned to the time text
-// baseline.
-gfx::Insets GetWeatherInfoInsets() {
-  int time_font_descent =
-      GetTimeFontList().GetHeight() - GetTimeFontList().GetBaseline();
-  int temperature_font_descent = GetWeatherTemperatureFontList().GetHeight() -
-                                 GetWeatherTemperatureFontList().GetBaseline();
-  return gfx::Insets(
-      0, 0, /*bottom=*/time_font_descent - temperature_font_descent, 0);
+int GetTimeFontDescent() {
+  return GetTimeFontList().GetHeight() - GetTimeFontList().GetBaseline();
+}
+
+int GetTemperatureFontDescent() {
+  return GetWeatherTemperatureFontList().GetHeight() -
+         GetWeatherTemperatureFontList().GetBaseline();
 }
 
 }  // namespace
@@ -128,9 +127,11 @@ void GlanceableInfoView::InitLayout() {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
-  layout->set_between_child_spacing(kSpacingBetweenTimeAndWeatherDip);
+
+  gfx::ShadowValues text_shadow_values = ambient::util::GetTextShadowValues();
+  gfx::Insets shadow_insets = gfx::ShadowValue::GetMargin(text_shadow_values);
 
   // Inits the time view.
   time_view_ = AddChildView(std::make_unique<tray::TimeView>(
@@ -139,35 +140,31 @@ void GlanceableInfoView::InitLayout() {
   time_view_->SetTextFont(GetTimeFontList());
   time_view_->SetTextColor(kTextColor,
                            /*auto_color_readability_enabled=*/false);
-  time_view_->SetTextShadowValues(ambient::util::GetTextShadowValues());
-
-  // Inits and layouts the weather info.
-  weather_info_ = AddChildView(std::make_unique<views::View>());
-  views::BoxLayout* weather_info_layout =
-      weather_info_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  // Aligns its child views to the center point.
-  weather_info_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  weather_info_layout->set_between_child_spacing(
-      kSpacingBetweenWeatherIconAndTempDip);
-
-  // This view should be baseline-aligned to the time view.
-  weather_info_layout->set_inside_border_insets(GetWeatherInfoInsets());
+  time_view_->SetTextShadowValues(text_shadow_values);
+  // Remove the internal spacing in `time_view_` and adjust spacing for shadows.
+  time_view_->SetBorder(views::CreateEmptyBorder(
+      -kUnifiedTrayTextTopPadding, -kUnifiedTrayTimeLeftPadding, 0,
+      kSpacingBetweenTimeAndWeatherDip + shadow_insets.right()));
 
   // Inits the icon view.
-  weather_condition_icon_ =
-      weather_info_->AddChildView(std::make_unique<views::ImageView>());
+  weather_condition_icon_ = AddChildView(std::make_unique<views::ImageView>());
   const gfx::Size size = gfx::Size(kWeatherIconSizeDip, kWeatherIconSizeDip);
   weather_condition_icon_->SetSize(size);
   weather_condition_icon_->SetImageSize(size);
+  constexpr int kIconInternalPaddingDip = 4;
+  weather_condition_icon_->SetBorder(views::CreateEmptyBorder(
+      0, 0,
+      GetTimeFontDescent() - shadow_insets.bottom() - kIconInternalPaddingDip,
+      kSpacingBetweenWeatherIconAndTempDip + shadow_insets.left()));
 
   // Inits the temp view.
-  temperature_ = weather_info_->AddChildView(std::make_unique<views::Label>());
+  temperature_ = AddChildView(std::make_unique<views::Label>());
   temperature_->SetAutoColorReadabilityEnabled(false);
   temperature_->SetEnabledColor(kTextColor);
   temperature_->SetFontList(GetWeatherTemperatureFontList());
-  temperature_->SetShadows(ambient::util::GetTextShadowValues());
+  temperature_->SetShadows(text_shadow_values);
+  temperature_->SetBorder(views::CreateEmptyBorder(
+      0, 0, GetTimeFontDescent() - GetTemperatureFontDescent(), 0));
 }
 
 }  // namespace ash

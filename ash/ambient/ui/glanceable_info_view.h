@@ -47,11 +47,7 @@ class GlanceableInfoView : public views::View,
   // View for the time info. Owned by the view hierarchy.
   ash::tray::TimeView* time_view_ = nullptr;
 
-  // Container holding weather-related views. Owned by the view hierarchy.
-  views::View* weather_info_ = nullptr;
-
   // Views for weather icon and temperature.
-  // Child views of |weather_info_| and owned by the view hierarchy.
   views::ImageView* weather_condition_icon_ = nullptr;
   views::Label* temperature_ = nullptr;
 

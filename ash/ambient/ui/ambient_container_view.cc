@@ -9,7 +9,6 @@
 
 #include "ash/ambient/ui/ambient_assistant_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
-#include "ash/ambient/ui/glanceable_info_view.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/ambient/util/ambient_util.h"
@@ -39,7 +38,6 @@ using chromeos::assistant::features::IsAmbientAssistantEnabled;
 
 // Appearance.
 constexpr int kHorizontalMarginDip = 16;
-constexpr int kVerticalMarginDip = 64;
 constexpr int kAssistantPreferredHeightDip = 128;
 constexpr int kMediaStringTopMarginDip = 25;
 
@@ -60,7 +58,8 @@ class AmbientContainerView::HostWidgetEventObserver : public ui::EventObserver {
     DCHECK(container_);
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, container_->GetWidget()->GetNativeWindow()->GetRootWindow(),
-        {ui::ET_KEY_PRESSED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_MOVED});
+        {ui::ET_KEY_PRESSED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_MOVED,
+         ui::ET_TOUCH_PRESSED, ui::ET_TOUCH_MOVED});
   }
 
   ~HostWidgetEventObserver() override = default;
@@ -73,6 +72,10 @@ class AmbientContainerView::HostWidgetEventObserver : public ui::EventObserver {
     switch (event.type()) {
       case ui::ET_KEY_PRESSED:
         DCHECK(event.IsKeyEvent());
+        container_->HandleEvent();
+        break;
+      case ui::ET_TOUCH_PRESSED:
+      case ui::ET_TOUCH_MOVED:
         container_->HandleEvent();
         break;
       case ui::ET_MOUSE_ENTERED:
@@ -133,7 +136,6 @@ gfx::Size AmbientContainerView::CalculatePreferredSize() const {
 void AmbientContainerView::Layout() {
   // Layout child views first to have proper bounds set for children.
   LayoutPhotoView();
-  LayoutGlanceableInfoView();
   LayoutMediaStringView();
   // The assistant view may not exist if |kAmbientAssistant| feature is
   // disabled.
@@ -155,9 +157,6 @@ void AmbientContainerView::Init() {
 
   photo_view_ = AddChildView(std::make_unique<PhotoView>(delegate_));
 
-  glanceable_info_view_ =
-      AddChildView(std::make_unique<GlanceableInfoView>(delegate_));
-
   media_string_view_ = AddChildView(std::make_unique<MediaStringView>());
   media_string_view_->SetVisible(false);
 
@@ -171,19 +170,6 @@ void AmbientContainerView::Init() {
 void AmbientContainerView::LayoutPhotoView() {
   // |photo_view_| should have the same size as the widget.
   photo_view_->SetBoundsRect(GetLocalBounds());
-}
-
-void AmbientContainerView::LayoutGlanceableInfoView() {
-  const gfx::Size container_size = GetLocalBounds().size();
-  const gfx::Size preferred_size = glanceable_info_view_->GetPreferredSize();
-
-  // The clock and weather view is positioned on the left-bottom corner of the
-  // container.
-  int x = kHorizontalMarginDip;
-  int y =
-      container_size.height() - kVerticalMarginDip - preferred_size.height();
-  glanceable_info_view_->SetBoundsRect(
-      gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
 }
 
 void AmbientContainerView::LayoutAssistantView() {

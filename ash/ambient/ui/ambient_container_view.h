@@ -15,7 +15,6 @@ namespace ash {
 
 class AmbientAssistantContainerView;
 class AmbientViewDelegate;
-class GlanceableInfoView;
 class PhotoView;
 class MediaStringView;
 
@@ -42,7 +41,6 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   // TODO(meilinw): Use LayoutManagers to lay out children instead of overriding
   // Layout(). See b/163170162.
   void LayoutPhotoView();
-  void LayoutGlanceableInfoView();
   void LayoutAssistantView();
   void LayoutMediaStringView();
 
@@ -54,7 +52,6 @@ class ASH_EXPORT AmbientContainerView : public views::View {
   // Owned by view hierarchy.
   PhotoView* photo_view_ = nullptr;
   AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
-  GlanceableInfoView* glanceable_info_view_ = nullptr;
   MediaStringView* media_string_view_ = nullptr;
 
   // Observes events from its host widget.
