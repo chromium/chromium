@@ -21,7 +21,7 @@
 #include "net/url_request/ftp_protocol_handler.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "url/gurl.h"
 
@@ -67,7 +67,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                            true /* enable_caching */);
   url_request_context.set_host_resolver(host_resolver.get());
 
-  net::URLRequestJobFactoryImpl job_factory;
+  net::URLRequestJobFactory job_factory;
   net::FtpAuthCache auth_cache;
   job_factory.SetProtocolHandler(
       "ftp", net::FtpProtocolHandler::CreateForTesting(
