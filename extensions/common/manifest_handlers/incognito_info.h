@@ -7,23 +7,19 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "extensions/common/api/incognito.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
 
 struct IncognitoInfo : public Extension::ManifestData {
-  enum Mode { SPLIT, SPANNING, NOT_ALLOWED };
-
-  explicit IncognitoInfo(Mode mode);
-
+  explicit IncognitoInfo(api::incognito::IncognitoMode mode);
   ~IncognitoInfo() override;
 
-  // If true, a separate process will be used for the extension in incognito
-  // mode.
-  Mode mode;
+  api::incognito::IncognitoMode mode;
 
-  // Return the incognito mode information for the given |extension|.
+  // Return whether the |extension| should run in split incognito mode.
   static bool IsSplitMode(const Extension* extension);
 
   // Return whether this extension can be run in incognito mode as specified

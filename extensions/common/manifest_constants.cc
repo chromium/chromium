@@ -74,7 +74,6 @@ const char kIcons[] = "icons";
 const char kId[] = "id";
 const char kImeOptionsPage[] = "options_page";
 const char kImport[] = "import";
-const char kIncognito[] = "incognito";
 const char kIncludeGlobs[] = "include_globs";
 const char kIndicator[] = "indicator";
 const char kInputComponents[] = "input_components";
@@ -475,8 +474,6 @@ const char kInvalidImportId[] =
     "Invalid value for 'import[*].id'.";
 const char kInvalidImportVersion[] =
     "Invalid value for 'import[*].minimum_version'.";
-const char kInvalidIncognitoBehavior[] =
-    "Invalid value for 'incognito'.";
 const char kInvalidInputComponents[] =
     "Invalid value for 'input_components'";
 const char kInvalidInputComponentDescription[] =

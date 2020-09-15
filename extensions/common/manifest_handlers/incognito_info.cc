@@ -6,71 +6,64 @@
 
 #include <memory>
 
-#include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_constants.h"
 
 namespace extensions {
 
-namespace keys = manifest_keys;
+using IncognitoManifestKeys = api::incognito::ManifestKeys;
 
-IncognitoInfo::IncognitoInfo(Mode mode) : mode(mode) {}
-
-IncognitoInfo::~IncognitoInfo() {
+IncognitoInfo::IncognitoInfo(api::incognito::IncognitoMode mode) : mode(mode) {
+  DCHECK_NE(api::incognito::INCOGNITO_MODE_NONE, mode);
 }
+
+IncognitoInfo::~IncognitoInfo() = default;
 
 // static
 bool IncognitoInfo::IsSplitMode(const Extension* extension) {
   IncognitoInfo* info = static_cast<IncognitoInfo*>(
-      extension->GetManifestData(keys::kIncognito));
-  return info ? info->mode == Mode::SPLIT : false;
+      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  return info ? info->mode == api::incognito::INCOGNITO_MODE_SPLIT : false;
 }
 
 // static
 bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
-  IncognitoInfo* info =
-      static_cast<IncognitoInfo*>(extension->GetManifestData(keys::kIncognito));
-  return info ? info->mode != Mode::NOT_ALLOWED : true;
+  IncognitoInfo* info = static_cast<IncognitoInfo*>(
+      extension->GetManifestData(IncognitoManifestKeys::kIncognito));
+  return info ? info->mode != api::incognito::INCOGNITO_MODE_NOT_ALLOWED : true;
 }
 
-IncognitoHandler::IncognitoHandler() {
-}
-
-IncognitoHandler::~IncognitoHandler() {
-}
+IncognitoHandler::IncognitoHandler() = default;
+IncognitoHandler::~IncognitoHandler() = default;
 
 bool IncognitoHandler::Parse(Extension* extension, base::string16* error) {
-  // Extensions and Chrome apps default to spanning mode.
-  // Hosted and legacy packaged apps default to split mode.
-  IncognitoInfo::Mode mode =
+  // Extensions and Chrome apps default to spanning mode. Hosted and legacy
+  // packaged apps default to split mode.
+  api::incognito::IncognitoMode default_mode =
       extension->is_hosted_app() || extension->is_legacy_packaged_app()
-          ? IncognitoInfo::Mode::SPLIT
-          : IncognitoInfo::Mode::SPANNING;
-  if (!extension->manifest()->HasKey(keys::kIncognito)) {
-    extension->SetManifestData(keys::kIncognito,
-                               std::make_unique<IncognitoInfo>(mode));
+          ? api::incognito::INCOGNITO_MODE_SPLIT
+          : api::incognito::INCOGNITO_MODE_SPANNING;
+
+  // This check is necessary since the "incognito" manifest key may not be
+  // available to the extension.
+  if (!extension->manifest()->HasKey(IncognitoManifestKeys::kIncognito)) {
+    extension->SetManifestData(IncognitoManifestKeys::kIncognito,
+                               std::make_unique<IncognitoInfo>(default_mode));
     return true;
   }
 
-  std::string incognito_string;
-  if (!extension->manifest()->GetString(keys::kIncognito, &incognito_string)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidIncognitoBehavior);
+  IncognitoManifestKeys manifest_keys;
+  if (!IncognitoManifestKeys::ParseFromDictionary(
+          *extension->manifest()->value(), &manifest_keys, error)) {
     return false;
   }
 
-  if (incognito_string == manifest_values::kIncognitoSplit) {
-    mode = IncognitoInfo::Mode::SPLIT;
-  } else if (incognito_string == manifest_values::kIncognitoSpanning) {
-    mode = IncognitoInfo::Mode::SPANNING;
-  } else if (incognito_string == manifest_values::kIncognitoNotAllowed) {
-    mode = IncognitoInfo::Mode::NOT_ALLOWED;
-  } else {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidIncognitoBehavior);
-    return false;
-  }
+  api::incognito::IncognitoMode mode = manifest_keys.incognito;
 
-  extension->SetManifestData(keys::kIncognito,
+  // This will be the case if the manifest key was omitted.
+  if (mode == api::incognito::INCOGNITO_MODE_NONE)
+    mode = default_mode;
+
+  extension->SetManifestData(IncognitoManifestKeys::kIncognito,
                              std::make_unique<IncognitoInfo>(mode));
   return true;
 }
@@ -80,7 +73,7 @@ bool IncognitoHandler::AlwaysParseForType(Manifest::Type type) const {
 }
 
 base::span<const char* const> IncognitoHandler::Keys() const {
-  static constexpr const char* kKeys[] = {keys::kIncognito};
+  static constexpr const char* kKeys[] = {IncognitoManifestKeys::kIncognito};
   return kKeys;
 }
 
