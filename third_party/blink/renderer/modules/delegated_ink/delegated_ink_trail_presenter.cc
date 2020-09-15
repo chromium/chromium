@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -97,14 +99,39 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
     layout_box = layout_view;
   }
 
-  // TODO(1052145): Move this further into the document lifecycle when layout
-  // is up to date.
-  PhysicalRect physical_rect_area = layout_box->LocalToAbsoluteRect(
+  // Intersect with the visible viewport so that the presentation area can't
+  // extend beyond the edges of the window or over the scrollbars. The frame
+  // visual viewport loop accounts for all iframe viewports, and the page visual
+  // viewport accounts for the full window. Convert everything to root frame
+  // coordinates in order to make sure offsets aren't lost along the way.
+  //
+  // TODO(1052145): Overflow and clip-path clips are ignored here, which results
+  // in delegated ink trails ignoring the clips and appearing incorrectly in
+  // some situations. This could also occur due to transformations, as the
+  // |presenation_area| is currently always a rectilinear bounding box. Ideally
+  // both of these situations are handled correctly, or the trail doesn't appear
+  // if we are unable to accurately render it.
+  PhysicalRect border_box_rect_absolute = layout_box->LocalToAbsoluteRect(
       layout_box->PhysicalBorderBoxRect(), kTraverseDocumentBoundaries);
-  gfx::RectF area(physical_rect_area.X().ToFloat(),
-                  physical_rect_area.Y().ToFloat(),
-                  physical_rect_area.Width().ToFloat(),
-                  physical_rect_area.Height().ToFloat());
+
+  while (layout_view->GetFrame()->OwnerLayoutObject()) {
+    PhysicalRect frame_visual_viewport_absolute =
+        layout_view->LocalToAbsoluteRect(
+            PhysicalRect(
+                layout_view->GetScrollableArea()->VisibleContentRect()),
+            kTraverseDocumentBoundaries);
+    border_box_rect_absolute.Intersect(frame_visual_viewport_absolute);
+
+    layout_view = layout_view->GetFrame()->OwnerLayoutObject()->View();
+  }
+
+  border_box_rect_absolute.Intersect(PhysicalRect(
+      local_frame_->GetPage()->GetVisualViewport().VisibleContentRect()));
+
+  gfx::RectF area(border_box_rect_absolute.X().ToFloat(),
+                  border_box_rect_absolute.Y().ToFloat(),
+                  border_box_rect_absolute.Width().ToFloat(),
+                  border_box_rect_absolute.Height().ToFloat());
 
   const double diameter_in_physical_pixels = style->diameter() * effective_zoom;
   std::unique_ptr<viz::DelegatedInkMetadata> metadata =
