@@ -51,10 +51,10 @@ class BASE_EXPORT PriorityQueue {
   // empty.
   RegisteredTaskSource RemoveTaskSource(const TaskSource& task_source);
 
-  // Updates the sort key of the TaskSource in |transaction| to
-  // match its current traits. No-ops if the TaskSource is not in the
-  // PriorityQueue or the PriorityQueue is empty.
-  void UpdateSortKey(TaskSource::Transaction transaction);
+  // Updates the sort key of |task_source| to |sort_key|, reordering
+  // |task_source| in the queue if necessary. No-ops if the TaskSource is not in
+  // the PriorityQueue or the PriorityQueue is empty.
+  void UpdateSortKey(const TaskSource& task_source, TaskSourceSortKey sort_key);
 
   // Returns true if the PriorityQueue is empty.
   bool IsEmpty() const;

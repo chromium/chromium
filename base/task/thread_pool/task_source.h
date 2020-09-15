@@ -105,10 +105,6 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
     operator bool() const { return !!task_source_; }
 
-    // Returns a TaskSourceSortKey representing the priority of the TaskSource.
-    // Cannot be called on an empty TaskSource.
-    TaskSourceSortKey GetSortKey() const;
-
     // Sets TaskSource priority to |priority|.
     void UpdatePriority(TaskPriority priority);
 
@@ -147,6 +143,9 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // this should only be used as a best-effort guess of how many more workers
   // are needed. This may be called on an empty task source.
   virtual size_t GetRemainingConcurrency() const = 0;
+
+  // Returns a TaskSourceSortKey representing the priority of the TaskSource.
+  virtual TaskSourceSortKey GetSortKey() const = 0;
 
   // Support for IntrusiveHeap.
   void SetHeapHandle(const HeapHandle& handle);
@@ -192,8 +191,6 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   // unless it guarantees never to hand-out multiple RegisteredTaskSources that
   // are concurrently ready.
   virtual Task Clear(TaskSource::Transaction* transaction) = 0;
-
-  virtual TaskSourceSortKey GetSortKey() const = 0;
 
   // Sets TaskSource priority to |priority|.
   void UpdatePriority(TaskPriority priority);

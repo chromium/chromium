@@ -86,6 +86,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
+  TaskSourceSortKey GetSortKey() const override;
 
   // Returns a token that uniquely identifies this Sequence.
   const SequenceToken& token() const { return token_; }
@@ -102,7 +103,6 @@ class BASE_EXPORT Sequence : public TaskSource {
   Task TakeTask(TaskSource::Transaction* transaction) override;
   Task Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
-  TaskSourceSortKey GetSortKey() const override;
 
   // Releases reference to TaskRunner.
   void ReleaseTaskRunner();
@@ -111,6 +111,8 @@ class BASE_EXPORT Sequence : public TaskSource {
 
   // Queue of tasks to execute.
   base::queue<Task> queue_;
+
+  std::atomic<TimeTicks> ready_time_{TimeTicks()};
 
   // True if a worker is currently associated with a Task from this Sequence.
   bool has_worker_ = false;

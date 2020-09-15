@@ -194,7 +194,7 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
   // If the TaskSource isn't saturated, check whether TaskTracker allows it to
   // remain in the PriorityQueue.
   // The canonical way of doing this is to pop the task source to return, call
-  // WillQueueTaskSource() to get an additional RegisteredTaskSource, and
+  // RegisterTaskSource() to get an additional RegisteredTaskSource, and
   // reenqueue that task source if valid. Instead, it is cheaper and equivalent
   // to peek the task source, call RegisterTaskSource() to get an additional
   // RegisteredTaskSource to replace if valid, and only pop |priority_queue_|
@@ -203,14 +203,17 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
       task_tracker_->RegisterTaskSource(priority_queue_.PeekTaskSource().get());
   if (!task_source)
     return priority_queue_.PopTaskSource();
-  return std::exchange(priority_queue_.PeekTaskSource(),
-                       std::move(task_source));
+  // Replace the top task_source and then update the queue.
+  std::swap(priority_queue_.PeekTaskSource(), task_source);
+  priority_queue_.UpdateSortKey(*task_source.get(), task_source->GetSortKey());
+  return task_source;
 }
 
 void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
                                     TaskSource::Transaction transaction) {
   CheckedAutoLock auto_lock(lock_);
-  priority_queue_.UpdateSortKey(std::move(transaction));
+  priority_queue_.UpdateSortKey(*transaction.task_source(),
+                                transaction.task_source()->GetSortKey());
   EnsureEnoughWorkersLockRequired(executor);
 }
 

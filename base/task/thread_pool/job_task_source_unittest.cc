@@ -203,6 +203,7 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTasksInParallel) {
   EXPECT_EQ(registered_task_source_a.WillRunTask(),
             TaskSource::RunStatus::kAllowedNotSaturated);
   EXPECT_EQ(1U, task_source->GetWorkerCount());
+  EXPECT_EQ(1U, task_source->GetSortKey().worker_count());
   auto task_a = registered_task_source_a.TakeTask();
 
   auto registered_task_source_b =
@@ -210,6 +211,7 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTasksInParallel) {
   EXPECT_EQ(registered_task_source_b.WillRunTask(),
             TaskSource::RunStatus::kAllowedSaturated);
   EXPECT_EQ(2U, task_source->GetWorkerCount());
+  EXPECT_EQ(2U, task_source->GetSortKey().worker_count());
   auto task_b = registered_task_source_b.TakeTask();
 
   // WillRunTask() should return a null RunStatus once the max concurrency is
@@ -222,9 +224,11 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTasksInParallel) {
   // source to re-enqueue.
   job_task->SetNumTasksToRun(2);
   EXPECT_TRUE(registered_task_source_a.DidProcessTask());
+  EXPECT_EQ(1U, task_source->GetSortKey().worker_count());
 
   std::move(task_b.task).Run();
   EXPECT_TRUE(registered_task_source_b.DidProcessTask());
+  EXPECT_EQ(0U, task_source->GetSortKey().worker_count());
 
   EXPECT_EQ(0U, task_source->GetWorkerCount());
 

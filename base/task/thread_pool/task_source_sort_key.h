@@ -16,19 +16,21 @@ namespace internal {
 class BASE_EXPORT TaskSourceSortKey final {
  public:
   TaskSourceSortKey() = default;
-  TaskSourceSortKey(TaskPriority priority, TimeTicks next_task_sequenced_time);
+  TaskSourceSortKey(TaskPriority priority,
+                    TimeTicks ready_time,
+                    uint8_t worker_count = 0);
 
   TaskPriority priority() const { return priority_; }
-  TimeTicks next_task_sequenced_time() const {
-    return next_task_sequenced_time_;
-  }
+  uint8_t worker_count() const { return worker_count_; }
+  TimeTicks ready_time() const { return ready_time_; }
 
   // Lower sort key means more important.
   bool operator<=(const TaskSourceSortKey& other) const;
 
   bool operator==(const TaskSourceSortKey& other) const {
     return priority_ == other.priority_ &&
-           next_task_sequenced_time_ == other.next_task_sequenced_time_;
+           worker_count_ == other.worker_count_ &&
+           ready_time_ == other.ready_time_;
   }
   bool operator!=(const TaskSourceSortKey& other) const {
     return !(other == *this);
@@ -42,9 +44,13 @@ class BASE_EXPORT TaskSourceSortKey final {
   // created.
   TaskPriority priority_;
 
-  // Sequenced time of the next task to run in the sequence at the time this
-  // sort key was created.
-  TimeTicks next_task_sequenced_time_;
+  // Number of workers running the task source, used as secondary sort key
+  // prioritizing task sources with fewer workers.
+  uint8_t worker_count_;
+
+  // Time since the task source has been ready to run upcoming work, used as
+  // secondary sort key after |worker_count| prioritizing older task sources.
+  TimeTicks ready_time_;
 };
 
 }  // namespace internal

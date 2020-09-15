@@ -128,7 +128,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyBestEffort) {
 
   // Get the sort key.
   const TaskSourceSortKey best_effort_sort_key =
-      best_effort_sequence_transaction.GetSortKey();
+      best_effort_sequence->GetSortKey();
 
   // Take the task from the sequence, so that its sequenced time is available
   // for the check below.
@@ -141,7 +141,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyBestEffort) {
   // Verify the sort key.
   EXPECT_EQ(TaskPriority::BEST_EFFORT, best_effort_sort_key.priority());
   EXPECT_EQ(take_best_effort_task.queue_time,
-            best_effort_sort_key.next_task_sequenced_time());
+            best_effort_sort_key.ready_time());
 
   // DidProcessTask for correctness.
   best_effort_registered_task_source.DidProcessTask(
@@ -162,7 +162,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyForeground) {
 
   // Get the sort key.
   const TaskSourceSortKey foreground_sort_key =
-      foreground_sequence_transaction.GetSortKey();
+      foreground_sequence->GetSortKey();
 
   // Take the task from the sequence, so that its sequenced time is available
   // for the check below.
@@ -174,8 +174,7 @@ TEST(ThreadPoolSequenceTest, GetSortKeyForeground) {
 
   // Verify the sort key.
   EXPECT_EQ(TaskPriority::USER_VISIBLE, foreground_sort_key.priority());
-  EXPECT_EQ(take_foreground_task.queue_time,
-            foreground_sort_key.next_task_sequenced_time());
+  EXPECT_EQ(take_foreground_task.queue_time, foreground_sort_key.ready_time());
 
   // DidProcessTask for correctness.
   foreground_registered_task_source.DidProcessTask(

@@ -7,14 +7,20 @@
 namespace base {
 namespace internal {
 
+static_assert(sizeof(TaskSourceSortKey) <= 2 * sizeof(uint64_t),
+              "Members in TaskSourceSortKey should be ordered to be compact.");
+
 TaskSourceSortKey::TaskSourceSortKey(TaskPriority priority,
-                                     TimeTicks next_task_sequenced_time)
+                                     TimeTicks ready_time,
+                                     uint8_t worker_count)
     : priority_(priority),
-      next_task_sequenced_time_(next_task_sequenced_time) {}
+      worker_count_(worker_count),
+      ready_time_(ready_time) {}
 
 bool TaskSourceSortKey::operator<=(const TaskSourceSortKey& other) const {
   // This TaskSourceSortKey is considered more important than |other| if it has
-  // a higher priority or if it has the same priority but its next task was
+  // a higher priority or if it has the same priority but fewer workers, or if
+  // it has the same priority and same worker count but its next task was
   // posted sooner than |other|'s.
   const int priority_diff =
       static_cast<int>(priority_) - static_cast<int>(other.priority_);
@@ -22,7 +28,11 @@ bool TaskSourceSortKey::operator<=(const TaskSourceSortKey& other) const {
     return true;
   if (priority_diff < 0)
     return false;
-  return next_task_sequenced_time_ <= other.next_task_sequenced_time_;
+  if (worker_count_ < other.worker_count_)
+    return true;
+  if (worker_count_ > other.worker_count_)
+    return false;
+  return ready_time_ <= other.ready_time_;
 }
 
 }  // namespace internal

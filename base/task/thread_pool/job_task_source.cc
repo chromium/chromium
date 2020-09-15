@@ -95,7 +95,7 @@ JobTaskSource::JobTaskSource(const Location& from_here,
             self->worker_task_.Run(&job_delegate);
           },
           base::Unretained(this))),
-      queue_time_(TimeTicks::Now()),
+      ready_time_(TimeTicks::Now()),
       delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -348,7 +348,8 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
 }
 
 TaskSourceSortKey JobTaskSource::GetSortKey() const {
-  return TaskSourceSortKey(traits_.priority(), queue_time_);
+  return TaskSourceSortKey(priority_racy(), ready_time_,
+                           TS_UNCHECKED_READ(state_).Load().worker_count());
 }
 
 Task JobTaskSource::Clear(TaskSource::Transaction* transaction) {

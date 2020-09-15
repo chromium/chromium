@@ -68,6 +68,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
+  TaskSourceSortKey GetSortKey() const override;
 
   bool IsCompleted() const;
   size_t GetWorkerCount() const;
@@ -182,7 +183,6 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   Task TakeTask(TaskSource::Transaction* transaction) override;
   Task Clear(TaskSource::Transaction* transaction) override;
   bool DidProcessTask(TaskSource::Transaction* transaction) override;
-  TaskSourceSortKey GetSortKey() const override;
 
   // Synchronizes access to workers state.
   mutable CheckedLock worker_lock_{UniversalSuccessor()};
@@ -207,7 +207,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   // Task returned from TakeTask(), that calls |worker_task_| internally.
   RepeatingClosure primary_task_;
 
-  const TimeTicks queue_time_;
+  const TimeTicks ready_time_;
   PooledTaskRunnerDelegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(JobTaskSource);

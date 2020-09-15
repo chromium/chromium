@@ -32,10 +32,6 @@ TaskSource::Transaction::~Transaction() {
   }
 }
 
-TaskSourceSortKey TaskSource::Transaction::GetSortKey() const {
-  return task_source_->GetSortKey();
-}
-
 void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
   if (FeatureList::IsEnabled(kAllTasksUserBlocking))
     return;
