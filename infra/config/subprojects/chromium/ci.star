@@ -1204,8 +1204,6 @@ ci.chromiumos_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = settings.main_console_name,
-    # TODO(crbug.com/1121667) Enable tree closing when it's stable.
-    tree_closing = False,
 )
 
 ci.chromiumos_builder(
@@ -1292,7 +1290,6 @@ ci.chromiumos_builder(
     main_console_view = settings.main_console_name,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     triggered_by = ["linux-lacros-builder-rel"],
-    # TODO(crbug.com/1104291): Enable tree closing.
     tree_closing = False,
 )
 
