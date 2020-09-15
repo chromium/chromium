@@ -59,6 +59,7 @@ class TestRunnerTest(unittest.TestCase):
       'browser_tests',
       'components_browsertests',
       'content_browsertests',
+      'lacros_chrome_browsertests',
   ])
   @mock.patch.object(os,
                      'listdir',
@@ -67,6 +68,7 @@ class TestRunnerTest(unittest.TestCase):
                      'mkdtemp',
                      side_effect=['/tmp/xdg', '/tmp/ash-data'])
   @mock.patch.object(os.environ, 'copy', side_effect=[{}, {}])
+  @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner,
                      '_GetLatestVersionOfAshChrome',
@@ -85,15 +87,28 @@ class TestRunnerTest(unittest.TestCase):
       ash_chrome_args = mock_popen.call_args_list[0][0][0]
       self.assertTrue(ash_chrome_args[0].endswith(
           'build/lacros/prebuilt_ash_chrome/793554/chrome'))
-      self.assertListEqual([
-          '--user-data-dir=/tmp/ash-data', '--enable-wayland-server',
-          '--no-startup-window'
-      ], ash_chrome_args[1:])
+      expected_ash_chrome_args = [
+          '--user-data-dir=/tmp/ash-data',
+          '--enable-wayland-server',
+          '--no-startup-window',
+      ]
+      if command == 'lacros_chrome_browsertests':
+        expected_ash_chrome_args.append(
+            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock')
+      self.assertListEqual(expected_ash_chrome_args, ash_chrome_args[1:])
       ash_chrome_env = mock_popen.call_args_list[0][1].get('env', {})
       self.assertDictEqual({'XDG_RUNTIME_DIR': '/tmp/xdg'}, ash_chrome_env)
 
       test_args = mock_popen.call_args_list[1][0][0]
-      self.assertListEqual([command], test_args)
+      if command == 'lacros_chrome_browsertests':
+        self.assertListEqual([
+            command,
+            '--lacros-mojo-socket-for-testing=/tmp/ash-data/lacros.sock',
+            '--test-launcher-jobs=1'
+        ], test_args)
+      else:
+        self.assertListEqual([command], test_args)
+
       test_env = mock_popen.call_args_list[1][1].get('env', {})
       self.assertDictEqual(
           {
@@ -101,9 +116,11 @@ class TestRunnerTest(unittest.TestCase):
               'EGL_PLATFORM': 'surfaceless'
           }, test_env)
 
+
   @mock.patch.object(os,
                      'listdir',
                      return_value=['wayland-0', 'wayland-0.lock'])
+  @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner,
                      '_GetLatestVersionOfAshChrome',
@@ -123,6 +140,7 @@ class TestRunnerTest(unittest.TestCase):
   @mock.patch.object(os,
                      'listdir',
                      return_value=['wayland-0', 'wayland-0.lock'])
+  @mock.patch.object(os.path, 'exists', return_value=True)
   @mock.patch.object(os.path, 'isfile', return_value=True)
   @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
   @mock.patch.object(subprocess, 'Popen', return_value=mock.Mock())
