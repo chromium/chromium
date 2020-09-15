@@ -6,7 +6,13 @@
 let ProcessingRoot;
 
 /**
- * @fileoverview This is a simple template engine inspired by JsTemplates
+ * @fileoverview
+ *
+ * This file (and related i18n_template_process.js) are deprecated and
+ * existing usages should be removed (see https://crbug.com/1128151).
+ * Do not add any additional usages of this file.
+ *
+ * This is a simple template engine inspired by JsTemplates
  * optimized for i18n.
  *
  * It currently supports three handlers:

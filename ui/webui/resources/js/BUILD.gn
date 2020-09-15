@@ -33,7 +33,7 @@ js_type_check("js_resources") {
     ":webui_resource_test",
   ]
   if (is_chromeos) {
-    deps += [ ":i18n_template" ]
+    deps += [ ":i18n_template_process" ]
   }
   if (is_ios) {
     deps += [ "ios:web_ui" ]
@@ -75,7 +75,7 @@ js_library("i18n_template_no_process") {
   deps = [ ":load_time_data" ]
 }
 
-js_library("i18n_template") {
+js_library("i18n_template_process") {
   deps = [ ":i18n_template_no_process" ]
 }
 

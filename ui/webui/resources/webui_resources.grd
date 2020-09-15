@@ -14,8 +14,7 @@ without changes to the corresponding grd file. -->
   <release seq="1">
     <includes>
       <if expr="chromeos">
-        <include name="IDR_WEBUI_I18N_TEMPLATE_JS" file="js/i18n_template.js"
-                 flattenhtml="true" type="BINDATA" />
+        <include name="IDR_WEBUI_I18N_TEMPLATE_PROCESS_JS" file="js/i18n_template_process.js" type="BINDATA" />
       </if>
       <include name="IDR_WEBUI_JSTEMPLATE_JS" file="js/jstemplate_compiled.js"
                flattenhtml="true" type="BINDATA"/>
