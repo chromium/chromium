@@ -4,51 +4,85 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
-  extensions_pak_file = "extensions_resources.pak"
-  unpak_folder = "extensions_resources.unpak"
+  preprocess_folder = "preprocessed"
 
   optimize_webui("build") {
     host = "extensions"
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "extensions.rollup.js" ]
     js_module_in_files = [ "extensions.js" ]
 
     deps = [
-      ":unpak",
+      ":preprocess",
+      ":preprocess_generated",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }
 
-  unpak("unpak") {
-    pak_file = extensions_pak_file
-    out_folder = unpak_folder
+  preprocess_grit("preprocess") {
+    in_folder = "./"
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "drag_and_drop_handler.js",
+      "extensions.js",
+      "item_behavior.js",
+      "item_util.js",
+      "keyboard_shortcut_delegate.js",
+      "navigation_helper.js",
+      "service.js",
+      "shortcut_util.js",
+    ]
 
-    deps = [ ":flattened_resources" ]
+    if (is_chromeos) {
+      in_files += [ "kiosk_browser_proxy.js" ]
+    }
   }
 
-  grit("flattened_resources") {
-    source = "extensions_resources.grd"
-
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
+  preprocess_grit("preprocess_generated") {
     deps = [ ":web_components" ]
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/extensions_resources.h",
-      "grit/extensions_resources_map.cc",
-      "grit/extensions_resources_map.h",
-      extensions_pak_file,
+    in_folder = target_gen_dir
+    out_folder = "$target_gen_dir/$preprocess_folder"
+    in_files = [
+      "checkup.js",
+      "code_section.js",
+      "activity_log/activity_log_history_item.js",
+      "activity_log/activity_log_history.js",
+      "activity_log/activity_log.js",
+      "activity_log/activity_log_stream_item.js",
+      "activity_log/activity_log_stream.js",
+      "detail_view.js",
+      "drop_overlay.js",
+      "error_page.js",
+      "host_permissions_toggle_list.js",
+      "icons.js",
+      "install_warnings_dialog.js",
+      "item.js",
+      "item_list.js",
+      "keyboard_shortcuts.js",
+      "load_error.js",
+      "manager.js",
+      "options_dialog.js",
+      "pack_dialog_alert.js",
+      "pack_dialog.js",
+      "runtime_host_permissions.js",
+      "runtime_hosts_dialog.js",
+      "shared_style.js",
+      "shared_vars.js",
+      "shortcut_input.js",
+      "sidebar.js",
+      "toggle_row.js",
+      "toolbar.js",
     ]
-    output_dir = "$root_gen_dir/chrome/browser/resources/extensions"
+
+    if (is_chromeos) {
+      in_files += [ "kiosk_dialog.js" ]
+    }
   }
 }
 
