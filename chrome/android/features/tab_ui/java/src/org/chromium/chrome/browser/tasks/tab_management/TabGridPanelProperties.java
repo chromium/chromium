@@ -70,6 +70,9 @@ class TabGridPanelProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_KEYBOARD_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel
+            .WritableObjectPropertyKey<String> COLLAPSE_BUTTON_CONTENT_DESCRIPTION =
+            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {COLLAPSE_CLICK_LISTENER,
             ADD_CLICK_LISTENER, HEADER_TITLE, CONTENT_TOP_MARGIN, PRIMARY_COLOR, TINT,
             IS_DIALOG_VISIBLE, SCRIMVIEW_CLICK_RUNNABLE, ANIMATION_SOURCE_VIEW, UNGROUP_BAR_STATUS,
@@ -77,5 +80,5 @@ class TabGridPanelProperties {
             DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID, DIALOG_UNGROUP_BAR_TEXT_APPEARANCE,
             INITIAL_SCROLL_INDEX, IS_MAIN_CONTENT_VISIBLE, MENU_CLICK_LISTENER, TITLE_TEXT_WATCHER,
             TITLE_TEXT_ON_FOCUS_LISTENER, TITLE_CURSOR_VISIBILITY, IS_TITLE_TEXT_FOCUSED,
-            IS_KEYBOARD_VISIBLE};
+            IS_KEYBOARD_VISIBLE, COLLAPSE_BUTTON_CONTENT_DESCRIPTION};
 }

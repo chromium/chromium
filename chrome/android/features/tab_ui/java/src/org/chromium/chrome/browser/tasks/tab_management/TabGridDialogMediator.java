@@ -371,9 +371,21 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(getRootId(currentTab));
             if (storedTitle != null && relatedTabs.size() > 1) {
+                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                            mContext.getResources().getQuantityString(
+                                    R.plurals.accessibility_dialog_back_button_with_group_name,
+                                    relatedTabs.size(), storedTitle, relatedTabs.size()));
+                }
                 mModel.set(TabGridPanelProperties.HEADER_TITLE, storedTitle);
                 return;
             }
+        }
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                    mContext.getResources().getQuantityString(
+                            R.plurals.accessibility_dialog_back_button, relatedTabs.size(),
+                            relatedTabs.size()));
         }
         mModel.set(TabGridPanelProperties.HEADER_TITLE,
                 mContext.getResources().getQuantityString(
@@ -511,12 +523,24 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
 
             String originalTitle = mContext.getResources().getQuantityString(
                     R.plurals.bottom_tab_grid_title_placeholder, tabsCount, tabsCount);
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                        mContext.getResources().getQuantityString(
+                                R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
+            }
             mModel.set(TabGridPanelProperties.HEADER_TITLE, originalTitle);
             mTabGroupTitleEditor.updateTabGroupTitle(currentTab, originalTitle);
             return;
         }
         mTabGroupTitleEditor.storeTabGroupTitle(getRootId(currentTab), mCurrentGroupModifiedTitle);
         mTabGroupTitleEditor.updateTabGroupTitle(currentTab, mCurrentGroupModifiedTitle);
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
+            mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                    mContext.getResources().getQuantityString(
+                            R.plurals.accessibility_dialog_back_button_with_group_name,
+                            relatedTabsCount, mCurrentGroupModifiedTitle, relatedTabsCount));
+        }
         mModel.set(TabGridPanelProperties.HEADER_TITLE, mCurrentGroupModifiedTitle);
         RecordUserAction.record("TabGridDialog.TabGroupNamedInDialog");
         mCurrentGroupModifiedTitle = null;
