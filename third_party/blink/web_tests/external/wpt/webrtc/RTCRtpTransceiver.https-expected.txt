@@ -24,16 +24,16 @@ PASS checkAddTrackExistingTransceiverThenRemove
 FAIL checkRemoveTrackNegotiation assert_equals: pc2.setRemoteDescription(offer) should've added 2 tracks to receive stream expected 2 but got 0
 FAIL checkMute assert_true: expected true got false
 FAIL checkStop assert_equals: getReceivers does not expose a receiver of a stopped transceiver expected 0 but got 1
-FAIL checkStopAfterCreateOffer assert_equals: expected "[{stopped:true}]" but got "[{stopped:false}]"
-FAIL checkStopAfterSetLocalOffer assert_equals: expected "[{stopped:true}]" but got "[{stopped:false}]"
-FAIL checkStopAfterSetRemoteOffer assert_equals: expected "[{mid:null,stopped:true}]" but got "[{mid:\"0\",stopped:false}]"
-FAIL checkStopAfterCreateAnswer assert_equals: expected "[{mid:null,stopped:true}]" but got "[{mid:\"0\",stopped:false}]"
-FAIL checkStopAfterSetLocalAnswer assert_equals: expected "[{mid:null,stopped:true}]" but got "[{mid:\"0\",stopped:false}]"
+PASS checkStopAfterCreateOffer
+PASS checkStopAfterSetLocalOffer
+PASS checkStopAfterSetRemoteOffer
+PASS checkStopAfterCreateAnswer
+PASS checkStopAfterSetLocalAnswer
 PASS checkStopAfterClose
-FAIL checkLocalRollback assert_equals: expected "[{stopped:true}]" but got "[{stopped:false}]"
+PASS checkLocalRollback
 PASS checkRollbackAndSetRemoteOfferWithDifferentType
-FAIL checkRemoteRollback assert_equals: expected "{currentDirection:null,mid:null,stopped:true}" but got "{currentDirection:null,mid:null,stopped:false}"
-FAIL checkMsectionReuse assert_equals: expected "[{currentDirection:null,mid:null,stopped:true}]" but got "[{currentDirection:\"inactive\",mid:\"0\",stopped:false}]"
+FAIL checkRemoteRollback promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'addTrack' on 'RTCPeerConnection': A sender already exists for the track."
+FAIL checkMsectionReuse assert_equals: expected "[{currentDirection:null,mid:null}]" but got "[{currentDirection:\"inactive\",mid:\"0\"}]"
 PASS checkStopAfterCreateOfferWithReusedMsection
 PASS checkAddIceCandidateToStoppedTransceiver
 FAIL checkBundleTagRejected promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: The m= section with mid='1' should be rejected."

@@ -212,6 +212,7 @@ void RTCRtpTransceiver::stop(ExceptionState& exception_state) {
     return;
   }
   stopped_ = true;
+  UpdateMembers();
 }
 
 void RTCRtpTransceiver::setCodecPreferences(

@@ -256,7 +256,12 @@ class RTCRtpTransceiverImpl::RTCRtpTransceiverInternal
     return error;
   }
 
-  webrtc::RTCError Stop() { return webrtc_transceiver_->StopStandard(); }
+  webrtc::RTCError Stop() {
+    auto error = webrtc_transceiver_->StopStandard();
+    // After stop(), direction always returns 'stopped'.
+    state_.set_direction(webrtc::RtpTransceiverDirection::kStopped);
+    return error;
+  }
 
   webrtc::RTCError setCodecPreferences(
       std::vector<webrtc::RtpCodecCapability> codec_preferences) {
