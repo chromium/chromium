@@ -10,13 +10,9 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/single_thread_task_runner.h"
-#include "base/synchronization/lock.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/ui_devtools/buildflags.h"
@@ -25,80 +21,11 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
-#include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/skia/include/core/SkFontLCDConfig.h"
 
 namespace {
-
-// Singleton class to store error strings from global mojo error handler. It
-// will store error strings for kTimeout seconds and can be used to set a crash
-// key if the GPU process is going to crash due to a deserialization error.
-// TODO(kylechar): This can be removed after tracking down all outstanding
-// deserialization errors in messages sent from the browser to GPU on the viz
-// message pipe.
-class MojoErrorTracker {
- public:
-  static constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(5);
-
-  static MojoErrorTracker& Get() {
-    static base::NoDestructor<MojoErrorTracker> tracker;
-    return *tracker;
-  }
-
-  void OnError(const std::string& error) {
-    {
-      base::AutoLock locked(lock_);
-      error_ = error;
-      error_time_ = base::TimeTicks::Now();
-    }
-
-    // Once the error is old enough we will no longer use it in a crash key we
-    // can reset the string storage.
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&MojoErrorTracker::Reset, base::Unretained(this)),
-        kTimeout);
-  }
-
-  // This will initialize the scoped crash key in |key| with the last mojo
-  // error message if the last mojo error happened within kTimeout seconds.
-  void MaybeSetCrashKeyWithRecentError(
-      base::Optional<mojo::debug::ScopedMessageErrorCrashKey>& key) {
-    base::AutoLock locked(lock_);
-    if (!HasErrorTimedOut())
-      key.emplace(error_);
-  }
-
- private:
-  friend class base::NoDestructor<MojoErrorTracker>;
-  MojoErrorTracker() = default;
-
-  bool HasErrorTimedOut() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    return base::TimeTicks::Now() - error_time_ > kTimeout;
-  }
-
-  void Reset() {
-    base::AutoLock locked(lock_);
-
-    // If another mojo error happened since this task was scheduled we shouldn't
-    // reset the error string yet.
-    if (!HasErrorTimedOut())
-      return;
-
-    error_.clear();
-    error_.shrink_to_fit();
-  }
-
-  base::Lock lock_;
-  std::string error_ GUARDED_BY(lock_);
-  base::TimeTicks error_time_ GUARDED_BY(lock_);
-};
-
-// static
-constexpr base::TimeDelta MojoErrorTracker::kTimeout;
 
 std::unique_ptr<base::Thread> CreateAndStartIOThread() {
   // TODO(sad): We do not need the IO thread once gpu has a separate process.
@@ -135,12 +62,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       gpu_init_(std::move(gpu_init)),
       gpu_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(gpu_init_);
-
-  if (!gpu_init_->gpu_info().in_process_gpu) {
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindRepeating(&MojoErrorTracker::OnError,
-                            base::Unretained(&MojoErrorTracker::Get())));
-  }
 
   // TODO(crbug.com/609317): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to
@@ -317,16 +238,8 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
   // FrameSinkManagerImpl, so just do a hard CHECK rather than crashing down the
   // road so that all crash reports caused by this issue look the same and have
   // the same signature. https://crbug.com/928845
-  if (task_executor_) {
-    // If the global mojo error handler callback ran recently, we've cached the
-    // error string and will initialize |crash_key| to contain it before
-    // intentionally crashing. The deserialization error that caused the mojo
-    // error handler to run was probably, but not 100% guaranteed, the error
-    // that caused the main viz browser-to-GPU message pipe close.
-    base::Optional<mojo::debug::ScopedMessageErrorCrashKey> crash_key;
-    MojoErrorTracker::Get().MaybeSetCrashKeyWithRecentError(crash_key);
-    CHECK(!task_executor_);
-  }
+  CHECK(!task_executor_);
+
   task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
       this, gpu_thread_task_runner_, gpu_service_->GetGpuScheduler(),
       gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
