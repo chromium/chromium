@@ -29,6 +29,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("add_input_methods_dialog") {
+  deps = [ "//ui/webui/resources/cr_elements:cr_scrollable_behavior" ]
 }
 
 js_library("change_device_language_dialog") {
@@ -194,6 +195,7 @@ js_type_check("closure_compile_module") {
 
 js_library("add_input_methods_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/add_input_methods_dialog.m.js" ]
+  deps = [ "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m" ]
   extra_deps = [ ":add_input_methods_dialog_module" ]
 }
 

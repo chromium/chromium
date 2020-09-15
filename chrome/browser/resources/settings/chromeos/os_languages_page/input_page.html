@@ -242,7 +242,8 @@
     </div>
 
     <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
-      <os-settings-add-input-methods-dialog
+      <os-settings-add-input-methods-dialog languages="[[languages]]"
+          language-helper="[[languageHelper]]"
           on-close="onAddInputMethodsDialogClose_">
       </os-settings-add-input-methods-dialog>
     </template>

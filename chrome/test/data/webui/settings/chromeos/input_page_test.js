@@ -167,11 +167,83 @@ suite('input page', () => {
   });
 
   suite('add input methods dialog', () => {
-    test('opens when clicking addInputMethod button', () => {
+    let dialog;
+    let suggestedInputMethods;
+    let cancelButton;
+    let actionButton;
+
+    setup(() => {
       assertFalse(!!inputPage.$$('os-settings-add-input-methods-dialog'));
       inputPage.$$('#addInputMethod').click();
       Polymer.dom.flush();
-      assertTrue(!!inputPage.$$('os-settings-add-input-methods-dialog'));
+
+      dialog = inputPage.$$('os-settings-add-input-methods-dialog');
+      assertTrue(!!dialog);
+
+      actionButton = dialog.$$('.action-button');
+      assertTrue(!!actionButton);
+      cancelButton = dialog.$$('.cancel-button');
+      assertTrue(!!cancelButton);
+
+      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
+      assertTrue(!!suggestedInputMethods);
+
+      // No input methods has been selected, so the action button is disabled.
+      assertTrue(actionButton.disabled);
+      assertFalse(cancelButton.disabled);
+    });
+
+    test('has action button working correctly', () => {
+      const listItems = suggestedInputMethods.querySelectorAll('.list-item');
+      // selecting a language enables action button
+      listItems[0].click();
+      assertFalse(actionButton.disabled);
+
+      // selecting the same language again disables action button
+      listItems[0].click();
+      assertTrue(actionButton.disabled);
+    });
+
+    test('adds input methods', () => {
+      const listItems = suggestedInputMethods.querySelectorAll('.list-item');
+      assertEquals(2, listItems.length);
+      assertEquals('US Swahili keyboard', listItems[0].textContent.trim());
+      assertEquals('Swahili keyboard', listItems[1].textContent.trim());
+      // selecting two input methods.
+      listItems[0].click();
+      listItems[1].click();
+      actionButton.click();
+
+      assertTrue(languageHelper.isInputMethodEnabled(
+          '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:sw:sw'));
+      assertTrue(languageHelper.isInputMethodEnabled(
+          '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw'));
+    });
+
+    test('suggested input methods hidden when no languages is enabled', () => {
+      languageHelper.setPrefValue('settings.language.preferred_languages', '');
+      Polymer.dom.flush();
+
+      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
+      // suggested input methods is rendered previously.
+      assertTrue(!!suggestedInputMethods);
+      assertEquals('none', getComputedStyle(suggestedInputMethods).display);
+    });
+
+    test('suggested input methods hidden when no input methods left', () => {
+      const languageCode = 'sw';
+      languageHelper.setPrefValue(
+          'settings.language.preferred_languages', languageCode);
+      languageHelper.getInputMethodsForLanguage(languageCode)
+          .forEach(inputMethod => {
+            languageHelper.addInputMethod(inputMethod.id);
+          });
+      Polymer.dom.flush();
+
+      suggestedInputMethods = dialog.$$('#suggestedInputMethods');
+      // suggested input methods is rendered previously.
+      assertTrue(!!suggestedInputMethods);
+      assertEquals('none', getComputedStyle(suggestedInputMethods).display);
     });
   });
 

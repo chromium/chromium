@@ -223,6 +223,24 @@ class LanguageHelper {
   getInputMethodsForLanguage(languageCode) {}
 
   /**
+   * Returns the input methods that support any of the given languages.
+   * @param {!Array<string>} languageCodes
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   */
+  getInputMethodsForLanguages(languageCodes) {}
+
+  /**
+   * @return {!Set<string>} list of enabled language code.
+   */
+  getEnabledLanguageCodes() {}
+
+  /**
+   * @param {string} id the input method id
+   * @return {boolean} True if the input method is enabled
+   */
+  isInputMethodEnabled(id) {}
+
+  /**
    * @param {!chrome.languageSettingsPrivate.InputMethod} inputMethod
    * @return {boolean}
    */
