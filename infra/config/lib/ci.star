@@ -678,12 +678,16 @@ def fyi_ios_builder(
         *,
         name,
         caches = None,
-        executable = "recipe:ios/unified_builder_tester",
+        executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_10_15,
+        properties = None,
         **kwargs):
-    if not caches:
-        caches = [builders.xcode_cache.x12a8189n]
+    # Default cache and properties sync
+    caches = caches or [builders.xcode_cache.x12a8189n]
+
+    properties = properties or {}
+    properties.setdefault("xcode_build_version", "12a8189n")
 
     return fyi_builder(
         name = name,
@@ -691,6 +695,7 @@ def fyi_ios_builder(
         cores = None,
         executable = executable,
         os = os,
+        properties = properties,
         **kwargs
     )
 
@@ -849,12 +854,10 @@ def mac_ios_builder(
         goma_backend = builders.goma.backend.RBE_PROD,
         properties = None,
         **kwargs):
-    if not caches:
-        caches = [builders.xcode_cache.x12a8189n]
-    if not properties:
-        properties = {
-            "xcode_build_version": "12a8189n",
-        }
+    caches = caches or [builders.xcode_cache.x12a8189n]
+
+    properties = properties or {}
+    properties.setdefault("xcode_build_version", "12a8189n")
 
     return mac_builder(
         name = name,

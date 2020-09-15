@@ -128,14 +128,12 @@ def xcode_enum(cache_name, cache_path):
 
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
 xcode_cache = struct(
-    x10e1001 = xcode_enum("xcode_ios_10e1001", "xcode_ios_10e1001.app"),
-    x11a1027 = xcode_enum("xcode_ios_11a1027", "xcode_ios_11a1027.app"),
+    # in use by webrtc mac builders
     x11c29 = xcode_enum("xcode_ios_11c29", "xcode_ios_11c29.app"),
-    x11m382q = xcode_enum("xcode_ios_11m382q", "xcode_ios_11m382q.app"),
+    # in use by ci/ios-simulator-cronet and try/ios-simulator-cronet
     x11e146 = xcode_enum("xcode_ios_11e146", "xcode_ios_11e146.app"),
-    x11e608c = xcode_enum("xcode_ios_11e608c", "xcode_ios_11e608c.app"),
+    # in use by ios-webkit-tot
     x11e608cwk = xcode_enum("xcode_ios_11e608cwk", "xcode_ios_11e608cwk.app"),
-    x11e503a_xct12b1 = xcode_enum("xcode_ios_11e503a_xct12b1", "xcode_ios_11e503a_xct12b1.app"),
     # xc12 beta 6
     x12a8189n = xcode_enum("xcode_ios_12a8189n", "xcode_ios_12a8189n.app"),
 )

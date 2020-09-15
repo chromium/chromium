@@ -1257,7 +1257,6 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_RELEASES,
-    executable = "recipe:chromium_trybot",
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
@@ -1268,52 +1267,26 @@ try_.chromium_mac_ios_builder(
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-multi-window",
-    executable = "recipe:chromium_trybot",
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-noncq",
-    executable = "recipe:chromium_trybot",
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios13-beta-simulator",
-    executable = "recipe:chromium_trybot",
-    caches = [xcode_cache.x12a8189n],
-    os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios13-sdk-simulator",
-    executable = "recipe:chromium_trybot",
-    caches = [xcode_cache.x12a8189n],
-    os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios14-beta-simulator",
-    executable = "recipe:chromium_trybot",
-    caches = [xcode_cache.x12a8189n],
-    os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
 )
 
 try_.chromium_mac_ios_builder(
     name = "ios14-sdk-simulator",
-    executable = "recipe:chromium_trybot",
-    caches = [xcode_cache.x12a8189n],
-    os = os.MAC_10_15,
-    properties = {
-        "xcode_build_version": "12a8189n",
-    },
 )
 
 try_.chromium_win_builder(
