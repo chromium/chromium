@@ -102,7 +102,7 @@ std::string SerializeCollectedClientDataToJson(
     // unreasonably specific assumptions about the clientData JSON. This is
     // done in the fashion of
     // https://tools.ietf.org/html/draft-ietf-tls-grease
-    ret.append(R"(,"extra_keys_may_be_added_here":")");
+    ret.append(R"(,"other_keys_can_be_added_here":")");
     ret.append(
         "do not compare clientDataJSON against a template. See "
         "https://goo.gl/yabPex\"");
