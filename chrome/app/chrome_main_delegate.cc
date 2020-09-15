@@ -488,7 +488,8 @@ void RecordMainStartupMetrics(base::TimeTicks application_start_time) {
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-  // Record the startup process creation time on supported platforms.
+  // Record the startup process creation time on supported platforms. On Android
+  // this is recorded in ChromeMainDelegateAndroid.
   startup_metric_utils::RecordStartupProcessCreationTime(
       base::Process::Current().CreationTime());
 #endif

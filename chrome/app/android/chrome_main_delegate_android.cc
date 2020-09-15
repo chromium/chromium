@@ -92,9 +92,19 @@ int ChromeMainDelegateAndroid::RunProcess(
   // Also only record the start time the first time round, since this is the
   // start time of the application, and will be same for all requests.
   if (!browser_runner_) {
-    startup_metric_utils::RecordApplicationStartTime(
-        chrome::android::GetApplicationStartTime(
-            base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics)));
+    base::TimeTicks process_start_time = chrome::android::GetProcessStartTime();
+    base::TimeTicks application_start_time =
+        chrome::android::GetApplicationStartTime();
+    if (!process_start_time.is_null()) {
+      startup_metric_utils::RecordStartupProcessCreationTime(
+          process_start_time);
+      // TODO(crbug.com/1127482): Perf bots should add support for measuring
+      // Startup.LoadTime.ProcessCreateToApplicationStart, then the
+      // kUseProcessStartTimeForMetrics feature can be removed.
+      if (base::FeatureList::IsEnabled(kUseProcessStartTimeForMetrics))
+        application_start_time = process_start_time;
+    }
+    startup_metric_utils::RecordApplicationStartTime(application_start_time);
     browser_runner_ = content::BrowserMainRunner::Create();
   }
 

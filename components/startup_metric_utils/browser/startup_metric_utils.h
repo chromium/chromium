@@ -34,6 +34,7 @@ void SetBackgroundModeEnabled();
 
 // Call this with the creation time of the startup (initial/main) process.
 void RecordStartupProcessCreationTime(base::Time time);
+void RecordStartupProcessCreationTime(base::TimeTicks ticks);
 
 // Call this with a time recorded as early as possible in the startup process.
 // On Android, the application start is the time at which the Java code starts.
