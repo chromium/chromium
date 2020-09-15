@@ -410,23 +410,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                     bool include_installing_version,
                                     FindRegistrationCallback callback);
 
-  // TODO(crbug.com/1127724): The *WithRunner functions should be removed.
-  // FindRegistrationCallback should only be called on the core thread, since
-  // ServiceWorkerRegistration is bound to that thread.
-  void DidFindRegistrationForFindImplWithRunner(
-      bool include_installing_version,
-      FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner,
-      blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
   void DidFindRegistrationForFindImpl(
       bool include_installing_version,
       FindRegistrationCallback callback,
       blink::ServiceWorkerStatusCode status,
-      scoped_refptr<ServiceWorkerRegistration> registration);
-  void OnStatusChangedForFindReadyRegistrationWithRunner(
-      FindRegistrationCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner,
       scoped_refptr<ServiceWorkerRegistration> registration);
   void OnStatusChangedForFindReadyRegistration(
       FindRegistrationCallback callback,
@@ -531,11 +518,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void DeleteForOriginOnCoreThread(
       const url::Origin& origin,
       ResultCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
-  void FindRegistrationForScopeOnCoreThread(
-      const GURL& scope,
-      bool include_installing_version,
-      FindRegistrationCallback callback,
       scoped_refptr<base::TaskRunner> callback_runner);
   void HasMainFrameWindowClientOnCoreThread(
       const GURL& origin,
