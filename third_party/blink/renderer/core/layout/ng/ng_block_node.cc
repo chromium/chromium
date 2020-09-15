@@ -469,12 +469,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
 
   TextAutosizer::NGLayoutScope text_autosizer_layout_scope(
       box_, fragment_geometry->border_box_size.inline_size);
-  if (text_autosizer_layout_scope.WasFontSizeAdjusted()) {
-    // If font size changed, this affects the intrinsic inline-size, which in
-    // turn may affect the inline-size, so recalculate the geometry.
-    fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this);
-  }
 
   PrepareForLayout();
 

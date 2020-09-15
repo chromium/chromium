@@ -346,16 +346,16 @@ void TextAutosizer::PrepareClusterStack(LayoutObject* layout_object) {
   }
 }
 
-bool TextAutosizer::BeginLayout(LayoutBlock* block,
+void TextAutosizer::BeginLayout(LayoutBlock* block,
                                 SubtreeLayoutScope* layouter) {
   DCHECK(ShouldHandleLayout());
 
   if (PrepareForLayout(block) == kStopLayout)
-    return false;
+    return;
 
   // Skip ruby's inner blocks, because these blocks already are inflated.
   if (block->IsRubyRun() || block->IsRubyBase() || block->IsRubyText())
-    return false;
+    return;
 
   DCHECK(!cluster_stack_.IsEmpty() || IsA<LayoutView>(block));
   if (cluster_stack_.IsEmpty())
@@ -374,8 +374,7 @@ bool TextAutosizer::BeginLayout(LayoutBlock* block,
                                    ->StyleRef()
                                    .IsFixedTableLayout();
   if (!is_auto_table_cell && !cluster_stack_.IsEmpty())
-    return Inflate(block, layouter) != 1.0;
-  return false;
+    Inflate(block, layouter);
 }
 
 void TextAutosizer::InflateAutoTable(LayoutNGTableInterface* table_interface) {
@@ -1250,10 +1249,9 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
       if (layout_object->IsText())
         ToLayoutText(layout_object)->AutosizingMultiplerChanged();
       DCHECK(!layouter || layout_object->IsDescendantOf(&layouter->Root()));
-      layout_object
-          ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-              layout_invalidation_reason::kTextAutosizing, kMarkContainerChain,
-              layouter);
+      layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kTextAutosizing, kMarkContainerChain,
+          layouter);
       break;
 
     case kLayoutNeeded:
@@ -1466,8 +1464,7 @@ TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
   // least if the autosizer is enabled.
   box_->SetLogicalWidth(inline_size);
 
-  was_font_size_adjusted_ =
-      text_autosizer_->BeginLayout(To<LayoutBlock>(box_), nullptr);
+  text_autosizer_->BeginLayout(To<LayoutBlock>(box_), nullptr);
 }
 
 TextAutosizer::NGLayoutScope::~NGLayoutScope() {
