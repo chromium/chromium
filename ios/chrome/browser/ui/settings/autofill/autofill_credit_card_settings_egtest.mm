@@ -93,9 +93,11 @@ id<GREYMatcher> BottomToolbar() {
 // Helper to open the settings page for Autofill credit cards.
 - (void)openCreditCardsSettings {
   [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                          l10n_util::GetNSString(
-                                              IDS_AUTOFILL_PAYMENT_METHODS))]
+  [[[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
+                                           l10n_util::GetNSString(
+                                               IDS_AUTOFILL_PAYMENT_METHODS))]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
       performAction:grey_tap()];
 }
 
