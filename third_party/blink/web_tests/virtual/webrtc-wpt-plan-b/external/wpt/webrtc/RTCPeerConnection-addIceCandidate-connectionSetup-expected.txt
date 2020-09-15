@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Candidates are added dynamically; connection should work promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Candidates are added at PC1; connection should work promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Candidates are added at PC2; connection should work promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+
