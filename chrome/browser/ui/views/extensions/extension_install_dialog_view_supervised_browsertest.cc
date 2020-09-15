@@ -150,8 +150,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
   task_runner->FastForwardBy(duration);
 
   // Supervised user presses "Ask a parent".
+  ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
   ExtensionInstallDialogView* delegate_view =
       CreateAndShowPrompt(&helper, install_prompt.GetPromptForTesting());
+  base::RunLoop().RunUntilIdle();
   delegate_view->AcceptDialog();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
 

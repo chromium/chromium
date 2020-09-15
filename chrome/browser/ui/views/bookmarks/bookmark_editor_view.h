@@ -80,10 +80,6 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // views::DialogDelegateView:
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
-  bool Accept() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -175,12 +171,10 @@ class BookmarkEditorView : public BookmarkEditor,
   // Returns the node with the specified id, or NULL if one can't be found.
   EditorNode* FindNodeWithID(BookmarkEditorView::EditorNode* node, int64_t id);
 
-  // Invokes ApplyEdits with the selected node.
-  void ApplyEdits();
-
   // Applies the edits done by the user. |parent| gives the parent of the URL
-  // being edited.
-  void ApplyEdits(EditorNode* parent);
+  // being edited. If |parent| is null, the selected node from the treeview's
+  // parent is used.
+  void ApplyEdits(EditorNode* parent = nullptr);
 
   // Recursively adds newly created folders and sets the title of nodes to
   // match the user edited title.

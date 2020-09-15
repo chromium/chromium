@@ -205,9 +205,12 @@ class ExtensionInstallDialogViewTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest, NotifyDelegate) {
   {
-    // User presses install.
+    // User presses install. Note that we have to wait for the 0ms delay for
+    // the install button to become enabled, hence the RunLoop later.
+    ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
     ExtensionInstallPromptTestHelper helper;
     ExtensionInstallDialogView* delegate_view = CreateAndShowPrompt(&helper);
+    base::RunLoop().RunUntilIdle();
     delegate_view->AcceptDialog();
     EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
   }

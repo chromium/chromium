@@ -72,6 +72,11 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(bb_model_);
   DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
   SetCanResize(true);
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
+  SetAcceptCallback(base::BindOnce(&BookmarkEditorView::ApplyEdits,
+                                   base::Unretained(this), nullptr));
+  SetTitle(details_.GetWindowTitleId());
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_SAVE));
   if (show_tree_) {
     new_folder_button_ =
@@ -99,32 +104,6 @@ bool BookmarkEditorView::IsDialogButtonEnabled(ui::DialogButton button) const {
     if (details_.GetNodeType() != BookmarkNode::FOLDER)
       return GetInputURL().is_valid();
   }
-  return true;
-}
-
-ui::ModalType BookmarkEditorView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool BookmarkEditorView::ShouldShowCloseButton() const {
-  return false;
-}
-
-base::string16 BookmarkEditorView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(details_.GetWindowTitleId());
-}
-
-bool BookmarkEditorView::Accept() {
-  if (!IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK)) {
-    if (details_.GetNodeType() != BookmarkNode::FOLDER) {
-      // The url is invalid, focus the url field.
-      url_tf_->SelectAll(true);
-      url_tf_->RequestFocus();
-    }
-    return false;
-  }
-  // Otherwise save changes and close the dialog box.
-  ApplyEdits();
   return true;
 }
 
@@ -523,23 +502,18 @@ BookmarkEditorView::EditorNode* BookmarkEditorView::FindNodeWithID(
   return nullptr;
 }
 
-void BookmarkEditorView::ApplyEdits() {
+void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   DCHECK(bb_model_->loaded());
 
-  if (tree_view_)
-    tree_view_->CommitEdit();
+  if (!parent) {
+    if (tree_view_)
+      tree_view_->CommitEdit();
 
-  EditorNode* parent =
-      show_tree_ ? tree_model_->AsNode(tree_view_->GetSelectedNode()) : nullptr;
-  if (show_tree_ && !parent) {
-    NOTREACHED();
-    return;
+    if (show_tree_) {
+      parent = tree_model_->AsNode(tree_view_->GetSelectedNode());
+      DCHECK(parent);
+    }
   }
-  ApplyEdits(parent);
-}
-
-void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
-  DCHECK(!show_tree_ || parent);
 
   // We're going to apply edits to the bookmark bar model, which will call us
   // back. Normally when a structural edit occurs we reset the tree model.

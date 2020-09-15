@@ -381,6 +381,7 @@ void DialogDelegate::SetButtonRowInsets(const gfx::Insets& insets) {
 }
 
 void DialogDelegate::AcceptDialog() {
+  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
   if (already_started_close_ || !Accept())
     return;
 
@@ -390,6 +391,9 @@ void DialogDelegate::AcceptDialog() {
 }
 
 void DialogDelegate::CancelDialog() {
+  // Note: don't DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL)) here;
+  // CancelDialog() is *always* reachable via Esc closing the dialog, even if
+  // the cancel button is disabled or there is no cancel button at all.
   if (already_started_close_ || !Cancel())
     return;
 
