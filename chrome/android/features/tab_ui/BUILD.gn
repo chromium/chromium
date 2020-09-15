@@ -129,6 +129,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridItemTouchHelperCallback.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelProperties.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridPanelViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridThumbnailView.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGridViewBinder.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupPopupUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupPopupUiMediator.java",

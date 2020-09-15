@@ -127,6 +127,10 @@ public class TabListCoordinator implements Destroyable {
                         R.layout.selectable_tab_grid_card_item, parentView, false);
                 group.setClickable(true);
 
+                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    setThumbnailViewAspectRatio(group);
+                }
+
                 return group;
             }, TabGridViewBinder::bindSelectableTab);
 
@@ -137,6 +141,11 @@ public class TabListCoordinator implements Destroyable {
                     group.getLayoutParams().width = context.getResources().getDimensionPixelSize(
                             R.dimen.tab_carousel_card_width);
                 }
+
+                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    setThumbnailViewAspectRatio(group);
+                }
+
                 group.setClickable(true);
                 return group;
             }, TabGridViewBinder::bindClosableTab);
@@ -152,6 +161,12 @@ public class TabListCoordinator implements Destroyable {
                 ViewLookupCachingFrameLayout root = (ViewLookupCachingFrameLayout) holder.itemView;
                 ImageView thumbnail = (ImageView) root.fastFindViewById(R.id.tab_thumbnail);
                 if (thumbnail == null) return;
+
+                if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    thumbnail.setImageDrawable(null);
+                    return;
+                }
+
                 if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
                     float expectedThumbnailAspectRatio =
                             (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
@@ -263,6 +278,17 @@ public class TabListCoordinator implements Destroyable {
             mGlobalLayoutListener = this::updateThumbnailLocation;
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
+    }
+
+    private static void setThumbnailViewAspectRatio(View view) {
+        float mExpectedThumbnailAspectRatio =
+                (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                        TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO_PARAM, 1.0);
+        mExpectedThumbnailAspectRatio = MathUtils.clamp(mExpectedThumbnailAspectRatio, 0.5f, 2.0f);
+        TabGridThumbnailView thumbnailView =
+                (TabGridThumbnailView) view.findViewById(R.id.tab_thumbnail);
+        thumbnailView.setAspectRatio(mExpectedThumbnailAspectRatio);
     }
 
     @NonNull
