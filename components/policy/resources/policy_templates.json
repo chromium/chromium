@@ -23218,17 +23218,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['skym@chromium.org', 'wenyufu@chromium.org', 'twellington@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': [],
-      'future_on': ['android'],
+      'supported_on': ['android:86-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
       },
       'example_value': True,
       'id': 760,
-      'caption': 'Enable ToS during first-run for CCT/PWA',
+      'caption': 'Enable ToS during first-run for CCT',
       'tags': [],
-      'desc': '''By default the Terms of Service are shown when CCT/PWA is first-run. Setting this policy to Disabled will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to Enabled or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
+      'desc': '''By default the Terms of Service are shown when CCT is first-run. Setting this policy to Disabled will cause the Terms of Service dialog to not appear during the first-run-experience or subsequent runs. Setting this policy to Enabled or leaving it unset will cause the Terms of Service dialog to appear during the first-run-experience. The other caveats are:
 
       - This policy only works on fully managed Android devices that can be configured by Unified Endpoint Management vendors.
 

@@ -6,7 +6,7 @@
 
 namespace first_run {
 
-// Whether the ToS should be shown during the first-run for CCTs/PWAs.
+// Whether the ToS should be shown during the first-run for CCTs.
 const char kCCTToSDialogEnabled[] = "policy.cct_tos_dialog_enabled";
 
 }  // namespace first_run
