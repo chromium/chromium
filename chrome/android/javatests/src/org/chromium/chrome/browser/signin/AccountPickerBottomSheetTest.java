@@ -409,7 +409,9 @@ public class AccountPickerBottomSheetTest {
 
     private void checkIncognitoInterstitialSheet() {
         onView(withId(R.id.account_picker_bottom_sheet_logo)).check(matches(isDisplayed()));
-        onView(withId(R.id.account_picker_bottom_sheet_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.account_picker_bottom_sheet_title))
+                .check(matches(isDisplayed()))
+                .check(matches(withText(R.string.incognito_interstitial_title)));
         onView(withId(R.id.account_picker_bottom_sheet_subtitle))
                 .check(matches(not(isDisplayed())));
         onView(withId(R.id.account_picker_horizontal_divider)).check(matches(not(isDisplayed())));

@@ -2415,6 +2415,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Waiting for Google Play Services to finish updating
       </message>
 
+      <!-- Strings for Incognito Interstitial. -->
+      <message name="IDS_INCOGNITO_INTERSTITIAL_TITLE" desc="The title of the incognito interstitial bottom sheet.">
+        Use incognito to sign in temporarily
+      </message>
+
       <!-- Strings for Streamlined Signin and Unified Consent. -->
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR-LIMIT=27]">
         Turn on sync?
