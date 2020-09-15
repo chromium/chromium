@@ -77,6 +77,7 @@ class DateOrderedListView {
                 mView.invalidateItemDecorations();
             }
         };
+        mView.setId(R.id.download_home_recycler_view);
         mView.setHasFixedSize(true);
         ((DefaultItemAnimator) mView.getItemAnimator()).setSupportsChangeAnimations(false);
         mView.getItemAnimator().setMoveDuration(0);

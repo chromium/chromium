@@ -6,4 +6,5 @@
 <resources>
     <item name="circular_progress_view_action" type="id" />
     <item name="circular_progress_view_progress" type="id" />
+    <item name="download_home_recycler_view" type="id" />
 </resources>
