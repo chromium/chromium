@@ -762,10 +762,6 @@ void RecordResumptionRestartReason(DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.ResumptionRestart.Reason", reason);
 }
 
-void RecordResumptionRestartCount(ResumptionRestartCountTypes type) {
-  base::UmaHistogramEnumeration("Download.ResumptionRestart.Counts", type);
-}
-
 void RecordDownloadManagerCreationTimeSinceStartup(
     base::TimeDelta elapsed_time) {
   base::UmaHistogramLongTimes("Download.DownloadManager.CreationDelay",

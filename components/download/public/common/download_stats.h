@@ -218,21 +218,6 @@ enum class ParallelDownloadCreationEvent {
   COUNT,
 };
 
-// Reason for download to restart during resumption. These enum values are
-// persisted to logs, and should therefore never be renumbered nor removed.
-enum class ResumptionRestartCountTypes {
-  // The download is restarted due to server response.
-  kRequestedByServerCount = 0,
-
-  // Strong validator changes.
-  kStrongValidatorChangesCount = 1,
-
-  // No strong validators are present.
-  kMissingStrongValidatorsCount = 2,
-
-  kMaxValue = kMissingStrongValidatorsCount
-};
-
 // Events for user scheduled downloads. Used in histograms, don't reuse or
 // remove items. Keep in sync with DownloadLaterEvent in enums.xml.
 enum class DownloadLaterEvent {
@@ -444,9 +429,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartReason(
 // Records the interrupt reason that causes download to restart.
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
     DownloadInterruptReason reason);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartCount(
-    ResumptionRestartCountTypes type);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerCreationTimeSinceStartup(
     base::TimeDelta elapsed_time);

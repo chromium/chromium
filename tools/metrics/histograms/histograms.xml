@@ -47560,6 +47560,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.ResumptionRestart.Counts"
     enum="DownloadResumptionRestartCountType" expires_after="2020-10-25">
+  <obsolete>
+    Removed in 09/2020.
+  </obsolete>
   <owner>qinmin@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
