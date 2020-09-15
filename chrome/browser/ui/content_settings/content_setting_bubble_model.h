@@ -41,6 +41,10 @@ namespace rappor {
 class RapporServiceImpl;
 }
 
+namespace ui {
+class Event;
+}
+
 // The hierarchy of bubble models:
 //
 // ContentSettingBubbleModel                  - base class
@@ -182,7 +186,7 @@ class ContentSettingBubbleModel {
 
   void set_owner(Owner* owner) { owner_ = owner; }
 
-  virtual void OnListItemClicked(int index, int event_flags) {}
+  virtual void OnListItemClicked(int index, const ui::Event& event) {}
   virtual void OnCustomLinkClicked() {}
   virtual void OnManageButtonClicked() {}
   virtual void OnManageCheckboxChecked(bool is_checked) {}
@@ -554,7 +558,7 @@ class ContentSettingFramebustBlockBubbleModel
   ~ContentSettingFramebustBlockBubbleModel() override;
 
   // ContentSettingBubbleModel:
-  void OnListItemClicked(int index, int event_flags) override;
+  void OnListItemClicked(int index, const ui::Event& event) override;
   ContentSettingFramebustBlockBubbleModel* AsFramebustBlockBubbleModel()
       override;
 

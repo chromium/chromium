@@ -293,11 +293,12 @@ std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
   return uma_view;
 }
 
-void SessionCrashedBubbleView::ExplainStatisticsLinkClicked(int event_flags) {
+void SessionCrashedBubbleView::ExplainStatisticsLinkClicked(
+    const ui::Event& event) {
   browser_->OpenURL(content::OpenURLParams(
       GURL("https://support.google.com/chrome/answer/96817"),
       content::Referrer(),
-      ui::DispositionFromEventFlags(event_flags,
+      ui::DispositionFromEventFlags(event.flags(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB),
       ui::PAGE_TRANSITION_LINK, false));
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);

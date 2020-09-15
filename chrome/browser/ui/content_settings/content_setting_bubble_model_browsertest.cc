@@ -35,7 +35,8 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 
 using content_settings::PageSpecificContentSettings;
 
@@ -328,7 +329,11 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest,
         "ContentSettings.Popups",
         content_settings::POPUPS_ACTION_DISPLAYED_BUBBLE, 1);
 
-  model->OnListItemClicked(0, ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+
+  model->OnListItemClicked(0, click_event);
   histograms.ExpectBucketCount(
         "ContentSettings.Popups",
         content_settings::POPUPS_ACTION_CLICKED_LIST_ITEM_CLICKED, 1);

@@ -257,12 +257,13 @@ void ProfileSigninConfirmationDialogViews::ButtonPressed(
   GetWidget()->Close();
 }
 
-void ProfileSigninConfirmationDialogViews::LearnMoreClicked(int event_flags) {
+void ProfileSigninConfirmationDialogViews::LearnMoreClicked(
+    const ui::Event& event) {
   NavigateParams params(
       browser_, GURL("https://support.google.com/chromebook/answer/1331549"),
       ui::PAGE_TRANSITION_LINK);
   params.disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::NEW_POPUP);
+      event.flags(), WindowOpenDisposition::NEW_POPUP);
   params.window_action = NavigateParams::SHOW_WINDOW;
   Navigate(&params);
 }

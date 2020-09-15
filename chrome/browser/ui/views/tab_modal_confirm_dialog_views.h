@@ -50,7 +50,7 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
   void CancelTabModalDialog() override;
   void CloseDialog() override;
 
-  void LinkClicked(int event_flags);
+  void LinkClicked(const ui::Event& event);
 
   views::View* GetInitiallyFocusedView() override;
 

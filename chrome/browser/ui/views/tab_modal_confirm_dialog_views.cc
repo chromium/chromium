@@ -105,8 +105,8 @@ void TabModalConfirmDialogViews::CloseDialog() {
   GetWidget()->Close();
 }
 
-void TabModalConfirmDialogViews::LinkClicked(int event_flags) {
-  delegate_->LinkClicked(ui::DispositionFromEventFlags(event_flags));
+void TabModalConfirmDialogViews::LinkClicked(const ui::Event& event) {
+  delegate_->LinkClicked(ui::DispositionFromEventFlags(event.flags()));
 }
 
 views::View* TabModalConfirmDialogViews::GetInitiallyFocusedView() {

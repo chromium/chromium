@@ -35,7 +35,7 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   void Init() override;
   bool Accept() override;
 
-  void LinkClicked(int event_flags);
+  void LinkClicked(const ui::Event&);
 
   // Used for loading pages.
   content::PageNavigator* navigator_;
@@ -87,11 +87,11 @@ bool NetworkProfileBubbleView::Accept() {
   return true;
 }
 
-void NetworkProfileBubbleView::LinkClicked(int event_flags) {
+void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
   NetworkProfileBubble::RecordUmaEvent(
       NetworkProfileBubble::METRIC_LEARN_MORE_CLICKED);
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
   content::OpenURLParams params(
       GURL("https://sites.google.com/a/chromium.org/dev/administrators/"
            "common-problems-and-solutions#network_profile"),

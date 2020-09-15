@@ -85,12 +85,12 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
   gfx::Range learn_more_range(offsets[1], message_text.length());
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          [](content::WebContents* web_contents, int event_flags) {
+          [](content::WebContents* web_contents, const ui::Event& event) {
             web_contents->OpenURL(content::OpenURLParams(
                 GURL(chrome::kAdvancedProtectionDownloadLearnMoreURL),
                 content::Referrer(),
                 ui::DispositionFromEventFlags(
-                    event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
                 ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
           },
           web_contents));

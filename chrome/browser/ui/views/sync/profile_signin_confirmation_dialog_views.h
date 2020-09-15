@@ -51,7 +51,7 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView,
   void ButtonPressed(views::Button*, const ui::Event& event) override;
 
   // Called when the "learn more" link is clicked.
-  void LearnMoreClicked(int event_flags);
+  void LearnMoreClicked(const ui::Event& event);
 
   // Weak ptr to parent view.
   Browser* const browser_;

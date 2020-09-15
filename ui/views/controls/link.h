@@ -32,7 +32,7 @@ class VIEWS_EXPORT Link : public Label {
 
   // A callback to be called when the link is clicked.  Closures are also
   // accepted; see below.
-  using ClickedCallback = base::RepeatingCallback<void(int event_flags)>;
+  using ClickedCallback = base::RepeatingCallback<void(const ui::Event& event)>;
 
   explicit Link(const base::string16& title = base::string16(),
                 int text_context = style::CONTEXT_LABEL,
@@ -44,9 +44,10 @@ class VIEWS_EXPORT Link : public Label {
   // way.
   void set_callback(base::RepeatingClosure callback) {
     // Adapt this closure to a ClickedCallback by discarding the extra arg.
-    callback_ = base::BindRepeating(
-        [](base::RepeatingClosure closure, int) { closure.Run(); },
-        std::move(callback));
+    callback_ =
+        base::BindRepeating([](base::RepeatingClosure closure,
+                               const ui::Event& event) { closure.Run(); },
+                            std::move(callback));
   }
   void set_callback(ClickedCallback callback) {
     callback_ = std::move(callback);
@@ -76,7 +77,7 @@ class VIEWS_EXPORT Link : public Label {
  private:
   void SetPressed(bool pressed);
 
-  void OnClick(int event_flags);
+  void OnClick(const ui::Event& event);
 
   void RecalculateFont();
 

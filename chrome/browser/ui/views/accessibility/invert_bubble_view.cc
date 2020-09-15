@@ -72,7 +72,7 @@ class InvertBubbleView : public views::BubbleDialogDelegateView,
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  void OpenLink(const std::string& url, int event_flags);
+  void OpenLink(const std::string& url, const ui::Event& event);
 
   Browser* browser_;
 
@@ -141,12 +141,13 @@ bool InvertBubbleView::ShouldShowCloseButton() const {
 void InvertBubbleView::ButtonPressed(views::Button* sender,
                                      const ui::Event& event) {
   if (sender->tag() == kLearnMoreButton)
-    OpenLink(kLearnMoreUrl, event.flags());
+    OpenLink(kLearnMoreUrl, event);
 }
 
-void InvertBubbleView::OpenLink(const std::string& url, int event_flags) {
+void InvertBubbleView::OpenLink(const std::string& url,
+                                const ui::Event& event) {
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+      event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
   content::OpenURLParams params(GURL(url), content::Referrer(), disposition,
                                 ui::PAGE_TRANSITION_LINK, false);
   browser_->OpenURL(params);

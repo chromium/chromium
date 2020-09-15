@@ -37,7 +37,7 @@ StyledLabel::RangeStyleInfo StyledLabel::RangeStyleInfo::CreateForLink(
     base::RepeatingClosure callback) {
   // Adapt this closure to a Link::ClickedCallback by discarding the extra arg.
   return CreateForLink(base::BindRepeating(
-      [](base::RepeatingClosure closure, int) { closure.Run(); },
+      [](base::RepeatingClosure closure, const ui::Event&) { closure.Run(); },
       std::move(callback)));
 }
 

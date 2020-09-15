@@ -251,10 +251,10 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
     link->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     link->set_callback(base::BindRepeating(
         [](const std::vector<Row>* items, const views::Link* link,
-           ContentSettingBubbleContents* parent, int event_flags) {
+           ContentSettingBubbleContents* parent, const ui::Event& event) {
           const auto it = base::ranges::find(*items, link, &Row::second);
           DCHECK(it != items->cend());
-          parent->LinkClicked(std::distance(items->cbegin(), it), event_flags);
+          parent->LinkClicked(std::distance(items->cbegin(), it), event);
         },
         base::Unretained(&list_item_views_), base::Unretained(link.get()),
         base::Unretained(parent_)));
@@ -619,10 +619,11 @@ ContentSettingBubbleContents::CreateHelpAndManageView() {
   return container;
 }
 
-void ContentSettingBubbleContents::LinkClicked(int row, int event_flags) {
+void ContentSettingBubbleContents::LinkClicked(int row,
+                                               const ui::Event& event) {
   DCHECK(content_setting_bubble_model_);
   DCHECK_NE(row, -1);
-  content_setting_bubble_model_->OnListItemClicked(row, event_flags);
+  content_setting_bubble_model_->OnListItemClicked(row, event);
 }
 
 void ContentSettingBubbleContents::CustomLinkClicked() {

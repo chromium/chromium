@@ -357,7 +357,7 @@ std::unique_ptr<views::StyledLabel> SharingDialogView::CreateHelpText() {
   return label;
 }
 
-void SharingDialogView::HelpLinkClicked(int event_flags) {
+void SharingDialogView::HelpLinkClicked() {
   std::move(data_.help_callback).Run(GetDialogType());
   CloseBubble();
 }

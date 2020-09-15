@@ -96,7 +96,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       const GURL& url,
       PageInfoClosingCallback closing_callback);
 
-  void SecurityDetailsClicked(int event_flags);
+  void SecurityDetailsClicked(const ui::Event& event);
   void ResetDecisionsClicked();
 
  protected:

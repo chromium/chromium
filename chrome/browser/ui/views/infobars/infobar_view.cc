@@ -402,9 +402,9 @@ void InfoBarView::SetLabelDetails(views::Label* label) const {
                                  0));
 }
 
-void InfoBarView::LinkClicked(int event_flags) {
+void InfoBarView::LinkClicked(const ui::Event& event) {
   if (!owner())
     return;  // We're closing; don't call anything, it might access the owner.
-  if (delegate()->LinkClicked(ui::DispositionFromEventFlags(event_flags)))
+  if (delegate()->LinkClicked(ui::DispositionFromEventFlags(event.flags())))
     RemoveSelf();
 }

@@ -37,7 +37,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/event_constants.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
@@ -141,8 +142,10 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_FALSE(clicked_url_.has_value());
 
   content::TestNavigationObserver observer(GetWebContents());
-  framebust_block_bubble_model.OnListItemClicked(/* index = */ 1,
-                                                 ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  framebust_block_bubble_model.OnListItemClicked(/* index = */ 1, click_event);
   observer.Wait();
 
   EXPECT_TRUE(clicked_index_.has_value());

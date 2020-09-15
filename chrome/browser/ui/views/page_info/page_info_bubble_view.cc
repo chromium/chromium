@@ -448,14 +448,14 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
                                 web_contents, url, std::move(closing_callback));
 }
 
-void PageInfoBubbleView::SecurityDetailsClicked(int event_flags) {
+void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
   if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP) {
     OpenHelpCenterFromSafetyTip(web_contents());
   } else {
     web_contents()->OpenURL(content::OpenURLParams(
         GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
         ui::DispositionFromEventFlags(
-            event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB),
+            event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
         ui::PAGE_TRANSITION_LINK, false));
     presenter_->RecordPageInfoAction(
         PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);

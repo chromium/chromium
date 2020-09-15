@@ -57,7 +57,7 @@ class SessionCrashedBubbleView : public SessionCrashedBubble,
   std::unique_ptr<views::View> CreateUmaOptInView();
 
   // Called when the user clicks the "statistics" link to get more information.
-  void ExplainStatisticsLinkClicked(int event_flags);
+  void ExplainStatisticsLinkClicked(const ui::Event& event);
 
   // Restore previous session after user selects so.
   void RestorePreviousSession();

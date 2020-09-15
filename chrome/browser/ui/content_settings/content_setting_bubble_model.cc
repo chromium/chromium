@@ -77,6 +77,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/event.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -793,7 +794,7 @@ class ContentSettingPopupBubbleModel
   void BlockedUrlAdded(int32_t id, const GURL& url) override;
 
  private:
-  void OnListItemClicked(int index, int event_flags) override;
+  void OnListItemClicked(int index, const ui::Event& event) override;
 
   int32_t item_id_from_item_index(int index) const {
     return bubble_content().list_items[index].item_id;
@@ -833,11 +834,11 @@ void ContentSettingPopupBubbleModel::BlockedUrlAdded(int32_t id,
 }
 
 void ContentSettingPopupBubbleModel::OnListItemClicked(int index,
-                                                       int event_flags) {
+                                                       const ui::Event& event) {
   auto* helper =
       blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents());
   helper->ShowBlockedPopup(item_id_from_item_index(index),
-                           ui::DispositionFromEventFlags(event_flags));
+                           ui::DispositionFromEventFlags(event.flags()));
   RemoveListItem(index);
   content_settings::RecordPopupsAction(
       content_settings::POPUPS_ACTION_CLICKED_LIST_ITEM_CLICKED);
@@ -1550,7 +1551,7 @@ ContentSettingFramebustBlockBubbleModel::
 
 void ContentSettingFramebustBlockBubbleModel::OnListItemClicked(
     int index,
-    int event_flags) {
+    const ui::Event& event) {
   FramebustBlockTabHelper::FromWebContents(web_contents())
       ->OnBlockedUrlClicked(index);
 }

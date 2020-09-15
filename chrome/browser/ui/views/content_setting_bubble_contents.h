@@ -76,7 +76,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   // "learn more" button and a "manage" button.
   std::unique_ptr<View> CreateHelpAndManageView();
 
-  void LinkClicked(int row, int event_flags);
+  void LinkClicked(int row, const ui::Event& event);
   void CustomLinkClicked();
 
   void OnPerformAction(views::Combobox* combobox);
