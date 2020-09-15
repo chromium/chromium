@@ -97,7 +97,8 @@ class ChromeProvidedSharingOptionsProvider {
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
         mChromeOptionShareCallback = chromeOptionShareCallback;
-        mUrl = getUrlToShare(shareParams, chromeShareExtras, mTabProvider.get().getUrl().getSpec());
+        mUrl = getUrlToShare(shareParams, chromeShareExtras,
+                mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "");
     }
 
     /**
