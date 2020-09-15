@@ -18,10 +18,10 @@ class PrefService;
 namespace chrome {
 namespace android {
 
-base::TimeTicks GetApplicationStartTime() {
+base::TimeTicks GetApplicationStartTime(bool use_process_start_time) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::TimeTicks::FromUptimeMillis(
-      Java_UmaUtils_getApplicationStartTime(env));
+      Java_UmaUtils_getApplicationStartTime(env, use_process_start_time));
 }
 
 static jboolean JNI_UmaUtils_IsClientInMetricsReportingSample(JNIEnv* env) {

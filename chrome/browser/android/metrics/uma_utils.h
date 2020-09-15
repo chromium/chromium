@@ -12,7 +12,7 @@
 namespace chrome {
 namespace android {
 
-base::TimeTicks GetApplicationStartTime();
+base::TimeTicks GetApplicationStartTime(bool use_process_start_time);
 
 // Sets whether UMA reporting is enabled. This will call to Java to update
 // the shared preference that is the source of truth for UMA reporting.

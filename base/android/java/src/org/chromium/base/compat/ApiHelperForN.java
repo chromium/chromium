@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaCodec.CryptoInfo;
 import android.os.Build;
+import android.os.Process;
 import android.security.NetworkSecurityPolicy;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
@@ -84,5 +85,10 @@ public final class ApiHelperForN {
     /** See {@link View#onResolvePointerIcon(MotionEvent, int)}. */
     public static PointerIcon onResolvePointerIcon(View view, MotionEvent event, int pointerIndex) {
         return view.onResolvePointerIcon(event, pointerIndex);
+    }
+
+    /** See {@link Process#getStartUptimeMillis()}. */
+    public static long getStartUptimeMillis() {
+        return Process.getStartUptimeMillis();
     }
 }
