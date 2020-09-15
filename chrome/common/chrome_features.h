@@ -162,6 +162,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsLocalUpdating;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kDesktopPWAsMigrationUserDisplayModeCleanUp;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDesktopPWAsRunOnOsLogin;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

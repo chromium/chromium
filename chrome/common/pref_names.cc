@@ -1930,6 +1930,9 @@ const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 // outlive the app installation and uninstallation.
 const char kWebAppsPreferences[] = "web_apps.web_app_ids";
 
+const char kWebAppsUserDisplayModeCleanedUp[] =
+    "web_apps.user_display_mode_cleaned_up";
+
 // A string representing the last version of Chrome that System Web Apps were
 // updated for.
 const char kSystemWebAppLastUpdateVersion[] =

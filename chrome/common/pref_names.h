@@ -649,6 +649,7 @@ extern const char kWebAppsDailyMetrics[];
 extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsPreferences[];
+extern const char kWebAppsUserDisplayModeCleanedUp[];
 extern const char kSystemWebAppLastUpdateVersion[];
 extern const char kSystemWebAppLastInstalledLocale[];
 extern const char kSystemWebAppInstallFailureCount[];

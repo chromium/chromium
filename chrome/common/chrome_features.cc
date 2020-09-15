@@ -225,6 +225,12 @@ const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
 const base::Feature kDesktopPWAsLocalUpdating{"DesktopPWAsLocalUpdating",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables the WebAppMigrationUserDisplayModeCleanUp code for
+// cleaning up the fallout of https://crbug.com/1125020.
+const base::Feature kDesktopPWAsMigrationUserDisplayModeCleanUp{
+    "DesktopPWAsMigrationUserDisplayModeCleanUp",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Desktop PWAs to be auto-started on OS login.
 const base::Feature kDesktopPWAsRunOnOsLogin{"DesktopPWAsRunOnOsLogin",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
