@@ -18,9 +18,11 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -94,8 +96,13 @@ public class SyncErrorInfoBar
         recordHistogram(mType, SyncErrorInfoBarAction.OPEN_SETTINGS_CLICKED);
 
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        settingsLauncher.launchSettingsActivity(getApplicationContext(),
-                SyncAndServicesSettings.class, SyncAndServicesSettings.createArguments(false));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            settingsLauncher.launchSettingsActivity(getApplicationContext(),
+                    ManageSyncSettings.class, ManageSyncSettings.createArguments(false));
+        } else {
+            settingsLauncher.launchSettingsActivity(getApplicationContext(),
+                    SyncAndServicesSettings.class, SyncAndServicesSettings.createArguments(false));
+        }
     }
 
     @CalledByNative
