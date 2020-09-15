@@ -34,10 +34,11 @@ class CORE_EXPORT TextFragmentSelector final {
   ~TextFragmentSelector() = default;
 
   SelectorType Type() const { return type_; }
-  String Start() const { return start_; }
-  String End() const { return end_; }
-  String Prefix() const { return prefix_; }
-  String Suffix() const { return suffix_; }
+  const String& Start() const { return start_; }
+  const String& End() const { return end_; }
+  const String& Prefix() const { return prefix_; }
+  const String& Suffix() const { return suffix_; }
+  String ToString() const;
 
  private:
   const SelectorType type_;

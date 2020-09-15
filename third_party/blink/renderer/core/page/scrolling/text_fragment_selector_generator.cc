@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
@@ -18,6 +20,11 @@ constexpr int kNoContextMinChars = 20;
 void TextFragmentSelectorGenerator::UpdateSelection(
     LocalFrame* selection_frame,
     const EphemeralRangeInFlatTree& selection_range) {
+  DCHECK(selection_frame);
+
+  // Scroll-to-text doesn't support iframes.
+  DCHECK(selection_frame->IsMainFrame());
+
   selection_frame_ = selection_frame;
   selection_range_ = MakeGarbageCollected<Range>(
       selection_range.GetDocument(),
@@ -25,7 +32,21 @@ void TextFragmentSelectorGenerator::UpdateSelection(
       ToPositionInDOMTree(selection_range.EndPosition()));
 }
 
-void TextFragmentSelectorGenerator::GenerateSelector() {
+void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
+    mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
+        producer) {
+  selector_producer_.reset();
+  selector_producer_.Bind(
+      std::move(producer),
+      selection_frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
+}
+
+void TextFragmentSelectorGenerator::GenerateSelector(
+    GenerateSelectorCallback callback) {
+  DCHECK(selection_range_);
+  DCHECK(callback);
+
+  pending_generate_selector_callback_ = std::move(callback);
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
 
   const TextFragmentSelector kInvalidSelector(
@@ -38,8 +59,10 @@ void TextFragmentSelectorGenerator::GenerateSelector() {
       FindBuffer::GetFirstBlockLevelAncestorInclusive(
           *ephemeral_range.EndPosition().AnchorNode());
 
-  if (!start_first_block_ancestor.isSameNode(&end_first_block_ancestor))
+  if (!start_first_block_ancestor.isSameNode(&end_first_block_ancestor)) {
     NotifySelectorReady(kInvalidSelector);
+    return;
+  }
 
   // TODO(gayane): If same node, need to check if start and end are interrupted
   // by a block. Example: <div>start of the selection <div> sub block </div>end
@@ -50,8 +73,10 @@ void TextFragmentSelectorGenerator::GenerateSelector() {
   String selected_text = PlainText(ephemeral_range);
 
   if (selected_text.length() < kNoContextMinChars ||
-      selected_text.length() > kExactTextMaxChars)
+      selected_text.length() > kExactTextMaxChars) {
     NotifySelectorReady(kInvalidSelector);
+    return;
+  }
 
   selector_ = std::make_unique<TextFragmentSelector>(
       TextFragmentSelector::SelectorType::kExact, selected_text, "", "", "");
@@ -72,19 +97,14 @@ void TextFragmentSelectorGenerator::DidFindMatch(
   }
 }
 
-void TextFragmentSelectorGenerator::SetCallbackForTesting(
-    base::OnceCallback<void(const TextFragmentSelector&)> callback) {
-  callback_for_tests_ = std::move(callback);
-}
-
 void TextFragmentSelectorGenerator::NotifySelectorReady(
     const TextFragmentSelector& selector) {
-  if (!callback_for_tests_.is_null())
-    std::move(callback_for_tests_).Run(selector);
+  DCHECK(pending_generate_selector_callback_);
+  std::move(pending_generate_selector_callback_).Run(selector.ToString());
 }
 
-void TextFragmentSelectorGenerator::DocumentDetached(Document* document) {
-  if (selection_range_ && selection_range_->OwnerDocument() == *document) {
+void TextFragmentSelectorGenerator::ClearSelection() {
+  if (selection_range_) {
     selection_range_->Dispose();
     selection_range_ = nullptr;
     selection_frame_ = nullptr;
@@ -94,6 +114,7 @@ void TextFragmentSelectorGenerator::DocumentDetached(Document* document) {
 void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(selection_frame_);
   visitor->Trace(selection_range_);
+  visitor->Trace(selector_producer_);
 }
 
 }  // namespace blink

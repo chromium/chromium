@@ -152,6 +152,7 @@
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/paint/compositing/graphics_layer_tree_as_text.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -357,6 +358,13 @@ void LocalFrame::Init(Frame* opener) {
       WTF::BindRepeating(&LocalFrame::BindToHighPriorityReceiver,
                          WrapWeakPersistent(this)),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
+
+  if (IsMainFrame()) {
+    GetInterfaceRegistry()->AddInterface(
+        WTF::BindRepeating(&LocalFrame::BindTextFragmentSelectorProducer,
+                           WrapWeakPersistent(this)));
+  }
+
   SetOpenerDoNotNotify(opener);
   loader_.Init();
 }
@@ -455,6 +463,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
+  visitor->Trace(text_fragment_selector_generator_);
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -592,7 +601,11 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
   // up calling back to LocalFrameClient via WindowProxy.
   GetScriptController().ClearForClose();
 
-  DCHECK(!view_->IsAttached());
+  if (text_fragment_selector_generator_)
+    text_fragment_selector_generator_->ClearSelection();
+
+  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
+  CHECK(!view_->IsAttached());
   SetView(nullptr);
 
   GetEventHandlerRegistry().DidRemoveAllEventHandlers(*DomWindow());
@@ -1386,6 +1399,10 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   }
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
+  if (IsMainFrame()) {
+    text_fragment_selector_generator_ =
+        MakeGarbageCollected<TextFragmentSelectorGenerator>();
+  }
 
   Initialize();
 
@@ -3164,6 +3181,16 @@ void LocalFrame::BindToHighPriorityReceiver(
   high_priority_frame_receiver_.Bind(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
+}
+
+void LocalFrame::BindTextFragmentSelectorProducer(
+    mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
+        receiver) {
+  if (IsDetached() || !text_fragment_selector_generator_)
+    return;
+
+  text_fragment_selector_generator_->BindTextFragmentSelectorProducer(
+      std::move(receiver));
 }
 
 SpellChecker& LocalFrame::GetSpellChecker() const {
