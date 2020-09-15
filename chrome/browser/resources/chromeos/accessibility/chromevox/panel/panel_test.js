@@ -7,10 +7,6 @@ GEN_INCLUDE([
   '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js'
 ]);
 
-GEN_INCLUDE([
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/mock_feedback.js'
-]);
-
 /**
  * Test fixture for Panel.
  */
@@ -18,16 +14,6 @@ ChromeVoxPanelTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   testGenCppIncludes() {
     ChromeVoxE2ETest.prototype.testGenCppIncludes.call(this);
-  }
-
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   getPanelWindow() {

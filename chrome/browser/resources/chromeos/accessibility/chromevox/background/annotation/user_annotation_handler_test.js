@@ -6,7 +6,6 @@
 GEN_INCLUDE(['../../testing/chromevox_next_e2e_test_base.js']);
 
 GEN_INCLUDE(['../../testing/fake_objects.js']);
-GEN_INCLUDE(['../../testing/mock_feedback.js']);
 
 /**
  * Test fixture for UserAnnotationHandler.
@@ -40,16 +39,6 @@ ChromeVoxAnnotationTest = class extends ChromeVoxNextE2ETest {
       assertFalse(true);
     }
     assertEquals(numAnnotations, annotations.length);
-  }
-
-  /**
-   * @return{!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   /**

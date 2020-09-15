@@ -5,7 +5,6 @@
 // Include test fixture.
 GEN_INCLUDE([
   '../testing/chromevox_next_e2e_test_base.js',
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/mock_feedback.js'
 ]);
 
 /**
@@ -32,16 +31,6 @@ ChromeVoxOptionsTest = class extends ChromeVoxNextE2ETest {
           });
       CommandHandler.onCommand('showOptionsPage');
     });
-  }
-
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   press(keyCode, modifiers) {

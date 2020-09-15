@@ -4,20 +4,11 @@
 
 // Include test fixture.
 GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
-GEN_INCLUDE(['../testing/mock_feedback.js']);
 
 /**
  * Test fixture for UserActionMonitor.
  */
 ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
-  /** @return {!MockFeedback} */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
-  }
-
   /**
    * Create mock event object.
    * @param {number} keyCode

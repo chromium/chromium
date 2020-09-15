@@ -6,7 +6,6 @@
 GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 
 GEN_INCLUDE(['../testing/fake_objects.js']);
-GEN_INCLUDE(['../testing/mock_feedback.js']);
 
 /**
  * Test fixture for Download_Handler.
@@ -36,16 +35,6 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
     window.simulateEvent = this.simulateEvent.bind(this);
-  }
-
-  /**
-   * @return{!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   /**

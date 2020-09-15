@@ -34,13 +34,6 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   `);
     super.testGenPreamble();
   }
-
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
-  }
 };
 
 TEST_F(

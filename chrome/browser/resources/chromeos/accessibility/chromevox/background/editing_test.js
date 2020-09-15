@@ -7,10 +7,6 @@ GEN_INCLUDE([
   '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/chromevox_next_e2e_test_base.js',
 ]);
 
-GEN_INCLUDE([
-  '//chrome/browser/resources/chromeos/accessibility/chromevox/testing/mock_feedback.js'
-]);
-
 /**
  * Test fixture for editing tests.
  */
@@ -18,16 +14,6 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
   constructor() {
     super();
     window.RoleType = chrome.automation.RoleType;
-  }
-
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   press(keyCode, modifiers) {

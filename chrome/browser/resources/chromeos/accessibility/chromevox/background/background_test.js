@@ -5,7 +5,7 @@
 // Include test fixture.
 GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
 
-GEN_INCLUDE(['../testing/mock_feedback.js', '../testing/fake_objects.js']);
+GEN_INCLUDE(['../testing/fake_objects.js']);
 
 /**
  * Test fixture for Background.
@@ -22,16 +22,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     window.Mod = constants.ModifierFlag;
 
     this.forceContextualLastOutput();
-  }
-
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   doGesture(gesture) {

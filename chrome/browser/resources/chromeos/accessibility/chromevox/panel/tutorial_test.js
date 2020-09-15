@@ -33,16 +33,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
     window.doCmd = this.doCmd;
   }
 
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-    mockFeedback.install();
-    return mockFeedback;
-  }
-
   getPanelWindow() {
     let panelWindow = null;
     while (!panelWindow) {

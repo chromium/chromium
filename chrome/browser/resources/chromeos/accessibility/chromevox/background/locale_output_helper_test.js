@@ -4,7 +4,6 @@
 
 // Include test fixture.
 GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
-GEN_INCLUDE(['../testing/mock_feedback.js']);
 
 /**
  * Test fixture for LocaleOutputHelper.
@@ -43,17 +42,6 @@ ChromeVoxLocaleOutputHelperTest = class extends ChromeVoxNextE2ETest {
         {'lang': 'ko-KR'}, {'lang': 'zh-TW'}, {'lang': 'ast'}, {'lang': 'pt'}
       ]);
     };
-  }
-
-  /**
-   * @return {!MockFeedback}
-   */
-  createMockFeedback() {
-    const mockFeedback =
-        new MockFeedback(this.newCallback(), this.newCallback.bind(this));
-
-    mockFeedback.install();
-    return mockFeedback;
   }
 
   /**
