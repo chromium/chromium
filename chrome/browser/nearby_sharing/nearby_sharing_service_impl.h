@@ -99,14 +99,10 @@ class NearbySharingServiceImpl
   NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) override;
   NearbyShareSettings* GetSettings() override;
-
-  // nearby_share::mojom::NearbyShareSettingsObserver:
-  void OnEnabledChanged(bool enabled) override;
-  void OnDeviceNameChanged(const std::string& device_name) override;
-  void OnDataUsageChanged(nearby_share::mojom::DataUsage data_usage) override;
-  void OnVisibilityChanged(nearby_share::mojom::Visibility visibility) override;
-  void OnAllowedContactsChanged(
-      const std::vector<std::string>& allowed_contacts) override;
+  NearbyShareHttpNotifier* GetHttpNotifier() override;
+  NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
+  NearbyShareContactManager* GetContactManager() override;
+  NearbyShareCertificateManager* GetCertificateManager() override;
 
   // NearbyProcessManager::Observer:
   void OnNearbyProfileChanged(Profile* profile) override;
@@ -120,34 +116,44 @@ class NearbySharingServiceImpl
 
   // Test methods
   void FlushMojoForTesting();
-  NearbyShareHttpNotifier* GetHttpNotifier() override;
-  NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
-  NearbyShareContactManager* GetContactManager() override;
-  NearbyShareCertificateManager* GetCertificateManager() override;
   void set_free_disk_space_for_testing(int64_t free_disk_space) {
     free_disk_space_for_testing_ = free_disk_space;
   }
+
+ private:
+  // nearby_share::mojom::NearbyShareSettingsObserver:
+  void OnEnabledChanged(bool enabled) override;
+  void OnDeviceNameChanged(const std::string& device_name) override;
+  void OnDataUsageChanged(nearby_share::mojom::DataUsage data_usage) override;
+  void OnVisibilityChanged(nearby_share::mojom::Visibility visibility) override;
+  void OnAllowedContactsChanged(
+      const std::vector<std::string>& allowed_contacts) override;
 
   // NearbyConnectionsManager::DiscoveryListener:
   void OnEndpointDiscovered(const std::string& endpoint_id,
                             const std::vector<uint8_t>& endpoint_info) override;
   void OnEndpointLost(const std::string& endpoint_id) override;
 
- private:
   // ash::SessionObserver:
   void OnLockStateChanged(bool locked) override;
+
+  // BluetoothAdapter::Observer:
+  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
+                             bool present) override;
+  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
+                             bool powered) override;
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
   bool IsVisibleInBackground(Visibility visibility);
   const base::Optional<std::vector<uint8_t>> CreateEndpointInfo(
       const base::Optional<std::string>& device_name);
-  void StartFastInitiationAdvertising();
-  void StopFastInitiationAdvertising();
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  void StartFastInitiationAdvertising();
   void OnStartFastInitiationAdvertising();
   void OnStartFastInitiationAdvertisingError();
+  void StopFastInitiationAdvertising();
   void OnStopFastInitiationAdvertising();
   void OnOutgoingAdvertisementDecoded(
       const std::string& endpoint_id,
@@ -159,10 +165,6 @@ class NearbySharingServiceImpl
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
   bool HasAvailableConnectionMediums();
-  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
-                             bool present) override;
-  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
-                             bool powered) override;
   void InvalidateSurfaceState();
   bool ShouldStopNearbyProcess();
   void InvalidateSendSurfaceState();
