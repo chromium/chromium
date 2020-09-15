@@ -124,15 +124,6 @@ def main():
   collect_inputs_only = InterceptFlag('--collect-inputs-only', args.command)
   generate_dwp = InterceptFlag('--generate-dwp', args.command)
 
-  # First, run the actual link.
-  command = wrapper_utils.CommandToRun(args.command)
-  result = wrapper_utils.RunLinkWithOptionalMapFile(command,
-                                                    env=fast_env,
-                                                    map_file=args.map_file)
-
-  if result != 0:
-    return result
-
   # If only linking, we are likely generating a partitioned .so that will be
   # split apart later. In that case:
   #
