@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/complex_tasks/endpoint_fetcher/endpoint_fetcher.h"
+#include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -22,8 +22,8 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/EndpointFetcher_jni.h"
-#include "chrome/android/chrome_jni_headers/EndpointResponse_jni.h"
+#include "chrome/browser/endpoint_fetcher/jni_headers/EndpointFetcher_jni.h"
+#include "chrome/browser/endpoint_fetcher/jni_headers/EndpointResponse_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 
 #endif  // defined(OS_ANDROID)

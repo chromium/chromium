@@ -237,8 +237,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/childaccounts/ChildAccountFeedbackReporter.java",
   "java/src/org/chromium/chrome/browser/childaccounts/ChildAccountService.java",
   "java/src/org/chromium/chrome/browser/complex_tasks/TaskTabHelper.java",
-  "java/src/org/chromium/chrome/browser/complex_tasks/endpoint_fetcher/EndpointFetcher.java",
-  "java/src/org/chromium/chrome/browser/complex_tasks/endpoint_fetcher/EndpointResponse.java",
   "java/src/org/chromium/chrome/browser/component_updater/UpdateScheduler.java",
   "java/src/org/chromium/chrome/browser/component_updater/UpdateTask.java",
   "java/src/org/chromium/chrome/browser/compositor/CompositorSurfaceManager.java",

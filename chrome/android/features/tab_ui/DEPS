@@ -1,5 +1,6 @@
 include_rules = [
  "+chrome/browser/android/lifecycle",
+ "+chrome/browser/endpoint_fetcher",
  "+chrome/browser/profiles/android/java",
  "+chrome/browser/tab/java",
  "+chrome/browser/tabmodel/android/java",
