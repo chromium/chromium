@@ -896,7 +896,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'b71187bf99c50fd86a4289b83e5b760b1d2ac0c7',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '0547fb291708a09df5e9873561aee0eed6889133',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
