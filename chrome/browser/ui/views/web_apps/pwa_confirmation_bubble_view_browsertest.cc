@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -113,4 +114,29 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   auto resulting_app_info =
       GetCallbackAppInfoFromDialog(/*run_on_os_login_checked=*/false);
   EXPECT_FALSE(resulting_app_info->run_on_os_login);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+                       CancelledDialogReportsMetrics) {
+  auto app_info = GetAppInfo();
+  base::RunLoop loop;
+  // Show the PWA install dialog.
+  chrome::ShowPWAInstallBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      base::BindLambdaForTesting(
+          [&](bool accepted,
+              std::unique_ptr<WebApplicationInfo> app_info_callback) {
+            loop.Quit();
+          }));
+
+  PWAConfirmationBubbleView* bubble_dialog =
+      PWAConfirmationBubbleView::GetBubbleForTesting();
+
+  base::HistogramTester histograms;
+  bubble_dialog->CancelDialog();
+  loop.Run();
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCancelButtonClicked, 1);
 }

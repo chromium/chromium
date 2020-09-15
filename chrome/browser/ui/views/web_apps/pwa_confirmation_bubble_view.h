@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/common/web_application_info.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class Checkbox;
@@ -31,6 +32,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   ~PWAConfirmationBubbleView() override;
 
   // LocationBarBubbleDelegateView:
+  bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
   views::View* GetInitiallyFocusedView() override;
   void WindowClosing() override;
   bool Accept() override;

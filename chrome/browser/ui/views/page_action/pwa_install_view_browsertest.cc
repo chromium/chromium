@@ -311,8 +311,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
-// Tests that the plus icon is shown when an existing app is installed and set
-// to open in a tab.
+// Tests that the install icon is shown when an existing app is installed and
+// set to open in a tab.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
@@ -331,6 +331,18 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
       banners::AppBannerManager::InstallableWebAppCheckResult::kPromotable);
   EXPECT_TRUE(pwa_install_view_->GetVisible());
+}
+
+// Test that the accept metrics is reported correctly.
+IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaInstalledMetricRecorded) {
+  bool installable = OpenTab(GetInstallableAppURL()).installable;
+  ASSERT_TRUE(installable);
+
+  base::HistogramTester histograms;
+  ExecutePwaInstallIcon();
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
 }
 
 // Tests that the plus icon updates its visibility when switching between
@@ -360,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
-// Tests that the plus icon updates its visibility when tab crashes.
+// Tests that the install icon updates its visibility when tab crashes.
 IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        IconVisibilityAfterTabCrashed) {
   StartNavigateToUrl(GetInstallableAppURL());

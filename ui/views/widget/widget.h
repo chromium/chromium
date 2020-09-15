@@ -144,14 +144,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // reason for menu or for the main Chrome browser, as we have no reason to
   // specifically differentiate those yet.
   //
-  // Add additional values as needed.
+  // Add additional values as needed. Do not change any existing values, as this
+  // enum is logged to UMA.
   enum class ClosedReason {
-    kUnspecified = 0,      // No reason was given for the widget closing.
-    kEscKeyPressed,        // The ESC key was pressed to cancel the widget.
-    kCloseButtonClicked,   // The [X] button was explicitly clicked.
-    kLostFocus,            // The widget destroyed itself when it lost focus.
-    kCancelButtonClicked,  // The widget's cancel button was clicked.
-    kAcceptButtonClicked   // The widget's done/accept button was clicked.
+    kUnspecified = 0,         // No reason was given for the widget closing.
+    kEscKeyPressed = 1,       // The ESC key was pressed to cancel the widget.
+    kCloseButtonClicked = 2,  // The [X] button was explicitly clicked.
+    kLostFocus = 3,           // The widget destroyed itself when it lost focus.
+    kCancelButtonClicked = 4,  // The widget's cancel button was clicked.
+    kAcceptButtonClicked = 5,  // The widget's done/accept button was clicked.
+    kMaxValue = kAcceptButtonClicked
   };
 
   struct VIEWS_EXPORT InitParams {

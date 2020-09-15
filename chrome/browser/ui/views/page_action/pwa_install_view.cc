@@ -30,7 +30,7 @@ constexpr base::FeatureParam<ExperimentIcon>::Option kIconParamOptions[] = {
     {ExperimentIcon::kDownload, "download"}};
 
 constexpr base::FeatureParam<ExperimentIcon> kInstallIconParam{
-    &kInstallIconExperiment, "shape", ExperimentIcon::kDownloadToDevice,
+    &kInstallIconExperiment, "installIcon", ExperimentIcon::kDownloadToDevice,
     &kIconParamOptions};
 
 }  // namespace

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/i18n/message_formatter.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -171,6 +172,13 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
 }
 
 PWAConfirmationBubbleView::~PWAConfirmationBubbleView() = default;
+
+bool PWAConfirmationBubbleView::OnCloseRequested(
+    views::Widget::ClosedReason close_reason) {
+  base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
+                                close_reason);
+  return LocationBarBubbleDelegateView::OnCloseRequested(close_reason);
+}
 
 views::View* PWAConfirmationBubbleView::GetInitiallyFocusedView() {
   return nullptr;
