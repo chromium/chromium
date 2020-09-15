@@ -1174,6 +1174,16 @@ void SVGSMILElement::DispatchEvents(EventDispatchMask events_to_dispatch) {
   }
 }
 
+void SVGSMILElement::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  SVGElement::AddedEventListener(event_type, registered_listener);
+  if (event_type == "repeatn") {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kSMILElementHasRepeatNEventListener);
+  }
+}
+
 void SVGSMILElement::UpdateProgressState(SMILTime presentation_time) {
   last_progress_ = CalculateProgressState(presentation_time);
 }

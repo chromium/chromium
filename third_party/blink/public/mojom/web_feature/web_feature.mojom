@@ -2795,6 +2795,7 @@ enum WebFeature {
   kTimerInstallFromBeforeUnload = 3468,
   kTimerInstallFromUnload = 3469,
   kElementAttachInternalsBeforeConstructor = 3470,
+  kSMILElementHasRepeatNEventListener = 3471,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

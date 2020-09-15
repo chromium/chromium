@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/svg/animation/svg_smil_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 
 namespace blink {
 
@@ -114,6 +117,24 @@ TEST(SMILInstanceTimeListTest, NextAfter) {
   EXPECT_EQ(list.NextAfter(SMILTime::FromSecondsD(5)), SMILTime::Unresolved());
   // After the last entry in the the list.
   EXPECT_EQ(list.NextAfter(SMILTime::FromSecondsD(6)), SMILTime::Unresolved());
+}
+
+class EmptyEventListener : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override {}
+};
+
+TEST(SVGSMILElementTest, RepeatNEventListenerUseCounted) {
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  Document& document = dummy_page_holder->GetDocument();
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  WebFeature feature = WebFeature::kSMILElementHasRepeatNEventListener;
+  EXPECT_FALSE(document.IsUseCounted(feature));
+  document.documentElement()->setInnerHTML("<svg><set/></svg>");
+  Element* set = document.QuerySelector("set");
+  ASSERT_TRUE(set);
+  set->addEventListener("repeatn", MakeGarbageCollected<EmptyEventListener>());
+  EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
 }  // namespace
