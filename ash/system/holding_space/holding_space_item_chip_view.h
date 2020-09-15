@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ash/system/holding_space/holding_space_item_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -28,7 +28,7 @@ class RoundedImageView;
 
 // A button with an image derived from a file's thumbnail and file's name as the
 // label.
-class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
+class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView,
                                             public views::ButtonListener {
  public:
   METADATA_HEADER(HoldingSpaceItemChipView);
@@ -38,10 +38,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
   HoldingSpaceItemChipView& operator=(const HoldingSpaceItemChipView&) = delete;
   ~HoldingSpaceItemChipView() override;
 
-  // views::InkDropHostView:
-  SkColor GetInkDropBaseColor() const override;
-  int GetDragOperations(const gfx::Point& point) override;
-  void WriteDragData(const gfx::Point& point, ui::OSExchangeData*) override;
+  // HoldingSpaceItemView:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // views::ButtonListener:
@@ -51,7 +48,6 @@ class ASH_EXPORT HoldingSpaceItemChipView : public views::InkDropHostView,
   void AddPinButton();
   void Update();
 
-  const HoldingSpaceItem* const item_;
   tray::RoundedImageView* image_ = nullptr;
   views::Label* label_ = nullptr;
   views::ToggleImageButton* pin_ = nullptr;

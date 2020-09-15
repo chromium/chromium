@@ -10,7 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
-#include "ash/system/holding_space/holding_space_screenshot_view.h"
+#include "ash/system/holding_space/holding_space_item_screenshot_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,7 +48,7 @@ RecentFilesContainer::RecentFilesContainer() {
   for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
     if (item->type() == HoldingSpaceItem::Type::kScreenshot) {
       screenshots_container_->AddChildView(
-          std::make_unique<HoldingSpaceScreenshotView>(item.get()));
+          std::make_unique<HoldingSpaceItemScreenshotView>(item.get()));
     }
   }
 

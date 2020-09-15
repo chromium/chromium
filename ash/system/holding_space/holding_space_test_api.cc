@@ -11,7 +11,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
-#include "ash/system/holding_space/holding_space_screenshot_view.h"
+#include "ash/system/holding_space/holding_space_item_screenshot_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ui/aura/window.h"
@@ -114,7 +114,7 @@ std::vector<views::View*> HoldingSpaceTestApi::GetPinnedFileChips() {
 std::vector<views::View*> HoldingSpaceTestApi::GetScreenshotViews() {
   std::vector<views::View*> screenshot_views;
   if (holding_space_tray_->GetBubbleView()) {
-    FindDescendentsOfClass<HoldingSpaceScreenshotView>(
+    FindDescendentsOfClass<HoldingSpaceItemScreenshotView>(
         holding_space_tray_->GetBubbleView()->GetViewByID(
             kHoldingSpaceRecentFilesContainerId),
         &screenshot_views);

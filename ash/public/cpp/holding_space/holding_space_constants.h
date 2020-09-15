@@ -5,10 +5,19 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONSTANTS_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONSTANTS_H_
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
+
+// Context menu commands.
+enum HoldingSpaceCommandId {
+  kTogglePinItem,
+  kCopyToClipboard,
+  kShowInFolder,
+  kMaxValue = kShowInFolder
+};
 
 // Appearance.
 constexpr gfx::Insets kHoldingSpaceContainerPadding(16);

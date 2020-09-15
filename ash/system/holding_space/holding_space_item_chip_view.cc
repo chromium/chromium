@@ -8,6 +8,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -15,8 +16,6 @@
 #include "ash/system/user/rounded_image_view.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
@@ -30,7 +29,7 @@
 namespace ash {
 
 HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
-    : item_(item) {
+    : HoldingSpaceItemView(item) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kHoldingSpaceChipPadding), kHoldingSpaceChipChildSpacing));
@@ -38,7 +37,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
   image_ =
       AddChildView(std::make_unique<tray::RoundedImageView>(kTrayItemSize / 2));
 
-  label_ = AddChildView(std::make_unique<views::Label>(item_->text()));
+  label_ = AddChildView(std::make_unique<views::Label>(item->text()));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   layout->SetFlexForView(label_, 1);
 
@@ -47,16 +46,11 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
 
   AddPinButton();
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-
   SetBackground(views::CreateRoundedRectBackground(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
       kHoldingSpaceChipCornerRadius));
 
-  GetViewAccessibility().OverrideName(item_->text());
-  SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
   set_ink_drop_visible_opacity(
       ShelfConfig::Get()->GetInkDropRippleAttributes().inkdrop_opacity);
@@ -68,26 +62,13 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(const HoldingSpaceItem* item)
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
-      item_->image().AddImageSkiaChangedCallback(base::BindRepeating(
+      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceItemChipView::Update, base::Unretained(this)));
 
   Update();
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
-
-SkColor HoldingSpaceItemChipView::GetInkDropBaseColor() const {
-  return ShelfConfig::Get()->GetInkDropRippleAttributes().base_color;
-}
-
-int HoldingSpaceItemChipView::GetDragOperations(const gfx::Point& point) {
-  return ui::DragDropTypes::DRAG_COPY;
-}
-
-void HoldingSpaceItemChipView::WriteDragData(const gfx::Point& point,
-                                             ui::OSExchangeData* data) {
-  data->SetFilename(item_->file_path());
-}
 
 void HoldingSpaceItemChipView::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
@@ -129,11 +110,11 @@ void HoldingSpaceItemChipView::AddPinButton() {
 
 void HoldingSpaceItemChipView::Update() {
   image_->SetImage(
-      item_->image().image_skia(),
+      item()->image().image_skia(),
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize));
 }
 
-BEGIN_METADATA(HoldingSpaceItemChipView, views::InkDropHostView)
+BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)
 END_METADATA
 
 }  // namespace ash
