@@ -9,6 +9,12 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 enable_built_in_dns = !is_ios
 
 source_set("dns") {
@@ -39,17 +45,12 @@ source_set("dns") {
       "address_info.cc",
       "address_info.h",
       "address_sorter.h",
-      "address_sorter_win.cc",
       "context_host_resolver.cc",
       "context_host_resolver.h",
       "dns_config.cc",
       "dns_config_overrides.cc",
       "dns_config_service.cc",
       "dns_config_service.h",
-      "dns_config_service_win.cc",
-      "dns_config_service_win.h",
-      "dns_config_watcher_mac.cc",
-      "dns_config_watcher_mac.h",
       "dns_hosts.cc",
       "dns_hosts.h",
       "dns_query.cc",
@@ -78,8 +79,6 @@ source_set("dns") {
       "httpssvc_metrics.cc",
       "httpssvc_metrics.h",
       "mapped_host_resolver.cc",
-      "notify_watcher_mac.cc",
-      "notify_watcher_mac.h",
       "record_parsed.cc",
       "record_rdata.cc",
       "resolve_context.cc",
@@ -89,6 +88,23 @@ source_set("dns") {
       "system_dns_config_change_notifier.cc",
       "system_dns_config_change_notifier.h",
     ]
+
+    if (is_win) {
+      sources += [
+        "address_sorter_win.cc",
+        "dns_config_service_win.cc",
+        "dns_config_service_win.h",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "dns_config_watcher_mac.cc",
+        "dns_config_watcher_mac.h",
+        "notify_watcher_mac.cc",
+        "notify_watcher_mac.h",
+      ]
+    }
 
     if (is_fuchsia) {
       sources += [
@@ -387,7 +403,6 @@ source_set("tests") {
     "address_info_unittest.cc",
     "context_host_resolver_unittest.cc",
     "dns_config_service_unittest.cc",
-    "dns_config_service_win_unittest.cc",
     "dns_hosts_unittest.cc",
     "dns_query_unittest.cc",
     "dns_response_unittest.cc",
@@ -405,6 +420,10 @@ source_set("tests") {
     "serial_worker_unittest.cc",
     "system_dns_config_change_notifier_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "dns_config_service_win_unittest.cc" ]
+  }
 
   if (is_posix) {
     sources += [ "dns_config_service_posix_unittest.cc" ]
