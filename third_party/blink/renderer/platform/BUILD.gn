@@ -1547,7 +1547,6 @@ component("platform") {
     sources += [
       "widget/input/synchronous_compositor_proxy.cc",
       "widget/input/synchronous_compositor_proxy.h",
-      "widget/input/synchronous_compositor_registry.h",
     ]
   }
 
@@ -1597,6 +1596,8 @@ component("platform") {
     "//crypto",
     "//device/vr/public/mojom:mojom_blink",
     "//gin",
+    "//gpu:gpu",
+    "//gpu/command_buffer/client:webgpu_interface",
     "//jingle:webrtc_glue",
     "//media",
     "//media/capture:capture_switches",
@@ -1818,6 +1819,7 @@ static_library("test_support") {
     "//cc",
     "//cc:test_support",
     "//components/viz/test:test_support",
+    "//gpu:raster",
     "//testing/gmock",
     "//testing/gtest:gtest",
     "//testing/perf",
@@ -2271,9 +2273,9 @@ source_set("blink_fuzzer_test_support") {
     "testing/blink_fuzzer_test_support.cc",
     "testing/blink_fuzzer_test_support.h",
   ]
+  public_deps = [ ":test_support" ]
   deps = [
     ":platform",
-    ":test_support",
     "//base/test:test_config",
     "//content/test:test_support",
   ]
