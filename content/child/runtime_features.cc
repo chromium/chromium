@@ -144,6 +144,9 @@ enum RuntimeFeatureEnableOptions {
   // Enables the Blink feature when the base::Feature is enabled,
   // otherwise no change.
   kEnableOnly,
+  // Enables the Blink feature when the base::Feature is enabled
+  // via an override on the command-line, otherwise no change.
+  kEnableOnlyIfOverriddenFromCommandLine,
   // Disables the Blink feature when the base::Feature is *disabled*,
   // otherwise no change.
   kDisableOnly,
@@ -171,6 +174,13 @@ void SetRuntimeFeatureFromChromiumFeature(const base::Feature& chromium_feature,
     case kEnableOnly:
       if (feature_enabled)
         enabler(true);
+      break;
+    case kEnableOnlyIfOverriddenFromCommandLine:
+      if (FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+              chromium_feature.name, FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+        DCHECK(feature_enabled);
+        enabler(true);
+      }
       break;
     case kDisableOnly:
       if (!feature_enabled)
@@ -266,7 +276,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      blink::features::kAllowSyncXHRInPageDismissal, kEnableOnly},
     {wf::EnableAutoplayIgnoresWebAudio, media::kAutoplayIgnoreWebAudio,
      kDefault},
-    {wf::EnablePortals, blink::features::kPortals, kDefault},
+    {wf::EnablePortals, blink::features::kPortals,
+     kEnableOnlyIfOverriddenFromCommandLine},
     {wf::EnableImplicitRootScroller, blink::features::kImplicitRootScroller,
      kDefault},
     {wf::EnableCSSOMViewScrollCoordinates,
