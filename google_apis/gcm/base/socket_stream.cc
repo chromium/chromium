@@ -216,7 +216,6 @@ void SocketInputStream::CloseStream(net::Error error) {
   DCHECK_LT(error, net::ERR_IO_PENDING);
   ResetInternal();
   last_error_ = error;
-  LOG(ERROR) << "Closing stream with result " << error;
 }
 
 SocketOutputStream::SocketOutputStream(
