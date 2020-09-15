@@ -916,6 +916,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
    public:
     LogicalExtentComputedValues() = default;
 
+    void CopyExceptBlockMargins(LogicalExtentComputedValues* out) const {
+      out->extent_ = extent_;
+      out->position_ = position_;
+      out->margins_.start_ = margins_.start_;
+      out->margins_.end_ = margins_.end_;
+    }
+
     // This is the dimension in the measured direction
     // (logical height or logical width).
     LayoutUnit extent_;

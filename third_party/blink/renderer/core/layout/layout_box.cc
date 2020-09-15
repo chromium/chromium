@@ -5269,12 +5269,8 @@ void LayoutBox::ComputePositionedLogicalWidth(
         logical_left_length, logical_right_length, margin_logical_left,
         margin_logical_right, max_values);
 
-    if (computed_values.extent_ > max_values.extent_) {
-      computed_values.extent_ = max_values.extent_;
-      computed_values.position_ = max_values.position_;
-      computed_values.margins_.start_ = max_values.margins_.start_;
-      computed_values.margins_.end_ = max_values.margins_.end_;
-    }
+    if (computed_values.extent_ > max_values.extent_)
+      max_values.CopyExceptBlockMargins(&computed_values);
   }
 
   // Calculate constraint equation values for 'min-width' case.
@@ -5288,12 +5284,8 @@ void LayoutBox::ComputePositionedLogicalWidth(
         logical_left_length, logical_right_length, margin_logical_left,
         margin_logical_right, min_values);
 
-    if (computed_values.extent_ < min_values.extent_) {
-      computed_values.extent_ = min_values.extent_;
-      computed_values.position_ = min_values.position_;
-      computed_values.margins_.start_ = min_values.margins_.start_;
-      computed_values.margins_.end_ = min_values.margins_.end_;
-    }
+    if (computed_values.extent_ < min_values.extent_)
+      min_values.CopyExceptBlockMargins(&computed_values);
   }
 
   computed_values.extent_ += borders_plus_padding;
