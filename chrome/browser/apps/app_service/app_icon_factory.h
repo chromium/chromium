@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_FACTORY_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -25,6 +26,8 @@ class BrowserContext;
 }
 
 namespace apps {
+
+using ScaleToSize = std::map<float, int>;
 
 // A bitwise-or of icon post-processing effects.
 //
@@ -88,6 +91,8 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
                                            float rep_icon_scale);
 
 #if defined(OS_CHROMEOS)
+gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size);
+
 gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image);
 
 gfx::ImageSkia CompositeImagesAndApplyMask(

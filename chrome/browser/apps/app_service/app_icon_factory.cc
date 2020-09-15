@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 
@@ -76,7 +75,6 @@ float kAndroidAdaptiveIconPaddingPercentage = 1.0f / 8.0f;
 using SizeToImageSkiaRep = std::map<int, gfx::ImageSkiaRep>;
 using ScaleToImageSkiaReps = std::map<float, SizeToImageSkiaRep>;
 using MaskImageSkiaReps = std::pair<SkBitmap, ScaleToImageSkiaReps>;
-using ScaleToSize = std::map<float, int>;
 
 MaskImageSkiaReps& GetMaskResourceIconCache() {
   static base::NoDestructor<MaskImageSkiaReps> mask_cache;
@@ -119,8 +117,8 @@ const gfx::ImageSkiaRep& GetMaskAsImageSkiaRep(float scale,
   return image_rep;
 }
 
-ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
-  ScaleToSize scale_to_size;
+apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
+  apps::ScaleToSize scale_to_size;
   if (image_skia.image_reps().empty()) {
     scale_to_size[1.0f] = image_skia.size().width();
   } else {
@@ -129,18 +127,6 @@ ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia) {
     }
   }
   return scale_to_size;
-}
-
-gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
-  gfx::ImageSkia mask_image;
-  for (const auto& it : scale_to_size) {
-    float scale = it.first;
-    int size_hint_in_dip = it.second;
-    mask_image.AddRepresentation(
-        GetMaskAsImageSkiaRep(scale, size_hint_in_dip));
-  }
-
-  return mask_image;
 }
 
 bool IsConsistentPixelSize(const gfx::ImageSkiaRep& rep,
@@ -1104,6 +1090,18 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
 }
 
 #if defined(OS_CHROMEOS)
+
+gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
+  gfx::ImageSkia mask_image;
+  for (const auto& it : scale_to_size) {
+    float scale = it.first;
+    int size_hint_in_dip = it.second;
+    mask_image.AddRepresentation(
+        GetMaskAsImageSkiaRep(scale, size_hint_in_dip));
+  }
+
+  return mask_image;
+}
 
 gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
   return gfx::ImageSkiaOperations::CreateButtonBackground(

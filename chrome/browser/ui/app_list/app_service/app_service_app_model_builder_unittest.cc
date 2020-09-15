@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_test_helper.h"
+#include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -31,10 +33,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/icon_standardizer.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -45,9 +49,13 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/test/test_utils.h"
+#include "extensions/browser/image_loader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -139,6 +147,31 @@ void RemoveApps(apps::mojom::AppType app_type,
       });
 }
 
+void WaitForIconUpdates(ChromeAppListItem* item) {
+  ASSERT_TRUE(item);
+  do {
+    content::RunAllTasksUntilIdle();
+  } while (item->icon().isNull());
+}
+
+void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
+  ASSERT_FALSE(src.isNull());
+  ASSERT_FALSE(dst.isNull());
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ASSERT_TRUE(src.HasRepresentation(scale));
+    ASSERT_TRUE(dst.HasRepresentation(scale));
+    ASSERT_TRUE(
+        gfx::test::AreBitmapsEqual(src.GetRepresentation(scale).GetBitmap(),
+                                   dst.GetRepresentation(scale).GetBitmap()));
+  }
+}
+
 }  // namespace
 
 class AppServiceAppModelBuilderTest
@@ -224,6 +257,33 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
                model_updater_.get());
   }
 
+  void GenerateExtensionAppIcon(const std::string app_id,
+                                gfx::ImageSkia& output_image_skia) {
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(profile());
+    ASSERT_TRUE(registry);
+    const extensions::Extension* extension =
+        registry->GetInstalledExtension(app_id);
+    ASSERT_TRUE(extension);
+
+    base::RunLoop run_loop;
+    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    extensions::ImageLoader::Get(profile())->LoadImageAtEveryScaleFactorAsync(
+        extension, gfx::Size(size_in_dip, size_in_dip),
+        base::BindOnce(
+            [](gfx::ImageSkia* image_skia,
+               base::OnceClosure load_app_icon_callback,
+               const gfx::Image& image) {
+              *image_skia = image.AsImageSkia();
+              std::move(load_app_icon_callback).Run();
+            },
+            &output_image_skia, run_loop.QuitClosure()));
+    run_loop.Run();
+
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+      output_image_skia = app_list::CreateStandardIconImage(output_image_skia);
+  }
+
   std::vector<std::string> default_apps_;
 };
 
@@ -249,6 +309,71 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
     AppServiceAppModelBuilderTest::CreateBuilder(false /*guest_mode*/);
     RemoveApps(apps::mojom::AppType::kWeb, testing_profile(),
                model_updater_.get());
+  }
+
+  std::string CreateWebApp(const std::string& app_name) {
+    const GURL kAppUrl("https://example.com/");
+
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->title = base::UTF8ToUTF16(app_name);
+    web_app_info->app_url = kAppUrl;
+    web_app_info->scope = kAppUrl;
+    web_app_info->open_as_window = true;
+
+    return web_app::InstallWebApp(profile(), std::move(web_app_info));
+  }
+
+  void GenerateWebAppIcon(const std::string& app_id,
+                          gfx::ImageSkia& output_image_skia) {
+    std::vector<int> icon_sizes_in_px;
+    apps::ScaleToSize scale_to_size_in_px;
+    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+      int size_in_px =
+          gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
+                                  ui::GetScaleForScaleFactor(scale_factor))
+              .width();
+      scale_to_size_in_px[ui::GetScaleForScaleFactor(scale_factor)] =
+          size_in_px;
+      icon_sizes_in_px.emplace_back(size_in_px);
+    }
+
+    web_app::WebAppProvider* web_app_provider =
+        web_app::WebAppProvider::Get(profile());
+    ASSERT_TRUE(web_app_provider);
+
+    base::RunLoop run_loop;
+    IconPurpose icon_purpose = IconPurpose::ANY;
+    web_app_provider->icon_manager().ReadIcons(
+        app_id, icon_purpose, icon_sizes_in_px,
+        base::BindOnce(
+            [](gfx::ImageSkia* image_skia,
+               std::map<float, int> scale_to_size_in_px,
+               base::OnceClosure load_app_icon_callback,
+               std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+              for (auto it : scale_to_size_in_px) {
+                image_skia->AddRepresentation(
+                    gfx::ImageSkiaRep(icon_bitmaps[it.second], it.first));
+              }
+              std::move(load_app_icon_callback).Run();
+            },
+            &output_image_skia, scale_to_size_in_px, run_loop.QuitClosure()));
+    run_loop.Run();
+
+    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
+      output_image_skia = gfx::ImageSkiaOperations::CreateMaskedImage(
+          output_image_skia, apps::LoadMaskImage(scale_to_size_in_px));
+    }
+
+    extensions::ChromeAppIcon::ApplyEffects(
+        size_in_dip, extensions::ChromeAppIcon::ResizeFunction(),
+        true /* app_launchable */, true /* from_bookmark */,
+        extensions::ChromeAppIcon::Badge::kNone, &output_image_skia);
+    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+      // Force the icon to be loaded.
+      output_image_skia.GetRepresentation(
+          ui::GetScaleForScaleFactor(scale_factor));
+    }
   }
 };
 
@@ -441,6 +566,17 @@ TEST_P(ExtensionAppTest, InvalidOrdinal) {
   CreateBuilder();
 }
 
+TEST_P(ExtensionAppTest, LoadIcon) {
+  // Generate the source icon for comparing.
+  gfx::ImageSkia src_image_skia;
+  GenerateExtensionAppIcon(kPackagedApp1Id, src_image_skia);
+
+  auto* item = model_updater_->FindItem(kPackagedApp1Id);
+  WaitForIconUpdates(item);
+
+  VerifyIcon(src_image_skia, item->icon());
+}
+
 // This test adds a bookmark app to the app list.
 TEST_P(BookmarkAppBuilderTest, BookmarkAppList) {
   const std::string kAppName = "Bookmark App";
@@ -470,25 +606,30 @@ TEST_P(BookmarkAppBuilderTest, BookmarkAppList) {
 
 // This test adds a web app to the app list.
 TEST_P(WebAppBuilderTest, WebAppList) {
-  Profile* const profile = profile_.get();
-
   const std::string kAppName = "Web App";
-  const GURL kAppUrl("https://example.com/");
-
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app_info->title = base::UTF8ToUTF16(kAppName);
-  web_app_info->app_url = kAppUrl;
-  web_app_info->scope = kAppUrl;
-  web_app_info->open_as_window = true;
-
-  const web_app::AppId app_id =
-      web_app::InstallWebApp(profile, std::move(web_app_info));
+  CreateWebApp(kAppName);
 
   app_service_test_.SetUp(profile_.get());
-  RemoveApps(apps::mojom::AppType::kWeb, profile, model_updater_.get());
+  RemoveApps(apps::mojom::AppType::kWeb, profile(), model_updater_.get());
   EXPECT_EQ(1u, model_updater_->ItemCount());
   EXPECT_EQ((std::vector<std::string>{kAppName}),
             GetModelContent(model_updater_.get()));
+}
+
+TEST_P(WebAppBuilderTest, LoadGeneratedIcon) {
+  const std::string kAppName = "Web App";
+  const std::string app_id = CreateWebApp(kAppName);
+
+  app_service_test_.FlushMojoCalls();
+
+  // Generate the source icon for comparing.
+  gfx::ImageSkia src_image_skia;
+  GenerateWebAppIcon(app_id, src_image_skia);
+
+  auto* item = model_updater_->FindItem(app_id);
+  WaitForIconUpdates(item);
+
+  VerifyIcon(src_image_skia, item->icon());
 }
 
 class CrostiniAppTest : public AppServiceAppModelBuilderTest {
