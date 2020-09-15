@@ -168,7 +168,7 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
 }
 
 void MessageBoxDialog::OnDialogAccepted() {
-  if (!message_box_view_->HasCheckBox() ||
+  if (!message_box_view_->HasVisibleCheckBox() ||
       message_box_view_->IsCheckBoxSelected()) {
     Done(chrome::MESSAGE_BOX_RESULT_YES);
   } else {

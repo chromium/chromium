@@ -138,6 +138,10 @@ base::string16 MessageBoxView::GetInputText() {
   return prompt_field_ ? prompt_field_->GetText() : base::string16();
 }
 
+bool MessageBoxView::HasVisibleCheckBox() const {
+  return checkbox_ && checkbox_->GetVisible();
+}
+
 bool MessageBoxView::IsCheckBoxSelected() {
   return checkbox_ && checkbox_->GetChecked();
 }

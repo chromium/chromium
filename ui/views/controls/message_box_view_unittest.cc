@@ -124,4 +124,12 @@ TEST_F(MessageBoxViewTest, CheckInterRowHeightChange) {
       message_box_->height());
 }
 
+TEST_F(MessageBoxViewTest, CheckHasVisibleCheckBox) {
+  EXPECT_FALSE(message_box_->HasVisibleCheckBox());
+
+  // Set and show a checkbox.
+  message_box_->SetCheckBoxLabel(base::ASCIIToUTF16("test checkbox"));
+  EXPECT_TRUE(message_box_->HasVisibleCheckBox());
+}
+
 }  // namespace views
