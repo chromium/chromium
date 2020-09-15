@@ -23487,6 +23487,10 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     # DeviceUpdateAllowedConnectionTypes is not generatable since the proto
     # uses enums, whereas the schema uses strings.
     ['DeviceUpdateAllowedConnectionTypes', 'auto_update_settings.allowed_connection_types'],
+    # NetworkThrottlingEnabled is one-to-many and uses a strongly typed proto.
+    ['NetworkThrottlingEnabled', 'network_throttling.enabled'],
+    ['NetworkThrottlingEnabled', 'network_throttling.upload_rate_kbits'],
+    ['NetworkThrottlingEnabled', 'network_throttling.download_rate_kbits'],
   ],
   # Mapping between device policies and fields in chrome_device_policy.proto.
   # Code for these policies can be generated. Add new device policies here!
@@ -23601,9 +23605,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceVpdInfo': 'device_reporting.report_vpd_info',
     'ReportDeviceSystemInfo': 'device_reporting.report_system_info',
     'ReportUploadFrequency': 'device_reporting.device_status_frequency',
-    'NetworkThrottlingEnabled': 'network_throttling.enabled',
-    'NetworkThrottlingEnabled': 'network_throttling.upload_rate_kbits',
-    'NetworkThrottlingEnabled': 'network_throttling.download_rate_kbits',
     'DeviceLoginScreenPowerManagement': 'login_screen_power_management.login_screen_power_management',
     'DeviceChromeVariations': 'device_chrome_variations_type.value',
     'DeviceDisplayResolution': 'device_display_resolution.device_display_resolution',
