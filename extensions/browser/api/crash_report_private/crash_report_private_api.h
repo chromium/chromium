@@ -29,16 +29,12 @@ class CrashReportPrivateReportErrorFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnConsentCheckCompleted(crash_report_private::ErrorInfo info,
-                               bool consented);
   void OnReportComplete();
 
   DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateReportErrorFunction);
 };
 
 void SetClockForTesting(base::Clock* clock);
-
-void SetCrashEndpointForTesting(const std::string& endpoint);
 
 }  // namespace api
 }  // namespace extensions

@@ -301,9 +301,10 @@ test("components_unittests") {
       "//components/webcrypto:unit_tests",
     ]
 
-    if (!is_fuchsia) {
+    if (!is_fuchsia) {  # !iOS and !Fuchsia
       deps += [
         "//components/crash/content/browser:unit_tests",
+        "//components/crash/content/browser/error_reporting:unit_tests",
         "//components/crash/core/app:unit_tests",
         "//components/data_reduction_proxy/core/browser:unit_tests",
         "//components/data_reduction_proxy/core/common:unit_tests",

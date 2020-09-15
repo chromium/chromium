@@ -4,9 +4,9 @@
 
 #include "base/system/sys_info.h"
 #include "base/test/simple_test_clock.h"
+#include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/crash_report_private/crash_report_private_api.h"
-#include "extensions/browser/api/crash_report_private/mock_crash_endpoint.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/switches.h"
 #include "extensions/shell/test/shell_apitest.h"
@@ -76,7 +76,7 @@ class CrashReportPrivateApiTest : public ShellApiTest {
   }
 
  protected:
-  const MockCrashEndpoint::Report& last_report() {
+  const base::Optional<MockCrashEndpoint::Report>& last_report() {
     return crash_endpoint_->last_report();
   }
   const Extension* extension_;
@@ -97,40 +97,47 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
   ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
                                 kTestScript);
 
-  EXPECT_EQ(last_report().query,
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(report->query,
             "browser=Chrome&browser_version=1.2.3.4&channel=Stable&"
             "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
             "os=ChromeOS&os_version=" +
                 GetOsVersion() +
-                "&prod=Chrome%2520(Chrome%2520OS)&src=http%3A%2F%2Fwww.test."
+                "&prod=Chrome_ChromeOS&src=http%3A%2F%2Fwww.test."
                 "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4");
-  EXPECT_EQ(last_report().content, "");
+  EXPECT_EQ(report->content, "");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
-  constexpr char kTestScript[] = R"(
+  constexpr char kTestScript[] = R"-(
     chrome.crashReportPrivate.reportError({
         message: "hi",
         url: "http://www.test.com/foo",
-        product: "TestApp",
+        product: "Chrome (Chrome OS)",
         version: "1.0.0.0",
         lineNumber: 123,
         columnNumber: 456,
         stackTrace: "   at <anonymous>:1:1",
       },
       () => window.domAutomationController.send(""));
-  )";
+  )-";
   ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
                                 kTestScript);
 
-  EXPECT_EQ(last_report().query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=%C8&"
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+  ASSERT_TRUE(report);
+  // The product name is escaped twice. The first time, it becomes
+  // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
+  EXPECT_EQ(report->query,
+            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
             "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
-            "&line=%7B&os=ChromeOS&os_version=" +
+            "&line=123&os=ChromeOS&os_version=" +
                 GetOsVersion() +
-                "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
-                "JavascriptError&url=%2Ffoo&ver=1.0.0.0");
-  EXPECT_EQ(last_report().content, "   at <anonymous>:1:1");
+                "&prod=Chrome%2520(Chrome%2520OS)&"
+                "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
+                "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0");
+  EXPECT_EQ(report->content, "   at <anonymous>:1:1");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
@@ -149,17 +156,19 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
   ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
                                 kTestScript);
 
-  EXPECT_EQ(last_report().query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=%C8&"
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(report->query,
+            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
             "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-            "line=%7B&os=ChromeOS&os_version=" +
+            "line=123&os=ChromeOS&os_version=" +
                 GetOsVersion() +
                 "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
                 "JavascriptError&url=%2Ffoo&ver=1.0.0.0");
-  EXPECT_EQ(last_report().content, "");
+  EXPECT_EQ(report->content, "");
 }
 
-IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, AnonymizeMessage) {
+IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
   // We use the feedback APIs redaction tool, which scrubs many different types
   // of PII. As a sanity check, test if MAC addresses are redacted.
   constexpr char kTestScript[] = R"(
@@ -176,15 +185,17 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, AnonymizeMessage) {
   ExecuteScriptInBackgroundPage(browser_context(), extension_->id(),
                                 kTestScript);
 
-  EXPECT_EQ(last_report().query,
-            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=%C8&"
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+  ASSERT_TRUE(report);
+  EXPECT_EQ(report->query,
+            "browser=Chrome&browser_version=1.2.3.4&channel=Stable&column=456&"
             "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
-            "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=%7B&os=ChromeOS&"
+            "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
             "os_version=" +
                 GetOsVersion() +
                 "&prod=TestApp&src=http%3A%2F%2Fwww.test.com%2Ffoo&type="
                 "JavascriptError&url=%2Ffoo&ver=1.0.0.0");
-  EXPECT_EQ(last_report().content, "");
+  EXPECT_EQ(report->content, "");
 }
 
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Throttling) {
@@ -238,8 +249,8 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, NoConsent) {
   EXPECT_EQ("", ExecuteScriptInBackgroundPage(browser_context(),
                                               extension_->id(), kTestScript));
   // The server should not receive any reports.
-  EXPECT_EQ(last_report().query, "");
-  EXPECT_EQ(last_report().content, "");
+  const base::Optional<MockCrashEndpoint::Report>& report = last_report();
+  EXPECT_FALSE(report);
 }
 
 }  // namespace extensions

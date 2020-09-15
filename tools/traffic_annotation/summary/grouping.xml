@@ -330,6 +330,9 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="cros_recovery_image_download"/>
       <traffic_annotation unique_id="download_recovery_component"/>
     </sender>
+    <sender name="Crash Reports">
+      <traffic_annotation unique_id="javascript_report_error"/>
+    </sender>
     <sender name="Chrome Performance, Feedback, and Usage Statistics">
       <traffic_annotation unique_id="background_performance_tracer"/>
       <traffic_annotation unique_id="chrome_feedback_report_app"/>

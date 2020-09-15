@@ -14,12 +14,8 @@ source_set("crash_report_private") {
   ]
 
   deps = [
-    "//components/crash/core/app",
-    "//components/feedback",
+    "//components/crash/content/browser/error_reporting",
     "//content/public/browser",
     "//extensions/common/api",
-    "//net",
-    "//services/network:network_service",
-    "//services/network/public/cpp",
   ]
 }

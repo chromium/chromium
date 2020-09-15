@@ -2719,6 +2719,8 @@ if (!is_android) {
         "../browser/enterprise/reporting/report_scheduler_browsertest.cc",
         "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       ]
+
+      deps += [ "//components/crash/content/browser/error_reporting:mock_crash_endpoint" ]
     } else {  # !is_chromeos
       sources -= [
         "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",

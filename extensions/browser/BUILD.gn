@@ -535,6 +535,7 @@ source_set("browser_tests") {
       "//chromeos/dbus/upstart",
       "//chromeos/login/login_state",
       "//chromeos/network",
+      "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
     ]
   }
 }
@@ -580,8 +581,6 @@ source_set("test_support") {
 
   if (is_chromeos) {
     sources += [
-      "api/crash_report_private/mock_crash_endpoint.cc",
-      "api/crash_report_private/mock_crash_endpoint.h",
       "api/feedback_private/mock_feedback_service.cc",
       "api/feedback_private/mock_feedback_service.h",
     ]

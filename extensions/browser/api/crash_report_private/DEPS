@@ -1,10 +1,4 @@
 include_rules = [
-  "+components/crash/core/app/client_upload_info.h",
-  "+components/feedback/redaction_tool.h",
+  "+components/crash/content/browser/error_reporting",
 ]
 
-specific_include_rules = {
-  "mock_crash_endpoint.cc": [
-    "+components/crash/core/app/crash_reporter_client.h",
-  ],
-}
