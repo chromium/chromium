@@ -466,6 +466,11 @@ external/wpt/css/css-text/line-breaking/line-breaking-atomic-006.html [ Skip ]
 external/wpt/css/css-text/line-breaking/line-breaking-replaced-002.html [ Skip ]
 external/wpt/css/css-text/line-breaking/line-breaking-replaced-003.html [ Skip ]
 
+# `tab-size` at non-block container (inline) not implemented.
+external/wpt/css/css-text/tab-size/tab-size-inline-001.html [ Skip ]
+external/wpt/css/css-text/tab-size/tab-size-inline-002.html [ Skip ]
+external/wpt/css/css-text/tab-size/tab-size-integer-004.html [ Skip ]
+
 # Undefined behavior without any implementations.
 external/wpt/css/css-text/white-space/seg-break-transformation-019.html [ Skip ]
 
