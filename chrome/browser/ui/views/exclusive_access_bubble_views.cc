@@ -154,7 +154,16 @@ void ExclusiveAccessBubbleViews::UpdateContent(
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
+#if defined(OS_MAC)
+  // Due to a quirk on the Mac, the popup will not be visible for a short period
+  // of time after it is shown (it's asynchronous) so if we don't check the
+  // value of the animation we'll have a stale version of the bounds when we
+  // show it and it will appear in the wrong place - typically where the window
+  // was located before going to fullscreen.
+  if (popup_->IsVisible() || animation_->GetCurrentValue() > 0.0)
+#else
   if (popup_->IsVisible())
+#endif
     UpdateBounds();
 }
 
