@@ -51,13 +51,23 @@ void TotalFrameCounter::Reset() {
 
 void TotalFrameCounter::UpdateTotalFramesSinceLastVisible(
     base::TimeTicks until) {
+  total_frames_ = ComputeTotalVisibleFrames(until);
+}
+
+size_t TotalFrameCounter::ComputeTotalVisibleFrames(
+    base::TimeTicks until) const {
   DCHECK(!until.is_null());
-  DCHECK(!last_shown_timestamp_.is_null());
+
+  if (last_shown_timestamp_.is_null() || latest_interval_.is_zero()) {
+    // The compositor may be currently invisible, or has just been made visible
+    // but has yet to receive a BeginFrameArgs.
+    return total_frames_;
+  }
+
   DCHECK_GE(until, last_shown_timestamp_);
-  DCHECK(!latest_interval_.is_zero());
   auto frames_since =
       std::round((until - last_shown_timestamp_) / latest_interval_);
-  total_frames_ += frames_since;
+  return total_frames_ + frames_since;
 }
 
 }  // namespace cc

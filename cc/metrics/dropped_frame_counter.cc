@@ -9,6 +9,8 @@
 #include <limits>
 
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
+#include "cc/metrics/total_frame_counter.h"
 
 namespace cc {
 
@@ -43,6 +45,14 @@ void DroppedFrameCounter::AddDroppedFrame() {
 
 void DroppedFrameCounter::AddDroppedFrameAffectingSmoothness() {
   ++total_smoothness_dropped_;
+  ReportFrames();
+}
+
+void DroppedFrameCounter::ReportFrames() {
+  TRACE_EVENT2(
+      "cc,benchmark", "SmoothnessDroppedFrame", "total",
+      total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now()),
+      "smoothness", total_smoothness_dropped_);
 }
 
 void DroppedFrameCounter::Reset() {

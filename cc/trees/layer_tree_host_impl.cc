@@ -455,6 +455,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   compositor_frame_reporting_controller_->SetDroppedFrameCounter(
       &dropped_frame_counter_);
 
+  dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   frame_trackers_.set_custom_tracker_results_added_callback(
       base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
                           weak_factory_.GetWeakPtr()));

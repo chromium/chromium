@@ -14,6 +14,8 @@
 
 namespace cc {
 
+class TotalFrameCounter;
+
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.
 class CC_EXPORT DroppedFrameCounter {
@@ -46,8 +48,13 @@ class CC_EXPORT DroppedFrameCounter {
   void AddDroppedFrame();
 
   void AddDroppedFrameAffectingSmoothness();
+  void ReportFrames();
 
   void Reset();
+
+  void set_total_counter(TotalFrameCounter* total_counter) {
+    total_counter_ = total_counter;
+  }
 
  private:
   RingBufferType ring_buffer_;
@@ -55,6 +62,8 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_partial_ = 0;
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
+
+  TotalFrameCounter* total_counter_ = nullptr;
 };
 
 }  // namespace cc

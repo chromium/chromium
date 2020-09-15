@@ -379,6 +379,8 @@ void CompositorFrameReportingController::AddActiveTracker(
 void CompositorFrameReportingController::RemoveActiveTracker(
     FrameSequenceTrackerType type) {
   active_trackers_.reset(static_cast<size_t>(type));
+  if (dropped_frame_counter_)
+    dropped_frame_counter_->ReportFrames();
 }
 
 void CompositorFrameReportingController::SetThreadAffectsSmoothness(
