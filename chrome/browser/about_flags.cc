@@ -6423,6 +6423,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncAutofillWalletOfferDataDescription, kOsAll,
      FEATURE_VALUE_TYPE(switches::kSyncAutofillWalletOfferData)},
 
+#if defined(OS_CHROMEOS)
+    {"enable-holding-space", flag_descriptions::kHoldingSpaceName,
+     flag_descriptions::kHoldingSpaceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTemporaryHoldingSpace)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

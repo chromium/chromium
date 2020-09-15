@@ -1654,6 +1654,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "enable-holding-space",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-home-page-location-policy",
     "owners": [ "wenyufu", "chrome-android-app@chromium.org" ],
     "expiry_milestone": 83

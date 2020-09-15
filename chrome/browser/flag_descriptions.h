@@ -2403,6 +2403,9 @@ extern const char kHelpAppSearchServiceIntegrationDescription[];
 extern const char kHideArcMediaNotificationsName[];
 extern const char kHideArcMediaNotificationsDescription[];
 
+extern const char kHoldingSpaceName[];
+extern const char kHoldingSpaceDescription[];
+
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 
