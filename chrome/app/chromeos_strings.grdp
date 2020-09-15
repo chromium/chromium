@@ -4573,9 +4573,6 @@
   <message name="IDS_CROSTINI_TERMINAL_STATUS_INSTALL_IMAGE_LOADER" desc="Text shown in the crostini terminal when it is checking whether the virtual machine component is installed">
     Checking the virtual machine
   </message>
-  <message name="IDS_CROSTINI_TERMINAL_STATUS_START_CONCIERGE" desc="Text shown in the crostini terminal when it is starting the VM controller">
-    Starting the virtual machine controller
-  </message>
   <message name="IDS_CROSTINI_TERMINAL_STATUS_CREATE_DISK_IMAGE" desc="Text shown in the crostini terminal when it is checking whether the VM image is installed">
     Checking the virtual machine image
   </message>

@@ -527,14 +527,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void UpgradeArc(UpgradeParams params,
-                  chromeos::VoidDBusMethodCallback callback) override {
-    VLOG(1) << "Starting Concierge service";
-    GetDebugDaemonClient()->StartConcierge(base::BindOnce(
-        &ArcVmClientAdapter::OnConciergeStarted, weak_factory_.GetWeakPtr(),
-        std::move(params), std::move(callback)));
-  }
-
   void StopArcInstance(bool on_shutdown, bool should_backup_log) override {
     if (on_shutdown) {
       // Do nothing when |on_shutdown| is true because either vm_concierge.conf
@@ -675,14 +667,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     should_notify_observers_ = true;
   }
 
-  void OnConciergeStarted(UpgradeParams params,
-                          chromeos::VoidDBusMethodCallback callback,
-                          bool success) {
-    if (!success) {
-      LOG(ERROR) << "Failed to start Concierge service for arcvm";
-      std::move(callback).Run(false);
-      return;
-    }
+  void UpgradeArc(UpgradeParams params,
+                  chromeos::VoidDBusMethodCallback callback) override {
     VLOG(2) << "Checking file system status";
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

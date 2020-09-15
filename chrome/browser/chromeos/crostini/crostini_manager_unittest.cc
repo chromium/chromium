@@ -645,12 +645,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     }
   }
 
-  void OnConciergeStarted(bool success) override {
-    if (abort_on_concierge_started_) {
-      Abort();
-    }
-  }
-
   void OnDiskImageCreated(bool success,
                           vm_tools::concierge::DiskImageStatus status,
                           int64_t disk_size_available) override {
@@ -753,7 +747,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   const CrostiniManager::RestartId uninitialized_id_ =
       CrostiniManager::kUninitializedRestartId;
   bool abort_on_component_loaded_ = false;
-  bool abort_on_concierge_started_ = false;
   bool abort_on_disk_image_created_ = false;
   bool abort_on_vm_started_ = false;
   bool abort_on_container_created_ = false;
@@ -857,21 +850,6 @@ TEST_F(CrostiniManagerRestartTest, AbortOnComponentLoaded) {
   run_loop()->Run();
   EXPECT_FALSE(
       profile_->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled));
-  EXPECT_FALSE(fake_concierge_client_->create_disk_image_called());
-  EXPECT_FALSE(fake_concierge_client_->start_termina_vm_called());
-  EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  ExpectRestarterUmaCount(1);
-}
-
-TEST_F(CrostiniManagerRestartTest, AbortOnConciergeStarted) {
-  abort_on_concierge_started_ = true;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
   EXPECT_FALSE(fake_concierge_client_->create_disk_image_called());
   EXPECT_FALSE(fake_concierge_client_->start_termina_vm_called());
   EXPECT_FALSE(fake_concierge_client_->get_container_ssh_keys_called());

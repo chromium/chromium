@@ -333,23 +333,6 @@ class CrostiniManager::CrostiniRestarter
     }
     // Set the pref here, after we first successfully install something
     profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
-    StartStage(mojom::InstallerState::kStartConcierge);
-    crostini_manager_->StartConcierge(base::BindOnce(
-        &CrostiniRestarter::ConciergeStarted, weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void ConciergeStarted(bool is_started) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    for (auto& observer : observer_list_) {
-      observer.OnConciergeStarted(is_started);
-    }
-    if (ReturnEarlyIfAborted()) {
-      return;
-    }
-    if (!is_started) {
-      FinishRestart(CrostiniResult::CONCIERGE_START_FAILED);
-      return;
-    }
 
     // Allow concierge to choose an appropriate disk image size.
     int64_t disk_size_bytes = options_.disk_size_bytes.value_or(0);
@@ -1042,34 +1025,6 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback) {
 
 void CrostiniManager::UninstallTermina(BoolCallback callback) {
   termina_installer_.Uninstall(std::move(callback));
-}
-
-void CrostiniManager::StartConcierge(BoolCallback callback) {
-  VLOG(1) << "Starting Concierge service";
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->StartConcierge(
-      base::BindOnce(&CrostiniManager::OnStartConcierge,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CrostiniManager::OnStartConcierge(BoolCallback callback, bool success) {
-  if (!success) {
-    LOG(ERROR) << "Failed to start Concierge service";
-    std::move(callback).Run(success);
-    return;
-  }
-  VLOG(1) << "Concierge service started";
-  VLOG(1) << "Waiting for Cicerone to announce availability.";
-
-  GetCiceroneClient()->WaitForServiceToBeAvailable(std::move(callback));
-}
-
-void CrostiniManager::OnStopConcierge(BoolCallback callback, bool success) {
-  if (!success) {
-    LOG(ERROR) << "Failed to stop Concierge service";
-  } else {
-    VLOG(1) << "Concierge service stopped";
-  }
-  std::move(callback).Run(success);
 }
 
 void CrostiniManager::CreateDiskImage(

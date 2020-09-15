@@ -11,7 +11,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/bus.h"
@@ -19,24 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-
-class TestDebugDaemonClient : public FakeDebugDaemonClient {
- public:
-  TestDebugDaemonClient() = default;
-  ~TestDebugDaemonClient() override = default;
-
-  void StartConcierge(ConciergeCallback callback) override {
-    ++start_concierge_called_;
-    FakeDebugDaemonClient::StartConcierge(std::move(callback));
-  }
-
-  size_t start_concierge_called() const { return start_concierge_called_; }
-
- private:
-  size_t start_concierge_called_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
-};
 
 class TestConciergeClient : public FakeConciergeClient {
  public:
@@ -96,7 +77,6 @@ class ConciergeHelperServiceTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     auto setter = DBusThreadManager::GetSetterForTesting();
-    setter->SetDebugDaemonClient(std::make_unique<TestDebugDaemonClient>());
     setter->SetConciergeClient(std::make_unique<TestConciergeClient>());
     service_ = ConciergeHelperService::GetForBrowserContext(&profile_);
   }
@@ -111,11 +91,6 @@ class ConciergeHelperServiceTest : public testing::Test {
         DBusThreadManager::Get()->GetConciergeClient());
   }
 
-  TestDebugDaemonClient* fake_debug_client() {
-    return static_cast<TestDebugDaemonClient*>(
-        DBusThreadManager::Get()->GetDebugDaemonClient());
-  }
-
   content::BrowserTaskEnvironment* task_environment() {
     return &task_environment_;
   }
@@ -127,12 +102,6 @@ class ConciergeHelperServiceTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(ConciergeHelperServiceTest);
 };
-
-// Tests that ConciergeHelperService can be constructed and destructed. Also,
-// check that ConciergeHelperService starts Concierge on construction.
-TEST_F(ConciergeHelperServiceTest, TestConstructDestruct) {
-  EXPECT_EQ(1U, fake_debug_client()->start_concierge_called());
-}
 
 // Tests that ConciergeHelperService makes cpu restriction requests correctly.
 TEST_F(ConciergeHelperServiceTest, TestSetVmCpuRestriction) {

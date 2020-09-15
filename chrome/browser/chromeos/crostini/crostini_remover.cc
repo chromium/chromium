@@ -34,15 +34,6 @@ CrostiniRemover::~CrostiniRemover() = default;
 
 void CrostiniRemover::RemoveCrostini() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CrostiniManager::GetForProfile(profile_)->StartConcierge(
-      base::BindOnce(&CrostiniRemover::OnConciergeStarted, this));
-}
-
-void CrostiniRemover::OnConciergeStarted(bool is_successful) {
-  if (!is_successful) {
-    std::move(callback_).Run(CrostiniResult::UNKNOWN_ERROR);
-    return;
-  }
   CrostiniManager::GetForProfile(profile_)->StopVm(
       vm_name_, base::BindOnce(&CrostiniRemover::StopVmFinished, this));
 }

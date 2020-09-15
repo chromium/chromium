@@ -18,31 +18,12 @@
 namespace chromeos {
 namespace {
 
-void OnStartConcierge(bool started) {
-  if (started)
-    VLOG(1) << "Concierge D-Bus service successfully started";
-  else
-    LOG(ERROR) << "Unable to start Concierge D-Bus service";
-}
-
 void OnSetVmCpuRestriction(
     base::Optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
   if (!response || !response->success()) {
     LOG(ERROR) << "Failed to call SetVmCpuRestriction";
     return;
   }
-}
-
-// Starts Concierge DBus service through debugd. If the service is already
-// running, this request will be ignored.
-void StartConcierge() {
-  auto* client = DBusThreadManager::Get()->GetDebugDaemonClient();
-  if (!client) {
-    LOG(WARNING) << "DebugDaemonClient is not available";
-    OnStartConcierge(false);
-    return;
-  }
-  client->StartConcierge(base::BindOnce(&OnStartConcierge));
 }
 
 // Adds a callback to be run when Concierge DBus service becomes available.
@@ -103,9 +84,7 @@ ConciergeHelperService* ConciergeHelperService::GetForBrowserContext(
   return ConciergeHelperServiceFactory::GetForBrowserContext(context);
 }
 
-ConciergeHelperService::ConciergeHelperService() {
-  StartConcierge();
-}
+ConciergeHelperService::ConciergeHelperService() = default;
 
 void ConciergeHelperService::SetArcVmCpuRestriction(bool do_restrict) {
   MakeRestrictionRequest(vm_tools::concierge::CPU_CGROUP_ARCVM, do_restrict);

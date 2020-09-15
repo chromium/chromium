@@ -149,7 +149,8 @@ suite('<crostini-installer-app>', () => {
     expectEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
     expectTrue(getInstallButton().hidden);
 
-    fakeBrowserProxy.page.onProgressUpdate(InstallerState.kStartConcierge, 0.5);
+    fakeBrowserProxy.page.onProgressUpdate(
+        InstallerState.kCreateDiskImage, 0.5);
     await flushTasks();
     expectTrue(
         !!app.$$('#installing-message > div').textContent.trim(),

@@ -235,14 +235,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
                                  CupsRemovePrinterCallback callback,
                                  base::OnceClosure error_callback) = 0;
 
-  // A callback to handle the result of StartConcierge.
-  using ConciergeCallback = base::OnceCallback<void(bool success)>;
-  // Calls debugd::kStartVmConcierge, which starts the Concierge service.
-  // |callback| is called when the method finishes. If the |callback| is called
-  // with true, it is guaranteed that the service is ready to accept requests.
-  // It is not necessary for ConciergeClient to use WaitForServiceToBeAvailable.
-  virtual void StartConcierge(ConciergeCallback callback) = 0;
-
   // A callback to handle the result of
   // StartPluginVmDispatcher/StopPluginVmDispatcher.
   using PluginVmDispatcherCallback = base::OnceCallback<void(bool success)>;
