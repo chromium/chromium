@@ -28,7 +28,8 @@ const base::string16 DriveShareAction::GetActionName() {
 }
 
 const gfx::ImageSkia DriveShareAction::GetActionIcon() {
-  // TODO(crbug.com/1097623): Get the icon.
+  // TODO(crbug.com/1127750): Update to create the Icon at the
+  // Sharesheet bubble view. Only get the VectorIcon here.
   return gfx::ImageSkia();
 }
 

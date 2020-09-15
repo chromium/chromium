@@ -190,6 +190,7 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_vpn.icon",
       "notification_wifi_off.icon",
       "notification_wifi.icon",
+      "person_add.icon",
       "shutdown_guest_os.icon",
       "warning_badge_circle.icon",
     ]
