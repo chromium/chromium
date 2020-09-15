@@ -195,6 +195,9 @@ class CORE_EXPORT NGInlineCursorPosition {
     item_ = nullptr;
   }
 
+  // True if current position is part of culled inline box |layout_inline|.
+  bool IsPartOfCulledInlineBox(const LayoutInline& layout_inline) const;
+
   const NGPaintFragment* paint_fragment_ = nullptr;
   const NGFragmentItem* item_ = nullptr;
   ItemsSpan::iterator item_iter_;
@@ -527,8 +530,13 @@ class CORE_EXPORT NGInlineCursor {
    public:
     CulledInlineTraversal() = default;
 
-    explicit operator bool() const { return current_object_; }
-    void Reset() { current_object_ = nullptr; }
+    const LayoutInline* GetLayoutInline() const { return layout_inline_; }
+
+    explicit operator bool() const { return layout_inline_; }
+    void Reset() { layout_inline_ = nullptr; }
+
+    bool UseFragmentTree() const { return use_fragment_tree_; }
+    void SetUseFragmentTree(const LayoutInline& layout_inline);
 
     // Returns first/next |LayoutObject| that contribute to |layout_inline|.
     const LayoutObject* MoveToFirstFor(const LayoutInline& layout_inline);
@@ -539,6 +547,7 @@ class CORE_EXPORT NGInlineCursor {
 
     const LayoutObject* current_object_ = nullptr;
     const LayoutInline* layout_inline_ = nullptr;
+    bool use_fragment_tree_ = false;
   };
 
   void MoveToFirstForCulledInline(const LayoutInline& layout_inline);

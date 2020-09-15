@@ -269,6 +269,32 @@ bool NGInlineCursorPosition::IsInlineLeaf() const {
   return !IsListMarker();
 }
 
+bool NGInlineCursorPosition::IsPartOfCulledInlineBox(
+    const LayoutInline& layout_inline) const {
+  DCHECK(!layout_inline.ShouldCreateBoxFragment());
+  DCHECK(*this);
+  const LayoutObject* const layout_object = GetLayoutObject();
+  // We use |IsInline()| to exclude floating and out-of-flow objects.
+  if (!layout_object || !layout_object->IsInline() ||
+      layout_object->IsAtomicInlineLevel())
+    return false;
+  DCHECK(!layout_object->IsFloatingOrOutOfFlowPositioned());
+  DCHECK(!BoxFragment() || !BoxFragment()->IsFormattingContextRoot());
+  for (const LayoutObject* parent = layout_object->Parent(); parent;
+       parent = parent->Parent()) {
+    // Children of culled inline should be included.
+    if (parent == &layout_inline)
+      return true;
+    // Grand children should be included only if children are also culled.
+    if (const auto* parent_layout_inline = ToLayoutInlineOrNull(parent)) {
+      if (!parent_layout_inline->ShouldCreateBoxFragment())
+        continue;
+    }
+    return false;
+  }
+  return false;
+}
+
 bool NGInlineCursor::IsLastLineInInlineBlock() const {
   DCHECK(Current().IsLineBox());
   if (!GetLayoutBlockFlow()->IsAtomicInlineLevel())
@@ -1665,14 +1691,23 @@ const LayoutObject* NGInlineCursor::CulledInlineTraversal::Find(
   return nullptr;
 }
 
+void NGInlineCursor::CulledInlineTraversal::SetUseFragmentTree(
+    const LayoutInline& layout_inline) {
+  layout_inline_ = &layout_inline;
+  use_fragment_tree_ = true;
+}
+
 const LayoutObject* NGInlineCursor::CulledInlineTraversal::MoveToFirstFor(
     const LayoutInline& layout_inline) {
   layout_inline_ = &layout_inline;
+  use_fragment_tree_ = false;
   current_object_ = Find(layout_inline.FirstChild());
   return current_object_;
 }
 
 const LayoutObject* NGInlineCursor::CulledInlineTraversal::MoveToNext() {
+  if (!current_object_)
+    return nullptr;
   current_object_ =
       Find(current_object_->NextInPreOrderAfterChildren(layout_inline_));
   return current_object_;
@@ -1680,6 +1715,19 @@ const LayoutObject* NGInlineCursor::CulledInlineTraversal::MoveToNext() {
 
 void NGInlineCursor::MoveToFirstForCulledInline(
     const LayoutInline& layout_inline) {
+  // When |this| is a descendant cursor, |this| may be limited to a very small
+  // subset of the |LayoutObject| descendants, and that traversing
+  // |LayoutObject| descendants is much more expensive. Prefer checking every
+  // fragment in that case.
+  if (IsDescendantsCursor()) {
+    culled_inline_.SetUseFragmentTree(layout_inline);
+    DCHECK(!CanMoveAcrossFragmentainer());
+    MoveToFirst();
+    while (Current() && !Current().IsPartOfCulledInlineBox(layout_inline))
+      MoveToNext();
+    return;
+  }
+
   if (const LayoutObject* layout_object =
           culled_inline_.MoveToFirstFor(layout_inline)) {
     MoveTo(*layout_object);
@@ -1691,6 +1739,16 @@ void NGInlineCursor::MoveToFirstForCulledInline(
 
 void NGInlineCursor::MoveToNextForCulledInline() {
   DCHECK(culled_inline_);
+  if (culled_inline_.UseFragmentTree()) {
+    const LayoutInline* layout_inline = culled_inline_.GetLayoutInline();
+    DCHECK(layout_inline);
+    DCHECK(!CanMoveAcrossFragmentainer());
+    do {
+      MoveToNext();
+    } while (Current() && !Current().IsPartOfCulledInlineBox(*layout_inline));
+    return;
+  }
+
   MoveToNextForSameLayoutObjectExceptCulledInline();
   // If we're at the end of fragments for the current |LayoutObject| that
   // contributes to the current culled inline, find the next |LayoutObject|.
