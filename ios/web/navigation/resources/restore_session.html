@@ -90,24 +90,34 @@
               getRestoreURL(sessionHistoryObject.urls[i] || "about:blank"));
         }
 
-        // iOS12.2 added a throttling mechanism where previous pushStates may
-        // not immediately be available. Set a 10ms interval delay until
-        // history.length reaches sessionHistory.length.
+        // iOS12.2 added a throttling mechanism where the previous pushStates
+        // may not immediately be available.  Instead of directly calling
+        // finishRestore(currentItemOffset) here, call it via a round trip
+        // native call to flush out the pushState IPC backlog.
         var currentItemOffset = parseInt(sessionHistoryObject.offset);
-        var goWhenReady = setInterval(() => {
-          if (history.length == sessionHistoryObject.urls.length) {
-            history.go(currentItemOffset);
-            window.clearInterval(goWhenReady);
+        var offset = {'offset': currentItemOffset}
+        window.webkit.messageHandlers['session_restore'].postMessage(offset);
+       } catch (e) {
+         handleError(e.name + ": " + e.message + " raw session history: " + sessionHistory);
+       }
+     }
 
-            // Queue a reload to redirect to the target URL after history.go
-            // is processed.
-            setTimeout(() => {
-              location.reload();
-            });
-           }
-        }, 10);
+    /**
+     * Finishes restoration by history.go-ing to |offset| and reloading the
+     * page.
+     * @param {int} offset Either zero, or the number of pages (negative) to
+     * go backwards.
+     */
+    function _crFinishSessionRestoration(offset) {
+      try {
+        history.go(offset);
+        // Queue a reload to redirect to the target URL after history.go
+        // is processed.
+        setTimeout(() => {
+          location.reload();
+        });
       } catch (e) {
-        handleError(e.name + ": " + e.message + " raw session history: " + sessionHistory);
+        handleError(e.name + ": " + e.message + " offset: " + offset);
       }
     }
 
