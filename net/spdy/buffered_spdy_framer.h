@@ -181,7 +181,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                      spdy::SpdyStreamId promised_stream_id,
                      bool end) override;
   void OnAltSvc(spdy::SpdyStreamId stream_id,
-                base::StringPiece origin,
+                absl::string_view origin,
                 const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector&
                     altsvc_vector) override;
   void OnDataFrameHeader(spdy::SpdyStreamId stream_id,

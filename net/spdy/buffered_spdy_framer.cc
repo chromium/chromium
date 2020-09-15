@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 
@@ -209,9 +210,10 @@ void BufferedSpdyFramer::OnPushPromise(spdy::SpdyStreamId stream_id,
 
 void BufferedSpdyFramer::OnAltSvc(
     spdy::SpdyStreamId stream_id,
-    base::StringPiece origin,
+    absl::string_view origin,
     const spdy::SpdyAltSvcWireFormat::AlternativeServiceVector& altsvc_vector) {
-  visitor_->OnAltSvc(stream_id, origin, altsvc_vector);
+  visitor_->OnAltSvc(stream_id, base::StringViewToStringPiece(origin),
+                     altsvc_vector);
 }
 
 void BufferedSpdyFramer::OnContinuation(spdy::SpdyStreamId stream_id,
@@ -299,7 +301,7 @@ std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateDataFrame(
     const char* data,
     uint32_t len,
     spdy::SpdyDataFlags flags) {
-  spdy::SpdyDataIR data_ir(stream_id, base::StringPiece(data, len));
+  spdy::SpdyDataIR data_ir(stream_id, absl::string_view(data, len));
   data_ir.set_fin((flags & spdy::DATA_FLAG_FIN) != 0);
   return std::make_unique<spdy::SpdySerializedFrame>(
       spdy_framer_.SerializeData(data_ir));

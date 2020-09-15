@@ -62,7 +62,7 @@ int ParseHeaderStatusCode(const spdy::SpdyHeaderBlock& header) {
   if (it == header.end()) {
     return -1;
   }
-  const base::StringPiece status(it->second);
+  const base::StringPiece status = base::StringViewToStringPiece(it->second);
   if (status.size() != 3) {
     return -1;
   }
@@ -401,7 +401,7 @@ TEST_F(QuicHttpProxyBackendStreamTest,
   auto responseLength = quic_response_headers.find("content-length");
   uint64_t response_header_content_length = 0;
   if (responseLength != quic_response_headers.end()) {
-    base::StringToUint64(responseLength->second,
+    base::StringToUint64(base::StringViewToStringPiece(responseLength->second),
                          &response_header_content_length);
   }
   EXPECT_EQ(rawBodyLength, response_header_content_length);

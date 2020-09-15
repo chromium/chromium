@@ -9,6 +9,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 
 using base::FilePath;
@@ -31,7 +32,9 @@ std::vector<std::string> ReadFileContentsImpl(const std::string& dirname) {
 // Reads the contents of |filename| as a string into |contents|.
 void ReadFileContentsImpl(quiche::QuicheStringPiece filename,
                           std::string* contents) {
-  base::ReadFileToString(FilePath::FromUTF8Unsafe(filename), contents);
+  base::ReadFileToString(
+      FilePath::FromUTF8Unsafe(base::StringViewToStringPiece(filename)),
+      contents);
 }
 
 }  // namespace quic

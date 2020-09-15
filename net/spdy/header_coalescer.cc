@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -46,10 +47,11 @@ HeaderCoalescer::HeaderCoalescer(uint32_t max_header_list_size,
                                  const NetLogWithSource& net_log)
     : max_header_list_size_(max_header_list_size), net_log_(net_log) {}
 
-void HeaderCoalescer::OnHeader(base::StringPiece key, base::StringPiece value) {
+void HeaderCoalescer::OnHeader(absl::string_view key, absl::string_view value) {
   if (error_seen_)
     return;
-  if (!AddHeader(key, value))
+  if (!AddHeader(base::StringViewToStringPiece(key),
+                 base::StringViewToStringPiece(value)))
     error_seen_ = true;
 }
 
@@ -122,7 +124,8 @@ bool HeaderCoalescer::AddHeader(base::StringPiece key,
     }
   }
 
-  headers_.AppendValueOrAddHeader(key, value);
+  headers_.AppendValueOrAddHeader(base::StringPieceToStringView(key),
+                                  base::StringPieceToStringView(value));
   return true;
 }
 

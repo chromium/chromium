@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/io_buffer.h"
@@ -186,7 +187,8 @@ void BidirectionalStream::OnHeadersReceived(
   int http_status_code = 0;
   const auto http_status_header = response_headers.find(":status");
   if (http_status_header != response_headers.end())
-    base::StringToInt(http_status_header->second, &http_status_code);
+    base::StringToInt(base::StringViewToStringPiece(http_status_header->second),
+                      &http_status_code);
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
     case net::kProtoHTTP2:

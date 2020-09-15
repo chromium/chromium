@@ -50,7 +50,7 @@ HeadersArray::HeadersArray(const spdy::SpdyHeaderBlock& header_block)
     : headers_strings_(header_block.size()) {
   // Split coalesced headers by '\0' and copy them into |header_strings_|.
   for (const auto& it : header_block) {
-    std::string value = it.second.as_string();
+    auto value = std::string(it.second);
     size_t start = 0;
     size_t end = 0;
     do {
@@ -64,7 +64,7 @@ HeadersArray::HeadersArray(const spdy::SpdyHeaderBlock& header_block)
       // |headers_strings_| is initialized to the size of header_block, but
       // split headers might take up more space.
       headers_strings_.push_back(
-          std::make_pair(it.first.as_string(), split_value));
+          std::make_pair(std::string(it.first), split_value));
       start = end + 1;
     } while (end != value.npos);
   }

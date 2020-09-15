@@ -106,8 +106,8 @@ void AppendToHeaderBlock(const char* const extra_headers[],
 
   // Copy in the headers.
   for (int i = 0; i < extra_header_count; i++) {
-    base::StringPiece key(extra_headers[i * 2]);
-    base::StringPiece value(extra_headers[i * 2 + 1]);
+    absl::string_view key(extra_headers[i * 2]);
+    absl::string_view value(extra_headers[i * 2 + 1]);
     DCHECK(!key.empty()) << "Header key must not be empty.";
     headers->AppendValueOrAddHeader(key, value);
   }
@@ -718,13 +718,14 @@ std::string SpdyTestUtil::ConstructSpdyReplyString(
   std::string reply_string;
   for (spdy::SpdyHeaderBlock::const_iterator it = headers.begin();
        it != headers.end(); ++it) {
-    std::string key = it->first.as_string();
+    auto key = std::string(it->first);
     // Remove leading colon from pseudo headers.
     if (key[0] == ':')
       key = key.substr(1);
     for (const std::string& value :
-         base::SplitString(it->second, base::StringPiece("\0", 1),
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+         base::SplitString(base::StringViewToStringPiece(it->second),
+                           base::StringPiece("\0", 1), base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_ALL)) {
       reply_string += key + ": " + value + "\n";
     }
   }
@@ -1032,7 +1033,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     int stream_id,
     base::StringPiece data,
     bool fin) {
-  spdy::SpdyDataIR data_ir(stream_id, data);
+  spdy::SpdyDataIR data_ir(stream_id, base::StringPieceToStringView(data));
   data_ir.set_fin(fin);
   return spdy::SpdySerializedFrame(
       headerless_spdy_framer_.SerializeData(data_ir));
@@ -1043,7 +1044,7 @@ spdy::SpdySerializedFrame SpdyTestUtil::ConstructSpdyDataFrame(
     base::StringPiece data,
     bool fin,
     int padding_length) {
-  spdy::SpdyDataIR data_ir(stream_id, data);
+  spdy::SpdyDataIR data_ir(stream_id, base::StringPieceToStringView(data));
   data_ir.set_fin(fin);
   data_ir.set_padding_len(padding_length);
   return spdy::SpdySerializedFrame(

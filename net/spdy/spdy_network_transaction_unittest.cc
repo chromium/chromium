@@ -6130,13 +6130,11 @@ TEST_F(SpdyNetworkTransactionTest, SpdyBasicAuth) {
 }
 
 struct PushHeaderTestParams {
-  std::vector<std::pair<base::StringPiece, base::StringPiece>>
-      extra_request_headers;
-  std::vector<std::pair<base::StringPiece, base::StringPiece>>
-      extra_pushed_request_headers;
-  std::vector<std::pair<base::StringPiece, base::StringPiece>>
+  std::vector<std::pair<std::string, std::string>> extra_request_headers;
+  std::vector<std::pair<std::string, std::string>> extra_pushed_request_headers;
+  std::vector<std::pair<std::string, std::string>>
       extra_pushed_response_headers;
-  base::StringPiece pushed_status_code;
+  std::string pushed_status_code;
   bool push_accepted;
   SpdyPushedStreamFate expected_fate;
 } push_header_test_cases[] = {

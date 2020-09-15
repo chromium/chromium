@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -28,8 +29,8 @@ base::ListValue ElideSpdyHeaderBlockForNetLog(
     NetLogCaptureMode capture_mode) {
   base::ListValue headers_list;
   for (const auto& header : headers) {
-    base::StringPiece key = header.first;
-    base::StringPiece value = header.second;
+    base::StringPiece key = base::StringViewToStringPiece(header.first);
+    base::StringPiece value = base::StringViewToStringPiece(header.second);
     headers_list.Append(NetLogStringValue(
         base::StrCat({key, ": ",
                       ElideHeaderValueForNetLog(capture_mode, key.as_string(),

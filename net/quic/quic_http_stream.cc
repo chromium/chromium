@@ -645,7 +645,7 @@ int QuicHttpStream::DoSendBody() {
   int len = request_body_buf_->BytesRemaining();
   if (len > 0 || eof) {
     next_state_ = STATE_SEND_BODY_COMPLETE;
-    quiche::QuicheStringPiece data(request_body_buf_->data(), len);
+    base::StringPiece data(request_body_buf_->data(), len);
     return stream_->WriteStreamData(
         data, eof,
         base::BindOnce(&QuicHttpStream::OnIOComplete,

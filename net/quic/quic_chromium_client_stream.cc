@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -216,7 +217,7 @@ int QuicChromiumClientStream::Handle::WriteStreamData(
   if (!stream_)
     return net_error_;
 
-  if (stream_->WriteStreamData(data, fin))
+  if (stream_->WriteStreamData(base::StringPieceToStringView(data), fin))
     return HandleIOComplete(OK);
 
   SetCallback(std::move(callback), &write_callback_);

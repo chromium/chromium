@@ -8849,7 +8849,7 @@ TEST_P(QuicStreamFactoryTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
 
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 3, 1));
@@ -9010,7 +9010,7 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeoutForMigration) {
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 3, 1));
   socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
@@ -9158,7 +9158,7 @@ TEST_P(QuicStreamFactoryTest, CustomRetransmittableOnWireTimeout) {
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
   socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
@@ -9304,7 +9304,7 @@ TEST_P(QuicStreamFactoryTest, NoRetransmittableOnWireTimeout) {
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
   socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
@@ -9441,7 +9441,7 @@ TEST_P(QuicStreamFactoryTest,
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
   socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));
@@ -9589,7 +9589,7 @@ TEST_P(QuicStreamFactoryTest,
   socket_data1.AddRead(
       ASYNC, server_maker_.MakeDataPacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 base::StringPiece("Hello World")));
+                 "Hello World"));
   // Read an ACK from server which acks all client data.
   socket_data1.AddRead(SYNCHRONOUS, server_maker_.MakeAckPacket(3, 2, 1));
   socket_data1.AddWrite(ASYNC, client_maker_.MakeAckPacket(packet_num++, 2, 1));

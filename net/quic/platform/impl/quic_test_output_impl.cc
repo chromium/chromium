@@ -10,6 +10,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_str_cat.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +27,8 @@ void QuicRecordTestOutputToFile(quiche::QuicheStringPiece filename,
   }
 
   auto path = base::FilePath::FromUTF8Unsafe(output_dir)
-                  .Append(base::FilePath::FromUTF8Unsafe(filename));
+                  .Append(base::FilePath::FromUTF8Unsafe(
+                      base::StringViewToStringPiece(filename)));
 
   int bytes_written = base::WriteFile(path, data.data(), data.size());
   if (bytes_written < 0) {
@@ -53,7 +55,8 @@ bool QuicLoadTestOutputImpl(quiche::QuicheStringPiece filename,
   }
 
   auto path = base::FilePath::FromUTF8Unsafe(output_dir)
-                  .Append(base::FilePath::FromUTF8Unsafe(filename));
+                  .Append(base::FilePath::FromUTF8Unsafe(
+                      base::StringViewToStringPiece(filename)));
 
   return base::ReadFileToString(path, data);
 }

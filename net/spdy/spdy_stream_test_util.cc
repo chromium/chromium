@@ -116,7 +116,7 @@ std::string StreamDelegateBase::GetResponseHeaderValue(
     const std::string& name) const {
   spdy::SpdyHeaderBlock::const_iterator it = response_headers_.find(name);
   return (it == response_headers_.end()) ? std::string()
-                                         : it->second.as_string();
+                                         : std::string(it->second);
 }
 
 const LoadTimingInfo& StreamDelegateBase::GetLoadTimingInfo() {

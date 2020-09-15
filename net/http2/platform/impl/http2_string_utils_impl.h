@@ -8,12 +8,14 @@
 #include <sstream>
 #include <utility>
 
+#include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/escape.h"
 #include "net/base/hex_utils.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
 
 namespace http2 {
 
@@ -40,18 +42,15 @@ inline std::string Http2HexEncodeImpl(const void* bytes, size_t size) {
 }
 
 inline std::string Http2HexDecodeImpl(quiche::QuicheStringPiece data) {
-  std::string result;
-  if (!base::HexStringToString(data, &result))
-    result.clear();
-  return result;
+  return quiche::QuicheTextUtils::HexDecode(data);
 }
 
 inline std::string Http2HexDumpImpl(quiche::QuicheStringPiece data) {
-  return net::HexDump(data);
+  return quiche::QuicheTextUtils::HexDump(data);
 }
 
 inline std::string Http2HexEscapeImpl(quiche::QuicheStringPiece data) {
-  return net::EscapeQueryParamValue(data, false);
+  return net::EscapeQueryParamValue(base::StringViewToStringPiece(data), false);
 }
 
 template <typename Number>

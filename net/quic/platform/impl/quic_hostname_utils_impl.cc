@@ -4,6 +4,7 @@
 
 #include "net/quic/platform/impl/quic_hostname_utils_impl.h"
 
+#include "base/strings/abseil_string_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -19,7 +20,7 @@ bool QuicHostnameUtilsImpl::IsValidSNI(quiche::QuicheStringPiece sni) {
   // accepted by the above spec is '_'.
   url::CanonHostInfo host_info;
   std::string canonicalized_host(
-      net::CanonicalizeHost(sni.as_string(), &host_info));
+      net::CanonicalizeHost(base::StringViewToStringPiece(sni), &host_info));
   return !host_info.IsIPAddress() &&
          net::IsCanonicalizedHostCompliant(canonicalized_host) &&
          sni.find_last_of('.') != std::string::npos;

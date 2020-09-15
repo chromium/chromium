@@ -310,9 +310,9 @@ bool ProofVerifierChromium::Job::GetX509Certificate(
   }
 
   // Convert certs to X509Certificate.
-  std::vector<quiche::QuicheStringPiece> cert_pieces(certs.size());
+  std::vector<base::StringPiece> cert_pieces(certs.size());
   for (unsigned i = 0; i < certs.size(); i++) {
-    cert_pieces[i] = quiche::QuicheStringPiece(certs[i]);
+    cert_pieces[i] = base::StringPiece(certs[i]);
   }
   cert_ = X509Certificate::CreateFromDERCertChain(cert_pieces);
   if (!cert_.get()) {

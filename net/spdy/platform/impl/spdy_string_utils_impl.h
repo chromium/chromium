@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/base/hex_utils.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
 
 namespace spdy {
 
@@ -34,10 +35,7 @@ inline char SpdyHexDigitToIntImpl(char c) {
 }
 
 inline std::string SpdyHexDecodeImpl(quiche::QuicheStringPiece data) {
-  std::string result;
-  if (!base::HexStringToString(data, &result))
-    result.clear();
-  return result;
+  return quiche::QuicheTextUtils::HexDecode(data);
 }
 
 NET_EXPORT_PRIVATE bool SpdyHexDecodeToUInt32Impl(
@@ -45,7 +43,7 @@ NET_EXPORT_PRIVATE bool SpdyHexDecodeToUInt32Impl(
     uint32_t* out);
 
 inline std::string SpdyHexEncodeImpl(const char* bytes, size_t size) {
-  return base::ToLowerASCII(base::HexEncode(bytes, size));
+  return quiche::QuicheTextUtils::HexEncode(bytes, size);
 }
 
 inline std::string SpdyHexEncodeUInt32AndTrimImpl(uint32_t data) {
@@ -53,13 +51,13 @@ inline std::string SpdyHexEncodeUInt32AndTrimImpl(uint32_t data) {
 }
 
 inline std::string SpdyHexDumpImpl(quiche::QuicheStringPiece data) {
-  return net::HexDump(data);
+  return quiche::QuicheTextUtils::HexDump(data);
 }
 
 struct SpdyStringPieceCaseHashImpl {
   size_t operator()(quiche::QuicheStringPiece data) const {
-    std::string lower = ToLowerASCII(data);
-    base::StringPieceHash hasher;
+    std::string lower = absl::AsciiStrToLower(data);
+    absl::Hash<absl::string_view> hasher;
     return hasher(lower);
   }
 };
@@ -67,7 +65,7 @@ struct SpdyStringPieceCaseHashImpl {
 struct SpdyStringPieceCaseEqImpl {
   bool operator()(quiche::QuicheStringPiece piece1,
                   quiche::QuicheStringPiece piece2) const {
-    return base::EqualsCaseInsensitiveASCII(piece1, piece2);
+    return absl::EqualsIgnoreCase(piece1, piece2);
   }
 };
 

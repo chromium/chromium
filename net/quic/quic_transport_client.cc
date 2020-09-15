@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
@@ -382,7 +383,7 @@ void QuicTransportClient::OnIncomingUnidirectionalStreamAvailable() {
 
 void QuicTransportClient::OnDatagramReceived(
     quiche::QuicheStringPiece datagram) {
-  visitor_->OnDatagramReceived(datagram);
+  visitor_->OnDatagramReceived(base::StringViewToStringPiece(datagram));
 }
 
 void QuicTransportClient::OnCanCreateNewOutgoingBidirectionalStream() {

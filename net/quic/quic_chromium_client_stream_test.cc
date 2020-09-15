@@ -331,9 +331,8 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
               WritevData(stream_->id(), _, _, _, quic::NOT_RETRANSMISSION, _))
       .WillOnce(Return(quic::QuicConsumedData(kDataLen, true)));
   TestCompletionCallback callback;
-  EXPECT_EQ(
-      OK, handle_->WriteStreamData(quiche::QuicheStringPiece(kData1, kDataLen),
-                                   true, callback.callback()));
+  EXPECT_EQ(OK, handle_->WriteStreamData(base::StringPiece(kData1, kDataLen),
+                                         true, callback.callback()));
 
   EXPECT_FALSE(handle_->IsOpen());
   EXPECT_EQ(quic::test::GetNthClientInitiatedBidirectionalStreamId(
@@ -349,10 +348,9 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
   EXPECT_EQ(header.length() + kDataLen, handle_->stream_bytes_written());
   EXPECT_EQ(0u, handle_->NumBytesConsumed());
 
-  EXPECT_EQ(
-      ERR_CONNECTION_CLOSED,
-      handle_->WriteStreamData(quiche::QuicheStringPiece(kData1, kDataLen),
-                               true, callback.callback()));
+  EXPECT_EQ(ERR_CONNECTION_CLOSED,
+            handle_->WriteStreamData(base::StringPiece(kData1, kDataLen), true,
+                                     callback.callback()));
 
   std::vector<scoped_refptr<IOBuffer>> buffers = {
       base::MakeRefCounted<IOBuffer>(10)};
@@ -759,9 +757,8 @@ TEST_P(QuicChromiumClientStreamTest, WriteStreamData) {
               WritevData(stream_->id(), _, _, _, quic::NOT_RETRANSMISSION, _))
       .WillOnce(Return(quic::QuicConsumedData(kDataLen, true)));
   TestCompletionCallback callback;
-  EXPECT_EQ(
-      OK, handle_->WriteStreamData(quiche::QuicheStringPiece(kData1, kDataLen),
-                                   true, callback.callback()));
+  EXPECT_EQ(OK, handle_->WriteStreamData(base::StringPiece(kData1, kDataLen),
+                                         true, callback.callback()));
 }
 
 TEST_P(QuicChromiumClientStreamTest, WriteStreamDataAsync) {
@@ -774,9 +771,9 @@ TEST_P(QuicChromiumClientStreamTest, WriteStreamDataAsync) {
               WritevData(stream_->id(), _, _, _, quic::NOT_RETRANSMISSION, _))
       .WillOnce(Return(quic::QuicConsumedData(0, false)));
   TestCompletionCallback callback;
-  EXPECT_EQ(ERR_IO_PENDING, handle_->WriteStreamData(
-                                quiche::QuicheStringPiece(kData1, kDataLen),
-                                true, callback.callback()));
+  EXPECT_EQ(ERR_IO_PENDING,
+            handle_->WriteStreamData(base::StringPiece(kData1, kDataLen), true,
+                                     callback.callback()));
   ASSERT_FALSE(callback.have_result());
 
   // All data written.

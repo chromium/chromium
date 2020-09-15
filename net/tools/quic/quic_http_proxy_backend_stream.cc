@@ -96,7 +96,7 @@ bool QuicHttpProxyBackendStream::SendRequestToBackend(
     if (url.path().compare("/") == 0) {
       backend_spec.pop_back();
     }
-    backend_spec.append(it->second.as_string());
+    backend_spec.append(std::string(it->second));
   }
 
   url_ = GURL(backend_spec.c_str());
@@ -110,7 +110,7 @@ bool QuicHttpProxyBackendStream::SendRequestToBackend(
   std::string method = "";
   it = incoming_request_headers->find(":method");
   if (it != incoming_request_headers->end()) {
-    method.append(it->second.as_string());
+    method.append(std::string(it->second));
   }
   if (ValidateHttpMethod(method) != true) {
     LOG(INFO) << "Unknown Request Type received from QUIC client " << method;
@@ -142,8 +142,8 @@ void QuicHttpProxyBackendStream::CopyHeaders(
   for (spdy::SpdyHeaderBlock::const_iterator it =
            incoming_request_headers->begin();
        it != incoming_request_headers->end(); ++it) {
-    std::string key = it->first.as_string();
-    std::string value = it->second.as_string();
+    auto key = std::string(it->first);
+    auto value = std::string(it->second);
     // Ignore the spdy headers
     if (!key.empty() && key[0] != ':') {
       // Remove hop-by-hop headers
