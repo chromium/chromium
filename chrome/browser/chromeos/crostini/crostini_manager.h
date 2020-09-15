@@ -189,6 +189,7 @@ class CrostiniManager : public KeyedService,
     virtual ~RestartObserver() {}
     virtual void OnStageStarted(mojom::InstallerState stage) {}
     virtual void OnComponentLoaded(CrostiniResult result) {}
+    virtual void OnConciergeStarted(bool success) {}
     virtual void OnDiskImageCreated(bool success,
                                     vm_tools::concierge::DiskImageStatus status,
                                     int64_t disk_size_bytes) {}
@@ -241,6 +242,10 @@ class CrostiniManager : public KeyedService,
 
   // Unloads and removes termina.
   void UninstallTermina(BoolCallback callback);
+
+  // Starts the Concierge service. |callback| is called after the method call
+  // finishes.
+  void StartConcierge(BoolCallback callback);
 
   // Checks the arguments for creating a new Termina VM disk image. Creates a
   // disk image for a Termina VM via ConciergeClient::CreateDiskImage.
@@ -697,6 +702,14 @@ class CrostiniManager : public KeyedService,
       GetTerminaVmKernelVersionCallback callback,
       base::Optional<vm_tools::concierge::GetVmEnterpriseReportingInfoResponse>
           response);
+
+  // Callback for CrostiniClient::StartConcierge. Called after the
+  // DebugDaemon service method finishes.
+  void OnStartConcierge(BoolCallback callback, bool success);
+
+  // Callback for CrostiniClient::StopConcierge. Called after the
+  // DebugDaemon service method finishes.
+  void OnStopConcierge(BoolCallback callback, bool success);
 
   // Callback for CiceroneClient::StartLxd. May indicate that LXD is still being
   // started in which case we will wait for OnStartLxdProgress events.

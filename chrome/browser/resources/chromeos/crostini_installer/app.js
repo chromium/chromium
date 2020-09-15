@@ -412,6 +412,9 @@ Polymer({
       case InstallerState.kInstallImageLoader:
         messageId = 'loadTerminaMessage';
         break;
+      case InstallerState.kStartConcierge:
+        messageId = 'startConciergeMessage';
+        break;
       case InstallerState.kCreateDiskImage:
         messageId = 'createDiskImageMessage';
         break;
@@ -457,6 +460,9 @@ Polymer({
     switch (error) {
       case InstallerError.kErrorLoadingTermina:
         messageId = 'loadTerminaError';
+        break;
+      case InstallerError.kErrorStartingConcierge:
+        messageId = 'startConciergeError';
         break;
       case InstallerError.kErrorCreatingDiskImage:
         messageId = 'createDiskImageError';

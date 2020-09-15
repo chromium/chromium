@@ -257,6 +257,11 @@ void FakeDebugDaemonClient::CupsRemovePrinter(
       FROM_HERE, base::BindOnce(std::move(callback), has_printer));
 }
 
+void FakeDebugDaemonClient::StartConcierge(ConciergeCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
 void FakeDebugDaemonClient::StartPluginVmDispatcher(
     const std::string& /* owner_id */,
     const std::string& /* lang */,

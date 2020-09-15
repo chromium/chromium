@@ -22,6 +22,7 @@ class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
 
   ~CrostiniRemover();
 
+  void OnConciergeStarted(bool is_successful);
   void StopVmFinished(crostini::CrostiniResult result);
   void DestroyDiskImageFinished(bool success);
   void UninstallTerminaFinished(bool success);

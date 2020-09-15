@@ -73,15 +73,26 @@ void GetDiskInfo(OnceDiskInfoCallback callback,
         base::BindOnce(&OnAmountOfFreeDiskSpace, std::move(callback), profile,
                        std::move(vm_name)));
   } else {
+    VLOG(1) << "Starting concierge";
     // Since we only care about the disk's current size and whether it's a
     // sparse disk, we claim there's plenty of free space available to prevent
     // error conditions in |OnCrostiniSufficientlyRunning|.
     constexpr int64_t kFakeAvailableDiskBytes =
         kDiskHeadroomBytes + kRecommendedDiskSizeBytes;
 
-    OnCrostiniSufficientlyRunning(std::move(callback), profile,
-                                  std::move(vm_name), kFakeAvailableDiskBytes,
-                                  CrostiniResult::SUCCESS);
+    CrostiniManager::GetForProfile(profile)->StartConcierge(base::BindOnce(
+        [](OnceDiskInfoCallback callback, Profile* profile, std::string vm_name,
+           bool success) {
+          if (!success) {
+            LOG(ERROR) << "Failed to start concierge";
+            std::move(callback).Run(nullptr);
+            return;
+          }
+          OnCrostiniSufficientlyRunning(
+              std::move(callback), profile, std::move(vm_name),
+              kFakeAvailableDiskBytes, CrostiniResult::SUCCESS);
+        },
+        std::move(callback), profile, std::move(vm_name)));
   }
 }
 
