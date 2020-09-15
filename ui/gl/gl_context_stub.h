@@ -23,13 +23,13 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
-  bool MakeCurrent(GLSurface* surface) override;
+  bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override;
   std::string GetGLVersion() override;
   std::string GetGLRenderer() override;
-  unsigned int CheckStickyGraphicsResetStatus() override;
+  unsigned int CheckStickyGraphicsResetStatusImpl() override;
 
   void SetUseStubApi(bool stub_api);
   void SetExtensionsString(const char* extensions);

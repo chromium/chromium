@@ -34,7 +34,7 @@ void GLContextVirtual::Destroy() {
   shared_context_ = nullptr;
 }
 
-bool GLContextVirtual::MakeCurrent(gl::GLSurface* surface) {
+bool GLContextVirtual::MakeCurrentImpl(gl::GLSurface* surface) {
   if (delegate_.get())
     return shared_context_->MakeVirtuallyCurrent(this, surface);
 
@@ -86,11 +86,10 @@ void GLContextVirtual::SetSafeToForceGpuSwitch() {
   return shared_context_->SetSafeToForceGpuSwitch();
 }
 
-unsigned int GLContextVirtual::CheckStickyGraphicsResetStatus() {
+unsigned int GLContextVirtual::CheckStickyGraphicsResetStatusImpl() {
   unsigned int reset_status = shared_context_->CheckStickyGraphicsResetStatus();
   if (reset_status == GL_NO_ERROR)
     return GL_NO_ERROR;
-  shared_context_->MarkVirtualContextLost();
   // Don't pretend we know which one of the virtual contexts was responsible.
   return GL_UNKNOWN_CONTEXT_RESET_ARB;
 }

@@ -396,14 +396,15 @@ TEST_P(GLES2DecoderTest, AbstractTextureIsDestroyedWhenMadeCurrent) {
   context_->ReleaseCurrent(surface_.get());
   abstract_texture.reset();
   // Make the context current again, |context_| overrides it with a mock.
-  context_->GLContextStub::MakeCurrent(surface_.get());
+  context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   // Having textures to delete should signal idle work.
   EXPECT_EQ(GetDecoder()->HasMoreIdleWork(), true);
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
 
   // Allow the context to be made current.
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   GetDecoder()->MakeCurrent();
 }
 

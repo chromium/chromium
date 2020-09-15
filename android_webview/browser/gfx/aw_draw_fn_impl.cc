@@ -68,7 +68,7 @@ class GLNonOwnedCompatibilityContext : public gl::GLContextEGL {
     g_gl_context = this;
   }
 
-  bool MakeCurrent(gl::GLSurface* surface) override {
+  bool MakeCurrentImpl(gl::GLSurface* surface) override {
     // A GLNonOwnedCompatibilityContext may have set the GetRealCurrent()
     // pointer to itself, while re-using our EGL context. In these cases just
     // call SetCurrent to restore expected GetRealContext().
@@ -83,10 +83,10 @@ class GLNonOwnedCompatibilityContext : public gl::GLContextEGL {
       return true;
     }
 
-    return gl::GLContextEGL::MakeCurrent(surface);
+    return gl::GLContextEGL::MakeCurrentImpl(surface);
   }
 
-  bool MakeCurrent() { return MakeCurrent(surface_.get()); }
+  bool MakeCurrent() { return gl::GLContext::MakeCurrent(surface_.get()); }
 
   static scoped_refptr<GLNonOwnedCompatibilityContext> GetOrCreateInstance() {
     if (g_gl_context)

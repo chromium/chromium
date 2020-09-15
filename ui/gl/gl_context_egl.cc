@@ -346,7 +346,7 @@ void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
   }
 }
 
-bool GLContextEGL::MakeCurrent(GLSurface* surface) {
+bool GLContextEGL::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(context_);
   if (lost_)
     return false;
@@ -435,7 +435,7 @@ void* GLContextEGL::GetHandle() {
   return context_;
 }
 
-unsigned int GLContextEGL::CheckStickyGraphicsResetStatus() {
+unsigned int GLContextEGL::CheckStickyGraphicsResetStatusImpl() {
   DCHECK(IsCurrent(nullptr));
   DCHECK(g_current_gl_driver);
   const ExtensionsGL& ext = g_current_gl_driver->ext;

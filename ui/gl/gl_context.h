@@ -125,7 +125,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
                           const GLContextAttribs& attribs) = 0;
 
   // Makes the GL context and a surface current on the current thread.
-  virtual bool MakeCurrent(GLSurface* surface) = 0;
+  bool MakeCurrent(GLSurface* surface);
 
   // Releases this GL context and surface as current on the current thread.
   virtual void ReleaseCurrent(GLSurface* surface) = 0;
@@ -190,7 +190,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // other than GL_NO_ERROR, that value is returned until the context is
   // destroyed.
   // The context must be current.
-  virtual unsigned int CheckStickyGraphicsResetStatus();
+  unsigned int CheckStickyGraphicsResetStatus();
 
   // Make this context current when used for context virtualization.
   bool MakeVirtuallyCurrent(GLContext* virtual_context, GLSurface* surface);
@@ -274,6 +274,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // Returns the last real (non-virtual) GLContext made current.
   static GLContext* GetRealCurrent();
 
+  virtual bool MakeCurrentImpl(GLSurface* surface) = 0;
+  virtual unsigned int CheckStickyGraphicsResetStatusImpl();
   virtual void ResetExtensions() = 0;
 
   GLApi* gl_api() { return gl_api_wrapper_->api(); }
@@ -284,8 +286,6 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   bool HasBackpressureFences() const;
   void DestroyBackpressureFences();
 #endif
-
-  void MarkVirtualContextLost() { virtual_context_lost_ = true; }
 
  private:
   friend class base::RefCounted<GLContext>;
@@ -321,7 +321,7 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   std::unique_ptr<GLVersionInfo> version_info_;
   // This bit allows us to avoid virtual context state restoration in the case
   // where this underlying context becomes lost.  https://crbug.com/1061442
-  bool virtual_context_lost_ = false;
+  bool context_lost_ = false;
 
 #if defined(OS_APPLE)
   std::map<uint64_t, std::unique_ptr<GLFence>> backpressure_fences_;

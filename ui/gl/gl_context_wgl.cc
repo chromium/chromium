@@ -91,7 +91,7 @@ void GLContextWGL::Destroy() {
   }
 }
 
-bool GLContextWGL::MakeCurrent(GLSurface* surface) {
+bool GLContextWGL::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(context_);
   if (IsCurrent(surface))
     return true;

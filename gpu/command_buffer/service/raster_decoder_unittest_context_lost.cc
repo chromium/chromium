@@ -136,7 +136,8 @@ class RasterDecoderLostContextTest : public RasterDecoderManualInitTest {
 
 TEST_P(RasterDecoderLostContextTest, LostFromMakeCurrent) {
   Init(/*has_robustness=*/false);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   EXPECT_FALSE(decoder_->WasContextLost());
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
@@ -149,7 +150,8 @@ TEST_P(RasterDecoderLostContextTest, LostFromMakeCurrent) {
 
 TEST_P(RasterDecoderLostContextTest, LostFromDriverOOM) {
   Init(/*has_robustness=*/false);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   EXPECT_CALL(*gl_, GetError()).WillOnce(Return(GL_OUT_OF_MEMORY));
   EXPECT_FALSE(decoder_->WasContextLost());
   decoder_->MakeCurrent();
@@ -166,7 +168,8 @@ TEST_P(RasterDecoderLostContextTest, LostFromMakeCurrentWithRobustness) {
   // If we can't make the context current, we cannot query the robustness
   // extension.
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB()).Times(0);
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
   EXPECT_FALSE(decoder_->WasContextLostByRobustnessExtension());
@@ -216,7 +219,8 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   EXPECT_CALL(*gl_, DeleteSync(kGlSync)).Times(0).RetiresOnSaturation();
 
   // Force context lost for MakeCurrent().
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(false));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(false));
 
   decoder_->MakeCurrent();
   EXPECT_TRUE(decoder_->WasContextLost());
@@ -228,7 +232,8 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
 TEST_P(RasterDecoderLostContextTest, LostFromResetAfterMakeCurrent) {
   Init(/*has_robustness=*/true);
   InSequence seq;
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   EXPECT_CALL(*gl_, GetError()).WillOnce(Return(GL_CONTEXT_LOST_KHR));
   EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
       .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_KHR));

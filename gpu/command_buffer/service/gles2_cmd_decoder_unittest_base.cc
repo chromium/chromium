@@ -230,7 +230,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   context_->SetExtensionsString(normalized_init.extensions.c_str());
   context_->SetGLVersionString(normalized_init.gl_version.c_str());
 
-  context_->GLContextStub::MakeCurrent(surface_.get());
+  context_->GLContextStub::MakeCurrentImpl(surface_.get());
 
   TestHelper::SetupContextGroupInitExpectations(
       gl_.get(),
@@ -525,7 +525,8 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
     return result;
   }
 
-  EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
+  EXPECT_CALL(*context_, MakeCurrentImpl(surface_.get()))
+      .WillOnce(Return(true));
   if (context_->HasRobustness()) {
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
         .WillOnce(Return(GL_NO_ERROR));

@@ -33,7 +33,7 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   // Implement GLContext.
   bool Initialize(gl::GLSurface* compatible_surface,
                   const gl::GLContextAttribs& attribs) override;
-  bool MakeCurrent(gl::GLSurface* surface) override;
+  bool MakeCurrentImpl(gl::GLSurface* surface) override;
   void ReleaseCurrent(gl::GLSurface* surface) override;
   bool IsCurrent(gl::GLSurface* surface) override;
   void* GetHandle() override;
@@ -42,7 +42,7 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   std::string GetGLRenderer() override;
   const gfx::ExtensionSet& GetExtensions() override;
   void SetSafeToForceGpuSwitch() override;
-  unsigned int CheckStickyGraphicsResetStatus() override;
+  unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
   gl::YUVToRGBConverter* GetYUVToRGBConverter(
       const gfx::ColorSpace& color_space) override;

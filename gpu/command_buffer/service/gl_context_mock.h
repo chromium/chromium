@@ -14,7 +14,7 @@ class GLContextMock : public gl::GLContextStub {
  public:
   GLContextMock();
 
-  MOCK_METHOD1(MakeCurrent, bool(gl::GLSurface* surface));
+  MOCK_METHOD1(MakeCurrentImpl, bool(gl::GLSurface* surface));
 
  protected:
   ~GLContextMock() override;

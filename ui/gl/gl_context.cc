@@ -122,6 +122,12 @@ GpuPreference GLContext::AdjustGpuPreference(GpuPreference gpu_preference) {
   }
 }
 
+bool GLContext::MakeCurrent(GLSurface* surface) {
+  if (context_lost_)
+    return false;
+  return MakeCurrentImpl(surface);
+}
+
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
   real_gl_api_ = new RealGLApi;
   real_gl_api_->set_gl_workarounds(gl_workarounds_);
@@ -365,6 +371,13 @@ void GLContext::SetGLStateRestorer(GLStateRestorer* state_restorer) {
 }
 
 GLenum GLContext::CheckStickyGraphicsResetStatus() {
+  GLenum status = CheckStickyGraphicsResetStatusImpl();
+  if (status != GL_NO_ERROR)
+    context_lost_ = true;
+  return status;
+}
+
+GLenum GLContext::CheckStickyGraphicsResetStatusImpl() {
   DCHECK(IsCurrent(nullptr));
   return GL_NO_ERROR;
 }
@@ -392,7 +405,7 @@ bool GLContext::MakeVirtuallyCurrent(
     GLContext* virtual_context, GLSurface* surface) {
   if (!ForceGpuSwitchIfNeeded())
     return false;
-  if (virtual_context_lost_)
+  if (context_lost_)
     return false;
 
   bool switched_real_contexts = GLContext::GetRealCurrent() != this;
@@ -404,7 +417,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (switched_real_contexts || !current_surface ||
         !virtual_context->IsCurrent(surface)) {
       if (!MakeCurrent(surface)) {
-        virtual_context_lost_ = true;
+        context_lost_ = true;
         return false;
       }
     }
@@ -445,7 +458,7 @@ bool GLContext::MakeVirtuallyCurrent(
   virtual_context->SetCurrent(surface);
   if (!surface->OnMakeCurrent(virtual_context)) {
     LOG(ERROR) << "Could not make GLSurface current.";
-    virtual_context_lost_ = true;
+    context_lost_ = true;
     return false;
   }
   return true;

@@ -210,7 +210,7 @@ YUVToRGBConverter* GLContextCGL::GetYUVToRGBConverter(
   return yuv_to_rgb_converter.get();
 }
 
-bool GLContextCGL::MakeCurrent(GLSurface* surface) {
+bool GLContextCGL::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(context_);
 
   if (!ForceGpuSwitchIfNeeded())

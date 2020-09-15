@@ -212,7 +212,7 @@ void GLContextGLX::Destroy() {
   }
 }
 
-bool GLContextGLX::MakeCurrent(GLSurface* surface) {
+bool GLContextGLX::MakeCurrentImpl(GLSurface* surface) {
   DCHECK(context_);
   if (IsCurrent(surface))
     return true;
@@ -278,7 +278,7 @@ void* GLContextGLX::GetHandle() {
   return context_;
 }
 
-unsigned int GLContextGLX::CheckStickyGraphicsResetStatus() {
+unsigned int GLContextGLX::CheckStickyGraphicsResetStatusImpl() {
   DCHECK(IsCurrent(nullptr));
   DCHECK(g_current_gl_driver);
   const ExtensionsGL& ext = g_current_gl_driver->ext;
