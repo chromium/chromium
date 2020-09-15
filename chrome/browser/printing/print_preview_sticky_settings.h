@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_STICKY_SETTINGS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
@@ -42,6 +43,11 @@ class PrintPreviewStickySettings {
   // The rank is the position in the list of recently used printers. The lower
   // the rank the more recent the printer was used.
   base::flat_map<std::string, int> GetPrinterRecentlyUsedRanks();
+
+  // Parses serialized printing sticky settings state and extracts the list of
+  // recently used printers. The list is ordered from most recently used to
+  // least recently used.
+  std::vector<std::string> GetRecentlyUsedPrinters();
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
