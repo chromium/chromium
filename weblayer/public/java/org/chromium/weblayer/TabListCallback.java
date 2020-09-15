@@ -14,7 +14,7 @@ public abstract class TabListCallback {
     /**
      * The active tab has changed.
      *
-     * @param activeTab The newly active tab.
+     * @param activeTab The newly active tab, null if no tab is active.
      */
     public void onActiveTabChanged(@Nullable Tab activeTab) {}
 
@@ -28,7 +28,16 @@ public abstract class TabListCallback {
     /**
      * A tab was removed from the Browser.
      *
+     * WARNING: this is *not* called when the Browser is destroyed. See {@link
+     * #onWillDestroyBrowserAndAllTabs} for more.
+     *
      * @param tab The tab that was removed.
      */
     public void onTabRemoved(@NonNull Tab tab) {}
+
+    /**
+     * Called when the Fragment the Browser is associated with is about to be destroyed. After this
+     * call the Browser and all Tabs are destroyed and can not be used.
+     */
+    public void onWillDestroyBrowserAndAllTabs() {}
 }

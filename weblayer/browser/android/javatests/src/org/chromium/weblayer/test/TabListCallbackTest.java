@@ -40,6 +40,7 @@ public class TabListCallbackTest {
         public static final String ADDED = "added";
         public static final String ACTIVE = "active";
         public static final String REMOVED = "removed";
+        public static final String WILL_DESTROY = "willdestroy";
 
         private List<String> mObservedValues =
                 Collections.synchronizedList(new ArrayList<String>());
@@ -57,6 +58,11 @@ public class TabListCallbackTest {
         @Override
         public void onTabRemoved(Tab tab) {
             recordValue(REMOVED);
+        }
+
+        @Override
+        public void onWillDestroyBrowserAndAllTabs() {
+            recordValue(WILL_DESTROY);
         }
 
         private void recordValue(String parameter) {
@@ -192,5 +198,27 @@ public class TabListCallbackTest {
             mActivity.getBrowser().destroyTab(mActivity.getBrowser().createTab());
         });
         callbackHelper.waitForFirst();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnWillDestroyBrowserAndAllTabs() throws Exception {
+        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
+        TabListCallbackImpl tabListCallback = new TabListCallbackImpl();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity.getBrowser().registerTabListCallback(tabListCallback);
+            mActivity.getBrowser().registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onWillDestroyBrowserAndAllTabs() {
+                    callbackHelper.notifyCalled();
+                }
+            });
+            mActivity.destroyFragment();
+        });
+        callbackHelper.waitForFirst();
+        Assert.assertEquals(1, tabListCallback.getObservedValues().size());
+        Assert.assertTrue(
+                tabListCallback.getObservedValues().contains(TabListCallbackImpl.WILL_DESTROY));
     }
 }
