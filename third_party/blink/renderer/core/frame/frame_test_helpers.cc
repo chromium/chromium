@@ -714,6 +714,21 @@ TestWebFrameClient::GetRemoteNavigationAssociatedInterfaces() {
   return associated_interface_provider_.get();
 }
 
+void TestWebFrameClient::DidMeaningfulLayout(
+    WebMeaningfulLayout meaningful_layout) {
+  switch (meaningful_layout) {
+    case WebMeaningfulLayout::kVisuallyNonEmpty:
+      visually_non_empty_layout_count_++;
+      break;
+    case WebMeaningfulLayout::kFinishedParsing:
+      finished_parsing_layout_count_++;
+      break;
+    case WebMeaningfulLayout::kFinishedLoading:
+      finished_loading_layout_count_++;
+      break;
+  }
+}
+
 TestWebRemoteFrameClient::TestWebRemoteFrameClient()
     : associated_interface_provider_(new AssociatedInterfaceProvider(nullptr)) {
 }
@@ -763,21 +778,6 @@ TestWebWidgetClient::BindNewWidgetHost() {
 
 bool TestWebWidgetClient::HaveScrollEventHandlers() const {
   return layer_tree_host()->have_scroll_event_handlers();
-}
-
-void TestWebWidgetClient::DidMeaningfulLayout(
-    WebMeaningfulLayout meaningful_layout) {
-  switch (meaningful_layout) {
-    case WebMeaningfulLayout::kVisuallyNonEmpty:
-      visually_non_empty_layout_count_++;
-      break;
-    case WebMeaningfulLayout::kFinishedParsing:
-      finished_parsing_layout_count_++;
-      break;
-    case WebMeaningfulLayout::kFinishedLoading:
-      finished_loading_layout_count_++;
-      break;
-  }
 }
 
 viz::FrameSinkId TestWebWidgetClient::GetFrameSinkId() {

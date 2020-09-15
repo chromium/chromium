@@ -283,10 +283,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   ~RenderFrameImpl() override;
 
-  // Called by RenderWidget when meaningful layout has happened.
-  // See RenderFrameObserver::DidMeaningfulLayout declaration for details.
-  void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type);
-
   // Draw commands have been issued by blink::LayerTreeView.
   void DidCommitAndDrawCompositorFrame();
 
@@ -776,6 +772,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) override;
+  void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
 
   // Binds to the fullscreen service in the browser.
   void BindFullscreen(

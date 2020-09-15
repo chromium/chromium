@@ -77,6 +77,7 @@
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
+#include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
@@ -691,6 +692,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) {}
+
+  // Called immediately following the first compositor-driven (frame-generating)
+  // layout that happened after an interesting document lifecycle change (see
+  // WebMeaningfulLayout for details.)
+  virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
 };
 
 }  // namespace blink

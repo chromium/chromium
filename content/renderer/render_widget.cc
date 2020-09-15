@@ -724,11 +724,6 @@ void RenderWidget::ResizeWebWidget() {
 ///////////////////////////////////////////////////////////////////////////////
 // WebWidgetClient
 
-void RenderWidget::DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) {
-  for (auto& observer : render_frames_)
-    observer.DidMeaningfulLayout(layout_type);
-}
-
 void RenderWidget::SetHandlingInputEvent(bool handling_input_event) {
   GetWebWidget()->SetHandlingInputEvent(handling_input_event);
 }

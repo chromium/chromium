@@ -1176,8 +1176,13 @@ void WebFrameWidgetBase::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
                   WrapPersistent(this)));
   }
 
-  if (client_)
-    client_->DidMeaningfulLayout(layout_type);
+  ForEachWebLocalFrameControlledByWidget(
+      local_root_,
+      WTF::BindRepeating(
+          [](WebMeaningfulLayout layout_type, WebLocalFrame* local_frame) {
+            local_frame->Client()->DidMeaningfulLayout(layout_type);
+          },
+          layout_type));
 }
 
 void WebFrameWidgetBase::PresentationCallbackForMeaningfulLayout(

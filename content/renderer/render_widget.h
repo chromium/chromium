@@ -234,7 +234,6 @@ class CONTENT_EXPORT RenderWidget
 
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
-  void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void CloseWidgetSoon() override;
   void ClosePopupWidgetSoon() override;
   void Show(blink::WebNavigationPolicy) override;

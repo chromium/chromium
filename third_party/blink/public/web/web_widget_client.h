@@ -53,7 +53,6 @@
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 
 class SkBitmap;
@@ -96,11 +95,6 @@ class WebWidgetClient {
   // ScheduleAnimation() this will be a no-op on multi-threaded environments and
   // will unconditionally ensure that the compositor is actually run.
   virtual void ScheduleAnimationForWebTests() {}
-
-  // Called immediately following the first compositor-driven (frame-generating)
-  // layout that happened after an interesting document lifecyle change (see
-  // WebMeaningfulLayout for details.)
-  virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
 
   // Called when some JS code has instructed the window associated to the main
   // frame to close, which will result in a request to the browser to close the

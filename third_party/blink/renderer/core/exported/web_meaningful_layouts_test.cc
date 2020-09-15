@@ -28,7 +28,7 @@ TEST_F(WebMeaningfulLayoutsTest, VisuallyNonEmptyTextCharacters) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
 }
 
 TEST_F(WebMeaningfulLayoutsTest, VisuallyNonEmptyTextCharactersEventually) {
@@ -44,7 +44,7 @@ TEST_F(WebMeaningfulLayoutsTest, VisuallyNonEmptyTextCharactersEventually) {
   // Pump a frame mid-load.
   Compositor().BeginFrame();
 
-  EXPECT_EQ(0, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(0, WebFrameClient().VisuallyNonEmptyLayoutCount());
 
   // Write more than 200 characters.
   main_resource.Write("!");
@@ -55,7 +55,7 @@ TEST_F(WebMeaningfulLayoutsTest, VisuallyNonEmptyTextCharactersEventually) {
   // not as the character count goes over 200.
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
 }
 
 // TODO(dglazkov): Write pixel-count and canvas-based VisuallyNonEmpty tests
@@ -83,7 +83,7 @@ TEST_F(WebMeaningfulLayoutsTest, VisuallyNonEmptyMissingPump) {
   Compositor().BeginFrame();
 
   // ... which correctly signals the VisuallyNonEmpty.
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
 }
 
 TEST_F(WebMeaningfulLayoutsTest, FinishedParsing) {
@@ -95,7 +95,7 @@ TEST_F(WebMeaningfulLayoutsTest, FinishedParsing) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().FinishedParsingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedParsingLayoutCount());
 }
 
 TEST_F(WebMeaningfulLayoutsTest, FinishedLoading) {
@@ -107,7 +107,7 @@ TEST_F(WebMeaningfulLayoutsTest, FinishedLoading) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().FinishedLoadingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedLoadingLayoutCount());
 }
 
 TEST_F(WebMeaningfulLayoutsTest, FinishedParsingThenLoading) {
@@ -121,8 +121,8 @@ TEST_F(WebMeaningfulLayoutsTest, FinishedParsingThenLoading) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().FinishedParsingLayoutCount());
-  EXPECT_EQ(0, WebWidgetClient().FinishedLoadingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedParsingLayoutCount());
+  EXPECT_EQ(0, WebFrameClient().FinishedLoadingLayoutCount());
 
   image_resource.Complete("image data");
 
@@ -131,8 +131,8 @@ TEST_F(WebMeaningfulLayoutsTest, FinishedParsingThenLoading) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().FinishedParsingLayoutCount());
-  EXPECT_EQ(1, WebWidgetClient().FinishedLoadingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedParsingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedLoadingLayoutCount());
 }
 
 TEST_F(WebMeaningfulLayoutsTest, WithIFrames) {
@@ -145,9 +145,9 @@ TEST_F(WebMeaningfulLayoutsTest, WithIFrames) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
-  EXPECT_EQ(1, WebWidgetClient().FinishedParsingLayoutCount());
-  EXPECT_EQ(0, WebWidgetClient().FinishedLoadingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedParsingLayoutCount());
+  EXPECT_EQ(0, WebFrameClient().FinishedLoadingLayoutCount());
 
   iframe_resource.Complete("iframe data");
 
@@ -156,9 +156,9 @@ TEST_F(WebMeaningfulLayoutsTest, WithIFrames) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
-  EXPECT_EQ(1, WebWidgetClient().FinishedParsingLayoutCount());
-  EXPECT_EQ(1, WebWidgetClient().FinishedLoadingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedParsingLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().FinishedLoadingLayoutCount());
 }
 
 // NoOverflowInIncrementVisuallyNonEmptyPixelCount tests fail if the number of
@@ -175,7 +175,7 @@ TEST_F(WebMeaningfulLayoutsTest,
   main_resource.Write("<DOCTYPE html><body><img src=\"test.svg\">");
   // Run pending tasks to initiate the request to test.svg.
   test::RunPendingTasks();
-  EXPECT_EQ(0, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(0, WebFrameClient().VisuallyNonEmptyLayoutCount());
 
   // We serve the SVG file and check VisuallyNonEmptyLayoutCount() before
   // main_resource.Finish() because finishing the main resource causes
@@ -187,7 +187,7 @@ TEST_F(WebMeaningfulLayoutsTest,
       "width=\"65536\"></svg>");
   svg_resource.Finish();
   Compositor().BeginFrame();
-  EXPECT_EQ(1, WebWidgetClient().VisuallyNonEmptyLayoutCount());
+  EXPECT_EQ(1, WebFrameClient().VisuallyNonEmptyLayoutCount());
 
   main_resource.Finish();
 }
