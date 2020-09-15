@@ -472,6 +472,11 @@ external/wpt/css/css-text/white-space/seg-break-transformation-019.html [ Skip ]
 # UAX#9 L1 is not implemented yet.
 crbug.com/316409 external/wpt/css/css-text/white-space/eol-spaces-bidi-002.html [ Skip ]
 
+# Removing trailing ogham spaces not implemented.
+external/wpt/css/css-text/white-space/trailing-ogham-001.html [ Skip ]
+external/wpt/css/css-text/white-space/trailing-ogham-002.html [ Skip ]
+external/wpt/css/css-text/white-space/trailing-ogham-003.html [ Skip ]
+
 external/wpt/css/CSS2/linebox/inline-formatting-context-010b.xht [ Skip ]
 external/wpt/css/CSS2/normal-flow/inline-block-replaced-height-008.xht [ Skip ]
 external/wpt/css/CSS2/normal-flow/inline-replaced-height-008.xht [ Skip ]
