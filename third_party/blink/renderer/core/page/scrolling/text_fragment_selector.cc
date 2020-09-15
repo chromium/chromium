@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -81,29 +80,5 @@ TextFragmentSelector::TextFragmentSelector(SelectorType type,
     : type_(type), start_(start), end_(end), prefix_(prefix), suffix_(suffix) {}
 
 TextFragmentSelector::TextFragmentSelector(SelectorType type) : type_(type) {}
-
-String TextFragmentSelector::ToString() const {
-  StringBuilder selector;
-  if (!prefix_.IsEmpty()) {
-    selector.Append(EncodeWithURLEscapeSequences(prefix_));
-    selector.Append("-,");
-  }
-
-  if (!start_.IsEmpty()) {
-    selector.Append(EncodeWithURLEscapeSequences(start_));
-  }
-
-  if (!end_.IsEmpty()) {
-    selector.Append(",");
-    selector.Append(EncodeWithURLEscapeSequences(end_));
-  }
-
-  if (!suffix_.IsEmpty()) {
-    selector.Append(",-");
-    selector.Append(EncodeWithURLEscapeSequences(suffix_));
-  }
-
-  return selector.ToString();
-}
 
 }  // namespace blink

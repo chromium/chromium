@@ -77,7 +77,6 @@ mojom("mojom_platform") {
     "insecure_input/insecure_input_service.mojom",
     "keyboard_lock/keyboard_lock.mojom",
     "leak_detector/leak_detector.mojom",
-    "link_to_text/link_to_text.mojom",
     "loader/code_cache.mojom",
     "loader/content_security_notifier.mojom",
     "loader/fetch_client_settings_object.mojom",

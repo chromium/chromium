@@ -7,7 +7,4 @@ specific_include_rules = {
   "chrome_client_impl_test\.cc": [
     "+base/run_loop.h",
   ],
-  "text_fragment_selector_generator_test\.cc": [
-    "+base/run_loop.h",
-  ],
 }

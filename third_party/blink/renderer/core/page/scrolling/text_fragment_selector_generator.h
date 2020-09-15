@@ -5,11 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_TEXT_FRAGMENT_SELECTOR_GENERATOR_H_
 
-#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
 
@@ -23,33 +21,30 @@ class LocalFrame;
 // triggered when users request "link to text" for the selected text.
 class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
-      public TextFragmentFinder::Client,
-      public blink::mojom::blink::TextFragmentSelectorProducer {
+      public TextFragmentFinder::Client {
  public:
   explicit TextFragmentSelectorGenerator() = default;
-
-  void BindTextFragmentSelectorProducer(
-      mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-          producer);
 
   // Sets the frame and range of the current selection.
   void UpdateSelection(LocalFrame* selection_frame,
                        const EphemeralRangeInFlatTree& selection_range);
 
-  // blink::mojom::blink::TextFragmentSelectorProducer interface
   // Generates selector for current selection.
-  void GenerateSelector(GenerateSelectorCallback callback) override;
+  void GenerateSelector();
 
   // TextFragmentFinder::Client interface
   void DidFindMatch(const EphemeralRangeInFlatTree& match,
                     const TextFragmentAnchorMetrics::Match match_metrics,
                     bool is_unique) override;
 
+  // Sets the callback used for notifying test results of |GenerateSelector|.
+  void SetCallbackForTesting(
+      base::OnceCallback<void(const TextFragmentSelector&)> callback);
+
   // Notifies the results of |GenerateSelector|.
   void NotifySelectorReady(const TextFragmentSelector& selector);
 
-  // Releases members if necessary.
-  void ClearSelection();
+  void DocumentDetached(Document* document);
 
   void Trace(Visitor*) const;
 
@@ -58,12 +53,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   Member<Range> selection_range_;
   std::unique_ptr<TextFragmentSelector> selector_;
 
-  // Used for communication between |TextFragmentSelectorGenerator| in renderer
-  // and |TextFragmentSelectorClientImpl| in browser.
-  HeapMojoReceiver<blink::mojom::blink::TextFragmentSelectorProducer,
-                   TextFragmentSelectorGenerator>
-      selector_producer_{this, nullptr};
-  GenerateSelectorCallback pending_generate_selector_callback_;
+  base::OnceCallback<void(const TextFragmentSelector&)> callback_for_tests_;
 
   DISALLOW_COPY_AND_ASSIGN(TextFragmentSelectorGenerator);
 };

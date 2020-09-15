@@ -45,7 +45,6 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
@@ -131,7 +130,6 @@ class PluginData;
 class ScriptController;
 class SmoothScrollSequencer;
 class SpellChecker;
-class TextFragmentSelectorGenerator;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
 class WebContentSettingsClient;
@@ -686,10 +684,6 @@ class CORE_EXPORT LocalFrame final
     return LocalFrameToken(GetFrameToken());
   }
 
-  TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() const {
-    return text_fragment_selector_generator_;
-  }
-
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
@@ -761,10 +755,6 @@ class CORE_EXPORT LocalFrame final
       mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver);
   void BindToHighPriorityReceiver(
       mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver);
-
-  void BindTextFragmentSelectorProducer(
-      mojo::PendingReceiver<mojom::blink::TextFragmentSelectorProducer>
-          receiver);
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 
@@ -907,8 +897,6 @@ class CORE_EXPORT LocalFrame final
   Member<RawSystemClipboard> raw_system_clipboard_;
 
   mojom::blink::BlinkOptimizationGuideHintsPtr optimization_guide_hints_;
-
-  Member<TextFragmentSelectorGenerator> text_fragment_selector_generator_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

@@ -524,14 +524,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
 void ContextMenuController::UpdateTextFragmentSelectorGenerator(
     LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentSelectorGenerator())
-    return;
-
   VisibleSelectionInFlatTree selection =
       selected_frame->Selection().ComputeVisibleSelectionInFlatTree();
   EphemeralRangeInFlatTree selection_range(selection.Start(), selection.End());
-  selected_frame->GetTextFragmentSelectorGenerator()->UpdateSelection(
-      selected_frame, selection_range);
+  page_->GetTextFragmentSelectorGenerator().UpdateSelection(selected_frame,
+                                                            selection_range);
 }
 
 }  // namespace blink
