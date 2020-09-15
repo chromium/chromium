@@ -4,6 +4,6 @@ FAIL setRemoteDescription(offer) with m= section and no existing transceiver sho
 FAIL setLocalDescription(rollback) should unset transceiver.mid Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setLocalDescription(rollback) should only unset transceiver mids associated with current round Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
 FAIL setRemoteDescription(rollback) should remove newly created transceiver from transceiver list Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'.
-FAIL setRemoteDescription should stop the transceiver if its corresponding m section is rejected promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL setRemoteDescription should set transceiver inactive if its corresponding m section is rejected promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
 Harness: the test ran to completion.
 
