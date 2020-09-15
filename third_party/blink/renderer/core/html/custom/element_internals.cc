@@ -329,10 +329,11 @@ bool ElementInternals::IsTargetFormAssociated() const {
   if (Target().IsFormAssociatedCustomElement())
     return true;
   // Custom element could be in the process of upgrading here, during which
-  // it will have state kFailed according to:
+  // it will have state kFailed or kPreCustomized according to:
   // https://html.spec.whatwg.org/multipage/custom-elements.html#upgrades
   if (Target().GetCustomElementState() != CustomElementState::kUndefined &&
-      Target().GetCustomElementState() != CustomElementState::kFailed) {
+      Target().GetCustomElementState() != CustomElementState::kFailed &&
+      Target().GetCustomElementState() != CustomElementState::kPreCustomized) {
     return false;
   }
   // An element is in "undefined" state in its constructor JavaScript code.

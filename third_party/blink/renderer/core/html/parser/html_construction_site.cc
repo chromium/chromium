@@ -989,8 +989,10 @@ Element* HTMLConstructionSite::CreateElement(
           document, tag_name, GetCreateElementFlags(), is);
     }
     // Definition for the created element does not exist here and it cannot be
-    // custom or failed.
+    // custom, precustomized, or failed.
     DCHECK_NE(element->GetCustomElementState(), CustomElementState::kCustom);
+    DCHECK_NE(element->GetCustomElementState(),
+              CustomElementState::kPreCustomized);
     DCHECK_NE(element->GetCustomElementState(), CustomElementState::kFailed);
 
     // TODO(dominicc): Move these steps so they happen for custom

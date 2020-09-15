@@ -3232,11 +3232,16 @@ void Node::SetCustomElementState(CustomElementState new_state) {
 
     case CustomElementState::kCustom:
       DCHECK(old_state == CustomElementState::kUndefined ||
-             old_state == CustomElementState::kFailed);
+             old_state == CustomElementState::kFailed ||
+             old_state == CustomElementState::kPreCustomized);
       break;
 
     case CustomElementState::kFailed:
       DCHECK_NE(CustomElementState::kFailed, old_state);
+      break;
+
+    case CustomElementState::kPreCustomized:
+      DCHECK_EQ(CustomElementState::kFailed, old_state);
       break;
   }
 

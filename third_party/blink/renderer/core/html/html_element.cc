@@ -1583,6 +1583,7 @@ ElementInternals* HTMLElement::attachInternals(
         "Unable to attach ElementInternals to a customized built-in element.");
     return nullptr;
   }
+
   CustomElementRegistry* registry = CustomElement::Registry(*this);
   auto* definition =
       registry ? registry->DefinitionForName(localName()) : nullptr;
@@ -1592,6 +1593,7 @@ ElementInternals* HTMLElement::attachInternals(
         "Unable to attach ElementInternals to non-custom elements.");
     return nullptr;
   }
+
   if (definition->DisableInternals()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1604,6 +1606,23 @@ ElementInternals* HTMLElement::attachInternals(
         "ElementInternals for the specified element was already attached.");
     return nullptr;
   }
+
+  // If element's custom element state is not "precustomized" or "custom",
+  // throw "NotSupportedError" DOMException.
+  if (GetCustomElementState() != CustomElementState::kCustom &&
+      GetCustomElementState() != CustomElementState::kPreCustomized) {
+    if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
+            GetExecutionContext())) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "The attachInternals() function cannot be called prior to the "
+          "execution of the custom element constructor.");
+      return nullptr;
+    }
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kElementAttachInternalsBeforeConstructor);
+  }
+
   UseCounter::Count(GetDocument(), WebFeature::kElementAttachInternals);
   SetDidAttachInternals();
   return &EnsureElementInternals();

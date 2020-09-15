@@ -196,10 +196,10 @@ CustomElementDefinition::ConstructionStackScope::~ConstructionStackScope() {
 
 // https://html.spec.whatwg.org/C/#concept-upgrade-an-element
 void CustomElementDefinition::Upgrade(Element& element) {
-  // 4.13.5.1 If element is custom, then return.
-  // 4.13.5.2 If element's custom element state is "failed", then return.
-  if (element.GetCustomElementState() == CustomElementState::kCustom ||
-      element.GetCustomElementState() == CustomElementState::kFailed) {
+  // 4.13.5.1 If element's custom element state is not "undefined" or
+  // "uncustomized", then return.
+  if (element.GetCustomElementState() != CustomElementState::kUndefined &&
+      element.GetCustomElementState() != CustomElementState::kUncustomized) {
     return;
   }
 

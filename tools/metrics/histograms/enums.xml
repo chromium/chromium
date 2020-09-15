@@ -29157,6 +29157,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3467" label="CSSContainAllWithoutContentVisibility"/>
   <int value="3468" label="TimerInstallFromBeforeUnload"/>
   <int value="3469" label="TimerInstallFromUnload"/>
+  <int value="3470" label="ElementAttachInternalsBeforeConstructor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -2794,6 +2794,7 @@ enum WebFeature {
   kCSSContainAllWithoutContentVisibility = 3467,
   kTimerInstallFromBeforeUnload = 3468,
   kTimerInstallFromUnload = 3469,
+  kElementAttachInternalsBeforeConstructor = 3470,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

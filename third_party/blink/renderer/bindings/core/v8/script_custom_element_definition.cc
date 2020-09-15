@@ -214,6 +214,9 @@ bool ScriptCustomElementDefinition::RunConstructor(Element& element) {
     return false;
   }
 
+  // 8.1.new: set custom element state to kPreCustomized.
+  element.SetCustomElementState(CustomElementState::kPreCustomized);
+
   Element* result = CallConstructor();
 
   // To report exception thrown from callConstructor()

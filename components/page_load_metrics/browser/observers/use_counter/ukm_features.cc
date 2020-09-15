@@ -12,7 +12,7 @@
 // (or highly likely be) rare, e.g. <1% of page views as measured by UMA.
 //
 // UKM-based UseCounter should be used to cover the case when UMA UseCounter
-// data shows a behaviour that is rare but too common to bindly change.
+// data shows a behaviour that is rare but too common to blindly change.
 // UKM-based UseCounter would allow use to find specific pages to reason about
 // either a breaking change is acceptable or not.
 
@@ -179,6 +179,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSchemelesslySameSitePostMessage,
           WebFeature::kSchemelesslySameSitePostMessageSecureToInsecure,
           WebFeature::kSchemelesslySameSitePostMessageInsecureToSecure,
+          WebFeature::kElementAttachInternalsBeforeConstructor,
       }));
   return *opt_in_features;
 }
