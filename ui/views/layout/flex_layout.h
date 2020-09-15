@@ -181,7 +181,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // Calculates available space for non-flex views.
   void CalculateNonFlexAvailableSpace(
       FlexLayoutData* data,
-      int available_space,
+      const SizeBound& available_space,
       const ChildViewSpacing& child_spacing,
       const FlexOrderToViewIndexMap& flex_views) const;
 
