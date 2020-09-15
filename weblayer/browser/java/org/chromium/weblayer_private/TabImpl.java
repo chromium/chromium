@@ -38,6 +38,7 @@ import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.find_in_page.FindInPageBridge;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindResultBar;
+import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -557,6 +558,11 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         return proxy;
     }
 
+    @Override
+    public void setTranslateTargetLanguage(String targetLanguage) {
+        TabImplJni.get().setTranslateTargetLanguage(mNativeTab, targetLanguage);
+    }
+
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {
         mFaviconCallbackProxies.remove(proxy);
     }
@@ -1042,6 +1048,16 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         return mInfoBarContainer.getContainerViewForTesting().isAllowedToAutoHide();
     }
 
+    @VisibleForTesting
+    public String getTranslateInfoBarTargetLanguageForTesting() {
+        if (!mInfoBarContainer.hasInfoBars()) return null;
+
+        ArrayList<InfoBar> infobars = mInfoBarContainer.getInfoBarsForTesting();
+        TranslateCompactInfoBar translateInfoBar = (TranslateCompactInfoBar) infobars.get(0);
+
+        return translateInfoBar.getTargetLanguageForTesting();
+    }
+
     @NativeMethods
     interface Natives {
         TabImpl fromWebContents(WebContents webContents);
@@ -1070,5 +1086,6 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         void unregisterWebMessageCallback(long nativeTabImpl, String jsObjectName);
         boolean canTranslate(long nativeTabImpl);
         void showTranslateUi(long nativeTabImpl);
+        void setTranslateTargetLanguage(long nativeTabImpl, String targetLanguage);
     }
 }

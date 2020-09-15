@@ -22,4 +22,8 @@
         android:title="Restart with WebView compat mode" />
     <item android:id="@+id/no_webview_compat_menu_id"
         android:title="Restart without WebView compat mode" />
+    <item android:id="@+id/set_translate_target_lang_menu_id"
+        android:title="Set translate target language to German" />
+    <item android:id="@+id/clear_translate_target_lang_menu_id"
+        android:title="Clear translate target language override" />
 </menu>
