@@ -76,7 +76,6 @@ class BASE_EXPORT JSONReader {
 
     // Contains default values if |value| exists, or the error status if |value|
     // is base::nullopt.
-    int error_code = ValueDeserializer::kErrorCodeNoError;
     std::string error_message;
     int error_line = 0;
     int error_column = 0;

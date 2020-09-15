@@ -189,8 +189,6 @@ TEST(JSONReaderTest, Doubles) {
   auto value_with_error =
       JSONReader::ReadAndReturnValueWithError("1e1000", JSON_PARSE_RFC);
   ASSERT_FALSE(value_with_error.value);
-  ASSERT_NE(base::ValueDeserializer::kErrorCodeNoError,
-            value_with_error.error_code);
 }
 
 TEST(JSONReaderTest, FractionalNumbers) {

@@ -55,7 +55,7 @@ std::unique_ptr<Value> JSONStringValueDeserializer::Deserialize(
     return base::Value::ToUniquePtrValue(std::move(*ret.value));
 
   if (error_code)
-    *error_code = ret.error_code;
+    *error_code = base::ValueDeserializer::kErrorCodeInvalidFormat;
   if (error_str)
     *error_str = std::move(ret.error_message);
   return nullptr;

@@ -46,7 +46,6 @@ JSONReader::ValueWithError JSONReader::ReadAndReturnValueWithError(
   ret.value = parser.Parse(json);
   if (!ret.value) {
     ret.error_message = parser.GetErrorMessage();
-    ret.error_code = parser.error_code();
     ret.error_line = parser.error_line();
     ret.error_column = parser.error_column();
   }
