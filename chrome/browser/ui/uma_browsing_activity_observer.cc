@@ -144,8 +144,8 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                                   browser->tab_strip_model()->count(), 1, 200,
                                   50);
     }
-
-    if (browser->deprecated_is_app())
+    if (browser->is_type_app() || browser->is_type_app_popup() ||
+        browser->is_type_devtools())
       app_window_count++;
     else if (browser->is_type_popup())
       popup_window_count++;

@@ -499,10 +499,10 @@ void Navigate(NavigateParams* params) {
     return;
 
   // Trying to open a background tab when in an app browser results in
-  // focusing a regular browser window an opening a tab in the background
+  // focusing a regular browser window and opening a tab in the background
   // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
   // the new tab is focused.
-  if (source_browser && source_browser->deprecated_is_app() &&
+  if (source_browser && source_browser->is_type_app() &&
       params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }

@@ -58,7 +58,7 @@ class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
 
   base::DictionaryValue* Get() override {
     base::DictionaryValue* all_apps_dict = DictionaryPrefUpdate::Get();
-    base::DictionaryValue* this_app_dict_weak = NULL;
+    base::DictionaryValue* this_app_dict_weak = nullptr;
     if (!all_apps_dict->GetDictionary(window_name_, &this_app_dict_weak)) {
       auto this_app_dict = std::make_unique<base::DictionaryValue>();
       this_app_dict_weak = this_app_dict.get();
@@ -114,8 +114,8 @@ const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
   const base::DictionaryValue* app_windows =
       prefs->GetDictionary(prefs::kAppWindowPlacement);
   if (!app_windows)
-    return NULL;
-  const base::DictionaryValue* to_return = NULL;
+    return nullptr;
+  const base::DictionaryValue* to_return = nullptr;
   app_windows->GetDictionary(window_name, &to_return);
   return to_return;
 }
@@ -123,7 +123,7 @@ const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
 bool ShouldSaveWindowPlacement(const Browser* browser) {
   // Never track app popup windows that do not have a trusted source (i.e.
   // popup windows spawned by an app).  See similar code in
-  //   SessionService::ShouldTrackBrowser().
+  // SessionService::ShouldTrackBrowser().
   return !browser->deprecated_is_app() || browser->is_trusted_source();
 }
 
@@ -131,10 +131,7 @@ bool SavedBoundsAreContentBounds(const Browser* browser) {
   // Applications other than web apps (such as devtools) save their window size.
   // Web apps, on the other hand, have the same behavior as popups, and save
   // their content bounds.
-  bool is_app_with_window_bounds =
-      browser->deprecated_is_app() &&
-      !web_app::AppBrowserController::IsForWebAppBrowser(browser);
-  return !browser->is_type_normal() && !is_app_with_window_bounds &&
+  return !browser->is_type_normal() && !browser->is_type_devtools() &&
          !browser->is_trusted_source();
 }
 
