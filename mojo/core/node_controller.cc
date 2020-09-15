@@ -993,11 +993,8 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
   // Feed the broker any pending invitees of our own.
   while (!pending_broker_clients.empty()) {
     const ports::NodeName& invitee_name = pending_broker_clients.front();
-    auto it = pending_invitations_.find(invitee_name);
-    // If for any reason we don't have a pending invitation for the invitee,
-    // there's nothing left to do: we've already swapped the relevant state into
-    // the stack.
-    if (it != pending_invitations_.end()) {
+    auto it = peers_.find(invitee_name);
+    if (it != peers_.end()) {
       broker->AddBrokerClient(invitee_name,
                               it->second->CloneRemoteProcessHandle());
     }
