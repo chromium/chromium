@@ -304,7 +304,7 @@ class BuildConfigGenerator extends DefaultTask {
                 |  # Omit this file since we use our own copy, included above.
                 |  # We can remove this once we migrate to AndroidX master for all libraries.
                 |  jar_excluded_patterns = [
-                |    "androidx/fragment/app/DialogFragment.java",
+                |    "androidx/fragment/app/DialogFragment*",
                 |  ]
                 |
                 |  ignore_proguard_configs = true
