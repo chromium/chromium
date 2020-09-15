@@ -245,7 +245,7 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
       // Calculate how many icons *should* be visible given the available space.
       SizeBounds available_size = parent()->GetAvailableSize(this);
       int num_visible = visible_views_.size();
-      if (available_size.width().has_value()) {
+      if (available_size.width().is_bounded()) {
         num_visible = std::min(
             num_visible,
             (available_size.width().value() - kIconDimension) / kIconDimension);

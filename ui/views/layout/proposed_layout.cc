@@ -14,19 +14,19 @@ namespace views {
 
 namespace {
 
-base::Optional<int> OptionalValueBetween(double value,
-                                         const base::Optional<int>& start,
-                                         const base::Optional<int>& target) {
-  return (start.has_value() && target.has_value())
-             ? gfx::Tween::IntValueBetween(value, *start, *target)
+SizeBound SizeBoundValueBetween(double value,
+                                const SizeBound& start,
+                                const SizeBound& target) {
+  return (start.is_bounded() && target.is_bounded())
+             ? gfx::Tween::IntValueBetween(value, start.value(), target.value())
              : target;
 }
 
 SizeBounds SizeBoundsBetween(double value,
                              const SizeBounds& start,
                              const SizeBounds& target) {
-  return {OptionalValueBetween(value, start.width(), target.width()),
-          OptionalValueBetween(value, start.height(), target.height())};
+  return {SizeBoundValueBetween(value, start.width(), target.width()),
+          SizeBoundValueBetween(value, start.height(), target.height())};
 }
 
 }  // anonymous namespace

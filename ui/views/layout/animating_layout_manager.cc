@@ -549,13 +549,11 @@ void AnimatingLayoutManager::LayoutImpl() {
       // Either both axes are animating or only the main axis is animating or
       // the cross axis hasn't changed (because otherwise the previous condition
       // would have executed instead).
-      const base::Optional<int> bounds_main =
-          GetMainAxis(orientation(), available_size);
+      const SizeBound bounds_main = GetMainAxis(orientation(), available_size);
       const int host_main = GetMainAxis(orientation(), host_size);
       const int current_main =
           GetMainAxis(orientation(), current_layout_.host_size);
-      if (current_main > host_main ||
-          (bounds_main && current_main > *bounds_main)) {
+      if ((current_main > host_main) || (current_main > bounds_main)) {
         // Reset the layout immediately if the current or target layout exceeds
         // the host size or the available space.
         last_available_host_size_ = available_size;
@@ -1096,13 +1094,13 @@ gfx::Size AnimatingLayoutManager::GetAvailableTargetLayoutSize() {
   const gfx::Size preferred_size =
       target_layout_manager()->GetPreferredSize(host_view());
 
-  int width = preferred_size.width();
+  int width;
 
   if (orientation() == LayoutOrientation::kVertical &&
       bounds_animation_mode_ == BoundsAnimationMode::kAnimateMainAxis) {
     width = host_view()->width();
-  } else if (bounds.width()) {
-    width = std::min(width, *bounds.width());
+  } else {
+    width = bounds.width().min_of(preferred_size.width());
   }
 
   int height;
@@ -1115,9 +1113,7 @@ gfx::Size AnimatingLayoutManager::GetAvailableTargetLayoutSize() {
                  ? target_layout_manager()->GetPreferredHeightForWidth(
                        host_view(), width)
                  : preferred_size.height();
-    if (bounds.height()) {
-      height = std::min(height, *bounds.height());
-    }
+    height = bounds.height().min_of(height);
   }
 
   return gfx::Size(width, height);
@@ -1142,9 +1138,7 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
   // Special case - if we're being asked for a zero-size layout we'll return the
   // minimum size of the layout. This is because we're being probed for how
   // small we can get, not being asked for an actual size.
-  const base::Optional<int> bounds_main =
-      GetMainAxis(animating_layout->orientation(), size_bounds);
-  if (bounds_main && *bounds_main <= 0)
+  if (GetMainAxis(animating_layout->orientation(), size_bounds) <= 0)
     return animating_layout->GetMinimumSize(view);
 
   // We know our current size does not fit into the bounds being given to us.
@@ -1163,26 +1157,26 @@ gfx::Size AnimatingLayoutManager::DefaultFlexRuleImpl(
   // need to ask the target layout how large it wants to be in the space
   // provided.
   gfx::Size size;
-  if (size_bounds.width() && size_bounds.height()) {
+  if (size_bounds.width().is_bounded() && size_bounds.height().is_bounded()) {
     // Both width and height are specified.  Constraining the width may change
     // the desired height, so we can't just blindly return the minimum in both
     // dimensions.  Instead, query the target layout in the constrained space
     // and return its size.
-    size = gfx::Size(*size_bounds.width(), *size_bounds.height());
-  } else if (size_bounds.width()) {
+    size = gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+  } else if (size_bounds.width().is_bounded()) {
     // The width is specified and too small.  Use the height-for-width
     // calculation.
     // TODO(dfried): This should be rare, but it is also inefficient. See if we
     // can't add an alternative to GetPreferredHeightForWidth() that actually
     // calculates the layout in this space so we don't have to do it twice.
-    const int width = *size_bounds.width();
+    const int width = size_bounds.width().value();
     size = gfx::Size(width,
                      target_layout->GetPreferredHeightForWidth(view, width));
   } else {
-    DCHECK(size_bounds.height());
+    DCHECK(size_bounds.height().is_bounded());
     // The height is specified and too small.  Fortunately the height of a
     // layout can't (shouldn't?) affect its width.
-    size = gfx::Size(target_preferred.width(), *size_bounds.height());
+    size = gfx::Size(target_preferred.width(), size_bounds.height().value());
   }
 
   return target_layout->GetProposedLayout(size).host_size;

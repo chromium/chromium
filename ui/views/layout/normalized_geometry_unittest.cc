@@ -57,14 +57,10 @@ TEST(NormalizedGeometryTest, GetMainAxis_SizeBounds) {
   SizeBounds size(1, 2);
   SizeBounds size2;
 
-  EXPECT_EQ(base::Optional<int>(1),
-            GetMainAxis(LayoutOrientation::kHorizontal, size));
-  EXPECT_EQ(base::Optional<int>(2),
-            GetMainAxis(LayoutOrientation::kVertical, size));
-  EXPECT_EQ(base::Optional<int>(),
-            GetMainAxis(LayoutOrientation::kHorizontal, size2));
-  EXPECT_EQ(base::Optional<int>(),
-            GetMainAxis(LayoutOrientation::kVertical, size2));
+  EXPECT_EQ(1, GetMainAxis(LayoutOrientation::kHorizontal, size));
+  EXPECT_EQ(2, GetMainAxis(LayoutOrientation::kVertical, size));
+  EXPECT_EQ(SizeBound(), GetMainAxis(LayoutOrientation::kHorizontal, size2));
+  EXPECT_EQ(SizeBound(), GetMainAxis(LayoutOrientation::kVertical, size2));
 }
 
 TEST(NormalizedGeometryTest, GetCrossAxis_Size) {
@@ -78,14 +74,10 @@ TEST(NormalizedGeometryTest, GetCrossAxis_SizeBounds) {
   SizeBounds size{1, 2};
   SizeBounds size2;
 
-  EXPECT_EQ(base::Optional<int>(2),
-            GetCrossAxis(LayoutOrientation::kHorizontal, size));
-  EXPECT_EQ(base::Optional<int>(1),
-            GetCrossAxis(LayoutOrientation::kVertical, size));
-  EXPECT_EQ(base::Optional<int>(),
-            GetCrossAxis(LayoutOrientation::kHorizontal, size2));
-  EXPECT_EQ(base::Optional<int>(),
-            GetCrossAxis(LayoutOrientation::kVertical, size2));
+  EXPECT_EQ(2, GetCrossAxis(LayoutOrientation::kHorizontal, size));
+  EXPECT_EQ(1, GetCrossAxis(LayoutOrientation::kVertical, size));
+  EXPECT_EQ(SizeBound(), GetCrossAxis(LayoutOrientation::kHorizontal, size2));
+  EXPECT_EQ(SizeBound(), GetCrossAxis(LayoutOrientation::kVertical, size2));
 }
 
 TEST(NormalizedGeometryTest, SetMainAxis_Size) {
@@ -103,10 +95,10 @@ TEST(NormalizedGeometryTest, SetMainAxis_SizeBounds) {
   SetMainAxis(&size, LayoutOrientation::kVertical, 4);
   EXPECT_EQ(SizeBounds(3, 4), size);
 
-  SetMainAxis(&size, LayoutOrientation::kHorizontal, base::nullopt);
-  EXPECT_EQ(SizeBounds(base::nullopt, 4), size);
+  SetMainAxis(&size, LayoutOrientation::kHorizontal, SizeBound());
+  EXPECT_EQ(SizeBounds(SizeBound(), 4), size);
 
-  SetMainAxis(&size, LayoutOrientation::kVertical, base::nullopt);
+  SetMainAxis(&size, LayoutOrientation::kVertical, SizeBound());
   EXPECT_EQ(SizeBounds(), size);
 }
 
@@ -125,10 +117,10 @@ TEST(NormalizedGeometryTest, SetCrossAxis_SizeBounds) {
   SetCrossAxis(&size, LayoutOrientation::kVertical, 4);
   EXPECT_EQ(SizeBounds(4, 3), size);
 
-  SetCrossAxis(&size, LayoutOrientation::kHorizontal, base::nullopt);
-  EXPECT_EQ(SizeBounds(4, base::nullopt), size);
+  SetCrossAxis(&size, LayoutOrientation::kHorizontal, SizeBound());
+  EXPECT_EQ(SizeBounds(4, SizeBound()), size);
 
-  SetCrossAxis(&size, LayoutOrientation::kVertical, base::nullopt);
+  SetCrossAxis(&size, LayoutOrientation::kVertical, SizeBound());
   EXPECT_EQ(SizeBounds(), size);
 }
 

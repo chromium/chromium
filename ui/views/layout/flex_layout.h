@@ -158,7 +158,7 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   NormalizedSize GetPreferredSizeForRule(
       const FlexRule& rule,
       const View* child,
-      const base::Optional<int>& available_cross) const;
+      const SizeBound& available_cross) const;
 
   // Returns the size for a given |rule| and |child| with |available| space.
   NormalizedSize GetCurrentSizeForRule(
@@ -198,10 +198,9 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
 
   // Calculates the cross-layout space available to a view based on the
   // available space and margins.
-  base::Optional<int> GetAvailableCrossAxisSize(
-      const FlexLayoutData& layout,
-      size_t child_index,
-      const NormalizedSizeBounds& bounds) const;
+  SizeBound GetAvailableCrossAxisSize(const FlexLayoutData& layout,
+                                      size_t child_index,
+                                      const NormalizedSizeBounds& bounds) const;
 
   // Calculates the preferred spacing between two child views, or between a
   // view edge and the first or last visible child views.

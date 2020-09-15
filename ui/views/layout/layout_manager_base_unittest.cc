@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/numerics/ranges.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
@@ -49,11 +50,13 @@ class TestLayoutManagerBase : public LayoutManagerBase {
 
     ProposedLayout layout;
     layout.host_size.set_width(
-        std::max(kMinimumSize.width(),
-                 size_bounds.width().value_or(kPreferredSize.width())));
-    layout.host_size.set_height(
-        std::max(kMinimumSize.height(),
-                 size_bounds.height().value_or(kPreferredSize.height())));
+        base::ClampToRange<SizeBound>(size_bounds.width(), kMinimumSize.width(),
+                                      kPreferredSize.width())
+            .value());
+    layout.host_size.set_height(base::ClampToRange<SizeBound>(
+                                    size_bounds.height(), kMinimumSize.height(),
+                                    kPreferredSize.height())
+                                    .value());
     return layout;
   }
 
@@ -97,8 +100,8 @@ class MockLayoutManagerBase : public LayoutManagerBase {
       const int required_width = preferred_size.width() + 2 * kChildViewPadding;
       const int required_height =
           preferred_size.height() + 2 * kChildViewPadding;
-      if ((!size_bounds.width() || required_width <= *size_bounds.width()) &&
-          (!size_bounds.height() || required_height <= *size_bounds.height())) {
+      if ((required_width <= size_bounds.width()) &&
+          (required_height <= size_bounds.height())) {
         visible = true;
         bounds = gfx::Rect(kChildViewPadding, kChildViewPadding,
                            preferred_size.width(), preferred_size.height());
@@ -701,10 +704,10 @@ TEST_F(LayoutManagerBaseAvailableSizeTest, AvailableSizesInNestedValuesAdd) {
 
   EXPECT_EQ(kChildAvailableSize, view()->GetAvailableSize(child));
   SizeBounds expected;
-  expected.set_width(*kGrandchildAvailableSize.width() +
-                     *kChildAvailableSize.width() - kChildSize.width());
-  expected.set_height(*kGrandchildAvailableSize.height() +
-                      *kChildAvailableSize.height() - kChildSize.height());
+  expected.set_width(kGrandchildAvailableSize.width() +
+                     kChildAvailableSize.width() - kChildSize.width());
+  expected.set_height(kGrandchildAvailableSize.height() +
+                      kChildAvailableSize.height() - kChildSize.height());
   EXPECT_EQ(expected, child->GetAvailableSize(grandchild));
 }
 
@@ -716,7 +719,7 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
       child->SetLayoutManager(std::make_unique<TestLayoutManagerBase>());
 
   constexpr gfx::Size kViewSize(18, 17);
-  constexpr SizeBounds kChildAvailableSize(16, base::nullopt);
+  constexpr SizeBounds kChildAvailableSize(16, SizeBound());
   constexpr gfx::Size kChildSize(13, 12);
   constexpr SizeBounds kGrandchildAvailableSize(10, 9);
   constexpr gfx::Size kGrandchildSize(3, 2);
@@ -731,9 +734,9 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
 
   EXPECT_EQ(kChildAvailableSize, view()->GetAvailableSize(child));
   SizeBounds expected;
-  expected.set_width(*kGrandchildAvailableSize.width() +
-                     *kChildAvailableSize.width() - kChildSize.width());
-  expected.set_height(*kGrandchildAvailableSize.height());
+  expected.set_width(kGrandchildAvailableSize.width() +
+                     kChildAvailableSize.width() - kChildSize.width());
+  expected.set_height(kGrandchildAvailableSize.height());
   EXPECT_EQ(expected, child->GetAvailableSize(grandchild));
 }
 
@@ -745,9 +748,9 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
       child->SetLayoutManager(std::make_unique<TestLayoutManagerBase>());
 
   constexpr gfx::Size kViewSize(18, 17);
-  constexpr SizeBounds kChildAvailableSize(16, base::nullopt);
+  constexpr SizeBounds kChildAvailableSize(16, SizeBound());
   constexpr gfx::Size kChildSize(13, 12);
-  constexpr SizeBounds kGrandchildAvailableSize(base::nullopt, 9);
+  constexpr SizeBounds kGrandchildAvailableSize(SizeBound(), 9);
   constexpr gfx::Size kGrandchildSize(3, 2);
   layout()->OverrideProposedLayout(
       {kViewSize, {{child, true, {{3, 3}, kChildSize}, kChildAvailableSize}}});

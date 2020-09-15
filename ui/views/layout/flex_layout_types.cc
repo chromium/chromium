@@ -102,14 +102,14 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
   gfx::Size preferred = view->GetPreferredSize();
 
   int width;
-  if (!maximum_size.width()) {
+  if (!maximum_size.width().is_bounded()) {
     // Not having a maximum size is different from having a large available
     // size; a view can't grow infinitely, so we go with its preferred size.
     width = preferred.width();
   } else {
     width =
         InterpolateSize(minimum_width_rule, maximum_width_rule, min->width(),
-                        preferred.width(), *maximum_size.width());
+                        preferred.width(), maximum_size.width().value());
   }
 
   int preferred_height = preferred.height();
@@ -118,8 +118,8 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
     // want views to be able to adapt to the horizontal available space by
     // growing vertically. We therefore allow the horizontal size to shrink even
     // if there's otherwise no flex allowed.
-    if (maximum_size.width() && maximum_size.width() > 0)
-      width = std::min(width, *maximum_size.width());
+    if (maximum_size.width() > 0)
+      width = maximum_size.width().min_of(width);
 
     if (width < preferred.width()) {
       // Allow views that need to grow vertically when they're compressed
@@ -139,14 +139,14 @@ gfx::Size GetPreferredSize(MinimumFlexSizeRule minimum_width_rule,
   }
 
   int height;
-  if (!maximum_size.height()) {
+  if (!maximum_size.height().is_bounded()) {
     // Not having a maximum size is different from having a large available
     // size; a view can't grow infinitely, so we go with its preferred size.
     height = preferred_height;
   } else {
     height =
         InterpolateSize(minimum_height_rule, maximum_height_rule, min->height(),
-                        preferred_height, *maximum_size.height());
+                        preferred_height, maximum_size.height().value());
   }
 
   return gfx::Size(width, height);

@@ -10,7 +10,6 @@
 
 #include "base/numerics/ranges.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -117,8 +116,7 @@ std::string NormalizedInsets::ToString() const {
 
 NormalizedSizeBounds::NormalizedSizeBounds() = default;
 
-NormalizedSizeBounds::NormalizedSizeBounds(base::Optional<int> main,
-                                           base::Optional<int> cross)
+NormalizedSizeBounds::NormalizedSizeBounds(SizeBound main, SizeBound cross)
     : main_(std::move(main)), cross_(std::move(cross)) {}
 
 NormalizedSizeBounds::NormalizedSizeBounds(const NormalizedSizeBounds& other)
@@ -128,10 +126,8 @@ NormalizedSizeBounds::NormalizedSizeBounds(const NormalizedSize& other)
     : main_(other.main()), cross_(other.cross()) {}
 
 void NormalizedSizeBounds::Expand(int main, int cross) {
-  if (main_)
-    main_ = std::max(0, *main_ + main);
-  if (cross_)
-    cross_ = std::max(0, *cross_ + cross);
+  main_ = std::max<SizeBound>(0, main_ + main);
+  cross_ = std::max<SizeBound>(0, cross_ + cross);
 }
 
 void NormalizedSizeBounds::Inset(const NormalizedInsets& insets) {
@@ -151,8 +147,7 @@ bool NormalizedSizeBounds::operator<(const NormalizedSizeBounds& other) const {
 }
 
 std::string NormalizedSizeBounds::ToString() const {
-  return base::StrCat({main_ ? base::NumberToString(*main_) : "_", " x ",
-                       cross_ ? base::NumberToString(*cross_) : "_"});
+  return base::StrCat({main_.ToString(), " x ", cross_.ToString()});
 }
 
 // NormalizedRect --------------------------------------------------------------
@@ -361,8 +356,7 @@ int GetCrossAxis(LayoutOrientation orientation, const gfx::Size& size) {
   }
 }
 
-base::Optional<int> GetMainAxis(LayoutOrientation orientation,
-                                const SizeBounds& size) {
+SizeBound GetMainAxis(LayoutOrientation orientation, const SizeBounds& size) {
   switch (orientation) {
     case LayoutOrientation::kHorizontal:
       return size.width();
@@ -371,8 +365,7 @@ base::Optional<int> GetMainAxis(LayoutOrientation orientation,
   }
 }
 
-base::Optional<int> GetCrossAxis(LayoutOrientation orientation,
-                                 const SizeBounds& size) {
+SizeBound GetCrossAxis(LayoutOrientation orientation, const SizeBounds& size) {
   switch (orientation) {
     case LayoutOrientation::kHorizontal:
       return size.height();
@@ -405,7 +398,7 @@ void SetCrossAxis(gfx::Size* size, LayoutOrientation orientation, int cross) {
 
 void SetMainAxis(SizeBounds* size,
                  LayoutOrientation orientation,
-                 base::Optional<int> main) {
+                 SizeBound main) {
   switch (orientation) {
     case LayoutOrientation::kHorizontal:
       size->set_width(std::move(main));
@@ -418,7 +411,7 @@ void SetMainAxis(SizeBounds* size,
 
 void SetCrossAxis(SizeBounds* size,
                   LayoutOrientation orientation,
-                  base::Optional<int> cross) {
+                  SizeBound cross) {
   switch (orientation) {
     case LayoutOrientation::kHorizontal:
       size->set_height(std::move(cross));

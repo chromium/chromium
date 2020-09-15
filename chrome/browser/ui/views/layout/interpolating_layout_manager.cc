@@ -55,28 +55,27 @@ InterpolatingLayoutManager::GetInterpolation(
 
   LayoutInterpolation result;
 
-  const base::Optional<int> dimension =
-      views::GetMainAxis(orientation_, size_bounds);
+  const views::SizeBound bound = views::GetMainAxis(orientation_, size_bounds);
 
   // Find the larger layout that overlaps the target size.
-  auto match = dimension ? embedded_layouts_.upper_bound({*dimension, 0})
-                         : embedded_layouts_.end();
+  auto match = bound.is_bounded()
+                   ? embedded_layouts_.upper_bound({bound.value(), 0})
+                   : embedded_layouts_.end();
   DCHECK(match != embedded_layouts_.begin())
-      << "No layout set for primary dimension size "
-      << (dimension ? *dimension : -1) << "; first layout starts at "
-      << match->first.ToString();
+      << "No layout set for primary dimension size " << bound.ToString()
+      << "; first layout starts at " << match->first.ToString();
   result.first = (--match)->second;
 
   // If the target size falls in an interpolation range, get the other layout.
   const views::Span& first_span = match->first;
-  if (dimension && first_span.end() > *dimension) {
+  if (first_span.end() > bound) {
     DCHECK(match != embedded_layouts_.begin())
-        << "Primary dimension size " << (dimension ? *dimension : -1)
+        << "Primary dimension size " << bound.ToString()
         << " falls into interpolation range " << match->first.ToString()
         << " but there is no smaller layout to interpolate with.";
     result.second = (--match)->second;
     result.percent_second =
-        float{first_span.end() - *dimension} / first_span.length();
+        float{first_span.end() - bound.value()} / first_span.length();
   }
 
   return result;
@@ -87,7 +86,8 @@ views::ProposedLayout InterpolatingLayoutManager::CalculateProposedLayout(
   // For interpolating layout we will never call this method for unbounded
   // sizes.
   DCHECK(size_bounds.is_fully_bounded());
-  const gfx::Size size(*size_bounds.width(), *size_bounds.height());
+  const gfx::Size size(size_bounds.width().value(),
+                       size_bounds.height().value());
 
   const LayoutInterpolation interpolation = GetInterpolation(size_bounds);
   const views::ProposedLayout first =
@@ -148,7 +148,7 @@ int InterpolatingLayoutManager::GetPreferredHeightForWidth(
   // experience; if this doesn't work in practice we can look at other options.
 
   const LayoutInterpolation interpolation =
-      GetInterpolation(views::SizeBounds(width, base::nullopt));
+      GetInterpolation(views::SizeBounds(width, views::SizeBound()));
   const int first =
       interpolation.first->GetPreferredHeightForWidth(host, width);
   if (!interpolation.second)

@@ -58,11 +58,11 @@ gfx::Size TabStripRegionView::GetMinimumSize() const {
 
 int TabStripRegionView::CalculateTabStripAvailableWidth() {
   Layout();
-  base::Optional<int> available_width =
+  views::SizeBound available_width =
       GetAvailableSize(tab_strip_container_).width();
-  // |available_width| might still be undefined in cases where the tabstrip is
+  // |available_width| might still be unbounded in cases where the tabstrip is
   // hidden (e.g. presentation mode on MacOS). In these cases we don't care
   // about the resulting layout, since the tabstrip is not visible, so we can
   // substitute 0 to ensure that we relayout once the width is defined again.
-  return available_width.value_or(0);
+  return available_width.is_bounded() ? available_width.value() : 0;
 }

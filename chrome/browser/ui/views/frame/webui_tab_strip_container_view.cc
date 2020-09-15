@@ -846,8 +846,9 @@ gfx::Size WebUITabStripContainerView::FlexRule(
     const views::View* view,
     const views::SizeBounds& bounds) const {
   DCHECK_EQ(view, web_view_);
-  const int width =
-      bounds.width() ? *bounds.width() : tab_contents_container_->width();
+  const int width = bounds.width().is_bounded()
+                        ? bounds.width().value()
+                        : tab_contents_container_->width();
   const int height = TabStripUILayout::CalculateForWebViewportSize(
                          tab_contents_container_->size())
                          .CalculateContainerHeight();
