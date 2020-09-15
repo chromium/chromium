@@ -640,11 +640,11 @@ const base::Feature kTrustedWebActivityPostMessage{
     "TrustedWebActivityPostMessage", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTrustedWebActivityQualityEnforcement{
-    "TrustedWebActivityQualityEnforcement", base::FEATURE_ENABLED_BY_DEFAULT};
+    "TrustedWebActivityQualityEnforcement", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTrustedWebActivityQualityEnforcementForced{
     "TrustedWebActivityQualityEnforcementForced",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kStartSurfaceAndroid{"StartSurfaceAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
