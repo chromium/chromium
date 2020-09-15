@@ -9,12 +9,14 @@
 #include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
+#include "ios/chrome/browser/web/features.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
@@ -36,6 +38,9 @@ class FontSizeTabHelperTest : public PlatformTest {
  public:
   FontSizeTabHelperTest()
       : application_(OCMPartialMock([UIApplication sharedApplication])) {
+    scoped_feature_list_.InitAndEnableFeature(
+        {web::kWebPageDefaultZoomFromDynamicType});
+
     OCMStub([application_ preferredContentSizeCategory])
         .andDo(^(NSInvocation* invocation) {
           [invocation setReturnValue:&preferred_content_size_category_];
@@ -91,6 +96,7 @@ class FontSizeTabHelperTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::TestWebState web_state_;
