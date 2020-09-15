@@ -173,7 +173,10 @@ enum NTPLoggingEventType {
   // Daily refresh was enabled by clicked 'Done' in the richer picker.
   NTP_BACKGROUND_DAILY_REFRESH_ENABLED = 82,
 
-  NTP_EVENT_TYPE_LAST = NTP_BACKGROUND_DAILY_REFRESH_ENABLED
+  // The NTP modules were shown.
+  NTP_MODULES_SHOWN = 83,
+
+  NTP_EVENT_TYPE_LAST = NTP_MODULES_SHOWN
 };
 
 // The different types of events that are logged for NTP search suggestions,

@@ -922,6 +922,11 @@ void NewTabPageHandler::OnVoiceSearchError(
   LogEvent(event);
 }
 
+void NewTabPageHandler::OnModulesRendered(double time) {
+  logger_->LogEvent(NTP_MODULES_SHOWN,
+                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+}
+
 void NewTabPageHandler::QueryAutocomplete(const base::string16& input,
                                           bool prevent_inline_autocomplete) {
   if (!autocomplete_controller_) {

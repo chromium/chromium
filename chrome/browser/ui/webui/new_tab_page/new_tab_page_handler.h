@@ -122,6 +122,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnVoiceSearchAction(
       new_tab_page::mojom::VoiceSearchAction action) override;
   void OnVoiceSearchError(new_tab_page::mojom::VoiceSearchError error) override;
+  void OnModulesRendered(double time) override;
   void QueryAutocomplete(const base::string16& input,
                          bool prevent_inline_autocomplete) override;
   void StopAutocomplete(bool clear_result) override;

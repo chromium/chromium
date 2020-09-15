@@ -548,6 +548,9 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED:
       RecordAction(LoggingEventToShortcutUserActionName(event));
       break;
+    case NTP_MODULES_SHOWN:
+      UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.ShownTime", time);
+      break;
   }
 }
 

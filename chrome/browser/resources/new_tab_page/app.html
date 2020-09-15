@@ -279,7 +279,8 @@
       <ntp-middle-slot-promo
           on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
       </ntp-middle-slot-promo>
-      <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules">
+      <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules"
+          on-dom-change="onModulesRendered_">
         <ntp-module-wrapper descriptor="[[item]]"></ntp-module-wrapper>
       </template>
       <a id="backgroundImageAttribution"

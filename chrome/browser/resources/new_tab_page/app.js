@@ -742,6 +742,11 @@ class AppElement extends PolymerElement {
     onResize();
   }
 
+  /** @private */
+  onModulesRendered_() {
+    this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+  }
+
   /**
    * During a shortcut drag, an iframe behind ntp-most-visited will prevent
    * 'dragover' events from firing. To workaround this, 'pointer-events: none'

@@ -456,11 +456,11 @@ suite('NewTabPageAppTest', () => {
         }
       ]);
       await flushTasks();  // Wait for module descriptor resolution.
-      $$(app, '#modules').render();
 
       // Assert.
       const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
       assertEquals(2, modules.length);
+      assertEquals(1, testProxy.handler.getCallCount('onModulesRendered'));
     });
   });
 });

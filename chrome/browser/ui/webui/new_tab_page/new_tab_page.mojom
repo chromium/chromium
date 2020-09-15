@@ -377,6 +377,8 @@ interface PageHandler {
   OnVoiceSearchAction(VoiceSearchAction action);
   // Logs an error occurred while using voice search.
   OnVoiceSearchError(VoiceSearchError error);
+  // Logs that the modules have been shown at |time|.
+  OnModulesRendered(double time);
 
   // ======= REALBOX =======
   // Queries autocomplete matches from the browser.
