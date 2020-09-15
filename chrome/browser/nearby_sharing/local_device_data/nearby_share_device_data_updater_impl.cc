@@ -12,8 +12,8 @@
 namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
-const char kContactsFieldMaskPath[] = "device.contacts";
-const char kCertificatesFieldMaskPath[] = "device.public_certificates";
+const char kContactsFieldMaskPath[] = "contacts";
+const char kCertificatesFieldMaskPath[] = "public_certificates";
 
 void RecordResultMetrics(NearbyShareHttpResult result) {
   base::UmaHistogramEnumeration(

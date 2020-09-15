@@ -80,9 +80,9 @@ void VerifyRequest(
             field_mask.size());
 
   EXPECT_EQ(expected_contacts.has_value(),
-            base::Contains(field_mask, "device.contacts"));
+            base::Contains(field_mask, "contacts"));
   EXPECT_EQ(expected_certificates.has_value(),
-            base::Contains(field_mask, "device.public_certificates"));
+            base::Contains(field_mask, "public_certificates"));
 
   EXPECT_EQ(std::string(kDeviceIdPrefix) + kTestDeviceId,
             request.device().name());
