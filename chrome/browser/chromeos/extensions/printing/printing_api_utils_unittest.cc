@@ -100,7 +100,7 @@ printing::PrinterSemanticCapsAndDefaults ConstructPrinterCapabilities() {
   printing::PrinterSemanticCapsAndDefaults capabilities;
   capabilities.color_model = printing::mojom::ColorModel::kColor;
   capabilities.duplex_modes.push_back(printing::mojom::DuplexMode::kLongEdge);
-  capabilities.copies_max = 2;
+  capabilities.copies_max = kCopies;
   capabilities.dpis.push_back(gfx::Size(kHorizontalDpi, kVerticalDpi));
   printing::PrinterSemanticCapsAndDefaults::Paper paper;
   paper.vendor_id = kMediaSizeVendorId;
@@ -193,7 +193,7 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilitiesCompatibility_Color) {
   std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
   printing::PrinterSemanticCapsAndDefaults capabilities =
       ConstructPrinterCapabilities();
-  capabilities.color_model = printing::UNKNOWN_COLOR_MODEL;
+  capabilities.color_model = printing::mojom::ColorModel::kUnknownColorModel;
   EXPECT_FALSE(
       CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
 }
