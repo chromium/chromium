@@ -4720,7 +4720,6 @@
                     },
                     "enable_features": [
                         "OmniboxDisplayTitleForCurrentUrl",
-                        "OmniboxDocumentProvider",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxReactiveZeroSuggestionsOnNTPOmnibox",
@@ -4771,6 +4770,24 @@
                     },
                     "enable_features": [
                         "OmniboxOnFocusSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxDocumentProviderNonDogfoodExperiments": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled ",
+                    "enable_features": [
+                        "OmniboxDocumentProvider"
                     ]
                 }
             ]
