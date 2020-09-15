@@ -62,9 +62,9 @@ void FEImage::Trace(Visitor* visitor) const {
   FilterEffect::Trace(visitor);
 }
 
-static FloatRect GetLayoutObjectRepaintRect(const LayoutObject* layout_object) {
-  return layout_object->LocalToSVGParentTransform().MapRect(
-      layout_object->VisualRectInLocalSVGCoordinates());
+static FloatRect GetLayoutObjectRepaintRect(const LayoutObject& layout_object) {
+  return layout_object.LocalToSVGParentTransform().MapRect(
+      layout_object.VisualRectInLocalSVGCoordinates());
 }
 
 static AffineTransform MakeMapBetweenRects(const FloatRect& source,
@@ -97,7 +97,7 @@ FloatRect FEImage::MapInputs(const FloatRect&) const {
   FloatRect dest_rect =
       GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
   if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
-    FloatRect src_rect = GetLayoutObjectRepaintRect(layout_object);
+    FloatRect src_rect = GetLayoutObjectRepaintRect(*layout_object);
     if (element_->HasRelativeLengths()) {
       auto viewport_transform =
           ComputeViewportAdjustmentTransform(element_, dest_rect);
@@ -131,7 +131,7 @@ WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
     image_size = image_->Size();
   } else if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
     image_size =
-        EnclosingIntRect(GetLayoutObjectRepaintRect(layout_object)).Size();
+        EnclosingIntRect(GetLayoutObjectRepaintRect(*layout_object)).Size();
   }
   WriteIndent(ts, indent);
   ts << "[feImage";
@@ -155,16 +155,24 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     const LayoutObject& layout_object) {
   FloatRect dst_rect =
       GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
+  FloatRect src_rect = GetLayoutObjectRepaintRect(layout_object);
 
   AffineTransform transform;
   if (element_->HasRelativeLengths()) {
     auto viewport_transform =
         ComputeViewportAdjustmentTransform(element_, dst_rect);
-    if (viewport_transform)
+    if (viewport_transform) {
+      src_rect = viewport_transform->MapRect(src_rect);
       transform = *viewport_transform;
+    }
   } else {
+    src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
+    src_rect.Move(dst_rect.X(), dst_rect.Y());
     transform.Translate(dst_rect.X(), dst_rect.Y());
   }
+  // Intersect with the (transformed) source rect to remove "empty" bits of the
+  // image.
+  dst_rect.Intersect(src_rect);
 
   // Clip the filter primitive rect by the filter region and use that as the
   // cull rect for the paint record.
