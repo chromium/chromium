@@ -8,9 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
-#include "build/build_config.h"
 #include "content/public/app/content_main.h"
 #include "services/service_manager/embedder/main_delegate.h"
 
@@ -28,19 +25,7 @@ class ContentServiceManagerMainDelegate : public service_manager::MainDelegate {
   bool IsEmbedderSubprocess() override;
   int RunEmbedderProcess() override;
   void ShutDownEmbedderProcess() override;
-  service_manager::ProcessType OverrideProcessType() override;
   void InitializeMojo(mojo::core::Configuration* config) override;
-  std::vector<service_manager::Manifest> GetServiceManifests() override;
-  bool ShouldLaunchAsServiceProcess(
-      const service_manager::Identity& identity) override;
-  void AdjustServiceProcessCommandLine(
-      const service_manager::Identity& identity,
-      base::CommandLine* command_line) override;
-  void OnServiceManagerInitialized(
-      base::OnceClosure quit_closure,
-      service_manager::BackgroundServiceManager* service_manager) override;
-  std::unique_ptr<service_manager::Service> CreateEmbeddedService(
-      const std::string& service_name) override;
 
   // Sets the flag whether to start the Service Manager without starting the
   // full browser.

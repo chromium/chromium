@@ -35,13 +35,9 @@
 #include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/service_manager/embedder/main_delegate.h"
-#include "services/service_manager/embedder/process_type.h"
 #include "services/service_manager/embedder/set_process_title.h"
 #include "services/service_manager/embedder/shared_file_util.h"
 #include "services/service_manager/embedder/switches.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_executable/service_executable_environment.h"
-#include "services/service_manager/public/cpp/service_executable/switches.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -150,100 +146,6 @@ void CommonSubprocessInit() {
 #endif
 }
 
-void NonEmbedderProcessInit() {
-  logging::LoggingSettings settings;
-  settings.logging_dest =
-      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  logging::InitLogging(settings);
-  // To view log output with IDs and timestamps use "adb logcat -v threadtime".
-  logging::SetLogItems(true,   // Process ID
-                       true,   // Thread ID
-                       true,   // Timestamp
-                       true);  // Tick count
-
-#if !defined(OFFICIAL_BUILD)
-  // Initialize stack dumping before initializing sandbox to make sure symbol
-  // names in all loaded libraries will be cached.
-  // NOTE: On Chrome OS, crash reporting for the root process and non-browser
-  // service processes is handled by the OS-level crash_reporter.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableInProcessStackTraces)) {
-    base::debug::EnableInProcessStackDumping();
-  }
-#endif
-
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-      "ServiceManagerProcess");
-}
-
-int RunServiceManager(MainDelegate* delegate) {
-  NonEmbedderProcessInit();
-
-  base::SingleThreadTaskExecutor main_thread_task_executor(
-      base::MessagePumpType::UI);
-
-  base::Thread ipc_thread("IPC thread");
-  ipc_thread.StartWithOptions(
-      base::Thread::Options(base::MessagePumpType::IO, 0));
-  mojo::core::ScopedIPCSupport ipc_support(
-      ipc_thread.task_runner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
-
-  service_manager::BackgroundServiceManager background_service_manager(
-      delegate->GetServiceManifests());
-
-  base::RunLoop run_loop;
-  delegate->OnServiceManagerInitialized(run_loop.QuitClosure(),
-                                        &background_service_manager);
-  run_loop.Run();
-
-  ipc_thread.Stop();
-  base::ThreadPoolInstance::Get()->Shutdown();
-
-  return 0;
-}
-
-void InitializeResources() {
-  const std::string locale =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ::switches::kLang);
-  // This loads the embedder's common resources (e.g. chrome_100_percent.pak for
-  // Chrome.)
-  ui::ResourceBundle::InitSharedInstanceWithLocale(
-      locale, nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
-}
-
-int RunService(MainDelegate* delegate) {
-  NonEmbedderProcessInit();
-
-  InitializeResources();
-
-  service_manager::ServiceExecutableEnvironment environment;
-
-  base::SingleThreadTaskExecutor main_thread_task_executor(
-      base::MessagePumpType::UI);
-  base::RunLoop run_loop;
-
-  std::string service_name =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kServiceName);
-  if (service_name.empty()) {
-    LOG(ERROR) << "Service process requires --service-name";
-    return 1;
-  }
-
-  std::unique_ptr<Service> service =
-      delegate->CreateEmbeddedService(service_name);
-  if (!service) {
-    LOG(ERROR) << "Failed to start embedded service: " << service_name;
-    return 1;
-  }
-
-  service->set_termination_closure(run_loop.QuitClosure());
-  run_loop.Run();
-  return 0;
-}
-
 }  // namespace
 
 MainParams::MainParams(MainDelegate* delegate) : delegate(delegate) {}
@@ -256,7 +158,6 @@ int Main(const MainParams& params) {
 
   int exit_code = -1;
   base::debug::GlobalActivityTracker* tracker = nullptr;
-  ProcessType process_type = delegate->OverrideProcessType();
 #if defined(OS_MAC)
   std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool;
 #endif
@@ -336,10 +237,8 @@ int Main(const MainParams& params) {
     SetupSignalHandlers();
 #endif
 
-    const auto& command_line = *base::CommandLine::ForCurrentProcess();
-
 #if defined(OS_WIN)
-    base::win::SetupCRT(command_line);
+    base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
 #endif
 
     MainDelegate::InitializeParams init_params;
@@ -355,11 +254,6 @@ int Main(const MainParams& params) {
 #endif
 
     mojo::core::Configuration mojo_config;
-    if (process_type == ProcessType::kDefault &&
-        command_line.GetSwitchValueASCII(switches::kProcessType) ==
-            switches::kProcessTypeServiceManager) {
-      mojo_config.is_broker_process = true;
-    }
     mojo_config.max_message_num_bytes = kMaximumMojoMessageSize;
     delegate->InitializeMojo(&mojo_config);
 
@@ -388,7 +282,8 @@ int Main(const MainParams& params) {
     // implementation of mojo::NodeController::CreateSharedBuffer().
 #if !defined(OS_MAC) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
     if (sandbox::policy::IsUnsandboxedSandboxType(
-            sandbox::policy::SandboxTypeFromCommandLine(command_line))) {
+            sandbox::policy::SandboxTypeFromCommandLine(
+                *base::CommandLine::ForCurrentProcess()))) {
       // Unsandboxed processes don't need shared memory brokering... because
       // they're not sandboxed.
     } else if (mojo_config.force_direct_shared_memory_allocation) {
@@ -421,38 +316,9 @@ int Main(const MainParams& params) {
     }
   }
 
-  const auto& command_line = *base::CommandLine::ForCurrentProcess();
-  if (process_type == ProcessType::kDefault) {
-    std::string type_switch =
-        command_line.GetSwitchValueASCII(switches::kProcessType);
-    if (type_switch == switches::kProcessTypeServiceManager) {
-      process_type = ProcessType::kServiceManager;
-    } else if (type_switch == switches::kProcessTypeService) {
-      process_type = ProcessType::kService;
-    } else {
-      process_type = ProcessType::kEmbedder;
-    }
-  }
-  switch (process_type) {
-    case ProcessType::kDefault:
-      NOTREACHED();
-      break;
-
-    case ProcessType::kServiceManager:
-      exit_code = RunServiceManager(delegate);
-      break;
-
-    case ProcessType::kService:
-      CommonSubprocessInit();
-      exit_code = RunService(delegate);
-      break;
-
-    case ProcessType::kEmbedder:
-      if (delegate->IsEmbedderSubprocess())
-        CommonSubprocessInit();
-      exit_code = delegate->RunEmbedderProcess();
-      break;
-  }
+  if (delegate->IsEmbedderSubprocess())
+    CommonSubprocessInit();
+  exit_code = delegate->RunEmbedderProcess();
 
   if (tracker) {
     if (exit_code == 0) {
@@ -469,8 +335,7 @@ int Main(const MainParams& params) {
   autorelease_pool.reset();
 #endif
 
-  if (process_type == ProcessType::kEmbedder)
-    delegate->ShutDownEmbedderProcess();
+  delegate->ShutDownEmbedderProcess();
 
   return exit_code;
 }

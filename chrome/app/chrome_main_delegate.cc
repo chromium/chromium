@@ -268,7 +268,6 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
   } else if (process_type == switches::kUtilityProcess ||
              process_type == switches::kGpuProcess ||
              process_type == switches::kCloudPrintServiceProcess ||
-             process_type == service_manager::switches::kProcessTypeService ||
              process_type == switches::kPpapiBrokerProcess) {
     score = content::kMiscOomScore;
 #if BUILDFLAG(ENABLE_NACL)
@@ -277,8 +276,6 @@ void AdjustLinuxOOMScore(const std::string& process_type) {
     score = content::kPluginOomScore;
 #endif
   } else if (process_type == service_manager::switches::kZygoteProcess ||
-             process_type ==
-                 service_manager::switches::kProcessTypeServiceManager ||
              process_type.empty()) {
     // For zygotes and unlabeled process types, we want to still make
     // them killable by the OOM killer.
@@ -1236,16 +1233,6 @@ ChromeMainDelegate::CreateContentRendererClient() {
 content::ContentUtilityClient*
 ChromeMainDelegate::CreateContentUtilityClient() {
   return g_chrome_content_utility_client.Pointer();
-}
-
-service_manager::ProcessType ChromeMainDelegate::OverrideProcessType() {
-  const auto& command_line = *base::CommandLine::ForCurrentProcess();
-  if (command_line.GetSwitchValueASCII(switches::kProcessType) ==
-      service_manager::switches::kProcessTypeService) {
-    // Don't mess with embedded service command lines.
-    return service_manager::ProcessType::kDefault;
-  }
-  return service_manager::ProcessType::kDefault;
 }
 
 void ChromeMainDelegate::PreCreateMainMessageLoop() {

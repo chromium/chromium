@@ -58,7 +58,6 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
                           delegates) override;
   void ZygoteForked() override;
 #endif
-  service_manager::ProcessType OverrideProcessType() override;
   void PreCreateMainMessageLoop() override;
   void PostEarlyInitialization(bool is_running_tests) override;
   bool ShouldCreateFeatureList() override;

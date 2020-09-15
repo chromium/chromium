@@ -35,14 +35,6 @@ const char kEnableLogging[] = "enable-logging";
 // "service-runner", or any other arbitrary value supported by the embedder.
 const char kProcessType[] = "type";
 
-// The value of the |kProcessType| switch which tells the executable to assume
-// the role of a standalone Service Manager instance.
-const char kProcessTypeServiceManager[] = "service-manager";
-
-// The value of the |kProcessType| switch which tells the executable to assume
-// the role of a service instance.
-const char kProcessTypeService[] = "service-runner";
-
 // The token to use to construct the message pipe for a service in a child
 // process.
 const char kServiceRequestChannelToken[] = "service-request-channel-token";

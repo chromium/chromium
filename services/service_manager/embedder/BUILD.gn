@@ -12,7 +12,6 @@ if (!is_ios) {
     public = [
       "main.h",
       "main_delegate.h",
-      "process_type.h",
       "set_process_title.h",
       "shared_file_util.h",
     ]

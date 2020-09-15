@@ -36,18 +36,6 @@ int ContentMainDelegate::TerminateForFatalInitializationError() {
   return 0;
 }
 
-service_manager::ProcessType ContentMainDelegate::OverrideProcessType() {
-  return service_manager::ProcessType::kDefault;
-}
-
-void ContentMainDelegate::AdjustServiceProcessCommandLine(
-    const service_manager::Identity& identity,
-    base::CommandLine* command_line) {}
-
-void ContentMainDelegate::OnServiceManagerInitialized(
-    base::OnceClosure quit_closure,
-    service_manager::BackgroundServiceManager* service_manager) {}
-
 bool ContentMainDelegate::ShouldCreateFeatureList() {
   return true;
 }

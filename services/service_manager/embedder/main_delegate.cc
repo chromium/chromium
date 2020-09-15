@@ -20,31 +20,6 @@ int MainDelegate::RunEmbedderProcess() {
 
 void MainDelegate::ShutDownEmbedderProcess() {}
 
-ProcessType MainDelegate::OverrideProcessType() {
-  return ProcessType::kDefault;
-}
-
 void MainDelegate::InitializeMojo(mojo::core::Configuration* config) {}
-
-std::vector<Manifest> MainDelegate::GetServiceManifests() {
-  return std::vector<Manifest>();
-}
-
-bool MainDelegate::ShouldLaunchAsServiceProcess(const Identity& identity) {
-  return true;
-}
-
-void MainDelegate::AdjustServiceProcessCommandLine(
-    const Identity& identity,
-    base::CommandLine* command_line) {}
-
-void MainDelegate::OnServiceManagerInitialized(
-    base::OnceClosure quit_closure,
-    BackgroundServiceManager* service_manager) {}
-
-std::unique_ptr<Service> MainDelegate::CreateEmbeddedService(
-    const std::string& service_name) {
-  return nullptr;
-}
 
 }  // namespace service_manager
