@@ -972,6 +972,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 15,
+        },
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
@@ -1999,7 +2002,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 10,
+          'shards': 15,
         },
       },
       'android-nougat-arm64-rel': {
@@ -2013,7 +2016,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
         ],
         'swarming': {
-          'shards': 10,
+          'shards': 15,
         },
       },
     },
@@ -2060,10 +2063,18 @@
       'android-marshmallow-x86-rel', # crbug.com/1098111
     ],
     'modifications': {
+      'android-marshmallow-x86-rel-non-cq': {
+        'swarming': {
+          'shards': 15,
+        },
+      },
       'android-pie-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
         ],
+        'swarming': {
+          'shards': 15,
+        },
       },
     },
   },
