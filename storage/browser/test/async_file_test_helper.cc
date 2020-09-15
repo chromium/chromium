@@ -269,4 +269,18 @@ blink::mojom::QuotaStatusCode AsyncFileTestHelper::GetUsageAndQuota(
   return status;
 }
 
+base::File::Error AsyncFileTestHelper::TouchFile(
+    FileSystemContext* context,
+    const FileSystemURL& url,
+    const base::Time& last_access_time,
+    const base::Time& last_modified_time) {
+  base::File::Error result = base::File::FILE_ERROR_FAILED;
+  base::RunLoop run_loop;
+  context->operation_runner()->TouchFile(
+      url, last_access_time, last_modified_time,
+      AssignAndQuitCallback(&run_loop, &result));
+  run_loop.Run();
+  return result;
+}
+
 }  // namespace storage

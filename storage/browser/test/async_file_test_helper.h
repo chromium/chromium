@@ -107,6 +107,14 @@ class AsyncFileTestHelper {
       FileSystemType type,
       int64_t* usage,
       int64_t* quota);
+
+  // Modifies timestamps of a file or directory at |url| with
+  // |last_access_time| and |last_modified_time|. The function DOES NOT
+  // create a file unlike 'touch' command on Linux.
+  static base::File::Error TouchFile(FileSystemContext* context,
+                                     const FileSystemURL& url,
+                                     const base::Time& last_access_time,
+                                     const base::Time& last_modified_time);
 };
 
 }  // namespace storage
