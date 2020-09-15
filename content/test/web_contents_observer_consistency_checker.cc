@@ -8,7 +8,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
 #include "content/public/browser/navigation_handle.h"

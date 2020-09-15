@@ -4,7 +4,7 @@
 
 #include "content/public/test/idle_test_utils.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/idle_manager.h"
 
 namespace content {

@@ -7,8 +7,8 @@
 #include <map>
 #include <set>
 
-#include "content/browser/frame_host/back_forward_cache_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 

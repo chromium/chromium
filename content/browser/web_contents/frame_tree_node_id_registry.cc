@@ -5,7 +5,7 @@
 #include "content/browser/web_contents/frame_tree_node_id_registry.h"
 
 #include "base/bind_helpers.h"
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {

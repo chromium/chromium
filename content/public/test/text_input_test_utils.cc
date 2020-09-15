@@ -7,9 +7,9 @@
 #include <unordered_set>
 
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/frame_host/frame_tree.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_base_observer.h"

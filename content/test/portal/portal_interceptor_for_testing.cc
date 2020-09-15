@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 
 namespace content {

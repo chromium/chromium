@@ -5,7 +5,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 #include "base/bind.h"
-#include "content/browser/frame_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 

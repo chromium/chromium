@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/web_contents/web_contents_impl.h"
