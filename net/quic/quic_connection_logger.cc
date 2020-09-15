@@ -589,8 +589,8 @@ void QuicConnectionLogger::OnTransportParametersResumed(
   event_logger_.OnTransportParametersResumed(transport_parameters);
 }
 
-void QuicConnectionLogger::OnZeroRttRejected() {
-  event_logger_.OnZeroRttRejected();
+void QuicConnectionLogger::OnZeroRttRejected(int reason) {
+  event_logger_.OnZeroRttRejected(reason);
 }
 
 void QuicConnectionLogger::RecordAggregatePacketLossRate() const {

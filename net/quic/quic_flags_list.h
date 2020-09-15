@@ -96,10 +96,6 @@ QUIC_FLAG(
     FLAGS_quic_reloadable_flag_quic_donot_reset_ideal_next_packet_send_time,
     false)
 
-// When true and the BBR9 connection option is present, BBR only considers
-// bandwidth samples app-limited if they're not filling the pipe.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_bbr_flexible_app_limited, false)
-
 // When the STMP connection option is sent by the client, timestamps in the QUIC
 // ACK frame are sent and processed.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_send_timestamps, false)
@@ -284,12 +280,6 @@ QUIC_FLAG(
 // If true, disable QUIC version h3-29.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_29, false)
 
-// If true, try to coalesce packet of higher space with retransmissions to
-// mitigate RTT inflations.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_coalesced_packet_of_higher_space2,
-          true)
-
 // If true, record the received min_ack_delay in transport parameters to QUIC
 // config.
 QUIC_FLAG(bool,
@@ -300,45 +290,6 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
           false)
-
-// If true,
-//   server accepts GOAWAY (draft-28 behavior),
-//   client receiving GOAWAY with stream ID that is not client-initiated
-//     bidirectional stream ID closes connection with H3_ID_ERROR (draft-28
-//     behavior).
-//   Also, receiving a GOAWAY with ID larger than previously received closes
-//     connection with H3_ID_ERROR.
-// If false,
-//   server receiving GOAWAY closes connection with H3_FRAME_UNEXPECTED
-//     (draft-27 behavior),
-//   client receiving GOAWAY with stream ID that is not client-initiated
-//     bidirectional stream ID closes connection with PROTOCOL_VIOLATION
-//     (draft-04 behavior),
-//   larger ID than previously received does not trigger connection close.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_http3_goaway_new_behavior, true)
-
-// If true, QUIC connection will revert to a previously validated MTU (if
-// exists) after two PTOs.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_revert_mtu_after_two_ptos, true)
-
-// If true, when TLPR copt is used, enable half RTT as first PTO timeout.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_half_rtt_as_first_pto, true)
-
-// If true, enable overshooting detection when the DTOS connection option is
-// supplied.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_enable_overshooting_detection,
-          true)
-
-// If true, fix a case where data is marked lost in HANDSHAKE level but
-// HANDSHAKE key gets decrypted later.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_neuter_handshake_data, true)
-
-// If true, when data is sending in fast path mode in the creator, making sure
-// stream data is sent in the right encryption level.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_check_encryption_level_in_fast_path,
-          true)
 
 // If true, gQUIC will only consult stream_map in
 // QuicSession::GetNumActiveStreams().
@@ -423,7 +374,7 @@ QUIC_FLAG(bool,
 QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_close_connection_in_on_can_write_with_blocked_writer,
-    false)
+    true)
 
 // If true, include stream information in idle timeout connection close detail.
 QUIC_FLAG(bool,
@@ -454,3 +405,10 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_t051, false)
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_fix_pto_pending_timer_count,
           true)
+
+// If true, QUIC connection will pass sent packet information to the debug
+// visitor after a packet is recorded as sent in sent packet manager.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_give_sent_packet_to_debug_visitor_after_sent,
+    false)

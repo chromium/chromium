@@ -94,7 +94,7 @@ class NET_EXPORT_PRIVATE QuicEventLogger
       const quic::TransportParameters& transport_parameters) override;
   void OnTransportParametersResumed(
       const quic::TransportParameters& transport_parameters) override;
-  void OnZeroRttRejected() override;
+  void OnZeroRttRejected(int reason) override;
 
   // Events that are not received via the visitor and have to be called manually
   // from the session.
