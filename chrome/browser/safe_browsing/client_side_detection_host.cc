@@ -567,8 +567,7 @@ void ClientSideDetectionHost::FeatureExtractionDone(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   // Send ping even if the browser feature extraction failed.
   csd_service_->SendClientReportPhishingRequest(
-      request.release(),  // The service takes ownership of the request object.
-      IsExtendedReportingEnabled(*profile->GetPrefs()),
+      std::move(request), IsExtendedReportingEnabled(*profile->GetPrefs()),
       IsEnhancedProtectionEnabled(*profile->GetPrefs()), callback);
 }
 

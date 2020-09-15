@@ -154,7 +154,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 }
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(
-    ClientPhishingRequest* verdict,
+    std::unique_ptr<ClientPhishingRequest> verdict,
     bool is_extended_reporting,
     bool is_enhanced_reporting,
     const ClientReportPhishingRequestCallback& callback) {
@@ -163,7 +163,7 @@ void ClientSideDetectionService::SendClientReportPhishingRequest(
       FROM_HERE,
       base::BindOnce(
           &ClientSideDetectionService::StartClientReportPhishingRequest,
-          weak_factory_.GetWeakPtr(), verdict, is_extended_reporting,
+          weak_factory_.GetWeakPtr(), std::move(verdict), is_extended_reporting,
           is_enhanced_reporting, callback));
 }
 
@@ -213,12 +213,11 @@ void ClientSideDetectionService::SendModelToRenderers() {
 }
 
 void ClientSideDetectionService::StartClientReportPhishingRequest(
-    ClientPhishingRequest* verdict,
+    std::unique_ptr<ClientPhishingRequest> request,
     bool is_extended_reporting,
     bool is_enhanced_reporting,
     const ClientReportPhishingRequestCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<ClientPhishingRequest> request(verdict);
 
   if (!enabled_) {
     if (!callback.is_null())

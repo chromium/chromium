@@ -29,15 +29,11 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   FakeClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
 
   void SendClientReportPhishingRequest(
-      ClientPhishingRequest* verdict,
+      std::unique_ptr<ClientPhishingRequest> verdict,
       bool is_extended_reporting,
       bool is_enhanced_protection,
       const ClientReportPhishingRequestCallback& callback) override {
     saved_request_ = *verdict;
-    // TODO(drubery): This can be removed if SendClientReportPhishingRequest
-    // takes a unique_ptr<ClientPhishingRequest>, while also providing better
-    // guarantees about memory safety.
-    delete verdict;
     saved_callback_ = callback;
     request_callback_.Run();
   }
