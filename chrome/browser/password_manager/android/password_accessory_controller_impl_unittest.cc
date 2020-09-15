@@ -725,6 +725,32 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlacklisted) {
       /*is_manual_generation_available=*/false);
 }
 
+TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnUsernameIfBlacklisted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {password_manager::features::kRecoverFromNeverSaveAndroid,
+       autofill::features::kAutofillKeyboardAccessory},
+      {});
+  cache()->SaveCredentialsAndBlacklistedForOrigin(
+      {}, CredentialCache::IsOriginBlacklisted(true),
+      url::Origin::Create(GURL(kExampleSite)));
+  ON_CALL(*password_client(), IsSavingAndFillingEnabled(GURL(kExampleSite)))
+      .WillByDefault(Return(true));
+  AccessorySheetData::Builder data_builder(AccessoryTabType::PASSWORDS,
+                                           passwords_empty_str(kExampleDomain));
+  data_builder
+      .SetOptionToggle(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_SAVING_STATUS_TOGGLE), false,
+          autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS)
+      .AppendFooterCommand(manage_passwords_str(),
+                           autofill::AccessoryAction::MANAGE_PASSWORDS);
+  EXPECT_CALL(mock_manual_filling_controller_,
+              RefreshSuggestions(std::move(data_builder).Build()));
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+}
+
 TEST_F(PasswordAccessoryControllerTest,
        RecordsAccessoryImpressionsForBlacklisted) {
   base::test::ScopedFeatureList scoped_feature_list;

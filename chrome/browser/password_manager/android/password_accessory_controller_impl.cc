@@ -32,6 +32,7 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -299,12 +300,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
       std::move(info_to_add), std::move(footer_commands_to_add));
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kRecoverFromNeverSaveAndroid) &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillKeyboardAccessory) &&
-      is_password_field &&
-      password_client_->IsSavingAndFillingEnabled(origin.GetURL())) {
+  if (ShouldShowRecoveryToggle(focused_field_type, origin)) {
     BlacklistedStatus blacklisted_status =
         credential_cache_->GetCredentialStore(origin).GetBlacklistedStatus();
     if (blacklisted_status == BlacklistedStatus::kWasBlacklisted ||
@@ -379,6 +375,23 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
       [&](const auto& cred) {
         return suggestion == (is_password ? cred.password() : cred.username());
       });
+}
+
+bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
+    autofill::mojom::FocusedFieldType field_type,
+    const url::Origin& origin) const {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kRecoverFromNeverSaveAndroid)) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillKeyboardAccessory)) {
+    return false;
+  }
+  if (!password_client_->IsSavingAndFillingEnabled(origin.GetURL()))
+    return false;
+  return field_type == FocusedFieldType::kFillablePasswordField ||
+         field_type == FocusedFieldType::kFillableUsernameField;
 }
 
 base::WeakPtr<ManualFillingController>
