@@ -138,8 +138,7 @@ def UnixNameToConstantName(unix_name):
   # type (str) -> str
   """Converts unix_name to kUnixName.
   """
-  return ('k' + ''.join(word[0].upper() + word[1:]
-      for word in unix_name.split('_')))
+  return ('k' + ''.join(word.capitalize() for word in unix_name.split('_')))
 
 def IsUnixName(s):
   # type (str) -> bool

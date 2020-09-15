@@ -161,8 +161,8 @@ class _Generator(object):
 
       if type_.origin.from_manifest_keys:
         c.Cblock(
-          self._GenerateParseFromDictionary(classname, classname_in_namespace,
-                                            type_))
+          self._GenerateParseFromDictionary(
+            classname, classname_in_namespace, type_))
     elif type_.property_type == PropertyType.ENUM:
       (c.Cblock(self._GenerateEnumToString(cpp_namespace, type_))
         .Cblock(self._GenerateEnumFromString(cpp_namespace, type_))
@@ -490,8 +490,8 @@ class _Generator(object):
     assert self._namespace.manifest_keys.property_type == PropertyType.OBJECT
     return self._GenerateType(None, self._namespace.manifest_keys)
 
-  def _GenerateParseFromDictionary(self, classname, classname_in_namespace,
-                                   type_):
+  def _GenerateParseFromDictionary(
+    self, classname, classname_in_namespace, type_):
     # type: (str, str, Type) -> Code
     """Generates a function that deserializes the type from the passed
     dictionary. E.g. for type "Foo", generates Foo::ParseFromDictionary().
@@ -613,6 +613,7 @@ class _Generator(object):
       PropertyType.INTEGER,
       PropertyType.OBJECT,
       PropertyType.STRING,
+      PropertyType.ENUM
     }
 
     c = Code()
@@ -621,14 +622,47 @@ class _Generator(object):
     assert (underlying_property_type in supported_property_types), (
       'Property type not implemented for %s, type: %s, namespace: %s' %
       (underlying_property_type, underlying_type.name,
-        underlying_type.namespace.name))
+      underlying_type.namespace.name))
+
+    assert (underlying_property_type != PropertyType.ARRAY or
+      underlying_type.item_type.property_type != PropertyType.ENUM), (
+      'Enum types in arrays are not currently supported. Type: %s.' %
+      underlying_type.name)
 
     property_constant = cpp_util.UnixNameToConstantName(property.unix_name)
     out_expression = '&out->%s' % property.unix_name
+
+    if underlying_property_type == PropertyType.ENUM:
+      enum_name = cpp_util.Classname(
+        schema_util.StripNamespace(underlying_type.name))
+      cpp_type_namespace = '' if underlying_type.namespace == self._namespace \
+          else '%s::' % underlying_type.namespace.unix_name
+
+      params = [
+        'dict',
+        '%s' % property_constant,
+        '&%sParse%s' % (cpp_type_namespace, enum_name),
+        'true' if property.optional else 'false',
+        '%s%s' % (cpp_type_namespace,
+                  self._type_helper.GetEnumNoneValue(underlying_type)),
+        '%s' % out_expression,
+        'error',
+        'error_path_reversed'
+      ]
+      func_name = 'ParseEnumFromDictionary'
+    else:
+      params = [
+        'dict',
+        '%s' % property_constant,
+        '%s' % out_expression,
+        'error',
+        'error_path_reversed'
+      ]
+      func_name = 'ParseFromDictionary'
+
     c.Sblock(
-      'if (!::json_schema_compiler::manifest_parse_util::ParseFromDictionary'
-      '(dict, %s, %s, error, error_path_reversed)) {' %
-      (property_constant, out_expression)
+      'if (!::json_schema_compiler::manifest_parse_util::%s(%s)) {'
+      % (func_name, self._GenerateParams(params, generate_error_messages=False))
     )
     if is_root_manifest_type:
       c.Append('::json_schema_compiler::manifest_parse_util::'

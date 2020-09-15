@@ -25,6 +25,14 @@ void PopulateArrayParseError(
     base::string16* error,
     std::vector<base::StringPiece>* error_path_reversed);
 
+// Populates |error| and |error_path_reversed| denoting the given invalid enum
+// |value| at the given |key|.
+void PopulateInvalidEnumValueError(
+    base::StringPiece key,
+    const std::string& value,
+    base::string16* error,
+    std::vector<base::StringPiece>* error_path_reversed);
+
 // Populates manifest parse |error| for the given path in |error_path_reversed|.
 void PopulateFinalError(base::string16* error,
                         std::vector<base::StringPiece>* error_path_reversed);
@@ -126,6 +134,47 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
     return false;
 
   *out_ptr = std::move(result);
+  return true;
+}
+
+// Alias for pointer to a function which converts a string to an enum of type T.
+template <typename T>
+using StringToEnumConverter = T (*)(const std::string&);
+
+// Parses enum |out| from |dict| at the given |key|. On failure, returns false
+// and populates |error| and |error_path_reversed|.
+template <typename T>
+bool ParseEnumFromDictionary(
+    const base::DictionaryValue& dict,
+    base::StringPiece key,
+    StringToEnumConverter<T> converter,
+    bool is_optional_property,
+    T none_value,
+    T* out,
+    base::string16* error,
+    std::vector<base::StringPiece>* error_path_reversed) {
+  DCHECK(out);
+  DCHECK_EQ(none_value, *out);
+
+  // Ignore optional keys if they are not present without raising an error.
+  if (is_optional_property && !dict.FindKey(key))
+    return true;
+
+  // Parse errors for optional keys which are specified should still cause a
+  // failure.
+  const base::Value* value = FindKeyOfType(dict, key, base::Value::Type::STRING,
+                                           error, error_path_reversed);
+  if (!value)
+    return false;
+
+  const std::string str = value->GetString();
+  T enum_value = converter(str);
+  if (enum_value == none_value) {
+    PopulateInvalidEnumValueError(key, str, error, error_path_reversed);
+    return false;
+  }
+
+  *out = enum_value;
   return true;
 }
 

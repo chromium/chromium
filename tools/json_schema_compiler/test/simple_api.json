@@ -4,6 +4,11 @@
     "description": "This is a simple API.",
     "types": [
       {
+        "id": "TestEnum",
+        "type": "string",
+        "enum": ["one", "two", "three"]
+      },
+      {
         "id": "TestType",
         "type": "object",
         "properties": {
@@ -38,13 +43,12 @@
             "items": {
               "type": "string"
             }
+          },
+          "opt_external_enum": {
+            "optional": true,
+            "$ref": "enums.Enumeration"
           }
         }
-      },
-      {
-        "id": "TestEnum",
-        "type": "string",
-        "enum": ["one", "two", "three"]
       }
     ],
     "manifest_keys": {
@@ -67,6 +71,9 @@
             "type": "boolean"
           }
         }
+      },
+      "key_enum": {
+        "$ref": "TestEnum"
       }
     },
     "functions": [

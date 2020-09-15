@@ -54,6 +54,20 @@ void PopulateArrayParseError(
       "Parsing array failed: %s.", base::UTF16ToASCII(*error).c_str()));
 }
 
+void PopulateInvalidEnumValueError(
+    base::StringPiece key,
+    const std::string& value,
+    base::string16* error,
+    std::vector<base::StringPiece>* error_path_reversed) {
+  DCHECK(error);
+  DCHECK(error_path_reversed);
+  DCHECK(error_path_reversed->empty());
+
+  error_path_reversed->push_back(key);
+  *error = base::ASCIIToUTF16(
+      base::StringPrintf("Specified value '%s' is invalid.", value.c_str()));
+}
+
 void PopulateFinalError(base::string16* error,
                         std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);
@@ -77,7 +91,6 @@ const base::Value* FindKeyOfType(
     std::vector<base::StringPiece>* error_path_reversed) {
   DCHECK(error);
   DCHECK(error_path_reversed);
-  DCHECK(error->empty());
   DCHECK(error_path_reversed->empty());
 
   const base::Value* value = dict.FindKey(key);
