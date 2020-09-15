@@ -36,7 +36,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:mutable_network_traffic_annotation_interface",
+    "//services/network/public/mojom:url_loader_base",
     "//url/mojom:url_mojom_gurl",
   ]
 

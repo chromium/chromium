@@ -211,8 +211,8 @@ mojom("mojom_platform") {
     "//services/data_decoder/public/mojom:mojom_resource_snapshot_for_web_bundle",
     "//services/device/public/mojom",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:data_pipe_interfaces",
     "//services/network/public/mojom:mojom_ip_address",
+    "//services/network/public/mojom:url_loader_base",
     "//services/network/public/mojom:websocket_mojom",
     "//services/service_manager/public/mojom",
     "//services/viz/public/mojom",
@@ -627,7 +627,7 @@ mojom("android_mojo_bindings") {
     sources += [ "remote_objects/remote_objects.mojom" ]
 
     # Direct deps (instead of transitive deps) are necessary for java targets.
-    public_deps += [ "//services/network/public/mojom:data_pipe_interfaces" ]
+    public_deps += [ "//services/network/public/mojom:url_loader_base" ]
   }
 
   # This Android unhandled-tap feature uses another mojo source, add it in.
