@@ -27,6 +27,18 @@ template("system_webview_bundle") {
       name = "weblayer"
       module_target = ":${_weblayer_module_target}"
     }
+
+    # TODO(crbug.com/1105096): This target is needed to add all WebLayer
+    # resources to the base module because of bugs with shared resources in
+    # splits.
+    android_resources("${_base_target_name}__all_weblayer_resources") {
+      recursive_resource_deps = true
+      deps = [ "//weblayer/browser/java" ]
+      if (defined(invoker.weblayer_deps)) {
+        deps += invoker.weblayer_deps
+      }
+    }
+
     android_app_bundle_module(_weblayer_module_target) {
       forward_variables_from(invoker,
                              [

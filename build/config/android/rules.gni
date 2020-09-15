@@ -897,6 +897,8 @@ if (enable_java_templates) {
   #     other.
   #   r_text_file: (optional) path to pre-generated R.txt to be used when
   #     generating R.java instead of resource-based aapt-generated one.
+  #   recursive_resource_deps: (optional) whether deps should be walked
+  #     recursively to find resource deps.
   #
   # Example:
   #   android_resources("foo_resources") {
@@ -982,6 +984,7 @@ if (enable_java_templates) {
                                "android_manifest_dep",
                                "custom_package",
                                "resource_overlay",
+                               "recursive_resource_deps",
                              ])
 
       # No package means resources override their deps.

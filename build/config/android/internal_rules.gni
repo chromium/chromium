@@ -575,6 +575,10 @@ template("write_build_config") {
         invoker.version_code,
       ]
     }
+    if (defined(invoker.recursive_resource_deps) &&
+        invoker.recursive_resource_deps) {
+      args += [ "--recursive-resource-deps" ]
+    }
     if (current_toolchain != default_toolchain) {
       # This has to be a built-time error rather than a GN assert because many
       # packages have a mix of java and non-java targets. For example, the

@@ -783,7 +783,10 @@ def _ResolveGroups(configs):
       ret[index:index + 1] = expanded_configs
 
 
-def _DepsFromPaths(dep_paths, target_type, filter_root_targets=True):
+def _DepsFromPaths(dep_paths,
+                   target_type,
+                   filter_root_targets=True,
+                   recursive_resource_deps=False):
   """Resolves all groups and trims dependency branches that we never want.
 
   E.g. When a resource or asset depends on an apk target, the intent is to
@@ -806,6 +809,10 @@ def _DepsFromPaths(dep_paths, target_type, filter_root_targets=True):
   # Don't allow java libraries to cross through assets/resources.
   if target_type in _RESOURCE_TYPES:
     allowlist.extend(_RESOURCE_TYPES)
+    # Pretend that this target directly depends on all of its transitive
+    # dependencies.
+    if recursive_resource_deps:
+      dep_paths = GetAllDepsConfigsInOrder(dep_paths)
 
   return _DepsFromPathsWithFilters(dep_paths, blocklist, allowlist)
 
@@ -914,6 +921,10 @@ def main(argv):
       action='store_true',
       help='Whether resources passed in via --resources-zip should override '
       'resources with the same name')
+  parser.add_option(
+      '--recursive-resource-deps',
+      action='store_true',
+      help='Whether deps should be walked recursively to find resource deps.')
 
   # android_assets options
   parser.add_option('--asset-sources', help='List of asset sources.')
@@ -1177,7 +1188,9 @@ def main(argv):
   }
 
   deps_configs_paths = build_utils.ParseGnList(options.deps_configs)
-  deps = _DepsFromPaths(deps_configs_paths, options.type)
+  deps = _DepsFromPaths(deps_configs_paths,
+                        options.type,
+                        recursive_resource_deps=options.recursive_resource_deps)
   processor_deps = _DepsFromPaths(
       build_utils.ParseGnList(options.annotation_processor_configs or ''),
       options.type, filter_root_targets=False)
