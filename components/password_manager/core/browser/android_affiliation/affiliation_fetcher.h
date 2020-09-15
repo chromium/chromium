@@ -23,7 +23,7 @@ class SimpleURLLoader;
 
 namespace password_manager {
 
-class TestAffiliationFetcherFactory;
+class AffiliationFetcherFactory;
 
 // Fetches authoritative information regarding which facets are affiliated with
 // each other, that is, which facets belong to the same logical application.
@@ -35,6 +35,9 @@ class TestAffiliationFetcherFactory;
 // moved to a factory responsible for creating AffiliationFetcher instances.
 class AffiliationFetcher : public AffiliationFetcherInterface {
  public:
+  AffiliationFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AffiliationFetcherDelegate* delegate);
   ~AffiliationFetcher() override;
 
   // Constructs a fetcher using the specified |url_loader_factory|, and will
@@ -52,7 +55,7 @@ class AffiliationFetcher : public AffiliationFetcherInterface {
   //
   // The caller must ensure that the |factory| outlives all potential Create()
   // calls. The caller may pass in NULL to resume using the default factory.
-  static void SetFactoryForTesting(TestAffiliationFetcherFactory* factory);
+  static void SetFactoryForTesting(AffiliationFetcherFactory* factory);
 
   // Actually starts the request to retrieve affiliations and optionally
   // groupings for each facet in |facet_uris| along with the details based on
@@ -68,11 +71,6 @@ class AffiliationFetcher : public AffiliationFetcherInterface {
   const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
 
   AffiliationFetcherDelegate* delegate() const;
-
- protected:
-  AffiliationFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate);
 
  private:
   // Prepares and returns the serialized protocol buffer message that will be

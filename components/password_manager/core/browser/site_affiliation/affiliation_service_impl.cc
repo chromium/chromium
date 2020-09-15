@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -59,7 +58,8 @@ AffiliationServiceImpl::AffiliationServiceImpl(
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : sync_service_(sync_service),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      fetcher_factory_(std::make_unique<AffiliationFetcherFactoryImpl>()) {}
 
 AffiliationServiceImpl::~AffiliationServiceImpl() = default;
 
@@ -157,7 +157,7 @@ void AffiliationServiceImpl::RequestFacetsAffiliations(
     const std::vector<FacetURI>& facets,
     const AffiliationFetcherInterface::RequestInfo request_info) {
   if (!facets.empty()) {
-    fetcher_ = AffiliationFetcher::Create(url_loader_factory_, this);
+    fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
     fetcher_->StartRequest(facets, request_info);
   }
 }

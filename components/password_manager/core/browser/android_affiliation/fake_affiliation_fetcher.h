@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
-#include "components/password_manager/core/browser/android_affiliation/test_affiliation_fetcher_factory.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
 
 namespace password_manager {
 
@@ -42,8 +42,7 @@ class FakeAffiliationFetcher : public AffiliationFetcher {
 // While this factory is in scope, calls to AffiliationFetcher::Create() will
 // produce FakeAffiliationFetchers that can be used in tests to return fake API
 // responses to users of AffiliationFetcher. Nesting is not supported.
-class ScopedFakeAffiliationFetcherFactory
-    : public TestAffiliationFetcherFactory {
+class ScopedFakeAffiliationFetcherFactory : public AffiliationFetcherFactory {
  public:
   ScopedFakeAffiliationFetcherFactory();
   ~ScopedFakeAffiliationFetcherFactory() override;
@@ -65,7 +64,7 @@ class ScopedFakeAffiliationFetcherFactory
   bool has_pending_fetchers() const { return !pending_fetchers_.empty(); }
 
   // AffiliationFetcherFactory:
-  FakeAffiliationFetcher* CreateInstance(
+  std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AffiliationFetcherDelegate* delegate) override;
 

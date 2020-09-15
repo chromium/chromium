@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -65,6 +66,11 @@ class AffiliationServiceImpl : public AffiliationService,
     url_loader_factory_ = std::move(url_loader_factory);
   }
 
+  void SetFetcherFactoryForTesting(
+      std::unique_ptr<AffiliationFetcherFactory> fetcher_factory) {
+    fetcher_factory_ = std::move(fetcher_factory);
+  }
+
   void SetSyncServiceForTesting(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;
   }
@@ -92,6 +98,7 @@ class AffiliationServiceImpl : public AffiliationService,
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   // TODO(crbug.com/1117045): A vector of pending fetchers to be created.
   std::unique_ptr<AffiliationFetcherInterface> fetcher_;
+  std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   // Callback is passed in PrefetchChangePasswordURLs and is run in
   // OnFetchSucceeded, OnFetchMalformed, OnFetchFailed to indicate the prefetch
   // has finished.

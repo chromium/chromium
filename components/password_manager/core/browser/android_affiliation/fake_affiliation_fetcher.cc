@@ -47,12 +47,13 @@ FakeAffiliationFetcher* ScopedFakeAffiliationFetcherFactory::PeekNextFetcher() {
   return pending_fetchers_.front();
 }
 
-FakeAffiliationFetcher* ScopedFakeAffiliationFetcherFactory::CreateInstance(
+std::unique_ptr<AffiliationFetcherInterface>
+ScopedFakeAffiliationFetcherFactory::CreateInstance(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate) {
-  FakeAffiliationFetcher* fetcher =
-      new FakeAffiliationFetcher(std::move(url_loader_factory), delegate);
-  pending_fetchers_.push(fetcher);
+  auto fetcher = std::make_unique<FakeAffiliationFetcher>(
+      std::move(url_loader_factory), delegate);
+  pending_fetchers_.push(fetcher.get());
   return fetcher;
 }
 
