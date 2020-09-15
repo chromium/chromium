@@ -335,15 +335,16 @@ class StartSurfaceMediator
                     mPropertyModel.get(FEED_SURFACE_COORDINATOR);
             if (feedSurfaceCoordinator != null) {
                 Stream feedStream = feedSurfaceCoordinator.getStream();
-                assert feedStream != null;
-                feedStream.addOnContentChangedListener(() -> {
-                    int firstCardDensity = feedStream.getFirstCardDensity();
-                    if (firstCardDensity != Stream.FeedFirstCardDensity.UNKNOWN) {
-                        StartSurfaceConfiguration.setFeedPlaceholderDense(
-                                feedStream.getFirstCardDensity()
-                                == Stream.FeedFirstCardDensity.DENSE);
-                    }
-                });
+                if (feedStream != null) {
+                    feedStream.addOnContentChangedListener(() -> {
+                        int firstCardDensity = feedStream.getFirstCardDensity();
+                        if (firstCardDensity != Stream.FeedFirstCardDensity.UNKNOWN) {
+                            StartSurfaceConfiguration.setFeedPlaceholderDense(
+                                    feedStream.getFirstCardDensity()
+                                    == Stream.FeedFirstCardDensity.DENSE);
+                        }
+                    });
+                }
             }
         }
 
