@@ -27,6 +27,10 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
                                  ComputedStyle& child_style) const override;
   void InvalidatePaint(const PaintInvalidatorContext& context) const final;
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
+  bool HitTestChildren(HitTestResult& result,
+                       const HitTestLocation& hit_test_location,
+                       const PhysicalOffset& accumulated_offset,
+                       HitTestAction hit_test_action) override;
 
   bool AllowsNonVisibleOverflow() const override { return false; }
   // Override to forward to the anonymous fieldset content box.
