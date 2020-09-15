@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="../metrics_recorder.html">
@@ -19,6 +20,15 @@
         padding-inline-end: 0;
       }
 
+      cr-search-field {
+        padding-bottom: 8px;
+      }
+
+      .label {
+        padding-bottom: 4px;
+        padding-top: 8px;
+      }
+
       .list-item {
         color: var(--cros-text-color-primary);
         min-height: 36px;
@@ -32,13 +42,20 @@
     <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
       <div slot="title">$i18n{addInputMethodLabel}</div>
       <div id="dialogBody" slot="body" scrollable>
+        <cr-search-field label="$i18n{searchInputMethodsLabel}"
+            id="search" on-search-changed="onSearchChanged_"
+            on-keydown="onKeydown_" autofocus>
+        </cr-search-field>
         <template is="dom-if" if="[[showSuggestedList_]]">
           <div id="suggestedInputMethods">
-            $i18n{suggestedInputMethodsLabel}
+            <div class="label">
+              $i18n{suggestedInputMethodsLabel}
+            </div>
             <iron-list scroll-target="[[$$('suggestedInputMethods')]]"
                 items="[[suggestedInputMethods_]]">
               <template>
                 <cr-checkbox class="list-item no-outline"
+                    checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
                     tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
                   [[item.displayName]]
                 </cr-checkbox>
@@ -46,6 +63,23 @@
             </iron-list>
           </div>
         </template>
+        <div id="allInputMethods">
+          <div id="allInputMethodsLabel" class="label"
+              hidden="[[!showSuggestedList_]]">
+            $i18n{allInputMethodsLabel}
+          </div>
+          <iron-list scroll-target="[[$$('allInputMethods')]]"
+              items="[[getAllInputMethods_(languages.inputMethods,
+                  lowercaseQueryString_)]]">
+            <template>
+              <cr-checkbox class="list-item no-outline"
+                  checked="[[willAdd_(item.id, inputMethodsToAdd_.size)]]"
+                  tab-index="[[tabIndex]]" on-change="onCheckboxChange_">
+                [[item.displayName]]
+              </cr-checkbox>
+            </template>
+          </iron-list>
+        </div>
       </div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonTap_">

@@ -40,7 +40,8 @@ Polymer({
     showSuggestedList_: {
       type: Boolean,
       value: false,
-      computed: 'shouldShowSuggestedList_(suggestedInputMethods_)'
+      computed:
+          'shouldShowSuggestedList_(suggestedInputMethods_, lowercaseQueryString_)'
     },
 
     /** @private */
@@ -49,6 +50,20 @@ Polymer({
       value: true,
       computed: 'shouldDisableActionButton_(inputMethodsToAdd_.size)',
     },
+
+    /** @private */
+    lowercaseQueryString_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  /**
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    this.lowercaseQueryString_ = e.detail.toLocaleLowerCase();
   },
 
   /**
@@ -68,11 +83,40 @@ Polymer({
   },
 
   /**
+   * @return {!Array<!chrome.languageSettingsPrivate.InputMethod>} A list of
+   *     possible input methods.
+   * @private
+   */
+  getAllInputMethods_() {
+    return this.languages.inputMethods.supported.filter(inputMethod => {
+      // Don't show input methods which are already enabled.
+      if (this.languageHelper.isInputMethodEnabled(inputMethod.id)) {
+        return false;
+      }
+      // Show input methods whose name matches the query.
+      return inputMethod.displayName.toLocaleLowerCase().includes(
+          this.lowercaseQueryString_);
+    });
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
   shouldShowSuggestedList_() {
-    return this.suggestedInputMethods_.length > 0;
+    return this.suggestedInputMethods_.length > 0 &&
+        !this.lowercaseQueryString_;
+  },
+
+  /**
+   * True if the user has chosen to add this input method (checked its
+   * checkbox).
+   * @param {string} id
+   * @return {boolean}
+   * @private
+   */
+  willAdd_(id) {
+    return this.inputMethodsToAdd_.has(id);
   },
 
   /**
@@ -115,5 +159,18 @@ Polymer({
     });
     settings.recordSettingChange();
     this.$.dialog.close();
+  },
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onKeydown_(e) {
+    // Close dialog if 'esc' is pressed and the search box is already empty.
+    if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
+      this.$.dialog.close();
+    } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
+      this.$.search.scrollIntoViewIfNeeded();
+    }
   },
 });

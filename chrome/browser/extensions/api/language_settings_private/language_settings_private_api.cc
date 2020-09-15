@@ -47,6 +47,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -131,6 +132,12 @@ std::vector<std::string> GetSortedComponentIMEs(
         component_ime_list.push_back(input_method_id);
         available_component_imes.erase(input_method_id);
       }
+    }
+  }
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kLanguageSettingsUpdate)) {
+    for (const auto& input_method_id : available_component_imes) {
+      component_ime_list.push_back(input_method_id);
     }
   }
 

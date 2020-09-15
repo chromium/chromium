@@ -163,7 +163,13 @@ cr.define('settings', function() {
           displayName: 'US Swahili keyboard',
           languageCodes: ['en', 'en-US', 'sw'],
           enabled: false,
-        }
+        },
+        {
+          id: '_comp_ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:vi:vi',
+          displayName: 'Vietnamese keyboard',
+          languageCodes: ['vi'],
+          enabled: false,
+        },
       ];
     }
 

@@ -132,7 +132,7 @@ Polymer({
     },
 
     /**
-     * Hash set of input method ids that are enabled.
+     * Hash set of enabled input methods id for mebership testings
      * @private {!Set<string>}
      */
     enabledInputMethodSet_: {
@@ -1090,11 +1090,9 @@ Polymer({
     const combinedInputMethods = [];
     for (const languageCode of languageCodes) {
       const inputMethods = this.getInputMethodsForLanguage(languageCode);
-      // Get the language's unused input methods.
+      // Get the language's unused input methods and mark them as used.
       const newInputMethods = inputMethods.filter(
           inputMethod => !usedInputMethods.has(inputMethod.id));
-      // Some input methods might be used by different languages, save the new
-      // ones in usedInputMethods to prevent adding them twice.
       newInputMethods.forEach(
           inputMethod => usedInputMethods.add(inputMethod.id));
       combinedInputMethods.push(...newInputMethods);
