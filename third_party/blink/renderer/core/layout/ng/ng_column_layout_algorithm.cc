@@ -973,16 +973,20 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
       ConstraintSpace(), style, BorderPadding(), style.LogicalMaxHeight(),
       LengthResolvePhase::kLayout);
   LayoutUnit extent = ResolveMainBlockLength(
-      ConstraintSpace(), style, BorderPadding(), style.LogicalHeight(), size,
-      LengthResolvePhase::kLayout);
+      ConstraintSpace(), style, BorderPadding(), style.LogicalHeight(),
+      kIndefiniteSize, LengthResolvePhase::kLayout);
   if (extent != kIndefiniteSize) {
     // A specified height/width will just constrain the maximum length.
     max = std::min(max, extent);
   }
 
+  // We may already have used some of the available space in earlier column rows
+  // or spanners.
+  max -= CurrentContentBlockOffset();
+
   // Constrain and convert the value back to content-box.
   size = std::min(size, max);
-  return size - extra;
+  return (size - extra).ClampNegativeToZero();
 }
 
 scoped_refptr<const NGLayoutResult>
