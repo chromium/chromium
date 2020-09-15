@@ -194,6 +194,10 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id) {
       return gfx::kGoogleBlue800;
 
     // Tooltip
+    case NativeTheme::kColorId_TooltipIcon:
+      return SkColorSetA(gfx::kGoogleGrey200, 0xBD);
+    case NativeTheme::kColorId_TooltipIconHovered:
+      return SK_ColorWHITE;
     case NativeTheme::kColorId_TooltipText:
       return SkColorSetA(gfx::kGoogleGrey200, 0xDE);
 
@@ -505,9 +509,9 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return SkColorSetA(bg, 0xCC);
     }
     case NativeTheme::kColorId_TooltipIcon:
-      return SkColorSetARGB(0xBD, 0x44, 0x44, 0x44);
+      return SkColorSetA(gfx::kGoogleGrey800, 0xBD);
     case NativeTheme::kColorId_TooltipIconHovered:
-      return SkColorSetARGB(0xBD, 0, 0, 0);
+      return SkColorSetA(SK_ColorBLACK, 0xBD);
     case NativeTheme::kColorId_TooltipText:
       return SkColorSetA(kPrimaryTextColor, 0xDE);
 
