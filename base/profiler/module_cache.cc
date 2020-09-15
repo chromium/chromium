@@ -54,38 +54,41 @@ std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
 }
 
 void ModuleCache::UpdateNonNativeModules(
-    const std::vector<const Module*>& to_remove,
-    std::vector<std::unique_ptr<const Module>> to_add) {
+    const std::vector<const Module*>& defunct_modules,
+    std::vector<std::unique_ptr<const Module>> new_modules) {
   // Insert the modules to remove into a set to support O(log(n)) lookup below.
-  flat_set<const Module*> to_remove_set(to_remove.begin(), to_remove.end());
+  flat_set<const Module*> defunct_modules_set(defunct_modules.begin(),
+                                              defunct_modules.end());
 
   // Reorder the modules to be removed to the last slots in the set, then move
   // them to the inactive modules, then erase the moved-from modules from the
-  // set. The flat_set docs endorse using base::EraseIf() which performs the
-  // same operations -- exclusive of the moves -- so this is OK even though it
-  // might seem like we're messing with the internal set representation.
+  // set. This is a variation on the standard erase-remove idiom, which is
+  // explicitly endorsed for implementing erase behavior on flat_sets.
   //
-  // remove_if is O(m*log(r)) where m is the number of current modules and r is
-  // the number of modules to remove. insert and erase are both O(r).
-  auto first_module_to_remove = std::remove_if(
+  // stable_partition is O(m*log(r)) where m is the number of current modules
+  // and r is the number of modules to remove. insert and erase are both O(r).
+  auto first_module_defunct_modules = std::stable_partition(
       non_native_modules_.begin(), non_native_modules_.end(),
-      [&to_remove_set](const std::unique_ptr<const Module>& module) {
-        return to_remove_set.find(module.get()) != to_remove_set.end();
+      [&defunct_modules_set](const std::unique_ptr<const Module>& module) {
+        return defunct_modules_set.find(module.get()) ==
+               defunct_modules_set.end();
       });
   // All modules requested to be removed should have been found.
-  DCHECK_EQ(static_cast<ptrdiff_t>(to_remove.size()),
-            std::distance(first_module_to_remove, non_native_modules_.end()));
+  DCHECK_EQ(
+      static_cast<ptrdiff_t>(defunct_modules.size()),
+      std::distance(first_module_defunct_modules, non_native_modules_.end()));
   inactive_non_native_modules_.insert(
       inactive_non_native_modules_.end(),
-      std::make_move_iterator(first_module_to_remove),
+      std::make_move_iterator(first_module_defunct_modules),
       std::make_move_iterator(non_native_modules_.end()));
-  non_native_modules_.erase(first_module_to_remove, non_native_modules_.end());
+  non_native_modules_.erase(first_module_defunct_modules,
+                            non_native_modules_.end());
 
   // Insert the modules to be added. This operation is O((m + a) + a*log(a))
   // where m is the number of current modules and a is the number of modules to
   // be added.
-  non_native_modules_.insert(std::make_move_iterator(to_add.begin()),
-                             std::make_move_iterator(to_add.end()));
+  non_native_modules_.insert(std::make_move_iterator(new_modules.begin()),
+                             std::make_move_iterator(new_modules.end()));
 }
 
 void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
