@@ -9,10 +9,10 @@ from infra import ChromeEnterpriseTestCase
 
 
 @environment(file="../policy_test.asset.textpb")
-class UrlBlacklistTest(ChromeEnterpriseTestCase):
-  """Test the URLBlacklist policy.
+class UrlBlocklistTest(ChromeEnterpriseTestCase):
+  """Test the URLBlocklist policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlacklist"""
+  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlocklist"""
 
   @before_all
   def setup(self):
@@ -31,8 +31,8 @@ class UrlBlacklistTest(ChromeEnterpriseTestCase):
     return output
 
   @test
-  def test_BlacklistAllCantVisit(self, incognito=False):
-    self.SetPolicy('win2019-dc', r'URLBlacklist\1', '*', 'String')
+  def test_BlocklistAllCantVisit(self, incognito=False):
+    self.SetPolicy('win2019-dc', r'URLBlocklist\1', '*', 'String')
     self.RunCommand('client2019', 'gpupdate /force')
 
     # Verify that we can't visit any site.
@@ -43,8 +43,8 @@ class UrlBlacklistTest(ChromeEnterpriseTestCase):
     self.assertIn("ERR_BLOCKED_BY_ADMINISTRATOR", output)
 
   @test
-  def test_BlacklistYouTubeCantVisit(self, incognito=False):
-    self.SetPolicy('win2019-dc', r'URLBlacklist\1', 'https://youtube.com',
+  def test_BlocklistYouTubeCantVisit(self, incognito=False):
+    self.SetPolicy('win2019-dc', r'URLBlocklist\1', 'https://youtube.com',
                    'String')
     self.RunCommand('client2019', 'gpupdate /force')
 
@@ -56,9 +56,9 @@ class UrlBlacklistTest(ChromeEnterpriseTestCase):
     self.assertNotIn("ERR_BLOCKED_BY_ADMINISTRATOR", output)
 
   @test
-  def test_BlacklistAllCantVisitIncognito(self):
-    self.test_BlacklistAllCantVisit(incognito=True)
+  def test_BlocklistAllCantVisitIncognito(self):
+    self.test_BlocklistAllCantVisit(incognito=True)
 
   @test
-  def test_BlacklistYouTubeCantVisitIncognito(self):
-    self.test_BlacklistYouTubeCantVisit(incognito=True)
+  def test_BlocklistYouTubeCantVisitIncognito(self):
+    self.test_BlocklistYouTubeCantVisit(incognito=True)

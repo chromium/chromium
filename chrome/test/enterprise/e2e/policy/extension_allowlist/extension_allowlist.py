@@ -9,9 +9,9 @@ from infra import ChromeEnterpriseTestCase
 
 
 @environment(file="../policy_test.asset.textpb")
-class ExtensionInstallWhitelistTest(ChromeEnterpriseTestCase):
-  """Test the ExtensionInstallBlacklist policy.
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallWhitelist"""
+class ExtensionInstallAllowlistTest(ChromeEnterpriseTestCase):
+  """Test the ExtensionInstallBlocklist policy.
+    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallAllowlist"""
 
   @before_all
   def setup(self):
@@ -29,13 +29,13 @@ class ExtensionInstallWhitelistTest(ChromeEnterpriseTestCase):
     return output
 
   @test
-  def test_ExtensionWhitelist_hangout(self):
+  def test_ExtensionAllowlist_hangout(self):
     extension = 'nckgahadagoaajjgafhacjanaoiihapd'
-    self.SetPolicy('win2019-dc', r'ExtensionInstallBlacklist\1', '*', 'String')
-    self.SetPolicy('win2019-dc', r'ExtensionInstallWhitelist\1', extension,
+    self.SetPolicy('win2019-dc', r'ExtensionInstallBlocklist\1', '*', 'String')
+    self.SetPolicy('win2019-dc', r'ExtensionInstallAllowlist\1', extension,
                    'String')
     self.RunCommand('client2019', 'gpupdate /force')
-    logging.info('Whitelist extension install for ' + extension +
+    logging.info('Allowlist extension install for ' + extension +
                  ' while disabling others')
 
     test_url = 'https://chrome.google.com/webstore/detail/google-hangouts/nckgahadagoaajjgafhacjanaoiihapd'

@@ -9,13 +9,13 @@ from infra import ChromeEnterpriseTestCase
 
 
 @environment(file="../policy_test.asset.textpb")
-class UrlWhitelistTest(ChromeEnterpriseTestCase):
-  """Test the URLWhitelist policy.
+class UrlAllowlistTest(ChromeEnterpriseTestCase):
+  """Test the URLAllowlist policy.
 
-  This policy provides exceptions to the URLBlacklist policy.
+  This policy provides exceptions to the URLBlocklist policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlacklist
-  and https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLWhitelist"""
+  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlocklist
+  and https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLAllowlist"""
 
   @before_all
   def setup(self):
@@ -24,9 +24,9 @@ class UrlWhitelistTest(ChromeEnterpriseTestCase):
     self.InstallChrome(client)
     self.InstallWebDriver(client)
 
-    # Blacklist all sites and add an exception with URLWhitelist.
-    self.SetPolicy(dc, r'URLBlacklist\1', '*', 'String')
-    self.SetPolicy(dc, r'URLWhitelist\1', 'https://youtube.com', 'String')
+    # Blocklist all sites and add an exception with URLAllowlist.
+    self.SetPolicy(dc, r'URLBlocklist\1', '*', 'String')
+    self.SetPolicy(dc, r'URLAllowlist\1', 'https://youtube.com', 'String')
     self.RunCommand(client, 'gpupdate /force')
 
   def openPage(self, url, incognito=False):

@@ -9,9 +9,9 @@ from infra import ChromeEnterpriseTestCase
 
 
 @environment(file="../policy_test.asset.textpb")
-class ExtensionInstallBlacklistTest(ChromeEnterpriseTestCase):
-  """Test the ExtensionInstallBlacklist policy.
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallBlacklist"""
+class ExtensionInstallBlocklistTest(ChromeEnterpriseTestCase):
+  """Test the ExtensionInstallBlocklist policy.
+    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallBlocklist"""
 
   @before_all
   def setup(self):
@@ -29,9 +29,9 @@ class ExtensionInstallBlacklistTest(ChromeEnterpriseTestCase):
     return output
 
   @test
-  def test_ExtensionBlacklist_all(self):
+  def test_ExtensionBlocklist_all(self):
     extension = '*'
-    self.SetPolicy('win2019-dc', r'ExtensionInstallBlacklist\1', extension,
+    self.SetPolicy('win2019-dc', r'ExtensionInstallBlocklist\1', extension,
                    'String')
     self.RunCommand('client2019', 'gpupdate /force')
     logging.info('Disabled extension install for ' + extension)
@@ -41,9 +41,9 @@ class ExtensionInstallBlacklistTest(ChromeEnterpriseTestCase):
     self.assertIn('blocked', output)
 
   @test
-  def test_ExtensionBlacklist_hangout(self):
+  def test_ExtensionBlocklist_hangout(self):
     extension = 'nckgahadagoaajjgafhacjanaoiihapd'
-    self.SetPolicy('win2019-dc', r'ExtensionInstallBlacklist\1', extension,
+    self.SetPolicy('win2019-dc', r'ExtensionInstallBlocklist\1', extension,
                    'String')
     self.RunCommand('client2019', 'gpupdate /force')
     logging.info('Disabled extension install for ' + extension)
