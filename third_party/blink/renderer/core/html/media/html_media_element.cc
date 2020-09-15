@@ -984,7 +984,7 @@ void HTMLMediaElement::InvokeLoadAlgorithm() {
   setPlaybackRate(defaultPlaybackRate());
 
   // 8 - Set the error attribute to null and the can autoplay flag to true.
-  error_ = nullptr;
+  SetError(nullptr);
   can_autoplay_ = true;
 
   // 9 - Invoke the media element's resource selection algorithm.
@@ -1212,6 +1212,7 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
 
   DCHECK(!media_source_attachment_);
   DCHECK(!media_source_tracer_);
+  DCHECK(!error_);
 
   bool attempt_load = true;
 
@@ -1589,8 +1590,8 @@ void HTMLMediaElement::NoneSupported(const String& input_message) {
 
   // 1 - Set the error attribute to a new MediaError object whose code attribute
   // is set to MEDIA_ERR_SRC_NOT_SUPPORTED.
-  error_ = MakeGarbageCollected<MediaError>(
-      MediaError::kMediaErrSrcNotSupported, message);
+  SetError(MakeGarbageCollected<MediaError>(
+      MediaError::kMediaErrSrcNotSupported, message));
 
   // 2 - Forget the media element's media-resource-specific text tracks.
   ForgetResourceSpecificTracks();
@@ -1628,7 +1629,7 @@ void HTMLMediaElement::MediaEngineError(MediaError* err) {
 
   // 2 - Set the error attribute to a new MediaError object whose code attribute
   // is set to MEDIA_ERR_NETWORK/MEDIA_ERR_DECODE.
-  error_ = err;
+  SetError(err);
 
   // 3 - Queue a task to fire a simple event named error at the media element.
   ScheduleEvent(event_type_names::kError);
@@ -2314,10 +2315,11 @@ void HTMLMediaElement::setCurrentTime(double time) {
   // playback start position to that time.
   if (ready_state_ == kHaveNothing) {
     default_playback_start_position_ = time;
-    return;
+  } else {
+    Seek(time);
   }
 
-  Seek(time);
+  ReportCurrentTimeToMediaSource();
 }
 
 double HTMLMediaElement::duration() const {
@@ -2819,6 +2821,11 @@ void HTMLMediaElement::PlaybackProgressTimerFired(TimerBase*) {
 
   if (!seeking_)
     ScheduleTimeupdateEvent(true);
+
+  // Playback progress is chosen here for simplicity as a proxy for a good
+  // periodic time to also update the attached MediaSource, if any, with our
+  // currentTime so that it can continue to have a "recent media time".
+  ReportCurrentTimeToMediaSource();
 }
 
 void HTMLMediaElement::ScheduleTimeupdateEvent(bool periodic_event) {
@@ -3616,6 +3623,8 @@ void HTMLMediaElement::UpdatePlayState() {
 
   if (web_media_player_)
     web_media_player_->OnTimeUpdate();
+
+  ReportCurrentTimeToMediaSource();
 }
 
 void HTMLMediaElement::StopPeriodicTimers() {
@@ -3679,6 +3688,8 @@ void HTMLMediaElement::ContextDestroyed() {
   CancelPendingEventsAndCallbacks();
 
   // Clear everything in the Media Element
+  if (media_source_attachment_)
+    media_source_attachment_->OnElementContextDestroyed();
   ClearMediaPlayer();
   ready_state_ = kHaveNothing;
   ready_state_maximum_ = kHaveNothing;
@@ -4339,6 +4350,24 @@ void HTMLMediaElement::RequestMuted(bool muted) {
 bool HTMLMediaElement::MediaShouldBeOpaque() const {
   return !IsMediaDataCorsSameOrigin() && ready_state_ < kHaveMetadata &&
          EffectivePreloadType() != WebMediaPlayer::kPreloadNone;
+}
+
+void HTMLMediaElement::SetError(MediaError* error) {
+  error_ = error;
+
+  if (!error || !media_source_attachment_)
+    return;
+
+  media_source_attachment_->OnElementError();
+}
+
+void HTMLMediaElement::ReportCurrentTimeToMediaSource() {
+  if (!media_source_attachment_)
+    return;
+
+  // See MediaSourceAttachment::OnElementTimeUpdate() for why the attachment
+  // needs our currentTime.
+  media_source_attachment_->OnElementTimeUpdate(currentTime());
 }
 
 WebMediaPlayerClient::Features HTMLMediaElement::GetFeatures() {

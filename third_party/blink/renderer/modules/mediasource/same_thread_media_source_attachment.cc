@@ -78,11 +78,6 @@ void SameThreadMediaSourceAttachment::Close(MediaSourceTracer* tracer) {
   GetMediaSource(tracer)->Close();
 }
 
-bool SameThreadMediaSourceAttachment::IsClosed(
-    MediaSourceTracer* tracer) const {
-  return GetMediaSource(tracer)->IsClosed();
-}
-
 double SameThreadMediaSourceAttachment::duration(
     MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->duration();

@@ -36,6 +36,13 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // MediaSourceAttachment
   void Unregister() final;
 
+  // TODO(https://crbug.com/878133): Make MediaSource consult us for this
+  // information. In same-thread version, we may still directly consult the
+  // element, but cross-thread version will need this info.
+  void OnElementTimeUpdate(double time) final;
+  void OnElementError() final;
+  void OnElementContextDestroyed() final;
+
  protected:
   explicit MediaSourceAttachmentSupplement(MediaSource* media_source);
   ~MediaSourceAttachmentSupplement() override;
@@ -43,6 +50,11 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // Cache of the registered MediaSource. Retains strong reference from
   // construction of this object until Unregister() is called.
   Persistent<MediaSource> registered_media_source_;
+
+ private:
+  double recent_element_time_;
+  bool element_has_error_;
+  bool element_context_destroyed_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };

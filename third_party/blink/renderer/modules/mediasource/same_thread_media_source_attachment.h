@@ -30,7 +30,6 @@ class SameThreadMediaSourceAttachment final
       std::unique_ptr<WebMediaSource>) override;
 
   void Close(MediaSourceTracer* tracer) override;
-  bool IsClosed(MediaSourceTracer* tracer) const override;
   double duration(MediaSourceTracer* tracer) const override;
   WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const override;
   WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const override;

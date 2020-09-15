@@ -565,6 +565,9 @@ class CORE_EXPORT HTMLMediaElement
 
   void OnRemovedFromDocumentTimerFired(TimerBase*);
 
+  void SetError(MediaError* error);
+  void ReportCurrentTimeToMediaSource();
+
   Features GetFeatures() override;
 
   TaskRunnerTimer<HTMLMediaElement> load_timer_;
@@ -585,6 +588,8 @@ class CORE_EXPORT HTMLMediaElement
   KURL current_src_after_redirects_;
   Member<MediaStreamDescriptor> src_object_;
 
+  // To prevent potential regression when extended by the MSE API, do not set
+  // |error_| outside of constructor and SetError().
   Member<MediaError> error_;
 
   double volume_;

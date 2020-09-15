@@ -95,7 +95,6 @@ class CORE_EXPORT MediaSourceAttachment
       std::unique_ptr<WebMediaSource>) = 0;
 
   virtual void Close(MediaSourceTracer* tracer) = 0;
-  virtual bool IsClosed(MediaSourceTracer* tracer) const = 0;
   virtual double duration(MediaSourceTracer* tracer) const = 0;
 
   // 'Internal' in these methods doesn't mean private, it means that they are
@@ -104,6 +103,29 @@ class CORE_EXPORT MediaSourceAttachment
   virtual WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const = 0;
   virtual TimeRanges* Buffered(MediaSourceTracer* tracer) const = 0;
   virtual void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) = 0;
+
+  // Provide state updates to the MediaSource that are necessary for its
+  // operation. These are pushed rather than pulled to reduce complexity and
+  // latency, especially when the MediaSource is in a Worker context.
+  // OnElementTimeUpdate() gives the MediaSource a notion of the recent media
+  // element currentTime so that it can more effectively prevent evicting
+  // buffered media near to playback and/or seek target time in its heuristic.
+  // Alternatives such as pumping this via the media pipeline are insufficient,
+  // as the media pipeline may not be aware of overrides to the playback start
+  // position.
+  virtual void OnElementTimeUpdate(double time) = 0;
+
+  // Needed as a precondition in the Prepare Append algorithm, OnElementError()
+  // lets the MediaSource know if the attached media element has transitioned to
+  // having an error.
+  virtual void OnElementError() = 0;
+
+  // Needed in cross-thread attachments to prevent the attachment from UAF of
+  // the media element when the media element's context might be destroyed
+  // before a worker-context MSE's context has been destroyed. In such case,
+  // neither the media element, nor the underlying main-thread-owned MSE demuxer
+  // should be used further.
+  virtual void OnElementContextDestroyed() = 0;
 
  private:
   friend class WTF::ThreadSafeRefCounted<MediaSourceAttachment>;
