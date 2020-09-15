@@ -922,9 +922,14 @@ void DevToolsUIBindings::LoadNetworkResource(const DispatchCallback& callback,
         target_tab->GetURL().scheme() == gurl.scheme()) {
       std::vector<std::string> allowed_webui_hosts;
       content::RenderFrameHost* frame_host = web_contents()->GetMainFrame();
-      url_loader_factory = content::CreateWebUIURLLoader(
-          frame_host, target_tab->GetURL().scheme(),
-          std::move(allowed_webui_hosts));
+
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
+          content::CreateWebUIURLLoaderFactory(frame_host,
+                                               target_tab->GetURL().scheme(),
+                                               std::move(allowed_webui_hosts));
+      url_loader_factory = network::SharedURLLoaderFactory::Create(
+          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+              std::move(pending_remote)));
     } else {
       base::DictionaryValue response;
       response.SetBoolean("schemeSupported", false);

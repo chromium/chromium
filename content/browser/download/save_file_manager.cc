@@ -252,7 +252,6 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
     request->mode = network::mojom::RequestMode::kNavigate;
 
     network::mojom::URLLoaderFactory* factory = nullptr;
-    std::unique_ptr<network::mojom::URLLoaderFactory> url_loader_factory;
     mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
     auto* rfh = RenderFrameHostImpl::FromID(render_process_host_id,
                                             render_frame_routing_id);
@@ -279,9 +278,8 @@ void SaveFileManager::SaveURL(SaveItemId save_item_id,
           storage_partition->GetFileSystemContext(), partition_domain));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
-      url_loader_factory = CreateWebUIURLLoader(rfh, url.scheme(),
-                                                base::flat_set<std::string>());
-      factory = url_loader_factory.get();
+      factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));
+      factory = factory_remote.get();
     } else {
       factory = storage_partition->GetURLLoaderFactoryForBrowserProcess().get();
     }

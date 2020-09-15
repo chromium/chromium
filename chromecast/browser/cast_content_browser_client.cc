@@ -907,9 +907,9 @@ void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
           browser_context, std::move(extension_factory)));
 #endif
 
-  uniquely_owned_factories->emplace(
+  factories->emplace(
       kChromeResourceScheme,
-      content::CreateWebUIURLLoader(
+      content::CreateWebUIURLLoaderFactory(
           frame_host, kChromeResourceScheme,
           /*allowed_webui_hosts=*/base::flat_set<std::string>()));
 }

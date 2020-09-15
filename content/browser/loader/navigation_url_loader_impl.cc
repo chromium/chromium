@@ -48,7 +48,6 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "content/browser/webui/url_data_manager_backend.h"
-#include "content/browser/webui/web_ui_url_loader_factory_internal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -59,6 +58,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/url_loader_throttles.h"
+#include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1154,8 +1154,11 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         &factory_receiver, nullptr /* header_client */,
         nullptr /* bypass_redirect_checks */, nullptr /* disable_secure_dns */,
         nullptr /* factory_override */);
-    CreateWebUIURLLoaderBinding(frame_tree_node, scheme,
-                                std::move(factory_receiver));
+
+    mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
+        CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
+                                    scheme, {}));
+    direct_factory_for_webui->Clone(std::move(factory_receiver));
   }
 
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>

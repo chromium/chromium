@@ -1299,16 +1299,10 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                 // even when there is high priority work to do.
                 base::TaskPriority::USER_VISIBLE));
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        url_loader_factory_remote;
-    mojo::MakeSelfOwnedReceiver(
-        CreateWebUIURLLoader(rfh, params->url().scheme(),
-                             base::flat_set<std::string>()),
-        url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
     pending_url_loader_factory =
-        CreatePendingSharedURLLoaderFactoryFromURLLoaderFactory(
-            CreateWebUIURLLoader(rfh, params->url().scheme(),
-                                 base::flat_set<std::string>()));
+        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+            CreateWebUIURLLoaderFactory(rfh, params->url().scheme(),
+                                        base::flat_set<std::string>()));
   } else if (rfh && params->url().SchemeIsFileSystem()) {
     StoragePartitionImpl* storage_partition =
         static_cast<StoragePartitionImpl*>(

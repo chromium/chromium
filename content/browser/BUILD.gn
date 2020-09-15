@@ -2047,7 +2047,6 @@ source_set("browser") {
     "webui/web_ui_impl.h",
     "webui/web_ui_message_handler.cc",
     "webui/web_ui_url_loader_factory.cc",
-    "webui/web_ui_url_loader_factory_internal.h",
     "worker_host/dedicated_worker_host.cc",
     "worker_host/dedicated_worker_host.h",
     "worker_host/dedicated_worker_host_factory_impl.cc",
@@ -2839,9 +2838,9 @@ if (is_android) {
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [
-    "//content/web_test:web_test_browser",
-    "//content/test/*",
     "//content/public/test/android/*",
+    "//content/test/*",
+    "//content/web_test:web_test_browser",
   ]
   if (!is_component_build) {
     public_deps = [ ":browser" ]

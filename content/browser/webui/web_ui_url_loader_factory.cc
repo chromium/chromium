@@ -18,6 +18,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/loader/non_network_url_loader_factory_base.h"
 #include "content/browser/webui/network_error_url_loader.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/url_data_source_impl.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -202,30 +204,31 @@ void StartURLLoader(
                                      std::move(data_available_callback));
 }
 
-// This class has two ownership models. When it's created by
-// CreateWebUIURLLoaderBinding it is owned by its receivers and will delete
-// itself when it has no more receivers. Otherwise it's strongly owned.
-class WebUIURLLoaderFactory : public network::mojom::URLLoaderFactory {
+class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
  public:
+  // Returns mojo::PendingRemote to a newly constructed WebUIURLLoaderFactory.
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).
+  //
   // |allowed_hosts| is an optional set of allowed host names. If empty then
   // all hosts are allowed.
-  WebUIURLLoaderFactory(
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       FrameTreeNode* ftn,
       const std::string& scheme,
-      base::flat_set<std::string> allowed_hosts,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
-          mojo::PendingReceiver<network::mojom::URLLoaderFactory>())
-      : frame_tree_node_id_(ftn->frame_tree_node_id()),
-        scheme_(scheme),
-        allowed_hosts_(std::move(allowed_hosts)) {
-    if (factory_receiver) {
-      loader_factory_receivers_.set_disconnect_handler(base::BindRepeating(
-          &WebUIURLLoaderFactory::OnDisconnect, base::Unretained(this)));
-      loader_factory_receivers_.Add(this, std::move(factory_receiver));
-    }
+      base::flat_set<std::string> allowed_hosts) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+    // The WebUIURLLoaderFactory will delete itself when there are no more
+    // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+    new WebUIURLLoaderFactory(ftn, scheme, std::move(allowed_hosts),
+                              pending_remote.InitWithNewPipeAndPassReceiver());
+
+    return pending_remote;
   }
 
-  ~WebUIURLLoaderFactory() override {}
+ private:
+  ~WebUIURLLoaderFactory() override = default;
 
   // network::mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -250,13 +253,7 @@ class WebUIURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
     if (request.url.scheme() != scheme_) {
       DVLOG(1) << "Bad scheme: " << request.url.scheme();
-      if (loader_factory_receivers_.empty()) {
-        // This factory is being used directly without going through a mojo pipe
-        // so just assert.
-        CHECK(false) << "Incorrect scheme";
-      } else {
-        loader_factory_receivers_.ReportBadMessage("Incorrect scheme");
-      }
+      mojo::ReportBadMessage("Incorrect scheme");
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
@@ -271,11 +268,7 @@ class WebUIURLLoaderFactory : public network::mojom::URLLoaderFactory {
       base::debug::SetCrashKeyString(crash_key, request.url.spec());
 
       DVLOG(1) << "Bad host: \"" << request.url.host() << '"';
-      if (loader_factory_receivers_.empty()) {
-        CHECK(false) << "Incorrect host";
-      } else {
-        loader_factory_receivers_.ReportBadMessage("Incorrect host");
-      }
+      mojo::ReportBadMessage("Incorrect host");
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
@@ -305,44 +298,33 @@ class WebUIURLLoaderFactory : public network::mojom::URLLoaderFactory {
                    browser_context);
   }
 
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    loader_factory_receivers_.Add(this, std::move(receiver));
-  }
-
   const std::string& scheme() const { return scheme_; }
 
- private:
-  void OnDisconnect() {
-    if (loader_factory_receivers_.empty())
-      delete this;
-  }
+  WebUIURLLoaderFactory(
+      FrameTreeNode* ftn,
+      const std::string& scheme,
+      base::flat_set<std::string> allowed_hosts,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+        frame_tree_node_id_(ftn->frame_tree_node_id()),
+        scheme_(scheme),
+        allowed_hosts_(std::move(allowed_hosts)) {}
 
   int const frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> loader_factory_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(WebUIURLLoaderFactory);
 };
 
 }  // namespace
 
-std::unique_ptr<network::mojom::URLLoaderFactory> CreateWebUIURLLoader(
-    RenderFrameHost* render_frame_host,
-    const std::string& scheme,
-    base::flat_set<std::string> allowed_hosts) {
-  return std::make_unique<WebUIURLLoaderFactory>(
-      FrameTreeNode::From(render_frame_host), scheme, std::move(allowed_hosts));
-}
-
-void CreateWebUIURLLoaderBinding(
-    FrameTreeNode* node,
-    const std::string& scheme,
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver) {
-  // Deletes itself when the last receiver is destructed.
-  new WebUIURLLoaderFactory(node, scheme, base::flat_set<std::string>(),
-                            std::move(factory_receiver));
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreateWebUIURLLoaderFactory(RenderFrameHost* render_frame_host,
+                            const std::string& scheme,
+                            base::flat_set<std::string> allowed_hosts) {
+  return WebUIURLLoaderFactory::Create(FrameTreeNode::From(render_frame_host),
+                                       scheme, std::move(allowed_hosts));
 }
 
 }  // namespace content

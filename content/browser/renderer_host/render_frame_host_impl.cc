@@ -128,7 +128,6 @@
 #include "content/browser/webtransport/quic_transport_connector_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
-#include "content/browser/webui/web_ui_url_loader_factory_internal.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/associated_interfaces.mojom.h"
@@ -163,6 +162,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -6102,8 +6102,10 @@ void RenderFrameHostImpl::CommitNavigation(
           base::nullopt /* navigation_id */, &factory_receiver,
           nullptr /* header_client */, nullptr /* bypass_redirect_checks */,
           nullptr /* disable_secure_dns */, nullptr /* factory_override */);
-      CreateWebUIURLLoaderBinding(frame_tree_node(), scheme,
-                                  std::move(factory_receiver));
+      mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
+          CreateWebUIURLLoaderFactory(this, scheme, {}));
+      direct_factory_for_webui->Clone(std::move(factory_receiver));
+
       // If the renderer has webui bindings, then don't give it access to
       // network loader for security reasons.
       // http://crbug.com/829412: make an exception for a small whitelist

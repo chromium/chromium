@@ -4650,9 +4650,9 @@ void ChromeContentBrowserClient::
   // The test below matches what's done by ShouldServiceRequestIOThread in
   // local_ntp_source.cc.
   if (instant_service->IsInstantProcess(render_process_id)) {
-    uniquely_owned_factories->emplace(
+    factories->emplace(
         chrome::kChromeSearchScheme,
-        content::CreateWebUIURLLoader(
+        content::CreateWebUIURLLoaderFactory(
             frame_host, chrome::kChromeSearchScheme,
             /*allowed_webui_hosts=*/base::flat_set<std::string>()));
   }
@@ -4692,10 +4692,10 @@ void ChromeContentBrowserClient::
     allowed_webui_hosts.emplace_back(chrome::kChromeUIAppIconHost);
   }
   if (!allowed_webui_hosts.empty()) {
-    uniquely_owned_factories->emplace(
-        content::kChromeUIScheme,
-        content::CreateWebUIURLLoader(frame_host, content::kChromeUIScheme,
-                                      std::move(allowed_webui_hosts)));
+    factories->emplace(content::kChromeUIScheme,
+                       content::CreateWebUIURLLoaderFactory(
+                           frame_host, content::kChromeUIScheme,
+                           std::move(allowed_webui_hosts)));
   }
 
   // Extension with a background page get file access that gets approval from
