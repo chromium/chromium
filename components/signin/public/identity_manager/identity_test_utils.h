@@ -9,7 +9,6 @@
 
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 
 namespace network {
 class TestURLLoaderFactory;
@@ -51,10 +50,13 @@ class IdentityManager;
 // PrimaryAccountManager callbacks for signin success. Blocks until the primary
 // account is set. Returns the CoreAccountInfo of the newly-set account.
 // NOTE: See disclaimer at top of file re: direct usage.
-CoreAccountInfo SetPrimaryAccount(
-    IdentityManager* identity_manager,
-    const std::string& email,
-    ConsentLevel consent_level = ConsentLevel::kSync);
+CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
+                                  const std::string& email);
+
+// As above, but adds an "unconsented" primary account. See ./README.md for
+// the distinction between primary and unconsented primary accounts.
+CoreAccountInfo SetUnconsentedPrimaryAccount(IdentityManager* identity_manager,
+                                             const std::string& email);
 
 // Sets a refresh token for the primary account (which must already be set).
 // Blocks until the refresh token is set. If |token_value| is empty a default

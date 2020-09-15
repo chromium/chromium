@@ -361,14 +361,12 @@ IdentityTestEnvironment::identity_manager_observer() {
 
 CoreAccountInfo IdentityTestEnvironment::SetPrimaryAccount(
     const std::string& email) {
-  return signin::SetPrimaryAccount(identity_manager(), email,
-                                   ConsentLevel::kSync);
+  return signin::SetPrimaryAccount(identity_manager(), email);
 }
 
 CoreAccountInfo IdentityTestEnvironment::SetUnconsentedPrimaryAccount(
     const std::string& email) {
-  return signin::SetPrimaryAccount(identity_manager(), email,
-                                   ConsentLevel::kNotRequired);
+  return signin::SetUnconsentedPrimaryAccount(identity_manager(), email);
 }
 
 void IdentityTestEnvironment::SetRefreshTokenForPrimaryAccount() {
