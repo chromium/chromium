@@ -153,16 +153,48 @@ class IsolatedPrerenderProxyingURLLoaderFactory
     // There are the mojo pipe endpoints between this proxy and the renderer.
     // Messages received by |client_receiver_| are forwarded to
     // |target_client_|.
-    mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
     mojo::Remote<network::mojom::URLLoaderClient> target_client_;
+    mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
 
     // These are the mojo pipe endpoints between this proxy and the network
     // process. Messages received by |loader_receiver_| are forwarded to
     // |target_loader_|.
-    mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
     mojo::Remote<network::mojom::URLLoader> target_loader_;
+    mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
 
     DISALLOW_COPY_AND_ASSIGN(InProgressRequest);
+  };
+
+  // Terminates the request when constructed.
+  class AbortRequest : public network::mojom::URLLoader {
+   public:
+    AbortRequest(
+        mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+    ~AbortRequest() override;
+
+    // network::mojom::URLLoader:
+    void FollowRedirect(
+        const std::vector<std::string>& removed_headers,
+        const net::HttpRequestHeaders& modified_headers,
+        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        const base::Optional<GURL>& new_url) override;
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override;
+    void PauseReadingBodyFromNet() override;
+    void ResumeReadingBodyFromNet() override;
+
+   private:
+    void OnBindingClosed();
+    void Abort();
+
+    // There are the mojo pipe endpoints between this proxy and the renderer.
+    mojo::Remote<network::mojom::URLLoaderClient> target_client_;
+    mojo::Receiver<network::mojom::URLLoader> loader_receiver_;
+
+    base::WeakPtrFactory<AbortRequest> weak_factory_{this};
+
+    DISALLOW_COPY_AND_ASSIGN(AbortRequest);
   };
 
   // Used as a callback for determining the eligibility of a resource to be
@@ -207,6 +239,10 @@ class IsolatedPrerenderProxyingURLLoaderFactory
   // All active network requests handled by this factory.
   std::set<std::unique_ptr<InProgressRequest>, base::UniquePtrComparator>
       requests_;
+
+  // Tracks how many requests the prerender has made in order to limit the
+  // number of subresources that can be prefetched by one page.
+  size_t request_count_ = 0;
 
   // The network process URLLoaderFactory.
   mojo::Remote<network::mojom::URLLoaderFactory> network_process_factory_;

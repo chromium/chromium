@@ -14,6 +14,10 @@
 // This command line flag enables NoStatePrefetch on Isolated Prerenders.
 extern const char kIsolatedPrerenderEnableNSPCmdLineFlag[];
 
+// Overrides the value returned by
+// |IsolatedPrerenderMaxSubresourcesPerPrerender| when a valid long is given.
+extern const char kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag[];
+
 // Returns true if the Isolated Prerender feature is enabled.
 bool IsolatedPrerenderIsEnabled();
 
@@ -67,5 +71,8 @@ enum class IsolatedPrerenderOriginProbeType {
   kHttpHead,
 };
 IsolatedPrerenderOriginProbeType IsolatedPrerenderOriginProbeMechanism();
+
+// The maximum number of subresources that will be fetched per prefetched page.
+size_t IsolatedPrerenderMaxSubresourcesPerPrerender();
 
 #endif  // CHROME_BROWSER_PRERENDER_ISOLATED_ISOLATED_PRERENDER_PARAMS_H_

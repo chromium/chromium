@@ -10,9 +10,12 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/prerender/isolated/isolated_prerender_params.h"
 #include "chrome/browser/prerender/isolated/isolated_prerender_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -271,6 +274,49 @@ void IsolatedPrerenderProxyingURLLoaderFactory::InProgressRequest::
       profile_, redirect_chain_, on_resource_load_successful_);
 }
 
+IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::~AbortRequest() =
+    default;
+IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::AbortRequest(
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client)
+    : target_client_(std::move(client)),
+      loader_receiver_(this, std::move(loader_receiver)) {
+  loader_receiver_.set_disconnect_handler(base::BindOnce(
+      &IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::OnBindingClosed,
+      base::Unretained(this)));
+
+  // PostTask the failure to get it out of this message loop, allowing the mojo
+  // pipes to settle in.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::Abort,
+          weak_factory_.GetWeakPtr()));
+}
+
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::Abort() {
+  target_client_->OnComplete(
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
+}
+
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::FollowRedirect(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers,
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const base::Optional<GURL>& new_url) {}
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::SetPriority(
+    net::RequestPriority priority,
+    int32_t intra_priority_value) {}
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::
+    PauseReadingBodyFromNet() {}
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::
+    ResumeReadingBodyFromNet() {}
+
+void IsolatedPrerenderProxyingURLLoaderFactory::AbortRequest::
+    OnBindingClosed() {
+  delete this;
+}
+
 IsolatedPrerenderProxyingURLLoaderFactory::
     IsolatedPrerenderProxyingURLLoaderFactory(
         int frame_tree_node_id,
@@ -332,9 +378,18 @@ void IsolatedPrerenderProxyingURLLoaderFactory::CreateLoaderAndStart(
   // If this request is happening during a prerender then check if it is
   // eligible for caching before putting it on the network.
   if (ShouldHandleRequestForPrerender()) {
+    // Check if this prerender has exceeded its max number of subresources.
+    request_count_++;
+    if (request_count_ > IsolatedPrerenderMaxSubresourcesPerPrerender()) {
+      std::unique_ptr<AbortRequest> request = std::make_unique<AbortRequest>(
+          std::move(loader_receiver), std::move(client));
+      // The request will manage its own lifecycle based on the mojo pipes.
+      request.release();
+      return;
+    }
+
     // We must check if the request can be cached and set the appropriate load
     // flag if so.
-
     IsolatedPrerenderTabHelper::CheckEligibilityOfURL(
         profile, request.url,
         base::BindOnce(
