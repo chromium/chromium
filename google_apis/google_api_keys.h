@@ -83,6 +83,10 @@ std::string GetSharingAPIKey();
 // Retrieves the Speech On-Device API (SODA) API Key.
 std::string GetSodaAPIKey();
 
+// Retrieves the DevTools Survey API Key. Note there is no public API to replace
+// this functionality.
+std::string GetDevtoolsSurveysAPIKey();
+
 #if defined(OS_IOS)
 // Sets the API key. This should be called as early as possible before this
 // API key is even accessed.

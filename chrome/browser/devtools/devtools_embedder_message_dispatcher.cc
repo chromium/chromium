@@ -233,5 +233,7 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      &Delegate::SetOpenNewWindowForPopups, delegate);
   d->RegisterHandler("registerExtensionsAPI", &Delegate::RegisterExtensionsAPI,
                      delegate);
+  d->RegisterHandlerWithCallback("getSurveyAPIKey", &Delegate::GetSurveyAPIKey,
+                                 delegate);
   return d;
 }

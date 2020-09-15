@@ -73,6 +73,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "google_apis/google_api_keys.h"
 #include "ipc/ipc_channel.h"
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
@@ -1528,6 +1529,12 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
 void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,
                                                const std::string& script) {
   extensions_api_[origin + "/"] = script;
+}
+
+void DevToolsUIBindings::GetSurveyAPIKey(const DispatchCallback& callback) {
+  base::DictionaryValue response;
+  response.SetString("apiKey", google_apis::GetDevtoolsSurveysAPIKey());
+  callback.Run(&response);
 }
 
 void DevToolsUIBindings::SetDelegate(Delegate* delegate) {

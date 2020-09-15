@@ -95,6 +95,12 @@
 #define GOOGLE_API_KEY_SODA DUMMY_API_TOKEN
 #endif
 
+// API key for the DevTools frontend to use for surveys. Note there is no
+// public API to replace this functionality.
+#if !defined(GOOGLE_API_KEY_DEVTOOLS_SURVEYS)
+#define GOOGLE_API_KEY_DEVTOOLS_SURVEYS DUMMY_API_TOKEN
+#endif
+
 // These are used as shortcuts for developers and users providing
 // OAuth credentials via preprocessor defines or environment
 // variables.  If set, they will be used to replace any of the client
@@ -146,6 +152,11 @@ class APIKeyCache {
     api_key_soda_ = CalculateKeyValue(
         GOOGLE_API_KEY_SODA, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA),
         nullptr, std::string(), environment.get(), command_line, gaia_config);
+
+    api_key_devtools_surveys_ = CalculateKeyValue(
+        GOOGLE_API_KEY_DEVTOOLS_SURVEYS,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_DEVTOOLS_SURVEYS), nullptr,
+        std::string(), environment.get(), command_line, gaia_config);
 
     metrics_key_ = CalculateKeyValue(
         GOOGLE_METRICS_SIGNING_KEY,
@@ -213,6 +224,9 @@ class APIKeyCache {
   std::string api_key_remoting() const { return api_key_remoting_; }
   std::string api_key_sharing() const { return api_key_sharing_; }
   std::string api_key_soda() const { return api_key_soda_; }
+  std::string api_key_devtools_surveys() const {
+    return api_key_devtools_surveys_;
+  }
 
   std::string metrics_key() const { return metrics_key_; }
 
@@ -324,6 +338,7 @@ class APIKeyCache {
   std::string api_key_remoting_;
   std::string api_key_sharing_;
   std::string api_key_soda_;
+  std::string api_key_devtools_surveys_;
   std::string metrics_key_;
   std::string client_ids_[CLIENT_NUM_ITEMS];
   std::string client_secrets_[CLIENT_NUM_ITEMS];
@@ -354,6 +369,10 @@ std::string GetSharingAPIKey() {
 
 std::string GetSodaAPIKey() {
   return g_api_key_cache.Get().api_key_soda();
+}
+
+std::string GetDevtoolsSurveysAPIKey() {
+  return g_api_key_cache.Get().api_key_devtools_surveys();
 }
 
 #if defined(OS_IOS)

@@ -104,6 +104,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void SetOpenNewWindowForPopups(bool value) = 0;
     virtual void RegisterExtensionsAPI(const std::string& origin,
                                        const std::string& script) = 0;
+    virtual void GetSurveyAPIKey(const DispatchCallback& callback) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;
