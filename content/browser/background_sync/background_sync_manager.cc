@@ -309,6 +309,8 @@ std::string GetEventStatusString(blink::ServiceWorkerStatusCode status_code) {
       return "succeeded";
     case blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected:
       return "waitUntil rejected";
+    case blink::ServiceWorkerStatusCode::kErrorFailed:
+      return "failed";
     case blink::ServiceWorkerStatusCode::kErrorAbort:
       return "aborted";
     case blink::ServiceWorkerStatusCode::kErrorTimeout:
