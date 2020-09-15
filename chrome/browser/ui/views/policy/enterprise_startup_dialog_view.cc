@@ -75,7 +75,7 @@ std::unique_ptr<views::View> CreateLogoView() {
                              ? IDR_PRODUCT_LOGO_ENTERPRISE_WHITE
                              : IDR_PRODUCT_LOGO_ENTERPRISE)
           .AsImageSkia());
-  logo_image->set_tooltip_text(
+  logo_image->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT));
   gfx::Rect logo_bounds = logo_image->GetImageBounds();
   logo_image->SetImageSize(gfx::Size(

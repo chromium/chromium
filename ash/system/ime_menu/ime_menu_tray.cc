@@ -430,7 +430,7 @@ base::string16 ImeMenuTray::GetAccessibleNameForTray() {
 
 void ImeMenuTray::HandleLocaleChange() {
   if (image_view_) {
-    image_view_->set_tooltip_text(
+    image_view_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   }
 
@@ -579,7 +579,7 @@ void ImeMenuTray::CreateImageView() {
     label_ = nullptr;
   }
   image_view_ = new ImeMenuImageView();
-  image_view_->set_tooltip_text(
+  image_view_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME));
   tray_container()->AddChildView(image_view_);
 }

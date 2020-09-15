@@ -523,7 +523,7 @@ views::View* NetworkListView::CreatePowerStatusView(const NetworkInfo& info) {
       AshColorProvider::GetSecondToneColor(icon_color), icon_color));
 
   // Show the numeric battery percentage on hover.
-  icon->set_tooltip_text(base::FormatPercent(info.battery_percentage));
+  icon->SetTooltipText(base::FormatPercent(info.battery_percentage));
 
   return icon;
 }
@@ -548,7 +548,7 @@ views::View* NetworkListView::CreateControlledByExtensionView(
   views::ImageView* controlled_icon = TrayPopupUtils::CreateMainImageView();
   controlled_icon->SetImage(
       gfx::CreateVectorIcon(kCaptivePortalIcon, GetIconColor()));
-  controlled_icon->set_tooltip_text(l10n_util::GetStringFUTF16(
+  controlled_icon->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_EXTENSION_CONTROLLED_WIFI,
       base::UTF8ToUTF16(info.captive_portal_provider_name)));
   controlled_icon->SetID(VIEW_ID_EXTENSION_CONTROLLED_WIFI);

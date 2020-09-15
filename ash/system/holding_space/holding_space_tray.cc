@@ -53,7 +53,7 @@ void SetupChildLayer(views::View* child) {
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   icon_ = tray_container()->AddChildView(std::make_unique<views::ImageView>());
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE));
 
   icon_->SetImage(CreateVectorIcon(kHoldingSpaceIcon,
@@ -83,7 +83,7 @@ base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
 }
 
 void HoldingSpaceTray::HandleLocaleChange() {
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_SCREENSHOTS_TITLE));
 }
 

@@ -66,7 +66,7 @@ MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   MediaNotificationProvider::Get()->AddObserver(this);
 
   auto icon = std::make_unique<views::ImageView>();
-  icon->set_tooltip_text(l10n_util::GetStringUTF16(
+  icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
   icon->SetImage(gfx::CreateVectorIcon(
       kGlobalMediaControlsIcon,
@@ -106,7 +106,7 @@ void MediaTray::UpdateAfterLoginStatusChange() {
 }
 
 void MediaTray::HandleLocaleChange() {
-  icon_->set_tooltip_text(l10n_util::GetStringUTF16(
+  icon_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
 }
 

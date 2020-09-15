@@ -25,7 +25,7 @@ constexpr int kTitleContainerSpacing = 16;
 views::ImageView* CreateTitleIcon(const gfx::VectorIcon& vector_icon,
                                   int tooltip_text_id) {
   auto* icon = new views::ImageView();
-  icon->set_tooltip_text(l10n_util::GetStringUTF16(tooltip_text_id));
+  icon->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
   icon->SetImage(CreateVectorIcon(
       vector_icon, AshColorProvider::Get()->GetContentLayerColor(
                        AshColorProvider::ContentLayerType::kIconColorPrimary)));

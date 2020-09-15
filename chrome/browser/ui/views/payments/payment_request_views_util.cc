@@ -259,7 +259,7 @@ std::unique_ptr<views::ImageView> CreateAppIconView(
     // Images from |icon_resource_id| are 32x20 credit cards.
     icon_view->SetImageSize(gfx::Size(32, 20));
   }
-  icon_view->set_tooltip_text(tooltip_text);
+  icon_view->SetTooltipText(tooltip_text);
   icon_view->SetPaintToLayer();
   icon_view->layer()->SetFillsBoundsOpaquely(false);
   icon_view->layer()->SetOpacity(opacity);
@@ -286,7 +286,7 @@ std::unique_ptr<views::View> CreateProductLogoFooterView() {
                              ? IDR_PRODUCT_LOGO_NAME_22_WHITE
                              : IDR_PRODUCT_LOGO_NAME_22)
           .AsImageSkia());
-  chrome_logo->set_tooltip_text(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+  chrome_logo->SetTooltipText(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   content_view->AddChildView(std::move(chrome_logo));
 
   return content_view;

@@ -93,7 +93,7 @@ class PhoneHubView : public views ::View {
 PhoneHubTray::PhoneHubTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // TODO(tengs): Update icon to spec.
   auto icon = std::make_unique<views::ImageView>();
-  icon->set_tooltip_text(
+  icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
   icon->SetImage(CreateVectorIcon(
       kSystemMenuPhoneIcon,
@@ -133,7 +133,7 @@ base::string16 PhoneHubTray::GetAccessibleNameForTray() {
 }
 
 void PhoneHubTray::HandleLocaleChange() {
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
 }
 

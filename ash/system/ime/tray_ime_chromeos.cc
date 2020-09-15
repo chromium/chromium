@@ -68,7 +68,7 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
         kSystemMenuBusinessIcon,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
-    controlled_setting_icon_->set_tooltip_text(
+    controlled_setting_icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);
   }

@@ -39,7 +39,7 @@ DictationButtonTray::DictationButtonTray(Shelf* shelf)
   const int horizontal_padding = (kTrayItemSize - icon_image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(vertical_padding, horizontal_padding)));
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
   tray_container()->AddChildView(icon_);
   Shell::Get()->AddShellObserver(this);
@@ -86,7 +86,7 @@ base::string16 DictationButtonTray::GetAccessibleNameForTray() {
 }
 
 void DictationButtonTray::HandleLocaleChange() {
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
 }
 

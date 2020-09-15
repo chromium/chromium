@@ -282,7 +282,7 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
       break;
   }
   if (res_id)
-    capture_icon_->set_tooltip_text(l10n_util::GetStringUTF16(res_id));
+    capture_icon_->SetTooltipText(l10n_util::GetStringUTF16(res_id));
 }
 
 base::string16 UserItemButton::GetTooltipText(const gfx::Point& p) const {

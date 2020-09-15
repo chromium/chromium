@@ -68,9 +68,8 @@ class VIEWS_EXPORT ImageView : public View {
   const base::string16& GetAccessibleName() const;
 
   // Set the tooltip text.
-  void set_tooltip_text(const base::string16& tooltip) {
-    tooltip_text_ = tooltip;
-  }
+  void SetTooltipText(const base::string16& tooltip);
+  const base::string16& GetTooltipText() const;
 
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;

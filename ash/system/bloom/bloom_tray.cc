@@ -86,7 +86,7 @@ void BloomTray::SetIcon() {
 
 void BloomTray::SetTooltipText() {
   // TODO(jeroendh): Use correct tooltip;
-  icon_->set_tooltip_text(
+  icon_->SetTooltipText(
       base::ASCIIToUTF16("Enable Bloom (THIS STRING MUST BE LOCALIZED)"));
 }
 

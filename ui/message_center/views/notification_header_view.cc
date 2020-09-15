@@ -345,7 +345,7 @@ void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
 void NotificationHeaderView::SetExpanded(bool expanded) {
   is_expanded_ = expanded;
   UpdateColors();
-  expand_button_->set_tooltip_text(l10n_util::GetStringUTF16(
+  expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);

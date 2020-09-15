@@ -62,11 +62,11 @@ void ManagedDeviceTrayItemView::Update() {
                                              ->enterprise_display_domain();
     SetVisible(true);
     if (!enterprise_domain_name.empty()) {
-      image_view()->set_tooltip_text(l10n_util::GetStringFUTF16(
+      image_view()->SetTooltipText(l10n_util::GetStringFUTF16(
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
           base::UTF8ToUTF16(enterprise_domain_name)));
     } else {
-      image_view()->set_tooltip_text(base::string16());
+      image_view()->SetTooltipText(base::string16());
       LOG(WARNING)
           << "Public account user, but device not enterprise-enrolled.";
     }
@@ -74,7 +74,7 @@ void ManagedDeviceTrayItemView::Update() {
     image_view()->SetImage(gfx::CreateVectorIcon(
         kSystemTraySupervisedUserIcon,
         TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-    image_view()->set_tooltip_text(
+    image_view()->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FAMILY_LINK_LABEL));
     SetVisible(true);
   } else {
