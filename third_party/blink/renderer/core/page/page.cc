@@ -75,7 +75,6 @@
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
@@ -226,9 +225,7 @@ Page::Page(PageClients& page_clients)
       next_related_page_(this),
       prev_related_page_(this),
       autoplay_flags_(0),
-      web_text_autosizer_page_info_({0, 0, 1.f}),
-      text_fragment_selector_generator_(
-          MakeGarbageCollected<TextFragmentSelectorGenerator>()) {
+      web_text_autosizer_page_info_({0, 0, 1.f}) {
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
@@ -343,7 +340,6 @@ LocalFrame* Page::DeprecatedLocalMainFrame() const {
 
 void Page::DocumentDetached(Document* document) {
   pointer_lock_controller_->DocumentDetached(document);
-  text_fragment_selector_generator_->DocumentDetached(document);
   context_menu_controller_->DocumentDetached(document);
   if (validation_message_client_)
     validation_message_client_->DocumentDetached(*document);
@@ -921,7 +917,6 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(plugins_changed_observers_);
   visitor->Trace(next_related_page_);
   visitor->Trace(prev_related_page_);
-  visitor->Trace(text_fragment_selector_generator_);
   Supplementable<Page>::Trace(visitor);
 }
 

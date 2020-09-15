@@ -341,10 +341,9 @@ class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.link, R.string.sharing_highlights)
                 .setFeatureNameForMetrics("SharingHubAndroid.LinkToTextSelected")
                 .setOnClickCallback((view) -> {
-                    LinkToTextCoordinator linkToTextCoordinator = new LinkToTextCoordinator(
-                            mActivity, mTabProvider.get().getWindowAndroid(),
-                            mChromeOptionShareCallback, mShareParams.getUrl(),
-                            mShareParams.getText());
+                    LinkToTextCoordinator linkToTextCoordinator =
+                            new LinkToTextCoordinator(mActivity, mTabProvider.get(),
+                                    mChromeOptionShareCallback, mUrl, mShareParams.getText());
                 })
                 .build();
     }

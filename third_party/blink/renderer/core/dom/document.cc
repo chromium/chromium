@@ -277,6 +277,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -3118,6 +3119,9 @@ void Document::Shutdown() {
     owner_element->SetEmbeddedContentView(nullptr);
 
   markers_->PrepareForDestruction();
+
+  if (GetFrame()->GetTextFragmentSelectorGenerator())
+    GetFrame()->GetTextFragmentSelectorGenerator()->ClearSelection();
 
   GetPage()->DocumentDetached(this);
 

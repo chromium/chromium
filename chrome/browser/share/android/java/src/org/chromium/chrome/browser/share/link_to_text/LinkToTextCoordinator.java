@@ -7,39 +7,49 @@ package org.chromium.chrome.browser.share.link_to_text;
 import android.content.Context;
 import android.net.Uri;
 
+import org.chromium.blink.mojom.TextFragmentSelectorProducer;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.services.service_manager.InterfaceProvider;
 
 /**
  * Handles the Link To Text action in the Sharing Hub.
  */
-public class LinkToTextCoordinator {
+public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n%s";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
+    private static final String INVALID_SELECTOR = "";
     private final Context mContext;
-    private final WindowAndroid mWindow;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final String mVisibleUrl;
     private final String mSelectedText;
+    private final Tab mTab;
 
-    public LinkToTextCoordinator(Context context, WindowAndroid window,
+    private TextFragmentSelectorProducer mProducer;
+    private boolean mCancelRequest;
+
+    public LinkToTextCoordinator(Context context, Tab tab,
             ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
             String selectedText) {
         mContext = context;
-        mWindow = window;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mVisibleUrl = visibleUrl;
         mSelectedText = selectedText;
+        mTab = tab;
+        mTab.addObserver(this);
+        mCancelRequest = false;
 
-        // TODO(1102382): Replace following line with a request to create text fragment selector and
-        // pass |OnSelectorReady| as callback.
-        onSelectorReady("");
+        requestSelector();
     }
 
     public void onSelectorReady(String selector) {
+        if (mCancelRequest) return;
+
         String successMessage =
                 mContext.getResources().getString(R.string.link_to_text_success_message);
         String failureMessage =
@@ -48,14 +58,32 @@ public class LinkToTextCoordinator {
         // TODO(1102382): Consider creating SharedParams on sharesheet side. In that case there will
         // be no need to keep the WindowAndroid in this class.
         String textToShare = getTextToShare(selector);
-        ShareParams params = new ShareParams.Builder(mWindow, /*title=*/"", /*url=*/"")
-                                     .setText(textToShare)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mTab.getWindowAndroid(), /*title=*/"", /*url=*/"")
+                        .setText(textToShare)
+                        .build();
 
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         mChromeOptionShareCallback.showThirdPartyShareSheetWithMessage(
                 !selector.isEmpty() ? successMessage : failureMessage, params, chromeShareExtras,
                 System.currentTimeMillis());
+    }
+
+    public void requestSelector() {
+        if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
+            onSelectorReady(INVALID_SELECTOR);
+            return;
+        }
+
+        InterfaceProvider interfaces = mTab.getWebContents().getMainFrame().getRemoteInterfaces();
+        mProducer = interfaces.getInterface(TextFragmentSelectorProducer.MANAGER);
+        mProducer.generateSelector(new TextFragmentSelectorProducer.GenerateSelectorResponse() {
+            @Override
+            public void call(String selector) {
+                onSelectorReady(selector);
+                cleanup();
+            }
+        });
     }
 
     public String getTextToShare(String selector) {
@@ -66,5 +94,30 @@ public class LinkToTextCoordinator {
             url = uri.buildUpon().encodedFragment(TEXT_FRAGMENT_PREFIX + selector).toString();
         }
         return String.format(SHARE_TEXT_TEMPLATE, mSelectedText, url);
+    }
+
+    // Discard results if tab is not on foreground anymore.
+    @Override
+    public void onHidden(Tab tab, @TabHidingType int type) {
+        cleanup();
+    }
+
+    // Discard results if tab content is changed by typing new URL in omnibox.
+    @Override
+    public void onUpdateUrl(Tab tab, String url) {
+        cleanup();
+    }
+
+    // Discard results if tab content crashes.
+    @Override
+    public void onCrash(Tab tab) {
+        cleanup();
+    }
+
+    private void cleanup() {
+        // TODO(gayane): Consider canceling request in renderer.
+        if (mProducer != null) mProducer.close();
+        mCancelRequest = true;
+        mTab.removeObserver(this);
     }
 }
