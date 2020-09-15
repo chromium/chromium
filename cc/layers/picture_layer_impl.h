@@ -222,8 +222,7 @@ class CC_EXPORT PictureLayerImpl
 
   LCDTextDisallowedReason ComputeLCDTextDisallowedReason(
       bool raster_translation_aligns_pixels) const;
-  // Returns true if the LCD state changed.
-  bool UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
+  void UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
 
   // TODO(crbug.com/1114504): For now this checks the immediate transform node
   // only. The callers may actually want to know if this layer or ancestor has

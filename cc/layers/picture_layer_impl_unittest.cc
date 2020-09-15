@@ -5066,8 +5066,20 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
   for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
     EXPECT_FALSE(tile->can_use_lcd_text());
 
+  // Change of the specific LCD text disallowed reason should not invalidate
+  // tilings.
   pending_layer()->SetContentsOpaque(true);
-  pending_layer()->UpdateTiles();
+  FilterOperations blur_filter;
+  blur_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
+  SetFilter(pending_layer(), blur_filter);
+  UpdateDrawProperties(host_impl()->pending_tree());
+  EXPECT_FALSE(pending_layer()->can_use_lcd_text());
+  EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
+  for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
+    EXPECT_FALSE(tile->can_use_lcd_text());
+
+  SetFilter(pending_layer(), FilterOperations());
+  UpdateDrawProperties(host_impl()->pending_tree());
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
   for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())

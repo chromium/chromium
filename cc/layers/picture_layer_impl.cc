@@ -14,6 +14,8 @@
 #include <set>
 #include <utility>
 
+#include "base/logging.h"
+
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
@@ -810,20 +812,15 @@ void PictureLayerImpl::UpdateRasterSource(
   }
 }
 
-bool PictureLayerImpl::UpdateCanUseLCDText(
+void PictureLayerImpl::UpdateCanUseLCDText(
     bool raster_translation_aligns_pixels) {
   // If we have pending/active trees, the active tree doesn't update lcd text
   // status but copies it from the pending tree.
   if (!layer_tree_impl()->IsSyncTree())
-    return false;
+    return;
 
-  auto new_lcd_text_disallowed_reason =
+  lcd_text_disallowed_reason_ =
       ComputeLCDTextDisallowedReason(raster_translation_aligns_pixels);
-  if (lcd_text_disallowed_reason_ == new_lcd_text_disallowed_reason)
-    return false;
-
-  lcd_text_disallowed_reason_ = new_lcd_text_disallowed_reason;
-  return true;
 }
 
 bool PictureLayerImpl::HasWillChangeTransformHint() const {
@@ -1200,6 +1197,9 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
   // Also avoid re-rasterization during pinch-zoom.
   if (layer_tree_impl()->PinchGestureActive())
     return false;
+  // Keep the current LCD text and raster translation if there is no text.
+  if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText)
+    return false;
   return true;
 }
 
@@ -1211,11 +1211,12 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
   gfx::Vector2dF raster_translation;
   bool raster_translation_aligns_pixels =
       CalculateRasterTranslation(raster_translation);
-  bool can_use_lcd_text_changed =
-      UpdateCanUseLCDText(raster_translation_aligns_pixels);
+  UpdateCanUseLCDText(raster_translation_aligns_pixels);
   if (high_res) {
     bool raster_translation_is_not_ideal =
         high_res->raster_transform().translation() != raster_translation;
+    bool can_use_lcd_text_changed =
+        high_res->can_use_lcd_text() != can_use_lcd_text();
     bool should_recreate_high_res =
         (raster_translation_is_not_ideal || can_use_lcd_text_changed) &&
         CanRecreateHighResTilingForLCDTextAndRasterTranslation(*high_res);
