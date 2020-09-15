@@ -204,10 +204,6 @@ class WebWidgetClient {
   // perform actual painting work.
   virtual void WillBeginMainFrame() {}
 
-  // Notification that the BeginMainFrame completed, was committed into the
-  // compositor (thread) and submitted to the display compositor.
-  virtual void DidCommitAndDrawCompositorFrame() {}
-
   // Notification that page scale animation was changed.
   virtual void DidCompletePageScaleAnimation() {}
 

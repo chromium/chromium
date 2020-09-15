@@ -81,15 +81,15 @@ namespace blink {
 
 namespace {
 
-void ForEachWebLocalFrameControlledByWidget(
-    WebLocalFrame* frame,
+void ForEachLocalFrameControlledByWidget(
+    LocalFrame* frame,
     const base::RepeatingCallback<void(WebLocalFrame*)>& callback) {
-  callback.Run(frame);
-  for (WebFrame* child = frame->FirstChild(); child;
+  callback.Run(WebLocalFrameImpl::FromFrame(frame));
+  for (Frame* child = frame->FirstChild(); child;
        child = child->NextSibling()) {
-    if (child->IsWebLocalFrame()) {
-      ForEachWebLocalFrameControlledByWidget(child->ToWebLocalFrame(),
-                                             callback);
+    if (child->IsLocalFrame()) {
+      ForEachLocalFrameControlledByWidget(DynamicTo<LocalFrame>(child),
+                                          callback);
     }
   }
 }
@@ -554,7 +554,11 @@ void WebFrameWidgetBase::EndCommitCompositorFrame(
 }
 
 void WebFrameWidgetBase::DidCommitAndDrawCompositorFrame() {
-  Client()->DidCommitAndDrawCompositorFrame();
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
+      WTF::BindRepeating([](WebLocalFrame* local_frame) {
+        local_frame->Client()->DidCommitAndDrawCompositorFrame();
+      }));
 }
 
 void WebFrameWidgetBase::DidObserveFirstScrollDelay(
@@ -666,8 +670,9 @@ void WebFrameWidgetBase::UpdateVisualProperties(
                                    visual_properties);
 
   if (old_visible_viewport_size != widget_base_->VisibleViewportSize()) {
-    ForEachWebLocalFrameControlledByWidget(
-        local_root_, WTF::BindRepeating([](WebLocalFrame* local_frame) {
+    ForEachLocalFrameControlledByWidget(
+        local_root_->GetFrame(),
+        WTF::BindRepeating([](WebLocalFrame* local_frame) {
           local_frame->Client()->ResetHasScrolledFocusedEditableIntoView();
         }));
 
@@ -1176,8 +1181,8 @@ void WebFrameWidgetBase::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
                   WrapPersistent(this)));
   }
 
-  ForEachWebLocalFrameControlledByWidget(
-      local_root_,
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(),
       WTF::BindRepeating(
           [](WebMeaningfulLayout layout_type, WebLocalFrame* local_frame) {
             local_frame->Client()->DidMeaningfulLayout(layout_type);

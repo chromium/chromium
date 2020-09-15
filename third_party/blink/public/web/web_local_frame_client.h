@@ -697,6 +697,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   // layout that happened after an interesting document lifecycle change (see
   // WebMeaningfulLayout for details.)
   virtual void DidMeaningfulLayout(WebMeaningfulLayout) {}
+
+  // Notification that the BeginMainFrame completed, was committed into the
+  // compositor (thread) and submitted to the display compositor.
+  virtual void DidCommitAndDrawCompositorFrame() {}
 };
 
 }  // namespace blink

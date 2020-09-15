@@ -397,6 +397,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
 }
 
 void WidgetBase::DidCommitAndDrawCompositorFrame() {
+  // NOTE: Tests may break if this event is renamed or moved. See
+  // tab_capture_performancetest.cc.
+  TRACE_EVENT0("gpu", "WidgetBase::DidCommitAndDrawCompositorFrame");
+
   client_->DidCommitAndDrawCompositorFrame();
 }
 

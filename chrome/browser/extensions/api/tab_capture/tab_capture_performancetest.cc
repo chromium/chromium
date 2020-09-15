@@ -51,7 +51,7 @@ constexpr char kEventCapture[] = "Capture";
 constexpr char kEventSuffixFailRate[] = "FailRate";
 constexpr char kEventSuffixLatency[] = "Latency";
 constexpr char kEventCommitAndDrawCompositorFrame[] =
-    "RenderWidget::DidCommitAndDrawCompositorFrame";
+    "WidgetBase::DidCommitAndDrawCompositorFrame";
 const std::unordered_map<std::string, std::string> kEventToMetricMap(
     {{kEventCapture, kMetricCaptureMs},
      {std::string(kEventCapture) + kEventSuffixFailRate,
