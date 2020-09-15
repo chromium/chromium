@@ -23,7 +23,6 @@
     'android_ar_gtests': {
       'monochrome_public_test_ar_apk': {},
     },
-
     'android_ddready_vr_gtests': {
       'chrome_public_test_vr_apk-ddready-cardboard': {
         'args': [
@@ -3998,7 +3997,11 @@
         'results_handler': 'layout tests',
       },
     },
-
+    'soda_gtests': {
+      'unit_tests': {
+        'args': ['--gtest_filter=SodaClient*'],
+      },
+    },
     # TODO(https://crbug.com/1057802): Remove these tests once Out-of-Process
     # Storage is on by default.
     'storage_service_gtests': {

@@ -4033,6 +4033,34 @@
       }
     ]
   },
+  "soda-linux": {
+    "additional_compile_targets": [
+      "unit_tests"
+    ],
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=SodaClient*"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Linux",
+              "pool": "chrome.tests"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "unit_tests",
+        "test_id_prefix": "ninja://chrome/test:unit_tests/"
+      }
+    ]
+  },
   "win-chrome": {
     "additional_compile_targets": [
       "chrome",

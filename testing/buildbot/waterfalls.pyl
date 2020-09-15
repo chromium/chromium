@@ -5515,6 +5515,30 @@
     },
   },
   {
+    'project': 'chrome',
+    'bucket': 'ci',
+    'name': 'internal.soda',
+    'machines': {
+      'soda-linux': {
+        'additional_compile_targets': [
+          'unit_tests',
+        ],
+        'test_suites': {
+            'gtest_tests': 'soda_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Linux',
+              'pool': 'chrome.tests',
+            },
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+        },
+      },
+    },
+  },
+  {
     'project': 'chromium',
     'bucket': 'try',
     'name': 'tryserver.chromium.android',
