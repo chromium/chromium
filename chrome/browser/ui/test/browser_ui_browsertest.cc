@@ -68,13 +68,9 @@ TEST(BrowserUiTest, Invoke) {
 
   base::LaunchOptions options;
 
-#if defined(OS_WIN)
-  // Under Windows, the child process won't launch without the wait option.
-  // See http://crbug.com/688534.
+  // Wait on subprocess. Otherwise the whole process group will be killed on
+  // parent process exit. See http://crbug.com/1094369.
   options.wait = true;
-#else
-  options.wait = !command.HasSwitch(switches::kTestLauncherInteractive);
-#endif
 
   base::LaunchProcess(command, options);
 }
