@@ -55,7 +55,7 @@ public class TabPrinter implements Printable {
     @Override
     public String getTitle() {
         Tab tab = mTab.get();
-        if (tab == null) return mDefaultTitle;
+        if (tab == null || !tab.isInitialized()) return mDefaultTitle;
 
         String title = tab.getTitle();
         if (!TextUtils.isEmpty(title)) return title;
