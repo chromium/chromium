@@ -35,7 +35,10 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   uint64_t GetFrameDuration(const VideoFrame& frame);
   void DrainOutputs();
 
-  vpx_codec_ctx_t* codec_ = nullptr;
+  using vpx_codec_unique_ptr =
+      std::unique_ptr<vpx_codec_ctx_t, void (*)(vpx_codec_ctx_t*)>;
+
+  vpx_codec_unique_ptr codec_;
   bool is_vp9_ = false;
   vpx_codec_enc_cfg_t codec_config_ = {};
   vpx_image_t vpx_image_ = {};
