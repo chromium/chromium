@@ -21,7 +21,6 @@ class AddressAccessoryController;
 class CreditCardAccessoryController;
 }  // namespace autofill
 
-
 class AccessoryController;
 class PasswordAccessoryController;
 
@@ -111,6 +110,9 @@ class ManualFillingControllerImpl
 
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;
+
+  // This map contains sheets for each sources to be shown to the user.
+  base::flat_map<FillingSource, autofill::AccessorySheetData> available_sheets_;
 
   // Type of the last known selected field. Helps to determine UI visibility.
   autofill::mojom::FocusedFieldType focused_field_type_ =

@@ -15,6 +15,7 @@
 #include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -108,6 +109,8 @@ void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
 void ManualFillingControllerImpl::RefreshSuggestions(
     const AccessorySheetData& accessory_sheet_data) {
   view_->OnItemsAvailable(accessory_sheet_data);
+  available_sheets_.emplace(GetSourceForTab(accessory_sheet_data),
+                            accessory_sheet_data);
   UpdateSourceAvailability(GetSourceForTab(accessory_sheet_data),
                            !accessory_sheet_data.user_info_list().empty());
 }
@@ -268,6 +271,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
 
 void ManualFillingControllerImpl::UpdateVisibility() {
   if (ShouldShowAccessory()) {
+    for (const FillingSource& source : available_sources_) {
+      if (!available_sheets_.contains(source))
+        continue;
+      view_->OnItemsAvailable(available_sheets_.find(source)->second);
+    }
     view_->ShowWhenKeyboardIsVisible();
   } else {
     view_->Hide();

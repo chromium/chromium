@@ -44,58 +44,61 @@ using base::android::ScopedJavaLocalRef;
 
 ManualFillingViewAndroid::ManualFillingViewAndroid(
     ManualFillingController* controller)
-    : controller_(controller) {
-  ui::ViewAndroid* view_android = controller_->container_view();
-  DCHECK(view_android);
-  java_object_.Reset(Java_ManualFillingComponentBridge_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      view_android->GetWindowAndroid()->GetJavaObject()));
-}
+    : controller_(controller) {}
 
 ManualFillingViewAndroid::~ManualFillingViewAndroid() {
-  DCHECK(!java_object_.is_null());
+  if (!java_object_internal_)
+    return;  // No work to do.
   Java_ManualFillingComponentBridge_destroy(
-      base::android::AttachCurrentThread(), java_object_);
-  java_object_.Reset(nullptr);
+      base::android::AttachCurrentThread(), java_object_internal_);
+  java_object_internal_.Reset(nullptr);
 }
 
 void ManualFillingViewAndroid::OnItemsAvailable(
     const AccessorySheetData& data) {
-  DCHECK(!java_object_.is_null());
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ManualFillingComponentBridge_onItemsAvailable(
-      env, java_object_, ConvertAccessorySheetDataToJavaObject(env, data));
+  if (auto obj = GetOrCreateJavaObject()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_ManualFillingComponentBridge_onItemsAvailable(
+        env, obj, ConvertAccessorySheetDataToJavaObject(env, data));
+  }
 }
 
 void ManualFillingViewAndroid::CloseAccessorySheet() {
-  Java_ManualFillingComponentBridge_closeAccessorySheet(
-      base::android::AttachCurrentThread(), java_object_);
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_closeAccessorySheet(
+        base::android::AttachCurrentThread(), obj);
+  }
 }
 
 void ManualFillingViewAndroid::SwapSheetWithKeyboard() {
-  Java_ManualFillingComponentBridge_swapSheetWithKeyboard(
-      base::android::AttachCurrentThread(), java_object_);
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_swapSheetWithKeyboard(
+        base::android::AttachCurrentThread(), obj);
+  }
 }
 
 void ManualFillingViewAndroid::ShowWhenKeyboardIsVisible() {
-  Java_ManualFillingComponentBridge_showWhenKeyboardIsVisible(
-      base::android::AttachCurrentThread(), java_object_);
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_showWhenKeyboardIsVisible(
+        base::android::AttachCurrentThread(), obj);
+  }
 }
 
 void ManualFillingViewAndroid::Hide() {
-  Java_ManualFillingComponentBridge_hide(base::android::AttachCurrentThread(),
-                                         java_object_);
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_hide(base::android::AttachCurrentThread(),
+                                           obj);
+  }
 }
 
 void ManualFillingViewAndroid::OnAutomaticGenerationStatusChanged(
     bool available) {
-  if (!available && java_object_.is_null())
+  if (!available && java_object_internal_.is_null())
     return;
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ManualFillingComponentBridge_onAutomaticGenerationStatusChanged(
-      env, java_object_, available);
+  if (auto obj = GetOrCreateJavaObject()) {
+    Java_ManualFillingComponentBridge_onAutomaticGenerationStatusChanged(
+        base::android::AttachCurrentThread(), obj, available);
+  }
 }
 
 void ManualFillingViewAndroid::OnFillingTriggered(
@@ -125,10 +128,17 @@ void ManualFillingViewAndroid::OnToggleChanged(
       static_cast<autofill::AccessoryAction>(selected_action), enabled);
 }
 
+void ManualFillingViewAndroid::OnViewDestroyed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  java_object_internal_.Reset(nullptr);
+}
+
 ScopedJavaLocalRef<jobject>
 ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
     JNIEnv* env,
     const AccessorySheetData& tab_data) {
+  DCHECK(java_object_internal_);
   ScopedJavaLocalRef<jobject> j_tab_data =
       Java_ManualFillingComponentBridge_createAccessorySheetData(
           env, static_cast<int>(tab_data.get_sheet_type()),
@@ -138,7 +148,7 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
   if (tab_data.option_toggle().has_value()) {
     autofill::OptionToggle toggle = tab_data.option_toggle().value();
     Java_ManualFillingComponentBridge_addOptionToggleToAccessorySheetData(
-        env, java_object_, j_tab_data,
+        env, java_object_internal_, j_tab_data,
         ConvertUTF16ToJavaString(env, toggle.display_text()),
         toggle.is_enabled(), static_cast<int>(toggle.accessory_action()));
   }
@@ -146,12 +156,12 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
   for (const UserInfo& user_info : tab_data.user_info_list()) {
     ScopedJavaLocalRef<jobject> j_user_info =
         Java_ManualFillingComponentBridge_addUserInfoToAccessorySheetData(
-            env, java_object_, j_tab_data,
+            env, java_object_internal_, j_tab_data,
             ConvertUTF8ToJavaString(env, user_info.origin()),
             user_info.is_psl_match().value());
     for (const UserInfo::Field& field : user_info.fields()) {
       Java_ManualFillingComponentBridge_addFieldToUserInfo(
-          env, java_object_, j_user_info,
+          env, java_object_internal_, j_user_info,
           static_cast<int>(tab_data.get_sheet_type()),
           ConvertUTF16ToJavaString(env, field.display_text()),
           ConvertUTF16ToJavaString(env, field.a11y_description()),
@@ -162,7 +172,7 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
 
   for (const FooterCommand& footer_command : tab_data.footer_commands()) {
     Java_ManualFillingComponentBridge_addFooterCommandToAccessorySheetData(
-        env, java_object_, j_tab_data,
+        env, java_object_internal_, j_tab_data,
         ConvertUTF16ToJavaString(env, footer_command.display_text()),
         static_cast<int>(footer_command.accessory_action()));
   }
@@ -182,6 +192,18 @@ UserInfo::Field ManualFillingViewAndroid::ConvertJavaUserInfoField(
   bool selectable = Java_UserInfoField_isSelectable(env, j_field_to_convert);
   return UserInfo::Field(display_text, a11y_description, id, is_obfuscated,
                          selectable);
+}
+
+base::android::ScopedJavaGlobalRef<jobject>
+ManualFillingViewAndroid::GetOrCreateJavaObject() {
+  if (java_object_internal_)
+    return java_object_internal_;
+  ui::ViewAndroid* view_android = controller_->container_view();
+  DCHECK(view_android);
+  java_object_internal_.Reset(Java_ManualFillingComponentBridge_create(
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      view_android->GetWindowAndroid()->GetJavaObject()));
+  return java_object_internal_;
 }
 
 // static

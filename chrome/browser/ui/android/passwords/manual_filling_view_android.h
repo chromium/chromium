@@ -54,6 +54,8 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
                        const base::android::JavaParamRef<jobject>& obj,
                        jint selected_action,
                        jboolean enabled);
+  void OnViewDestroyed(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& obj);
 
  private:
   void OnImageFetched(base::android::ScopedJavaGlobalRef<jstring> j_origin,
@@ -69,11 +71,13 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_field_to_convert);
 
+  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+
   // The controller provides data for this view and owns it.
   ManualFillingController* controller_;
 
-  // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
   DISALLOW_COPY_AND_ASSIGN(ManualFillingViewAndroid);
 };

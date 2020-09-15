@@ -20,6 +20,15 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public interface ManualFillingComponent {
     /**
+     * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}.
+     * They are notified when the {@link ManualFillingComponent} is destroyed.
+     */
+    interface Observer {
+        /** Called if the ManualFillingComponent is destroyed. */
+        void onDestroy();
+    }
+
+    /**
      * Initializes the manual filling component. Calls to this class are NoOps until this method
      * is called.
      * @param windowAndroid The window needed to listen to the keyboard and to connect to
@@ -116,4 +125,16 @@ public interface ManualFillingComponent {
      * @param view A {@link View} that is used to find the window root.
      */
     boolean isFillingViewShown(View view);
+
+    /**
+     * @param observer An {@link Observer} to add.
+     * @return True iff the observer could be added.
+     */
+    boolean addObserver(Observer observer);
+
+    /**
+     * @param observer An {@link Observer} to add.
+     * @return True iff the observer could be remove.
+     */
+    boolean removeObserver(Observer observer);
 }
