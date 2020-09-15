@@ -387,6 +387,7 @@ static_library("test_support") {
   deps = [
     ":content_test_mojo_bindings",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//components/viz/client",
     "//components/viz/host",
