@@ -7,6 +7,12 @@ import("//build/util/version.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//tools/grit/grit_rule.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 grit("autofill_address_rewriter_resources") {
   source = "autofill_address_rewriter_resources.grd"
   outputs = [
@@ -56,8 +62,6 @@ static_library("browser") {
     "autofill_handler.h",
     "autofill_handler_proxy.cc",
     "autofill_handler_proxy.h",
-    "autofill_ie_toolbar_import_win.cc",
-    "autofill_ie_toolbar_import_win.h",
     "autofill_manager.cc",
     "autofill_manager.h",
     "autofill_manager_test_delegate.h",
@@ -299,6 +303,13 @@ static_library("browser") {
     "webdata/system_encryptor.cc",
     "webdata/system_encryptor.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "autofill_ie_toolbar_import_win.cc",
+      "autofill_ie_toolbar_import_win.h",
+    ]
+  }
 
   if (is_ios) {
     sources += [
@@ -579,7 +590,6 @@ source_set("unit_tests") {
     "autofill_driver_factory_unittest.cc",
     "autofill_experiments_unittest.cc",
     "autofill_external_delegate_unittest.cc",
-    "autofill_ie_toolbar_import_win_unittest.cc",
     "autofill_manager_unittest.cc",
     "autofill_merge_unittest.cc",
     "autofill_metrics_unittest.cc",
@@ -653,6 +663,10 @@ source_set("unit_tests") {
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "autofill_ie_toolbar_import_win_unittest.cc" ]
+  }
 
   if (is_ios || is_android) {
     sources += [
