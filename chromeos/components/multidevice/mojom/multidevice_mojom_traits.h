@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
-#include "chromeos/components/multidevice/mojom/multidevice_types.mojom.h"
+#include "chromeos/components/multidevice/mojom/multidevice_types.mojom-shared.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"

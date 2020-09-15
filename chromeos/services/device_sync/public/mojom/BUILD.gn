@@ -11,6 +11,31 @@ mojom("mojom") {
     "//chromeos/components/multidevice/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.device_sync.mojom.ConnectivityStatus"
+          cpp = "cryptauthv2::ConnectivityStatus"
+        },
+        {
+          mojom = "chromeos.device_sync.mojom.FeatureStatusChange"
+          cpp = "chromeos::device_sync::FeatureStatusChange"
+        },
+        {
+          mojom = "chromeos.device_sync.mojom.CryptAuthService"
+          cpp = "cryptauthv2::TargetService"
+        },
+      ]
+      traits_headers = [ "device_sync_mojom_traits.h" ]
+      traits_sources = [ "device_sync_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//chromeos/services/device_sync:feature_status_change",
+        "//chromeos/services/device_sync/proto",
+      ]
+    },
+  ]
 }
 
 source_set("unit_tests") {

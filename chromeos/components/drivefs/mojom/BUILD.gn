@@ -14,4 +14,23 @@ mojom_component("mojom") {
 
   output_prefix = "drivefs_mojom"
   macro_prefix = "DRIVEFS_MOJOM"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "drivefs.mojom.FileError"
+          cpp = "::drive::FileError"
+        },
+      ]
+      traits_headers =
+          [ "//chromeos/components/drivefs/drivefs_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/components/drivefs/drivefs_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//components/drive",
+      ]
+    },
+  ]
 }

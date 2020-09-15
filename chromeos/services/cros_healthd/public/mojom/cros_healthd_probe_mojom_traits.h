@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_MOJOM_CROS_HEALTHD_PROBE_MOJOM_TRAITS_H_
 #define CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_MOJOM_CROS_HEALTHD_PROBE_MOJOM_TRAITS_H_
 
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 

@@ -7,12 +7,6 @@ _typemap_imports = [
   "//chrome/common/importer/typemaps.gni",
   "//chrome/typemaps.gni",
   "//chromecast/typemaps.gni",
-  "//chromeos/typemaps.gni",
-  "//chromeos/components/multidevice/mojom/typemaps.gni",
-  "//chromeos/services/cros_healthd/public/mojom/typemaps.gni",
-  "//chromeos/services/device_sync/public/mojom/typemaps.gni",
-  "//chromeos/services/network_config/public/mojom/typemaps.gni",
-  "//chromeos/services/secure_channel/public/mojom/typemaps.gni",
   "//content/browser/typemaps.gni",
   "//content/public/common/typemaps.gni",
 ]

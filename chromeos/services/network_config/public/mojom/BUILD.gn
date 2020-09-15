@@ -15,6 +15,20 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_ip_address",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.cros_network_config.mojom.ProxyMode"
+          cpp = "::ProxyPrefs::ProxyMode"
+        },
+      ]
+      traits_headers = [ "cros_network_config_mojom_traits.h" ]
+      traits_sources = [ "cros_network_config_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/proxy_config" ]
+    },
+  ]
 }
 
 mojom("network_types") {

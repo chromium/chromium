@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_MOJOM_CROS_NETWORK_CONFIG_MOJOM_TRAITS_H_
 #define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_MOJOM_CROS_NETWORK_CONFIG_MOJOM_TRAITS_H_
 
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 

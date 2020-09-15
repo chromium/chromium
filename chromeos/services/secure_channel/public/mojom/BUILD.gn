@@ -11,6 +11,26 @@ mojom("mojom") {
     "//chromeos/components/multidevice/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.secure_channel.mojom.ConnectionMedium"
+          cpp = "::chromeos::secure_channel::ConnectionMedium"
+        },
+        {
+          mojom = "chromeos.secure_channel.mojom.ConnectionPriority"
+          cpp = "::chromeos::secure_channel::ConnectionPriority"
+        },
+      ]
+
+      traits_headers = [ "secure_channel_mojom_traits.h" ]
+      traits_sources = [ "secure_channel_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chromeos/services/secure_channel/public/cpp/shared" ]
+    },
+  ]
 }
 
 source_set("unit_tests") {

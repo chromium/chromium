@@ -17,4 +17,18 @@ mojom("mojom") {
     "//chromeos/services/network_health/public/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.cros_healthd_probe.mojom.CpuArchitectureEnum"
+          cpp = "::em::CpuInfo::Architecture"
+        },
+      ]
+      traits_headers = [ "cros_healthd_probe_mojom_traits.h" ]
+      traits_sources = [ "cros_healthd_probe_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/policy/proto" ]
+    },
+  ]
 }
