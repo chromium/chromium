@@ -330,7 +330,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP" desc="The label used in the tray popup to tell the user we are casting the desktop.">
         Casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME" desc="The label used as the header in the dark theme popup. [CHAR_LIMIT=17">
+      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME" desc="The label used as the header in the dark theme popup. [CHAR_LIMIT=19">
         Dark theme
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Dark theme feature on or off.">
