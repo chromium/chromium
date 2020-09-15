@@ -24,8 +24,7 @@ bool WebAppShimManagerDelegate::ShowAppWindows(Profile* profile,
                                                const AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->ShowAppWindows(profile, app_id);
-  // This is only used by legacy apps.
-  NOTREACHED();
+  // Non-legacy app windows are handled in AppShimManager.
   return false;
 }
 

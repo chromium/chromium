@@ -245,7 +245,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // The function LoadAndLaunchApp will:
   // - Find the appropriate profiles for which |app_id| should be launched.
   // - Load the profiles and ensure the app is enabled (using
-  //   LoadProfileAndApp).
+  //   LoadProfileAndApp), if needed.
   // - Launch the app, if appropriate.
   // The "if appropriate" above is defined as:
   // - If |launch_files| is non-empty, then will always launch the app
@@ -260,13 +260,23 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                               chrome::mojom::AppShimLaunchResult result)>;
   void LoadAndLaunchApp(const web_app::AppId& app_id,
                         const base::FilePath& profile_path,
-                        std::vector<base::FilePath> launch_files,
+                        const std::vector<base::FilePath>& launch_files,
                         LoadAndLaunchAppCallback launch_callback);
+  bool LoadAndLaunchApp_TryExistingProfileStates(
+      const web_app::AppId& app_id,
+      const base::FilePath& profile_path,
+      const std::vector<base::FilePath>& launch_files,
+      LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const web_app::AppId& app_id,
-      std::vector<base::FilePath> launch_files,
+      const std::vector<base::FilePath>& launch_files,
       const std::vector<base::FilePath>& profile_paths_to_launch,
       LoadAndLaunchAppCallback launch_callback);
+  void LoadAndLaunchApp_LaunchIfAppropriate(
+      Profile* profile,
+      ProfileState* profile_state,
+      const web_app::AppId& app_id,
+      const std::vector<base::FilePath>& launch_files);
 
   // The final step of both paths for OnShimProcessConnected. This will connect
   // |bootstrap| to |profile_state|'s AppShimHost, if possible. The value of
@@ -275,10 +285,6 @@ class AppShimManager : public AppShimHostBootstrap::Client,
       std::unique_ptr<AppShimHostBootstrap> bootstrap,
       ProfileState* profile_state,
       chrome::mojom::AppShimLaunchResult result);
-
-  // Continuation of OnShimSelectedProfile, once the profile has loaded.
-  void OnShimSelectedProfileAndAppLoaded(const web_app::AppId& app_id,
-                                         Profile* profile);
 
   // Load the specified profile and extension, and run |callback| with
   // the result. The callback's arguments may be nullptr on failure.

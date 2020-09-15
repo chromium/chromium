@@ -933,6 +933,7 @@ TEST_F(AppShimManagerTest, MultiProfileShimLaunch) {
 }
 
 TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(false));
   manager_->SetHostForCreate(std::move(host_aa_unique_));
   ShimLaunchedCallback launched_callback;
   delegate_->SetCaptureShimLaunchedCallback(&launched_callback);
@@ -963,6 +964,7 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu) {
 
   // Select profile A and B from the menu -- this should not request a launch,
   // because the profiles are already enabled.
+  EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate_, LaunchApp(_, _, _)).Times(0);
   host_aa_->ProfileSelectedFromMenu(profile_path_a_);
   host_aa_->ProfileSelectedFromMenu(profile_path_b_);
