@@ -264,8 +264,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
                                                      view:self];
 
   // Layout guides should both be setup
-  DCHECK(imageLayoutGuide.isConstrained);
-  DCHECK(textLayoutGuide.isConstrained);
+  DCHECK(imageLayoutGuide);
+  DCHECK(textLayoutGuide);
 
   // The text stack view is attached to both ends of the layout gude. This is
   // because it needs to switch directions if the device is in LTR mode and the
