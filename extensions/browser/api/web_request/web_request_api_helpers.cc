@@ -94,6 +94,17 @@ bool ParseCookieLifetime(const net::ParsedCookie& cookie,
   return false;
 }
 
+std::set<std::string> GetExtraHeaderRequestHeaders(
+    bool is_out_of_blink_cors_enabled) {
+  std::set<std::string> headers(
+      {"accept-encoding", "accept-language", "cookie", "referer"});
+
+  if (is_out_of_blink_cors_enabled)
+    headers.insert("origin");
+
+  return headers;
+}
+
 void RecordRequestHeaderRemoved(RequestHeaderType type) {
   UMA_HISTOGRAM_ENUMERATION("Extensions.WebRequest.RequestHeaderRemoved", type);
 }
@@ -1735,11 +1746,18 @@ std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
 bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
                              int extra_info_spec,
                              const std::string& name) {
-  static const std::set<std::string> kRequestHeaders(
-      {"accept-encoding", "accept-language", "cookie", "origin", "referer"});
+  static const std::set<std::string> kRequestHeadersForOutOfBlinkCors =
+      GetExtraHeaderRequestHeaders(/*is_out_of_blink_cors_enabled=*/true);
+  static const std::set<std::string> kRequestHeadersForBlinkCors =
+      GetExtraHeaderRequestHeaders(/*is_out_of_blink_cors_enabled=*/false);
+  bool is_out_of_blink_cors_enabled =
+      browser_context && browser_context->ShouldEnableOutOfBlinkCors();
+  const std::set<std::string>& request_headers =
+      is_out_of_blink_cors_enabled ? kRequestHeadersForOutOfBlinkCors
+                                   : kRequestHeadersForBlinkCors;
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
-         kRequestHeaders.find(base::ToLowerASCII(name)) !=
-             kRequestHeaders.end();
+         request_headers.find(base::ToLowerASCII(name)) !=
+             request_headers.end();
 }
 
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {

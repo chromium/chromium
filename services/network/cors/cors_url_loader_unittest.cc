@@ -169,6 +169,7 @@ class CorsURLLoaderTest : public testing::Test {
     context_params->initial_proxy_config =
         net::ProxyConfigWithAnnotation::CreateDirect();
     context_params->cors_exempt_header_list.push_back(kTestCorsExemptHeader);
+    context_params->cors_mode = mojom::NetworkContextParams::CorsMode::kEnable;
     network_context_ = std::make_unique<NetworkContext>(
         network_service_.get(),
         network_context_remote_.BindNewPipeAndPassReceiver(),

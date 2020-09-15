@@ -364,6 +364,7 @@ class TestingProfile : public Profile {
   GURL GetHomePage() override;
 
   void SetCreationTimeForTesting(base::Time creation_time) override;
+  bool ShouldEnableOutOfBlinkCors() override;
 
   PrefService* GetOffTheRecordPrefs() override;
 
