@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -24,10 +26,13 @@ static const size_t kMaxUnacknowledgedBytesSent = 10 * 1024 * 1024;  // 10 MB.
 }  // namespace
 
 MIDIDispatcher::MIDIDispatcher(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    ExecutionContext* execution_context)
+    // TODO(1049056): Now that this has ExecutionContext, generate task_runner
+    // here.
     : task_runner_(std::move(task_runner)) {
   TRACE_EVENT0("midi", "MIDIDispatcher::MIDIDispatcher");
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
       midi_session_provider_.BindNewPipeAndPassReceiver(task_runner_));
   midi_session_provider_->StartSession(
       midi_session_.BindNewPipeAndPassReceiver(),

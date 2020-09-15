@@ -140,7 +140,8 @@ void MIDIAccessInitializer::StartSession() {
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
-  dispatcher_ = std::make_unique<MIDIDispatcher>(task_runner);
+  dispatcher_ =
+      std::make_unique<MIDIDispatcher>(task_runner, GetExecutionContext());
   dispatcher_->SetClient(this);
 }
 

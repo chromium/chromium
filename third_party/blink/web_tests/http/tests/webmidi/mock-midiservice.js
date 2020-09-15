@@ -9,7 +9,7 @@ class MockMIDIService {
     this.start_session_result_ = midi.mojom.Result.OK;
 
     this.interceptor_ = new MojoInterfaceInterceptor(
-        midi.mojom.MidiSessionProvider.name, 'process');
+        midi.mojom.MidiSessionProvider.name);
     this.binding_ = new mojo.Binding(midi.mojom.MidiSessionProvider, this);
     this.session_binding_ = new mojo.Binding(midi.mojom.MidiSession, this);
     this.interceptor_.oninterfacerequest = e => {

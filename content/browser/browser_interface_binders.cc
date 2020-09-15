@@ -25,6 +25,7 @@
 #include "content/browser/image_capture/image_capture_impl.h"
 #include "content/browser/keyboard_lock/keyboard_lock_service_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
+#include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
@@ -541,6 +542,15 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::NativeFileSystemManager>(
         base::BindRepeating(&RenderFrameHostImpl::GetNativeFileSystemManager,
                             base::Unretained(host)));
+  }
+
+  // BrowserMainLoop::GetInstance() may be null on unit tests.
+  if (BrowserMainLoop::GetInstance()) {
+    map->Add<midi::mojom::MidiSessionProvider>(
+        base::BindRepeating(&MidiHost::BindReceiver,
+                            host->GetProcess()->GetID(),
+                            BrowserMainLoop::GetInstance()->midi_service()),
+        GetIOThreadTaskRunner({}));
   }
 
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(

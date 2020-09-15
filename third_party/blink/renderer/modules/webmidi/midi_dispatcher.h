@@ -8,6 +8,7 @@
 #include "media/midi/midi_service.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -40,7 +41,8 @@ class MIDIDispatcher : public midi::mojom::blink::MidiSessionClient {
   };
 
   explicit MIDIDispatcher(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      ExecutionContext* execution_context);
   ~MIDIDispatcher() override;
 
   void SetClient(Client* client) { client_ = client; }
@@ -76,6 +78,8 @@ class MIDIDispatcher : public midi::mojom::blink::MidiSessionClient {
   // TODO(toyoshim): Consider to have a per-process limit.
   size_t unacknowledged_bytes_sent_ = 0u;
 
+  // TODO(1049056): Now that MidiSession is passed an ExecutionContext use it to
+  // convert these to HeapMojo.
   mojo::Remote<midi::mojom::blink::MidiSession> midi_session_;
 
   mojo::Receiver<midi::mojom::blink::MidiSessionClient> receiver_{this};
