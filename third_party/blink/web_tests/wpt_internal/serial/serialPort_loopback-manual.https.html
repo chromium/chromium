@@ -159,9 +159,9 @@
           }
         })();
 
-        await port.setSignals({brk: true});
+        await port.setSignals({break: true});
         await readPromise;
-        await port.setSignals({brk: false});
+        await port.setSignals({break: false});
 
         const writer = port.writable.getWriter();
         // |data| is small enough to be completely transmitted.
