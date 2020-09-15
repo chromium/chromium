@@ -20,6 +20,6 @@ theBrowserProxy.callbackRouter.onSomethingHappened.addListener(
       console.log('eh? ' + something + '. what? ' + other);
     });
 
-document.addEventListener('DOMContentLoaded', () => {
-  console.info('File manager launched ...');
+document.addEventListener('DOMContentLoaded', function() {
+  alert('DOMContentLoaded');
 });

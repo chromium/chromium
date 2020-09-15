@@ -57,7 +57,6 @@ enum class SystemAppType {
   SCANNING,
   DIAGNOSTICS,
 #if !defined(OFFICIAL_BUILD)
-  FILE_MANAGER,
   TELEMETRY,
   SAMPLE,
 #endif  // !defined(OFFICIAL_BUILD)

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/file_manager/file_manager_page_handler.h"
+#include "chrome/browser/ui/webui/chromeos/file_manager/file_manager_ui.h"
 
 #include "base/bind.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/chromeos/file_manager/file_manager_page_handler.h"
+#include "chrome/common/url_constants.h"
+#include "chrome/grit/browser_resources.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
 
 namespace chromeos {
 namespace file_manager {
