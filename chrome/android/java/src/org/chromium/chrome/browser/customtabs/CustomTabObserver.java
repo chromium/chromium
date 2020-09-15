@@ -203,13 +203,15 @@ public class CustomTabObserver extends EmptyTabObserver {
         if (mCustomTabsConnection == null) return;
         if (!mCustomTabsConnection.shouldSendNavigationInfoForSession(mSession)) return;
         if (tab.getWebContents() == null) return;
-        if (TextUtils.isEmpty(tab.getTitle())) return;
+        String title = tab.getTitle();
+        if (TextUtils.isEmpty(title)) return;
+        String urlString = tab.getUrlString();
 
         ShareImageFileUtils.captureScreenshotForContents(tab.getWebContents(), mContentBitmapWidth,
                 mContentBitmapHeight, (Uri snapshotPath) -> {
                     if (snapshotPath == null) return;
                     mCustomTabsConnection.sendNavigationInfo(
-                            mSession, tab.getUrlString(), tab.getTitle(), snapshotPath);
+                            mSession, urlString, title, snapshotPath);
                 });
     }
 }
