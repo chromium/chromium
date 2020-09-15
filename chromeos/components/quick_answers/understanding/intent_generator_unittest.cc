@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/components/quick_answers/utils/language_detector.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -29,19 +28,12 @@ using machine_learning::mojom::TextAnnotationPtr;
 using machine_learning::mojom::TextEntity;
 using machine_learning::mojom::TextEntityData;
 using machine_learning::mojom::TextEntityPtr;
+using machine_learning::mojom::TextLanguage;
+using machine_learning::mojom::TextLanguagePtr;
 
-class MockLanguageDetector : public LanguageDetector {
- public:
-  MockLanguageDetector() = default;
-
-  MockLanguageDetector(const MockLanguageDetector&) = delete;
-  MockLanguageDetector& operator=(const MockLanguageDetector&) = delete;
-
-  ~MockLanguageDetector() override = default;
-
-  // TestResultLoader:
-  MOCK_METHOD1(DetectLanguage, std::string(const std::string&));
-};
+TextLanguagePtr DefaultLanguage() {
+  return TextLanguage::New("en", /* confidence */ 1);
+}
 
 }  // namespace
 
@@ -56,13 +48,6 @@ class IntentGeneratorTest : public testing::Test {
     intent_generator_ = std::make_unique<IntentGenerator>(
         base::BindOnce(&IntentGeneratorTest::IntentGeneratorTestCallback,
                        base::Unretained(this)));
-
-    // Mock language detector.
-    mock_language_detector_ = std::make_unique<MockLanguageDetector>();
-    EXPECT_CALL(*mock_language_detector_, DetectLanguage(::testing::_))
-        .WillRepeatedly(::testing::Return("en"));
-    intent_generator_->SetLanguageDetectorForTesting(
-        std::move(mock_language_detector_));
 
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kQuickAnswersTextAnnotator,
@@ -80,15 +65,17 @@ class IntentGeneratorTest : public testing::Test {
  protected:
   void UseFakeServiceConnection(
       const std::vector<TextAnnotationPtr>& annotations =
-          std::vector<TextAnnotationPtr>()) {
+          std::vector<TextAnnotationPtr>(),
+      const std::vector<TextLanguagePtr>& languages =
+          std::vector<TextLanguagePtr>()) {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     fake_service_connection_.SetOutputAnnotation(annotations);
+    fake_service_connection_.SetOutputLanguages(languages);
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IntentGenerator> intent_generator_;
-  std::unique_ptr<MockLanguageDetector> mock_language_detector_;
   std::string intent_text_;
   IntentType intent_type_ = IntentType::kUnknown;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -97,7 +84,9 @@ class IntentGeneratorTest : public testing::Test {
 };
 
 TEST_F(IntentGeneratorTest, TranslationIntent) {
-  UseFakeServiceConnection();
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
@@ -111,7 +100,9 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
-  UseFakeServiceConnection();
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
@@ -125,7 +116,9 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
-  UseFakeServiceConnection();
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
 
   QuickAnswersRequest request;
   request.selected_text =
@@ -148,7 +141,9 @@ TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {
   scoped_feature_list.InitWithFeatures(
       {chromeos::features::kQuickAnswersTextAnnotator},
       {chromeos::features::kQuickAnswersTranslation});
-  UseFakeServiceConnection();
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
@@ -162,7 +157,9 @@ TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentDeviceLanguageNotSet) {
-  UseFakeServiceConnection();
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  UseFakeServiceConnection({}, languages);
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";

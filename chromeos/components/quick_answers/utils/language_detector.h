@@ -15,7 +15,9 @@ class NNetLanguageIdentifier;
 namespace chromeos {
 namespace quick_answers {
 
-// Utility class for langugage detection.
+// Utility class for language detection.
+// TODO(b/168541952): Cleanup this class after the new language detection API
+// becomes stable.
 class LanguageDetector {
  public:
   LanguageDetector();

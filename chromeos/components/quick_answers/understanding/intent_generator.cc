@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/components/quick_answers/utils/language_detector.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -85,7 +84,6 @@ IntentType RewriteIntent(const std::string& selected_text,
 
 IntentGenerator::IntentGenerator(IntentGeneratorCallback complete_callback)
     : complete_callback_(std::move(complete_callback)) {
-  language_detector_ = std::make_unique<LanguageDetector>();
 }
 
 IntentGenerator::~IntentGenerator() {
@@ -155,9 +153,16 @@ void IntentGenerator::AnnotationCallback(
   MaybeGenerateTranslationIntent(request);
 }
 
-void IntentGenerator::SetLanguageDetectorForTesting(
-    std::unique_ptr<LanguageDetector> language_detector) {
-  language_detector_ = std::move(language_detector);
+void IntentGenerator::FindLanguagesCallback(
+    const QuickAnswersRequest& request,
+    std::vector<machine_learning::mojom::TextLanguagePtr> languages) {
+  auto intent_type = IntentType::kUnknown;
+  // TODO(b/b/150034512): Take confidence level into consideration.
+  if (!languages.empty() &&
+      languages.front()->locale != request.context.device_properties.language) {
+    intent_type = IntentType::kTranslation;
+  }
+  std::move(complete_callback_).Run(request.selected_text, intent_type);
 }
 
 void IntentGenerator::MaybeGenerateTranslationIntent(
@@ -178,16 +183,15 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
         .Run(request.selected_text, IntentType::kUnknown);
     return;
   }
-  auto detected_language = language_detector_->DetectLanguage(
-      !request.context.surrounding_text.empty()
-          ? request.context.surrounding_text
-          : request.selected_text);
-  auto intent_type = IntentType::kUnknown;
-  if (!detected_language.empty() &&
-      detected_language != request.context.device_properties.language) {
-    intent_type = IntentType::kTranslation;
+
+  if (text_classifier_) {
+    text_classifier_->FindLanguages(
+        !request.context.surrounding_text.empty()
+            ? request.context.surrounding_text
+            : request.selected_text,
+        base::BindOnce(&IntentGenerator::FindLanguagesCallback,
+                       weak_factory_.GetWeakPtr(), request));
   }
-  std::move(complete_callback_).Run(request.selected_text, intent_type);
 }
 
 }  // namespace quick_answers
