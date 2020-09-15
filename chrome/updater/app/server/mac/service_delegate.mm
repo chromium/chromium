@@ -285,6 +285,7 @@
                  appServer:(scoped_refptr<updater::AppServerMac>)appServer {
   if (self = [super init]) {
     _service = service;
+    _appServer = appServer;
     _callbackRunner = base::SequencedTaskRunnerHandle::Get();
   }
   return self;

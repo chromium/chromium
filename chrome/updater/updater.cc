@@ -111,10 +111,10 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 #if defined(OS_WIN)
   if (command_line->HasSwitch(kComServiceSwitch))
     return ServiceMain::RunComService(command_line);
+#endif  // OS_WIN
 
   if (command_line->HasSwitch(kInstallSwitch))
     return MakeAppInstall()->Run();
-#endif  // OS_WIN
 
   if (command_line->HasSwitch(kUninstallSwitch))
     return MakeAppUninstall()->Run();

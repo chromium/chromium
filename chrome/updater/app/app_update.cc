@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
@@ -41,9 +42,11 @@ void AppUpdate::Uninitialize() {
 }
 
 void AppUpdate::FirstTaskRun() {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallCandidate, false),
-      base::BindOnce(&AppUpdate::SetupDone, this));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&InstallCandidate, false,
+                     base::SequencedTaskRunnerHandle::Get(),
+                     base::BindOnce(&AppUpdate::SetupDone, this)));
 }
 
 void AppUpdate::SetupDone(int result) {

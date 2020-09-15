@@ -55,22 +55,6 @@ class IntegrationTest : public ::testing::Test {
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
   ExpectInstalled();
-  Uninstall();
-}
-
-TEST_F(IntegrationTest, InstallAndPromote) {
-  Install();
-  ExpectInstalled();
-// TODO(crbug.com/1109231): resolve implementation inconsistencies for
-// different platforms. In this case, Windows promotes during Install, and
-// as a post-condition, the version of the updater is active before --wake
-// runs.
-#if defined(OS_WIN)
-  ExpectActiveVersion(UPDATER_VERSION_STRING);
-#else
-  ExpectActiveVersion("0");
-#endif
-  RunWake(0);  // Candidate qualifies and promotes to active.
   ExpectActiveVersion(UPDATER_VERSION_STRING);
   ExpectActive();
   Uninstall();

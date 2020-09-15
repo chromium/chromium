@@ -64,6 +64,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   const auto pv = persisted_data_->GetProductVersion(app_id_);
   if (pv.IsValid()) {
     pv_ = pv;
+    checker_path_ = persisted_data_->GetExistenceCheckerPath(app_id_);
     fingerprint_ = persisted_data_->GetFingerprint(app_id_);
   } else {
     pv_ = base::Version(kNullVersion);

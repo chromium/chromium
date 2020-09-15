@@ -10,6 +10,7 @@
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
@@ -78,6 +79,12 @@ bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   if (!result)
     return false;
   global_prefs->SetActiveVersion(UPDATER_VERSION_STRING);
+  scoped_refptr<PersistedData> persisted_data =
+      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+  if (!persisted_data->GetProductVersion(kUpdaterAppId).IsValid()) {
+    persisted_data->SetProductVersion(kUpdaterAppId,
+                                      base::Version(UPDATER_VERSION_STRING));
+  }
   global_prefs->SetSwapping(false);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
   return true;

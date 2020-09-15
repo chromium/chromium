@@ -128,7 +128,7 @@ void Install() {
   const base::FilePath path = GetExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitch(kUpdateSwitch);
+  command_line.AppendSwitch(kInstallSwitch);
   int exit_code = -1;
   ASSERT_TRUE(Run(command_line, &exit_code));
   EXPECT_EQ(0, exit_code);

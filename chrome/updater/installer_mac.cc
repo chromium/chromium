@@ -17,10 +17,8 @@ int Installer::RunApplicationInstaller(const base::FilePath& app_installer,
   DVLOG(1) << "Running application install from DMG";
   // InstallFromDMG() returns the exit code of the script. 0 is success and
   // anything else should be an error.
-  return InstallFromDMG(
-      app_installer, persisted_data_->GetExistenceCheckerPath(app_id_),
-      base::StrCat({persisted_data_->GetProductVersion(app_id_).GetString(),
-                    " ", arguments}));
+  return InstallFromDMG(app_installer, checker_path_,
+                        base::StrCat({pv_.GetString(), " ", arguments}));
 }
 
 }  // namespace updater

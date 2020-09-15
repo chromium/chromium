@@ -5,10 +5,18 @@
 #include "chrome/updater/mac/setup/setup.h"
 #include "chrome/updater/setup.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/task_runner.h"
+
 namespace updater {
 
-int InstallCandidate(bool is_machine) {
-  return InstallCandidate();
+void InstallCandidate(bool is_machine,
+                      scoped_refptr<base::TaskRunner> runner,
+                      base::OnceCallback<void(int)> callback) {
+  runner->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), InstallCandidate()),
+      base::TimeDelta::FromSeconds(3));
 }
 
 }  // namespace updater

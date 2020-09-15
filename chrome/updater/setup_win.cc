@@ -5,10 +5,17 @@
 #include "chrome/updater/setup.h"
 #include "chrome/updater/win/setup/setup.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/task_runner.h"
+
 namespace updater {
 
-int InstallCandidate(bool is_machine) {
-  return Setup(is_machine);
+void InstallCandidate(bool is_machine,
+                      scoped_refptr<base::TaskRunner> runner,
+                      base::OnceCallback<void(int)> callback) {
+  runner->PostTask(FROM_HERE,
+                   base::BindOnce(std::move(callback), Setup(is_machine)));
 }
 
 }  // namespace updater

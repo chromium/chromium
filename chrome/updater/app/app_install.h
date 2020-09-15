@@ -20,13 +20,12 @@ class TaskRunner;
 
 namespace updater {
 
-class LocalPrefs;
-class GlobalPrefs;
+struct RegistrationResponse;
 
 // This class defines an interface for installing an application. The interface
 // is intended to be implemented for scenerios where UI and RPC calls to
 // |UpdateService| are involved, hence the word `controller` in the name of
-// the ]interface.
+// the interface.
 class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
@@ -57,13 +56,13 @@ class AppInstall : public App {
 
   void InstallCandidateDone(int result);
 
+  void RegisterUpdater();
+
+  void RegisterUpdaterDone(const RegistrationResponse& response);
+
   // Handles the --app-id command line argument, and triggers installing of the
   // corresponding app-id if the argument is present.
   void HandleAppId();
-
-  // Makes this version of the updater active, self-registers for updates, then
-  // runs the |done| closure.
-  void MakeActive(base::OnceClosure done);
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -79,14 +78,6 @@ class AppInstall : public App {
   std::unique_ptr<SplashScreen> splash_screen_;
 
   scoped_refptr<AppInstallController> app_install_controller_;
-
-  // These prefs objects are used to make the updater active and register this
-  // version of the updater for self-updates.
-  //
-  // TODO(crbug.com/1109231) - this is a temporary workaround until a better
-  // fix is found.
-  std::unique_ptr<LocalPrefs> local_prefs_;
-  std::unique_ptr<GlobalPrefs> global_prefs_;
 
   scoped_refptr<base::TaskRunner> make_active_task_runner_;
 };

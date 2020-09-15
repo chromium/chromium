@@ -134,9 +134,11 @@ void AppRegister::RegisterAppDone(const RegistrationResponse& response) {
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallCandidate, false),
-      base::BindOnce(&AppRegister::InstallCandidateDone, this));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&InstallCandidate, false,
+                     base::SequencedTaskRunnerHandle::Get(),
+                     base::BindOnce(&AppRegister::InstallCandidateDone, this)));
 }
 
 void AppRegister::InstallCandidateDone(int result) {

@@ -5,9 +5,19 @@
 #ifndef CHROME_UPDATER_SETUP_H_
 #define CHROME_UPDATER_SETUP_H_
 
+#include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
+
+namespace base {
+class TaskRunner;
+}  // namespace base
+
 namespace updater {
 
-int InstallCandidate(bool is_machine);
+// Installs the candidate, then posts |callback| to |runner|.
+void InstallCandidate(bool is_machine,
+                      scoped_refptr<base::TaskRunner> runner,
+                      base::OnceCallback<void(int)> callback);
 
 }  // namespace updater
 
