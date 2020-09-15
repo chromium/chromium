@@ -674,7 +674,6 @@ AboutSigninInternals::SigninStatus::ToValue(
   // Time and status information of the possible sign in types.
   base::ListValue* detailed_info =
       AddSection(signin_info.get(), "Last Signin Details");
-  signin_status->Set("signin_info", std::move(signin_info));
   for (signin_internals_util::TimedSigninStatusField i =
            signin_internals_util::TIMED_FIELDS_BEGIN;
        i < signin_internals_util::TIMED_FIELDS_END; ++i) {
@@ -709,8 +708,8 @@ AboutSigninInternals::SigninStatus::ToValue(
     AddSectionEntry(detailed_info, "Token Service Next Retry",
                     base::TimeToISO8601(next_retry_time), "");
   }
-
 #endif  // !defined(OS_CHROMEOS)
+  signin_status->Set("signin_info", std::move(signin_info));
 
   // Token information for all services.
   auto token_info = std::make_unique<base::ListValue>();
