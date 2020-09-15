@@ -378,11 +378,30 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void StartTracing() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(skyostil): Don't hardcode the session's priority.
+    auto priority = mojom::TracingClientPriority::kUnknown;
+    for (const auto& data_source : trace_config_.data_sources()) {
+      if (!data_source.has_config() ||
+          !data_source.config().has_chrome_config()) {
+        continue;
+      }
+      switch (data_source.config().chrome_config().client_priority()) {
+        case perfetto::protos::gen::ChromeConfig::BACKGROUND:
+          priority =
+              std::max(priority, mojom::TracingClientPriority::kBackground);
+          break;
+        case perfetto::protos::gen::ChromeConfig::USER_INITIATED:
+          priority =
+              std::max(priority, mojom::TracingClientPriority::kUserInitiated);
+          break;
+        default:
+        case perfetto::protos::gen::ChromeConfig::UNKNOWN:
+          break;
+      }
+    }
     consumer_host_->EnableTracing(
         tracing_session_host_.BindNewPipeAndPassReceiver(),
         tracing_session_client_.BindNewPipeAndPassRemote(), trace_config_,
-        tracing::mojom::TracingClientPriority::kUserInitiated);
+        priority);
     tracing_session_host_.set_disconnect_handler(base::BindOnce(
         &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
     tracing_session_client_.set_disconnect_handler(base::BindOnce(

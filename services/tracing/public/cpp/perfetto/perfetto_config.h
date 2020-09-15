@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace base {
@@ -22,7 +23,9 @@ namespace tracing {
 perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP) GetDefaultPerfettoConfig(
     const base::trace_event::TraceConfig& chrome_config,
     bool privacy_filtering_enabled = false,
-    bool convert_to_legacy_json = false);
+    bool convert_to_legacy_json = false,
+    perfetto::protos::gen::ChromeConfig::ClientPriority =
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
 // Creates a perfetto trace config with only the data sources included in
 // |source_names| and enabled by |trace_config|. Passing empty set will add all
@@ -33,7 +36,9 @@ perfetto::TraceConfig COMPONENT_EXPORT(TRACING_CPP)
         const base::trace_event::TraceConfig& chrome_config,
         const std::set<std::string>& source_names,
         bool privacy_filtering_enabled = false,
-        bool convert_to_legacy_json = false);
+        bool convert_to_legacy_json = false,
+        perfetto::protos::gen::ChromeConfig::ClientPriority =
+            perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
 }  // namespace tracing
 
