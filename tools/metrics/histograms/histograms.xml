@@ -218113,7 +218113,12 @@ regressions. -->
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.ScrollingThread"/>
   <affected-histogram
-      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread"/>
+      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread">
+    <obsolete>
+      Removed on 9/2020. No longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="SingleThreadedCompositorLatency"/>
   <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame"/>
   <affected-histogram
@@ -218138,7 +218143,12 @@ regressions. -->
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.ScrollingThread"/>
   <affected-histogram
-      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread"/>
+      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread">
+    <obsolete>
+      Removed on 9/2020. No longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
+  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessThreadTypes" separator=".">
@@ -218148,7 +218158,12 @@ regressions. -->
   <suffix name="ScrollingThread"
       label="The throughput of the thread responsible for handling the thread"/>
   <suffix name="SlowerThread"
-      label="The worse throughput of the main and the compositor thread"/>
+      label="The worse throughput of the main and the compositor thread">
+    <obsolete>
+      Removed on 9/2020. No longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Graphics.Smoothness.PercentDroppedFrames"/>
 </histogram_suffixes>
 

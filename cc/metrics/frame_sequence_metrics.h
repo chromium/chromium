@@ -41,7 +41,7 @@ class CC_EXPORT FrameSequenceMetrics {
   FrameSequenceMetrics(const FrameSequenceMetrics&) = delete;
   FrameSequenceMetrics& operator=(const FrameSequenceMetrics&) = delete;
 
-  enum class ThreadType { kMain, kCompositor, kSlower, kUnknown };
+  enum class ThreadType { kMain, kCompositor, kUnknown };
 
   struct ThroughputData {
     static std::unique_ptr<base::trace_event::TracedValue> ToTracedValue(

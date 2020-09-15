@@ -124,7 +124,6 @@ void FrameSequenceMetrics::SetScrollingThread(ThreadType scrolling_thread) {
   scrolling_thread_ = scrolling_thread;
 
   DCHECK(!jank_reporter_);
-  DCHECK_NE(scrolling_thread, ThreadType::kSlower);
   DCHECK_NE(scrolling_thread, ThreadType::kUnknown);
   jank_reporter_ = std::make_unique<JankMetrics>(type_, scrolling_thread);
 }
@@ -232,21 +231,6 @@ void FrameSequenceMetrics::ReportMetrics() {
       GetIndexForMetric(FrameSequenceMetrics::ThreadType::kMain, type_),
       main_throughput_);
 
-  // Report for the 'slower thread' for the metrics where it makes sense.
-  bool should_report_slower_thread = IsInteractionType(type_);
-  base::Optional<int> aggregated_throughput_percent;
-  if (should_report_slower_thread) {
-    aggregated_throughput_percent = ThroughputData::ReportHistogram(
-        this, ThreadType::kSlower,
-        GetIndexForMetric(FrameSequenceMetrics::ThreadType::kSlower, type_),
-        aggregated_throughput_);
-    if (aggregated_throughput_percent.has_value() && throughput_ukm_reporter_) {
-      throughput_ukm_reporter_->ReportThroughputUkm(
-          aggregated_throughput_percent, impl_throughput_percent,
-          main_throughput_percent, type_);
-    }
-  }
-
   // Report for the 'scrolling thread' for the scrolling interactions.
   if (scrolling_thread_ != ThreadType::kUnknown) {
     base::Optional<int> scrolling_thread_throughput;
@@ -257,7 +241,6 @@ void FrameSequenceMetrics::ReportMetrics() {
       case ThreadType::kMain:
         scrolling_thread_throughput = main_throughput_percent;
         break;
-      case ThreadType::kSlower:
       case ThreadType::kUnknown:
         NOTREACHED();
         break;

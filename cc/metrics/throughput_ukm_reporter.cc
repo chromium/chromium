@@ -45,9 +45,6 @@ void ThroughputUkmReporter::ReportThroughputUkm(
                                         FrameSequenceMetrics::ThreadType::kMain,
                                         main_throughput_percent.value());
     }
-    ukm_manager_->RecordThroughputUKM(type,
-                                      FrameSequenceMetrics::ThreadType::kSlower,
-                                      slower_throughput_percent.value());
   }
   DCHECK_GT(samples_to_next_event_[static_cast<int>(type)], 0u);
   samples_to_next_event_[static_cast<int>(type)]--;

@@ -4795,6 +4795,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SlowerThread.CompositorAnimation">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during a
       compositor animation.
@@ -4809,6 +4813,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.MainThreadAnimation">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during a main
       thread animation.
@@ -4837,6 +4845,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.RAF">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during rAF
       callback driven animation.
@@ -4851,6 +4863,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.ScrollbarScroll">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       scrollbar driven interactions.
@@ -4865,6 +4881,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.TouchScroll">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       touchscroll driven interactions.
@@ -4896,6 +4916,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.Video">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during video
       play.
@@ -4910,6 +4934,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SlowerThread.WheelScroll">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       mousewheel scroll driven interactions.
@@ -5020,48 +5048,80 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SlowerThread.CompositorAnimation">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during a
       compositor animation.
     </summary>
   </metric>
   <metric name="SlowerThread.MainThreadAnimation">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during a main
       thread animation.
     </summary>
   </metric>
   <metric name="SlowerThread.PinchZoom">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       pinch-zoom interactions.
     </summary>
   </metric>
   <metric name="SlowerThread.RAF">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during rAF
       callback driven animation.
     </summary>
   </metric>
   <metric name="SlowerThread.TouchScroll">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       touchscroll driven interactions.
     </summary>
   </metric>
   <metric name="SlowerThread.Universal">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread for all frame
       production.
     </summary>
   </metric>
   <metric name="SlowerThread.Video">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during video
       play.
     </summary>
   </metric>
   <metric name="SlowerThread.WheelScroll">
+    <obsolete>
+      Removed in 9/2020, since no longer needed after 'Universal' metric was
+      deprecated.
+    </obsolete>
     <summary>
       The worse throughput of the main and the compositor thread during
       mousewheel scroll driven interactions.

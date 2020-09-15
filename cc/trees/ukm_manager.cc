@@ -147,28 +147,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kSlower: {
-      switch (tracker_type) {
-#define CASE_FOR_SLOWER_THREAD_TRACKER(name)    \
-  case FrameSequenceTrackerType::k##name:       \
-    builder.SetSlowerThread_##name(throughput); \
-    break;
-        CASE_FOR_SLOWER_THREAD_TRACKER(CompositorAnimation);
-        CASE_FOR_SLOWER_THREAD_TRACKER(MainThreadAnimation);
-        CASE_FOR_SLOWER_THREAD_TRACKER(PinchZoom);
-        CASE_FOR_SLOWER_THREAD_TRACKER(RAF);
-        CASE_FOR_SLOWER_THREAD_TRACKER(ScrollbarScroll);
-        CASE_FOR_SLOWER_THREAD_TRACKER(TouchScroll);
-        CASE_FOR_SLOWER_THREAD_TRACKER(Video);
-        CASE_FOR_SLOWER_THREAD_TRACKER(WheelScroll);
-#undef CASE_FOR_SLOWER_THREAD_TRACKER
-        default:
-          NOTREACHED();
-          break;
-      }
-      break;
-    }
-    default:
+    case FrameSequenceMetrics::ThreadType::kUnknown:
       NOTREACHED();
       break;
   }
