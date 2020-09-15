@@ -761,7 +761,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   // ImageData objects should serialize and deserialize correctly.
   V8TestingScope scope;
   ImageData* image_data = ImageData::Create(2, 1, ASSERT_NO_EXCEPTION);
-  image_data->data()->Data()[0] = 200;
+  image_data->data().GetAsUint8ClampedArray()->Data()[0] = 200;
   v8::Local<v8::Value> wrapper =
       ToV8(image_data, scope.GetContext()->Global(), scope.GetIsolate());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
@@ -769,9 +769,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_NE(image_data, new_image_data);
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
-  EXPECT_EQ(image_data->data()->lengthAsSizeT(),
-            new_image_data->data()->lengthAsSizeT());
-  EXPECT_EQ(200, new_image_data->data()->Data()[0]);
+  EXPECT_EQ(image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT(),
+            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
@@ -815,8 +815,9 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  EXPECT_EQ(8u, new_image_data->data()->lengthAsSizeT());
-  EXPECT_EQ(200, new_image_data->data()->Data()[0]);
+  EXPECT_EQ(8u,
+            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
@@ -830,8 +831,9 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  EXPECT_EQ(8u, new_image_data->data()->lengthAsSizeT());
-  EXPECT_EQ(200, new_image_data->data()->Data()[0]);
+  EXPECT_EQ(8u,
+            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
 TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {

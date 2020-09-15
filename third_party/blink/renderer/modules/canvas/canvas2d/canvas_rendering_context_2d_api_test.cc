@@ -235,10 +235,12 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
 
-  for (size_t i = 0; i < image_data->data()->lengthAsSizeT(); ++i)
-    image_data->data()->Data()[i] = 255;
+  for (size_t i = 0;
+       i < image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT(); ++i) {
+    image_data->data().GetAsUint8ClampedArray()->Data()[i] = 255;
+  }
 
-  EXPECT_EQ(255, image_data->data()->Data()[32]);
+  EXPECT_EQ(255, image_data->data().GetAsUint8ClampedArray()->Data()[32]);
 
   // createImageData(imageData) should create a new ImageData of the same size
   // as 'imageData' but filled with transparent black
@@ -248,7 +250,8 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, same_size_image_data->width());
   EXPECT_EQ(50, same_size_image_data->height());
-  EXPECT_EQ(0, same_size_image_data->data()->Data()[32]);
+  EXPECT_EQ(0,
+            same_size_image_data->data().GetAsUint8ClampedArray()->Data()[32]);
 
   // createImageData(width, height) takes the absolute magnitude of the size
   // arguments
@@ -262,10 +265,10 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   ImageData* imgdata4 = Context2D()->createImageData(-10, -20, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(800u, imgdata1->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata2->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata3->data()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata4->data()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata1->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata2->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata3->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata4->data().GetAsUint8ClampedArray()->lengthAsSizeT());
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {

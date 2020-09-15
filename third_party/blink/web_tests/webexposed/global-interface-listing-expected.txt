@@ -4585,7 +4585,6 @@ interface ImageCapture
 interface ImageData
     attribute @@toStringTag
     getter data
-    getter dataUnion
     getter height
     getter width
     method constructor

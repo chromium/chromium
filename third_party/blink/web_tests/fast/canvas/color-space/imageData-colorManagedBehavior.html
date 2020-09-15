@@ -75,7 +75,7 @@ function checkImageDataColorSettings(canvasColorSettings, imageData) {
 
 function checkImageDataColorValues(canvasColorSettings, imageData, isBlank = '',
   width = xWidth, height = xHeight, isWCG_U8toSRGB_U8 = '') {
-  var data = imageData.dataUnion;
+  var data = imageData.data;
   if (isBlank === 'isBlank') {
     testBlankPixels(data, width, height);
   } else {
@@ -164,20 +164,20 @@ function PreparePredefinedImageDataObjects() {
 
   for (var i = 0; i < xWidth * xHeight; i++)
     for (var j = 0; j < 4; j++) {
-      srgbImageDataU8.dataUnion[i*4+j] = srgbPixels[i][j];
-      e_srgbImageDataU16.dataUnion[i*4+j] =
+      srgbImageDataU8.data[i*4+j] = srgbPixels[i][j];
+      e_srgbImageDataU16.data[i*4+j] =
           Math.round(e_srgbPixels[i][j] * 65535);
-      e_srgbImageDataF32.dataUnion[i*4+j] = e_srgbPixels[i][j];
+      e_srgbImageDataF32.data[i*4+j] = e_srgbPixels[i][j];
 
-      rec2020ImageDataU8.dataUnion[i*4+j] =
+      rec2020ImageDataU8.data[i*4+j] =
           Math.round(rec2020Pixels[i][j] * 255);
-      rec2020ImageDataU16.dataUnion[i*4+j] =
+      rec2020ImageDataU16.data[i*4+j] =
           Math.round(rec2020Pixels[i][j] * 65535);
-      rec2020ImageDataF32.dataUnion[i*4+j] = rec2020Pixels[i][j];
+      rec2020ImageDataF32.data[i*4+j] = rec2020Pixels[i][j];
 
-      p3ImageDataU8.dataUnion[i*4+j] = Math.round(p3Pixels[i][j] * 255);
-      p3ImageDataU16.dataUnion[i*4+j] = Math.round(p3Pixels[i][j] * 65535);
-      p3ImageDataF32.dataUnion[i*4+j] = p3Pixels[i][j];
+      p3ImageDataU8.data[i*4+j] = Math.round(p3Pixels[i][j] * 255);
+      p3ImageDataU16.data[i*4+j] = Math.round(p3Pixels[i][j] * 65535);
+      p3ImageDataF32.data[i*4+j] = p3Pixels[i][j];
     }
 }
 
@@ -335,7 +335,7 @@ function runTestCreateImageDataWHC(canvasColorSettings, imageDataColorSettings) 
                 imageDataColorSettings.storageFormat,
                 "storageFormat should match");
   var blankData = new Array(4 * width * height).fill(0);
-  assert_array_equals(imageData.dataUnion, blankData,
+  assert_array_equals(imageData.data, blankData,
                       "ImageData should be transparent black");
 }
 

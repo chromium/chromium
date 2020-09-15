@@ -5287,11 +5287,13 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
   if (isContextLost())
     return;
   DCHECK(pixels);
-  if (pixels->data()->BufferBase()->IsDetached()) {
+  DCHECK(!pixels->data().IsNull());
+  if (pixels->BufferBase()->IsDetached()) {
     SynthesizeGLError(GL_INVALID_VALUE, func_name,
                       "The source data has been detached.");
     return;
   }
+
   if (!ValidateTexImageBinding(func_name, function_id, target))
     return;
   TexImageFunctionType function_type;
@@ -5317,6 +5319,8 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
                                     adjusted_source_image_rect.MaxY());
   }
 
+  // TODO(crbug.com/1115317): Should be compatible with uint_8, float16 and
+  // float32.
   Vector<uint8_t> data;
   bool need_conversion = true;
   // The data from ImageData is always of format RGBA8.
@@ -5331,7 +5335,7 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
       type = GL_FLOAT;
     }
     if (!WebGLImageConversion::ExtractImageData(
-            pixels->data()->Data(),
+            pixels->data().GetAsUint8ClampedArray()->Data(),
             WebGLImageConversion::DataFormat::kDataFormatRGBA8, pixels->Size(),
             adjusted_source_image_rect, depth, unpack_image_height, format,
             type, unpack_flip_y_, unpack_premultiply_alpha_, data)) {
@@ -5340,7 +5344,9 @@ void WebGLRenderingContextBase::TexImageHelperImageData(
     }
   }
   ScopedUnpackParametersResetRestore temporary_reset_unpack(this);
-  const uint8_t* bytes = need_conversion ? data.data() : pixels->data()->Data();
+  const uint8_t* bytes = need_conversion
+                             ? data.data()
+                             : pixels->data().GetAsUint8ClampedArray()->Data();
   if (function_id == kTexImage2D) {
     DCHECK_EQ(unpack_image_height, 0);
     TexImage2DBase(

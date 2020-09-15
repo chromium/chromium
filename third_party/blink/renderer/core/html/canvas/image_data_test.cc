@@ -488,13 +488,15 @@ TEST_F(ImageDataTest, TestCropRect) {
 
             if (image_data_storage_formats[i] ==
                 kUint8ClampedArrayStorageFormat) {
-              if (cropped_image_data->data()->Data()[index] != expected_value) {
+              if (cropped_image_data->data()
+                      .GetAsUint8ClampedArray()
+                      ->Data()[index] != expected_value) {
                 test_passed = false;
                 break;
               }
             } else if (image_data_storage_formats[i] ==
                        kUint16ArrayStorageFormat) {
-              if (cropped_image_data->dataUnion()
+              if (cropped_image_data->data()
                       .GetAsUint16Array()
                       .View()
                       ->Data()[index] != expected_value) {
@@ -502,7 +504,7 @@ TEST_F(ImageDataTest, TestCropRect) {
                 break;
               }
             } else {
-              if (cropped_image_data->dataUnion()
+              if (cropped_image_data->data()
                       .GetAsFloat32Array()
                       .View()
                       ->Data()[index] != fexpected_value) {

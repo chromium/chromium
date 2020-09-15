@@ -23,8 +23,8 @@ function runTest(colorSettings, expectedColorSettings) {
   var ctx = canvas.getContext("2d");
 
   imageData = ctx.createImageData(1, 1, colorSettings);
-  checkDataTypeAgainstStorageFormat(imageData.dataUnion, colorSettings.storageFormat);
-  assert_array_equals(imageData.dataUnion, [0, 0, 0, 0]);
+  checkDataTypeAgainstStorageFormat(imageData.data, colorSettings.storageFormat);
+  assert_array_equals(imageData.data, [0, 0, 0, 0]);
   checkColorSettings(imageData.getColorSettings(), expectedColorSettings.colorSpace, expectedColorSettings.storageFormat);
 }
 

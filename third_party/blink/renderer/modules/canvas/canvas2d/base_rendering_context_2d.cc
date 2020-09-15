@@ -1829,8 +1829,11 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
                    IntPoint(dest_offset));
     }
   } else {
-    PutByteArray(data->data()->Data(), IntSize(data->width(), data->height()),
-                 source_rect, IntPoint(dest_offset));
+    // TODO(crbug.com/1115317): PutByteArray works with uint8 only. It should be
+    // compatible with uint16 and float32.
+    PutByteArray(data->data().GetAsUint8ClampedArray()->Data(),
+                 IntSize(data->width(), data->height()), source_rect,
+                 IntPoint(dest_offset));
   }
 
   if (!IsPaint2D()) {

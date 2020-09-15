@@ -749,7 +749,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface ImageData
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
-[Worker]     getter dataUnion
 [Worker]     getter height
 [Worker]     getter width
 [Worker]     method constructor

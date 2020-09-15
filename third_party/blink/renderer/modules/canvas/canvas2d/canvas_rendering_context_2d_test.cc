@@ -784,7 +784,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
   context->drawImage(script_state, image_union, 0, 0, exception_state);
 
   ImageData* image_data = context->getImageData(0, 0, 2, 2, exception_state);
-  ImageDataArray data_array = image_data->dataUnion();
+  ImageDataArray data_array = image_data->data();
   ASSERT_TRUE(data_array.IsFloat32Array());
   DOMArrayBufferView* buffer_view = data_array.GetAsFloat32Array().View();
   ASSERT_EQ(16u, buffer_view->byteLengthAsSizeT() / buffer_view->TypeSize());

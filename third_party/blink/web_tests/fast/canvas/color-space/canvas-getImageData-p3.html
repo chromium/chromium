@@ -25,7 +25,7 @@ function drawSRGBThenGetImageDataP3() {
         {colorSpace: 'p3', pixelFormat:'float16'});
     ctx.fillStyle = 'rgb(50, 100, 150)';
     ctx.fillRect(0, 0, 10, 10);
-    var pixel = ctx.getImageData(5, 5, 1, 1).dataUnion;
+    var pixel = ctx.getImageData(5, 5, 1, 1).data;
     // Check against the same color in P3. 0.01 protects the test against
     // color conversion deviations.
     assert_array_approx_equals(pixel, [0.24304, 0.38818, 0.57227, 1], 0.01);
@@ -40,12 +40,12 @@ function putImageDataP3ThenGetImageDataP3() {
     var dataP3 = new Float32Array(4);
     var imageData = ctx.createImageData(1, 1,
         {colorSpace: 'p3', storageFormat:'float32'});
-    imageData.dataUnion[0] = 0.24304;
-    imageData.dataUnion[1] = 0.38818;
-    imageData.dataUnion[2] = 0.57227;
-    imageData.dataUnion[3] = 1;
+    imageData.data[0] = 0.24304;
+    imageData.data[1] = 0.38818;
+    imageData.data[2] = 0.57227;
+    imageData.data[3] = 1;
     ctx.putImageData(imageData, 5, 5);
-    var pixel = ctx.getImageData(5, 5, 1, 1).dataUnion;
+    var pixel = ctx.getImageData(5, 5, 1, 1).data;
     // Check against the same color in P3. 0.001 protects the test against
     // rounding errors.
     assert_array_approx_equals(pixel, [0.24304, 0.38818, 0.57227, 1], 0.001);
@@ -64,7 +64,7 @@ function putImageDataSRGBThenGetImageDataP3() {
     imageData.data[2] = 150;
     imageData.data[3] = 255;
     ctx.putImageData(imageData, 5, 5);
-    var pixel = ctx.getImageData(5, 5, 1, 1).dataUnion;
+    var pixel = ctx.getImageData(5, 5, 1, 1).data;
     // Check against the same color in P3. 0.01 protects the test against
     // color conversion deviations.
     assert_array_approx_equals(pixel, [0.24304, 0.38818, 0.57227, 1], 0.01);

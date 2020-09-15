@@ -41,6 +41,5 @@ typedef (Uint8ClampedArray or Uint16Array or Float32Array) ImageDataArray;
 
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;
-    readonly attribute Uint8ClampedArray data;
-    [RuntimeEnabled=CanvasColorManagement] readonly attribute ImageDataArray dataUnion;
+    readonly attribute ImageDataArray data;
 };
