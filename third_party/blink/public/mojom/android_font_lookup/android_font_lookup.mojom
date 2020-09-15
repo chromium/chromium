@@ -11,8 +11,6 @@ import "mojo/public/mojom/base/file.mojom";
 interface AndroidFontLookup {
   // Returns a list of ICU case folded full font names available to be fetched
   // locally from on-device storage, without a network roundtrip.
-  // TODO(crbug.com/1111148): Complete implementation of this method in
-  // AndroidFontLookupImpl.java. Currently returns empty list.
   GetUniqueNameLookupTable()
     => (array<string> available_unique_font_names);
 
