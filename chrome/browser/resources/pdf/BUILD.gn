@@ -163,6 +163,7 @@ js_library("pdf_viewer") {
     ":toolbar_manager",
     "elements:viewer-error-screen",
     "elements:viewer-password-screen",
+    "elements:viewer-pdf-sidenav",
     "elements:viewer-pdf-toolbar",
     "elements:viewer-pdf-toolbar-new",
     "elements:viewer-zoom-toolbar",

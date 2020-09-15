@@ -40,7 +40,6 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       // </if>
       annotationMode: {
         type: Boolean,
-        notify: true,
         value: false,
         reflectToAttribute: true,
       },
@@ -324,11 +323,11 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   // <if expr="chromeos">
   toggleAnnotation() {
-    this.annotationMode = !this.annotationMode;
+    const newAnnotationMode = !this.annotationMode;
     this.dispatchEvent(new CustomEvent(
-        'annotation-mode-toggled', {detail: this.annotationMode}));
+        'annotation-mode-toggled', {detail: newAnnotationMode}));
 
-    if (this.annotationMode && !this.displayAnnotations_) {
+    if (newAnnotationMode && !this.displayAnnotations_) {
       this.toggleDisplayAnnotations_();
     }
   }

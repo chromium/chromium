@@ -142,6 +142,7 @@
 </template>
 <template is="dom-if" if="[[pdfViewerUpdateEnabled_]]">
   <viewer-pdf-toolbar-new id="toolbar"
+    annotation-mode="[[annotationMode_]]"
     doc-title="[[title_]]" doc-length="[[docLength_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"

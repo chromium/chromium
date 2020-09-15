@@ -4,7 +4,6 @@
 
 import './elements/viewer-error-screen.js';
 import './elements/viewer-password-screen.js';
-import './elements/viewer-pdf-sidenav.js';
 import './elements/viewer-pdf-toolbar.js';
 import './elements/viewer-zoom-toolbar.js';
 import './elements/shared-vars.js';
@@ -18,12 +17,13 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
+import {hasKeyModifiers, listenOnce} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
 import {Attachment, FittingType, Point, SaveRequestType} from './constants.js';
+import {ViewerPdfSidenavElement} from './elements/viewer-pdf-sidenav.js';
 import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 // <if expr="chromeos">
 import {InkController} from './ink_controller.js';
@@ -259,6 +259,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     /** @private {boolean} */
     this.sidenavCollapsed_ = false;
 
+    /**
+     * The state to restore sidenavCollapsed_ to after exiting annotation mode.
+     * @private {boolean}
+     */
+    this.sidenavRestoreState_ = false;
+
     if (this.pdfViewerUpdateEnabled_) {
       // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
       this.sidenavCollapsed_ = Boolean(Number.parseInt(
@@ -459,18 +465,51 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   // <if expr="chromeos">
   /**
+   * @return {!Promise} Resolves when the sidenav animation is complete.
+   * @private
+   */
+  waitForSidenavTransition_() {
+    return new Promise(resolve => {
+      listenOnce(
+          /** @type {!ViewerPdfSidenavElement} */ (
+              this.shadowRoot.querySelector('#sidenav-container')),
+          'transitionend', e => resolve());
+    });
+  }
+
+  /**
+   * @return {!Promise} Resolves when the sidenav is restored to
+   *     |sidenavRestoreState_|, after having been closed for annotation mode.
+   * @private
+   */
+  restoreSidenav_() {
+    this.sidenavCollapsed_ = this.sidenavRestoreState_;
+    return this.sidenavCollapsed_ ? Promise.resolve() :
+                                    this.waitForSidenavTransition_();
+  }
+
+  /**
    * Handles the annotation mode being toggled on or off.
    * @param {!CustomEvent<boolean>} e
    * @private
    */
   async onAnnotationModeToggled_(e) {
     const annotationMode = e.detail;
-    this.annotationMode_ = annotationMode;
     if (annotationMode) {
       // Enter annotation mode.
       assert(this.currentController === this.pluginController);
       // TODO(dstockwell): set plugin read-only, begin transition
       this.updateProgress(0);
+
+      if (this.pdfViewerUpdateEnabled_) {
+        this.sidenavRestoreState_ = this.sidenavCollapsed_;
+        this.sidenavCollapsed_ = true;
+        if (!this.sidenavRestoreState_) {
+          // Wait for the animation before proceeding.
+          await this.waitForSidenavTransition_();
+        }
+      }
+
       // TODO(dstockwell): handle save failure
       const saveResult =
           await this.pluginController.save(SaveRequestType.ANNOTATION);
@@ -483,12 +522,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         } catch (e) {
           // The user aborted entering annotation mode. Revert to the plugin.
           this.getToolbar_().annotationMode = false;
-          this.annotationMode_ = false;
           this.updateProgress(100);
           return;
         }
       }
       PDFMetrics.record(PDFMetrics.UserAction.ENTER_ANNOTATION_MODE);
+      this.annotationMode_ = true;
       this.hasEnteredAnnotationMode_ = true;
       // TODO(dstockwell): feed real progress data from the Ink component
       this.updateProgress(50);
@@ -502,6 +541,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);
+      this.annotationMode_ = false;
       // This runs separately to allow other consumers of `loaded` to queue
       // up after this task.
       this.loaded.then(() => {
@@ -513,6 +553,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           await this.inkController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       const result = /** @type {!RequiredSaveResult} */ (saveResult);
+      if (this.pdfViewerUpdateEnabled_) {
+        await this.restoreSidenav_();
+      }
       await this.pluginController.load(result.fileName, result.dataToSave);
       // Ensure the plugin gets the initial viewport.
       this.pluginController.afterZoom();
@@ -529,6 +572,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
     this.getToolbar_().toggleAnnotation();
     this.annotationMode_ = false;
+    if (this.pdfViewerUpdateEnabled_) {
+      await this.restoreSidenav_();
+    }
     await this.loaded;
   }
   // </if>
@@ -546,7 +592,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onScroll_(e) {
-    if (this.currentController === this.pluginController) {
+    if (this.currentController === this.pluginController &&
+        !this.annotationMode_) {
       this.pluginController.updateScroll(
           e.target.scrollLeft, e.target.scrollTop);
     }

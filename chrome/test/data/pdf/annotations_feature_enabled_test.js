@@ -68,12 +68,6 @@ chrome.test.runTests([
 
       chrome.test.assertEq(3, cameras.length);
 
-      if (updateEnabled) {
-        // TODO (https://crbug.com/1120279): Determine what the expectations
-        // below should be for the new UI and fix if needed to meet them.
-        return;
-      }
-
       const expectations = [
         {top: 44.25, left: -106.5, right: 718.5, bottom: -448.5},
         {top: 23.25, left: -3.75, right: 408.75, bottom: -223.125},
@@ -82,7 +76,10 @@ chrome.test.runTests([
 
       for (const expectation of expectations) {
         const actual = cameras.shift();
-        chrome.test.assertEq(expectation.top, actual.top);
+        const expectationTop = updateEnabled ?
+            Math.min(2.25, expectation.top - 21) :
+            expectation.top;
+        chrome.test.assertEq(expectationTop, actual.top);
         chrome.test.assertEq(expectation.left, actual.left);
         chrome.test.assertEq(expectation.bottom, actual.bottom);
         chrome.test.assertEq(expectation.right, actual.right);
@@ -392,7 +389,7 @@ chrome.test.runTests([
       const toolbar = document.createElement('viewer-pdf-toolbar-new');
       document.body.appendChild(toolbar);
       toolbar.toggleAnnotation();
-      chrome.test.assertTrue(toolbar.annotationMode);
+      toolbar.annotationMode = true;
 
       await toolbar.addEventListener('display-annotations-changed', async e => {
         chrome.test.assertFalse(e.detail);
