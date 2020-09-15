@@ -7,7 +7,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "chromecast/common/mojom/multiroom.mojom.h"
+#include "chromecast/common/mojom/multiroom.mojom-shared.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 

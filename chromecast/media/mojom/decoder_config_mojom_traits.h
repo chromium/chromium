@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_MOJOM_DECODER_CONFIG_MOJOM_TRAITS_H_
 #define CHROMECAST_MEDIA_MOJOM_DECODER_CONFIG_MOJOM_TRAITS_H_
 
-#include "chromecast/media/mojom/media_types.mojom.h"
+#include "chromecast/media/mojom/media_types.mojom-shared.h"
 #include "chromecast/public/media/decoder_config.h"
 
 namespace mojo {

@@ -23,4 +23,27 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromecast.shell.mojom.BitstreamAudioCodecsInfo"
+          cpp = "::chromecast::BitstreamAudioCodecsInfo"
+        },
+      ]
+      traits_headers = [ "application_media_capabilities_traits.h" ]
+      traits_public_deps = [ "//chromecast/base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "chromecast.mojom.AudioChannel"
+          cpp = "::chromecast::media::AudioChannel"
+        },
+      ]
+      traits_headers = [ "multiroom_mojom_traits.h" ]
+      traits_public_deps = [ "//chromecast/public/media" ]
+    },
+  ]
 }

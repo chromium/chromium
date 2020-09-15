@@ -12,6 +12,58 @@ mojom("interfaces") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.FaviconUsageDataList"
+          cpp = "::favicon_base::FaviconUsageDataList"
+        },
+        {
+          mojom = "chrome.mojom.ImportedBookmarkEntry"
+          cpp = "::ImportedBookmarkEntry"
+        },
+        {
+          mojom = "chrome.mojom.ImporterAutofillFormDataEntry"
+          cpp = "::ImporterAutofillFormDataEntry"
+        },
+        {
+          mojom = "chrome.mojom.ImporterIE7PasswordInfo"
+          cpp = "::importer::ImporterIE7PasswordInfo"
+        },
+        {
+          mojom = "chrome.mojom.ImporterURLRow"
+          cpp = "::ImporterURLRow"
+        },
+        {
+          mojom = "chrome.mojom.SearchEngineInfo"
+          cpp = "::importer::SearchEngineInfo"
+        },
+        {
+          mojom = "chrome.mojom.SourceProfile"
+          cpp = "::importer::SourceProfile"
+        },
+        {
+          mojom = "chrome.mojom.ImportItem"
+          cpp = "::importer::ImportItem"
+        },
+      ]
+      traits_headers = [
+        "//chrome/common/importer/imported_bookmark_entry.h",
+        "//chrome/common/importer/importer_autofill_form_data_entry.h",
+        "//chrome/common/importer/importer_data_types.h",
+        "//chrome/common/importer/importer_url_row.h",
+        "//components/favicon_base/favicon_usage_data.h",
+      ]
+      traits_private_headers = [ "profile_import_process_param_traits.h" ]
+      traits_public_deps = [
+        "//chrome/common",
+        "//components/favicon_base",
+        "//ipc",
+      ]
+    },
+  ]
 }
 
 source_set("importer") {
