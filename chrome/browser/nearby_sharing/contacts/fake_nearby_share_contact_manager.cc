@@ -40,3 +40,12 @@ void FakeNearbyShareContactManager::SetAllowedContacts(
 void FakeNearbyShareContactManager::OnStart() {}
 
 void FakeNearbyShareContactManager::OnStop() {}
+
+void FakeNearbyShareContactManager::Bind(
+    mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver) {}
+
+void FakeNearbyShareContactManager::AddDownloadContactsObserver(
+    ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
+        observer) {}
+
+void FakeNearbyShareContactManager::DownloadContacts() {}

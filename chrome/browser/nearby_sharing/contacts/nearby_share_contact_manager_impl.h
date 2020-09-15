@@ -13,6 +13,10 @@
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 class NearbyShareClientFactory;
 class NearbyShareContactDownloader;
@@ -74,6 +78,18 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       const std::set<std::string>& allowed_contact_ids) override;
   void OnStart() override;
   void OnStop() override;
+  void Bind(mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver)
+      override;
+
+  void NotifyMojoObserverContactsDownloaded(
+      const std::set<std::string>& allowed_contact_ids,
+      const std::vector<nearbyshare::proto::ContactRecord>& contacts);
+
+  // nearby_share::mojom::ContactsManager:
+  void AddDownloadContactsObserver(
+      ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
+          observer) override;
+  void DownloadContacts() override;
 
   std::set<std::string> GetAllowedContacts() const;
   void OnContactsDownloadRequested();
@@ -101,6 +117,8 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   std::unique_ptr<NearbyShareScheduler> contact_download_scheduler_;
   std::unique_ptr<NearbyShareScheduler> contact_upload_scheduler_;
   std::unique_ptr<NearbyShareContactDownloader> contact_downloader_;
+  mojo::RemoteSet<nearby_share::mojom::DownloadContactsObserver> observers_set_;
+  mojo::ReceiverSet<nearby_share::mojom::ContactManager> receiver_set_;
   base::WeakPtrFactory<NearbyShareContactManagerImpl> weak_ptr_factory_{this};
 };
 

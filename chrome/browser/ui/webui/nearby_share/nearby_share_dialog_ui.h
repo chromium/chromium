@@ -43,6 +43,10 @@ class NearbyShareDialogUI : public ui::MojoWebUIController {
   // ui::MojoWebUIController
   void BindInterface(
       mojo::PendingReceiver<mojom::NearbyShareSettings> receiver);
+  // Binds to the existing contacts manager instance owned by the nearby share
+  // keyed service.
+  void BindInterface(
+      mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver);
 
  private:
   void HandleClose(const base::ListValue* args);

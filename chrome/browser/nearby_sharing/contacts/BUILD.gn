@@ -22,6 +22,7 @@ source_set("contacts") {
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/prefs",
   ]
 }
@@ -63,7 +64,9 @@ source_set("unit_tests") {
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
     "//chrome/browser/nearby_sharing/scheduling:test_support",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/sync_preferences:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

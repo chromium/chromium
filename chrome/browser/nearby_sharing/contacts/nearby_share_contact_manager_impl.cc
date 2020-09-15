@@ -18,6 +18,8 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-shared.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
@@ -55,6 +57,52 @@ std::vector<nearbyshare::proto::Contact> ContactRecordsToContacts(
     }
   }
   return contacts;
+}
+
+nearby_share::mojom::ContactIdentifierPtr ProtoToMojo(
+    const nearbyshare::proto::Contact_Identifier& identifier) {
+  nearby_share::mojom::ContactIdentifierPtr identifier_ptr =
+      nearby_share::mojom::ContactIdentifier::New();
+  switch (identifier.identifier_case()) {
+    case nearbyshare::proto::Contact_Identifier::IdentifierCase::kAccountName:
+      identifier_ptr->set_account_name(identifier.account_name());
+      break;
+    case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+        kObfuscatedGaia:
+      identifier_ptr->set_obfuscated_gaia(identifier.obfuscated_gaia());
+      break;
+    case nearbyshare::proto::Contact_Identifier::IdentifierCase::kPhoneNumber:
+      identifier_ptr->set_phone_number(identifier.phone_number());
+      break;
+    case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+        IDENTIFIER_NOT_SET:
+      NOTREACHED();
+      break;
+  }
+  return identifier_ptr;
+}
+
+nearby_share::mojom::ContactRecordPtr ProtoToMojo(
+    const nearbyshare::proto::ContactRecord& contact_record) {
+  nearby_share::mojom::ContactRecordPtr contact_record_ptr =
+      nearby_share::mojom::ContactRecord::New();
+  contact_record_ptr->id = contact_record.id();
+  contact_record_ptr->person_name = contact_record.person_name();
+  contact_record_ptr->image_url = GURL(contact_record.image_url());
+  for (const auto& identifier : contact_record.identifiers()) {
+    contact_record_ptr->identifiers.push_back(ProtoToMojo(identifier));
+  }
+  return contact_record_ptr;
+}
+
+std::vector<nearby_share::mojom::ContactRecordPtr> ProtoToMojo(
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+  std::vector<nearby_share::mojom::ContactRecordPtr> mojo_contacts;
+  mojo_contacts.reserve(contacts.size());
+  for (const auto& contact_record : contacts) {
+    mojo_contacts.push_back(ProtoToMojo(contact_record));
+  }
+  return mojo_contacts;
 }
 
 }  // namespace
@@ -140,6 +188,21 @@ void NearbyShareContactManagerImpl::OnStop() {
   contact_upload_scheduler_->Stop();
 }
 
+void NearbyShareContactManagerImpl::Bind(
+    mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver) {
+  receiver_set_.Add(this, std::move(receiver));
+}
+
+void NearbyShareContactManagerImpl::AddDownloadContactsObserver(
+    ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
+        observer) {
+  observers_set_.Add(std::move(observer));
+}
+
+void NearbyShareContactManagerImpl::DownloadContacts() {
+  DownloadContacts(/*only_download_if_changed=*/false);
+}
+
 std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
     const {
   std::set<std::string> allowlist;
@@ -189,7 +252,9 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
             GetAllowedContacts(), *contacts));
 
     // Notify observers that the contact list was downloaded.
-    NotifyContactsDownloaded(GetAllowedContacts(), *contacts);
+    std::set<std::string> allowed_contact_ids = GetAllowedContacts();
+    NotifyContactsDownloaded(allowed_contact_ids, *contacts);
+    NotifyMojoObserverContactsDownloaded(allowed_contact_ids, *contacts);
 
     // Request a contacts upload if needed, or process an existing upload
     // request now that we have the access to the full contacts list.
@@ -221,6 +286,11 @@ void NearbyShareContactManagerImpl::OnContactsDownloadSuccess(
 }
 
 void NearbyShareContactManagerImpl::OnContactsDownloadFailure() {
+  // Notify mojo remotes.
+  for (auto& remote : observers_set_) {
+    remote->OnContactsDownloadFailed();
+  }
+
   contact_download_scheduler_->HandleResult(/*success=*/false);
 }
 
@@ -288,4 +358,22 @@ bool NearbyShareContactManagerImpl::SetAllowlist(
   NotifyAllowlistChanged(were_contacts_added, were_contacts_removed);
 
   return true;
+}
+
+void NearbyShareContactManagerImpl::NotifyMojoObserverContactsDownloaded(
+    const std::set<std::string>& allowed_contact_ids,
+    const std::vector<nearbyshare::proto::ContactRecord>& contacts) {
+  if (observers_set_.empty()) {
+    return;
+  }
+
+  // Mojo doesn't have sets, so we have to copy to an array.
+  std::vector<std::string> allowed_contact_ids_vector(
+      allowed_contact_ids.begin(), allowed_contact_ids.end());
+
+  // Notify mojo remotes.
+  for (auto& remote : observers_set_) {
+    remote->OnContactsDownloaded(allowed_contact_ids_vector,
+                                 ProtoToMojo(contacts));
+  }
 }

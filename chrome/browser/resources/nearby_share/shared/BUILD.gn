@@ -50,6 +50,7 @@ js_library("nearby_share_settings") {
   deps = [
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr",
+    "//url/mojom:url_mojom_gurl_js_library_for_compile",
   ]
 }
 
@@ -141,6 +142,7 @@ js_library("nearby_share_settings.m") {
   deps = [
     "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
+    "//url/mojom:url_mojom_gurl_js_library_for_compile",
   ]
   extra_deps = [ ":modulize" ]
 }

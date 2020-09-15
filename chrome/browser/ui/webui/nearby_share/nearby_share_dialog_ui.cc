@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_per_session_discovery_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -91,6 +92,14 @@ void NearbyShareDialogUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   nearby_sharing_service->GetSettings()->Bind(std::move(receiver));
+}
+
+void NearbyShareDialogUI::BindInterface(
+    mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver) {
+  NearbySharingService* nearby_sharing_service =
+      NearbySharingServiceFactory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  nearby_sharing_service->GetContactManager()->Bind(std::move(receiver));
 }
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {

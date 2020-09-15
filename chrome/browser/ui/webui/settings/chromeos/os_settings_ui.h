@@ -73,6 +73,11 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<nearby_share::mojom::ReceiveManager> receiver);
 
+  // Binds to the existing contacts manager instance owned by the nearby share
+  // keyed service.
+  void BindInterface(
+      mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver);
+
  private:
   base::TimeTicks time_when_opened_;
 

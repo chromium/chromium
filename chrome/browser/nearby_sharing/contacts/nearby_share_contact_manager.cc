@@ -32,6 +32,14 @@ void NearbyShareContactManager::Stop() {
   OnStop();
 }
 
+void NearbyShareContactManager::SetAllowedContacts(
+    const std::vector<std::string>& allowed_contacts) {
+  // This is mojo version of the call, but mojo doesn't support sets, so we
+  // have to convert the vector to set.
+  std::set<std::string> set(allowed_contacts.begin(), allowed_contacts.end());
+  SetAllowedContacts(set);
+}
+
 void NearbyShareContactManager::NotifyAllowlistChanged(
     bool were_contacts_added_to_allowlist,
     bool were_contacts_removed_from_allowlist) {

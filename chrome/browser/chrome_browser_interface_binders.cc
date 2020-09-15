@@ -709,6 +709,10 @@ void PopulateChromeWebUIFrameBinders(
         nearby_share::mojom::NearbyShareSettings,
         chromeos::settings::OSSettingsUI, nearby_share::NearbyShareDialogUI>(
         map);
+    RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
+                                           chromeos::settings::OSSettingsUI,
+                                           nearby_share::NearbyShareDialogUI>(
+        map);
     RegisterWebUIControllerInterfaceBinder<
         nearby_share::mojom::DiscoveryManager,
         nearby_share::NearbyShareDialogUI>(map);

@@ -4,6 +4,7 @@
 
 // clang-format off
 // #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js'
 // #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 // #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // #import '/mojo/nearby_share_target_types.mojom-lite.js';

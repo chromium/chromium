@@ -22,7 +22,10 @@
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler_factory.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom-test-utils.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -65,8 +68,20 @@ std::vector<nearbyshare::proto::ContactRecord> TestContactRecordList(
   for (size_t i = 0; i < num_contacts; ++i) {
     nearbyshare::proto::ContactRecord contact;
     contact.set_id(GetTestContactId(i));
-    contact.add_identifiers()->set_account_name(GetTestContactEmail(i));
-    contact.add_identifiers()->set_phone_number(GetTestContactPhone(i));
+    contact.set_image_url("https://google.com");
+    contact.set_person_name("John Doe");
+    // only one of these fields should be set...
+    switch ((i % 3)) {
+      case 0:
+        contact.add_identifiers()->set_account_name(GetTestContactEmail(i));
+        break;
+      case 1:
+        contact.add_identifiers()->set_phone_number(GetTestContactPhone(i));
+        break;
+      case 2:
+        contact.add_identifiers()->set_obfuscated_gaia("4938tyah");
+        break;
+    }
     contact_list.push_back(contact);
   }
   return contact_list;
@@ -89,6 +104,28 @@ std::vector<nearbyshare::proto::Contact> ContactRecordsToContacts(
   }
   return contacts;
 }
+
+class TestDownloadContactsObserver
+    : public nearby_share::mojom::DownloadContactsObserver {
+ public:
+  void OnContactsDownloaded(
+      const std::vector<std::string>& allowed_contacts,
+      std::vector<nearby_share::mojom::ContactRecordPtr> contacts) override {
+    allowed_contacts_ = allowed_contacts;
+    contacts_ = std::move(contacts);
+    on_contacts_downloaded_called_ = true;
+  }
+
+  void OnContactsDownloadFailed() override {
+    on_contacts_download_failed_called_ = true;
+  }
+
+  std::vector<std::string> allowed_contacts_;
+  std::vector<nearby_share::mojom::ContactRecordPtr> contacts_;
+  bool on_contacts_downloaded_called_ = false;
+  bool on_contacts_download_failed_called_ = false;
+  mojo::Receiver<nearby_share::mojom::DownloadContactsObserver> receiver_{this};
+};
 
 }  // namespace
 
@@ -119,12 +156,18 @@ class NearbyShareContactManagerImplTest
 
     manager_ = NearbyShareContactManagerImpl::Factory::Create(
         &pref_service_, &http_client_factory_, &local_device_data_manager_);
+    manager_awaiter_ =
+        std::make_unique<nearby_share::mojom::ContactManagerAsyncWaiter>(
+            manager_.get());
     VerifySchedulerInitialization();
     manager_->AddObserver(this);
+    manager_->AddDownloadContactsObserver(
+        mojo_observer_.receiver_.BindNewPipeAndPassRemote());
     manager_->Start();
   }
 
   void TearDown() override {
+    manager_awaiter_.reset();
     manager_->RemoveObserver(this);
     manager_.reset();
     NearbyShareSchedulerFactory::SetFactoryForTesting(nullptr);
@@ -132,6 +175,10 @@ class NearbyShareContactManagerImplTest
   }
 
   void DownloadContacts(bool only_download_if_changed) {
+    // Manually reset these before each download.
+    mojo_observer_.on_contacts_downloaded_called_ = false;
+    mojo_observer_.on_contacts_download_failed_called_ = false;
+
     // Verify that the download scheduler is sent request.
     size_t num_requests = download_scheduler()->num_immediate_requests();
     manager_->DownloadContacts(only_download_if_changed);
@@ -194,6 +241,15 @@ class NearbyShareContactManagerImplTest
     EXPECT_EQ(num_handled_results + 1,
               download_scheduler()->handled_results().size());
     EXPECT_TRUE(download_scheduler()->handled_results().back());
+
+    // Verify the mojo observer was called if we had contacts.
+    mojo_observer_.receiver_.FlushForTesting();
+    EXPECT_EQ(contacts.has_value(),
+              mojo_observer_.on_contacts_downloaded_called_);
+    EXPECT_FALSE(mojo_observer_.on_contacts_download_failed_called_);
+    if (contacts) {
+      VerifyMojoContacts(contacts.value(), mojo_observer_.contacts_);
+    }
   }
 
   void FailDownload(bool expected_only_download_if_changed) {
@@ -205,6 +261,11 @@ class NearbyShareContactManagerImplTest
     EXPECT_EQ(num_handled_results + 1,
               download_scheduler()->handled_results().size());
     EXPECT_FALSE(download_scheduler()->handled_results().back());
+
+    // Verify the mojo observer was called as well.
+    mojo_observer_.receiver_.FlushForTesting();
+    EXPECT_FALSE(mojo_observer_.on_contacts_downloaded_called_);
+    EXPECT_TRUE(mojo_observer_.on_contacts_download_failed_called_);
   }
 
   void TriggerUploadFromScheduler() {
@@ -397,6 +458,47 @@ class NearbyShareContactManagerImplTest
     }
   }
 
+  void VerifyMojoContacts(
+      const std::vector<nearbyshare::proto::ContactRecord>& proto_list,
+      const std::vector<nearby_share::mojom::ContactRecordPtr>& mojo_list) {
+    ASSERT_EQ(proto_list.size(), mojo_list.size());
+    int i = 0;
+    for (auto& proto_contact : proto_list) {
+      auto& mojo_contact = mojo_list.at(i++);
+      EXPECT_EQ(proto_contact.id(), mojo_contact->id);
+      EXPECT_EQ(proto_contact.person_name(), mojo_contact->person_name);
+      EXPECT_EQ(GURL(proto_contact.image_url()), mojo_contact->image_url);
+      ASSERT_EQ((size_t)proto_contact.identifiers().size(),
+                mojo_contact->identifiers.size());
+      int j = 0;
+      for (auto& proto_identifier : proto_contact.identifiers()) {
+        auto& mojo_identifier = mojo_contact->identifiers.at(j++);
+        switch (proto_identifier.identifier_case()) {
+          case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+              kAccountName:
+            EXPECT_EQ(proto_identifier.account_name(),
+                      mojo_identifier->get_account_name());
+            break;
+          case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+              kObfuscatedGaia:
+            EXPECT_EQ(proto_identifier.obfuscated_gaia(),
+                      mojo_identifier->get_obfuscated_gaia());
+            break;
+          case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+              kPhoneNumber:
+            EXPECT_EQ(proto_identifier.phone_number(),
+                      mojo_identifier->get_phone_number());
+            break;
+          case nearbyshare::proto::Contact_Identifier::IdentifierCase::
+              IDENTIFIER_NOT_SET:
+            NOTREACHED();
+            break;
+        }
+      }
+    }
+  }
+
+  TestDownloadContactsObserver mojo_observer_;
   std::vector<AllowlistChangedNotification> allowlist_changed_notifications_;
   std::vector<ContactsDownloadedNotification>
       contacts_downloaded_notifications_;
@@ -407,6 +509,9 @@ class NearbyShareContactManagerImplTest
   FakeNearbyShareSchedulerFactory scheduler_factory_;
   FakeNearbyShareContactDownloader::Factory downloader_factory_;
   std::unique_ptr<NearbyShareContactManager> manager_;
+  std::unique_ptr<nearby_share::mojom::ContactManagerAsyncWaiter>
+      manager_awaiter_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(NearbyShareContactManagerImplTest, SetAllowlist) {

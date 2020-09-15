@@ -15,6 +15,9 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 // The Nearby Share contacts manager interfaces with the Nearby server in the
 // following ways:
@@ -29,7 +32,7 @@
 //
 // All contact data and update notifications are conveyed via observer methods;
 // the manager does not return data directly from function calls.
-class NearbyShareContactManager {
+class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -44,7 +47,7 @@ class NearbyShareContactManager {
   };
 
   NearbyShareContactManager();
-  virtual ~NearbyShareContactManager();
+  ~NearbyShareContactManager() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -70,6 +73,15 @@ class NearbyShareContactManager {
   // are notified of any changes to the allowlist via OnAllowlistChanged().
   virtual void SetAllowedContacts(
       const std::set<std::string>& allowed_contact_ids) = 0;
+
+  virtual void Bind(
+      mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver) = 0;
+
+  // nearby_share::mojom::ContactManager:
+  void SetAllowedContacts(
+      const std::vector<std::string>& allowed_contacts) override;
+  // This prevents the mojo version of DownloadContacts from being hidden.
+  using nearby_share::mojom::ContactManager::DownloadContacts;
 
  protected:
   virtual void OnStart() = 0;
