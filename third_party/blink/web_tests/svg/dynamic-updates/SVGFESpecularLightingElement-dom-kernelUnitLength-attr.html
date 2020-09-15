@@ -4,6 +4,12 @@
 <script src="resources/SVGTestCase.js"></script>
 <script src="../../resources/js-test.js"></script>
 <script src="../../paint/invalidation/resources/text-based-repaint.js"></script>
+<script>
+// Under-invalidatin checking seems to affect blending of anti-aliased pixels
+// for this test. See crbug.com/1128627 for details.
+if (window.internals)
+  internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+</script>
 </head>
 <body onload="runRepaintTest()">
 <h1>SVG 1.1 dynamic update tests</h1>

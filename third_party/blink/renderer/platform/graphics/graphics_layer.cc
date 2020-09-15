@@ -307,20 +307,6 @@ bool GraphicsLayer::Paint() {
         raster_invalidation_function_,
         GetPaintController().GetPaintArtifactShared(), layer_bounds,
         layer_state_->state.Unalias(), this);
-
-    if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
-        PaintsContentOrHitTest()) {
-      auto& tracking = EnsureRasterInvalidator().EnsureTracking();
-      tracking.CheckUnderInvalidations(DebugName(), CapturePaintRecord(),
-                                       InterestRect());
-      if (auto record = tracking.UnderInvalidationRecord()) {
-        // Add the under-invalidation overlay onto the painted result.
-        GetPaintController().AppendDebugDrawingAfterCommit(std::move(record),
-                                                           layer_state_->state);
-        // Ensure the compositor will raster the under-invalidation overlay.
-        CcLayer().SetNeedsDisplay();
-      }
-    }
   }
 
   needs_check_raster_invalidation_ = false;
@@ -726,18 +712,24 @@ scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList(
   if (painting_control != PAINTING_BEHAVIOR_NORMAL)
     Paint();
 
-  auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
-
-  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
-  PaintChunksToCcLayer::ConvertInto(
-      GetPaintController().PaintChunks(), layer_state_->state.Unalias(),
-      gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
-      paint_controller.GetPaintArtifact().GetDisplayItemList(), *display_list);
+  base::Optional<RasterUnderInvalidationCheckingParams>
+      raster_under_invalidation_params;
+  if (RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() &&
+      PaintsContentOrHitTest()) {
+    raster_under_invalidation_params.emplace(
+        EnsureRasterInvalidator().EnsureTracking(), InterestRect(),
+        DebugName());
+  }
 
   PaintController::ClearFlagsForBenchmark();
 
-  display_list->Finalize();
-  return display_list;
+  DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
+  return PaintChunksToCcLayer::Convert(
+      GetPaintController().PaintChunks(), layer_state_->state.Unalias(),
+      gfx::Vector2dF(layer_state_->offset.X(), layer_state_->offset.Y()),
+      paint_controller.GetPaintArtifact().GetDisplayItemList(),
+      cc::DisplayItemList::kTopLevelDisplayItemList,
+      base::OptionalOrNullptr(raster_under_invalidation_params));
 }
 
 size_t GraphicsLayer::GetApproximateUnsharedMemoryUsage() const {

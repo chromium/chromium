@@ -14,17 +14,6 @@
 
 namespace blink {
 
-namespace {
-
-// For PaintArtifact::AppendDebugDrawing().
-class DebugDrawingClient final : public DisplayItemClient {
- public:
-  DebugDrawingClient() { Invalidate(PaintInvalidationReason::kUncacheable); }
-  String DebugName() const final { return "DebugDrawing"; }
-};
-
-}  // namespace
-
 PaintArtifact::PaintArtifact() : display_item_list_(0) {}
 
 PaintArtifact::PaintArtifact(DisplayItemList display_items,
@@ -52,24 +41,6 @@ size_t PaintArtifact::ApproximateUnsharedMemoryUsage() const {
   for (const auto& chunk : chunks_)
     total_size += chunk.MemoryUsageInBytes();
   return total_size;
-}
-
-void PaintArtifact::AppendDebugDrawing(
-    sk_sp<const PaintRecord> record,
-    const PropertyTreeStateOrAlias& property_tree_state) {
-  DEFINE_STATIC_LOCAL(DebugDrawingClient, debug_drawing_client, ());
-
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  auto& display_item =
-      display_item_list_.AllocateAndConstruct<DrawingDisplayItem>(
-          debug_drawing_client, DisplayItem::kDebugDrawing,
-          LayoutRect::InfiniteIntRect(), std::move(record));
-
-  // Create a PaintChunk for the debug drawing.
-  chunks_.emplace_back(display_item_list_.size() - 1, display_item_list_.size(),
-                       display_item.GetId(), property_tree_state);
-  chunks_.back().bounds = chunks_.back().drawable_bounds =
-      display_item_list_.Last().VisualRect();
 }
 
 void PaintArtifact::Replay(GraphicsContext& graphics_context,

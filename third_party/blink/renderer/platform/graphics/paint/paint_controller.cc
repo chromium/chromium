@@ -668,14 +668,6 @@ size_t PaintController::ApproximateUnsharedMemoryUsage() const {
   return memory_usage;
 }
 
-void PaintController::AppendDebugDrawingAfterCommit(
-    sk_sp<const PaintRecord> record,
-    const PropertyTreeStateOrAlias& property_tree_state) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK(new_display_item_list_.IsEmpty());
-  current_paint_artifact_->AppendDebugDrawing(record, property_tree_state);
-}
-
 void PaintController::ShowUnderInvalidationError(
     const char* reason,
     const DisplayItem& new_item,

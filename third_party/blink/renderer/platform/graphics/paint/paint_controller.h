@@ -231,9 +231,6 @@ class PLATFORM_EXPORT PaintController {
   // the last CommitNewDisplayItems(). Use with care.
   DisplayItemList& NewDisplayItemList() { return new_display_item_list_; }
 
-  void AppendDebugDrawingAfterCommit(sk_sp<const PaintRecord>,
-                                     const PropertyTreeStateOrAlias&);
-
 #if DCHECK_IS_ON()
   void ShowCompactDebugData() const;
   void ShowDebugData() const;

@@ -66,9 +66,6 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   // shared with the embedder after copying to cc::DisplayItemList.
   size_t ApproximateUnsharedMemoryUsage() const;
 
-  void AppendDebugDrawing(sk_sp<const PaintRecord>,
-                          const PropertyTreeStateOrAlias&);
-
   // Draws the paint artifact to a GraphicsContext, into the ancestor state
   // given by |replay_state|.
   void Replay(GraphicsContext&,
