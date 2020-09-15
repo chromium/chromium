@@ -41,6 +41,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -1162,10 +1163,17 @@ IN_PROC_BROWSER_TEST_F(LocalNTPTest, PendingNavigations) {
 
   // Verify that the omnibox displays |slow_url|.
   OmniboxView* view = browser()->window()->GetLocationBar()->GetOmniboxView();
-  std::string omnibox_text = base::UTF16ToUTF8(view->GetText());
-  EXPECT_THAT(omnibox_text, ::testing::StartsWith(slow_url.host()));
-  EXPECT_THAT(omnibox_text, ::testing::EndsWith(slow_url.path()));
-  EXPECT_THAT(slow_url.spec(), ::testing::EndsWith(omnibox_text));
+  // Depending on field trial configuration, the omnibox text might contain the
+  // full URL or just a portion of it.
+  if (base::FeatureList::IsEnabled(
+          omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover)) {
+    EXPECT_EQ(base::ASCIIToUTF16(slow_url.spec()), view->GetText());
+  } else {
+    std::string omnibox_text = base::UTF16ToUTF8(view->GetText());
+    EXPECT_THAT(omnibox_text, ::testing::StartsWith(slow_url.host()));
+    EXPECT_THAT(omnibox_text, ::testing::EndsWith(slow_url.path()));
+    EXPECT_THAT(slow_url.spec(), ::testing::EndsWith(omnibox_text));
+  }
 }
 
 // Verifies that Chrome won't spawn a separate renderer process for
