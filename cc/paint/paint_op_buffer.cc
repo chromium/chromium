@@ -18,7 +18,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrRecordingContext.h"
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
@@ -2792,7 +2792,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
 
     if (op->IsPaintOpWithFlags()) {
       const auto* flags_op = static_cast<const PaintOpWithFlags*>(op);
-      auto* context = canvas->getGrContext();
+      auto* context = canvas->recordingContext();
       const ScopedRasterFlags scoped_flags(
           &flags_op->flags, new_params.image_provider, canvas->getTotalMatrix(),
           context ? context->maxTextureSize() : 0, iter.alpha());
