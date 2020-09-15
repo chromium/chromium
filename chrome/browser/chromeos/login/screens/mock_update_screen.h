@@ -39,12 +39,10 @@ class MockUpdateView : public UpdateView {
 
   MOCK_METHOD(void, SetUIState, (UpdateView::UIState value));
   MOCK_METHOD(void,
-              SetUpdateStatusMessagePercent,
-              (const base::string16& value));
-  MOCK_METHOD(void,
-              SetUpdateStatusMessageTimeLeft,
-              (const base::string16& value));
-  MOCK_METHOD(void, SetBetterUpdateProgress, (int value));
+              SetUpdateStatus,
+              (int percent,
+               const base::string16& percent_message,
+               const base::string16& timeleft_message));
   MOCK_METHOD(void, SetEstimatedTimeLeft, (int value));
   MOCK_METHOD(void, SetShowEstimatedTimeLeft, (bool value));
   MOCK_METHOD(void, SetUpdateCompleted, (bool value));

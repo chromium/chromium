@@ -47,9 +47,9 @@ class UpdateView {
   virtual void Unbind() = 0;
 
   virtual void SetUIState(UIState value) = 0;
-  virtual void SetUpdateStatusMessagePercent(const base::string16& value) = 0;
-  virtual void SetUpdateStatusMessageTimeLeft(const base::string16& value) = 0;
-  virtual void SetBetterUpdateProgress(int value) = 0;
+  virtual void SetUpdateStatus(int percent,
+                               const base::string16& percent_message,
+                               const base::string16& timeleft_message) = 0;
   // Set the estimated time left, in seconds.
   virtual void SetEstimatedTimeLeft(int value) = 0;
   virtual void SetShowEstimatedTimeLeft(bool value) = 0;
@@ -77,9 +77,9 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   void Unbind() override;
 
   void SetUIState(UpdateView::UIState value) override;
-  void SetUpdateStatusMessagePercent(const base::string16& value) override;
-  void SetUpdateStatusMessageTimeLeft(const base::string16& value) override;
-  void SetBetterUpdateProgress(int value) override;
+  void SetUpdateStatus(int percent,
+                       const base::string16& percent_message,
+                       const base::string16& timeleft_message) override;
   void SetEstimatedTimeLeft(int value) override;
   void SetShowEstimatedTimeLeft(bool value) override;
   void SetUpdateCompleted(bool value) override;

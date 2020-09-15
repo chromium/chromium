@@ -73,9 +73,11 @@
             icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
         </hd-iron-icon>
         <div slot="subtitle">
-          <span>[[updateStatusMessagePercent]]</span>
+          <span id="better-update-percent">[[updateStatusMessagePercent]]</span>
           <span> | </span>
-          <span>[[updateStatusMessageTimeLeft]]</span>
+          <span id="better-update-timeleft">
+            [[updateStatusMessageTimeLeft]]
+          </span>
         </div>
         <paper-progress slot="progress" id="update-progress"
             value="[[betterUpdateProgressValue]]">
