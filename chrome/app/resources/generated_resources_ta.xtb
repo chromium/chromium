@@ -1465,6 +1465,7 @@
 <translation id="2731700343119398978">காத்திருக்கவும்...</translation>
 <translation id="2731710757838467317">உங்கள் மேற்பார்வையிடப்படும் பயனரை உருவாக்குகிறது. இதற்கு ஒரு சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="2731971182069536520">அடுத்தமுறை சாதனத்தை ரீஸ்டார்ட் செய்யும்போது உங்களின் அகத் தரவை நீக்குவதற்கான 'ஒருமுறை செய்யும் புதுப்பிப்பை' நிர்வாகி மேற்கொள்வார்.</translation>
+<translation id="2732134891301408122">கூடுதல் உள்ளடக்கம் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> குழுவில் உள்ள எல்லா தளங்களும் மீட்டமைக்கப்படும்.</translation>
 <translation id="2735712963799620190">திட்ட அட்டவணை</translation>
 <translation id="2737363922397526254">சுருக்கு...</translation>
@@ -3091,6 +3092,7 @@
 <translation id="4735803855089279419">இந்தச் சாதனத்திற்கான சாதன அடையாளங்காட்டிகளை சிஸ்டத்தால் தீர்மானிக்க முடியவில்லை.</translation>
 <translation id="4736292055110123391">உங்கள் எல்லாச் சாதனங்களிலும் உங்கள் புக்மார்க்குகள், கடவுச்சொற்கள், வரலாறு, மேலும் பலவற்றை ஒத்திசைக்கலாம்</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
+<translation id="473936925429402449">தேர்ந்தெடுக்கப்பட்டது, கூடுதல் உள்ளடக்கம் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="4739639199548674512">டிக்கெட்டுகள்</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />பயன்பாடுகளைப் புதுப்பிப்பது எப்படி என்பதை அறிக<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{தளத்தின் ஒலியை இயக்கு}other{தளங்களின் ஒலியை இயக்கு}}</translation>
@@ -4103,6 +4105,7 @@
 <translation id="6011449291337289699">தளத் தரவை அழி</translation>
 <translation id="6015266928248016057">தவறான PUK. இன்னும் <ph name="RETRIES" /> முறை முயலலாம்.</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
+<translation id="6016178549409952427">கூடுதல் உள்ளடக்கத்திற்குச் செல்லும் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">முந்தைய பதிப்பிற்கு மாற, பவர்வாஷை உறுதிப்படுத்தவும்</translation>
 <translation id="6016972670657536680">மொழி மற்றும் விசைப்பலகைப் பொத்தானைத் தேர்ந்தெடுக்கவும். தற்போது தேர்ந்தெடுத்த மொழி: <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">பச்சை</translation>

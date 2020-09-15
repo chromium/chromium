@@ -1465,6 +1465,7 @@
 <translation id="2731700343119398978">Περιμένετε…</translation>
 <translation id="2731710757838467317">Δημιουργία του χρήστη υπό επίβλεψη. Η διαδικασία ενδέχεται να διαρκέσει λίγη ώρα.</translation>
 <translation id="2731971182069536520">Την επόμενη φορά που θα επανεκκινήσετε τη συσκευή σας, ο διαχειριστής σας θα εκτελέσει για μία μόνο φορά μια ενημέρωση που θα διαγράψει τα τοπικά δεδομένα σας.</translation>
+<translation id="2732134891301408122">Επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2734760316755174687">Θα γίνει επίσης επαναφορά των ιστοτόπων της ομάδας <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Χρονοδιάγραμμα</translation>
 <translation id="2737363922397526254">Σύμπτυξη...</translation>
@@ -3091,6 +3092,7 @@
 <translation id="4735803855089279419">Το σύστημα δεν κατάφερε να προσδιορίσει αναγνωριστικά συσκευής για αυτήν τη συσκευή.</translation>
 <translation id="4736292055110123391">Συγχρονίστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό σας και άλλο περιεχόμενο σε όλες τις συσκευές σας</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
+<translation id="473936925429402449">Επιλεγμένο, επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Εισιτήρια</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Μάθετε πώς μπορείτε να ενημερώνετε τις εφαρμογές<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Κατάργηση σίγασης ιστοτόπου}other{Κατάργηση σίγασης ιστοτόπων}}</translation>
@@ -4103,6 +4105,7 @@
 <translation id="6011449291337289699">Εκκαθάριση δεδομένων ιστότοπου</translation>
 <translation id="6015266928248016057">Μη έγκυρος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="6015796118275082299">Έτος</translation>
+<translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
 <translation id="6016972670657536680">Επιλέξτε το κουμπί γλώσσας και πληκτρολογίου. Η τρέχουσα επιλεγμένη γλώσσα είναι τα <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
