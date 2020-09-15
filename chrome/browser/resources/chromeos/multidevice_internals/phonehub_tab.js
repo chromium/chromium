@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './browser_tabs_model_form.js';
 import './i18n_setup.js';
+import './phone_name_form.js';
 import './phone_status_model_form.js';
 import './shared_style.js';
 
@@ -85,6 +86,12 @@ Polymer({
     },
 
     /** @private */
+    isPhoneSetUp_: {
+      type: Boolean,
+      computed: 'isPhoneSetUpComputed_(featureStatus_)',
+    },
+
+    /** @private */
     isFeatureEnabledAndConnected_: {
       type: Boolean,
       computed: 'isFeatureEnabledAndConnectedComputed_(featureStatus_)',
@@ -97,6 +104,19 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPhoneSetUpComputed_() {
+    if (this.featureStatus_ === FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE ||
+        this.featureStatus_ === FeatureStatus.ELIGIBLE_PHONE_BUT_NOT_SETUP) {
+      return false;
+    }
+
+    return true;
   },
 
   /**

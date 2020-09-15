@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
     ":multidevice_logs_browser_proxy",
     ":multidevice_phonehub_browser_proxy",
     ":multidevice_phonehub_browser_proxy",
+    ":phone_name_form",
     ":phone_status_model_form",
     ":phonehub_tab",
     ":types",
@@ -79,6 +80,10 @@ js_library("multidevice_logs_browser_proxy") {
   ]
 }
 
+js_library("phone_name_form") {
+  deps = [ ":multidevice_phonehub_browser_proxy" ]
+}
+
 js_library("phone_status_model_form") {
   deps = [
     ":multidevice_phonehub_browser_proxy",
@@ -109,6 +114,7 @@ html_to_js("web_components") {
     "logging_tab.js",
     "multidevice_internals.js",
     "phonehub_tab.js",
+    "phone_name_form.js",
     "phone_status_model_form.js",
     "shared_style.js",
     "browser_tabs_metadata_form.js",

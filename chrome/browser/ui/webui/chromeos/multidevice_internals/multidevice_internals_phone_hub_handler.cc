@@ -108,6 +108,11 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
+      "setFakePhoneName",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneName,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "setFakePhoneStatus",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakePhoneStatus,
                           base::Unretained(this)));
@@ -161,10 +166,22 @@ void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
   fake_phone_hub_manager_->fake_feature_status_provider()->SetStatus(feature);
 }
 
+void MultidevicePhoneHubHandler::HandleSetFakePhoneName(
+    const base::ListValue* args) {
+  base::string16 phone_name;
+  CHECK(args->GetString(0, &phone_name));
+  fake_phone_hub_manager_->mutable_phone_model()->SetPhoneName(phone_name);
+  PA_LOG(VERBOSE) << "Set phone name to " << phone_name;
+}
+
 void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
     const base::ListValue* args) {
   const base::DictionaryValue* phones_status_dict = nullptr;
   CHECK(args->GetDictionary(0, &phones_status_dict));
+
+  base::string16 phone_name;
+  CHECK(phones_status_dict->GetString("phoneName", &phone_name));
+
   int mobile_status_as_int;
   CHECK(phones_status_dict->GetInteger("mobileStatus", &mobile_status_as_int));
   auto mobile_status = static_cast<phonehub::PhoneStatusModel::MobileStatus>(

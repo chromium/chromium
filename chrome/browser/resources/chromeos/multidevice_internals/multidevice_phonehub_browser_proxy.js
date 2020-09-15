@@ -26,6 +26,14 @@ export class MultidevicePhoneHubBrowserProxy {
   }
 
   /**
+   * Sets the phone name.
+   * @param {string} phoneName
+   */
+  setFakePhoneName(phoneName) {
+    chrome.send('setFakePhoneName', [phoneName]);
+  }
+
+  /**
    * Sets the phone model.
    * @param {!PhoneStatusModel} phoneStatusModel The phone status with fake
    *     values.

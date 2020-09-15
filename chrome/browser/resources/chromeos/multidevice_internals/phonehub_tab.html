@@ -40,6 +40,11 @@
         <span class="emphasize">ENABLED_AND_CONNECTED</span>.
       </div>
     </div>
+    <template is="dom-if" if="[[isPhoneSetUp_]]" restamp>
+      <div class="cr-row">
+        <phone-name-form></phone-name-form>
+      </div>
+    </template>
     <template is="dom-if" if="[[isFeatureEnabledAndConnected_]]" restamp>
       <div class="cr-row">
         <phone-status-model-form></phone-status-model-form>
