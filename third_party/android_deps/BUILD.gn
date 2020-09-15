@@ -602,6 +602,7 @@ android_aar_prebuilt("androidx_test_espresso_espresso_contrib_java") {
     "//third_party/accessibility_test_framework:accessibility_test_framework_java",
   ]
   resource_overlay = true
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

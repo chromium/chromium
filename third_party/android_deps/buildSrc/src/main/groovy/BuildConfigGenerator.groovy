@@ -438,6 +438,7 @@ class BuildConfigGenerator extends DefaultTask {
                 |
                 |""".stripMargin())
                 break
+            case 'androidx_test_espresso_espresso_contrib':
             case 'androidx_test_espresso_espresso_web':
             case 'androidx_window_window':
                 sb.append('  enable_bytecode_checks = false\n')
