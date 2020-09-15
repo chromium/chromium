@@ -68,7 +68,7 @@ def get_device_info(args, failures):
                      'tools',
                      'device_status.py'),
         '--json-output', tempfile_path,
-        '--blacklist-file', os.path.join(
+        '--denylist-file', os.path.join(
               args.paths['checkout'], 'out', 'bad_devices.json')
     ]
     if args.args:
@@ -86,7 +86,7 @@ def get_device_info(args, failures):
   results['devices'] = sorted(v['serial'] for v in device_info)
 
   details = [
-      v['ro.build.fingerprint'] for v in device_info if not v['blacklisted']]
+      v['ro.build.fingerprint'] for v in device_info if not v['denylisted']]
 
   def unique_build_details(index):
     return sorted(list(set([v.split(':')[index] for v in details])))
@@ -106,8 +106,8 @@ def get_device_info(args, failures):
       failures.append(k)
 
   for v in device_info:
-    if v['blacklisted']:
-      failures.append('Device %s blacklisted' % v['serial'])
+    if v['denylisted']:
+      failures.append('Device %s denylisted' % v['serial'])
 
   return results
 
