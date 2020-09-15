@@ -24,6 +24,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/common/task_annotator.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -886,11 +887,18 @@ class ChannelAssociatedGroupController
       // in-transit associated endpoints and thus acquire |lock_|. We no longer
       // need the lock to be held now since |proxy_task_runner_| is safe to
       // access unguarded.
-      locker.Release();
-      proxy_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ChannelAssociatedGroupController::AcceptOnProxyThread,
-                         this, std::move(*message)));
+      {
+        // Grab interface name from |client| before releasing the lock to ensure
+        // that |client| is safe to access.
+        base::TaskAnnotator::ScopedSetIpcHash scoped_set_ipc_hash(
+            client ? client->interface_name() : "unknown interface");
+        locker.Release();
+        proxy_task_runner_->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ChannelAssociatedGroupController::AcceptOnProxyThread, this,
+                std::move(*message)));
+      }
       return true;
     }
 
@@ -900,6 +908,9 @@ class ChannelAssociatedGroupController
            !message->has_flag(mojo::Message::kFlagIsResponse));
 
     locker.Release();
+    // It's safe to access |client| here without holding a lock, because this
+    // code runs on a proxy thread and |client| can't be destroyed from any
+    // thread.
     return client->HandleIncomingMessage(message);
   }
 
