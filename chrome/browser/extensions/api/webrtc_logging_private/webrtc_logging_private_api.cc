@@ -91,13 +91,13 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
     std::string* error) {
   // There are 2 ways these API functions can get called.
   //
-  //  1. From a whitelisted component extension on behalf of a page with the
+  //  1. From an allowlisted component extension on behalf of a page with the
   //  appropriate origin via a message from that page. In this case, either the
   //  guest process id or the tab id is on the message received by the component
   //  extension, and the extension can pass that along in RequestInfo as
   //  |guest_process_id| or |tab_id|.
   //
-  //  2. From a whitelisted app that hosts a page in a webview. In this case,
+  //  2. From an allowlisted app that hosts a page in a webview. In this case,
   //  the app should call these API functions with the |target_webview| flag
   //  set, from a web contents that has exactly 1 webview .
 

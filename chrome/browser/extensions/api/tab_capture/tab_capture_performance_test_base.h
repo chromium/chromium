@@ -44,7 +44,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   ~TabCapturePerformanceTestBase() override;
 
   // SetUp overrides to enable pixel output, configure the embedded test server,
-  // whitelist the extension loaded by the tests.
+  // allowlist the extension loaded by the tests.
   void SetUp() override;
   void SetUpOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;

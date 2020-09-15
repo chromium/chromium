@@ -52,9 +52,9 @@ class TestingConsentProviderDelegate
     is_auto_launched_ = is_auto_launched;
   }
 
-  // Sets a whitelisted components list with a single id.
-  void SetComponentWhitelist(const std::string& extension_id) {
-    whitelisted_component_id_ = extension_id;
+  // Sets an allowlisted components list with a single id.
+  void SetComponentAllowlist(const std::string& extension_id) {
+    allowlisted_component_id_ = extension_id;
   }
 
   int show_dialog_counter() const { return show_dialog_counter_; }
@@ -81,8 +81,8 @@ class TestingConsentProviderDelegate
     return is_auto_launched_;
   }
 
-  bool IsWhitelistedComponent(const extensions::Extension& extension) override {
-    return whitelisted_component_id_.compare(extension.id()) == 0;
+  bool IsAllowlistedComponent(const extensions::Extension& extension) override {
+    return allowlisted_component_id_.compare(extension.id()) == 0;
   }
 
   bool HasRequestDownloadsPermission(const Extension& extension) override {
@@ -94,7 +94,7 @@ class TestingConsentProviderDelegate
   int show_notification_counter_;
   ui::DialogButton dialog_button_;
   bool is_auto_launched_;
-  std::string whitelisted_component_id_;
+  std::string allowlisted_component_id_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingConsentProviderDelegate);
 };
@@ -142,7 +142,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
 };
 
 TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
-  // Component apps are not granted unless they are whitelisted.
+  // Component apps are not granted unless they are allowlisted.
   {
     scoped_refptr<const Extension> component_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
@@ -154,21 +154,21 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
               FileSystemDelegate::kGrantNone);
   }
 
-  // Whitelisted component apps are instantly granted access without asking
+  // Allowlisted component apps are instantly granted access without asking
   // user.
   {
-    scoped_refptr<const Extension> whitelisted_component_extension(
+    scoped_refptr<const Extension> allowlisted_component_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
             .SetLocation(Manifest::COMPONENT)
             .Build());
     TestingConsentProviderDelegate delegate;
-    delegate.SetComponentWhitelist(whitelisted_component_extension->id());
+    delegate.SetComponentAllowlist(allowlisted_component_extension->id());
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*whitelisted_component_extension),
+    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_component_extension),
               FileSystemDelegate::kGrantAll);
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*whitelisted_component_extension.get(), nullptr,
+    provider.RequestConsent(*allowlisted_component_extension.get(), nullptr,
                             volume_, true /* writable */,
                             base::BindOnce(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();
@@ -178,25 +178,25 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
     EXPECT_EQ(ConsentProvider::CONSENT_GRANTED, result);
   }
 
-  // Whitelisted extensions are instantly granted downloads access without
+  // Allowlisted extensions are instantly granted downloads access without
   // asking user.
   {
-    scoped_refptr<const Extension> whitelisted_extension(
+    scoped_refptr<const Extension> allowlisted_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
             .SetLocation(Manifest::COMPONENT)
             .AddPermission("fileSystem.requestDownloads")
             .Build());
     TestingConsentProviderDelegate delegate;
     ConsentProvider provider(&delegate);
-    EXPECT_EQ(provider.GetGrantVolumesMode(*whitelisted_extension),
+    EXPECT_EQ(provider.GetGrantVolumesMode(*allowlisted_extension),
               FileSystemDelegate::kGrantPerVolume);
     EXPECT_FALSE(
-        provider.IsGrantableForVolume(*whitelisted_extension, volume_));
-    EXPECT_TRUE(provider.IsGrantableForVolume(*whitelisted_extension,
+        provider.IsGrantableForVolume(*allowlisted_extension, volume_));
+    EXPECT_TRUE(provider.IsGrantableForVolume(*allowlisted_extension,
                                               download_volume_->AsWeakPtr()));
 
     ConsentProvider::Consent result = ConsentProvider::CONSENT_IMPOSSIBLE;
-    provider.RequestConsent(*whitelisted_extension.get(), nullptr,
+    provider.RequestConsent(*allowlisted_extension.get(), nullptr,
                             download_volume_->AsWeakPtr(), true /* writable */,
                             base::BindRepeating(&OnConsentReceived, &result));
     base::RunLoop().RunUntilIdle();

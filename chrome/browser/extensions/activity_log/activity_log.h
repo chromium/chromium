@@ -96,7 +96,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
           void(std::unique_ptr<std::vector<scoped_refptr<Action>>>)> callback);
 
   // ExtensionRegistryObserver.
-  // We keep track of whether the whitelisted extension is installed; if it is,
+  // We keep track of whether the allowlisted extension is installed; if it is,
   // we want to recompute whether to have logging enabled.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
@@ -205,7 +205,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // testing_mode_ also causes us to print to the console.
   bool testing_mode_;
 
-  // Used to track whether the whitelisted extension is installed. If it's
+  // Used to track whether the allowlisted extension is installed. If it's
   // added or removed, enabled_ may change.
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>

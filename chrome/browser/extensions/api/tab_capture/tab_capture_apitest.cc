@@ -279,12 +279,12 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 
 // http://crbug.com/427730
 // Make sure tabCapture.capture only works if the tab has been granted
-// permission via an extension icon click or the extension is whitelisted.
+// permission via an extension icon click or the extension is allowlisted.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   ExtensionTestMessageListener before_open_tab("ready1", true);
   ExtensionTestMessageListener before_grant_permission("ready2", true);
   ExtensionTestMessageListener before_open_new_tab("ready3", true);
-  ExtensionTestMessageListener before_whitelist_extension("ready4", true);
+  ExtensionTestMessageListener before_allowlist_extension("ready4", true);
 
   ASSERT_TRUE(RunExtensionSubtest("tab_capture",
                                   "active_tab_permission_test.html"))
@@ -312,10 +312,10 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   browser()->OpenURL(params);
   before_open_new_tab.Reply("");
 
-  // Add extension to whitelist and make sure capture succeeds.
-  EXPECT_TRUE(before_whitelist_extension.WaitUntilSatisfied());
+  // Add extension to allowlist and make sure capture succeeds.
+  EXPECT_TRUE(before_allowlist_extension.WaitUntilSatisfied());
   AddExtensionToCommandLineAllowlist();
-  before_whitelist_extension.Reply("");
+  before_allowlist_extension.Reply("");
 
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(browser()->profile());

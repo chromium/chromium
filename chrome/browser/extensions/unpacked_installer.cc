@@ -288,7 +288,7 @@ bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
   if (!service_weak_.get())
     return true;
   // If there is a "*" in the extension blocklist, then no extensions should be
-  // allowed at all (except explicitly whitelisted extensions).
+  // allowed at all (except explicitly allowlisted extensions).
   return !ExtensionManagementFactory::GetForBrowserContext(
               service_weak_->profile())
               ->BlocklistedByDefault();

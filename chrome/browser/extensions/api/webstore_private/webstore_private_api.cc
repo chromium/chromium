@@ -671,8 +671,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed() {
   // This gets cleared in CrxInstaller::ConfirmInstall(). TODO(asargent) - in
-  // the future we may also want to add time-based expiration, where a whitelist
-  // entry is only valid for some number of minutes.
+  // the future we may also want to add time-based expiration, where an
+  // allowlist entry is only valid for some number of minutes.
   std::unique_ptr<WebstoreInstaller::Approval> approval(
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
           chrome_details_.GetProfile(), details().id,
@@ -812,7 +812,7 @@ WebstorePrivateCompleteInstallFunction::Run() {
   AddRef();
 
   // The extension will install through the normal extension install flow, but
-  // the whitelist entry will bypass the normal permissions install dialog.
+  // the allowlist entry will bypass the normal permissions install dialog.
   scoped_refptr<WebstoreInstaller> installer = new WebstoreInstaller(
       chrome_details_.GetProfile(), this, web_contents, params->expected_id,
       std::move(approval_), WebstoreInstaller::INSTALL_SOURCE_OTHER);

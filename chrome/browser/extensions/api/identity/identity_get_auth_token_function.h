@@ -206,10 +206,10 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Starts a login access token request for device robot account. This method
   // will be called only in Chrome OS for:
   // 1. Enterprise kiosk mode.
-  // 2. Whitelisted first party apps in public session.
+  // 2. Allowlisted first party apps in public session.
   virtual void StartDeviceAccessTokenRequest();
 
-  bool IsOriginWhitelistedInPublicSession();
+  bool IsOriginAllowlistedInPublicSession();
 #endif
 
   // Methods for invoking UI. Overridable for testing.

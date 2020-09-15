@@ -78,7 +78,7 @@ void ActivityLogAPI::Shutdown() {
 }
 
 // static
-bool ActivityLogAPI::IsExtensionWhitelisted(const std::string& extension_id) {
+bool ActivityLogAPI::IsExtensionAllowlisted(const std::string& extension_id) {
   // TODO(devlin): Pass in a HashedExtensionId to avoid this conversion.
   return FeatureProvider::GetPermissionFeatures()
       ->GetFeature("activityLogPrivate")

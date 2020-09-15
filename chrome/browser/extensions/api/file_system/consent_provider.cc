@@ -29,9 +29,9 @@ namespace extensions {
 
 namespace {
 
-// List of whitelisted component apps and extensions by their ids for
+// List of allowlisted component apps and extensions by their ids for
 // chrome.fileSystem.requestFileSystem.
-const char* const kRequestFileSystemComponentWhitelist[] = {
+const char* const kRequestFileSystemComponentAllowlist[] = {
     file_manager::kFileManagerAppId, file_manager::kVideoPlayerAppId,
     file_manager::kGalleryAppId, file_manager::kAudioPlayerAppId,
     file_manager::kImageLoaderExtensionId, file_manager::kZipArchiverId,
@@ -93,15 +93,15 @@ void ConsentProvider::RequestConsent(
     ConsentCallback callback) {
   DCHECK(IsGrantableForVolume(extension, volume));
 
-  // If a whitelisted component, then no need to ask or inform the user.
+  // If a allowlisted component, then no need to ask or inform the user.
   if (extension.location() == Manifest::COMPONENT &&
-      delegate_->IsWhitelistedComponent(extension)) {
+      delegate_->IsAllowlistedComponent(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
 
-  // If a whitelisted app or extensions to access Downloads folder, then no
+  // If a allowlisted app or extensions to access Downloads folder, then no
   // need to ask or inform the user.
   if (volume.get() &&
       volume->type() == file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY &&
@@ -135,21 +135,21 @@ void ConsentProvider::RequestConsent(
 
 FileSystemDelegate::GrantVolumesMode ConsentProvider::GetGrantVolumesMode(
     const Extension& extension) {
-  const bool is_whitelisted_component =
-      delegate_->IsWhitelistedComponent(extension);
+  const bool is_allowlisted_component =
+      delegate_->IsAllowlistedComponent(extension);
 
   const bool is_running_in_kiosk_session =
       KioskModeInfo::IsKioskOnly(&extension) &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
 
-  if (is_whitelisted_component || is_running_in_kiosk_session) {
+  if (is_allowlisted_component || is_running_in_kiosk_session) {
     return FileSystemDelegate::kGrantAll;
   }
 
-  const bool is_whitelisted_non_component =
+  const bool is_allowlisted_non_component =
       delegate_->HasRequestDownloadsPermission(extension);
 
-  return is_whitelisted_non_component ? FileSystemDelegate::kGrantPerVolume
+  return is_allowlisted_non_component ? FileSystemDelegate::kGrantPerVolume
                                       : FileSystemDelegate::kGrantNone;
 }
 
@@ -245,10 +245,10 @@ bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
          app_info.was_auto_launched_with_zero_delay;
 }
 
-bool ConsentProviderDelegate::IsWhitelistedComponent(
+bool ConsentProviderDelegate::IsAllowlistedComponent(
     const Extension& extension) {
-  for (auto* whitelisted_id : kRequestFileSystemComponentWhitelist) {
-    if (extension.id().compare(whitelisted_id) == 0)
+  for (auto* allowlisted_id : kRequestFileSystemComponentAllowlist) {
+    if (extension.id().compare(allowlisted_id) == 0)
       return true;
   }
   return false;

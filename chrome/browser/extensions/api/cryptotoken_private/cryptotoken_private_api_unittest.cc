@@ -121,7 +121,7 @@ TEST_F(CryptoTokenPrivateApiTest, CanOriginAssertAppId) {
   ASSERT_TRUE(
       GetCanOriginAssertAppIdResult(google_origin, gstatic_appid, &result));
   EXPECT_TRUE(result);
-  // Not all gstatic urls are allowed, just those specifically whitelisted.
+  // Not all gstatic urls are allowed, just those specifically allowlisted.
   std::string gstatic_otherurl("https://www.gstatic.com/foobar");
   ASSERT_TRUE(
       GetCanOriginAssertAppIdResult(google_origin, gstatic_otherurl, &result));

@@ -34,8 +34,8 @@ class ActivityLogAPI : public BrowserContextKeyedAPI,
 
   void Shutdown() override;
 
-  // Lookup whether the extension ID is whitelisted.
-  static bool IsExtensionWhitelisted(const std::string& extension_id);
+  // Lookup whether the extension ID is allowlisted.
+  static bool IsExtensionAllowlisted(const std::string& extension_id);
 
  private:
   friend class BrowserContextKeyedAPIFactory<ActivityLogAPI>;

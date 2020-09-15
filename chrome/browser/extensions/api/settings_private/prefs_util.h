@@ -29,14 +29,14 @@ class PrefsUtil {
   explicit PrefsUtil(Profile* profile);
   virtual ~PrefsUtil();
 
-  // Gets the list of whitelisted pref keys -- that is, those which correspond
+  // Gets the list of allowlisted pref keys -- that is, those which correspond
   // to prefs that clients of the settingsPrivate API may retrieve and
   // manipulate.
-  const TypedPrefMap& GetWhitelistedKeys();
+  const TypedPrefMap& GetAllowlistedKeys();
 
   // Returns the pref type for |pref_name| or PREF_TYPE_NONE if not in the
-  // whitelist.
-  api::settings_private::PrefType GetWhitelistedPrefType(
+  // allowlist.
+  api::settings_private::PrefType GetAllowlistedPrefType(
       const std::string& pref_name);
 
   // Gets the value of the pref with the given |name|. Returns a pointer to an

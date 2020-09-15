@@ -19,7 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/component_extensions_whitelist/whitelist.h"
+#include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "chrome/browser/extensions/data_deleter.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -160,7 +160,7 @@ ComponentLoader::ComponentLoader(ExtensionSystem* extension_system,
                                  Profile* profile)
     : profile_(profile),
       extension_system_(extension_system),
-      ignore_whitelist_for_testing_(false) {}
+      ignore_allowlist_for_testing_(false) {}
 
 ComponentLoader::~ComponentLoader() = default;
 
@@ -186,8 +186,8 @@ std::unique_ptr<base::DictionaryValue> ComponentLoader::ParseManifest(
 
 std::string ComponentLoader::Add(int manifest_resource_id,
                                  const base::FilePath& root_directory) {
-  if (!ignore_whitelist_for_testing_ &&
-      !IsComponentExtensionWhitelisted(manifest_resource_id))
+  if (!ignore_allowlist_for_testing_ &&
+      !IsComponentExtensionAllowlisted(manifest_resource_id))
     return std::string();
 
   base::StringPiece manifest_contents =
@@ -203,23 +203,23 @@ std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
 
 std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
                                  const base::FilePath& root_directory,
-                                 bool skip_whitelist) {
+                                 bool skip_allowlist) {
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
   std::unique_ptr<base::DictionaryValue> manifest =
       ParseManifest(manifest_contents);
   if (manifest)
-    return Add(std::move(manifest), root_directory, skip_whitelist);
+    return Add(std::move(manifest), root_directory, skip_allowlist);
   return std::string();
 }
 
 std::string ComponentLoader::Add(
     std::unique_ptr<base::DictionaryValue> parsed_manifest,
     const base::FilePath& root_directory,
-    bool skip_whitelist) {
+    bool skip_allowlist) {
   ComponentExtensionInfo info(std::move(parsed_manifest), root_directory);
-  if (!ignore_whitelist_for_testing_ && !skip_whitelist &&
-      !IsComponentExtensionWhitelisted(info.extension_id))
+  if (!ignore_allowlist_for_testing_ && !skip_allowlist &&
+      !IsComponentExtensionAllowlisted(info.extension_id))
     return std::string();
 
   component_extensions_.push_back(std::move(info));
@@ -323,8 +323,8 @@ void ComponentLoader::AddWithNameAndDescription(
     const base::FilePath& root_directory,
     const std::string& name_string,
     const std::string& description_string) {
-  if (!ignore_whitelist_for_testing_ &&
-      !IsComponentExtensionWhitelisted(manifest_resource_id))
+  if (!ignore_allowlist_for_testing_ &&
+      !IsComponentExtensionAllowlisted(manifest_resource_id))
     return;
 
   base::StringPiece manifest_contents =

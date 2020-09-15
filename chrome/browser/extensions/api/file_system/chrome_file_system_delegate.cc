@@ -267,7 +267,7 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
     return false;
 
   // TODO(asargent/benwells) - As a short term remediation for
-  // crbug.com/179010 we're adding the ability for a whitelisted extension to
+  // crbug.com/179010 we're adding the ability for a allowlisted extension to
   // use this API since chrome.fileBrowserHandler.selectFile is ChromeOS-only.
   // Eventually we'd like a better solution and likely this code will go back
   // to being platform-app only.
@@ -276,7 +276,7 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
   // platform apps cannot open the file picker from a background page.
   // TODO(michaelpg): As a workaround for https://crbug.com/736930, allow this
   // to work from a background page for non-platform apps (which, in practice,
-  // is restricted to whitelisted extensions).
+  // is restricted to allowlisted extensions).
   if (extension->is_platform_app() &&
       !AppWindowRegistry::Get(extension_function->browser_context())
            ->GetAppWindowForWebContents(web_contents)) {
@@ -323,7 +323,7 @@ ChromeFileSystemDelegate::GetGrantVolumesMode(
     content::RenderFrameHost* render_frame_host,
     const Extension& extension) {
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   ConsentProviderDelegate consent_provider_delegate(
       Profile::FromBrowserContext(browser_context));
   return ConsentProvider(&consent_provider_delegate)

@@ -461,7 +461,7 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
     return NULL;
   }
 
-  extension_service()->component_loader()->set_ignore_whitelist_for_testing(
+  extension_service()->component_loader()->set_ignore_allowlist_for_testing(
       true);
   std::string extension_id =
       extension_service()->component_loader()->Add(manifest, path);

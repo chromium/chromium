@@ -2962,9 +2962,9 @@ class GetAuthTokenFunctionPublicSessionTest : public GetAuthTokenFunctionTest {
   chromeos::MockUserManager* user_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonWhitelisted) {
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {
   // GetAuthToken() should return UserNotSignedIn in public sessions for
-  // non-whitelisted extensions.
+  // non-allowlisted extensions.
   user_manager::ScopedUserManager user_manager_enabler(
       base::WrapUnique(user_manager_));
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
@@ -2976,11 +2976,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonWhitelisted) {
   EXPECT_FALSE(func->scope_ui_shown());
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName,
-      IdentityGetAuthTokenError::State::kNotWhitelistedInPublicSession, 1);
+      IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, Whitelisted) {
-  // GetAuthToken() should return a token for whitelisted extensions.
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, Allowlisted) {
+  // GetAuthToken() should return a token for allowlisted extensions.
   user_manager::ScopedUserManager user_manager_enabler(
       base::WrapUnique(user_manager_));
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());

@@ -261,9 +261,9 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
 
   if (connector->IsEnterpriseManaged() && (is_kiosk || is_public_session)) {
-    if (is_public_session && !IsOriginWhitelistedInPublicSession()) {
+    if (is_public_session && !IsOriginAllowlistedInPublicSession()) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kNotWhitelistedInPublicSession));
+          IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
     }
 
@@ -490,10 +490,10 @@ void IdentityGetAuthTokenFunction::StartMintToken(
 #if defined(OS_CHROMEOS)
         // Always force minting token for ChromeOS kiosk app and public session.
         if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount() &&
-            !IsOriginWhitelistedInPublicSession()) {
+            !IsOriginAllowlistedInPublicSession()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
-                                            kNotWhitelistedInPublicSession));
+                                            kNotAllowlistedInPublicSession));
           return;
         }
 
@@ -513,7 +513,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
 #endif
 
         if (oauth2_info.auto_approve)
-          // oauth2_info.auto_approve is protected by a whitelist in
+          // oauth2_info.auto_approve is protected by an allowlist in
           // _manifest_features.json hence only selected extensions take
           // advantage of forcefully minting the token.
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
@@ -951,7 +951,7 @@ void IdentityGetAuthTokenFunction::StartDeviceAccessTokenRequest() {
   device_access_token_request_ = service->StartAccessTokenRequest(scopes, this);
 }
 
-bool IdentityGetAuthTokenFunction::IsOriginWhitelistedInPublicSession() {
+bool IdentityGetAuthTokenFunction::IsOriginAllowlistedInPublicSession() {
   DCHECK(extension());
   GURL extension_url = extension()->url();
   for (size_t i = 0; i < base::size(kPublicSessionAllowedOrigins); i++) {

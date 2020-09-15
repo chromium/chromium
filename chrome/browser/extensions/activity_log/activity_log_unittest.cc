@@ -427,9 +427,9 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   // Since the command line switch for logging isn't enabled and there's no
   // watchdog app active, the activity log shouldn't log anything.
   EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
-  const char kWhitelistedExtensionId[] = "eplckmlabaanikjjcgnigddmagoglhmp";
+  const char kAllowlistedExtensionId[] = "eplckmlabaanikjjcgnigddmagoglhmp";
   scoped_refptr<const Extension> activity_log_extension =
-      ExtensionBuilder("Test").SetID(kWhitelistedExtensionId).Build();
+      ExtensionBuilder("Test").SetID(kAllowlistedExtensionId).Build();
   extension_service_->AddExtension(activity_log_extension.get());
   // Loading a watchdog app means the activity log should log other extension
   // activities...

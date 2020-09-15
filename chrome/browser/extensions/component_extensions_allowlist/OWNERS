@@ -1,8 +1,8 @@
 # Adding new component extensions requires approval from the Extensions Tech
-# Lead. See comment in whitelist.h
+# Lead. See comment in allowlist.h
 set noparent
 
-file://chrome/browser/extensions/component_extensions_whitelist/EXTENSION_WHITELIST_OWNERS
+file://chrome/browser/extensions/component_extensions_allowlist/EXTENSION_ALLOWLIST_OWNERS
 
 # TEAM: extensions-dev@chromium.org
 # COMPONENT: Platform>Extensions

@@ -50,7 +50,7 @@ void SettingsPrivateEventRouter::Shutdown() {
 #if defined(OS_CHROMEOS)
     cros_settings_subscription_map_.clear();
 #endif
-    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetWhitelistedKeys();
+    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
     settings_private::GeneratedPrefs* generated_prefs =
         settings_private::GeneratedPrefsFactory::GetForBrowserContext(context_);
     for (const auto& it : keys) {
@@ -94,7 +94,7 @@ void SettingsPrivateEventRouter::StartOrStopListeningForPrefsChanges() {
   settings_private::GeneratedPrefs* generated_prefs =
       settings_private::GeneratedPrefsFactory::GetForBrowserContext(context_);
   if (should_listen && !listening_) {
-    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetWhitelistedKeys();
+    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
     for (const auto& it : keys) {
       std::string pref_name = it.first;
       if (prefs_util_->IsCrosSetting(pref_name)) {
@@ -117,7 +117,7 @@ void SettingsPrivateEventRouter::StartOrStopListeningForPrefsChanges() {
       }
     }
   } else if (!should_listen && listening_) {
-    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetWhitelistedKeys();
+    const PrefsUtil::TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
     for (const auto& it : keys) {
       if (prefs_util_->IsCrosSetting(it.first)) {
 #if defined(OS_CHROMEOS)

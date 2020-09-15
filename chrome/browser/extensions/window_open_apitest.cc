@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, VerifyCommandsInLockedFullscreen) {
   EXPECT_FALSE(
       browser()->command_controller()->IsCommandEnabled(IDC_ZOOM_PLUS));
 
-  // Verify some whitelisted commands.
+  // Verify some allowlisted commands.
   EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_COPY));
   EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_PASTE));
 }

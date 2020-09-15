@@ -42,7 +42,7 @@ std::unique_ptr<base::Value> SettingsPrivateDelegate::GetPref(
 std::unique_ptr<base::Value> SettingsPrivateDelegate::GetAllPrefs() {
   std::unique_ptr<base::ListValue> prefs(new base::ListValue());
 
-  const TypedPrefMap& keys = prefs_util_->GetWhitelistedKeys();
+  const TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
   for (const auto& it : keys) {
     std::unique_ptr<base::Value> pref = GetPref(it.first);
     if (!pref->is_none())

@@ -37,22 +37,22 @@ IPC::Message* CreateUpdateMessage(const GURL& visible_url,
                                   const std::string& extension_id,
                                   const URLPatternSet& new_hosts,
                                   int tab_id,
-                                  bool update_whitelist) {
+                                  bool update_allowlist) {
   return new ExtensionMsg_UpdateTabSpecificPermissions(
-      visible_url, extension_id, new_hosts, update_whitelist, tab_id);
+      visible_url, extension_id, new_hosts, update_allowlist, tab_id);
 }
 
 // Creates a new IPC message for clearing tab-specific permissions.
 IPC::Message* CreateClearMessage(const std::vector<std::string>& ids,
                                  int tab_id,
-                                 bool update_whitelist) {
-  return new ExtensionMsg_ClearTabSpecificPermissions(
-      ids, update_whitelist, tab_id);
+                                 bool update_allowlist) {
+  return new ExtensionMsg_ClearTabSpecificPermissions(ids, update_allowlist,
+                                                      tab_id);
 }
 
 // Sends a message exactly once to each render process host owning one of the
 // given |frame_hosts| and |tab_process|. If |tab_process| doesn't own any of
-// the |frame_hosts|, it will not be signaled to update its origin whitelist.
+// the |frame_hosts|, it will not be signaled to update its origin allowlist.
 void SendMessageToProcesses(
     const std::set<content::RenderFrameHost*>& frame_hosts,
     content::RenderProcessHost* tab_process,
@@ -61,13 +61,13 @@ void SendMessageToProcesses(
   for (content::RenderFrameHost* frame_host : frame_hosts) {
     content::RenderProcessHost* process_host = frame_host->GetProcess();
     if (sent_to_hosts.count(process_host) == 0) {
-      // Extension processes have to update the origin whitelists.
+      // Extension processes have to update the origin allowlists.
       process_host->Send(create_message.Run(true));
       sent_to_hosts.insert(frame_host->GetProcess());
     }
   }
   // If the tab wasn't one of those processes already updated (it likely
-  // wasn't), update it. Tabs don't need to update the origin whitelist.
+  // wasn't), update it. Tabs don't need to update the origin allowlist.
   if (sent_to_hosts.count(tab_process) == 0)
     tab_process->Send(create_message.Run(false));
 }

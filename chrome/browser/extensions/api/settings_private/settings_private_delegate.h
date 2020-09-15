@@ -41,7 +41,7 @@ class SettingsPrivateDelegate : public KeyedService {
   // Gets the value of the pref with the given |name|.
   virtual std::unique_ptr<base::Value> GetPref(const std::string& name);
 
-  // Gets the values of all whitelisted prefs.
+  // Gets the values of all allowlisted prefs.
   virtual std::unique_ptr<base::Value> GetAllPrefs();
 
   // Gets the value.

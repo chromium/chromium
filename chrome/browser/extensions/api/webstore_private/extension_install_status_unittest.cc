@@ -498,7 +498,7 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByPermissionsWithUpdateUrl) {
 }
 
 TEST_F(ExtensionInstallStatusTest,
-       ExtensionBlockedByPermissionButWhitelistById) {
+       ExtensionBlockedByPermissionButAllowlistById) {
   SetExtensionSettings(R"({
     "*": {
       "blocked_permissions": ["storage"]
@@ -506,7 +506,7 @@ TEST_F(ExtensionInstallStatusTest,
       "installation_mode": "allowed"
   }})");
 
-  // Per-id whitelisted has higher priority than blocked permissions.
+  // Per-id allowlisted has higher priority than blocked permissions.
   APIPermissionSet api_permissions;
   api_permissions.insert(APIPermission::kStorage);
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,

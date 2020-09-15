@@ -122,8 +122,8 @@ class ComponentLoader {
   void AddChromeOsSpeechSynthesisExtensions();
 #endif
 
-  void set_ignore_whitelist_for_testing(bool value) {
-    ignore_whitelist_for_testing_ = value;
+  void set_ignore_allowlist_for_testing(bool value) {
+    ignore_allowlist_for_testing_ = value;
   }
 
  private:
@@ -159,10 +159,10 @@ class ComponentLoader {
 
   std::string Add(const base::StringPiece& manifest_contents,
                   const base::FilePath& root_directory,
-                  bool skip_whitelist);
+                  bool skip_allowlist);
   std::string Add(std::unique_ptr<base::DictionaryValue> parsed_manifest,
                   const base::FilePath& root_directory,
-                  bool skip_whitelist);
+                  bool skip_allowlist);
 
   // Loads a registered component extension.
   void Load(const ComponentExtensionInfo& info);
@@ -225,7 +225,7 @@ class ComponentLoader {
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;
   RegisteredComponentExtensions component_extensions_;
 
-  bool ignore_whitelist_for_testing_;
+  bool ignore_allowlist_for_testing_;
 
   base::WeakPtrFactory<ComponentLoader> weak_factory_{this};
 

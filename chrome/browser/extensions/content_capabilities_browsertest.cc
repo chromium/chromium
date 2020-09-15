@@ -57,7 +57,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   }
 
   // Builds an extension manifest with the given content_capabilities matches
-  // and permissions. The extension always has the same (whitelisted) ID.
+  // and permissions. The extension always has the same (allowlisted) ID.
   scoped_refptr<const Extension> LoadExtensionWithCapabilities(
       const std::string& matches,
       const std::string& permissions,

@@ -3553,7 +3553,7 @@ TEST_F(ExtensionServiceTest, UnloadBlocklistedExtensionPolicy) {
   test_blocklist.SetBlocklistState(good_crx, BLOCKLISTED_MALWARE, true);
   content::RunAllTasksUntilIdle();
 
-  // The good_crx is blocklisted and the whitelist doesn't negate it.
+  // The good_crx is blocklisted and the allowlist doesn't negate it.
   ASSERT_TRUE(ValidateBooleanPref(good_crx, kPrefBlocklist, true));
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 }
@@ -4052,7 +4052,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
 
 // Tests that active permissions are not revoked from component extensions
 // by policy when the policy is updated. https://crbug.com/746017.
-TEST_F(ExtensionServiceTest, ComponentExtensionWhitelistedPermission) {
+TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   // Install a component extension.
@@ -6614,19 +6614,17 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
   EXPECT_FALSE(pending_info->version().IsValid());
 }
 
-// This makes sure we can package and install CRX files that use whitelisted
+// This makes sure we can package and install CRX files that use allowlisted
 // permissions.
-TEST_F(ExtensionServiceTest, InstallWhitelistedExtension) {
+TEST_F(ExtensionServiceTest, InstallAllowlistedExtension) {
   std::string test_id = "hdkklepkcpckhnpgjnmbdfhehckloojk";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAllowlistedExtensionID, test_id);
 
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("permissions");
-  base::FilePath pem_path = path
-      .AppendASCII("whitelist.pem");
-  path = path
-      .AppendASCII("whitelist");
+  base::FilePath pem_path = path.AppendASCII("allowlist.pem");
+  path = path.AppendASCII("allowlist");
 
   const Extension* extension = PackAndInstallCRX(path, pem_path, INSTALL_NEW);
   EXPECT_EQ(0u, GetErrors().size());

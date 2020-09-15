@@ -1247,7 +1247,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
 
   EXPECT_FALSE(
       ExtensionManagementFactory::GetForBrowserContext(browser_context())
-          ->HasWhitelistedExtension());
+          ->HasAllowlistedExtension());
 
   auto info = DeveloperPrivateAPI::CreateProfileInfo(testing_profile());
 
@@ -1262,7 +1262,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithBlocklistingPolicy) {
 }
 
 TEST_F(DeveloperPrivateApiUnitTest,
-       LoadUnpackedWorksWithBlocklistingPolicyAlongWhitelistingPolicy) {
+       LoadUnpackedWorksWithBlocklistingPolicyAlongAllowlistingPolicy) {
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
 
@@ -1282,7 +1282,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   EXPECT_TRUE(
       ExtensionManagementFactory::GetForBrowserContext(browser_context())
-          ->HasWhitelistedExtension());
+          ->HasAllowlistedExtension());
 
   auto info = DeveloperPrivateAPI::CreateProfileInfo(testing_profile());
 

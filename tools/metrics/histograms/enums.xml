@@ -33353,7 +33353,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="12" label="kGaiaFlowRejected"/>
   <int value="13" label="kRemoteConsentFlowRejected"/>
   <int value="14" label="kUserNotSignedIn"/>
-  <int value="15" label="kNotWhitelistedInPublicSession"/>
+  <int value="15" label="kNotAllowlistedInPublicSession"/>
   <int value="16" label="kSignInFailed"/>
   <int value="17" label="kRemoteConsentUserNotSignedIn"/>
   <int value="18" label="kUserNonPrimary"/>

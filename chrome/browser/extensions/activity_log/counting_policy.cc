@@ -61,10 +61,10 @@ using extensions::Action;
 constexpr base::TimeDelta kCleaningDelay = base::TimeDelta::FromHours(12);
 
 // We should log the arguments to these API calls.  Be careful when
-// constructing this whitelist to not keep arguments that might compromise
+// constructing this allowlist to not keep arguments that might compromise
 // privacy by logging too much data to the activity log.
 //
-// TODO(mvrable): The contents of this whitelist should be reviewed and
+// TODO(mvrable): The contents of this allowlist should be reviewed and
 // expanded as needed.
 struct ApiList {
   Action::ActionType type;
@@ -173,7 +173,7 @@ CountingPolicy::CountingPolicy(Profile* profile)
       url_table_("url_ids"),
       retention_time_(base::TimeDelta::FromHours(60)) {
   for (size_t i = 0; i < base::size(kAlwaysLog); i++) {
-    api_arg_whitelist_.insert(
+    api_arg_allowlist_.insert(
         std::make_pair(kAlwaysLog[i].type, kAlwaysLog[i].name));
   }
 }
@@ -205,7 +205,7 @@ void CountingPolicy::QueueAction(scoped_refptr<Action> action) {
   if (activity_database()->is_db_valid()) {
     action = action->Clone();
     Util::StripPrivacySensitiveFields(action);
-    Util::StripArguments(api_arg_whitelist_, action);
+    Util::StripArguments(api_arg_allowlist_, action);
 
     // If the current action falls on a different date than the ones in the
     // queue, flush the queue out now to prevent any false merging (actions

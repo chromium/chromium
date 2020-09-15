@@ -361,7 +361,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
                     const base::ListValue& args,
                     Action::ActionType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ActivityLogAPI::IsExtensionWhitelisted(extension_id))
+  if (ActivityLogAPI::IsExtensionAllowlisted(extension_id))
     return;
 
   ActivityLog* activity_log = SafeGetActivityLog(browser_context);
@@ -400,7 +400,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
                            const std::string& api_call,
                            std::unique_ptr<base::DictionaryValue> details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ActivityLogAPI::IsExtensionWhitelisted(extension_id))
+  if (ActivityLogAPI::IsExtensionAllowlisted(extension_id))
     return;
 
   ActivityLog* activity_log = SafeGetActivityLog(browser_context);
@@ -563,7 +563,7 @@ void ActivityLog::SetHasListeners(bool has_listeners) {
 
 void ActivityLog::OnExtensionLoaded(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  if (!ActivityLogAPI::IsExtensionWhitelisted(extension->id()))
+  if (!ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
     return;
 
   ++active_consumers_;
@@ -578,7 +578,7 @@ void ActivityLog::OnExtensionLoaded(content::BrowserContext* browser_context,
 void ActivityLog::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                       const Extension* extension,
                                       UnloadedExtensionReason reason) {
-  if (!ActivityLogAPI::IsExtensionWhitelisted(extension->id()))
+  if (!ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
     return;
   --active_consumers_;
 
@@ -594,7 +594,7 @@ void ActivityLog::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (ActivityLogAPI::IsExtensionWhitelisted(extension->id()) &&
+  if (ActivityLogAPI::IsExtensionAllowlisted(extension->id()) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableExtensionActivityLogging) &&
       active_consumers_ == 0) {
@@ -651,7 +651,7 @@ bool ActivityLog::ShouldLog(const std::string& extension_id) const {
   // Do not log for activities from the browser/WebUI, which is indicated by an
   // empty extension ID.
   return is_active_ && !extension_id.empty() &&
-         !ActivityLogAPI::IsExtensionWhitelisted(extension_id);
+         !ActivityLogAPI::IsExtensionAllowlisted(extension_id);
 }
 
 void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
@@ -663,7 +663,7 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
   for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
     const Extension* extension =
         registry->GetExtensionById(it->first, ExtensionRegistry::ENABLED);
-    if (!extension || ActivityLogAPI::IsExtensionWhitelisted(extension->id()))
+    if (!extension || ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
       continue;
 
     // If OnScriptsExecuted is fired because of tabs.executeScript, the list

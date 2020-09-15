@@ -31,7 +31,7 @@ class IdentityGetAuthTokenError {
     kGaiaFlowRejected = 12,
     kRemoteConsentFlowRejected = 13,
     kUserNotSignedIn = 14,
-    kNotWhitelistedInPublicSession = 15,
+    kNotAllowlistedInPublicSession = 15,
     kSignInFailed = 16,
     kRemoteConsentUserNotSignedIn = 17,
     kUserNonPrimary = 18,

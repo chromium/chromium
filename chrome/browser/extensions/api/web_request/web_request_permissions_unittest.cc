@@ -262,7 +262,7 @@ TEST_F(ExtensionWebRequestHelpersTestWithThreadsTest,
   chromeos::ScopedTestPublicSessionLoginState login_state;
 
   // Host permission checks are disabled in Public Sessions, instead all URLs
-  // are whitelisted.
+  // are allowlisted.
   EXPECT_EQ(PermissionsData::PageAccess::kAllowed,
             WebRequestPermissions::CanExtensionAccessURL(
                 permission_helper_, com_policy_extension_->id(), org_url,

@@ -90,7 +90,7 @@ class EPKPChallengeMachineKeyTest : public EPKPChallengeKeyTestBase {
 // Base 64 encoding of 'challenge'.
 const char EPKPChallengeMachineKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\"]";
 
-TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowed) {
+TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
   base::ListValue empty_allowlist;
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
@@ -130,7 +130,7 @@ class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
 // Base 64 encoding of 'challenge', register_key required.
 const char EPKPChallengeUserKeyTest::kFuncArgs[] = "[\"Y2hhbGxlbmdl\", true]";
 
-TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowed) {
+TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
   base::ListValue empty_allowlist;
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 

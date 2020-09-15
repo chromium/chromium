@@ -119,7 +119,7 @@ class CountingPolicy : public ActivityLogDatabasePolicy {
   bool CleanStringTables(sql::Database* db);
 
   // API calls for which complete arguments should be logged.
-  Util::ApiSet api_arg_whitelist_;
+  Util::ApiSet api_arg_allowlist_;
 
   // Tables for mapping strings to integers for shrinking database storage
   // requirements.  URLs are kept in a separate table from other strings to

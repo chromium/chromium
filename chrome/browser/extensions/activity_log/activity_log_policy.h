@@ -89,7 +89,7 @@ class ActivityLogPolicy {
   // these methods more convenient from within a policy, but they are public.
   class Util {
    public:
-    // A collection of API calls, used to specify whitelists for argument
+    // A collection of API calls, used to specify allowlists for argument
     // filtering.
     typedef std::set<std::pair<Action::ActionType, std::string> > ApiSet;
 
@@ -104,9 +104,9 @@ class ActivityLogPolicy {
     // call ->Clone() first.
     static void StripPrivacySensitiveFields(scoped_refptr<Action> action);
 
-    // Strip arguments from most API actions, preserving actions only for a
-    // whitelisted set.  Modifies the Action object in-place.
-    static void StripArguments(const ApiSet& api_whitelist,
+    // Strip arguments from most API actions, preserving actions only for an
+    // allowlisted set.  Modifies the Action object in-place.
+    static void StripArguments(const ApiSet& api_allowlist,
                                scoped_refptr<Action> action);
 
     // Given a base day (timestamp at local midnight), computes the timestamp

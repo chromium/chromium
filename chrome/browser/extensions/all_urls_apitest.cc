@@ -34,13 +34,13 @@ class AllUrlsApiTest : public ExtensionApiTest {
   const Extension* content_script() const { return content_script_.get(); }
   const Extension* execute_script() const { return execute_script_.get(); }
 
-  void WhitelistExtensions() {
+  void AllowlistExtensions() {
     ExtensionsClient::ScriptingAllowlist allowlist;
     allowlist.push_back(content_script_->id());
     allowlist.push_back(execute_script_->id());
     ExtensionsClient::Get()->SetScriptingAllowlist(allowlist);
     // Extensions will have certain permissions withheld at initialization if
-    // they aren't whitelisted, so we need to reload them.
+    // they aren't allowlisted, so we need to reload them.
     ExtensionTestMessageListener listener("execute: ready", false);
     extension_service()->ReloadExtension(content_script_->id());
     extension_service()->ReloadExtension(execute_script_->id());
@@ -78,8 +78,8 @@ class AllUrlsApiTest : public ExtensionApiTest {
   DISALLOW_COPY_AND_ASSIGN(AllUrlsApiTest);
 };
 
-IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, WhitelistedExtension) {
-  WhitelistExtensions();
+IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {
+  AllowlistExtensions();
 
   auto* bystander = LoadExtension(
       test_data_dir_.AppendASCII("all_urls").AppendASCII("bystander"));
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, WhitelistedExtension) {
     NavigateAndWait(test_url);
 }
 
-// Test that an extension NOT whitelisted for scripting can ask for <all_urls>
+// Test that an extension NOT allowlisted for scripting can ask for <all_urls>
 // and run scripts on non-restricted all pages.
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, RegularExtensions) {
   // Now verify we can script a regular http page.

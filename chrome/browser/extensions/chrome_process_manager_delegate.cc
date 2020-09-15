@@ -23,7 +23,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/extensions/component_extensions_whitelist/whitelist.h"
+#include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
@@ -90,9 +90,9 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
             ->GetForceInstallList();
 
     // For the ChromeOS login profile, only allow apps installed by device
-    // policy or that are explicitly whitelisted.
+    // policy or that are explicitly allowlisted.
     return login_screen_apps_list->HasKey(extension.id()) ||
-           IsComponentExtensionWhitelistedForSignInProfile(extension.id());
+           IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
   if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&

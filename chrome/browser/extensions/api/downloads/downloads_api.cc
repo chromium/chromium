@@ -144,7 +144,7 @@ const char kDangerKey[] = "danger";
 const char kDangerSafe[] = "safe";
 const char kDangerUncommon[] = "uncommon";
 const char kDangerUnwanted[] = "unwanted";
-const char kDangerWhitelistedByPolicy[] = "whitelistedByPolicy";
+const char kDangerAllowlistedByPolicy[] = "allowlistedByPolicy";
 const char kDangerAsyncScanning[] = "asyncScanning";
 const char kDangerPasswordProtected[] = "passwordProtected";
 const char kDangerTooLarge[] = "blockedTooLarge";
@@ -185,8 +185,6 @@ const char kUrlRegexKey[] = "urlRegex";
 const char kFinalUrlKey[] = "finalUrl";
 const char kFinalUrlRegexKey[] = "finalUrlRegex";
 
-// Note: Any change to the danger type strings, should be accompanied by a
-// corresponding change to downloads.json.
 const char* const kDangerStrings[] = {kDangerSafe,
                                       kDangerFile,
                                       kDangerUrl,
@@ -196,7 +194,7 @@ const char* const kDangerStrings[] = {kDangerSafe,
                                       kDangerAccepted,
                                       kDangerHost,
                                       kDangerUnwanted,
-                                      kDangerWhitelistedByPolicy,
+                                      kDangerAllowlistedByPolicy,
                                       kDangerAsyncScanning,
                                       kDangerPasswordProtected,
                                       kDangerTooLarge,
@@ -209,8 +207,6 @@ const char* const kDangerStrings[] = {kDangerSafe,
 static_assert(base::size(kDangerStrings) == download::DOWNLOAD_DANGER_TYPE_MAX,
               "kDangerStrings should have DOWNLOAD_DANGER_TYPE_MAX elements");
 
-// Note: Any change to the state strings, should be accompanied by a
-// corresponding change to downloads.json.
 const char* const kStateStrings[] = {
   kStateInProgress,
   kStateComplete,

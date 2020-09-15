@@ -157,7 +157,7 @@ bool ExtensionViewHost::IsBackgroundPage() const {
 content::WebContents* ExtensionViewHost::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
-  // Whitelist the dispositions we will allow to be opened.
+  // Allowlist the dispositions we will allow to be opened.
   switch (params.disposition) {
     case WindowOpenDisposition::SINGLETON_TAB:
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:

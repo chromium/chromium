@@ -16,7 +16,7 @@ class Extension;
 class ExtensionManagement;
 
 // The standard management policy provider, which takes into account the
-// extension black/whitelists and admin black/whitelists.
+// extension block/allowlists and admin block/allowlists.
 class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
  public:
   explicit StandardManagementPolicyProvider(

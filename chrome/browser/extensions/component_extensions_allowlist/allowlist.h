@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_WHITELIST_WHITELIST_H_
-#define CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_WHITELIST_WHITELIST_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_ALLOWLIST_ALLOWLIST_H_
+#define CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_ALLOWLIST_ALLOWLIST_H_
 
 #include <string>
 
@@ -37,17 +37,17 @@ namespace extensions {
 // =============================================================================
 
 // Checks using an extension ID.
-bool IsComponentExtensionWhitelisted(const std::string& extension_id);
+bool IsComponentExtensionAllowlisted(const std::string& extension_id);
 
 // Checks using resource ID of manifest.
-bool IsComponentExtensionWhitelisted(int manifest_resource_id);
+bool IsComponentExtensionAllowlisted(int manifest_resource_id);
 
 #if defined(OS_CHROMEOS)
 // Checks using extension id for sign in profile.
-bool IsComponentExtensionWhitelistedForSignInProfile(
+bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id);
 #endif
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_WHITELIST_WHITELIST_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_COMPONENT_EXTENSIONS_ALLOWLIST_ALLOWLIST_H_

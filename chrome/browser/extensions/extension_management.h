@@ -111,7 +111,7 @@ class ExtensionManagement : public KeyedService {
   // Returns |true| if there is at least one extension with
   // |INSTALLATION_ALLOWED| as installation mode. This excludes force installed
   // extensions.
-  bool HasWhitelistedExtension() const;
+  bool HasAllowlistedExtension() const;
 
   // Returns if an extension with id |id| is explicitly allowed by enterprise
   // policy or not.

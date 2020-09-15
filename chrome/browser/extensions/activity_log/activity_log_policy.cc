@@ -118,11 +118,10 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
 }
 
 // static
-void ActivityLogPolicy::Util::StripArguments(const ApiSet& api_whitelist,
+void ActivityLogPolicy::Util::StripArguments(const ApiSet& api_allowlist,
                                              scoped_refptr<Action> action) {
-  if (api_whitelist.find(
-          std::make_pair(action->action_type(), action->api_name())) ==
-      api_whitelist.end()) {
+  if (api_allowlist.find(std::make_pair(
+          action->action_type(), action->api_name())) == api_allowlist.end()) {
     action->set_args(std::unique_ptr<base::ListValue>());
   }
 }

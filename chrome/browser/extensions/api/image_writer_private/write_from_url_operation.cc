@@ -103,7 +103,7 @@ void WriteFromUrlOperation::Download(base::OnceClosure continuation) {
           cookies_store: "user"
           setting:
             "This feature cannot be disabled by settings, it can only be used "
-            "by whitelisted apps/extension."
+            "by allowlisted apps/extension."
           policy_exception_justification:
             "Not implemented, considered not useful."
         })");

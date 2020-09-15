@@ -683,7 +683,7 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
       std::string extension_id;
       UnpackedInstaller::Create(this)->LoadFromCommandLine(
           base::FilePath(t.token()), &extension_id, false /*only-allow-apps*/);
-      // Extension id is added to whitelist after its extension is loaded
+      // Extension id is added to allowlist after its extension is loaded
       // because code is executed asynchronously. TODO(michaelpg): Remove this
       // assumption so loading extensions does not have to be asynchronous:
       // crbug.com/708354.

@@ -232,11 +232,11 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUpdate) {
 
 }
 
-TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
-  std::string whitelisted_id = crx_file::id_util::GenerateId("whitelisted");
-  std::string nonwhitelisted_id =
-      crx_file::id_util::GenerateId("nonwhitelisted");
-  // Create a module which exports to a restricted whitelist.
+TEST_F(SharedModuleServiceUnitTest, AllowlistedImports) {
+  std::string allowlisted_id = crx_file::id_util::GenerateId("allowlisted");
+  std::string nonallowlisted_id =
+      crx_file::id_util::GenerateId("nonallowlisted");
+  // Create a module which exports to a restricted allowlist.
   std::unique_ptr<base::DictionaryValue> manifest =
       DictionaryBuilder()
           .Set("name", "Shared Module")
@@ -244,8 +244,8 @@ TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
           .Set("manifest_version", 2)
           .Set("export",
                DictionaryBuilder()
-                   .Set("whitelist",
-                        ListBuilder().Append(whitelisted_id).Build())
+                   .Set("allowlist",
+                        ListBuilder().Append(allowlisted_id).Build())
                    .Set("resources", ListBuilder().Append("*").Build())
                    .Build())
           .Build();
@@ -258,23 +258,23 @@ TEST_F(SharedModuleServiceUnitTest, WhitelistedImports) {
 
   EXPECT_TRUE(InstallExtension(shared_module.get(), false));
 
-  // Create and install an extension with the whitelisted ID.
-  scoped_refptr<const Extension> whitelisted_extension =
+  // Create and install an extension with the allowlisted ID.
+  scoped_refptr<const Extension> allowlisted_extension =
       CreateExtensionImportingModules(
-          std::vector<std::string>(1, shared_module->id()), whitelisted_id,
+          std::vector<std::string>(1, shared_module->id()), allowlisted_id,
           "1.0");
-  EXPECT_TRUE(InstallExtension(whitelisted_extension.get(), false));
+  EXPECT_TRUE(InstallExtension(allowlisted_extension.get(), false));
 
-  // Try to install an extension with an ID that is not whitelisted.
-  scoped_refptr<const Extension> nonwhitelisted_extension =
+  // Try to install an extension with an ID that is not allowlisted.
+  scoped_refptr<const Extension> nonallowlisted_extension =
       CreateExtensionImportingModules(
-          std::vector<std::string>(1, shared_module->id()), nonwhitelisted_id,
+          std::vector<std::string>(1, shared_module->id()), nonallowlisted_id,
           "1.0");
   // This should succeed because only CRX installer (and by extension the
-  // WebStore Installer) checks the shared module whitelist.  InstallExtension
-  // bypasses the whitelist check because the SharedModuleService does not
-  // care about whitelists.
-  EXPECT_TRUE(InstallExtension(nonwhitelisted_extension.get(), false));
+  // WebStore Installer) checks the shared module allowlist.  InstallExtension
+  // bypasses the allowlist check because the SharedModuleService does not
+  // care about allowlists.
+  EXPECT_TRUE(InstallExtension(nonallowlisted_extension.get(), false));
 }
 
 TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {

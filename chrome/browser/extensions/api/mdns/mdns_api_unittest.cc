@@ -346,20 +346,20 @@ TEST_F(MDnsAPIMaxServicesTest, OnServiceListDoesNotExceedLimit) {
   dns_sd_registry()->DispatchMDnsEvent("_testing._tcp.local", services);
 }
 
-TEST_F(MDnsAPITest, ExtensionRespectsWhitelist) {
+TEST_F(MDnsAPITest, ExtensionRespectsAllowlist) {
   scoped_refptr<extensions::Extension> extension =
       CreateExtension("Dinosaur networker", false, kExtId);
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
   ASSERT_EQ(Manifest::TYPE_EXTENSION, extension->GetType());
 
-  // There is a whitelist of mdns service types extensions may access, which
-  // includes "_testing._tcp.local" and exludes "_trex._tcp.local"
+  // There is a allowlist of mdns service types extensions may access, which
+  // includes "_testing._tcp.local" and excludes "_trex._tcp.local"
   {
     base::DictionaryValue filter;
     filter.SetString(kEventFilterServiceTypeKey, "_trex._tcp.local");
 
     ASSERT_TRUE(dns_sd_registry());
-    // Test that the extension is able to listen to a non-whitelisted service
+    // Test that the extension is able to listen to a non-allowlisted service
     EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener("_trex._tcp.local"))
         .Times(0);
     EventRouter::Get(browser_context())
@@ -379,7 +379,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsWhitelist) {
     filter.SetString(kEventFilterServiceTypeKey, "_testing._tcp.local");
 
     ASSERT_TRUE(dns_sd_registry());
-    // Test that the extension is able to listen to a whitelisted service
+    // Test that the extension is able to listen to a allowlisted service
     EXPECT_CALL(*dns_sd_registry(),
                 RegisterDnsSdListener("_testing._tcp.local"));
     EventRouter::Get(browser_context())
@@ -396,7 +396,7 @@ TEST_F(MDnsAPITest, ExtensionRespectsWhitelist) {
   }
 }
 
-TEST_F(MDnsAPITest, PlatformAppsNotSubjectToWhitelist) {
+TEST_F(MDnsAPITest, PlatformAppsNotSubjectToAllowlist) {
   scoped_refptr<extensions::Extension> extension =
       CreateExtension("Dinosaur networker", true, kExtId);
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
@@ -406,7 +406,7 @@ TEST_F(MDnsAPITest, PlatformAppsNotSubjectToWhitelist) {
   filter.SetString(kEventFilterServiceTypeKey, "_trex._tcp.local");
 
   ASSERT_TRUE(dns_sd_registry());
-  // Test that the extension is able to listen to a non-whitelisted service
+  // Test that the extension is able to listen to a non-allowlisted service
   EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener("_trex._tcp.local"));
 
   EventRouter::Get(browser_context())

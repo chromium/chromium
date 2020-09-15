@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/component_extensions_whitelist/whitelist.h"
+#include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
 
 #include <stddef.h>
 
@@ -24,7 +24,7 @@
 
 namespace extensions {
 
-bool IsComponentExtensionWhitelisted(const std::string& extension_id) {
+bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   const char* const kAllowed[] = {
     extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kCastExtensionIdRelease,
@@ -54,12 +54,12 @@ bool IsComponentExtensionWhitelisted(const std::string& extension_id) {
   }
 #endif
   LOG(ERROR) << "Component extension with id " << extension_id << " not in "
-             << "whitelist and is not being loaded as a result.";
+             << "allowlist and is not being loaded as a result.";
   NOTREACHED();
   return false;
 }
 
-bool IsComponentExtensionWhitelisted(int manifest_resource_id) {
+bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   switch (manifest_resource_id) {
     // Please keep the list in alphabetical order.
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -101,14 +101,14 @@ bool IsComponentExtensionWhitelisted(int manifest_resource_id) {
   }
 
   LOG(ERROR) << "Component extension with manifest resource id "
-             << manifest_resource_id << " not in whitelist and is not being "
+             << manifest_resource_id << " not in allowlist and is not being "
              << "loaded as a result.";
   NOTREACHED();
   return false;
 }
 
 #if defined(OS_CHROMEOS)
-bool IsComponentExtensionWhitelistedForSignInProfile(
+bool IsComponentExtensionAllowlistedForSignInProfile(
     const std::string& extension_id) {
   const char* const kAllowed[] = {
       extension_misc::kAccessibilityCommonExtensionId,

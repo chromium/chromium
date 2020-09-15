@@ -59,7 +59,7 @@ Refer to README.md for content description and update process.
  <item id="content_suggestion_get_favicon" hash_code="16653985" type="0" content_hash_code="134280933" os_list="linux,windows" file_path="components/ntp_snippets/content_suggestions_service.cc"/>
  <item id="conversion_measurement_report" hash_code="113422320" type="0" content_hash_code="60688877" os_list="linux,windows" file_path="content/browser/conversions/conversion_network_sender_impl.cc"/>
  <item id="credenential_avatar" hash_code="53695122" type="0" content_hash_code="113035371" os_list="linux,windows" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc"/>
- <item id="cros_recovery_image_download" hash_code="101725581" type="0" content_hash_code="23088027" os_list="linux,windows" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc"/>
+ <item id="cros_recovery_image_download" hash_code="101725581" type="0" content_hash_code="10999698" os_list="linux,windows" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc"/>
  <item id="cryptauth_device_sync_tickle" hash_code="96565489" type="1" second_id="29188932" deprecated="2018-03-15" content_hash_code="115714668" file_path=""/>
  <item id="cryptauth_enrollment_flow_finish" hash_code="54836939" type="1" second_id="29188932" deprecated="2018-04-04" content_hash_code="17060642" file_path=""/>
  <item id="cryptauth_enrollment_flow_setup" hash_code="84889397" type="1" second_id="29188932" deprecated="2018-04-04" content_hash_code="128348931" file_path=""/>

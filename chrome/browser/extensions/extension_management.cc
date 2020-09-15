@@ -153,7 +153,7 @@ ExtensionManagement::GetRecommendedInstallList() const {
   return GetInstallListByMode(INSTALLATION_RECOMMENDED);
 }
 
-bool ExtensionManagement::HasWhitelistedExtension() const {
+bool ExtensionManagement::HasAllowlistedExtension() const {
   if (default_settings_->installation_mode != INSTALLATION_BLOCKED &&
       default_settings_->installation_mode != INSTALLATION_REMOVED) {
     return true;
@@ -173,7 +173,7 @@ bool ExtensionManagement::IsInstallationExplicitlyAllowed(
   if (it == settings_by_id_.end())
     return false;
   // Checks if the extension is on the automatically installed list or
-  // install white-list.
+  // install allow-list.
   InstallationMode mode = it->second->installation_mode;
   return mode == INSTALLATION_FORCED || mode == INSTALLATION_RECOMMENDED ||
          mode == INSTALLATION_ALLOWED;
@@ -202,7 +202,7 @@ bool ExtensionManagement::IsOffstoreInstallAllowed(
   if (!url_patterns.MatchesURL(url))
     return false;
 
-  // The referrer URL must also be whitelisted, unless the URL has the file
+  // The referrer URL must also be allowlisted, unless the URL has the file
   // scheme (there's no referrer for those URLs).
   return url.SchemeIsFile() || url_patterns.MatchesURL(referrer_url);
 }
@@ -351,7 +351,7 @@ void ExtensionManagement::Refresh() {
       static_cast<const base::ListValue*>(LoadPreference(
           pref_names::kInstallAllowList, true, base::Value::Type::LIST));
   // Allow user to use preference to block certain extensions. Note that policy
-  // managed forcelist or whitelist will always override this.
+  // managed forcelist or allowlist will always override this.
   const base::ListValue* denied_list_pref =
       static_cast<const base::ListValue*>(LoadPreference(
           pref_names::kInstallDenyList, false, base::Value::Type::LIST));

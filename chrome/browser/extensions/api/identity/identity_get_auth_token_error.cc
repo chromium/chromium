@@ -80,7 +80,7 @@ std::string IdentityGetAuthTokenError::ToString() const {
     case State::kRemoteConsentFlowRejected:
       return identity_constants::kUserRejected;
     case State::kUserNotSignedIn:
-    case State::kNotWhitelistedInPublicSession:
+    case State::kNotAllowlistedInPublicSession:
     case State::kSignInFailed:
     case State::kRemoteConsentUserNotSignedIn:
       return identity_constants::kUserNotSignedIn;

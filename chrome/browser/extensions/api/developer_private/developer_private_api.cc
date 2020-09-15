@@ -307,7 +307,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
       prefs->GetBoolean(prefs::kExtensionsUIDeveloperMode);
   info->can_load_unpacked =
       ExtensionManagementFactory::GetForBrowserContext(profile)
-          ->HasWhitelistedExtension();
+          ->HasAllowlistedExtension();
   return info;
 }
 

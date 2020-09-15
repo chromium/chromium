@@ -61,7 +61,7 @@ class ComponentLoaderTest : public testing::Test {
         base::CommandLine::ForCurrentProcess(),
         base::FilePath() /* install_directory */,
         false /* autoupdate_enabled */);
-    component_loader_.set_ignore_whitelist_for_testing(true);
+    component_loader_.set_ignore_allowlist_for_testing(true);
   }
 
   void SetUp() override {

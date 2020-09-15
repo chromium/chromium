@@ -28,7 +28,7 @@ class InstallSigner;
 struct InstallSignature;
 
 // This class implements verification that a set of extensions are either from
-// the webstore or are whitelisted by enterprise policy.  The webstore
+// the webstore or are allowlisted by enterprise policy.  The webstore
 // verification process works by sending a request to a backend server to get a
 // signature proving that a set of extensions are verified. This signature is
 // written into the extension preferences and is checked for validity when

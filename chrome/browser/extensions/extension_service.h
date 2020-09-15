@@ -291,7 +291,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // preventing them from ever loading until UnblockAllExtensions is called.
   // This state is stored in preferences, so persists until Chrome restarts.
   //
-  // Component, external component and whitelisted policy installed extensions
+  // Component, external component and allowlisted policy installed extensions
   // are exempt from being Blocked (see CanBlockExtension in .cc file).
   void BlockAllExtensions();
 
@@ -618,7 +618,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // These extensions should appear in registry_.
   ExtensionSet greylist_;
 
-  // Set of whitelisted enabled extensions loaded from the
+  // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
   std::set<std::string> disable_flag_exempted_extensions_;
 
