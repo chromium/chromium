@@ -38,6 +38,7 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.matcher.BoundedMatcher;
+import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -415,6 +416,11 @@ class AutofillAssistantUiTestUtil {
             viewsWithTag.add(view);
         }
         return viewsWithTag;
+    }
+
+    static Matcher<View> withTextId(int id) {
+        return ViewMatchers.withText(
+                InstrumentationRegistry.getTargetContext().getResources().getString(id));
     }
 
     /**
