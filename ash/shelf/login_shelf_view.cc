@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/focus_cycler.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/lock_screen_action/lock_screen_action_background_state.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
@@ -246,6 +247,12 @@ class LoginShelfButton : public views::LabelButton {
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(icon_, button_text_color));
     SchedulePaint();
+  }
+
+  void OnFocus() override {
+    auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
+    keyboard_controller->set_keyboard_locked(false /*lock*/);
+    keyboard_controller->HideKeyboardImplicitlyByUser();
   }
 
  private:
