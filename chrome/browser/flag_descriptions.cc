@@ -1857,12 +1857,6 @@ const char kPassiveDocumentWheelEventListenersDescription[] =
     "Forces wheel, and mousewheel event listeners on document level targets "
     "(which haven't requested otherwise) to be treated as passive.";
 
-const char kPassiveMixedContentWarningName[] =
-    "Warning for Passive Mixed Content";
-const char kPassiveMixedContentWarningDescription[] =
-    "Causes a 'Not Secure' chip to be shown in the omnibox if a site contains "
-    "passive (aka optionally blockable) mixed content.";
-
 const char kPasswordChangeInSettingsName[] =
     "Rework password change flow from settings";
 const char kPasswordChangeInSettingsDescription[] =

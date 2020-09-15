@@ -396,10 +396,7 @@ IN_PROC_BROWSER_TEST_F(
   CloseAllTabs();
 
   security_state::SecurityLevel mixed_content_security_level =
-      base::FeatureList::IsEnabled(
-          security_state::features::kPassiveMixedContentWarning)
-          ? security_state::WARNING
-          : security_state::NONE;
+      security_state::WARNING;
 
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::

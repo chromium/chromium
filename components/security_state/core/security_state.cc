@@ -210,10 +210,7 @@ SecurityLevel GetSecurityLevel(
   DCHECK(!visible_security_state.ran_content_with_cert_errors);
 
   if (visible_security_state.displayed_mixed_content) {
-    if (base::FeatureList::IsEnabled(features::kPassiveMixedContentWarning)) {
-      return kDisplayedInsecureContentWarningLevel;
-    }
-    return kDisplayedInsecureContentLevel;
+    return kDisplayedInsecureContentWarningLevel;
   }
 
   if ((visible_security_state.contained_mixed_form &&

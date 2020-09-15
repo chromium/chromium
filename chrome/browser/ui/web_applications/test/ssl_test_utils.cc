@@ -46,11 +46,7 @@ void CheckMixedContentLoaded(Browser* browser) {
   DCHECK(browser);
   ssl_test_util::CheckSecurityState(
       browser->tab_strip_model()->GetActiveWebContents(),
-      ssl_test_util::CertError::NONE,
-      base::FeatureList::IsEnabled(
-          security_state::features::kPassiveMixedContentWarning)
-          ? security_state::WARNING
-          : security_state::NONE,
+      ssl_test_util::CertError::NONE, security_state::WARNING,
       ssl_test_util::AuthState::DISPLAYED_INSECURE_CONTENT);
 }
 

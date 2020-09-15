@@ -180,13 +180,6 @@ security_state::InsecureInputEventData GetInputEvents(
   return security_state::InsecureInputEventData();
 }
 
-security_state::SecurityLevel GetLevelForPassiveMixedContent() {
-  return base::FeatureList::IsEnabled(
-             security_state::features::kPassiveMixedContentWarning)
-             ? security_state::WARNING
-             : security_state::NONE;
-}
-
 // A delegate class that allows emulating selection of a file for an
 // INPUT TYPE=FILE form field.
 class FileChooserDelegate : public content::WebContentsDelegate {
@@ -778,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
                                https_server_.GetURL(replacement_path));
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      GetLevelForPassiveMixedContent(), false, true, false,
+      security_state::WARNING, false, true, false,
       false /* expect cert status error */);
 
   // Navigate to an HTTPS page that displays mixed content dynamically.
@@ -798,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
   EXPECT_TRUE(js_result);
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      GetLevelForPassiveMixedContent(), false, true, false,
+      security_state::WARNING, false, true, false,
       false /* expect cert status error */);
 
   // Navigate to an HTTPS page that runs mixed content.
@@ -842,7 +835,7 @@ class
   SecurityStateTabHelperTestWithAutoupgradesDisabledAndMixedContentWarningEnabled() {
     feature_list.InitWithFeatures(
         /* enabled_features */
-        {security_state::features::kPassiveMixedContentWarning},
+        {},
         /* disabled_features */
         {blink::features::kMixedContentAutoupgrade});
   }
@@ -871,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(
                                https_server_.GetURL(replacement_path));
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      GetLevelForPassiveMixedContent(), false, true, false,
+      security_state::WARNING, false, true, false,
       false /* expect cert status error */);
 
   // Navigate to an HTTPS page that displays mixed content dynamically.
@@ -891,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(js_result);
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      GetLevelForPassiveMixedContent(), false, true, false,
+      security_state::WARNING, false, true, false,
       false /* expect cert status error */);
 }
 
@@ -1634,9 +1627,7 @@ IN_PROC_BROWSER_TEST_F(
   ui_test_utils::NavigateToURL(browser(), mixed_content_url);
 
   blink::SecurityStyle expected_mixed_content_security_style =
-      base::FeatureList::IsEnabled(
-          security_state::features::kPassiveMixedContentWarning) &&
-              security_state::ShouldShowDangerTriangleForWarningLevel()
+      security_state::ShouldShowDangerTriangleForWarningLevel()
           ? blink::SecurityStyle::kInsecure
           : blink::SecurityStyle::kNeutral;
   EXPECT_EQ(expected_mixed_content_security_style,
@@ -2231,8 +2222,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
                                        "i.src = 'http://example.test';"
                                        "document.body.appendChild(i);"));
     observer.WaitForDidChangeVisibleSecurityState();
-    histograms.ExpectUniqueSample(kHistogramName,
-                                  GetLevelForPassiveMixedContent(), 1);
+    histograms.ExpectUniqueSample(kHistogramName, security_state::WARNING, 1);
   }
 
   // Navigate away and the histogram should be recorded exactly once again, when

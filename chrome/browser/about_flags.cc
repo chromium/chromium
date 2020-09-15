@@ -5888,11 +5888,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kUseWallpaperStagingUrl)},
 #endif  // defined(OS_CHROMEOS)
 
-    {"passive-mixed-content-warning",
-     flag_descriptions::kPassiveMixedContentWarningName,
-     flag_descriptions::kPassiveMixedContentWarningDescription, kOsAll,
-     FEATURE_VALUE_TYPE(security_state::features::kPassiveMixedContentWarning)},
-
     {"autofill-enable-virtual-card",
      flag_descriptions::kAutofillEnableVirtualCardName,
      flag_descriptions::kAutofillEnableVirtualCardDescription, kOsDesktop,

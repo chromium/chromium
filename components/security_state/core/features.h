@@ -44,11 +44,6 @@ extern const base::Feature kLegacyTLSWarnings;
 COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
 extern const base::Feature kSafetyTipUI;
 
-// This feature causes passive mixed content to show the not secure warning
-// chip. Does not affect mixed forms.
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const base::Feature kPassiveMixedContentWarning;
-
 }  // namespace features
 }  // namespace security_state
 
