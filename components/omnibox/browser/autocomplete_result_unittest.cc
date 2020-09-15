@@ -56,10 +56,12 @@ const AutocompleteMatchTestData kNonVerbatimMatches[] = {
 };
 
 // Adds |count| AutocompleteMatches to |matches|.
-void PopulateAutocompleteMatchesFromTestData(
-    const AutocompleteMatchTestData* data,
-    size_t count,
-    ACMatches* matches) {
+template <typename T>
+void PopulateAutocompleteMatchesFromTestData(const T* data,
+                                             size_t count,
+                                             ACMatches* matches) {
+  static_assert(std::is_base_of<AutocompleteMatchTestData, T>::value,
+                "T must derive from AutocompleteMatchTestData");
   ASSERT_TRUE(matches != nullptr);
   for (size_t i = 0; i < count; ++i) {
     AutocompleteMatch match;
@@ -1692,6 +1694,69 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
   EXPECT_TRUE(result.match_at(0)->has_tab_match);
   EXPECT_TRUE(result.match_at(1)->has_tab_match);
   EXPECT_FALSE(result.match_at(2)->has_tab_match);
+}
+
+TEST_F(AutocompleteResultTest, AttachesPedals) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kOmniboxPedalSuggestions, omnibox::kOmniboxSuggestionButtonRow},
+      {});
+  EXPECT_TRUE(OmniboxFieldTrial::IsPedalSuggestionsEnabled());
+  FakeAutocompleteProviderClient client;
+  EXPECT_NE(nullptr, client.GetPedalProvider());
+
+  AutocompleteResult result;
+
+  // Populate result with test matches.
+  {
+    ACMatches matches;
+    struct TestData : AutocompleteMatchTestData {
+      std::string contents;
+      TestData(std::string url,
+               AutocompleteMatch::Type type,
+               std::string contents)
+          : AutocompleteMatchTestData{url, type}, contents(contents) {}
+    };
+    const TestData data[] = {
+        {"http://search-what-you-typed/",
+         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, "search what you typed"},
+        {"http://search-history/", AutocompleteMatchType::SEARCH_HISTORY,
+         "search history"},
+        {"http://history-url/", AutocompleteMatchType::HISTORY_URL,
+         "history url"},
+        {"http://history-title/", AutocompleteMatchType::HISTORY_TITLE,
+         "history title"},
+        {"http://url-what-you-typed/",
+         AutocompleteMatchType::URL_WHAT_YOU_TYPED, "url what you typed"},
+        {"http://clipboard-url/", AutocompleteMatchType::CLIPBOARD_URL,
+         "clipboard url"},
+        {"http://bookmark-title/", AutocompleteMatchType::BOOKMARK_TITLE,
+         "bookmark title"},
+        {"http://entity-clear-history/",
+         AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "clear history"},
+        {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
+         "clear history"},
+    };
+    PopulateAutocompleteMatchesFromTestData(data, base::size(data), &matches);
+    for (size_t i = 0; i < base::size(data); i++) {
+      matches[i].contents = base::UTF8ToUTF16(data[i].contents);
+    }
+
+    AutocompleteInput input(base::ASCIIToUTF16("a"),
+                            metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    result.AppendMatches(input, matches);
+  }
+
+  // Attach |pedal| to result matches where appropriate.
+  result.ConvertInSuggestionPedalMatches(&client);
+
+  // Ensure the entity suggestion doesn't get a pedal even though its contents
+  // form a concept match.
+  EXPECT_EQ(nullptr, std::prev(std::prev(result.end()))->pedal);
+
+  // The same concept-matching contents on a non-entity suggestion gets a pedal.
+  EXPECT_NE(nullptr, std::prev(result.end())->pedal);
 }
 
 TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {
