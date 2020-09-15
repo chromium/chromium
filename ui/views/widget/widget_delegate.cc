@@ -263,6 +263,8 @@ void WidgetDelegate::SetFocusTraversesOut(bool focus_traverses_out) {
 
 void WidgetDelegate::SetIcon(const gfx::ImageSkia& icon) {
   params_.icon = icon;
+  if (GetWidget())
+    GetWidget()->UpdateWindowIcon();
 }
 
 void WidgetDelegate::SetModalType(ui::ModalType modal_type) {
@@ -276,6 +278,8 @@ void WidgetDelegate::SetShowCloseButton(bool show_close_button) {
 
 void WidgetDelegate::SetShowIcon(bool show_icon) {
   params_.show_icon = show_icon;
+  if (GetWidget())
+    GetWidget()->UpdateWindowIcon();
 }
 
 void WidgetDelegate::SetShowTitle(bool show_title) {
