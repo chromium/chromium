@@ -47,6 +47,7 @@ constexpr struct {
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
     {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
+    {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
 };
 
