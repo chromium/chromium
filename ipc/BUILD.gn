@@ -10,6 +10,12 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 buildflag_header("ipc_buildflags") {
   header = "ipc_buildflags.h"
 
@@ -117,10 +123,6 @@ component("ipc") {
 
 component("message_support") {
   sources = [
-    "handle_attachment_win.cc",
-    "handle_attachment_win.h",
-    "handle_win.cc",
-    "handle_win.h",
     "ipc_message.cc",
     "ipc_message.h",
     "ipc_message_attachment.cc",
@@ -136,16 +138,30 @@ component("message_support") {
     "ipc_platform_file.h",
     "ipc_sync_message.cc",
     "ipc_sync_message.h",
-    "mach_port_attachment_mac.cc",
-    "mach_port_attachment_mac.h",
-    "mach_port_mac.cc",
-    "mach_port_mac.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "handle_attachment_win.cc",
+      "handle_attachment_win.h",
+      "handle_win.cc",
+      "handle_win.h",
+    ]
+  }
 
   if (is_posix || is_fuchsia) {
     sources += [
       "ipc_platform_file_attachment_posix.cc",
       "ipc_platform_file_attachment_posix.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mach_port_attachment_mac.cc",
+      "mach_port_attachment_mac.h",
+      "mach_port_mac.cc",
+      "mach_port_mac.h",
     ]
   }
 
