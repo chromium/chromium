@@ -9,6 +9,8 @@ if (is_android) {
 
 source_set("internal") {
   sources = [
+    "config.cc",
+    "config.h",
     "proto_conversions.cc",
     "proto_conversions.h",
     "store.h",
@@ -80,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "config_unittest.cc",
     "proto_conversions_unittest.cc",
     "tutorial_group_unittest.cc",
     "tutorial_store_unittest.cc",
@@ -89,6 +92,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/video_tutorials:public",
     "//chrome/browser/video_tutorials/proto",
     "//chrome/browser/video_tutorials/test:test_lib",
     "//components/leveldb_proto",
