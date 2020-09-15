@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">slutnot</translation>
 <translation id="1281252709823657822">dialogruta</translation>
 <translation id="1306460908038601864">Av</translation>
+<translation id="1311894908970423688">Värdet måste vara <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">medverkande</translation>
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1359897965706325498">banner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="668171684555832681">Annan...</translation>
 <translation id="6692633176391053278">knappreglage</translation>
+<translation id="6709093583001123835">Värdet måste vara <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Låg uppspelningskvalitet</translation>
 <translation id="6755330956360078551">beskrivning</translation>
 <translation id="6790428901817661496">Spela</translation>

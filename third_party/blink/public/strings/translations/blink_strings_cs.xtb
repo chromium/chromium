@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">koncová poznámka</translation>
 <translation id="1281252709823657822">dialogové okno</translation>
 <translation id="1306460908038601864">Vypnuto</translation>
+<translation id="1311894908970423688">Hodnota musí být <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">poděkování</translation>
 <translation id="1342835525016946179">čl</translation>
 <translation id="1359897965706325498">banner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="668171684555832681">Další...</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6709093583001123835">Hodnota musí být <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Špatná kvalita přehrávání</translation>
 <translation id="6755330956360078551">popisek</translation>
 <translation id="6790428901817661496">Přehrát</translation>

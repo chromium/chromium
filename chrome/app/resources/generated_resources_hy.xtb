@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Ձեր սարքը կարող է ապակողպվել Smart Lock-ի միջոցով։ Սեղմեք Enter՝ ապակողպելու համար։</translation>
 <translation id="1361164813881551742">Ավելացնել ձեռքով</translation>
 <translation id="1361655923249334273">Չօգտագործված</translation>
-<translation id="1361707011052629095">Մոտակայքում գտնվող սարքերը, երբ «Փոխանակում մոտակա սարքերի հետ» գործառույթը միացված է</translation>
 <translation id="1361872463926621533">Նվագարկել ազդանշան մեկնարկի ժամանակ</translation>
 <translation id="1362865166188278099">Մեխանիկական խնդիր է առաջացել։ Ստուգեք տպիչը։</translation>
 <translation id="1363585519747660921">USB տպիչը հարկավոր է կարգավորել</translation>
@@ -1476,6 +1475,7 @@
 <translation id="2731700343119398978">Սպասեք…</translation>
 <translation id="2731710757838467317">Վերահսկվող պրոֆիլը ստեղծվում է: Սա կարող է մի քանի վայրկյան տևել:</translation>
 <translation id="2731971182069536520">Հաջորդ անգամ, երբ վերագործարկեք սարքը, ձեր ադմինիստրատորը մեկանգամյա թարմացում կկատարի, ինչի արդյունքում ձեր լոկալ տվյալները կջնջվեն:</translation>
+<translation id="2732134891301408122">Լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="2734760316755174687">Թույլտվությունները կվերակայվեն նաև <ph name="SITE_GROUP_NAME" />-ի բոլոր կայքերում:</translation>
 <translation id="2735712963799620190">Ժամանակացույց</translation>
 <translation id="2737363922397526254">Կոծկել…</translation>
@@ -3123,6 +3123,7 @@
 <translation id="4735803855089279419">Չհաջողվեց ճանաչել սարքի նույնացուցիչները:</translation>
 <translation id="4736292055110123391">Համաժամացրեք ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
+<translation id="473936925429402449">Ընտրված է լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />-ը՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="4739639199548674512">Տոմսեր</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ինչպես թարմացնել հավելվածները<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Միացնել կայքի ձայնը}one{Միացնել կայքի ձայնը}other{Միացնել կայքերի ձայնը}}</translation>
@@ -4147,6 +4148,7 @@
 <translation id="6011449291337289699">Մաքրել կայքի տվյալները</translation>
 <translation id="6015266928248016057">Անվավեր PUK: Մնաց <ph name="RETRIES" /> փորձ:</translation>
 <translation id="6015796118275082299">Տարի</translation>
+<translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="6016551720757758985">Հաստատեք Powerwash-ը՝ նախկին տարբերակին վերադարձով</translation>
 <translation id="6016972670657536680">Ընտրեք լեզուն և ստեղնաշարը։ Ընթացիկ լեզուն՝ <ph name="LANGUAGE" />։</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
@@ -5711,7 +5713,6 @@
 <translation id="7918257978052780342">Գրանցվել</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> վ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> կայքը կարող է դիտել <ph name="FILENAME" /> ֆայլը</translation>
-<translation id="7924080089023843180">Ոչ ոք, քանի դեռ դուք չեք միացրել «Փոխանակում մոտակա սարքերի հետ» գործառույթը</translation>
 <translation id="7924358170328001543">Չհաջողվեց փոխանցել միացքը</translation>
 <translation id="792514962475806987">Ամրացված խոշորացույցի մասշտաբը՝</translation>
 <translation id="7925247922861151263">AAA ստուգումը չհաջողվեց</translation>
@@ -6452,6 +6453,7 @@
 <translation id="8811862054141704416">Խոսափողի օգտագործման թույլտվություն Crostini-ում</translation>
 <translation id="8812552797690463522">Այս ցանցը հասանելի է ձեզ։</translation>
 <translation id="8812593354822910461">Ջնջել նաև այցելությունների պատմությունը (<ph name="URL" />)։ Նկատի ունեցեք, որ արդյունքում հնարավոր է դուրս գրվեք ձեր հաշվից <ph name="DOMAIN" /> կայքում։ <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">Հիշեցնել ավելի ուշ</translation>
 <translation id="8813698869395535039">Հնարավոր չէ մուտք գործել <ph name="USERNAME" /> հաշիվ</translation>
 <translation id="8813872945700551674">Դիմեք ձեր ծնողին՝ «<ph name="EXTENSION_NAME" />» ընդլայնումը թույլատրելու համար</translation>
 <translation id="8813969267212093033">Համակարգի տեքստը ցուցադրվում է այս լեզվով</translation>
@@ -6482,6 +6484,7 @@
 <translation id="8838601485495657486">Ոչ թափանցիկ</translation>
 <translation id="8838770651474809439">Համբուրգեր</translation>
 <translation id="883911313571074303">Պատկերին ավելացնել նշում</translation>
+<translation id="8841843049738266382">Դիտել և փոխել սպիտակ ցուցակի օգտատերերին</translation>
 <translation id="8842594465773264717">Ջնջել այս մատնահետքը</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8846132060409673887">Ցույց տալ համակարգչի արտադրողին և մոդելը</translation>

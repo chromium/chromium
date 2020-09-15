@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Dispozitivul se deblochează cu Smart Lock. Apasă pe Enter pentru a-l debloca.</translation>
 <translation id="1361164813881551742">Adaugă manual</translation>
 <translation id="1361655923249334273">Neutilizat</translation>
-<translation id="1361707011052629095">Dispozitive din apropiere, atunci când funcția Nearby Share este deschisă</translation>
 <translation id="1361872463926621533">Redă sunetul la pornire</translation>
 <translation id="1362865166188278099">Defecțiune mecanică. Verifică imprimanta.</translation>
 <translation id="1363585519747660921">Imprimanta USB necesită configurare</translation>
@@ -5709,7 +5708,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7918257978052780342">Înscrieți</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sec.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> poate să vadă <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Nimeni, dacă nu deschizi Nearby Share</translation>
 <translation id="7924358170328001543">Eroare la redirecționarea de port</translation>
 <translation id="792514962475806987">Nivelul de zoom al lupei andocate:</translation>
 <translation id="7925247922861151263">Verificarea AAA nu a reușit</translation>

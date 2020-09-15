@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">przypis końcowy</translation>
 <translation id="1281252709823657822">okno dialogowe</translation>
 <translation id="1306460908038601864">Wyłączono</translation>
+<translation id="1311894908970423688">Wymagana wartość: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">autorzy</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">baner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="668171684555832681">Inny...</translation>
 <translation id="6692633176391053278">element kroczący</translation>
+<translation id="6709093583001123835">Wymagana wartość: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Niska jakość odtwarzania</translation>
 <translation id="6755330956360078551">etykietka</translation>
 <translation id="6790428901817661496">Odtwórz</translation>

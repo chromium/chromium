@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Pulsante di attivazione/disattivazione</translation>
 <translation id="1299774449519412690">Azzurro cielo chiaro</translation>
 <translation id="1303806948938513162">Tocca con quattro dita per aprire i menu di ChromeVox</translation>
+<translation id="1313373992684326101">Passa alla sezione precedente. Alcuni esempi includono la barra di stato e Avvio app.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, pulsante di opzione di una voce di menu non selezionato</translation>
 <translation id="1325946044405407859">Marrone chiaro</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> di <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Aumenta tono</translation>
 <translation id="151784044608172266">Frase successiva</translation>
 <translation id="1524531499102321782">Braille riga successiva</translation>
+<translation id="1542513807034338907">Scorri fino alla pagina precedente</translation>
 <translation id="1546370775711804143">Barra di scorrimento</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1559739829547075274">Spostati indietro</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">predefinito</translation>
 <translation id="4772771694153161212">Non sottolineato</translation>
+<translation id="4780458943471935919">Scorri fino alla pagina successiva</translation>
 <translation id="4784215347943747396">Controlla il dispositivo con solo uno o due sensori</translation>
 <translation id="4786285211967466855">Nessuna intestazione di livello 1 precedente</translation>
 <translation id="4787577491510559358">Annuncia la formattazione dell'elemento corrente</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Modifica il tono quando vengono letti tipi di elementi e testi tra virgolette, eliminati, in grassetto, tra parentesi o in maiuscolo.</translation>
 <translation id="7491962110804786152">Tab</translation>
+<translation id="7492497529767769458">Passa alla sezione successiva. Alcuni esempi includono la barra di stato e Avvio app.</translation>
 <translation id="7505149250476994901">Di' "maiuscola" dopo la lettera</translation>
 <translation id="7518543783849163354">Per interrompere temporaneamente le funzioni vocali di ChromeVox, premi il tasto CTRL.</translation>
 <translation id="7533226154149229506">Giallo ocra dorato chiaro</translation>

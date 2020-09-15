@@ -48,6 +48,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1351937230027495976">Vou kieslys in</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1391102559483454063">Aan</translation>
+<translation id="1407069428457324124">Donkertema</translation>
 <translation id="1419738280318246476">Ontsluit toestel om die kennisgewinghandeling uit te voer</translation>
 <translation id="1420408895951708260">Wissel Aandbeligting. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Skermkiekie is geneem en na knipbord gestoor</translation>
@@ -65,6 +66,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1570871743947603115">Wissel Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
+<translation id="1611993646327628135">Aan</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
 <translation id="1667964833127753507">Die neutrale kleurmodus gebruik nie kleure wat van die muurpapier onttrek is nie, maar vervang dit met 'n stel ligte of donker skakerings van neutrale kleure.</translation>
@@ -79,6 +81,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1761222317188459878">Wissel netwerkverbinding. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1782199038061388045">vertaling</translation>
+<translation id="1787955149152357925">Af</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1812997170047690955">Wat wys op my skerm?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Vou kieslys uit</translation>
 <translation id="3087734570205094154">Onderkant</translation>
+<translation id="3090989381251959936">Wissel <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Beweeg merker</translation>
 <translation id="3098580329624789136">Kry die <ph name="INTENT" /> vir "<ph name="QUERY" />"</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3371140690572404006">USB C-toestel (voorste poort aan regterkant)</translation>
 <translation id="3386978599540877378">die volskermvergrootglas</translation>
 <translation id="3400357268283240774">Bykomende instellings</translation>
+<translation id="3410336247007142655">Wys Donkertema-instellings</translation>
 <translation id="3413817803639110246">Nog niks om te sien nie</translation>
 <translation id="3428447136709161042">Ontkoppel vanaf <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swiep van regs af om terug te gaan</translation>
@@ -327,6 +332,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4378551569595875038">Koppel tans …</translation>
 <translation id="4379531060876907730">Dit is jou stilusnutsgoed</translation>
 <translation id="4389184120735010762">Jy het die sleutelbordkortpad vir die gedokte vergrootglas gedruk. Wil jy dit aanskakel?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is af.</translation>
 <translation id="4421231901400348175">Deel tans beheer oor jou skerm met <ph name="HELPER_NAME" /> deur afstandbystand.</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
@@ -346,6 +352,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4570957409596482333">Hardoplees-knoppie</translation>
 <translation id="4577274620589681794">Tyd is verby · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Hou op om op 'n onbekende ontvanger uit te saai</translation>
+<translation id="4596144739579517758">Donkertema is af</translation>
 <translation id="4623167406982293031">Verifieer rekening</translation>
 <translation id="4628757576491864469">Toestelle</translation>
 <translation id="4659419629803378708">ChromeVox is geaktiveer</translation>
@@ -388,6 +395,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
+<translation id="5208059991603368177">Aan</translation>
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="523505283826916779">Toeganklikheidsinstellings</translation>
 <translation id="5260676007519551770">Lessenaar 4</translation>
@@ -399,6 +407,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5313326810920013265">Bluetooth-instellings</translation>
 <translation id="5314219114274263156">Skermopname is geneem</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
+<translation id="5352250171825660495">Donkertema is aan</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
 <translation id="5397578532367286026">Gebruiker se gebruik en geskiedenis kan op chrome.com deur die bestuurder (<ph name="MANAGER_EMAIL" />) nagegaan word.</translation>
 <translation id="5400461572260843123">Kitsinstellings; druk soek + links om na die kennisgewingsentrum toe te gaan.</translation>
@@ -435,6 +444,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5769373120130404283">Privaatheidskerm</translation>
 <translation id="5777841717266010279">Stop skermdeling?</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
+<translation id="579415080077680903">Stilte</translation>
 <translation id="5820394555380036790">Chromium-bedryfstelsel</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Af</translation>
@@ -445,6 +455,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Mikrofoon is gedemp.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is aan.</translation>
 <translation id="5947494881799873997">Stel terug</translation>
 <translation id="595202126637698455">Prestasie-nasporing geaktiveer</translation>
 <translation id="5957083217255311415">Mobiele data is afgeskakel.</translation>
@@ -469,6 +480,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="615957422585914272">Wys opskerm-sleutelbord</translation>
 <translation id="6164005077879661055">Alle lêers en plaaslike data wat met die gebruiker onder toesig geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker onder toesig verwyder word. Besoekte webwerwe en instellings vir hierdie gebruiker sonder toesig kan dalk steeds by <ph name="MANAGEMENT_URL" /> vir die bestuurder sigbaar wees.</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
+<translation id="6192859646269780503">Spoor foon op</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6236290670123303279">Bestuur instellings</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -540,6 +552,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="698231206551913481">Alle lêers en plaaslike data wat met hierdie gebruiker geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker verwyder word.</translation>
 <translation id="7007983414944123363">Jou PIN of wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
+<translation id="7013005189539051442">Aktiveer warmkol</translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Koppel jou <ph name="DEVICE_NAME" /> aan jou foon</translation>
 <translation id="7026338066939101231">Verminder</translation>
@@ -612,6 +625,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7842569679327885685">Waarskuwing: Eksperimentele kenmerk</translation>
 <translation id="7846634333498149051">Sleutelbord</translation>
 <translation id="7868900307798234037">Ontsluit met vingerafdruk</translation>
+<translation id="7872786842639831132">Af</translation>
 <translation id="7886169021410746335">Verstel privaatheidinstellings</translation>
 <translation id="7886277072580235377">Jou internetsessie sal uitgevee word wanneer jy afmeld. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Stuur 'n e-pos</translation>
@@ -716,6 +730,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
 <translation id="885387440427703469">Skermkiekies is gedeaktiveer</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
+<translation id="8871580645200179206">Wissel Donkertema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8877788021141246043">Stel 'n onthounota</translation>
 <translation id="8878886163241303700">Brei skerm uit</translation>

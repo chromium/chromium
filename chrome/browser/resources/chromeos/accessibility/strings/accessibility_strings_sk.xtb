@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Prepínač</translation>
 <translation id="1299774449519412690">Svetlá nebeská modrá</translation>
 <translation id="1303806948938513162">Klepnutím štyrmi prstami prejdete do ponúk zariadenia ChromeVox</translation>
+<translation id="1313373992684326101">Prejsť na predchádzajúcu sekciu. Príklady zahrnujú stavový panel a spúšťač.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, výber prepínača položiek ponuky bol zrušený</translation>
 <translation id="1325946044405407859">Okrová</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> z <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Zvýšiť výšku hlasu</translation>
 <translation id="151784044608172266">Ďalšia veta</translation>
 <translation id="1524531499102321782">Braille – ďalší riadok</translation>
+<translation id="1542513807034338907">Posunúť na predchádzajúcu stránku</translation>
 <translation id="1546370775711804143">Panel posúvania</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1559739829547075274">Prejsť späť</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">predvolené</translation>
 <translation id="4772771694153161212">Text nie je podčiarknutý</translation>
+<translation id="4780458943471935919">Posunúť na ďalšiu stránku</translation>
 <translation id="4784215347943747396">Ovládajte zariadenie iba jedným alebo dvoma prepínačmi</translation>
 <translation id="4786285211967466855">Žiadny predchádzajúci nadpis prvej úrovne</translation>
 <translation id="4787577491510559358">Oznamovať formátovanie aktuálnej položky</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Zmeňte výšku hlasu pri vyslovovaní typov prvkov a citovaného, odstráneného a tučného textu, ako aj takého, ktorý je v zátvorkách alebo napísaný veľkými písmenami.</translation>
 <translation id="7491962110804786152">karta</translation>
+<translation id="7492497529767769458">Prejsť na ďalšiu sekciu. Príklady zahrnujú stavový panel a spúšťač.</translation>
 <translation id="7505149250476994901">Povedať pred písmenom „veľké“</translation>
 <translation id="7518543783849163354">Ak chcete ChromeVox dočasne zastaviť, stlačte kláves Ctrl.</translation>
 <translation id="7533226154149229506">Svetlá žltá</translation>

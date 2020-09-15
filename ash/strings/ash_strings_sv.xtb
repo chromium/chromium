@@ -48,6 +48,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
+<translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">En skärmdump har tagits och sparats i Urklipp</translation>
@@ -65,6 +66,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1550523713251050646">Klicka här för fler alternativ</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
+<translation id="1611993646327628135">På</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1667964833127753507">I det neutrala färgläget ersätts färger från bakgrunden med en uppsättning ljusa eller mörka nyanser i neutrala toner.</translation>
@@ -79,6 +81,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1761222317188459878">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Rulla åt höger</translation>
 <translation id="1782199038061388045">Översätt</translation>
+<translation id="1787955149152357925">Av</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="1812997170047690955">Vad visas på skärmen?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
 <translation id="3087734570205094154">Nederst</translation>
+<translation id="3090989381251959936">Aktivera och inaktivera <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Flytta muspekaren</translation>
 <translation id="3098580329624789136"><ph name="INTENT" /> <ph name="QUERY" /></translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3371140690572404006">USB-C-enhet (främre porten på högra sidan)</translation>
 <translation id="3386978599540877378">helskärmsförstoraren</translation>
 <translation id="3400357268283240774">Ytterligare inställningar</translation>
+<translation id="3410336247007142655">Visa inställningarna för mörkt tema</translation>
 <translation id="3413817803639110246">Det finns inget att se här ännu</translation>
 <translation id="3428447136709161042">Koppla från <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Återgå genom att svepa från höger</translation>
@@ -326,6 +331,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4379531060876907730">Här är dina verktyg för e-penna</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4430019312045809116">Volym</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
@@ -345,6 +351,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4570957409596482333">Knappen Textuppläsning</translation>
 <translation id="4577274620589681794">Tiden är ute · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
+<translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
@@ -387,6 +394,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
+<translation id="5208059991603368177">På</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
@@ -398,6 +406,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
 <translation id="5314219114274263156">En skärminspelning har tagits</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
+<translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5379115545237091094">För många försök</translation>
 <translation id="5397578532367286026">Användning och historik för den här användaren kan granskas av den ansvarige (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
 <translation id="5400461572260843123">Snabbinställningar, tryck på sök + vänster för att komma åt aviseringscentret.</translation>
@@ -434,6 +443,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5769373120130404283">Sekretesskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5790085346892983794">Klart</translation>
+<translation id="579415080077680903">Ljudlös</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Av</translation>
@@ -444,6 +454,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Mikrofonen är av.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> är på.</translation>
 <translation id="5947494881799873997">Återgå</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
 <translation id="5957083217255311415">Mobildata har inaktiverats.</translation>
@@ -468,6 +479,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
 <translation id="6164005077879661055">Alla filer och lokala data som är kopplade till den hanterade användaren tas bort permanent när den hanterade användaren tas bort. Besökta webbplatser och inställningar för den hanterade användaren kan fortfarande vara synliga för den som hanterar användaren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
+<translation id="6192859646269780503">Hitta telefonen</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +551,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="698231206551913481">Alla filer inklusive lokal data som tillhör den här användaren tas bort permanent när användaren tas bort.</translation>
 <translation id="7007983414944123363">Det gick inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
+<translation id="7013005189539051442">Aktivera surfzon</translation>
 <translation id="7015766095477679451">Prova igen klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Anslut <ph name="DEVICE_NAME" /> med mobilen</translation>
 <translation id="7026338066939101231">Minska</translation>
@@ -611,6 +624,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7842569679327885685">Varning: Experimentfunktion</translation>
 <translation id="7846634333498149051">Tangentbord</translation>
 <translation id="7868900307798234037">Låser upp med fingeravtryck</translation>
+<translation id="7872786842639831132">Av</translation>
 <translation id="7886169021410746335">Ändra sekretessinställningarna</translation>
 <translation id="7886277072580235377">Internetsessionen rensas när du loggar ut. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Skicka e-post</translation>
@@ -715,6 +729,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="885387440427703469">Skärmbilder/skärminspelningar har inaktiverats</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
+<translation id="8871580645200179206">Aktivera och inaktivera mörkt tema. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8877788021141246043">Ställ in en påminnelse</translation>
 <translation id="8878886163241303700">Utökad skärm</translation>

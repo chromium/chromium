@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Η συσκευή σας μπορεί να ξεκλειδωθεί με το Smart Lock. Πατήστε Enter για ξεκλείδωμα.</translation>
 <translation id="1361164813881551742">Μη αυτόματη προσθήκη</translation>
 <translation id="1361655923249334273">Δεν χρησιμοποιείται</translation>
-<translation id="1361707011052629095">Συσκευές που βρίσκονται κοντά σας όταν η Κοινοποίηση κοντά είναι ενεργοποιημένη.</translation>
 <translation id="1361872463926621533">Αναπαραγωγή ήχου κατά την εκκίνηση</translation>
 <translation id="1362865166188278099">Μηχανικό πρόβλημα. Έλεγχος εκτυπωτή</translation>
 <translation id="1363585519747660921">Ο εκτυπωτής USB χρειάζεται διαμόρφωση</translation>
@@ -1476,6 +1475,7 @@
 <translation id="2731700343119398978">Περιμένετε…</translation>
 <translation id="2731710757838467317">Δημιουργία του χρήστη υπό επίβλεψη. Η διαδικασία ενδέχεται να διαρκέσει λίγη ώρα.</translation>
 <translation id="2731971182069536520">Την επόμενη φορά που θα επανεκκινήσετε τη συσκευή σας, ο διαχειριστής σας θα εκτελέσει για μία μόνο φορά μια ενημέρωση που θα διαγράψει τα τοπικά δεδομένα σας.</translation>
+<translation id="2732134891301408122">Επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2734760316755174687">Θα γίνει επίσης επαναφορά των ιστοτόπων της ομάδας <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Χρονοδιάγραμμα</translation>
 <translation id="2737363922397526254">Σύμπτυξη...</translation>
@@ -2840,7 +2840,7 @@
 <translation id="4390000551125140321">{0,plural, =1{Ανώνυμη περιήγηση}other{# ανοικτά παράθυρα για ανώνυμη περιήγηση}}</translation>
 <translation id="439266289085815679">Η διαμόρφωση Bluetooth ελέγχεται από τον χρήστη <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Επεξεργαστείτε το αρχείο διαμόρφωσης.</translation>
-<translation id="4393691030048716353">Ο τομέας <ph name="DOMAIN" /> απενεργοποίησε τον εντοπισμό και διόρθωση σφαλμάτων ADB. Όταν επανεκκινήσετε τη συσκευή <ph name="DEVICE_TYPE" />, δεν θα μπορείτε να φορτώσετε παράπλευρα εφαρμογές.</translation>
+<translation id="4393691030048716353">Ο τομέας <ph name="DOMAIN" /> απενεργοποίησε τον εντοπισμό και τη διόρθωση σφαλμάτων ADB. Όταν επανεκκινήσετε τη συσκευή <ph name="DEVICE_TYPE" />, δεν θα επιτρέπεται η παράπλευρη φόρτωση εφαρμογών.</translation>
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="439817266247065935">Η συσκευή σας δεν απενεργοποιήθηκε σωστά. Επανεκκινήστε το Linux για να χρησιμοποιήσετε το Linux.</translation>
 <translation id="4400367121200150367">Οι ιστότοποι που δεν αποθηκεύουν ποτέ κωδικούς πρόσβασης θα εμφανίζονται εδώ</translation>
@@ -3123,6 +3123,7 @@
 <translation id="4735803855089279419">Το σύστημα δεν κατάφερε να προσδιορίσει αναγνωριστικά συσκευής για αυτήν τη συσκευή.</translation>
 <translation id="4736292055110123391">Συγχρονίστε τους σελιδοδείκτες, τους κωδικούς πρόσβασης, το ιστορικό σας και άλλο περιεχόμενο σε όλες τις συσκευές σας</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
+<translation id="473936925429402449">Επιλεγμένο, επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Εισιτήρια</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Μάθετε πώς μπορείτε να ενημερώνετε τις εφαρμογές<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Κατάργηση σίγασης ιστοτόπου}other{Κατάργηση σίγασης ιστοτόπων}}</translation>
@@ -4145,6 +4146,7 @@
 <translation id="6011449291337289699">Εκκαθάριση δεδομένων ιστότοπου</translation>
 <translation id="6015266928248016057">Μη έγκυρος κωδικός PUK. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="6015796118275082299">Έτος</translation>
+<translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
 <translation id="6016972670657536680">Επιλέξτε το κουμπί γλώσσας και πληκτρολογίου. Η τρέχουσα επιλεγμένη γλώσσα είναι τα <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
@@ -5710,7 +5712,6 @@
 <translation id="7918257978052780342">Εγγραφή</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> δ.</translation>
 <translation id="7920363873148656176">Το <ph name="ORIGIN" /> μπορεί να προβάλλει το <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Κανένας εκτός εάν ανοίξετε την Κοινοποίηση κοντά.</translation>
 <translation id="7924358170328001543">Σφάλμα κατά την προώθηση θύρας</translation>
 <translation id="792514962475806987">Επίπεδο εστίασης σε παράθυρο:</translation>
 <translation id="7925247922861151263">Ο έλεγχος ΑΑΑ απέτυχε</translation>
@@ -6165,7 +6166,7 @@
 <translation id="8467326454809944210">Επιλογή άλλης γλώσσας</translation>
 <translation id="8470214316007448308">Άλλα άτομα</translation>
 <translation id="8470513973197838199">Αποθηκευμένοι κωδικοί πρόσβασης για το <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232">Ο τομέας <ph name="DOMAIN" /> απενεργοποιεί τον εντοπισμό και διόρθωση σφαλμάτων ADB. Αυτό θα επαναφέρει τη συσκευή σας <ph name="DEVICE_TYPE" /> σε 24 ώρες. Δημιουργήστε αντίγραφα ασφαλείας των αρχείων που θέλετε να κρατήσετε.</translation>
+<translation id="8471256130228705232">Ο τομέας <ph name="DOMAIN" /> απενεργοποιεί τον εντοπισμό και τη διόρθωση σφαλμάτων ADB. Αυτό θα επαναφέρει τη συσκευή σας <ph name="DEVICE_TYPE" /> σε 24 ώρες. Δημιουργήστε αντίγραφα ασφαλείας των αρχείων που θέλετε να κρατήσετε.</translation>
 <translation id="8472623782143987204">υποστηριζόμενο από υλικό</translation>
 <translation id="8473863474539038330">Διευθύνσεις και άλλα</translation>
 <translation id="8475313423285172237">Κάποιο άλλο πρόγραμμα στον υπολογιστή σας πρόσθεσε μια επέκταση, η οποία ενδέχεται να αλλάξει τον τρόπο λειτουργίας του Chrome.</translation>
@@ -6450,6 +6451,7 @@
 <translation id="8811862054141704416">Πρόσβαση μικροφώνου Crostini</translation>
 <translation id="8812552797690463522">Γίνεται κοινή χρήση αυτού του δικτύου με εσάς.</translation>
 <translation id="8812593354822910461">Επίσης, διαγράψτε δεδομένα περιήγησης (<ph name="URL" />) τα οποία θα σας αποσυνδέσουν από τον τομέα <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">Υπενθύμιση αργότερα</translation>
 <translation id="8813698869395535039">Δεν είναι δυνατή η σύνδεση στο <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Ζήτα από τον γονέα σου να εγκρίνει την επέκταση "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="8813969267212093033">Το κείμενο συστήματος εμφανίζεται σε αυτήν τη γλώσσα</translation>
@@ -6480,6 +6482,7 @@
 <translation id="8838601485495657486">Αδιαφανές</translation>
 <translation id="8838770651474809439">Χάμπουργκερ</translation>
 <translation id="883911313571074303">Σχολιασμός εικόνας</translation>
+<translation id="8841843049738266382">Ανάγνωση και αλλαγή χρηστών λίστας επιτρεπομένων</translation>
 <translation id="8842594465773264717">Διαγραφή αυτού του δακτυλικού αποτυπώματος</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8846132060409673887">Διαβάστε τις πληροφορίες κατασκευαστή και μοντέλου αυτού του υπολογιστή</translation>

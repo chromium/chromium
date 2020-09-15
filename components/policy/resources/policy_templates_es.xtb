@@ -2224,6 +2224,11 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Si no se le asigna ningún valor, el resaltado del símbolo de intercalación se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4183229833636799228">Configuración predeterminada de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="4192388905594723944">URL para validar el token de autenticación de clientes de acceso remoto</translation>
+<translation id="4196466220333757818">Esta política especifica las extensiones que pueden utilizar la función de <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> <ph name="CHALLENGE_USER_KEY_FUNCTION" /> para la atestación remota. Las extensiones se deben añadir a esta lista para utilizar la API.
+
+          Si una extensión no está en la lista o no se ha configurado la lista, la llamada a la API devolverá un código de error.
+
+          Esta política está obsoleta. Usa la política <ph name="ATTESTATION_EXTENSION_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="4203389617541558220">Limita el tiempo de actividad del dispositivo mediante la programación de reinicios automáticos.
 
       Si se establece esta política, especifica el tiempo de actividad del dispositivo que debe transcurrir para que se programe un reinicio automático.
@@ -3245,6 +3250,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="5584132346604748282">Controlar los servicios de ubicación de Google de Android</translation>
+<translation id="5585568978223984334">Esta política especifica las extensiones que pueden usar las funciones de <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> para la atestación remota. Las extensiones se deben añadir a esta lista para usar la API.
+
+          Si la lista no se ha configurado o si una extensión no está incluida en ella, aparecerá un código de error en la llamada a la API.</translation>
 <translation id="5586942249556966598">No hacer nada</translation>
 <translation id="5590494712401018042">Especifica el porcentaje del retraso de atenuación de pantalla cuando el dispositivo se encuentra en el modo de presentación.
 

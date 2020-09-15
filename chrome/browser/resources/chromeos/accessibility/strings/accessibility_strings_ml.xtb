@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">ടോഗിൾ ബട്ടൺ</translation>
 <translation id="1299774449519412690">ഇളം ആകാശനീല</translation>
 <translation id="1303806948938513162">ChromeVox മെനു നൽകാൻ 4 വിരലുകൾ ഉപയോഗിച്ച് ടാപ്പ് ചെയ്യുക</translation>
+<translation id="1313373992684326101">മുമ്പത്തെ വിഭാഗത്തിലേക്ക് നീങ്ങുക. സ്‌റ്റാറ്റസ് ട്രേ, ലോഞ്ചർ എന്നിവ ഉദാഹരണങ്ങളിൽപ്പെടുന്നു.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, മെനു ഇനത്തിന്റെ റേഡിയോ ബട്ടണ്‍ തിരഞ്ഞെടുത്തത് മാറ്റി</translation>
 <translation id="1325946044405407859">തവിട്ടുനിറം</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">പിച്ച് വർദ്ധിപ്പിക്കുക</translation>
 <translation id="151784044608172266">അടുത്ത വാക്യം</translation>
 <translation id="1524531499102321782">അടുത്ത ബ്രെയ്‌ലി വരി</translation>
+<translation id="1542513807034338907">മുമ്പത്തെ പേജിലേക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="1546370775711804143">സ്‌ക്രോൾ ബാർ</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="1559739829547075274">പിന്നോട്ട് നാവിഗേറ്റ് ചെയ്യുക</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">വീഡിയോ</translation>
 <translation id="4764692524839457597">ഡിഫോൾട്ട്</translation>
 <translation id="4772771694153161212">അടിവര ഇല്ല</translation>
+<translation id="4780458943471935919">അടുത്ത പേജിലേക്ക് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="4784215347943747396">ഒന്നോ രണ്ടോ സ്വിച്ച് ഉപയോഗിച്ച് ഉപകരണം നിയന്ത്രിക്കുക</translation>
 <translation id="4786285211967466855">മുൻ നില 1 ശീർഷകം ഒന്നുമില്ല</translation>
 <translation id="4787577491510559358">നിലവിലെ ഇനത്തിന്റെ ഫോർമാറ്റ് ചെയ്യൽ അറിയിക്കുക</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ഘടകത്തിന്റെ തരങ്ങളും ഉദ്ധരിച്ചതോ ഇല്ലാതാക്കിയതോ ബോൾഡ് ചെയ്‌തതോ ബ്രാക്കറ്റിനുള്ളിലെയോ വലിയക്ഷരത്തിലുള്ളതോ ആയ ടെക്‌സ്‌റ്റ് പറയുമ്പോൾ പിച്ച് മാറ്റുക.</translation>
 <translation id="7491962110804786152">ടാബ്</translation>
+<translation id="7492497529767769458">അടുത്ത വിഭാഗത്തിലേക്ക് നീങ്ങുക. സ്‌റ്റാറ്റസ് ട്രേ, ലോഞ്ചർ എന്നിവ ഉദാഹരണങ്ങളിൽപ്പെടുന്നു.</translation>
 <translation id="7505149250476994901">അക്ഷരം പറയുന്നതിന് മുമ്പ് "വലിയക്ഷരം" എന്ന് പറയുക</translation>
 <translation id="7518543783849163354">സംസാരിക്കുന്നതിൽ നിന്ന് ChromeVox-നെ തൽക്കാലം നിർത്താൻ, കൺട്രോൾ കീ അമർത്തുക.</translation>
 <translation id="7533226154149229506">ഇളം ഗോൾഡൻ റോഡ് മഞ്ഞ</translation>

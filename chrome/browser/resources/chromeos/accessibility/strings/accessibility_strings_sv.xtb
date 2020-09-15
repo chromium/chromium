@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">På/av-knapp</translation>
 <translation id="1299774449519412690">Ljust himmelsblå</translation>
 <translation id="1303806948938513162">Öppna ChromeVox-menyerna genom att trycka med fyra fingrar.</translation>
+<translation id="1313373992684326101">Navigera till föregående avsnitt, till exempel statusfältet eller översikten.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menyalternativ med omarkerad alternativknapp</translation>
 <translation id="1325946044405407859">Mellanbrun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> av <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Öka tonhöjden</translation>
 <translation id="151784044608172266">Nästa mening</translation>
 <translation id="1524531499102321782">Punktskrift på nästa rad</translation>
+<translation id="1542513807034338907">Scrolla till föregående sida</translation>
 <translation id="1546370775711804143">Rullningslist</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1559739829547075274">Navigera bakåt</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">standard</translation>
 <translation id="4772771694153161212">Inte understruken</translation>
+<translation id="4780458943471935919">Scrolla till nästa sida</translation>
 <translation id="4784215347943747396">Styr enheten med bara en eller två brytare</translation>
 <translation id="4786285211967466855">Det finns ingen föregående rubrik på nivå 1</translation>
 <translation id="4787577491510559358">Läs upp formatering för det aktuella objektet</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">lösenordsfält</translation>
 <translation id="7484805699335881122">Ändra tonhöjd när elementtyper och text i fetstil, inom parentes, skriven med versaler, citeras eller raderas läses upp.</translation>
 <translation id="7491962110804786152">tabb</translation>
+<translation id="7492497529767769458">Navigera till nästa avsnitt, till exempel statusfältet eller översikten.</translation>
 <translation id="7505149250476994901">Säg ”stort” före bokstaven</translation>
 <translation id="7518543783849163354">Stoppa ChromeVox från att tala genom att trycka på Ctrl-tangenten.</translation>
 <translation id="7533226154149229506">Ljust gullrisgul</translation>

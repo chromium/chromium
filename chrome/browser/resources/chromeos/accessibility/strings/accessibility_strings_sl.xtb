@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Preklopni gumb</translation>
 <translation id="1299774449519412690">Svetlo nebesno modra</translation>
 <translation id="1303806948938513162">Dotaknite se s štirimi prsti, če želite odpreti menije za ChromeVox</translation>
+<translation id="1313373992684326101">Premik na prejšnji razdelek. Med primeri sta vrstica stanja in zaganjalnik.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, izbirni gumb menijskega elementa ni izbran</translation>
 <translation id="1325946044405407859">Rumenorjava</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> od <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Povečanje višine tona</translation>
 <translation id="151784044608172266">Naslednji stavek</translation>
 <translation id="1524531499102321782">Braillova pisava – naslednja vrstica</translation>
+<translation id="1542513807034338907">Pomik na prejšnjo stran</translation>
 <translation id="1546370775711804143">Drsni trak</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1559739829547075274">Pomik nazaj</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">privzeto</translation>
 <translation id="4772771694153161212">Ni podčrtano</translation>
+<translation id="4780458943471935919">Pomik na naslednjo stran</translation>
 <translation id="4784215347943747396">Nadziranje naprave s samo enim ali dvema stikaloma</translation>
 <translation id="4786285211967466855">Ni prejšnjega naslova na ravni 1</translation>
 <translation id="4787577491510559358">Najava oblikovanja za trenutni element</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">gesel</translation>
 <translation id="7484805699335881122">Spremeni višino tona pri izgovarjanju vrst elementov in citiranega, izbrisanega ali krepkega besedila oziroma besedila v oklepajih ali besedila z veliko začetnico.</translation>
 <translation id="7491962110804786152">tabulatorka</translation>
+<translation id="7492497529767769458">Premik na naslednji razdelek. Med primeri sta vrstica stanja in zaganjalnik.</translation>
 <translation id="7505149250476994901">Pred črko izgovorite »cap« (velika črka)</translation>
 <translation id="7518543783849163354">Če želite začasno ustaviti izgovarjavo ChromeVoxa, pritisnite tipko Control.</translation>
 <translation id="7533226154149229506">Svetla zlatorumena</translation>

@@ -48,6 +48,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1391102559483454063">Sees</translation>
+<translation id="1407069428457324124">Tume teema</translation>
 <translation id="1419738280318246476">Märguandetoimingu tegemiseks avage seade</translation>
 <translation id="1420408895951708260">Öövalguse lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Ekraanipilt jäädvustati ja salvestati lõikelauale</translation>
@@ -65,6 +66,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1550523713251050646">Klõpsake lisavalikute nägemiseks</translation>
 <translation id="1570871743947603115">Lülitab Bluetoothi sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
+<translation id="1611993646327628135">Sees</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
 <translation id="1667964833127753507">Neutraalne värvirežiim ei kasuta taustapildist tuletatud värve, vaid asendab need neutraalsete heledate või tumedate toonidega.</translation>
@@ -79,6 +81,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1761222317188459878">Lülitab võrguühenduse sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Keri paremale</translation>
 <translation id="1782199038061388045">tõlge</translation>
+<translation id="1787955149152357925">Väljas</translation>
 <translation id="181103072419391116">Signaali tugevus: <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="1812997170047690955">Mis on minu ekraanil?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3077734595579995578">tõstuklahv</translation>
 <translation id="3081696990447829002">Laienda menüü</translation>
 <translation id="3087734570205094154">Alaserv</translation>
+<translation id="3090989381251959936">Vahetage funktsiooni <ph name="FEATURE_NAME" /> olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Kursori liigutamine</translation>
 <translation id="3098580329624789136">Hankige päringu „<ph name="QUERY" />” <ph name="INTENT" /></translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3371140690572404006">C-tüüpi USB-seade (eesmine parempoolne port)</translation>
 <translation id="3386978599540877378">täisekraani luup</translation>
 <translation id="3400357268283240774">Lisaseaded</translation>
+<translation id="3410336247007142655">Kuva tumeda teema seaded</translation>
 <translation id="3413817803639110246">Veel ei ole midagi kuvada</translation>
 <translation id="3428447136709161042">Katkesta ühendus võrguga <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Tagasiliikumiseks pühkige paremalt vasakule</translation>
@@ -327,6 +332,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4379531060876907730">Need on teie elektronpliiatsi tööriistad</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
 <translation id="4421231901400348175">Ekraani juhtimise jagamine isikuga <ph name="HELPER_NAME" /> kaugabi kaudu.</translation>
 <translation id="4430019312045809116">Helitugevus</translation>
 <translation id="4450893287417543264">Ära kuva uuesti</translation>
@@ -346,6 +352,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4570957409596482333">Nupp Vali ja kuula</translation>
 <translation id="4577274620589681794">Aeg on läbi · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
+<translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4623167406982293031">Kinnitage konto</translation>
 <translation id="4628757576491864469">Seadmed</translation>
 <translation id="4659419629803378708">ChromeVox on lubatud</translation>
@@ -388,6 +395,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
+<translation id="5208059991603368177">Sees</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
@@ -399,6 +407,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5313326810920013265">Bluetoothi seaded</translation>
 <translation id="5314219114274263156">Jäädvustati ekraanisalvestis</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
+<translation id="5352250171825660495">Tume teema on sisse lülitatud</translation>
 <translation id="5379115545237091094">Liiga palju katseid</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
 <translation id="5400461572260843123">Kiirseaded, märguandekeskusele juurdepääsemiseks vajutage otsinguklahvi ja vasaknoolt.</translation>
@@ -435,6 +444,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5769373120130404283">Privaatsuskuva</translation>
 <translation id="5777841717266010279">Kas peatada ekraani jagamine?</translation>
 <translation id="5790085346892983794">Õnnestus</translation>
+<translation id="579415080077680903">Vaigistus</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Katkesta <ph name="ROUTE_TITLE" /> asukohas <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -445,6 +455,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sisse lülitatud.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
 <translation id="5957083217255311415">Mobiilne andmeside on välja lülitatud.</translation>
@@ -469,6 +480,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="615957422585914272">Ekraanil kuvatava klaviatuuri kuvamine</translation>
 <translation id="6164005077879661055">Kõik jälgitava kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui jälgitav kasutaja eemaldatakse. Selle jälgitava kasutaja külastatud veebisaite ja seadeid näeb haldur endiselt aadressil <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Lisateave</translation>
+<translation id="6192859646269780503">Telefoni asukoht</translation>
 <translation id="622484624075952240">Alla</translation>
 <translation id="6236290670123303279">Halda seadeid</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -540,6 +552,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="698231206551913481">Kõik selle kasutajaga seotud failid ja kohalikud andmed kustutatakse jäädavalt kohe, kui see kasutaja eemaldatakse.</translation>
 <translation id="7007983414944123363">Teie PIN-koodi või parooli ei saanud kinnitada. Proovige uuesti.</translation>
+<translation id="7013005189539051442">Kuumkoha lubamine</translation>
 <translation id="7015766095477679451">Tulge tagasi kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Ühendage seade <ph name="DEVICE_NAME" /> oma telefoniga</translation>
 <translation id="7026338066939101231">Vähenemine</translation>
@@ -612,6 +625,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7842569679327885685">Hoiatus: katseline funktsioon</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7868900307798234037">Sõrmejäljega avamine</translation>
+<translation id="7872786842639831132">Väljas</translation>
 <translation id="7886169021410746335">Privaatsusseadete kohandamine</translation>
 <translation id="7886277072580235377">Teie Interneti-seanss kustutatakse väljalogimisel. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Saada meil</translation>
@@ -716,6 +730,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8853703225951107899">Teie PIN-koodi või parooli ei saanud ikka kinnitada. Märkus. Kui muutsite hiljuti parooli, siis kasutage vana parooli. Uus parool rakendatakse väljalogimisel.</translation>
 <translation id="885387440427703469">Ekraanikuva jäädvustamine on keelatud</translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
+<translation id="8871580645200179206">Vahetage tumeda teema olekut. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8877788021141246043">Määra meeldetuletus</translation>
 <translation id="8878886163241303700">Ekraani laiendamine</translation>

@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">nota finale</translation>
 <translation id="1281252709823657822">finestra di dialogo</translation>
 <translation id="1306460908038601864">Off</translation>
+<translation id="1311894908970423688">Il valore deve essere <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">ringraziamenti</translation>
 <translation id="1342835525016946179">articolo</translation>
 <translation id="1359897965706325498">banner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="668171684555832681">Altro...</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6709093583001123835">Il valore deve essere <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Scarsa qualità di riproduzione</translation>
 <translation id="6755330956360078551">descrizione comando</translation>
 <translation id="6790428901817661496">Play</translation>

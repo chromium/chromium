@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Seu dispositivo pode ser desbloqueado com o Smart Lock. Pressione "Enter" para desbloquear.</translation>
 <translation id="1361164813881551742">Adicionar manualmente</translation>
 <translation id="1361655923249334273">Não utilizado</translation>
-<translation id="1361707011052629095">Dispositivos perto de você quando o "Compartilhar por proximidade" estiver aberto</translation>
 <translation id="1361872463926621533">Reproduzir som na inicialização</translation>
 <translation id="1362865166188278099">Problema mecânico. Verificar impressora</translation>
 <translation id="1363585519747660921">A impressora USB precisa ser configurada</translation>
@@ -1476,6 +1475,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731710757838467317">Criando seu usuário supervisionado. Isso pode demorar alguns instantes.</translation>
 <translation id="2731971182069536520">Na próxima vez que você reiniciar o dispositivo, o administrador fará uma atualização única que excluirá seus dados locais.</translation>
+<translation id="2732134891301408122">Conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2734760316755174687">Os sites de <ph name="SITE_GROUP_NAME" /> também serão redefinidos.</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Recolher...</translation>
@@ -3124,6 +3124,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4735803855089279419">Falha do sistema ao determinar os identificadores do dispositivo.</translation>
 <translation id="4736292055110123391">Sincronize favoritos, senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="473775607612524610">Atualizar</translation>
+<translation id="473936925429402449">Selecionado, conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="4739639199548674512">Tíquetes</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicativos<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
@@ -4146,6 +4147,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6011449291337289699">Limpar dados de sites</translation>
 <translation id="6015266928248016057">PUK inválida. Tentativas restantes: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">Ano</translation>
+<translation id="6016178549409952427">Navegar para o conteúdo extra <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar powerwash com retorno à versão anterior</translation>
 <translation id="6016972670657536680">Botão Selecionar idioma e teclado. O idioma selecionado no momento é o <ph name="LANGUAGE" />.</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -5712,7 +5714,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7918257978052780342">Inscrever-se</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pode ver <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Ninguém, a menos que você abra o "Compartilhar por proximidade"</translation>
 <translation id="7924358170328001543">Erro ao encaminhar a porta</translation>
 <translation id="792514962475806987">Nível de zoom da lupa em área fixa:</translation>
 <translation id="7925247922861151263">Falha ao verificar AAA</translation>
@@ -6454,6 +6455,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8811862054141704416">Acesso ao microfone no Crostini</translation>
 <translation id="8812552797690463522">Esta rede é compartilhada com você.</translation>
 <translation id="8812593354822910461">Limpar também os dados de navegação (<ph name="URL" />). Sua conta poderá ser desconectada de <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8813698869395535039">Não é possível fazer login em <ph name="USERNAME" /></translation>
 <translation id="8813872945700551674">Peça para seu pai/mãe aprovar a extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="8813969267212093033">O texto do sistema é exibido nesse idioma</translation>
@@ -6484,6 +6486,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hambúrger</translation>
 <translation id="883911313571074303">Nota na imagem</translation>
+<translation id="8841843049738266382">Ler e mudar usuários na lista de permissões</translation>
 <translation id="8842594465773264717">Excluir essa impressão digital</translation>
 <translation id="8845001906332463065">Ajuda</translation>
 <translation id="8846132060409673887">Ler as informações sobre o fabricante e modelo deste computador</translation>

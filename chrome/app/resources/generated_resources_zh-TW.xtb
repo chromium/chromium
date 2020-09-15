@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
 <translation id="1361655923249334273">未使用</translation>
-<translation id="1361707011052629095">開啟鄰近分享功能的附近裝置</translation>
 <translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
@@ -2838,7 +2837,7 @@
 <translation id="4390000551125140321">{0,plural, =1{無痕模式}other{已開啟 # 個無痕式視窗}}</translation>
 <translation id="439266289085815679">藍牙設定由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="4392896746540753732">編輯設定檔</translation>
-<translation id="4393691030048716353"><ph name="DOMAIN" /> 已停用 ADB 偵錯。你重新啟動 <ph name="DEVICE_TYPE" /> 後，將無法測載應用程式。</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，你將無法側載應用程式。</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="439817266247065935">你的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="4400367121200150367">一律不儲存密碼的網站會顯示在這裡</translation>
@@ -5707,7 +5706,6 @@
 <translation id="7918257978052780342">註冊</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以檢視「<ph name="FILENAME" />」</translation>
-<translation id="7924080089023843180">除非你開啟鄰近分享功能，否則沒有人可與你分享內容</translation>
 <translation id="7924358170328001543">轉送通訊埠時發生錯誤</translation>
 <translation id="792514962475806987">停駐縮放比例：</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
@@ -6161,7 +6159,7 @@
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8470214316007448308">其他人</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 側載。這會讓系統在 24 小時後重設你的 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> 正在停用 ADB 偵錯功能。這會讓系統在 24 小時後重設你的 <ph name="DEVICE_TYPE" />。請備份你要保留的檔案。</translation>
 <translation id="8472623782143987204">硬體支援</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8475313423285172237">電腦中其他程式所新增的擴充功能可能會變更 Chrome 的運作方式。</translation>

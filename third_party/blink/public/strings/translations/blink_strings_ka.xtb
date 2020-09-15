@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">საბოლოო შენიშვნა</translation>
 <translation id="1281252709823657822">დიალოგი</translation>
 <translation id="1306460908038601864">გამორთული</translation>
+<translation id="1311894908970423688">მნიშვნელობა უნდა იყოს <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">შემქმნელები</translation>
 <translation id="1342835525016946179">არტიკლი</translation>
 <translation id="1359897965706325498">ბანერი</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="668171684555832681">სხვა…</translation>
 <translation id="6692633176391053278">სტეპერი</translation>
+<translation id="6709093583001123835">მნიშვნელობა უნდა იყოს <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">დაკვრის ხარისხი ცუდია</translation>
 <translation id="6755330956360078551">მინიშნება</translation>
 <translation id="6790428901817661496">დაკვრა</translation>

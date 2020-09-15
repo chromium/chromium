@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Ваше устройство можно разблокировать с помощью Smart Lock. Для этого нажмите Ввод.</translation>
 <translation id="1361164813881551742">Добавить вручную</translation>
 <translation id="1361655923249334273">Не используется</translation>
-<translation id="1361707011052629095">Устройства, находящиеся поблизости, когда у вас открыто окно "Обмен с окружением"</translation>
 <translation id="1361872463926621533">Воспроизводить звук при запуске</translation>
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
@@ -5707,7 +5706,6 @@
 <translation id="7918257978052780342">Зарегистрироваться</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>
-<translation id="7924080089023843180">Никто, если окно "Обмен с окружением" закрыто</translation>
 <translation id="7924358170328001543">При переадресации порта произошла ошибка.</translation>
 <translation id="792514962475806987">Масштаб закрепленной лупы:</translation>
 <translation id="7925247922861151263">Сбой при проверке AAA</translation>

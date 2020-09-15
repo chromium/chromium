@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Botón activar/desactivar</translation>
 <translation id="1299774449519412690">Azul cielo claro</translation>
 <translation id="1303806948938513162">Toca con 4 dedos para acceder a los menús de ChromeVox</translation>
+<translation id="1313373992684326101">Ir a la sección anterior. Algunos ejemplos son la bandeja de estado y el menú de aplicaciones.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botón de selección de opción de menú no seleccionado</translation>
 <translation id="1325946044405407859">Bronce</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Sube el tono</translation>
 <translation id="151784044608172266">Frase siguiente</translation>
 <translation id="1524531499102321782">Línea braille posterior</translation>
+<translation id="1542513807034338907">Desplazarte a la página anterior</translation>
 <translation id="1546370775711804143">Barra de desplazamiento</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559739829547075274">Retrocede</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4764692524839457597">opción predeterminada</translation>
 <translation id="4772771694153161212">Sin subrayado</translation>
+<translation id="4780458943471935919">Desplazarse a la página siguiente</translation>
 <translation id="4784215347943747396">Controla el dispositivo con solo 1 o 2 interruptores</translation>
 <translation id="4786285211967466855">No hay ningún título de nivel 1 anterior</translation>
 <translation id="4787577491510559358">Indica el formato del elemento actual</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Cambiar el tono al leer los tipos de elementos y el texto entrecomillado, eliminado, en negrita, entre paréntesis o en mayúsculas.</translation>
 <translation id="7491962110804786152">tabulador</translation>
+<translation id="7492497529767769458">Ir a la sección siguiente. Algunos ejemplos son la bandeja de estado y el menú de aplicaciones.</translation>
 <translation id="7505149250476994901">Di "mayúscula" después de la letra</translation>
 <translation id="7518543783849163354">Para que ChromeVox deje de hablar temporalmente, pulsa la tecla Control.</translation>
 <translation id="7533226154149229506">Amarillo dorado claro</translation>

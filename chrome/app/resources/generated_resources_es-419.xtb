@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
 <translation id="1361655923249334273">No utilizado</translation>
-<translation id="1361707011052629095">Dispositivos cerca de tu ubicación cuando la ventana de Compartir con Nearby está abierta</translation>
 <translation id="1361872463926621533">Reproducir sonidos en el inicio</translation>
 <translation id="1362865166188278099">Hubo un problema mecánico. Verifica la impresora.</translation>
 <translation id="1363585519747660921">La impresora USB debe configurarse</translation>
@@ -5706,7 +5705,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7918257978052780342">Inscribir</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> puede ver <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Nadie, a menos que abras Compartir con Nearby</translation>
 <translation id="7924358170328001543">Se produjo un error al reenviar el puerto</translation>
 <translation id="792514962475806987">Nivel de zoom en vista acoplada:</translation>
 <translation id="7925247922861151263">Falló la verificación de AAA</translation>

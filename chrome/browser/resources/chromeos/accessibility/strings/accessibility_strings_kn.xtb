@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">ಟಾಗಲ್ ಬಟನ್</translation>
 <translation id="1299774449519412690">ತಿಳಿ ಆಕಾಶ ನೀಲಿ</translation>
 <translation id="1303806948938513162">ChromeVox ಮೆನುಗಳನ್ನು ಪ್ರವೇಶಿಸಲು 4 ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="1313373992684326101">ಹಿಂದಿನ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿ. ಉದಾಹರಣೆಗಳು ಸ್ಥಿತಿ ಟ್ರೇ ಮತ್ತು ಲಾಂಚರ್ ಅನ್ನು ಒಳಗೊಂಡಿವೆ.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ಮೆನು ಐಟಂ ರೇಡಿಯೋ ಬಟನ್ ಆಯ್ಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1325946044405407859">ಟ್ಯಾನ್</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> / <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">ಪಿಚ್ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="151784044608172266">ಮುಂದಿನ ವಾಕ್ಯ</translation>
 <translation id="1524531499102321782">ಬ್ರೈಲಿ ಮುಂದಿನ ಸಾಲು</translation>
+<translation id="1542513807034338907">ಹಿಂದಿನ ಪುಟಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="1546370775711804143">ಸ್ಕ್ರಾಲ್ ಪಟ್ಟಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1559739829547075274">ಹಿಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ವೀಡಿಯೊ</translation>
 <translation id="4764692524839457597">ಡಿಫಾಲ್ಟ್</translation>
 <translation id="4772771694153161212">ಅಂಡರ್‌ಲೈನ್ ಮಾಡಿಲ್ಲ</translation>
+<translation id="4780458943471935919">ಮುಂದಿನ ಪುಟಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4784215347943747396">ಕೇವಲ 1 ಅಥವಾ 2 ಸ್ವಿಚ್‌ಗಳನ್ನು ಹೊಂದಿರುವ ಸಾಧನವನ್ನು ನಿಯಂತ್ರಿಸಿ.</translation>
 <translation id="4786285211967466855">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 1 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="4787577491510559358">ಪ್ರಸ್ತುತ ಲೇಖನಕ್ಕಾಗಿ ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಅನ್ನು ಪ್ರಕಟಿಸಿ</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ಎಲಿಮೆಂಟ್ ಪ್ರಕಾರಗಳನ್ನು ಮಾತನಾಡುವಾಗ ಪಿಚ್ ಮತ್ತು ಉಲ್ಲೇಖಿಸಿದ, ಅಳಿಸಿದ, ಬೋಲ್ಡ್, ಆವರಣ ಅಥವಾ ದೊಡ್ಡಕ್ಷರ ಪಠ್ಯವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="7491962110804786152">ಟ್ಯಾಬ್</translation>
+<translation id="7492497529767769458">ಮುಂದಿನ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿ. ಉದಾಹರಣೆಗಳು ಸ್ಥಿತಿ ಟ್ರೇ ಮತ್ತು ಲಾಂಚರ್ ಅನ್ನು ಒಳಗೊಂಡಿವೆ.</translation>
 <translation id="7505149250476994901">ಅಕ್ಷರದ ಮೊದಲು "ದೊಡ್ಡಕ್ಷರ" ಎಂದು ಹೇಳಿ</translation>
 <translation id="7518543783849163354">ಮಾತನಾಡದಂತೆ ತಾತ್ಕಾಲಿಕವಾಗಿ ChromeVox ಅನ್ನು ನಿಲ್ಲಿಸಲು, Control ಕೀ ಒತ್ತಿ.</translation>
 <translation id="7533226154149229506">ತಿಳಿ ಗೋಲ್ಡನ್ ರಾಡ್ ಹಳದಿ</translation>

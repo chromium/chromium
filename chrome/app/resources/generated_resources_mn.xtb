@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Таны төхөөрөмжийн түгжээг Ухаалаг түгжээгээр тайлах боломжтой. Түгжээг тайлахын тулд Enter дээр дарна уу.</translation>
 <translation id="1361164813881551742">Гараар нэмэх</translation>
 <translation id="1361655923249334273">Ашиглагдаагүй</translation>
-<translation id="1361707011052629095">Ойролцоо хуваалцах онцлог нээлттэй байх үед таны ойролцоох төхөөрөмжүүд</translation>
 <translation id="1361872463926621533">Эхлүүлэхэд дуу тоглуулах</translation>
 <translation id="1362865166188278099">Механик асуудал. Хэвлэгчийг шалгана уу</translation>
 <translation id="1363585519747660921">USB хэвлэгчид тохируулга хийх шаардлагатай</translation>
@@ -5702,7 +5701,6 @@
 <translation id="7918257978052780342">Хамрагдах</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
-<translation id="7924080089023843180">Та Ойролцоо хуваалцах онцлогийг нээхгүй бол өөр хэн ч харахгүй</translation>
 <translation id="7924358170328001543">Порт дамжуулахад алдаа гарлаа</translation>
 <translation id="792514962475806987">Суурилуулсан томруулалтын түвшин:</translation>
 <translation id="7925247922861151263">AAA шалгалт амжилтгүй боллоо</translation>

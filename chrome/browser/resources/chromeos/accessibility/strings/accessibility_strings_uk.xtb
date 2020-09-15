@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Перемикач</translation>
 <translation id="1299774449519412690">Світлий небесно-блакитний</translation>
 <translation id="1303806948938513162">Торкніться 4 пальцями, щоб відкрити меню ChromeVox</translation>
+<translation id="1313373992684326101">Перейти до попереднього розділу. Приклади: "Панель статусу" або "Панель запуску".</translation>
 <translation id="1325363694295259631">Скасовано вибір перемикача пункту меню "<ph name="NAME" />"</translation>
 <translation id="1325946044405407859">Жовто-брунатний</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> з <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Збільшити висоту звуку</translation>
 <translation id="151784044608172266">Наступне речення</translation>
 <translation id="1524531499102321782">Наступний рядок шрифтом Брайля</translation>
+<translation id="1542513807034338907">Прокрутити до попередньої сторінки</translation>
 <translation id="1546370775711804143">Панель прокручування</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1559739829547075274">Перейти назад</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">відео</translation>
 <translation id="4764692524839457597">за умовчанням</translation>
 <translation id="4772771694153161212">Без підкреслення</translation>
+<translation id="4780458943471935919">Прокрутити до наступної сторінки</translation>
 <translation id="4784215347943747396">Керувати пристроєм за допомогою 1 або 2 перемикачів</translation>
 <translation id="4786285211967466855">Немає попереднього заголовка рівня 1</translation>
 <translation id="4787577491510559358">Озвучувати формат поточного елемента</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">пароль</translation>
 <translation id="7484805699335881122">Змінювати тон під час озвучування типів елементів і цитованого чи видаленого тексту, а також фраз жирним шрифтом, у дужках або великими літерами.</translation>
 <translation id="7491962110804786152">вкладка</translation>
+<translation id="7492497529767769458">Перейти до наступного розділу. Приклади: "Панель статусу" або "Панель запуску".</translation>
 <translation id="7505149250476994901">Казати "велика літера" перед буквою</translation>
 <translation id="7518543783849163354">Щоб тимчасово припинити звучання голосових підказок у ChromeVox, натисніть клавішу Control.</translation>
 <translation id="7533226154149229506">Світлий золотисто-жовтий</translation>

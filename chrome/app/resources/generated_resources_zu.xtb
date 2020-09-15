@@ -312,7 +312,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1359923111303110318">Idivayisi yakho ingavulwa nge-Smart Lock. Cindezela ku-Enter ukuze uvule.</translation>
 <translation id="1361164813881551742">Engeza ngokwenza</translation>
 <translation id="1361655923249334273">Akusetshenzisiwe</translation>
-<translation id="1361707011052629095">Amadivayisi aseduze nawe lapho Ukuthumela Eduze kuvuliwe</translation>
 <translation id="1361872463926621533">Dlala umsindo ekuqaleni</translation>
 <translation id="1362865166188278099">Inkinga yomshini. Hlola iphrinta</translation>
 <translation id="1363585519747660921">Iphrinta ye-USB idinga ukulungiselelwa</translation>
@@ -5709,7 +5708,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7918257978052780342">Bhalisa</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920363873148656176">I-<ph name="ORIGIN" /> ingabuka i-<ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Akekho omunye umuntu ngaphandle kokuthi uvule Ukuthumela Eduze</translation>
 <translation id="7924358170328001543">Iphutha lokudlulisela imbobo</translation>
 <translation id="792514962475806987">Ileveli yokusondeza edokhiwe:</translation>
 <translation id="7925247922861151263">Ukuhlolwa kwe-AAA kuhlulekile</translation>

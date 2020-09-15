@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">გადართვის ღილაკი</translation>
 <translation id="1299774449519412690">ღია ცისფერი</translation>
 <translation id="1303806948938513162">ChromeVox-ის მენიუებში შესასვლელად შეეხეთ 4 თითით</translation>
+<translation id="1313373992684326101">წინა სექციაზე გადასვლა. მაგალითად, სტატუსის პანელზე და გამშვებზე.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, მენიუს ერთეული არჩევანის ღილაკი აურჩეველი</translation>
 <translation id="1325946044405407859">რუჯისფერი</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> სულ: <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">გაზარდეთ დახრა</translation>
 <translation id="151784044608172266">შემდეგი წინადადება</translation>
 <translation id="1524531499102321782">ბრაილის შემდეგი სტრიქონი</translation>
+<translation id="1542513807034338907">წინა გვერდზე გადაადგილება</translation>
 <translation id="1546370775711804143">გადაადგილების ზოლი</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1559739829547075274">ნავიგაცია უკან</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">ვიდეო</translation>
 <translation id="4764692524839457597">ნაგულისხმევი</translation>
 <translation id="4772771694153161212">ხაზგაუსმელი</translation>
+<translation id="4780458943471935919">შემდეგ გვერდზე გადაადგილება</translation>
 <translation id="4784215347943747396">მართეთ მოწყობილობა 1 ან 2 გადამრთველით</translation>
 <translation id="4786285211967466855">წინა 1-ლი დონის სათაური არ არის</translation>
 <translation id="4787577491510559358">მიმდინარე ერთეულის ფორმატირების გამოცხადება</translation>
@@ -819,6 +822,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">ტონის შეცვლა ელემენტების ტიპებისა და წაშლილი, გამუქებული, ბრჭყალებში ან ფრთჩხილებში ჩასმული თუ გამთავრულებული ტექსტის გამხმოვანებისას.</translation>
 <translation id="7491962110804786152">ჩანართი</translation>
+<translation id="7492497529767769458">შემდეგ სექციაზე გადასვლა. მაგალითად, სტატუსის პანელზე და გამშვებზე.</translation>
 <translation id="7505149250476994901">ასომდე „მთავრულის“ წარმოთქმა</translation>
 <translation id="7518543783849163354">ChromeVox-ის გახმოვანების დროებით შესაწყვეტად, დააჭირეთ კლავიშს „Control“.</translation>
 <translation id="7533226154149229506">ღია ოქროწკეპლისფერი</translation>

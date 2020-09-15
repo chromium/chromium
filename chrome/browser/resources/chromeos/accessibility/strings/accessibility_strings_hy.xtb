@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Փոխարկման կոճակ</translation>
 <translation id="1299774449519412690">Բաց երկնագույն</translation>
 <translation id="1303806948938513162">Հպեք 4 մատով՝ ChromeVox-ի ընտրացանկերը բացելու համար</translation>
+<translation id="1313373992684326101">Անցնել նախորդ բաժին (օր․՝ Կարգավիճակի տող, Գործարկիչ և այլ)։</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ընտրացանկի տարրի կետակոճակն ընտրված չէ</translation>
 <translation id="1325946044405407859">Դեղնաշագանակագույն</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Բարձրացնել ձայնածավալը</translation>
 <translation id="151784044608172266">Հաջորդ նախադասությունը</translation>
 <translation id="1524531499102321782">Հաջորդ տողը</translation>
+<translation id="1542513807034338907">Ոլորեք մինչև նախորդ էջ</translation>
 <translation id="1546370775711804143">Ոլորագոտի</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1559739829547075274">Անցնել նախորդ տարրին</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">կանխադրված</translation>
 <translation id="4772771694153161212">Ընդգծումն անջատված է</translation>
+<translation id="4780458943471935919">Ոլորեք մինչև հաջորդ էջ</translation>
 <translation id="4784215347943747396">Կառավարեք սարքն ընդամենը 1 կամ 2 փոխանջատիչի օգնությամբ</translation>
 <translation id="4786285211967466855">1-ին մակարդակի նախորդ վերնագիր չկա</translation>
 <translation id="4787577491510559358">Հնչեցնել ընթացիկ տարրի ձևաչափը</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Փոխել տոնը՝ տարրերի տեսակներ և մեջբերված, ջնջված, ընդգծված, փակագծերի մեջ վերցված կամ գլխատառերով գրված տեքստ արտասանելիս։</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Անցնել հաջորդ բաժին (օր․՝ Կարգավիճակի տող, Գործարկիչ և այլ)։</translation>
 <translation id="7505149250476994901">Տառից առաջ արտասանեք «մեծատառ»</translation>
 <translation id="7518543783849163354">ChromeVox-ի ձայնը ժամանակավորապես անջատելու համար սեղմեք Control ստեղնը:</translation>
 <translation id="7533226154149229506">Բաց ոսկեդեղին</translation>

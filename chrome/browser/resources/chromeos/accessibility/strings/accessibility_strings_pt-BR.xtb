@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Botão ativar</translation>
 <translation id="1299774449519412690">Azul-celeste-claro</translation>
 <translation id="1303806948938513162">Toque com quatro dedos para entrar nos menus do ChromeVox</translation>
+<translation id="1313373992684326101">Mover para a seção anterior. Alguns exemplos são a bandeja de status e o acesso rápido.</translation>
 <translation id="1325363694295259631">Botão de opção <ph name="NAME" /> para item de menu desmarcado</translation>
 <translation id="1325946044405407859">Castanho-claro</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="151784044608172266">Próxima frase</translation>
 <translation id="1524531499102321782">Próxima linha Braille</translation>
+<translation id="1542513807034338907">Rolar para a página anterior</translation>
 <translation id="1546370775711804143">Barra de rolagem</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1559739829547075274">Navegar para trás</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4764692524839457597">padrão</translation>
 <translation id="4772771694153161212">Sem sublinhado</translation>
+<translation id="4780458943471935919">Rolar para a próxima página</translation>
 <translation id="4784215347943747396">Controle o dispositivo com apenas um ou dois interruptores</translation>
 <translation id="4786285211967466855">Nenhum cabeçalho de nível 1 anterior</translation>
 <translation id="4787577491510559358">Anunciar formatação para item atual</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Mudar o timbre ao falar tipos de elemento, texto entre aspas ou parênteses e texto excluído, em negrito ou em letras maiúsculas.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Mover para a próxima seção. Alguns exemplos são a bandeja de status e o acesso rápido.</translation>
 <translation id="7505149250476994901">Dizer "maiúsculo" depois da letra</translation>
 <translation id="7518543783849163354">Para interromper temporariamente a fala do ChromeVox, pressione a tecla Control.</translation>
 <translation id="7533226154149229506">Amarelo-dourado-claro</translation>

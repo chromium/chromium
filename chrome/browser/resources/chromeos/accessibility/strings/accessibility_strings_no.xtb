@@ -52,6 +52,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1291286136605998134">Av/på-knapp</translation>
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Trykk med fire fingre for å åpne ChromeVox-menyene</translation>
+<translation id="1313373992684326101">Gå til forrige del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menyelement med alternativknapp som ikke er valgt</translation>
 <translation id="1325946044405407859">Gyllenbrun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> av <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1506187449813838456">Øk stemmeleiet</translation>
 <translation id="151784044608172266">Neste setning</translation>
 <translation id="1524531499102321782">Punktskrift – neste linje</translation>
+<translation id="1542513807034338907">Rull til forrige side</translation>
 <translation id="1546370775711804143">Rullefelt</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1559739829547075274">Naviger bakover</translation>
@@ -485,6 +487,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4764692524839457597">standard</translation>
 <translation id="4772771694153161212">Ikke understreking</translation>
+<translation id="4780458943471935919">Rull til neste side</translation>
 <translation id="4784215347943747396">Styr enheten med kun én eller to brytere</translation>
 <translation id="4786285211967466855">Det finnes ingen tidligere overskrifter på nivå 1</translation>
 <translation id="4787577491510559358">Les opp formatering for det gjeldende elementet</translation>
@@ -820,6 +823,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">Endre tonehøyde ved opplesing av elementtyper, tekst i hermetegn, slettet tekst, fet tekst, tekst i parentes og tekst med store bokstaver.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Gå til neste del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
 <translation id="7505149250476994901">Si «stor» før bokstaven</translation>
 <translation id="7518543783849163354">For å stoppe talemeldingene fra ChromeVox midlertidig, trykk på Control-tasten.</translation>
 <translation id="7533226154149229506">Lys gullris</translation>

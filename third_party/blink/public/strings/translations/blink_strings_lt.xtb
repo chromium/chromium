@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">išnaša</translation>
 <translation id="1281252709823657822">dialogo langas</translation>
 <translation id="1306460908038601864">Išjungta</translation>
+<translation id="1311894908970423688">Vertė turi būti <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">titrai</translation>
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1359897965706325498">reklamjuostė</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="668171684555832681">Kita...</translation>
 <translation id="6692633176391053278">ėjimo aukštyn / žemyn valdiklis</translation>
+<translation id="6709093583001123835">Vertė turi būti <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Prasta atkūrimo kokybė</translation>
 <translation id="6755330956360078551">patarimas</translation>
 <translation id="6790428901817661496">Žaisti</translation>

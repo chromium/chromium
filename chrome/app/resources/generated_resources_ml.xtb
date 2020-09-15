@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Smart Lock ഉപയോഗിച്ച് നിങ്ങളുടെ ഉപകരണം അൺലോക്ക് ചെയ്യാനാവും. അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="1361164813881551742">നേരിട്ട് ചേർക്കുക</translation>
 <translation id="1361655923249334273">ഉപയോഗിക്കാത്ത</translation>
-<translation id="1361707011052629095">സമീപമുള്ള പങ്കിടൽ തുറന്നിരിക്കുമ്പോൾ നിങ്ങൾക്ക് സമീപമുള്ള ഉപകരണങ്ങൾ</translation>
 <translation id="1361872463926621533">ആരംഭിക്കുമ്പോൾ ശബ്‌ദം പ്ലേ ചെയ്യുക</translation>
 <translation id="1362865166188278099">മെക്കാനിക്കൽ പ്രശ്‌നം. പ്രിന്റർ പരിശോധിക്കുക</translation>
 <translation id="1363585519747660921">USB പ്രിൻ്ററിന് കോൺഫിഗറേഷൻ ആവശ്യമുണ്ട്</translation>
@@ -1473,6 +1472,7 @@
 <translation id="2731700343119398978">കാത്തിരിക്കുക...</translation>
 <translation id="2731710757838467317">നിങ്ങളുടെ മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവിനെ സൃഷ്‌ടിക്കുന്നു. ഇതിന് കുറച്ചു സമയമെടുക്കാം.</translation>
 <translation id="2731971182069536520">അടുത്ത തവണ നിങ്ങളുടെ ഉപകരണം റീസ്‌റ്റാർട്ട് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ ലോക്കൽ ഡാറ്റ ഇല്ലാതാക്കുന്ന ഒരു ഒറ്റത്തവണ അപ്ഡേറ്റ് അഡ്‌മിൻ നിർവ്വഹിക്കും.</translation>
+<translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> എന്നതിന് കീഴിലുള്ള സൈറ്റുകളും പുനഃസജ്ജീകരിക്കപ്പെടും.</translation>
 <translation id="2735712963799620190">ഷെഡ്യൂള്‍‌</translation>
 <translation id="2737363922397526254">ചുരുക്കുക...</translation>
@@ -3119,6 +3119,7 @@
 <translation id="4735803855089279419">ഈ ഉപകരണത്തിനായി ഉപകരണ ഐഡന്റിഫയറുകൾ നിർണ്ണയിക്കാൻ സിസ്‌റ്റത്തിനായില്ല.</translation>
 <translation id="4736292055110123391">ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ, ചരിത്രം എന്നിവയും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കം തിരഞ്ഞെടുത്തു</translation>
 <translation id="4739639199548674512">ടിക്കറ്റുകൾ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ആപ്പുകൾ അപ്‌ഡേറ്റ് ചെയ്യുന്നത് എങ്ങനെയെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>
@@ -4141,6 +4142,7 @@
 <translation id="6011449291337289699">സൈറ്റ് ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="6015266928248016057">PUK അസാധുവാണ്. ശേഷിക്കുന്ന ശ്രമങ്ങൾ: <ph name="RETRIES" />.</translation>
 <translation id="6015796118275082299">വര്‍ഷം</translation>
+<translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കത്തിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="6016551720757758985">മുൻ പതിപ്പിലേക്ക് പോകുന്നതിലൂടെ പവർവാഷ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="6016972670657536680">ഭാഷയും കീബോർഡും ബട്ടൺ തിരഞ്ഞെടുക്കുക. നിലവിൽ തിരഞ്ഞെടുത്ത ഭാഷ <ph name="LANGUAGE" /> ആണ്.</translation>
 <translation id="6017514345406065928">പച്ച</translation>
@@ -5707,7 +5709,6 @@
 <translation id="7918257978052780342">എൻറോൾ ചെയ്യുക</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />സെക്കൻഡ്</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />-ന് <ph name="FILENAME" /> കാണാനാവും</translation>
-<translation id="7924080089023843180">സമീപമുള്ള പങ്കിടൽ നിങ്ങൾ തുറന്നില്ലെങ്കിൽ ആർക്കും കഴിയില്ല</translation>
 <translation id="7924358170328001543">പോർട്ട് കൈമാറുന്നതിൽ പിശക്</translation>
 <translation id="792514962475806987">ഡോക്ക് ചെയ്‌ത സൂം നില:</translation>
 <translation id="7925247922861151263">AAA പരിശോധന പരാജയപ്പെട്ടു</translation>
@@ -6448,6 +6449,7 @@
 <translation id="8811862054141704416">Crostini-ക്കുള്ള മൈക്രോഫോൺ ആക്സസ്</translation>
 <translation id="8812552797690463522">ഈ നെറ്റ്‌വർക്ക് നിങ്ങളുമായി പങ്കിടുന്നു.</translation>
 <translation id="8812593354822910461"><ph name="DOMAIN" /> എന്നതിൽ നിന്ന് നിങ്ങളെ സൈൻ ഔട്ട് ചെയ്യുന്ന ബ്രൗസിംഗ് ഡാറ്റയും (<ph name="URL" />) മായ്‌ക്കുക.<ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">എന്നെ പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാനാവില്ല</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />"-ന് അംഗീകാരം നൽകാൻ രക്ഷിതാവിനോട് ആവശ്യപ്പെടുക</translation>
 <translation id="8813969267212093033">ഈ ഭാഷയിലാണ് സിസ്‌റ്റം ടെക്‌സ്‌റ്റ് കാണിച്ചിരിക്കുന്നത്</translation>
@@ -6478,6 +6480,7 @@
 <translation id="8838601485495657486">അതാര്യം</translation>
 <translation id="8838770651474809439">ഹാംബർഗർ</translation>
 <translation id="883911313571074303">ചിത്രം വ്യാഖ്യാനിക്കുക</translation>
+<translation id="8841843049738266382">വൈറ്റ്ലിസ്‌റ്റ് ചെയ്‌ത ഉപയോക്താക്കളെ വായിക്കുക, മാറ്റുക</translation>
 <translation id="8842594465773264717">ഈ ഫിംഗർപ്രിന്റ് ഇല്ലാതാക്കുക</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
 <translation id="8846132060409673887">ഈ കമ്പ്യൂട്ടറിന്റെ നിർമ്മാതാവ്, മോഡൽ എന്നിവയെക്കുറിച്ചുള്ള വിവരം വായിക്കുക</translation>

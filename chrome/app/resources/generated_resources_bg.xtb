@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Устройството ви може да бъде отключвано чрез Smart Lock. Натиснете Enter, за да потвърдите.</translation>
 <translation id="1361164813881551742">Ръчно добавяне</translation>
 <translation id="1361655923249334273">Не се използва</translation>
-<translation id="1361707011052629095">Устройствата в близост, когато функцията „Споделяне наблизо“ е отворена</translation>
 <translation id="1361872463926621533">Възпроизвеждане на звук при стартиране</translation>
 <translation id="1362865166188278099">Механичен проблем. Проверете принтера</translation>
 <translation id="1363585519747660921">Принтерът с USB трябва да бъде конфигуриран</translation>
@@ -5709,7 +5708,6 @@
 <translation id="7918257978052780342">Записване</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> може да преглежда <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">Никой друг, освен ако не отворите функцията „Споделяне наблизо“</translation>
 <translation id="7924358170328001543">Грешка при пренасочване на порта</translation>
 <translation id="792514962475806987">Ниво на мащаба при прикрепен режим:</translation>
 <translation id="7925247922861151263">Проверката за AAA не бе успешна</translation>

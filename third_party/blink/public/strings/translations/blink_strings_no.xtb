@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">sluttnote</translation>
 <translation id="1281252709823657822">dialog</translation>
 <translation id="1306460908038601864">Av</translation>
+<translation id="1311894908970423688">Verdien må være <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">anerkjennelser</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="668171684555832681">Annen</translation>
 <translation id="6692633176391053278">stepper</translation>
+<translation id="6709093583001123835">Verdien må være <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Dårlig avspillingskvalitet</translation>
 <translation id="6755330956360078551">verktøytips</translation>
 <translation id="6790428901817661496">Spill av</translation>

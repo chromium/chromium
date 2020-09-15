@@ -48,6 +48,7 @@
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1391102559483454063">Вклучено</translation>
+<translation id="1407069428457324124">Темна тема</translation>
 <translation id="1419738280318246476">Отклучете го уредот за да се изврши дејството од известувањето</translation>
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Сликата од екранот е направена и зачувана во привремената меморија</translation>
@@ -65,6 +66,7 @@
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1570871743947603115">Вклучи/исклучи Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
+<translation id="1611993646327628135">Вклучено</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
 <translation id="1667964833127753507">Режимот во неутрални бои не користи бои од тапетот, туку ги заменува со збир од неутрални светли или темни нијанси.</translation>
@@ -79,6 +81,7 @@
 <translation id="1761222317188459878">Вклучи/исклучи мрежна врска. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Лизгај надесно</translation>
 <translation id="1782199038061388045">превод</translation>
+<translation id="1787955149152357925">Исклучено</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1812997170047690955">Што има на мојот екран?</translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Прошири го менито</translation>
 <translation id="3087734570205094154">Дно</translation>
+<translation id="3090989381251959936">Вклучете/исклучете <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Премести го покажувачот</translation>
 <translation id="3098580329624789136">Добијте <ph name="INTENT" /> за „<ph name="QUERY" />“</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@
 <translation id="3371140690572404006">USB-Ц уред (предна порта од десна страна)</translation>
 <translation id="3386978599540877378">лупа за цел екран</translation>
 <translation id="3400357268283240774">Дополнителни поставки</translation>
+<translation id="3410336247007142655">Прикажи ги поставките за темната тема</translation>
 <translation id="3413817803639110246">Сѐ уште нема што да се види</translation>
 <translation id="3428447136709161042">Прекини ја врската со <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Повлечете оддесно за да се вратите назад</translation>
@@ -327,6 +332,7 @@
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4379531060876907730">Ова се вашите пенкала</translation>
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
 <translation id="4421231901400348175">Споделување контрола на вашиот екран со <ph name="HELPER_NAME" /> преку далечинска помош.</translation>
 <translation id="4430019312045809116">Гласност</translation>
 <translation id="4450893287417543264">Не прикажувај повторно</translation>
@@ -346,6 +352,7 @@
 <translation id="4570957409596482333">Копче за „Изберете за говор“</translation>
 <translation id="4577274620589681794">Времето истече · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Престани со емитување на непознат приемник</translation>
+<translation id="4596144739579517758">Темната тема е исклучена</translation>
 <translation id="4623167406982293031">Потврдете ја сметката</translation>
 <translation id="4628757576491864469">Уреди</translation>
 <translation id="4659419629803378708">ChromeVox е овозможен</translation>
@@ -388,6 +395,7 @@
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
+<translation id="5208059991603368177">Вклучено</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="523505283826916779">Поставки за пристапност</translation>
 <translation id="5260676007519551770">Биро 4</translation>
@@ -399,6 +407,7 @@
 <translation id="5313326810920013265">Поставки за Bluetooth</translation>
 <translation id="5314219114274263156">Направена е снимка од екранот</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
+<translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
 <translation id="5397578532367286026">Користењето и историјата на овој корисник може да ги прегледува управникот (<ph name="MANAGER_EMAIL" />) на chrome.com.</translation>
 <translation id="5400461572260843123">Брзи поставки, Притиснете „Пребарување + лево“ за да пристапите до центарот за известувања.</translation>
@@ -435,6 +444,7 @@
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5777841717266010279">Запри споделување екран?</translation>
 <translation id="5790085346892983794">Успешно</translation>
+<translation id="579415080077680903">Стиши</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -445,6 +455,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5920710855273935292">Звукот на микрофонот е исклучен.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
 <translation id="5957083217255311415">Мобилниот интернет е исклучен.</translation>
@@ -469,6 +480,7 @@
 <translation id="615957422585914272">Покажи тастатура на екран</translation>
 <translation id="6164005077879661055">Сите датотеки и локални податоци што се поврзани со надгледуваниот корисник трајно ќе се избришат откако тој ќе се отстрани. Посетените веб-локации и поставки за надгледуваниот корисник можеби уште ќе бидат видливи за управникот на <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
+<translation id="6192859646269780503">Лоцирај го телефонот</translation>
 <translation id="622484624075952240">Долу</translation>
 <translation id="6236290670123303279">Управувајте со поставките</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -540,6 +552,7 @@
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
 <translation id="7007983414944123363">Не можеше да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
+<translation id="7013005189539051442">Овозможете точка на пристап</translation>
 <translation id="7015766095477679451">Вратете се во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Поврзете го вашиот <ph name="DEVICE_NAME" /> со телефонот</translation>
 <translation id="7026338066939101231">Намалување</translation>
@@ -612,6 +625,7 @@
 <translation id="7842569679327885685">Предупредување: експериментална функција</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7868900307798234037">Отклучување со отпечаток</translation>
+<translation id="7872786842639831132">Исклучено</translation>
 <translation id="7886169021410746335">ги приспособи поставките за приватност.</translation>
 <translation id="7886277072580235377">Сесијата на интернет ќе се исчисти кога ќе се одјавите. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Испрати е-порака</translation>
@@ -716,6 +730,7 @@
 <translation id="8853703225951107899">Сѐ уште не може да се потврди PIN-кодот или лозинката. Забелешка: ако неодамна сте ја промениле лозинката, користете ја вашата стара лозинка. Новата лозинка ќе се примени откако ќе се одјавите.</translation>
 <translation id="885387440427703469">Снимањето на екранот е оневозможено</translation>
 <translation id="8870509716567206129">Апликацијата не поддржува поделен екран.</translation>
+<translation id="8871580645200179206">Вклучете/исклучете ја темната тема. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8877788021141246043">Потсетник</translation>
 <translation id="8878886163241303700">Проширување екран</translation>

@@ -312,7 +312,6 @@
 <translation id="1359923111303110318">Your device can be unlocked with Smart Lock. Press enter to unlock.</translation>
 <translation id="1361164813881551742">Add Manually</translation>
 <translation id="1361655923249334273">Unused</translation>
-<translation id="1361707011052629095">Devices near you when Nearby Share is open</translation>
 <translation id="1361872463926621533">Play sound on startup</translation>
 <translation id="1362865166188278099">Mechanical issue. Check printer</translation>
 <translation id="1363585519747660921">USB printer needs configuration</translation>
@@ -5712,7 +5711,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7918257978052780342">Enrol</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
-<translation id="7924080089023843180">No one unless you open Nearby Share</translation>
 <translation id="7924358170328001543">Error forwarding port</translation>
 <translation id="792514962475806987">Docked zoom level:</translation>
 <translation id="7925247922861151263">AAA check failed</translation>

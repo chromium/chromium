@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Dugme za uključivanje/isključivanje</translation>
 <translation id="1299774449519412690">Svijetla nebeskoplava</translation>
 <translation id="1303806948938513162">Dodirnite s 4 prsta za ulazak u menije ChromeVoxa</translation>
+<translation id="1313373992684326101">Prelazak na prethodni odjeljak. Primjeri uključuju traku statusa i Pokretač.</translation>
 <translation id="1325363694295259631">Poništen je odabir dugmeta za izbor stavke menija <ph name="NAME" /></translation>
 <translation id="1325946044405407859">Zagasita</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> od <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Povećaj visinu tona</translation>
 <translation id="151784044608172266">Sljedeća rečenica</translation>
 <translation id="1524531499102321782">Sljedeća linija Brailleovog pisma</translation>
+<translation id="1542513807034338907">Pomicanje na prethodnu stranicu</translation>
 <translation id="1546370775711804143">Traka za pomicanje</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1559739829547075274">Vrati se nazad</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">videozapis</translation>
 <translation id="4764692524839457597">zadano</translation>
 <translation id="4772771694153161212">Nije podvučeno</translation>
+<translation id="4780458943471935919">Pomicanje na sljedeću stranicu</translation>
 <translation id="4784215347943747396">Kontrolirajte uređaj sa samo 1 ili 2 prekidača</translation>
 <translation id="4786285211967466855">Nema prethodnog naslova 1. nivoa</translation>
 <translation id="4787577491510559358">Najava formatiranja za trenutnu stavku</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">urdlznk</translation>
 <translation id="7484805699335881122">Promijenite visinu glasa prilikom izgovaranja vrsta elemenata te teksta koji je citiran, izbrisan, boldiran, napisan u zagradi ili velikim slovima.</translation>
 <translation id="7491962110804786152">kart</translation>
+<translation id="7492497529767769458">Prelazak na sljedeći odjeljak. Primjeri uključuju traku statusa i Pokretač.</translation>
 <translation id="7505149250476994901">Recite "veliko" prije slova</translation>
 <translation id="7518543783849163354">Da privremeno spriječite ChromeVox da govori, pritisnite tipku Ctrl.</translation>
 <translation id="7533226154149229506">Svijetla zlatnožuta</translation>

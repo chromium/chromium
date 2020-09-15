@@ -48,6 +48,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
+<translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1419738280318246476">Otključajte uređaj da biste dobili obaveštenje</translation>
 <translation id="1420408895951708260">Uključite ili isključite noćno svetlo. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Snimak ekrana je napravljen i sačuvan u privremenoj memoriji</translation>
@@ -65,6 +66,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1570871743947603115">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
+<translation id="1611993646327628135">Uključeno</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
 <translation id="1667964833127753507">Režim neutralnih boja ne koristi boje iz pozadina i zamenjuje ih skupom neutralnih svetlih i tamnih nijansi.</translation>
@@ -79,6 +81,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1761222317188459878">Uključite/isključite mrežnu vezu. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Pomeri nadesno</translation>
 <translation id="1782199038061388045">prevod</translation>
+<translation id="1787955149152357925">Isključeno</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
@@ -201,6 +204,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširi meni</translation>
 <translation id="3087734570205094154">Dno</translation>
+<translation id="3090989381251959936">Uključite/isključite funkciju <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Pomerite kursor</translation>
 <translation id="3098580329624789136">Potražite <ph name="INTENT" /> za „<ph name="QUERY" />“</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -233,6 +237,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3371140690572404006">Uređaj sa USB priključkom tipa C (desni prednji port)</translation>
 <translation id="3386978599540877378">lupa preko celog ekrana</translation>
 <translation id="3400357268283240774">Dodatna podešavanja</translation>
+<translation id="3410336247007142655">Prikažite podešavanja tamne teme</translation>
 <translation id="3413817803639110246">Još uvek nema šta da se vidi</translation>
 <translation id="3428447136709161042">Prekinite vezu sa mrežom <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Prevucite sa desne strane da biste se vratili</translation>
@@ -326,6 +331,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4379531060876907730">Ovo su alatke za pisaljku</translation>
 <translation id="4389184120735010762">Pritisnuli ste tastersku prečicu za montiranu lupu ekrana. Želite li da je uključite?</translation>
+<translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4421231901400348175">Delite kontrolu nad ekranom sa osobom <ph name="HELPER_NAME" /> preko Daljinske pomoći.</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
@@ -345,6 +351,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4570957409596482333">Dugme Izaberite za govor</translation>
 <translation id="4577274620589681794">Vreme je isteklo · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Zaustavi prebacivanje na nepoznati prijemnik</translation>
+<translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4623167406982293031">Verifikujte nalog</translation>
 <translation id="4628757576491864469">Uređaji</translation>
 <translation id="4659419629803378708">ChromeVox je omogućen</translation>
@@ -387,6 +394,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
+<translation id="5208059991603368177">Uključeno</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
@@ -398,6 +406,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5313326810920013265">Podešavanja Bluetooth-a</translation>
 <translation id="5314219114274263156">Ekran je snimljen</translation>
 <translation id="5331975486040154427">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
+<translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5397578532367286026">Menadžer (<ph name="MANAGER_EMAIL" />) može da pregleda korišćenje i istoriju ovog korisnika na chrome.com.</translation>
 <translation id="5400461572260843123">Brza podešavanja, pritisnite taster za pretragu i strelicu ulevo da biste pristupili centru za obaveštenja.</translation>
@@ -434,6 +443,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5769373120130404283">Ekran za privatnost</translation>
 <translation id="5777841717266010279">Želite li da prekinete deljenje ekrana?</translation>
 <translation id="5790085346892983794">Uspešno</translation>
+<translation id="579415080077680903">Tišina</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Isključeno</translation>
@@ -444,6 +454,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje učinka je omogućeno</translation>
 <translation id="5957083217255311415">Mobilni podaci su isključeni.</translation>
@@ -468,6 +479,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
 <translation id="6164005077879661055">Sve datoteke i lokalni podaci povezani sa korisnikom pod nadzorom će biti trajno izbrisani kada uklonite ovog korisnika pod nadzorom. Menadžer će možda i dalje moći da vidi posećene veb-sajtove i podešavanja za ovog korisnika pod nadzorom na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
+<translation id="6192859646269780503">Pronađi telefon</translation>
 <translation id="622484624075952240">Nadole</translation>
 <translation id="6236290670123303279">Upravljajte podešavanjima</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -539,6 +551,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="698231206551913481">Sve datoteke i lokalni podaci povezani sa ovim korisnikom će biti trajno izbrisani kada uklonite ovog korisnika.</translation>
 <translation id="7007983414944123363">Verifikacija PIN-a ili lozinke nije uspela. Probajte ponovo.</translation>
+<translation id="7013005189539051442">Omogući hotspot</translation>
 <translation id="7015766095477679451">Vratite se u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Povežite <ph name="DEVICE_NAME" /> sa telefonom</translation>
 <translation id="7026338066939101231">Smanjenje</translation>
@@ -611,6 +624,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7842569679327885685">Upozorenje: Eksperimentalna funkcija</translation>
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7868900307798234037">Otključavanje pomoću otiska prsta</translation>
+<translation id="7872786842639831132">Isključeno</translation>
 <translation id="7886169021410746335">Prilagodite podešavanja privatnosti</translation>
 <translation id="7886277072580235377">Internet sesija će biti obrisana kada se odjavite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Pošalji imejl</translation>
@@ -715,6 +729,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
 <translation id="885387440427703469">Snimanje ekrana je onemogućeno</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
+<translation id="8871580645200179206">Uključite/isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8877788021141246043">Podesi podsetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>

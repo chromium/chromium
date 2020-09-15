@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">nota final</translation>
 <translation id="1281252709823657822">cuadro de diálogo</translation>
 <translation id="1306460908038601864">Desactivado</translation>
+<translation id="1311894908970423688">El valor debe ser <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">créditos</translation>
 <translation id="1342835525016946179">artículo</translation>
 <translation id="1359897965706325498">banner</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Eliminar</translation>
 <translation id="668171684555832681">Otros...</translation>
 <translation id="6692633176391053278">secuenciador</translation>
+<translation id="6709093583001123835">El valor debe ser <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Calidad de reproducción baja</translation>
 <translation id="6755330956360078551">descripción emergente</translation>
 <translation id="6790428901817661496">Reproducir</translation>

@@ -52,6 +52,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1291286136605998134">टॉगल बटन</translation>
 <translation id="1299774449519412690">हल्का आसमानी नीला</translation>
 <translation id="1303806948938513162">ChromeVox मेन्यू में जाने के लिए चार उंगलियों से टैप करें</translation>
+<translation id="1313373992684326101">पिछले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, मेन्यू आइटम रेडियो बटन से चुने का निशान हटाया गया</translation>
 <translation id="1325946044405407859">हल्का भूरा रंग</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> में से <ph name="INDEX" /></translation>
@@ -79,6 +80,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1506187449813838456">पिच बढ़ाएं</translation>
 <translation id="151784044608172266">अगला वाक्य</translation>
 <translation id="1524531499102321782">अगली पंक्ति को ब्रेल में लिखें</translation>
+<translation id="1542513807034338907">स्क्रोल करके पिछले पेज पर जाएं</translation>
 <translation id="1546370775711804143">स्क्रोल बार</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="1559739829547075274">'पीछे की ओर' नेविगेट करें</translation>
@@ -485,6 +487,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4763480195061959176">वीडियो</translation>
 <translation id="4764692524839457597">डिफ़ॉल्ट</translation>
 <translation id="4772771694153161212">अंडरलाइन नहीं है</translation>
+<translation id="4780458943471935919">स्क्रोल करके अगले पेज पर जाएं</translation>
 <translation id="4784215347943747396">सिर्फ़ एक या दो स्विच से डिवाइस कंट्रोल करें</translation>
 <translation id="4786285211967466855">पहले से कोई लेवल 2 शीर्षक नहीं है</translation>
 <translation id="4787577491510559358">मौजूदा आइटम का फ़ॉर्मैट बताएं</translation>
@@ -819,6 +822,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="744163271241493234">pwded</translation>
 <translation id="7484805699335881122">अलग-अलग तरह के एलिमेंट के अलावा, कोट किए गए, मिटाए गए, बोल्ड किए गए, ब्रैकेट में लिखे गए या बड़े अक्षरों में लिखे गए टेक्स्ट बोलते समय आवाज़ की रफ़्तार (पिच) बदलें.</translation>
 <translation id="7491962110804786152">टैब</translation>
+<translation id="7492497529767769458">अगले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="7505149250476994901">अक्षर से पहले "बड़ा" कहें</translation>
 <translation id="7518543783849163354">ChromeVox को अस्थायी रूप से बोलने से रोकने के लिए, Control कुंजी दबाएं.</translation>
 <translation id="7533226154149229506">गोल्डन रॉड जैसा हल्का पीला रंग</translation>

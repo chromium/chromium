@@ -13,6 +13,7 @@
 <translation id="1211441953136645838">референца</translation>
 <translation id="1281252709823657822">дијалог</translation>
 <translation id="1306460908038601864">Исклучени</translation>
+<translation id="1311894908970423688">Вредноста мора да биде <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1335095011850992622">благодарност</translation>
 <translation id="1342835525016946179">статија</translation>
 <translation id="1359897965706325498">банер</translation>
@@ -185,6 +186,7 @@
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="668171684555832681">Друго...</translation>
 <translation id="6692633176391053278">градатор</translation>
+<translation id="6709093583001123835">Вредноста мора да биде <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Слаб квалитет на репродукција</translation>
 <translation id="6755330956360078551">совет за алатка</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>

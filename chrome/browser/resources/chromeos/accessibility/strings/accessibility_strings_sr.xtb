@@ -52,6 +52,7 @@
 <translation id="1291286136605998134">Дугме за укључивање/искључивање</translation>
 <translation id="1299774449519412690">Светла небескоплава</translation>
 <translation id="1303806948938513162">Додирните са 4 прста да бисте ушли у ChromeVox меније</translation>
+<translation id="1313373992684326101">Пређите на претходни одељак. Примери обухватају Статусну траку и Покретач.</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, поништен је избор дугмета за избор ставке менија</translation>
 <translation id="1325946044405407859">Жутомрка</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> од <ph name="TOTAL" /></translation>
@@ -79,6 +80,7 @@
 <translation id="1506187449813838456">Повећавање регистра</translation>
 <translation id="151784044608172266">Следећа реченица</translation>
 <translation id="1524531499102321782">Следећи ред на Брајевој азбуци</translation>
+<translation id="1542513807034338907">Померите до претходне странице</translation>
 <translation id="1546370775711804143">Трака за померање</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1559739829547075274">Кретање уназад</translation>
@@ -485,6 +487,7 @@
 <translation id="4763480195061959176">видео</translation>
 <translation id="4764692524839457597">подразумевано</translation>
 <translation id="4772771694153161212">Није подвучено</translation>
+<translation id="4780458943471935919">Померите до следеће странице</translation>
 <translation id="4784215347943747396">Контролишите уређај помоћу само 1 или 2 прекидача</translation>
 <translation id="4786285211967466855">Нема претходног заглавља 1. нивоа</translation>
 <translation id="4787577491510559358">Описује форматирање за тренутну ставку</translation>
@@ -820,6 +823,7 @@
 <translation id="744163271241493234">лозинка</translation>
 <translation id="7484805699335881122">Промени интонацију приликом изговора типова елемената и цитираног, избрисаног или подебљаног текста, текста у загради или текста написаног великим словима.</translation>
 <translation id="7491962110804786152">tab</translation>
+<translation id="7492497529767769458">Пређите на следећи одељак. Примери обухватају Статусну траку и Покретач.</translation>
 <translation id="7505149250476994901">Изговорите „велико“ пре слова</translation>
 <translation id="7518543783849163354">Да бисте привремено спречили ChromeVox да говори, притисните тастер Control.</translation>
 <translation id="7533226154149229506">Светла златножута</translation>
