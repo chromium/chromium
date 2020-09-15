@@ -77,13 +77,13 @@ public class PageInfoPermissionsControllerUnitTest {
                         "Sound allowed, Location blocked"},
                 {"Multiple Permissions Allowed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_ALLOWED, VR_ALLOWED),
-                        "Location, Sound and 1 more allowed"},
+                        "Location, Sound, and 1 more allowed"},
                 {"Multiple Permissions Blocked",
                         Arrays.asList(LOCATION_BLOCKED, SOUND_BLOCKED, VR_BLOCKED),
-                        "Location, Sound and 1 more blocked"},
+                        "Location, Sound, and 1 more blocked"},
                 {"Multiple Permissions Mixed",
                         Arrays.asList(LOCATION_ALLOWED, SOUND_BLOCKED, VR_BLOCKED),
-                        "Location, Sound and 1 more"}});
+                        "Location, Sound, and 1 more"}});
     }
 
     @Test
