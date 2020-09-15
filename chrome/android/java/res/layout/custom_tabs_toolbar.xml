@@ -103,9 +103,6 @@
         android:layout_gravity="center_vertical|end"
         android:layout_width="42dp"
         android:paddingEnd="4dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:id="@+id/menu_button_wrapper">
 
         <org.chromium.ui.widget.ChromeImageButton
@@ -113,7 +110,9 @@
             style="@style/ToolbarButton"
             android:src="@drawable/ic_more_vert_24dp"
             android:layout_gravity="center"
-            android:importantForAccessibility="no"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
 
