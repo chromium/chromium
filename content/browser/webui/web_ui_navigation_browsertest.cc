@@ -46,6 +46,13 @@ content::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
   return params;
 }
 
+bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
+                                    const GURL& url) {
+  return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+      isolation_context,
+      SiteInstanceImpl::ComputeSiteInfo(isolation_context, url));
+}
+
 }  // namespace
 
 class WebUINavigationBrowserTest : public ContentBrowserTest {
@@ -920,8 +927,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // chrome:// URLs should require a dedicated process.
   WebContents* web_contents = shell()->web_contents();
   BrowserContext* browser_context = web_contents->GetBrowserContext();
-  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      IsolationContext(browser_context), chrome_url));
+  EXPECT_TRUE(DoesURLRequireDedicatedProcess(IsolationContext(browser_context),
+                                             chrome_url));
 
   // Navigate to a WebUI page.
   EXPECT_TRUE(NavigateToURL(shell(), chrome_url));
@@ -943,8 +950,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the blob also requires a dedicated process and that it would
   // use the same site url as the original page.
-  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      IsolationContext(browser_context), blob_url));
+  EXPECT_TRUE(DoesURLRequireDedicatedProcess(IsolationContext(browser_context),
+                                             blob_url));
   EXPECT_EQ(expected_site_url,
             SiteInstance::GetSiteForURL(browser_context, blob_url));
 }
@@ -961,8 +968,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // chrome-untrusted:// URLs should require a dedicated process.
   WebContents* web_contents = shell()->web_contents();
   BrowserContext* browser_context = web_contents->GetBrowserContext();
-  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      IsolationContext(browser_context), chrome_untrusted_url));
+  EXPECT_TRUE(DoesURLRequireDedicatedProcess(IsolationContext(browser_context),
+                                             chrome_untrusted_url));
 
   // Navigate to a chrome-untrusted:// page.
   EXPECT_TRUE(NavigateToURL(shell(), chrome_untrusted_url));
@@ -984,8 +991,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
   // Verify that the blob also requires a dedicated process and that it would
   // use the same site url as the original page.
-  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      IsolationContext(browser_context), blob_url));
+  EXPECT_TRUE(DoesURLRequireDedicatedProcess(IsolationContext(browser_context),
+                                             blob_url));
   EXPECT_EQ(expected_site_url,
             SiteInstance::GetSiteForURL(browser_context, blob_url));
 }

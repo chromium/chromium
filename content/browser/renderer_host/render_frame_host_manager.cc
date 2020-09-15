@@ -106,8 +106,11 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // Check whether |destination_effective_url| would require a dedicated process
   // if we left it in the current BrowsingInstance.  If so, there's no need to
   // swap BrowsingInstances.
-  if (SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-          current_instance->GetIsolationContext(), destination_effective_url)) {
+  auto& current_isolation_context = current_instance->GetIsolationContext();
+  if (SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+          current_isolation_context,
+          SiteInstanceImpl::ComputeSiteInfo(current_isolation_context,
+                                            destination_effective_url))) {
     return false;
   }
 
@@ -117,8 +120,10 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // current_instance->GetIsolationContext().
   IsolationContext future_isolation_context(
       current_instance->GetBrowserContext());
-  return SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
+  auto future_site_info = SiteInstanceImpl::ComputeSiteInfo(
       future_isolation_context, destination_effective_url);
+  return SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+      future_isolation_context, future_site_info);
 }
 
 bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
@@ -1937,9 +1942,13 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
           features::kProcessSharingWithStrictSiteInstances)) {
     if (!frame_tree_node_->IsMainFrame()) {
       RenderFrameHostImpl* parent = frame_tree_node_->parent();
+      auto& parent_isolation_context =
+          parent->GetSiteInstance()->GetIsolationContext();
       bool dest_url_requires_dedicated_process =
-          SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-              parent->GetSiteInstance()->GetIsolationContext(), dest_url);
+          SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+              parent_isolation_context,
+              SiteInstanceImpl::ComputeSiteInfo(parent_isolation_context,
+                                                dest_url));
       if (!parent->GetSiteInstance()->RequiresDedicatedProcess() &&
           !dest_url_requires_dedicated_process) {
         return SiteInstanceDescriptor(parent->GetSiteInstance());

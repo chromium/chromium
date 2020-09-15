@@ -4188,8 +4188,8 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // before the commit for the siteless URL arrives, resulting in a renderer
   // kill. See https://crbug.com/970046.
   if (SiteInstanceImpl::ShouldAssignSiteForURL(site_info.site_url()) &&
-      SiteInstanceImpl::DoesSiteRequireDedicatedProcess(isolation_context,
-                                                        site_info.site_url())) {
+      SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(isolation_context,
+                                                            site_info)) {
     SiteProcessCountTracker* pending_tracker =
         static_cast<SiteProcessCountTracker*>(
             browser_context->GetUserData(kPendingSiteProcessCountTrackerKey));

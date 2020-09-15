@@ -410,13 +410,13 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   static GURL GetEffectiveURL(BrowserContext* browser_context,
                               const GURL& url);
 
-  // Returns true if pages loaded from |url| ought to be handled only by a
+  // Returns true if pages loaded from |site_info| ought to be handled only by a
   // renderer process isolated from other sites. If --site-per-process is used,
   // this is true for all sites. In other site isolation modes, only a subset
   // of sites will require dedicated processes.
-  static bool DoesSiteRequireDedicatedProcess(
+  static bool DoesSiteInfoRequireDedicatedProcess(
       const IsolationContext& isolation_context,
-      const GURL& url);
+      const SiteInfo& site_info);
 
   // Returns true if a process for a |site_info| should be locked. Returning
   // true here also implies that |site_info| requires a dedicated process.
@@ -427,7 +427,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // single-process mode, or extensions where a process is currently allowed to
   // be reused for different extensions.  Most of these special cases should
   // eventually be removed, and this function should become equivalent to
-  // DoesSiteRequireDedicatedProcess().
+  // DoesSiteInfoRequireDedicatedProcess().
   //
   // |is_guest| should be set to true if the call is being made for a <webview>
   // guest SiteInstance(i.e. SiteInstance::IsGuest() returns true).
@@ -571,16 +571,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // See GetEffectiveURL().  This will be true for hosted apps as well as NTP
   // URLs.
   static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
-
-  // Returns true if pages loaded from |site_info| ought to be handled only by a
-  // renderer process isolated from other sites. If --site-per-process is used,
-  // this is true for all sites. In other site isolation modes, only a subset
-  // of sites will require dedicated processes.
-  // Note: Unlike DoesSiteRequireDedicatedProcess(), this method expects a
-  // SiteInfo instead of a plain URL.
-  static bool DoesSiteInfoRequireDedicatedProcess(
-      const IsolationContext& isolation_context,
-      const SiteInfo& site_info);
 
   // Returns true if |url| and its |site_url| can be placed inside a default
   // SiteInstance.

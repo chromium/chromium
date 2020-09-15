@@ -2372,8 +2372,9 @@ void NavigationRequest::OnResponseStarted(
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
     if (!instance->HasSite() &&
-        SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-            isolation_context, common_params_->url)) {
+        SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+            isolation_context, SiteInstanceImpl::ComputeSiteInfo(
+                                   isolation_context, common_params_->url))) {
       instance->ConvertToDefaultOrSetSite(common_params_->url);
     }
 

@@ -8638,9 +8638,12 @@ IN_PROC_BROWSER_TEST_P(
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
   RenderProcessHost* foo_process = nullptr;
   TestNavigationManager foo_manager(web_contents, foo_url);
-  EXPECT_TRUE(SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-      root->current_frame_host()->GetSiteInstance()->GetIsolationContext(),
-      GURL("http://foo.com")));
+  auto& current_isolation_context =
+      root->current_frame_host()->GetSiteInstance()->GetIsolationContext();
+  EXPECT_TRUE(SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
+      current_isolation_context,
+      SiteInstanceImpl::ComputeSiteInfo(current_isolation_context,
+                                        GURL("http://foo.com"))));
 
   // Set up the work to be done after the renderer is asked to commit
   // |siteless_url|, but before the corresponding DidCommitProvisionalLoad IPC

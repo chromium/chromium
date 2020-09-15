@@ -1201,17 +1201,6 @@ bool SiteInstanceImpl::HasEffectiveURL(BrowserContext* browser_context,
 }
 
 // static
-bool SiteInstanceImpl::DoesSiteRequireDedicatedProcess(
-    const IsolationContext& isolation_context,
-    const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
-         DoesSiteInfoRequireDedicatedProcess(
-             isolation_context,
-             SiteInstanceImpl::ComputeSiteInfo(isolation_context, url));
-}
-
-// static
 bool SiteInstanceImpl::DoesSiteInfoRequireDedicatedProcess(
     const IsolationContext& isolation_context,
     const SiteInfo& site_info) {
