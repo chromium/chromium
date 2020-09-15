@@ -105,6 +105,7 @@ js2gtest("switch_access_extjs_tests") {
     "navigation_manager_test.js",
     "nodes/basic_node_test.js",
     "nodes/desktop_node_test.js",
+    "nodes/group_node_test.js",
     "nodes/tab_node_test.js",
     "switch_access_predicate_test.js",
     "text_navigation_manager_test.js",

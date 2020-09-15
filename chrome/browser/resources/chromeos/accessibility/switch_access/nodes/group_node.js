@@ -35,7 +35,8 @@ class GroupNode extends SAChildNode {
 
   /** @override */
   get location() {
-    const childLocations = this.children_.map(c => c.location);
+    const childLocations =
+        this.children_.filter(c => c.isValidAndVisible()).map(c => c.location);
     return RectUtil.unionAll(childLocations);
   }
 
