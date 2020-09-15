@@ -142,7 +142,7 @@ bool InputMethodWinTSF::IsCandidatePopupOpen() const {
 void InputMethodWinTSF::OnWillChangeFocusedClient(
     TextInputClient* focused_before,
     TextInputClient* focused) {
-  if (IsWindowFocused(focused_before)) {
+  if (ui::TSFBridge::GetInstance() && IsWindowFocused(focused_before)) {
     ConfirmCompositionText();
     ui::TSFBridge::GetInstance()->RemoveFocusedClient(focused_before);
   }
