@@ -507,6 +507,7 @@ void FlexLayout::InitializeChildData(
 
     const base::Optional<int> available_cross =
         GetAvailableCrossAxisSize(*data, view_index, bounds);
+    SetCrossAxis(&child_layout.available_size, orientation(), available_cross);
 
     flex_child.preferred_size =
         GetPreferredSizeForRule(flex_child.flex.rule(), child, available_cross);
@@ -516,24 +517,18 @@ void FlexLayout::InitializeChildData(
       flex_child.current_size =
           GetCurrentSizeForRule(flex_child.flex.rule(), child,
                                 NormalizedSizeBounds(0, available_cross));
-      SetCrossAxis(&child_layout.available_size, orientation(),
-                   available_cross);
-
       DCHECK_GE(flex_child.preferred_size.main(),
                 flex_child.current_size.main())
           << " in " << child->GetClassName();
-
-      // Keep track of non-hidden flex controls.
-      const bool can_flex =
-          flex_child.flex.weight() > 0 ||
-          flex_child.current_size.main() < flex_child.preferred_size.main();
-      if (can_flex)
-        (*flex_order_to_index)[flex_child.flex.order()].push_back(view_index);
-
     } else {
       // All non-flex or unbounded controls get preferred size.
       flex_child.current_size = flex_child.preferred_size;
     }
+
+    // Keep track of non-hidden flex controls.
+    if (flex_child.flex.weight() > 0 ||
+        flex_child.current_size.main() < flex_child.preferred_size.main())
+      (*flex_order_to_index)[flex_child.flex.order()].push_back(view_index);
 
     child_layout.visible = flex_child.current_size.main() > 0;
   }
