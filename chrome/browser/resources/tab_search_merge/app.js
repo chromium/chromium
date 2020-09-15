@@ -293,7 +293,7 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   getKeyboardShortcut_() {
-    return (isMac ? 'Cmd' : 'Ctrl') + '+Shift+E';
+    return (isMac ? 'Cmd' : 'Ctrl') + '+Shift+A';
   }
 
   /**
