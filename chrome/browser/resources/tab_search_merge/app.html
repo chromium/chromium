@@ -61,7 +61,8 @@
 <div id="tabs">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"
       selected="{{selectedIndex_}}" selected-class="selected">
-    <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]">
+    <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]"
+        initial-count="[[chunkingItemCount_]]">
       <tab-search-item id="[[item.tabId]]" class="mwb-list-item" data="[[item]]"
           on-click="onItemClick_" on-close="onItemClose_"
           on-focus="onItemFocus_" tabindex="0" >

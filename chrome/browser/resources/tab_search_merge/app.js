@@ -49,6 +49,17 @@ export class TabSearchAppElement extends PolymerElement {
         type: Array,
         value: [],
       },
+
+      /**
+       * Controls the number of tab search list items initially rendered in
+       * dom-repeat's chunked rendering mode.
+       * @private {number}
+       */
+      chunkingItemCount_: {
+        type: Number,
+        readOnly: true,
+        value: 10,
+      },
     };
   }
 
@@ -89,8 +100,8 @@ export class TabSearchAppElement extends PolymerElement {
       if (!this.openTabs_) {
         listenOnce(this.$.tabsList, 'rendered-item-count-changed', e => {
           const event = /** @type {!CustomEvent<!{value: number}>} */ (e);
-          // Ensure that the full list of tabs has been rendered.
-          assert(event.detail.value === this.filteredOpenTabs_.length);
+          // The initial rendered tab list must be non-zero.
+          assert(event.detail.value > 0);
 
           // Push showUI() to the event loop to allow reflow to occur following
           // the DOM update.
