@@ -74,7 +74,6 @@ android_library("audio_track_java") {
     "//chromecast/base:base_java",
     "//chromecast/public:volume_control_enums_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:androidx_legacy_legacy_support_v13_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
