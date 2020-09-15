@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -17,6 +18,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 
 DriveShareAction::DriveShareAction() = default;
@@ -30,7 +32,8 @@ const base::string16 DriveShareAction::GetActionName() {
 const gfx::ImageSkia DriveShareAction::GetActionIcon() {
   // TODO(crbug.com/1127750): Update to create the Icon at the
   // Sharesheet bubble view. Only get the VectorIcon here.
-  return gfx::ImageSkia();
+  return gfx::CreateVectorIcon(kPersonAddIcon, sharesheet::kIconSize,
+                               gfx::kPlaceholderColor);
 }
 
 void DriveShareAction::LaunchAction(
