@@ -65,9 +65,8 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
   int hit_count() const { return hit_count_; }
 
   // URLRequestInterceptor implementation:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override;
 
  private:
   // scheme,hostname -> URLRequestInterceptor

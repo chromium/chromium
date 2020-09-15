@@ -46,8 +46,9 @@ const char* kTextHtml = "text/html";
 
 class HeadersURLRequestJob : public URLRequestJob {
  public:
-  HeadersURLRequestJob(URLRequest* request)
-      : URLRequestJob(request, nullptr) {}
+  explicit HeadersURLRequestJob(URLRequest* request) : URLRequestJob(request) {}
+
+  ~HeadersURLRequestJob() override {}
 
   void Start() override {
     // Fills response headers and returns immediately.
@@ -88,8 +89,6 @@ class HeadersURLRequestJob : public URLRequestJob {
   }
 
  protected:
-  ~HeadersURLRequestJob() override {}
-
   std::string GetContentTypeValue() const {
     if (request()->url().path_piece() == "/badcontenttype")
       return "\xff";
@@ -99,10 +98,9 @@ class HeadersURLRequestJob : public URLRequestJob {
 
 class NetURLRequestInterceptor : public URLRequestInterceptor {
  public:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new HeadersURLRequestJob(request);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<HeadersURLRequestJob>(request);
   }
 };
 

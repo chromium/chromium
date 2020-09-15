@@ -43,10 +43,9 @@ URLRequestFtpJob::AuthData::~AuthData() = default;
 
 URLRequestFtpJob::URLRequestFtpJob(
     URLRequest* request,
-    NetworkDelegate* network_delegate,
     FtpTransactionFactory* ftp_transaction_factory,
     FtpAuthCache* ftp_auth_cache)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       proxy_resolution_service_(
           request_->context()->proxy_resolution_service()),
       read_in_progress_(false),

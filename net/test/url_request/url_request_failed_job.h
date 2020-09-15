@@ -29,14 +29,14 @@ class URLRequestFailedJob : public URLRequestJob {
   };
 
   URLRequestFailedJob(URLRequest* request,
-                      NetworkDelegate* network_delegate,
                       FailurePhase phase,
                       int net_error);
 
   // Same as above, except that the job fails at FailurePhase.START.
   URLRequestFailedJob(URLRequest* request,
-                      NetworkDelegate* network_delegate,
                       int net_error);
+
+  ~URLRequestFailedJob() override;
 
   // URLRequestJob implementation:
   void Start() override;
@@ -72,7 +72,6 @@ class URLRequestFailedJob : public URLRequestJob {
                                          const std::string& hostname);
 
  protected:
-  ~URLRequestFailedJob() override;
   void StartAsync();
 
  private:

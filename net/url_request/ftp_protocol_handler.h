@@ -17,7 +17,6 @@ namespace net {
 class FtpAuthCache;
 class FtpTransactionFactory;
 class HostResolver;
-class NetworkDelegate;
 class URLRequestJob;
 
 // Implements a ProtocolHandler for FTP.
@@ -37,9 +36,7 @@ class NET_EXPORT FtpProtocolHandler :
       std::unique_ptr<FtpTransactionFactory> ftp_transaction_factory,
       FtpAuthCache* auth_cache);
 
-  std::unique_ptr<URLRequestJob> CreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
+  std::unique_ptr<URLRequestJob> CreateJob(URLRequest* request) const override;
 
  private:
   friend class FtpTestURLRequestContext;

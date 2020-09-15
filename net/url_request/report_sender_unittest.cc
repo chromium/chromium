@@ -81,8 +81,7 @@ void SuccessCallback(bool* called) {
 // URLRequestJob that returns an HTTP 500 response.
 class MockServerErrorJob : public URLRequestJob {
  public:
-  MockServerErrorJob(URLRequest* request, NetworkDelegate* network_delegate)
-      : URLRequestJob(request, network_delegate) {}
+  explicit MockServerErrorJob(URLRequest* request) : URLRequestJob(request) {}
   ~MockServerErrorJob() override = default;
 
  protected:
@@ -103,10 +102,9 @@ class MockServerErrorJobInterceptor : public URLRequestInterceptor {
   MockServerErrorJobInterceptor() = default;
   ~MockServerErrorJobInterceptor() override = default;
 
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new MockServerErrorJob(request, network_delegate);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<MockServerErrorJob>(request);
   }
 
  private:

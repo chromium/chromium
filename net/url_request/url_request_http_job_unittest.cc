@@ -97,7 +97,6 @@ class TestURLRequestHttpJob : public URLRequestHttpJob {
  public:
   explicit TestURLRequestHttpJob(URLRequest* request)
       : URLRequestHttpJob(request,
-                          request->context()->network_delegate(),
                           request->context()->http_user_agent_settings()),
         use_null_source_stream_(false) {}
 

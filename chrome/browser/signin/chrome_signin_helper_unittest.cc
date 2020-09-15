@@ -46,14 +46,13 @@ class TestRequestInterceptor : public net::URLRequestInterceptor {
   ~TestRequestInterceptor() override = default;
 
  private:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     std::string response_headers =
         base::StringPrintf("HTTP/1.1 200 OK\n\n%s: %s\n", header_name_.c_str(),
                            header_value_.c_str());
-    return new net::URLRequestTestJob(request, network_delegate,
-                                      response_headers, "", true);
+    return std::make_unique<net::URLRequestTestJob>(request, response_headers,
+                                                    "", true);
   }
 
   const std::string header_name_;

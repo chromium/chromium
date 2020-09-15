@@ -32,7 +32,6 @@ enum class FTPStartResult : int {
 
 class FtpAuthCache;
 class FtpTransactionFactory;
-class NetworkDelegate;
 class ProxyResolutionRequest;
 
 // A URLRequestJob subclass that is built on top of FtpTransaction. It
@@ -40,7 +39,6 @@ class ProxyResolutionRequest;
 class NET_EXPORT_PRIVATE URLRequestFtpJob : public URLRequestJob {
  public:
   URLRequestFtpJob(URLRequest* request,
-                   NetworkDelegate* network_delegate,
                    FtpTransactionFactory* ftp_transaction_factory,
                    FtpAuthCache* ftp_auth_cache);
   ~URLRequestFtpJob() override;

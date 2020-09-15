@@ -23,10 +23,10 @@ class URLRequest;
 class URLRequestMockDataJob : public URLRequestJob {
  public:
   URLRequestMockDataJob(URLRequest* request,
-                        NetworkDelegate* network_delegate,
                         const std::string& data,
                         int data_repeat_count,
                         bool request_client_certificate);
+  ~URLRequestMockDataJob() override;
 
   void Start() override;
   int ReadRawData(IOBuffer* buf, int buf_size) override;
@@ -60,9 +60,6 @@ class URLRequestMockDataJob : public URLRequestJob {
 
   // Overrides response headers in the mocked response.
   void OverrideResponseHeaders(const std::string& headers);
-
- protected:
-  ~URLRequestMockDataJob() override;
 
  private:
   void GetResponseInfoConst(HttpResponseInfo* info) const;

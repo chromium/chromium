@@ -39,15 +39,13 @@ struct MockUploadResult {
 
 class UploadMockURLRequestJob : public net::URLRequestJob {
  public:
-  UploadMockURLRequestJob(net::URLRequest* request,
-                          net::NetworkDelegate* network_delegate,
-                          MockUploadResult result)
-      : net::URLRequestJob(request, network_delegate),
-        upload_stream_(nullptr),
-        result_(result) {
+  UploadMockURLRequestJob(net::URLRequest* request, MockUploadResult result)
+      : net::URLRequestJob(request), upload_stream_(nullptr), result_(result) {
     EXPECT_FALSE(request->allow_credentials());
     EXPECT_TRUE(request->load_flags() & net::LOAD_DO_NOT_SAVE_COOKIES);
   }
+
+  ~UploadMockURLRequestJob() override = default;
 
  protected:
   void Start() override {
@@ -65,8 +63,6 @@ class UploadMockURLRequestJob : public net::URLRequestJob {
   }
 
  private:
-  ~UploadMockURLRequestJob() override {}
-
   void OnStreamInitialized(int rv) {
     EXPECT_EQ(net::OK, rv);
 
@@ -109,9 +105,8 @@ class UploadInterceptor : public net::URLRequestInterceptor {
 
   ~UploadInterceptor() override { EXPECT_TRUE(results_.empty()); }
 
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     EXPECT_FALSE(results_.empty());
     MockUploadResult result = results_.front();
     results_.pop_front();
@@ -121,7 +116,7 @@ class UploadInterceptor : public net::URLRequestInterceptor {
 
     ++request_count_;
 
-    return new UploadMockURLRequestJob(request, delegate, result);
+    return std::make_unique<UploadMockURLRequestJob>(request, result);
   }
 
   void ExpectRequestAndReturnError(int net_error) {

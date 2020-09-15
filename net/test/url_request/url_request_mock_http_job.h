@@ -30,8 +30,8 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
  public:
   // Note that all file I/O is done using ThreadPool.
   URLRequestMockHTTPJob(URLRequest* request,
-                        NetworkDelegate* network_delegate,
                         const base::FilePath& file_path);
+  ~URLRequestMockHTTPJob() override;
 
   // URLRequestJob overrides.
   void Start() override;
@@ -66,9 +66,6 @@ class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
   // requests with the contents of |file|.
   static std::unique_ptr<URLRequestInterceptor> CreateInterceptorForSingleFile(
       const base::FilePath& file);
-
- protected:
-  ~URLRequestMockHTTPJob() override;
 
  private:
   void GetResponseInfoConst(HttpResponseInfo* info) const;

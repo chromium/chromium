@@ -126,14 +126,8 @@ std::string URLRequestTestJob::test_error_headers() {
   return std::string(kHeaders, base::size(kHeaders));
 }
 
-URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate)
-    : URLRequestTestJob(request, network_delegate, false) {}
-
-URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate,
-                                     bool auto_advance)
-    : URLRequestJob(request, network_delegate),
+URLRequestTestJob::URLRequestTestJob(URLRequest* request, bool auto_advance)
+    : URLRequestJob(request),
       auto_advance_(auto_advance),
       stage_(WAITING),
       priority_(DEFAULT_PRIORITY),
@@ -144,11 +138,10 @@ URLRequestTestJob::URLRequestTestJob(URLRequest* request,
       async_reads_(false) {}
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request,
-                                     NetworkDelegate* network_delegate,
                                      const std::string& response_headers,
                                      const std::string& response_data,
                                      bool auto_advance)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       auto_advance_(auto_advance),
       stage_(WAITING),
       priority_(DEFAULT_PRIORITY),

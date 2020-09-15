@@ -84,7 +84,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // factories to be queried.  If no factory handles the request, then the
   // default job will be used.
   typedef URLRequestJob*(ProtocolFactory)(URLRequest* request,
-                                          NetworkDelegate* network_delegate,
                                           const std::string& scheme);
 
   // Max number of http redirects to follow. The Fetch spec says: "If
@@ -621,6 +620,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Used to specify the context (cookie store, cache) for this request.
   const URLRequestContext* context() const;
 
+  // Returns context()->network_delegate().
+  NetworkDelegate* network_delegate() const;
+
   const NetLogWithSource& net_log() const { return net_log_; }
 
   // Returns the expected content size if available
@@ -746,14 +748,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   friend class TestNetworkDelegate;
 
   // URLRequests are always created by calling URLRequestContext::CreateRequest.
-  //
-  // If no network delegate is passed in, will use the ones from the
-  // URLRequestContext.
   URLRequest(const GURL& url,
              RequestPriority priority,
              Delegate* delegate,
              const URLRequestContext* context,
-             NetworkDelegate* network_delegate,
              NetworkTrafficAnnotationTag traffic_annotation);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
@@ -797,9 +795,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
                                  bool fatal);
   void NotifyReadCompleted(int bytes_read);
 
-  // These functions delegate to |network_delegate_| if it is not NULL.
-  // If |network_delegate_| is NULL, cookies can be used unless
-  // SetDefaultCookiePolicyToBlock() has been called.
+  // These functions delegate to the NetworkDelegate if it is not nullptr.
+  // Otherwise, cookies can be used unless SetDefaultCookiePolicyToBlock() has
+  // been called.
   bool CanGetCookies() const;
   bool CanSetCookie(const net::CanonicalCookie& cookie,
                     CookieOptions* options) const;
@@ -823,8 +821,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // most of the dependencies which are shared between requests (disk cache,
   // cookie store, socket pool, etc.)
   const URLRequestContext* context_;
-
-  NetworkDelegate* network_delegate_;
 
   // Tracks the time spent in various load states throughout this request.
   NetLogWithSource net_log_;
@@ -852,7 +848,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // caller.
   bool allow_credentials_;
   // Privacy mode for current hop. Based on |allow_credentials_|, |load_flags_|,
-  // and information provided by |network_delegate_|. Saving cookies can
+  // and information provided by the NetworkDelegate. Saving cookies can
   // currently be blocked independently of this field by setting the deprecated
   // LOAD_DO_NOT_SAVE_COOKIES field in |load_flags_|.
   PrivacyMode privacy_mode_;

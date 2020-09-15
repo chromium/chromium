@@ -18,7 +18,6 @@ class GURL;
 
 namespace net {
 
-class NetworkDelegate;
 class URLRequest;
 class URLRequestInterceptor;
 class URLRequestJob;
@@ -34,8 +33,7 @@ class NET_EXPORT URLRequestJobFactory {
     // Creates a URLRequestJob for the particular protocol. Never returns
     // nullptr.
     virtual std::unique_ptr<URLRequestJob> CreateJob(
-        URLRequest* request,
-        NetworkDelegate* network_delegate) const = 0;
+        URLRequest* request) const = 0;
 
     // Indicates if it should be safe to redirect to |location|. Should handle
     // protocols handled by MaybeCreateJob().
@@ -54,9 +52,7 @@ class NET_EXPORT URLRequestJobFactory {
   // with net::Error code if unable to handle request->url().
   //
   // Virtual for tests.
-  virtual std::unique_ptr<URLRequestJob> CreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const;
+  virtual std::unique_ptr<URLRequestJob> CreateJob(URLRequest* request) const;
 
   // Returns true if it's safe to redirect to |location|.
   //

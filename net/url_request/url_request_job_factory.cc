@@ -30,10 +30,8 @@ class HttpProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
   HttpProtocolHandler& operator=(const HttpProtocolHandler&) = delete;
   ~HttpProtocolHandler() override = default;
 
-  std::unique_ptr<URLRequestJob> CreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return URLRequestHttpJob::Create(request, network_delegate);
+  std::unique_ptr<URLRequestJob> CreateJob(URLRequest* request) const override {
+    return URLRequestHttpJob::Create(request);
   }
 };
 
@@ -81,30 +79,27 @@ bool URLRequestJobFactory::SetProtocolHandler(
 }
 
 std::unique_ptr<URLRequestJob> URLRequestJobFactory::CreateJob(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) const {
+    URLRequest* request) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If we are given an invalid URL, then don't even try to inspect the scheme.
   if (!request->url().is_valid())
-    return std::make_unique<URLRequestErrorJob>(request, network_delegate,
-                                                ERR_INVALID_URL);
+    return std::make_unique<URLRequestErrorJob>(request, ERR_INVALID_URL);
 
   if (g_interceptor_for_testing) {
     std::unique_ptr<URLRequestJob> job(
-        g_interceptor_for_testing->MaybeInterceptRequest(request,
-                                                         network_delegate));
+        g_interceptor_for_testing->MaybeInterceptRequest(request));
     if (job)
       return job;
   }
 
   auto it = protocol_handler_map_.find(request->url().scheme());
   if (it == protocol_handler_map_.end()) {
-    return std::make_unique<URLRequestErrorJob>(request, network_delegate,
+    return std::make_unique<URLRequestErrorJob>(request,
                                                 ERR_UNKNOWN_URL_SCHEME);
   }
 
-  return it->second->CreateJob(request, network_delegate);
+  return it->second->CreateJob(request);
 }
 
 bool URLRequestJobFactory::IsSafeRedirectTarget(const GURL& location) const {

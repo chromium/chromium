@@ -21,15 +21,13 @@ URLRequestInterceptingJobFactory::URLRequestInterceptingJobFactory(
 URLRequestInterceptingJobFactory::~URLRequestInterceptingJobFactory() = default;
 
 std::unique_ptr<net::URLRequestJob> URLRequestInterceptingJobFactory::CreateJob(
-    net::URLRequest* request,
-    net::NetworkDelegate* network_delegate) const {
+    net::URLRequest* request) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unique_ptr<net::URLRequestJob> job =
-      base::WrapUnique<net::URLRequestJob>(
-          interceptor_->MaybeInterceptRequest(request, network_delegate));
+      interceptor_->MaybeInterceptRequest(request);
   if (job)
     return job;
-  return job_factory_->CreateJob(request, network_delegate);
+  return job_factory_->CreateJob(request);
 }
 
 bool URLRequestInterceptingJobFactory::IsSafeRedirectTarget(

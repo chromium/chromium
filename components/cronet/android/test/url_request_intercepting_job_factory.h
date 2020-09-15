@@ -39,8 +39,7 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
 
   // URLRequestJobFactory implementation
   std::unique_ptr<net::URLRequestJob> CreateJob(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override;
+      net::URLRequest* request) const override;
   bool IsSafeRedirectTarget(const GURL& location) const override;
 
  private:

@@ -92,7 +92,6 @@ class URLRequestChromeJob : public net::URLRequestJob {
  public:
   // |is_incognito| set when job is generated from an incognito profile.
   URLRequestChromeJob(net::URLRequest* request,
-                      net::NetworkDelegate* network_delegate,
                       BrowserState* browser_state,
                       bool is_incognito);
 
@@ -205,10 +204,9 @@ class URLRequestChromeJob : public net::URLRequestJob {
 };
 
 URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
-                                         net::NetworkDelegate* network_delegate,
                                          BrowserState* browser_state,
                                          bool is_incognito)
-    : net::URLRequestJob(request, network_delegate),
+    : net::URLRequestJob(request),
       data_offset_(0),
       pending_buf_size_(0),
       allow_caching_(true),
@@ -401,12 +399,11 @@ class ChromeProtocolHandler
   ~ChromeProtocolHandler() override {}
 
   std::unique_ptr<net::URLRequestJob> CreateJob(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+      net::URLRequest* request) const override {
     DCHECK(request);
 
-    return std::make_unique<URLRequestChromeJob>(request, network_delegate,
-                                                 browser_state_, is_incognito_);
+    return std::make_unique<URLRequestChromeJob>(request, browser_state_,
+                                                 is_incognito_);
   }
 
   bool IsSafeRedirectTarget(const GURL& location) const override {

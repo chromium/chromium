@@ -29,11 +29,10 @@
 namespace net {
 
 URLRequestRedirectJob::URLRequestRedirectJob(URLRequest* request,
-                                             NetworkDelegate* network_delegate,
                                              const GURL& redirect_destination,
                                              ResponseCode response_code,
                                              const std::string& redirect_reason)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       redirect_destination_(redirect_destination),
       response_code_(response_code),
       redirect_reason_(redirect_reason) {

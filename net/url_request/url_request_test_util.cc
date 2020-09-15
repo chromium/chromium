@@ -656,10 +656,9 @@ class TestScopedURLInterceptor::TestRequestInterceptor
 
   ~TestRequestInterceptor() override { CHECK(safe_to_delete_); }
 
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return intercept_job_.release();
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::move(intercept_job_);
   }
 
   bool job_used() const { return intercept_job_.get() == nullptr; }

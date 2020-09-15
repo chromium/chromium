@@ -40,7 +40,6 @@ class HttpRequestHeaders;
 class HttpResponseInfo;
 class IOBuffer;
 struct LoadTimingInfo;
-class NetworkDelegate;
 class ProxyServer;
 class SSLCertRequestInfo;
 class SSLInfo;
@@ -51,8 +50,7 @@ class X509Certificate;
 
 class NET_EXPORT URLRequestJob {
  public:
-  explicit URLRequestJob(URLRequest* request,
-                         NetworkDelegate* network_delegate);
+  explicit URLRequestJob(URLRequest* request);
   virtual ~URLRequestJob();
 
   // Returns the request that owns this job.
@@ -325,9 +323,6 @@ class NET_EXPORT URLRequestJob {
   // or nullptr on error.
   virtual std::unique_ptr<SourceStream> SetUpSourceStream();
 
-  // Provides derived classes with access to the request's network delegate.
-  NetworkDelegate* network_delegate() { return network_delegate_; }
-
   // Set the proxy server that was used, if any.
   void SetProxyServer(const ProxyServer& proxy_server);
 
@@ -432,9 +427,6 @@ class NET_EXPORT URLRequestJob {
   // Set when a redirect is deferred. Redirects are deferred after validity
   // checks are performed, so this field must not be modified.
   base::Optional<RedirectInfo> deferred_redirect_info_;
-
-  // The network delegate to use with this request, if any.
-  NetworkDelegate* network_delegate_;
 
   // Non-null if ReadRawData() returned ERR_IO_PENDING, and the read has not
   // completed.

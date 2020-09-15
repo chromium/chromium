@@ -54,10 +54,9 @@ URLRequestTestJobBackedByFile::FileMetaInfo::FileMetaInfo()
 
 URLRequestTestJobBackedByFile::URLRequestTestJobBackedByFile(
     URLRequest* request,
-    NetworkDelegate* network_delegate,
     const base::FilePath& file_path,
     const scoped_refptr<base::TaskRunner>& file_task_runner)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       file_path_(file_path),
       stream_(new FileStream(file_task_runner)),
       file_task_runner_(file_task_runner),

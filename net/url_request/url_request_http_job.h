@@ -47,16 +47,13 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // Returns a job that returns a redirect in the case of HSTS, and returns a
   // job that fails for unencrypted requests if current settings dont allow
   // them. Never returns nullptr.
-  static std::unique_ptr<URLRequestJob> Create(
-      URLRequest* request,
-      NetworkDelegate* network_delegate);
+  static std::unique_ptr<URLRequestJob> Create(URLRequest* request);
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
 
  protected:
   URLRequestHttpJob(URLRequest* request,
-                    NetworkDelegate* network_delegate,
                     const HttpUserAgentSettings* http_user_agent_settings);
 
   ~URLRequestHttpJob() override;

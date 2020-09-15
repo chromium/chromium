@@ -17,7 +17,6 @@ namespace net {
 class NET_EXPORT URLRequestErrorJob : public URLRequestJob {
  public:
   URLRequestErrorJob(URLRequest* request,
-                     NetworkDelegate* network_delegate,
                      int error);
   ~URLRequestErrorJob() override;
 

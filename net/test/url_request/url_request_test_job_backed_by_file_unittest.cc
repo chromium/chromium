@@ -35,7 +35,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
   // OnReadComplete.
   TestURLRequestTestJobBackedByFile(
       URLRequest* request,
-      NetworkDelegate* network_delegate,
       const base::FilePath& file_path,
       const scoped_refptr<base::TaskRunner>& file_task_runner,
       int* open_result,
@@ -43,7 +42,6 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
       bool* done_reading,
       std::string* observed_content)
       : URLRequestTestJobBackedByFile(request,
-                                      network_delegate,
                                       file_path,
                                       file_task_runner),
         open_result_(open_result),
@@ -232,9 +230,8 @@ void URLRequestTestJobBackedByFileEventsTest::RunRequestWithPath(
       kUrl, DEFAULT_PRIORITY, &delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));
   TestScopedURLInterceptor interceptor(
       kUrl, std::make_unique<TestURLRequestTestJobBackedByFile>(
-                request.get(), context_.network_delegate(), path,
-                base::ThreadTaskRunnerHandle::Get(), open_result, seek_position,
-                done_reading, observed_content));
+                request.get(), path, base::ThreadTaskRunnerHandle::Get(),
+                open_result, seek_position, done_reading, observed_content));
   if (!range.empty()) {
     request->SetExtraRequestHeaderByName(HttpRequestHeaders::kRange, range,
                                          true /*overwrite*/);

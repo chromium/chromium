@@ -336,10 +336,8 @@ class PriorityMonitoringURLRequestJob : public URLRequestTestJob {
  public:
   // The latest priority of the job is always written to |request_priority_|.
   PriorityMonitoringURLRequestJob(URLRequest* request,
-                                  NetworkDelegate* network_delegate,
                                   RequestPriority* request_priority)
-      : URLRequestTestJob(request, network_delegate),
-        request_priority_(request_priority) {
+      : URLRequestTestJob(request), request_priority_(request_priority) {
     *request_priority_ = DEFAULT_PRIORITY;
   }
 
@@ -979,11 +977,11 @@ class URLRequestInterceptorWithLoadTimingInfo : public URLRequestInterceptor {
   ~URLRequestInterceptorWithLoadTimingInfo() override = default;
 
   // URLRequestInterceptor implementation:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    URLRequestTestJob* job = new URLRequestTestJob(
-        request, network_delegate, ok_headers(), ok_data(), true);
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    std::unique_ptr<URLRequestTestJob> job =
+        std::make_unique<URLRequestTestJob>(request, ok_headers(), ok_data(),
+                                            true);
     job->set_load_timing_info(main_request_load_timing_info_);
     return job;
   }
@@ -1408,8 +1406,9 @@ TEST_F(URLRequestTest, SetJobPriorityBeforeJobStart) {
   EXPECT_EQ(DEFAULT_PRIORITY, req->priority());
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
   EXPECT_EQ(DEFAULT_PRIORITY, job_priority);
 
@@ -1428,8 +1427,9 @@ TEST_F(URLRequestTest, SetJobPriority) {
       TRAFFIC_ANNOTATION_FOR_TESTS));
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->SetPriority(LOW);
@@ -1451,8 +1451,9 @@ TEST_F(URLRequestTest, PriorityIgnoreLimits) {
   EXPECT_EQ(MAXIMUM_PRIORITY, req->priority());
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->SetLoadFlags(LOAD_IGNORE_LIMITS);
@@ -2884,8 +2885,7 @@ class URLRequestTestHTTP : public URLRequestTest {
     // URLRequestJobFactory::ProtocolHandler implementation:
 
     std::unique_ptr<URLRequestJob> CreateJob(
-        URLRequest* request,
-        NetworkDelegate* network_delegate) const override {
+        URLRequest* request) const override {
       NOTREACHED();
       return nullptr;
     }
@@ -6159,9 +6159,10 @@ TEST_F(URLRequestTestHTTP, RedirectJobWithReferenceFragment) {
   std::unique_ptr<URLRequest> r(default_context().CreateRequest(
       original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      r.get(), &default_network_delegate_, redirect_url,
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          r.get(), redirect_url, URLRequestRedirectJob::REDIRECT_302_FOUND,
+          "Very Good Reason");
   TestScopedURLInterceptor interceptor(r->url(), std::move(job));
 
   r->Start();
@@ -7978,10 +7979,10 @@ TEST_F(URLRequestTestHTTP, InterceptPost302RedirectGet) {
                     base::NumberToString(base::size(kData) - 1));
   req->SetExtraRequestHeaders(headers);
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      http_test_server()->GetURL("/echo"),
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), http_test_server()->GetURL("/echo"),
+          URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
@@ -8005,11 +8006,11 @@ TEST_F(URLRequestTestHTTP, InterceptPost307RedirectPost) {
                     base::NumberToString(base::size(kData) - 1));
   req->SetExtraRequestHeaders(headers);
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      http_test_server()->GetURL("/echo"),
-      URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
-      "Very Good Reason"));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), http_test_server()->GetURL("/echo"),
+          URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
+          "Very Good Reason");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
@@ -8208,9 +8209,10 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
       initial_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   EXPECT_EQ(DEFAULT_PRIORITY, req->priority());
 
-  std::unique_ptr<URLRequestRedirectJob> redirect_job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_, redirect_url,
-      URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason"));
+  std::unique_ptr<URLRequestRedirectJob> redirect_job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), redirect_url, URLRequestRedirectJob::REDIRECT_302_FOUND,
+          "Very Good Reason");
   auto interceptor = std::make_unique<TestScopedURLInterceptor>(
       initial_url, std::move(redirect_job));
 
@@ -8221,8 +8223,9 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
   interceptor.reset();
 
   RequestPriority job_priority;
-  std::unique_ptr<URLRequestJob> job(new PriorityMonitoringURLRequestJob(
-      req.get(), &default_network_delegate_, &job_priority));
+  std::unique_ptr<URLRequestJob> job =
+      std::make_unique<PriorityMonitoringURLRequestJob>(req.get(),
+                                                        &job_priority);
   interceptor =
       std::make_unique<TestScopedURLInterceptor>(redirect_url, std::move(job));
 
@@ -9837,9 +9840,8 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
 
  private:
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     EXPECT_TRUE(request->disable_secure_dns());
     return nullptr;
   }
@@ -11616,10 +11618,11 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
       GURL("http://not-a-real-domain/"), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
 
-  std::unique_ptr<URLRequestRedirectJob> job(new URLRequestRedirectJob(
-      req.get(), &default_network_delegate_,
-      GURL("http://this-should-never-be-navigated-to/"),
-      URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Jumbo shrimp"));
+  std::unique_ptr<URLRequestRedirectJob> job =
+      std::make_unique<URLRequestRedirectJob>(
+          req.get(), GURL("http://this-should-never-be-navigated-to/"),
+          URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
+          "Jumbo shrimp");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();

@@ -41,9 +41,8 @@ class MockJobInterceptor : public URLRequestInterceptor {
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation:
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
     int net_error = OK;
     URLRequestFailedJob::FailurePhase phase =
         URLRequestFailedJob::FailurePhase::MAX_FAILURE_PHASE;
@@ -57,7 +56,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
         }
       }
     }
-    return new URLRequestFailedJob(request, network_delegate, phase, net_error);
+    return std::make_unique<URLRequestFailedJob>(request, phase, net_error);
   }
 
  private:
@@ -78,10 +77,9 @@ GURL GetMockUrl(const std::string& scheme,
 }  // namespace
 
 URLRequestFailedJob::URLRequestFailedJob(URLRequest* request,
-                                         NetworkDelegate* network_delegate,
                                          FailurePhase phase,
                                          int net_error)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       phase_(phase),
       net_error_(net_error),
       total_received_bytes_(0) {
@@ -90,11 +88,10 @@ URLRequestFailedJob::URLRequestFailedJob(URLRequest* request,
   CHECK_LT(net_error, OK);
 }
 
-URLRequestFailedJob::URLRequestFailedJob(URLRequest* request,
-                                         NetworkDelegate* network_delegate,
-                                         int net_error)
-    : URLRequestFailedJob(request, network_delegate, START, net_error) {
-}
+URLRequestFailedJob::URLRequestFailedJob(URLRequest* request, int net_error)
+    : URLRequestFailedJob(request, START, net_error) {}
+
+URLRequestFailedJob::~URLRequestFailedJob() = default;
 
 void URLRequestFailedJob::Start() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -178,8 +175,6 @@ GURL URLRequestFailedJob::GetMockHttpsUrlForHostname(
     const std::string& hostname) {
   return GetMockUrl("https", hostname, START, net_error);
 }
-
-URLRequestFailedJob::~URLRequestFailedJob() = default;
 
 void URLRequestFailedJob::StartAsync() {
   if (phase_ == START) {

@@ -216,9 +216,7 @@ void MarkSameSiteCompatPairs(
 
 namespace net {
 
-std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) {
+std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   const GURL& url = request->url();
 
   // URLRequestContext must have been initialized.
@@ -236,7 +234,7 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(
       replacements.SetSchemeStr(
           url.SchemeIs(url::kHttpScheme) ? url::kHttpsScheme : url::kWssScheme);
       return std::make_unique<URLRequestRedirectJob>(
-          request, network_delegate, url.ReplaceComponents(replacements),
+          request, url.ReplaceComponents(replacements),
           // Use status code 307 to preserve the method, so POST requests work.
           URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
     }
@@ -246,22 +244,20 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(
     // ERR_CLEARTEXT_NOT_PERMITTED if not.
     if (request->context()->check_cleartext_permitted() &&
         !android::IsCleartextPermitted(url.host())) {
-      return std::make_unique<URLRequestErrorJob>(request, network_delegate,
+      return std::make_unique<URLRequestErrorJob>(request,
                                                   ERR_CLEARTEXT_NOT_PERMITTED);
     }
 #endif
   }
 
-  return base::WrapUnique<URLRequestJob>(
-      new URLRequestHttpJob(request, network_delegate,
-                            request->context()->http_user_agent_settings()));
+  return base::WrapUnique<URLRequestJob>(new URLRequestHttpJob(
+      request, request->context()->http_user_agent_settings()));
 }
 
 URLRequestHttpJob::URLRequestHttpJob(
     URLRequest* request,
-    NetworkDelegate* network_delegate,
     const HttpUserAgentSettings* http_user_agent_settings)
-    : URLRequestJob(request, network_delegate),
+    : URLRequestJob(request),
       num_cookie_lines_left_(0),
       priority_(DEFAULT_PRIORITY),
       response_info_(nullptr),
@@ -407,14 +403,15 @@ void URLRequestHttpJob::DestroyTransaction() {
 }
 
 void URLRequestHttpJob::StartTransaction() {
-  if (network_delegate()) {
+  NetworkDelegate* network_delegate = request()->network_delegate();
+  if (network_delegate) {
     OnCallToDelegate(
         NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION);
     // The NetworkDelegate must watch for OnRequestDestroyed and not modify
     // |extra_headers| after it's called.
     // TODO(mattm): change the API to remove the out-params and take the
     // results as params of the callback.
-    int rv = network_delegate()->NotifyBeforeStartTransaction(
+    int rv = network_delegate->NotifyBeforeStartTransaction(
         request_,
         base::BindOnce(&URLRequestHttpJob::NotifyBeforeStartTransactionCallback,
                        weak_factory_.GetWeakPtr()),
@@ -908,7 +905,8 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   if (result == OK) {
     scoped_refptr<HttpResponseHeaders> headers = GetResponseHeaders();
 
-    if (network_delegate()) {
+    NetworkDelegate* network_delegate = request()->network_delegate();
+    if (network_delegate) {
       // Note that |this| may not be deleted until
       // |URLRequestHttpJob::OnHeadersReceivedCallback()| or
       // |NetworkDelegate::URLRequestDestroyed()| has been called.
@@ -921,7 +919,7 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
       // any of the arguments after it's called.
       // TODO(mattm): change the API to remove the out-params and take the
       // results as params of the callback.
-      int error = network_delegate()->NotifyHeadersReceived(
+      int error = network_delegate->NotifyHeadersReceived(
           request_,
           base::BindOnce(&URLRequestHttpJob::OnHeadersReceivedCallback,
                          weak_factory_.GetWeakPtr()),

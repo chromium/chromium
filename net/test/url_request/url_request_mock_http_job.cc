@@ -41,11 +41,10 @@ class MockJobInterceptor : public URLRequestInterceptor {
   ~MockJobInterceptor() override = default;
 
   // URLRequestJobFactory::ProtocolHandler implementation
-  URLRequestJob* MaybeInterceptRequest(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return new URLRequestMockHTTPJob(
-        request, network_delegate,
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    return std::make_unique<URLRequestMockHTTPJob>(
+        request,
         map_all_requests_to_base_path_ ? base_path_ : GetOnDiskPath(request));
   }
 
@@ -126,11 +125,9 @@ URLRequestMockHTTPJob::CreateInterceptorForSingleFile(
 }
 
 URLRequestMockHTTPJob::URLRequestMockHTTPJob(URLRequest* request,
-                                             NetworkDelegate* network_delegate,
                                              const base::FilePath& file_path)
     : URLRequestTestJobBackedByFile(
           request,
-          network_delegate,
           file_path,
           base::ThreadPool::CreateTaskRunner({base::MayBlock()})) {}
 

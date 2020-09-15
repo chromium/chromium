@@ -38,7 +38,6 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
  public:
   URLRequestTestJobBackedByFile(
       URLRequest* request,
-      NetworkDelegate* network_delegate,
       const base::FilePath& file_path,
       const scoped_refptr<base::TaskRunner>& file_task_runner);
 

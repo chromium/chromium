@@ -260,9 +260,8 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
 
  private:
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     EXPECT_TRUE(request->disable_secure_dns());
     *invoked_interceptor_ = true;
     return nullptr;

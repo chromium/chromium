@@ -160,14 +160,15 @@ static ResourceRequest CreateResourceRequest(const char* method,
 class URLRequestMultipleWritesJob : public net::URLRequestJob {
  public:
   URLRequestMultipleWritesJob(net::URLRequest* request,
-                              net::NetworkDelegate* network_delegate,
                               std::list<std::string> packets,
                               net::Error net_error,
                               bool async_reads)
-      : URLRequestJob(request, network_delegate),
+      : URLRequestJob(request),
         packets_(std::move(packets)),
         net_error_(net_error),
         async_reads_(async_reads) {}
+
+  ~URLRequestMultipleWritesJob() override = default;
 
   // net::URLRequestJob implementation:
   void Start() override {
@@ -199,8 +200,6 @@ class URLRequestMultipleWritesJob : public net::URLRequestJob {
   }
 
  private:
-  ~URLRequestMultipleWritesJob() override {}
-
   void StartAsync() { NotifyHeadersComplete(); }
 
   std::list<std::string> packets_;
@@ -225,12 +224,10 @@ class MultipleWritesInterceptor : public net::URLRequestInterceptor {
   static GURL GetURL() { return GURL("http://foo"); }
 
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    return new URLRequestMultipleWritesJob(request, network_delegate,
-                                           std::move(packets_), net_error_,
-                                           async_reads_);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<URLRequestMultipleWritesJob>(
+        request, std::move(packets_), net_error_, async_reads_);
   }
 
  private:
@@ -247,10 +244,10 @@ class URLRequestEternalSyncReadsJob : public net::URLRequestJob {
   // If |fill_entire_buffer| is true, each read fills the entire read buffer at
   // once. Otherwise, one byte is read at a time.
   URLRequestEternalSyncReadsJob(net::URLRequest* request,
-                                net::NetworkDelegate* network_delegate,
                                 bool fill_entire_buffer)
-      : URLRequestJob(request, network_delegate),
-        fill_entire_buffer_(fill_entire_buffer) {}
+      : URLRequestJob(request), fill_entire_buffer_(fill_entire_buffer) {}
+
+  ~URLRequestEternalSyncReadsJob() override = default;
 
   // net::URLRequestJob implementation:
   void Start() override {
@@ -271,8 +268,6 @@ class URLRequestEternalSyncReadsJob : public net::URLRequestJob {
   }
 
  private:
-  ~URLRequestEternalSyncReadsJob() override {}
-
   void StartAsync() { NotifyHeadersComplete(); }
 
   const bool fill_entire_buffer_;
@@ -293,16 +288,15 @@ class EternalSyncReadsInterceptor : public net::URLRequestInterceptor {
   static GURL GetFillBufferURL() { return GURL("http://eternal/fill-buffer"); }
 
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     if (request->url() == GetSingleByteURL()) {
-      return new URLRequestEternalSyncReadsJob(request, network_delegate,
-                                               false /* fill_entire_buffer */);
+      return std::make_unique<URLRequestEternalSyncReadsJob>(
+          request, false /* fill_entire_buffer */);
     }
     if (request->url() == GetFillBufferURL()) {
-      return new URLRequestEternalSyncReadsJob(request, network_delegate,
-                                               true /* fill_entire_buffer */);
+      return std::make_unique<URLRequestEternalSyncReadsJob>(
+          request, true /* fill_entire_buffer */);
     }
     return nullptr;
   }
@@ -319,12 +313,13 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
   // once. Otherwise, one byte is read at a time.
   URLRequestSimulatedCacheJob(
       net::URLRequest* request,
-      net::NetworkDelegate* network_delegate,
       scoped_refptr<net::IOBuffer>* simulated_cache_dest,
       bool use_text_plain)
-      : URLRequestJob(request, network_delegate),
+      : URLRequestJob(request),
         simulated_cache_dest_(simulated_cache_dest),
         use_text_plain_(use_text_plain) {}
+
+  ~URLRequestSimulatedCacheJob() override = default;
 
   // net::URLRequestJob implementation:
   void Start() override {
@@ -356,7 +351,6 @@ class URLRequestSimulatedCacheJob : public net::URLRequestJob {
   }
 
  private:
-  ~URLRequestSimulatedCacheJob() override {}
   void StartAsync() { NotifyHeadersComplete(); }
 
   scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
@@ -374,11 +368,10 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
       : simulated_cache_dest_(simulated_cache_dest),
         use_text_plain_(use_text_plain) {}
 
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    return new URLRequestSimulatedCacheJob(
-        request, network_delegate, simulated_cache_dest_, use_text_plain_);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<URLRequestSimulatedCacheJob>(
+        request, simulated_cache_dest_, use_text_plain_);
   }
 
  private:
@@ -392,15 +385,15 @@ class URLRequestFakeTransportInfoJob : public net::URLRequestJob {
  public:
   // |transport_info| is subsequently passed to the OnConnected() callback.
   URLRequestFakeTransportInfoJob(net::URLRequest* request,
-                                 net::NetworkDelegate* network_delegate,
                                  const net::TransportInfo& transport_info)
-      : URLRequestJob(request, network_delegate),
-        transport_info_(transport_info) {}
+      : URLRequestJob(request), transport_info_(transport_info) {}
 
   URLRequestFakeTransportInfoJob(const URLRequestFakeTransportInfoJob&) =
       delete;
   URLRequestFakeTransportInfoJob& operator=(
       const URLRequestFakeTransportInfoJob&) = delete;
+
+  ~URLRequestFakeTransportInfoJob() override = default;
 
   // net::URLRequestJob implementation:
   void Start() override {
@@ -412,8 +405,6 @@ class URLRequestFakeTransportInfoJob : public net::URLRequestJob {
   int ReadRawData(net::IOBuffer* buf, int buf_size) override { return 0; }
 
  private:
-  ~URLRequestFakeTransportInfoJob() override = default;
-
   void StartAsync() {
     const int result = NotifyConnected(transport_info_);
     if (result != net::OK) {
@@ -446,14 +437,10 @@ class FakeTransportInfoInterceptor : public net::URLRequestInterceptor {
       delete;
 
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    // NOTE: We cannot use make_unique() because
-    // URLRequestFakeTransportInfoJob's destructor is private, which prevents
-    // use of unique_ptr.
-    return new URLRequestFakeTransportInfoJob(request, network_delegate,
-                                              transport_info_);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<URLRequestFakeTransportInfoJob>(request,
+                                                            transport_info_);
   }
 
  private:
@@ -2877,15 +2864,15 @@ TEST_F(URLLoaderTest, RedirectDirectlyModifiedSecHeadersUser) {
 class MockHTTPSURLRequestJob : public net::URLRequestTestJob {
  public:
   MockHTTPSURLRequestJob(net::URLRequest* request,
-                         net::NetworkDelegate* network_delegate,
                          const std::string& response_headers,
                          const std::string& response_data,
                          bool auto_advance)
       : net::URLRequestTestJob(request,
-                               network_delegate,
                                response_headers,
                                response_data,
                                auto_advance) {}
+
+  ~MockHTTPSURLRequestJob() override = default;
 
   // net::URLRequestTestJob:
   void GetResponseInfo(net::HttpResponseInfo* info) override {
@@ -2897,8 +2884,6 @@ class MockHTTPSURLRequestJob : public net::URLRequestTestJob {
   }
 
  private:
-  ~MockHTTPSURLRequestJob() override {}
-
   DISALLOW_COPY_AND_ASSIGN(MockHTTPSURLRequestJob);
 };
 
@@ -2908,11 +2893,10 @@ class MockHTTPSJobURLRequestInterceptor : public net::URLRequestInterceptor {
   ~MockHTTPSJobURLRequestInterceptor() override {}
 
   // net::URLRequestInterceptor:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    return new MockHTTPSURLRequestJob(request, network_delegate, std::string(),
-                                      "dummy response", true);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<MockHTTPSURLRequestJob>(request, std::string(),
+                                                    "dummy response", true);
   }
 };
 

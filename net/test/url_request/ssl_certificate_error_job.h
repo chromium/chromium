@@ -12,14 +12,14 @@
 
 namespace net {
 
-class NetworkDelegate;
 class URLRequest;
 
 // SSLCertificateErrorJob simulates a ERR_CERT_DATE_INVALID error.
 class SSLCertificateErrorJob : public URLRequestJob {
  public:
-  SSLCertificateErrorJob(URLRequest* request,
-                         NetworkDelegate* network_delegate);
+  explicit SSLCertificateErrorJob(URLRequest* request);
+
+  ~SSLCertificateErrorJob() override;
 
   // URLRequestJob implementation:
   void Start() override;
@@ -30,8 +30,6 @@ class SSLCertificateErrorJob : public URLRequestJob {
   static GURL GetMockUrl();
 
  private:
-  ~SSLCertificateErrorJob() override;
-
   void NotifyError();
 
   base::WeakPtrFactory<SSLCertificateErrorJob> weak_factory_{this};

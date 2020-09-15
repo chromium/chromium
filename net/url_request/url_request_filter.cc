@@ -8,6 +8,7 @@
 #include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_job_factory.h"
 
 namespace net {
@@ -108,13 +109,13 @@ void URLRequestFilter::ClearHandlers() {
   hit_count_ = 0;
 }
 
-URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) const {
+std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
+    URLRequest* request) const {
   DCHECK(base::CurrentIOThread::Get());
-  URLRequestJob* job = nullptr;
   if (!request->url().is_valid())
     return nullptr;
+
+  std::unique_ptr<URLRequestJob> job;
 
   // Check the hostname map first.
   const std::string hostname = request->url().host();
@@ -123,7 +124,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
   {
     auto it = hostname_interceptor_map_.find(make_pair(scheme, hostname));
     if (it != hostname_interceptor_map_.end())
-      job = it->second->MaybeInterceptRequest(request, network_delegate);
+      job = it->second->MaybeInterceptRequest(request);
   }
 
   if (!job) {
@@ -131,7 +132,7 @@ URLRequestJob* URLRequestFilter::MaybeInterceptRequest(
     const std::string& url = request->url().spec();
     auto it = url_interceptor_map_.find(url);
     if (it != url_interceptor_map_.end())
-      job = it->second->MaybeInterceptRequest(request, network_delegate);
+      job = it->second->MaybeInterceptRequest(request);
   }
   if (job) {
     DVLOG(1) << "URLRequestFilter hit for " << request->url().spec();

@@ -37,7 +37,6 @@ class NET_EXPORT URLRequestRedirectJob : public URLRequestJob {
   // Constructs a job that redirects to the specified URL.  |redirect_reason| is
   // logged for debugging purposes, and must not be an empty string.
   URLRequestRedirectJob(URLRequest* request,
-                        NetworkDelegate* network_delegate,
                         const GURL& redirect_destination,
                         ResponseCode response_code,
                         const std::string& redirect_reason);

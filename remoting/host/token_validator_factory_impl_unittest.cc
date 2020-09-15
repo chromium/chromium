@@ -48,11 +48,10 @@ class TestURLRequestInterceptor : public net::URLRequestInterceptor {
 
   ~TestURLRequestInterceptor() override = default;
 
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    return new net::URLRequestTestJob(request, network_delegate, headers_,
-                                      response_, true);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<net::URLRequestTestJob>(request, headers_,
+                                                    response_, true);
   }
 
  private:
@@ -70,11 +69,10 @@ class TestFailingURLRequestInterceptor : public net::URLRequestInterceptor {
 
   ~TestFailingURLRequestInterceptor() override = default;
 
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
-    return new net::URLRequestFailedJob(request, network_delegate,
-                                        failure_phase_, net_error_);
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    return std::make_unique<net::URLRequestFailedJob>(request, failure_phase_,
+                                                      net_error_);
   }
 
  private:

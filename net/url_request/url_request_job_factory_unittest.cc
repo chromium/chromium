@@ -29,8 +29,7 @@ namespace {
 
 class MockURLRequestJob : public URLRequestJob {
  public:
-  MockURLRequestJob(URLRequest* request, NetworkDelegate* network_delegate)
-      : URLRequestJob(request, network_delegate) {}
+  explicit MockURLRequestJob(URLRequest* request) : URLRequestJob(request) {}
 
   ~MockURLRequestJob() override = default;
 
@@ -50,10 +49,8 @@ class MockURLRequestJob : public URLRequestJob {
 
 class DummyProtocolHandler : public URLRequestJobFactory::ProtocolHandler {
  public:
-  std::unique_ptr<URLRequestJob> CreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override {
-    return std::make_unique<MockURLRequestJob>(request, network_delegate);
+  std::unique_ptr<URLRequestJob> CreateJob(URLRequest* request) const override {
+    return std::make_unique<MockURLRequestJob>(request);
   }
 };
 

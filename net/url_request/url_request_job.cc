@@ -79,15 +79,13 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   DISALLOW_COPY_AND_ASSIGN(URLRequestJobSourceStream);
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request,
-                             NetworkDelegate* network_delegate)
+URLRequestJob::URLRequestJob(URLRequest* request)
     : request_(request),
       done_(false),
       prefilter_bytes_read_(0),
       postfilter_bytes_read_(0),
       has_handled_response_(false),
-      expected_content_size_(-1),
-      network_delegate_(network_delegate) {}
+      expected_content_size_(-1) {}
 
 URLRequestJob::~URLRequestJob() {
 }

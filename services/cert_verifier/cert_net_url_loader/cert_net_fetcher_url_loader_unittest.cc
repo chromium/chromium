@@ -27,6 +27,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
+#include "net/url_request/url_request_job.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_test.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -226,9 +227,8 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
 
  private:
   // URLRequestInterceptor implementation:
-  net::URLRequestJob* MaybeInterceptRequest(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate) const override {
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
     EXPECT_TRUE(request->disable_secure_dns());
     *invoked_interceptor_ = true;
     return nullptr;

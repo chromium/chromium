@@ -16,8 +16,8 @@ class URLRequest;
 // A URLRequestJob that hangs when try to read response body.
 class URLRequestHangingReadJob : public URLRequestJob {
  public:
-  URLRequestHangingReadJob(URLRequest* request,
-                           NetworkDelegate* network_delegate);
+  explicit URLRequestHangingReadJob(URLRequest* request);
+  ~URLRequestHangingReadJob() override;
 
   void Start() override;
   int ReadRawData(IOBuffer* buf, int buf_size) override;
@@ -31,7 +31,6 @@ class URLRequestHangingReadJob : public URLRequestJob {
 
  private:
   void GetResponseInfoConst(HttpResponseInfo* info) const;
-  ~URLRequestHangingReadJob() override;
 
   void StartAsync();
 
