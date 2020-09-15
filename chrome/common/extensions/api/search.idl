@@ -17,7 +17,7 @@ namespace search {
 
   dictionary QueryInfo {
     // String to query with the default search provider.
-    DOMString search;
+    DOMString text;
 
     // Location where search results should be displayed.
     // <code>CURRENT_TAB</code> is the default.

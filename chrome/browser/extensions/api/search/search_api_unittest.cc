@@ -125,26 +125,26 @@ void SearchApiUnitTest::RunFunctionAndExpectError(
 
 // Test for error if search field is empty string.
 TEST_F(SearchApiUnitTest, QueryEmpty) {
-  RunFunctionAndExpectError(R"([{"search": ""}])", "Empty search parameter.");
+  RunFunctionAndExpectError(R"([{"text": ""}])", "Empty text parameter.");
 }
 
 // Test for error if both disposition and tabId are populated.
 TEST_F(SearchApiUnitTest, DispositionAndTabIDValid) {
   RunFunctionAndExpectError(
-      R"([{"search": "1", "disposition": "NEW_TAB", "tabId": 1}])",
+      R"([{"text": "1", "disposition": "NEW_TAB", "tabId": 1}])",
       "Cannot set both 'disposition' and 'tabId'.");
 }
 
 // Test for error if both disposition and tabId are populated.
 TEST_F(SearchApiUnitTest, InvalidTabId) {
-  RunFunctionAndExpectError(R"([{"search": "1", "tabId": -1}])",
+  RunFunctionAndExpectError(R"([{"text": "1", "tabId": -1}])",
                             "No tab with id: -1.");
 }
 
 // Test for error if missing browser context.
 TEST_F(SearchApiUnitTest, NoActiveBrowser) {
   auto result = api_test_utils::RunFunctionAndReturnError(
-      function(), R"([{"search": "1"}])", nullptr);
+      function(), R"([{"text": "1"}])", nullptr);
   EXPECT_EQ("No active browser.", result);
 }
 

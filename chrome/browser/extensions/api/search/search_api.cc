@@ -34,13 +34,13 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Convenience for input params.
-  const std::string& search = params->query_info.search;
+  const std::string& text = params->query_info.text;
   const std::unique_ptr<int>& tab_id = params->query_info.tab_id;
   Disposition disposition = params->query_info.disposition;
 
   // Simple validation of input params.
-  if (search.empty()) {
-    return RespondNow(Error("Empty search parameter."));
+  if (text.empty()) {
+    return RespondNow(Error("Empty text parameter."));
   }
   if (tab_id.get() && disposition != Disposition::DISPOSITION_NONE) {
     return RespondNow(Error("Cannot set both 'disposition' and 'tabId'."));
@@ -94,7 +94,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       TemplateURLServiceFactory::GetForProfile(profile);
   DCHECK(url_service);
   GURL url =
-      GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(search));
+      GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(text));
   if (!url.is_valid()) {
     return RespondNow(Error("Missing default search provider."));
   }

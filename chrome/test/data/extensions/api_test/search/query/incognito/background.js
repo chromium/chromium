@@ -15,14 +15,14 @@ chrome.test.runTests([
   function IncognitoSpecificTab() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
       const tab = tabs[0];
-      testHelper(tabs, {search: SEARCH_WORDS, tabId: tab.id});
+      testHelper(tabs, {text: SEARCH_WORDS, tabId: tab.id});
     });
   },
 
   // Verify search results shown in current incognito tab.
   function IncognitoNoDisposition() {
     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-      testHelper(tabs, {search: SEARCH_WORDS});
+      testHelper(tabs, {text: SEARCH_WORDS});
     });
   },
 ]);

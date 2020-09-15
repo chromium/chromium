@@ -15,8 +15,8 @@ chrome.test.runTests([
 
   // Error if search string is empty.
   function QueryEmpty() {
-    chrome.search.query({search: ''}, function() {
-      assertLastError('Empty search parameter.');
+    chrome.search.query({text: ''}, function() {
+      assertLastError('Empty text parameter.');
       succeed();
     });
   },
@@ -25,7 +25,7 @@ chrome.test.runTests([
   function QueryPopulatedDispositionEmpty() {
     chrome.tabs.create({}, (tab) => {
       waitForTabAndPass(tab.id);
-      chrome.search.query({search: SEARCH_WORDS}, () => {});
+      chrome.search.query({text: SEARCH_WORDS}, () => {});
     });
   },
 
@@ -33,7 +33,7 @@ chrome.test.runTests([
   function QueryPopulatedDispositionCurrentTab() {
     chrome.tabs.create({}, (tab) => {
       waitForTabAndPass(tab.id);
-      chrome.search.query({search: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
+      chrome.search.query({text: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
     });
   },
 
@@ -46,7 +46,7 @@ chrome.test.runTests([
             waitForAnyTab(),
             new Promise(resolve => {
               chrome.search.query(
-                  {search: SEARCH_WORDS, disposition: 'NEW_TAB'}, () => {
+                  {text: SEARCH_WORDS, disposition: 'NEW_TAB'}, () => {
                     chrome.tabs.query(
                         {active: true, currentWindow: true}, (tabs) => {
                           assertEq(1, tabs.length);
@@ -72,7 +72,7 @@ chrome.test.runTests([
             waitForAnyTab(),
             new Promise((resolve) => {
               chrome.search.query(
-                  {search: SEARCH_WORDS, disposition: 'NEW_WINDOW'}, () => {
+                  {text: SEARCH_WORDS, disposition: 'NEW_WINDOW'}, () => {
                     chrome.windows.getAll({}, (windows) => {
                       let window = windows.find(
                           window => !initialWindowIds.includes(window.id));
@@ -93,13 +93,13 @@ chrome.test.runTests([
   function QueryPopulatedTabIDValid() {
     chrome.tabs.create({}, (tab) => {
       waitForTabAndPass(tab.id);
-      chrome.search.query({search: SEARCH_WORDS, tabId: tab.id});
+      chrome.search.query({text: SEARCH_WORDS, tabId: tab.id});
     });
   },
 
   // Error if tab id invalid.
   function QueryPopulatedTabIDInvalid() {
-    chrome.search.query({search: SEARCH_WORDS, tabId: -1}, () => {
+    chrome.search.query({text: SEARCH_WORDS, tabId: -1}, () => {
       assertLastError('No tab with id: -1.');
       succeed();
     });
@@ -109,7 +109,7 @@ chrome.test.runTests([
   function QueryAndDispositionPopulatedTabIDValid() {
     chrome.tabs.query({active: true}, (tabs) => {
       chrome.search.query(
-          {search: SEARCH_WORDS, tabId: tabs[0].id, disposition: 'NEW_TAB'},
+          {text: SEARCH_WORDS, tabId: tabs[0].id, disposition: 'NEW_TAB'},
           () => {
             assertLastError('Cannot set both \'disposition\' and \'tabId\'.');
             succeed();
