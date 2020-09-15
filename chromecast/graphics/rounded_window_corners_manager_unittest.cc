@@ -344,4 +344,32 @@ TEST_F(RoundedWindowCornersManagerTest,
   webview = nullptr;
 }
 
+TEST_F(RoundedWindowCornersManagerTest, UnmanagedAppWithChild) {
+  aura::Window* root_window = mock_cast_window_manager_->GetRootWindow();
+  root_window->Show();
+  std::unique_ptr<aura::Window> window_host =
+      std::make_unique<aura::Window>(nullptr);
+  window_host->Init(ui::LAYER_TEXTURED);
+  window_host->Show();
+  root_window->AddChild(window_host.get());
+  std::unique_ptr<aura::Window> unmanaged_app =
+      std::make_unique<aura::Window>(nullptr);
+  unmanaged_app->Init(ui::LAYER_TEXTURED);
+  unmanaged_app->set_id(CastWindowManager::UNMANAGED_APP);
+  window_host->AddChild(unmanaged_app.get());
+
+  EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
+  unmanaged_app->Show();
+
+  std::unique_ptr<aura::Window> child = std::make_unique<aura::Window>(nullptr);
+  child->Init(ui::LAYER_TEXTURED);
+  unmanaged_app->AddChild(child.get());
+  // Rounded corners should be retained if the unmanaged app parent is visible.
+  child->Show();
+  child = nullptr;
+
+  EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(false));
+  unmanaged_app = nullptr;
+}
+
 }  // namespace chromecast

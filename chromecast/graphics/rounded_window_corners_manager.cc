@@ -33,6 +33,17 @@ aura::Window* FindTopmostVisibleNonCornersWindow(
   return window->id() != CastWindowManager::CORNERS_OVERLAY ? window : nullptr;
 }
 
+bool HasNonAppParent(const aura::Window* window) {
+  const aura::Window* parent = window->parent();
+  while (parent && parent->IsVisible()) {
+    if (parent->id() != CastWindowManager::APP)
+      return true;
+    else
+      parent = parent->parent();
+  }
+  return false;
+}
+
 }  // namespace
 
 // Keeps track of the creation and destruction of webview container windows, and
@@ -101,9 +112,12 @@ class RoundedCornersObserver : public aura::WindowObserver,
       return;
 
     int window_id = topmost_visible_window->id();
+    // The window may be a child to a visible non-app window that does not draw
+    // its own corners, so this needs to be checked for.
     bool set_rounded_corners =
         (window_id != CastWindowManager::APP) ||
-        base::Contains(observed_container_windows_, topmost_visible_window);
+        base::Contains(observed_container_windows_, topmost_visible_window) ||
+        HasNonAppParent(topmost_visible_window);
 
     if (rounded_corners_ == set_rounded_corners)
       return;
