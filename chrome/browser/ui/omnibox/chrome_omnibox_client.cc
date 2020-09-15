@@ -472,8 +472,10 @@ void ChromeOmniboxClient::WakeupDecoder() {
           omnibox::kEntitySuggestionsReduceLatency,
           OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam,
           false)) {
-    BitmapFetcherServiceFactory::GetForBrowserContext(profile_)
-        ->WakeupDecoder();
+    if (auto* service =
+            BitmapFetcherServiceFactory::GetForBrowserContext(profile_)) {
+      service->WakeupDecoder();
+    }
   }
 }
 
