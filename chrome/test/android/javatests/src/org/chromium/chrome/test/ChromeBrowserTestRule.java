@@ -26,9 +26,8 @@ public class ChromeBrowserTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 /**
-                 * Loads the native library on the activity UI thread (must not be called from the
-                 * UI thread).  After loading the library, this will initialize the browser process
-                 * if necessary.
+                 * Loads the native library on the activity UI thread.  After loading the library,
+                 * this will initialize the browser process if necessary.
                  */
                 NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
                 base.evaluate();

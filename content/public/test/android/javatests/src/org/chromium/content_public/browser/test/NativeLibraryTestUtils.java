@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser.test;
 
-import org.junit.Assert;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -18,14 +16,14 @@ import org.chromium.ui.resources.ResourceExtractor;
  */
 public class NativeLibraryTestUtils {
     /**
-     * Loads the native library on the activity UI thread (must not be called from the UI thread).
+     * Loads the native library on the activity UI thread.
      */
     public static void loadNativeLibraryNoBrowserProcess() {
         handleNativeInitialization(false);
     }
 
     /**
-     * Loads the native library on the activity UI thread (must not be called from the UI thread).
+     * Loads the native library on the activity UI thread.
      * After loading the library, this will initialize the browser process.
      */
     public static void loadNativeLibraryAndInitBrowserProcess() {
@@ -33,8 +31,6 @@ public class NativeLibraryTestUtils {
     }
 
     private static void handleNativeInitialization(final boolean initBrowserProcess) {
-        Assert.assertFalse(ThreadUtils.runningOnUiThread());
-
         // LibraryLoader is not in general multithreaded; as other InstrumentationTestCase code
         // (specifically, ChromeBrowserProvider) uses it from the main thread we must do
         // likewise.

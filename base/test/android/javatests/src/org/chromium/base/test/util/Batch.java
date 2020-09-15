@@ -44,7 +44,7 @@ public @interface Batch {
      * Unit tests must be careful not to persist any changes to global state, or flakes are likely
      * to occur.
      *
-     * An exception to this is loading Chrome's native library (eg. using NativeLibraryTestRule).
+     * An exception to this is loading Chrome's native library (eg. using NativeLibraryTestUtils).
      * Your unit tests must assume that the native library may have already been loaded by another
      * test.
      */
