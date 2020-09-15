@@ -868,8 +868,11 @@
           'weblayer_shell',
         ],
         'test_suites': {
-          'gtest_tests': 'android_pie_rel_non_skia_renderer_gtests',
-          'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          #'gtest_tests': 'android_pie_rel_non_skia_renderer_gtests',
+          #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          # TODO(crbug.com/1111436): Remove this if/when additional capacity
+          # has been deployed.
+          'gtest_tests': 'android_pie_rel_reduced_capacity_gtests',
         },
         'use_swarming': True,
         'os_type': 'android',

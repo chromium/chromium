@@ -685,8 +685,6 @@
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # https://crbug.com/1018780
       'android-lollipop-arm-rel', # https://crbug.com/1060245
-      # TODO https://crbug.com/1109999: Re-enable once there are enough devices
-      'android-pie-arm64-rel',
       'android-pie-x86-rel', # crbug.com/1126536
     ],
     'modifications': {
@@ -749,6 +747,15 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
         ],
+        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
+        # capacity has been deployed.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'device_type': 'sailfish',
+            },
+          ],
+        }
       },
       'android-pie-x86-rel': {
         'args': [

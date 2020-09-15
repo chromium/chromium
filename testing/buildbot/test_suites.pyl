@@ -165,6 +165,30 @@
       'chrome_java_test_pagecontroller_tests': {},
     },
 
+    # TODO(crbug.com/1111436): Deprecate this group in favor of
+    # android_pie_rel_non_skia_renderer_gtests if/when android Pie capacity
+    # is fully restored.
+    'android_pie_rel_reduced_capacity_gtests': {
+      'chrome_public_test_apk': {
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'monochrome_public_bundle_fake_modules_smoke_test': {},
+      'monochrome_public_bundle_smoke_test': {},
+      'monochrome_public_smoke_test': {},
+      'weblayer_instrumentation_test_apk': {},
+      'webview_instrumentation_test_apk': {
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    },
+
     'android_smoke_tests': {
       'chrome_public_smoke_test': {},
     },
@@ -4623,25 +4647,25 @@
     #
     # TODO(https://crbug.com/1058067): Remove this once SkiaRenderer goes
     # stable on Android.
-    'android_pie_rel_non_skia_renderer_gtests': [
-      'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
-      'android_smoke_tests',
-      # TODO: Following tests are experimental (crbug/1010211).
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'network_service_android_gtests',
-      'non_skia_renderer_gtests',
-      'system_webview_shell_instrumentation_tests', # Not an experimental test
-      'vr_platform_specific_chromium_gtests',
-      'weblayer_android_gtests',
-      'weblayer_gtests',
-      # Experimental tests end here.
-      'webview_cts_tests_gtest',
-      'webview_ui_instrumentation_tests',
-    ],
+    # 'android_pie_rel_non_skia_renderer_gtests': [
+    #   'android_monochrome_smoke_tests',
+    #   'android_pagecontroller_self_tests',
+    #   'android_smoke_tests',
+    #   # TODO: Following tests are experimental (crbug/1010211).
+    #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
+    #   'chromium_gtests',
+    #   'chromium_gtests_for_devices_with_graphical_output',
+    #   'linux_flavor_specific_chromium_gtests',
+    #   'network_service_android_gtests',
+    #   'non_skia_renderer_gtests',
+    #   'system_webview_shell_instrumentation_tests', # Not an experimental test
+    #   'vr_platform_specific_chromium_gtests',
+    #   'weblayer_android_gtests',
+    #   'weblayer_gtests',
+    #   # Experimental tests end here.
+    #   'webview_cts_tests_gtest',
+    #   'webview_ui_instrumentation_tests',
+    # ],
 
     'android_wpt_scripts': [
       'chrome_public_wpt',
