@@ -45,7 +45,7 @@ struct FirefoxDetail {
   // in stored.
   base::FilePath path;
   // The user specified name of the profile.
-  std::string name;
+  base::string16 name;
 };
 
 inline bool operator==(const FirefoxDetail& a1, const FirefoxDetail& a2) {

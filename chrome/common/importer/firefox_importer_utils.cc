@@ -75,16 +75,17 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
       break;
     }
 
-    std::string path;
-    if (!root.GetStringASCII(current_profile + ".Path", &path))
+    base::string16 path;
+    if (!root.GetString(current_profile + ".Path", &path))
       continue;
 
     FirefoxDetail details;
     details.path = GetProfilePath(root, current_profile);
-    std::string name;
-    root.GetStringASCII(current_profile + ".Name", &name);
+    base::string16 name;
+    root.GetString(current_profile + ".Name", &name);
     // Make the profile name more presentable by replacing dashes with spaces.
-    base::ReplaceChars(name, "-", " ", &name);
+    base::ReplaceChars(name, base::ASCIIToUTF16("-"), base::ASCIIToUTF16(" "),
+                       &name);
     details.name = name;
     profile_details.push_back(details);
   }
@@ -93,7 +94,7 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
   // The name is only used to disambiguate profiles in the profile selection UI,
   // which is only useful when there are multiple profiles.
   if (profile_details.size() == 1) {
-    profile_details[0].name = "";
+    profile_details[0].name = base::string16();
   }
 
   return profile_details;

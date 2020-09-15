@@ -48,7 +48,7 @@ struct SourceProfile {
   // The application locale. Stored because we can only access it from the UI
   // thread on the browser process. This is only used by the Firefox importer.
   std::string locale;
-  std::string profile;
+  base::string16 profile;
 };
 
 // Contains information needed for importing search engine urls.
