@@ -1644,12 +1644,14 @@ void QuicChromiumClientSession::LogZeroRttStats() {
   ZeroRttState state;
 
   ssl_early_data_reason_t early_data_reason = crypto_stream_->EarlyDataReason();
-  if (early_data_reason == ssl_early_data_disabled) {
-    state = ZeroRttState::kNotAttempted;
-  } else if (early_data_reason == ssl_early_data_accepted) {
+  if (early_data_reason == ssl_early_data_accepted) {
     state = ZeroRttState::kAttemptedAndSucceeded;
-  } else {
+  } else if (early_data_reason == ssl_early_data_peer_declined ||
+             early_data_reason == ssl_early_data_session_not_resumed ||
+             early_data_reason == ssl_early_data_hello_retry_request) {
     state = ZeroRttState::kAttemptedAndRejected;
+  } else {
+    state = ZeroRttState::kNotAttempted;
   }
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttState", state);
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttReason", early_data_reason,
