@@ -7,8 +7,6 @@
  * Includes UI for adding, changing, and removing entries.
  */
 
-(function() {
-
 Polymer({
   is: 'network-proxy-exclusions',
 
@@ -45,4 +43,3 @@ Polymer({
     this.fire('proxy-exclusions-change');
   }
 });
-})();
