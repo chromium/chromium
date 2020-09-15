@@ -20,6 +20,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -30,8 +31,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kMaxFolderNameWidth = 204;
-constexpr SkColor kFolderNameColor = gfx::kGoogleGrey700;
+constexpr SkColor kFolderNameTextColor = gfx::kGoogleGrey700;
 constexpr SkColor kFolderTitleHintTextColor = gfx::kGoogleGrey600;
 
 }  // namespace
@@ -42,26 +42,51 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   explicit FolderNameView(FolderHeaderView* folder_header_view)
       : folder_header_view_(folder_header_view) {
     DCHECK(folder_header_view_);
-    SetBorder(views::CreateEmptyBorder(1, 1, 1, 1));
+    // Make folder name font size 14px.
+    SetFontList(
+        ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
+    SetTextColor(kFolderNameTextColor);
+    set_placeholder_text_color(kFolderTitleHintTextColor);
+    SetNameViewBorderAndBackground(/*is_active=*/false);
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
 
   ~FolderNameView() override = default;
 
   gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kMaxFolderNameWidth,
+    return gfx::Size(AppListConfig::instance().folder_header_max_width(),
                      AppListConfig::instance().folder_header_height());
   }
 
+  void SetNameViewBorderAndBackground(bool is_active) {
+    int horizontal_padding = AppListConfig::instance().folder_name_padding();
+    SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(
+            AppListConfig::instance().folder_name_border_thickness(),
+            AppListConfig::instance().folder_name_border_radius(),
+            is_active ? AppListConfig::instance().folder_name_border_color()
+                      : SK_ColorTRANSPARENT),
+        gfx::Insets(0, horizontal_padding)));
+
+    SetBackgroundColor(
+        AppListConfig::instance().GetFolderNameBackgroundColor(is_active));
+  }
+
   void OnFocus() override {
+    SetNameViewBorderAndBackground(/*is_active=*/true);
     SetText(base::UTF8ToUTF16(folder_header_view_->folder_item_->name()));
     starting_name_ = GetText();
     folder_header_view_->previous_folder_name_ = starting_name_;
-    SelectAll(false);
+
+    if (!defer_select_all_)
+      SelectAll(false);
+
     Textfield::OnFocus();
   }
 
   void OnBlur() override {
+    SetNameViewBorderAndBackground(/*is_active=*/false);
+
     // Collapse whitespace when FolderNameView loses focus.
     folder_header_view_->ContentsChanged(
         this, base::CollapseWhitespace(GetText(), false));
@@ -81,15 +106,76 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
       }
     }
 
+    defer_select_all_ = false;
+
     Textfield::OnBlur();
+  }
+
+  bool DoesMouseEventActuallyIntersect(const ui::MouseEvent& event) {
+    // Since hitbox for this view is extended for tap, we need to manually
+    // calculate this when checking for mouse events.
+    return GetLocalBounds().Contains(event.location());
+  }
+
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    // Since hovering changes the background color, only taps should be
+    // triggered using the extended event target.
+    if (!DoesMouseEventActuallyIntersect(event))
+      return false;
+
+    return Textfield::OnMousePressed(event);
+  }
+
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    if (!HasFocus()) {
+      SetBackgroundColor(AppListConfig::instance().GetFolderNameBackgroundColor(
+          /*is_active=*/false));
+    }
+
+    has_mouse_already_entered_ = false;
+  }
+
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    if (DoesMouseEventActuallyIntersect(event) && !has_mouse_already_entered_) {
+      // If this is reached, the mouse is entering the view.
+      // Recreate border to have custom corner radius.
+      SetBackground(views::CreateRoundedRectBackground(
+          AppListConfig::instance().GetFolderNameBackgroundColor(
+              /*is_active=*/true),
+          AppListConfig::instance().folder_name_border_radius()));
+      has_mouse_already_entered_ = true;
+    } else if (!DoesMouseEventActuallyIntersect(event) &&
+               has_mouse_already_entered_ && !HasFocus()) {
+      // If this is reached, the mouse is exiting the view on its horizontal
+      // edges.
+      SetBackgroundColor(AppListConfig::instance().GetFolderNameBackgroundColor(
+          /*is_active=*/false));
+      has_mouse_already_entered_ = false;
+    }
+  }
+
+  void OnMouseReleased(const ui::MouseEvent& event) override {
+    if (defer_select_all_) {
+      defer_select_all_ = false;
+
+      if (!HasSelection())
+        SelectAll(false);
+    }
   }
 
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override {
     DCHECK_EQ(target, this);
     gfx::Rect textfield_bounds = target->GetLocalBounds();
-    int horizontal_padding = -(textfield_bounds.height() * 1.5);
+
+    // Ensure that the tap target for this view is always at least the view's
+    // minimum width.
+    int min_width =
+        std::max(AppListConfig::instance().folder_header_min_tap_width(),
+                 textfield_bounds.width());
+    int horizontal_padding = -((min_width - textfield_bounds.width()) / 2);
     textfield_bounds.Inset(gfx::Insets(0, horizontal_padding));
+
     return textfield_bounds.Intersects(rect);
   }
 
@@ -100,6 +186,18 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   // Name of the folder when FolderNameView is focused, used to track folder
   // rename metric.
   base::string16 starting_name_;
+
+  // If the view is focused via a mouse press event, then selection will be
+  // cleared by its mouse release. To address this, defer selecting all
+  // until we receive mouse release.
+  bool defer_select_all_ = false;
+
+  // Because of this view's custom event target, this view receives mouse enter
+  // events in areas where the view isn't actually occupying. To check whether a
+  // user has entered/exited this, we must check every mouse move event. This
+  // bool tracks whether the mouse has entered the view, avoiding repainting the
+  // background on each mouse move event.
+  bool has_mouse_already_entered_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FolderNameView);
 };
@@ -113,15 +211,7 @@ FolderHeaderView::FolderHeaderView(FolderHeaderViewDelegate* delegate)
       delegate_(delegate),
       folder_name_visible_(true),
       is_tablet_mode_(false) {
-  folder_name_view_->set_placeholder_text_color(kFolderTitleHintTextColor);
   folder_name_view_->SetPlaceholderText(folder_name_placeholder_text_);
-  folder_name_view_->SetBorder(views::NullBorder());
-
-  // Make folder name font size 14px.
-  folder_name_view_->SetFontList(
-      ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(2));
-  folder_name_view_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  folder_name_view_->SetTextColor(kFolderNameColor);
   folder_name_view_->set_controller(this);
   AddChildView(folder_name_view_);
 
@@ -206,7 +296,7 @@ bool FolderHeaderView::IsFolderNameEnabledForTest() const {
 }
 
 gfx::Size FolderHeaderView::CalculatePreferredSize() const {
-  return gfx::Size(kMaxFolderNameWidth,
+  return gfx::Size(AppListConfig::instance().folder_header_max_width(),
                    folder_name_view_->GetPreferredSize().height());
 }
 
@@ -223,7 +313,7 @@ views::View* FolderHeaderView::GetFolderNameViewForTest() const {
 }
 
 int FolderHeaderView::GetMaxFolderNameWidth() const {
-  return kMaxFolderNameWidth;
+  return AppListConfig::instance().folder_header_max_width();
 }
 
 base::string16 FolderHeaderView::GetElidedFolderName(
@@ -247,20 +337,20 @@ void FolderHeaderView::Layout() {
     return;
 
   gfx::Rect text_bounds(rect);
-  base::string16 text = folder_item_ && !folder_item_->name().empty()
-                            ? base::UTF8ToUTF16(folder_item_->name())
-                            : folder_name_placeholder_text_;
+
+  base::string16 text = folder_name_view_->GetText().empty()
+                            ? folder_name_placeholder_text_
+                            : folder_name_view_->GetText();
   int text_width =
       gfx::Canvas::GetStringWidth(text, folder_name_view_->GetFontList()) +
       folder_name_view_->GetCaretBounds().width() +
       folder_name_view_->GetInsets().width();
-  text_width = std::min(text_width, GetMaxFolderNameWidth());
+  text_width =
+      std::min(text_width, AppListConfig::instance().folder_header_max_width());
+  text_width =
+      std::max(text_width, AppListConfig::instance().folder_header_min_width());
   text_bounds.set_x(std::max(0, rect.x() + (rect.width() - text_width) / 2));
-
-  // The width of the text field should always be the maximum length possible,
-  // to prevent the touch target from resizing with the text. The width should
-  // also stay within the FolderHeaderView bounds.
-  text_bounds.set_width(std::min(rect.width(), GetMaxFolderNameWidth()));
+  text_bounds.set_width(std::min(rect.width(), text_width));
 
   text_bounds.ClampToCenteredSize(gfx::Size(
       text_bounds.width(), folder_name_view_->GetPreferredSize().height()));
@@ -292,12 +382,16 @@ void FolderHeaderView::ContentsChanged(views::Textfield* sender,
   Layout();
 }
 
+bool FolderHeaderView::ShouldNameViewClearFocus(const ui::KeyEvent& key_event) {
+  return key_event.type() == ui::ET_KEY_PRESSED &&
+         (key_event.key_code() == ui::VKEY_RETURN ||
+          key_event.key_code() == ui::VKEY_ESCAPE);
+}
+
 bool FolderHeaderView::HandleKeyEvent(views::Textfield* sender,
                                       const ui::KeyEvent& key_event) {
-  if (key_event.key_code() == ui::VKEY_RETURN &&
-      key_event.type() == ui::ET_KEY_PRESSED) {
-    delegate_->GiveBackFocusToSearchBox();
-    delegate_->NavigateBack(folder_item_, key_event);
+  if (ShouldNameViewClearFocus(key_event)) {
+    folder_name_view_->GetFocusManager()->ClearFocus();
     return true;
   }
   if (!IsUnhandledLeftRightKeyEvent(key_event))

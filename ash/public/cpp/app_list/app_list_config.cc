@@ -293,7 +293,16 @@ AppListConfig::AppListConfig(AppListConfigType type)
       expand_arrow_tile_height_(72),
       folder_bubble_radius_(FolderUnclippedIconDimensionForType(type) / 2),
       folder_bubble_y_offset_(0),
-      folder_header_height_(20),
+      folder_header_height_(32),
+      folder_header_min_width_(24),
+      folder_header_max_width_(200),
+      folder_header_min_tap_width_(32),
+      folder_name_border_radius_(4),
+      folder_name_border_thickness_(2),
+      folder_name_padding_(8),
+      folder_name_border_color_(gfx::kGoogleBlue600),
+      folder_name_background_color_(SK_ColorTRANSPARENT),
+      folder_name_background_color_active_(gfx::kGoogleGrey100),
       folder_icon_dimension_(FolderClippedIconDimensionForType(type)),
       folder_unclipped_icon_dimension_(
           FolderUnclippedIconDimensionForType(type)),
@@ -305,7 +314,7 @@ AppListConfig::AppListConfig(AppListConfigType type)
       item_icon_in_folder_icon_margin_(ItemIconInFolderIconMarginForType(type)),
       folder_dropping_circle_radius_(folder_bubble_radius_),
       folder_dropping_delay_(0),
-      folder_background_color_(gfx::kGoogleGrey100),
+      folder_background_color_(SK_ColorWHITE),
       page_flip_zone_size_(20),
       grid_tile_spacing_in_folder_(8),
       blur_radius_(30),
@@ -420,6 +429,16 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                                      inner_tile_scale_y)),
       folder_bubble_y_offset_(base_config.folder_bubble_y_offset_),
       folder_header_height_(base_config.folder_header_height_),
+      folder_header_min_width_(base_config.folder_header_min_width_),
+      folder_header_max_width_(base_config.folder_header_max_width_),
+      folder_header_min_tap_width_(base_config.folder_header_min_tap_width_),
+      folder_name_border_radius_(base_config.folder_name_border_radius_),
+      folder_name_border_thickness_(base_config.folder_name_border_thickness_),
+      folder_name_padding_(base_config.folder_name_padding_),
+      folder_name_border_color_(base_config.folder_name_border_color_),
+      folder_name_background_color_(base_config.folder_name_background_color_),
+      folder_name_background_color_active_(
+          base_config.folder_name_background_color_active_),
       folder_icon_dimension_(MinScale(base_config.folder_icon_dimension_,
                                       scale_x,
                                       inner_tile_scale_y)),
@@ -532,6 +551,11 @@ int AppListConfig::GetIdealVerticalMargin(
 SkColor AppListConfig::GetCardifiedBackgroundColor(bool is_active) const {
   return is_active ? cardified_background_color_active_
                    : cardified_background_color_;
+}
+
+SkColor AppListConfig::GetFolderNameBackgroundColor(bool is_active) const {
+  return is_active ? folder_name_background_color_active_
+                   : folder_name_background_color_;
 }
 
 }  // namespace ash

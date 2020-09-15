@@ -1571,9 +1571,9 @@ TEST_P(AppListViewFocusTest, HittingLeftRightWhenFocusOnTextfield) {
   TestLeftAndRightKeyTraversalOnTextfield(search_box_view()->search_box());
 }
 
-// Tests that the focus is reset onto the search box and the folder exits after
-// hitting enter on folder name.
-TEST_P(AppListViewFocusTest, FocusResetAfterHittingEnterOnFolderName) {
+// Tests that the focus is reset and the folder does not exit after hitting
+// enter/escape on folder name.
+TEST_P(AppListViewFocusTest, FocusResetAfterHittingEnterOrEscapeOnFolderName) {
   Show();
 
   // Transition to FULLSCREEN_ALL_APPS state and open the folder.
@@ -1589,8 +1589,14 @@ TEST_P(AppListViewFocusTest, FocusResetAfterHittingEnterOnFolderName) {
 
   // Hit enter key.
   SimulateKeyPress(ui::VKEY_RETURN, false);
-  search_box_view()->search_box()->RequestFocus();
-  EXPECT_FALSE(contents_view()->apps_container_view()->IsInFolderView());
+  EXPECT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
+  EXPECT_FALSE(folder_name_view->HasFocus());
+
+  // Refocus and hit escape key.
+  folder_name_view->RequestFocus();
+  SimulateKeyPress(ui::VKEY_ESCAPE, false);
+  EXPECT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
+  EXPECT_FALSE(folder_name_view->HasFocus());
 }
 
 // Tests that the selection highlight follows the page change.

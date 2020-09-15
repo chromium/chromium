@@ -68,6 +68,10 @@ class APP_LIST_EXPORT FolderHeaderView : public views::View,
   // Returns elided folder name from |folder_name|.
   base::string16 GetElidedFolderName(const base::string16& folder_name) const;
 
+  // Returns whether |folder_name_view_| should clear focus based on
+  // |key_event_|.
+  bool ShouldNameViewClearFocus(const ui::KeyEvent& key_event);
+
   // views::View:
   void Layout() override;
 

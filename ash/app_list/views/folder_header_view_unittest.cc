@@ -147,7 +147,7 @@ TEST_F(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
   EXPECT_EQ("N A", delegate_->folder_name());
 }
 
-TEST_F(FolderHeaderViewTest, MaxFoldernNameLength) {
+TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
   // Creating a folder with empty folder name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   folder_header_view_->SetFolderItem(folder_item);
@@ -205,34 +205,57 @@ void SendTap(GestureHandler* handler, const gfx::Point& location) {
   handler->OnGestureEvent(&tap_up);
 }
 
+template <typename EventHandler>
+void SendPress(EventHandler* handler, const gfx::Point& location) {
+  ui::MouseEvent press_down(ui::ET_MOUSE_PRESSED,
+                            gfx::PointF(location.x(), location.y()),
+                            gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
+  handler->OnMouseEvent(&press_down);
+  ui::MouseEvent press_up(ui::ET_MOUSE_RELEASED,
+                          gfx::PointF(location.x(), location.y()),
+                          gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
+  handler->OnMouseEvent(&press_up);
+}
+
 }  // namespace
 
-// Tests that folder name textfield is triggered when user touches on or near
-// the folder name. (see https://crbug.com/997364)
+// Tests that when folder name is small, the folder name textfield is triggered
+// by only tap when on the textfieldd or near it to the left/right.
 TEST_F(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
-  // Creating a folder with empty folder name.
+  // Create a folder with a small name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   folder_header_view_->SetFolderItem(folder_item);
+  UpdateFolderName("ab");
 
   // Get in screen bounds of folder name
-  const gfx::Rect name_view_bounds =
-      folder_header_view_->GetFolderNameViewForTest()->GetBoundsInScreen();
+  views::View* name_view = folder_header_view_->GetFolderNameViewForTest();
+  const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
 
   // Tap folder name and check that folder renaming is triggered.
-  SendTap(folder_header_view_->GetFolderNameViewForTest(),
-          name_view_bounds.CenterPoint());
+  SendTap(name_view, name_view_bounds.CenterPoint());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  EXPECT_TRUE(name_view->HasFocus());
 
   // Clear focus from the folder name.
   widget_->GetFocusManager()->ClearFocus();
-  ASSERT_FALSE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  ASSERT_FALSE(name_view->HasFocus());
 
   // Test that tapping near (but not directly on) the folder name still
   // triggers folder rename.
   // Tap folder name and check that folder renaming is triggered.
-  SendTap(widget_.get(), name_view_bounds.top_right());
-  EXPECT_TRUE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  gfx::Point right_of_name_view = name_view_bounds.right_center();
+  right_of_name_view.Offset(2, 0);
+  SendTap(widget_.get(), right_of_name_view);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(name_view->HasFocus());
+
+  // Clear focus from the folder name.
+  widget_->GetFocusManager()->ClearFocus();
+  ASSERT_FALSE(name_view->HasFocus());
+
+  // Test that clicking in the same spot won't trigger folder rename.
+  SendPress(widget_.get(), right_of_name_view);
+  EXPECT_FALSE(name_view->HasFocus());
 }
 
 }  // namespace test
