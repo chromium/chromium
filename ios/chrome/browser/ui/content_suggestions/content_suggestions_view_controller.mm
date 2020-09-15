@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recording.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -89,6 +90,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 // Whether this VC is observing the discoverFeedHeight using KVO or not.
 @property(nonatomic, assign) BOOL observingDiscoverFeedHeight;
+
+// The CollectionViewController scroll position when an scrolling event starts.
+@property(nonatomic, assign) int scrollStartPosition;
 
 @end
 
@@ -742,6 +746,7 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
+  self.scrollStartPosition = scrollView.contentOffset.y;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
@@ -749,6 +754,8 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
   [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
   [self.overscrollActionsController scrollViewDidEndDragging:scrollView
                                               willDecelerate:decelerate];
+  [self.discoverFeedMetricsRecorder
+      recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView

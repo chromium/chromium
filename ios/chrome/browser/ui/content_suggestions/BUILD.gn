@@ -23,8 +23,6 @@ source_set("content_suggestions") {
     "content_suggestions_service_bridge_observer.h",
     "content_suggestions_service_bridge_observer.mm",
     "discover_feed_delegate.h",
-    "discover_feed_metrics_recorder.h",
-    "discover_feed_metrics_recorder.mm",
     "mediator_util.h",
     "mediator_util.mm",
     "ntp_home_mediator.h",
@@ -35,6 +33,7 @@ source_set("content_suggestions") {
   ]
   deps = [
     ":feature_flags",
+    ":metrics",
     "//base",
     "//components/favicon/core",
     "//components/feature_engagement/public",
@@ -103,6 +102,7 @@ source_set("content_suggestions") {
     "//ui/base",
     "//ui/strings",
   ]
+  public_deps = [ ":metrics" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -151,6 +151,7 @@ source_set("content_suggestions_ui") {
     ":content_suggestions_constant",
     ":content_suggestions_ui_util",
     ":feature_flags",
+    ":metrics",
     "resources:content_suggestions_no_image",
     "resources:content_suggestions_offline",
     "resources:ntp_search_icon",
@@ -182,6 +183,15 @@ source_set("content_suggestions_ui") {
     "//ui/base",
   ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "discover_feed_metrics_recorder.h",
+    "discover_feed_metrics_recorder.mm",
+  ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
