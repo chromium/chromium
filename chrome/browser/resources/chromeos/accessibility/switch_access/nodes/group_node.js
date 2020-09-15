@@ -51,10 +51,8 @@ class GroupNode extends SAChildNode {
   asRootNode() {
     const root = new SARootNode();
 
-    const children = [];
-    for (const child of this.children_) {
-      children.push(child);
-    }
+    // Make a copy of the children array.
+    const children = [...this.children_];
 
     children.push(new BackButtonNode(root));
     root.children = children;
