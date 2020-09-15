@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -480,6 +481,9 @@ TEST_F(PrimaryAccountMutatorTest,
       RemoveAccountExpectation::kRemoveAll);
 }
 
+// kRemoveAuthenticatedAccountIfInError isn't supported on Android.
+#if !defined(OS_ANDROID)
+
 // Test that ClearPrimaryAccount(...) with ClearAccountTokensAction::kDefault
 // and AccountConsistencyMethod::kDice keeps all accounts when the the primary
 // account does not have an authentication error (see *_AuthError test).
@@ -500,6 +504,7 @@ TEST_F(PrimaryAccountMutatorTest,
       signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
       RemoveAccountExpectation::kRemovePrimary, AuthExpectation::kAuthError);
 }
+#endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS)

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -310,12 +311,20 @@ void PrimaryAccountManager::StartSignOut(
   VLOG(1) << "StartSignOut: " << static_cast<int>(signout_source_metric) << ", "
           << static_cast<int>(signout_delete_metric) << ", "
           << static_cast<int>(remove_option);
-  client_->PreSignOut(
-      base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
-                     base::Unretained(this), signout_source_metric,
-                     signout_delete_metric, remove_option,
-                     assert_signout_allowed),
-      signout_source_metric);
+  if (IsAuthenticated()) {
+    client_->PreSignOut(
+        base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
+                       base::Unretained(this), signout_source_metric,
+                       signout_delete_metric, remove_option,
+                       assert_signout_allowed),
+        signout_source_metric);
+  } else {
+    // Sign-out is always allowed if there's only unconsented primary account
+    // without sync consent, so skip calling PreSignOut.
+    OnSignoutDecisionReached(signout_source_metric, signout_delete_metric,
+                             remove_option, assert_signout_allowed,
+                             SigninClient::SignoutDecision::ALLOW_SIGNOUT);
+  }
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(
@@ -331,7 +340,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
   VLOG(1) << "OnSignoutDecisionReached: "
           << (signout_decision == SigninClient::SignoutDecision::ALLOW_SIGNOUT);
   signin_metrics::LogSignout(signout_source_metric, signout_delete_metric);
-  if (!IsAuthenticated()) {
+  if (primary_account_info().IsEmpty()) {
     return;
   }
 
