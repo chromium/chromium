@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"

@@ -7,7 +7,7 @@
 #include <AppKit/AppKit.h>
 #include <Foundation/Foundation.h>
 
-#include "content/browser/frame_host/popup_menu_helper_mac.h"
+#include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "content/browser/sandbox_parameters_mac.h"
 #include "net/test/test_data_directory.h"
 

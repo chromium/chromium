@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/public/test/browser_task_environment.h"

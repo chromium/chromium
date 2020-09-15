@@ -20,7 +20,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"

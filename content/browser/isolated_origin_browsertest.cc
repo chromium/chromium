@@ -15,7 +15,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/navigator.h"
+#include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"

@@ -12,7 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
