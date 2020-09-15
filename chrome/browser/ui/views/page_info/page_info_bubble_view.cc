@@ -194,6 +194,8 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
                              const GURL& url);
   ~InternalPageInfoBubbleView() override;
 
+  gfx::Size CalculatePreferredSize() const override;
+
   DISALLOW_COPY_AND_ASSIGN(InternalPageInfoBubbleView);
 };
 
@@ -405,17 +407,36 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+
   // Use a normal label's style for the title since there is no content.
   views::Label* title_label =
       static_cast<views::Label*>(GetBubbleFrameView()->title());
   title_label->SetFontList(views::Label::GetDefaultFontList());
-  title_label->SetMultiLine(false);
+  title_label->SetMultiLine(true);
   title_label->SetElideBehavior(gfx::NO_ELIDE);
 
   SizeToContents();
 }
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() {}
+
+gfx::Size InternalPageInfoBubbleView::CalculatePreferredSize() const {
+  // Without a layout manager this will recurse infinitely
+  // (GetHeightForWidth() calls CalculatePreferredSize()).
+  // TODO(crbug.com/1128500): Fix infinite recursion or always
+  // install a layout manager.
+  if (!GetLayoutManager())
+    return gfx::Size();
+
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                    margins().width();
+  return gfx::Size(width, GetHeightForWidth(width));
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // PageInfoBubbleView
