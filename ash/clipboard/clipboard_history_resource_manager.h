@@ -10,6 +10,8 @@
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/strings/string16.h"
 #include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
@@ -19,6 +21,14 @@ namespace ash {
 class ASH_EXPORT ClipboardHistoryResourceManager
     : public ClipboardHistory::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the CachedImageModel that corresponds with 'menu_item_ids'
+    // has been updated.
+    virtual void OnCachedImageModelUpdated(
+        const std::vector<base::UnguessableToken>& menu_item_ids) = 0;
+  };
+
   explicit ClipboardHistoryResourceManager(
       const ClipboardHistory* clipboard_history);
   ClipboardHistoryResourceManager(const ClipboardHistoryResourceManager&) =
@@ -33,10 +43,8 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   // Returns the label to display for the specified clipboard history |item|.
   base::string16 GetLabel(const ClipboardHistoryItem& item) const;
 
-  // Returns the main format of the specified clipboard history |item|. Note
-  // that one `ClipboardHistoryItem` instance may own multiple formats.
-  ui::ClipboardInternalFormat CalculateMainFormat(
-      const ClipboardHistoryItem& item) const;
+  void AddObserver(Observer* observer) const;
+  void RemoveObserver(Observer* observer) const;
 
  private:
   struct CachedImageModel {
@@ -79,6 +87,10 @@ class ASH_EXPORT ClipboardHistoryResourceManager
 
   // Image used when the cached ImageModel has not yet been generated.
   ui::ImageModel placeholder_image_model_;
+
+  // Mutable to allow adding/removing from |observers_| through a const
+  // ClipboardHistoryResourceManager.
+  mutable base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ClipboardHistoryResourceManager> weak_factory_{this};
 };

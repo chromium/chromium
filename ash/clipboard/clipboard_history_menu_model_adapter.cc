@@ -130,7 +130,7 @@ views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
 
   std::unique_ptr<ClipboardHistoryItemView> item_view =
       ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
-          GetItemFromCommandId(command_id), *resource_manager_, container);
+          GetItemFromCommandId(command_id), resource_manager_, container);
   item_view->Init();
   container->AddChildView(std::move(item_view));
 

@@ -138,16 +138,13 @@ const char* ClipboardHistoryItemView::DeleteButton::GetClassName() const {
 std::unique_ptr<ClipboardHistoryItemView>
 ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     const ClipboardHistoryItem& item,
-    const ClipboardHistoryResourceManager& resource_manager,
+    const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container) {
   switch (ClipboardHistoryUtil::CalculateMainFormat(item.data()).value()) {
     case ui::ClipboardInternalFormat::kBitmap:
-      return std::make_unique<ClipboardHistoryBitmapItemView>(
-          gfx::ImageSkia::CreateFrom1xBitmap(item.data().bitmap()), container);
     case ui::ClipboardInternalFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
-          *(resource_manager.GetImageModel(item).GetImage().ToImageSkia()),
-          container);
+          item, resource_manager, container);
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:

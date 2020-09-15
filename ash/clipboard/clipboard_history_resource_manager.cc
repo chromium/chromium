@@ -160,6 +160,14 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
   }
 }
 
+void ClipboardHistoryResourceManager::AddObserver(Observer* observer) const {
+  observers_.AddObserver(observer);
+}
+
+void ClipboardHistoryResourceManager::RemoveObserver(Observer* observer) const {
+  observers_.RemoveObserver(observer);
+}
+
 ClipboardHistoryResourceManager::CachedImageModel::CachedImageModel() = default;
 
 ClipboardHistoryResourceManager::CachedImageModel::CachedImageModel(
@@ -177,8 +185,15 @@ void ClipboardHistoryResourceManager::CacheImageModel(
     ui::ImageModel image_model) {
   auto cached_image_model = base::ConstCastIterator(
       cached_image_models_, FindCachedImageModelForId(id));
-  if (cached_image_model != cached_image_models_.end())
-    cached_image_model->image_model = std::move(image_model);
+  if (cached_image_model == cached_image_models_.end())
+    return;
+
+  cached_image_model->image_model = std::move(image_model);
+
+  for (auto& observer : observers_) {
+    observer.OnCachedImageModelUpdated(
+        cached_image_model->clipboard_history_item_ids);
+  }
 }
 
 std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator

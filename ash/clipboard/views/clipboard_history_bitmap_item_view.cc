@@ -5,12 +5,20 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_resource_manager.h"
+#include "ash/clipboard/clipboard_history_util.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+
+namespace ash {
 
 namespace {
 
@@ -20,9 +28,108 @@ constexpr int kBitmapHeight = 64;
 // The margins of the delete button.
 constexpr gfx::Insets kDeleteButtonMargins =
     gfx::Insets(/*top=*/4, /*left=*/0, /*bottom=*/0, /*right=*/4);
-}  // namespace
 
-namespace ash {
+// The duration of the fade out animation for transitioning the placeholder
+// image to rendered HTML.
+constexpr base::TimeDelta kFadeOutDurationMs =
+    base::TimeDelta::FromMilliseconds(60);
+
+// The duration of the fade in animation for transitioning the placeholder image
+// to rendered HTML.
+constexpr base::TimeDelta kFadeInDurationMs =
+    base::TimeDelta::FromMilliseconds(200);
+
+////////////////////////////////////////////////////////////////////////////////
+// FadeImageView
+// An ImageView which reacts to updates from ClipboardHistoryResourceManager by
+// fading out the old image, and fading in the new image. Used when HTML is done
+// rendering. Only expected to transition once in its lifetime.
+class FadeImageView : public views::ImageView,
+                      public ui::ImplicitAnimationObserver,
+                      public ClipboardHistoryResourceManager::Observer {
+ public:
+  FadeImageView(const ClipboardHistoryItem& clipboard_history_item,
+                const ClipboardHistoryResourceManager* resource_manager)
+      : views::ImageView(),
+        resource_manager_(resource_manager),
+        clipboard_history_item_(clipboard_history_item) {
+    resource_manager_->AddObserver(this);
+    SetImage(*(resource_manager_->GetImageModel(clipboard_history_item_)
+                   .GetImage()
+                   .ToImageSkia()));
+  }
+
+  FadeImageView(const FadeImageView& rhs) = delete;
+
+  FadeImageView& operator=(const FadeImageView& rhs) = delete;
+
+  ~FadeImageView() override {
+    StopObservingImplicitAnimations();
+    resource_manager_->RemoveObserver(this);
+  }
+
+  // ClipboardHistoryResourceManager::Observer:
+  void OnCachedImageModelUpdated(
+      const std::vector<base::UnguessableToken>& item_ids) override {
+    if (!base::Contains(item_ids, clipboard_history_item_.id()))
+      return;
+
+    // Fade the old image out, then swap in the new image.
+    DCHECK_EQ(FadeAnimationState::kNoFadeAnimation, animation_state_);
+    SetPaintToLayer();
+    animation_state_ = FadeAnimationState::kFadeOut;
+
+    ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
+    settings.SetTransitionDuration(kFadeOutDurationMs);
+    settings.AddObserver(this);
+    layer()->SetOpacity(0.0f);
+  }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override {
+    switch (animation_state_) {
+      case FadeAnimationState::kNoFadeAnimation:
+        NOTREACHED();
+        return;
+      case FadeAnimationState::kFadeOut:
+        DCHECK_EQ(0.0f, layer()->opacity());
+        animation_state_ = FadeAnimationState::kFadeIn;
+        SetImage(*(resource_manager_->GetImageModel(clipboard_history_item_)
+                       .GetImage()
+                       .ToImageSkia()));
+        {
+          ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
+          settings.AddObserver(this);
+          settings.SetTransitionDuration(kFadeInDurationMs);
+          layer()->SetOpacity(1.0f);
+        }
+        return;
+      case FadeAnimationState::kFadeIn:
+        DestroyLayer();
+        animation_state_ = FadeAnimationState::kNoFadeAnimation;
+        return;
+    }
+  }
+
+  // The different animation states possible when transitioning from one
+  // gfx::ImageSkia to the next.
+  enum class FadeAnimationState {
+    kNoFadeAnimation,
+    kFadeOut,
+    kFadeIn,
+  };
+
+  // The current animation state.
+  FadeAnimationState animation_state_ = FadeAnimationState::kNoFadeAnimation;
+
+  // The resource manager, owned by ClipboardHistoryController.
+  const ClipboardHistoryResourceManager* const resource_manager_;
+
+  // The ClipboardHistoryItem represented by this class.
+  const ClipboardHistoryItem clipboard_history_item_;
+};
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // ClipboardHistoryBitmapItemView::BitmapContentsView
@@ -62,9 +169,12 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
 // ClipboardHistoryBitmapItemView
 
 ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
-    const gfx::ImageSkia& image_skia,
+    const ClipboardHistoryItem& clipboard_history_item,
+    const ClipboardHistoryResourceManager* resource_manager,
     views::MenuItemView* container)
-    : ClipboardHistoryItemView(container), original_image_(image_skia) {}
+    : ClipboardHistoryItemView(container),
+      resource_manager_(resource_manager),
+      clipboard_history_item_(clipboard_history_item) {}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
@@ -77,11 +187,9 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
   auto contents_view = std::make_unique<BitmapContentsView>(this);
   contents_view->SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(original_image_);
+  auto image_view = BuildImageView();
   image_view->SetPreferredSize(gfx::Size(INT_MAX, kBitmapHeight));
   image_view_ = contents_view->AddChildView(std::move(image_view));
-
   contents_view->InstallDeleteButton();
   return contents_view;
 }
@@ -89,6 +197,26 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
 void ClipboardHistoryBitmapItemView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   image_view_->SetImageSize(CalculateTargetImageSize());
+}
+
+std::unique_ptr<views::ImageView>
+ClipboardHistoryBitmapItemView::BuildImageView() {
+  switch (
+      ClipboardHistoryUtil::CalculateMainFormat(clipboard_history_item_.data())
+          .value()) {
+    case ui::ClipboardInternalFormat::kHtml:
+      return std::make_unique<FadeImageView>(clipboard_history_item_,
+                                             resource_manager_);
+    case ui::ClipboardInternalFormat::kBitmap: {
+      auto image_view = std::make_unique<views::ImageView>();
+      image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(
+          clipboard_history_item_.data().bitmap()));
+      return image_view;
+    }
+    default:
+      NOTREACHED();
+      return std::make_unique<views::ImageView>();
+  }
 }
 
 gfx::Size ClipboardHistoryBitmapItemView::CalculateTargetImageSize() const {

@@ -23,7 +23,7 @@ class ClipboardHistoryItemView : public views::View,
   static std::unique_ptr<ClipboardHistoryItemView>
   CreateFromClipboardHistoryItem(
       const ClipboardHistoryItem& item,
-      const ClipboardHistoryResourceManager& resource_manager,
+      const ClipboardHistoryResourceManager* resource_manager,
       views::MenuItemView* container);
 
   ClipboardHistoryItemView(const ClipboardHistoryItemView& rhs) = delete;
