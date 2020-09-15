@@ -25,6 +25,8 @@ namespace bindings {
 // depending on the return value type.
 
 struct V8ReturnValue {
+  STATIC_ONLY(V8ReturnValue);
+
   // Support compile-time overload resolution by making each value have its own
   // type.
 
@@ -44,6 +46,16 @@ struct V8ReturnValue {
 
   // Returns the interface object of the given type.
   enum InterfaceObject { kInterfaceObject };
+
+  // Selects the appropriate creation context.
+  static v8::Local<v8::Object> CreationContext(
+      const v8::FunctionCallbackInfo<v8::Value>& info) {
+    return info.This();
+  }
+  static v8::Local<v8::Object> CreationContext(
+      const v8::PropertyCallbackInfo<v8::Value>& info) {
+    return info.Holder();
+  }
 };
 
 // V8 handle types
@@ -72,9 +84,9 @@ PLATFORM_EXPORT v8::Local<v8::Object> CreatePropertyDescriptorObject(
     v8::Isolate* isolate,
     const v8::PropertyDescriptor& desc);
 
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const v8::PropertyDescriptor& value) {
+PLATFORM_EXPORT inline void V8SetReturnValue(
+    const v8::PropertyCallbackInfo<v8::Value>& info,
+    const v8::PropertyDescriptor& value) {
   info.GetReturnValue().Set(
       CreatePropertyDescriptorObject(info.GetIsolate(), value));
 }
@@ -120,9 +132,9 @@ PLATFORM_EXPORT inline void V8SetReturnValue(
   info.GetReturnValue().SetNull();
 }
 
-template <typename CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      NamedPropertyDeleterResult value) {
+PLATFORM_EXPORT inline void V8SetReturnValue(
+    const v8::PropertyCallbackInfo<v8::Boolean>& info,
+    NamedPropertyDeleterResult value) {
   if (value == NamedPropertyDeleterResult::kDidNotIntercept) {
     // Do not set the return value to indicate that the request was not
     // intercepted.
@@ -273,7 +285,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
 
-  info.GetReturnValue().Set(wrappable->Wrap(info.GetIsolate(), info.This()));
+  info.GetReturnValue().Set(
+      wrappable->Wrap(info.GetIsolate(), V8ReturnValue::CreationContext(info)));
 }
 
 template <typename CallbackInfo>
@@ -286,7 +299,8 @@ void V8SetReturnValue(const CallbackInfo& info,
                                                wrappable))
     return;
 
-  info.GetReturnValue().Set(wrappable->Wrap(info.GetIsolate(), info.This()));
+  info.GetReturnValue().Set(
+      wrappable->Wrap(info.GetIsolate(), V8ReturnValue::CreationContext(info)));
 }
 
 template <typename CallbackInfo>
@@ -298,11 +312,13 @@ void V8SetReturnValue(const CallbackInfo& info,
 
   ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(value);
   if (DOMDataStore::SetReturnValueFast(info.GetReturnValue(), wrappable,
-                                       info.This(), receiver)) {
+                                       V8ReturnValue::CreationContext(info),
+                                       receiver)) {
     return;
   }
 
-  info.GetReturnValue().Set(wrappable->Wrap(info.GetIsolate(), info.This()));
+  info.GetReturnValue().Set(
+      wrappable->Wrap(info.GetIsolate(), V8ReturnValue::CreationContext(info)));
 }
 
 template <typename CallbackInfo>
@@ -311,11 +327,13 @@ void V8SetReturnValue(const CallbackInfo& info,
                       const ScriptWrappable* receiver) {
   ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(&value);
   if (DOMDataStore::SetReturnValueFast(info.GetReturnValue(), wrappable,
-                                       info.This(), receiver)) {
+                                       V8ReturnValue::CreationContext(info),
+                                       receiver)) {
     return;
   }
 
-  info.GetReturnValue().Set(wrappable->Wrap(info.GetIsolate(), info.This()));
+  info.GetReturnValue().Set(
+      wrappable->Wrap(info.GetIsolate(), V8ReturnValue::CreationContext(info)));
 }
 
 template <typename CallbackInfo>
