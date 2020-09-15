@@ -493,8 +493,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     // All behavior relating to Lens integration is gated by Feature Flag.
                     // A map to indicate which image search menu item would be shown.
                     Map<String, Boolean> imageSearchMenuItemsToShow =
-                            getSearchByImageMenuItemsToShowAndRecordMetrics(
-                                    context, params.getPageUrl(), isShoppyImage);
+                            getSearchByImageMenuItemsToShowAndRecordMetrics(context,
+                                    params.getPageUrl(), isShoppyImage, mDelegate.isIncognito());
                     if (imageSearchMenuItemsToShow.get(LENS_SEARCH_MENU_ITEM_KEY)) {
                         if (LensUtils.useLensWithSearchByImageText()) {
                             mEnableLensWithSearchByImageText = true;
@@ -957,12 +957,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param pageUrl The Url associated with the main frame of the page that triggered the context
      *         menu.
      * @param isShoppyImage Whether the image has been identified to have clear shopping intent.
+     * @param isIncognito Whether the user is incognito.
      * @return An immutable map. Can be used to check whether a specific Lens menu item is enabled.
      */
     private Map<String, Boolean> getSearchByImageMenuItemsToShowAndRecordMetrics(
-            Context context, String pageUrl, boolean isShoppyImage) {
+            Context context, String pageUrl, boolean isShoppyImage, boolean isIncognito) {
         // If Google Lens feature is not supported, show search by image menu item.
-        if (!LensUtils.isGoogleLensFeatureEnabled()) {
+        if (!LensUtils.isGoogleLensFeatureEnabled(isIncognito)) {
             // TODO(yusuyoutube): Cleanup. Remove repetition.
             return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
                 {
@@ -1035,7 +1036,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // In Lens Shopping Menu Item experiment, fallback to Search image with Google Lens
         // When the url is not in domain allowlist and AGSA version is equal to or greater than the
         // minimum shopping supported version.
-        if (LensUtils.isGoogleLensShoppingFeatureEnabled()
+        if (LensUtils.isGoogleLensShoppingFeatureEnabled(isIncognito)
                 && !GSAState.getInstance(context).isAgsaVersionBelowMinimum(
                         versionName, LensUtils.getMinimumAgsaVersionForLensShoppingSupport())) {
             if (LensUtils.isInShoppingAllowlist(pageUrl) || isShoppyImage) {
@@ -1112,7 +1113,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param metricName The name of the UKM metric to record.
      */
     private void maybeRecordBooleanUkm(String eventName, String metricName) {
-        if (!LensUtils.shouldLogUkm()) return;
+        if (!LensUtils.shouldLogUkm(mDelegate.isIncognito())) return;
         initializeUkmRecorderBridge();
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null) {
@@ -1126,7 +1127,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param actionId The id of the action corresponding the ContextMenuUma.Action enum.
      */
     private void maybeRecordActionUkm(String eventName, int actionId) {
-        if (!LensUtils.shouldLogUkm()) return;
+        if (!LensUtils.shouldLogUkm(mDelegate.isIncognito())) return;
         initializeUkmRecorderBridge();
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null) {
