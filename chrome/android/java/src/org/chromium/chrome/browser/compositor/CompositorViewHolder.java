@@ -154,7 +154,7 @@ public class CompositorViewHolder extends FrameLayout
     private CompositorAccessibilityProvider mNodeProvider;
 
     /** The toolbar control container. **/
-    private ControlContainer mControlContainer;
+    private @Nullable ControlContainer mControlContainer;
 
     private InsetObserverView mInsetObserverView;
     private boolean mShowingFullscreen;
@@ -472,7 +472,7 @@ public class CompositorViewHolder extends FrameLayout
     /**
      * @param controlContainer The ControlContainer.
      */
-    public void setControlContainer(ControlContainer controlContainer) {
+    public void setControlContainer(@Nullable ControlContainer controlContainer) {
         DynamicResourceLoader loader = mCompositorView.getResourceManager() != null
                 ? mCompositorView.getResourceManager().getDynamicResourceLoader()
                 : null;
@@ -1228,7 +1228,7 @@ public class CompositorViewHolder extends FrameLayout
             TabCreatorManager tabCreatorManager,
             ContextualSearchManagementDelegate contextualSearchManager,
             ActivityTabProvider tabProvider) {
-        assert mLayoutManager != null && mControlContainer != null;
+        assert mLayoutManager != null;
         mLayoutManager.init(tabModelSelector, tabCreatorManager, mControlContainer,
                 contextualSearchManager,
                 mCompositorView.getResourceManager().getDynamicResourceLoader(), tabProvider);

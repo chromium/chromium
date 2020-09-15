@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.compositor.overlays.toolbar;
 import android.content.Context;
 import android.graphics.RectF;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -41,7 +43,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
     public TopToolbarOverlayCoordinator(Context context,
             CompositorModelChangeProcessor.FrameRequestSupplier frameRequestSupplier,
-            LayoutManager layoutManager, ControlContainer controlContainer,
+            LayoutManager layoutManager, @Nullable ControlContainer controlContainer,
             ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Boolean> androidViewShownSupplier,

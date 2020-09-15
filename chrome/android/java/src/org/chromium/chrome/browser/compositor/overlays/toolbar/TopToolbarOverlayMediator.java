@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.toolbar;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -45,7 +46,7 @@ public class TopToolbarOverlayMediator {
     private final SceneChangeObserver mSceneChangeObserver;
 
     /** A Layout for browser controls. */
-    private final ControlContainer mToolbarContainer;
+    private final @Nullable ControlContainer mToolbarContainer;
 
     /** Provides current tab. */
     private final ActivityTabProvider mTabSupplier;
@@ -75,7 +76,7 @@ public class TopToolbarOverlayMediator {
     private boolean mLayoutHasOwnToolbar;
 
     TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManager layoutManager,
-            ControlContainer controlContainer, ActivityTabProvider tabSupplier,
+            @Nullable ControlContainer controlContainer, ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Boolean> androidViewShownSupplier) {
         mContext = context;

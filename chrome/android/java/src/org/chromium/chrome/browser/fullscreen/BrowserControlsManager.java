@@ -177,7 +177,7 @@ public class BrowserControlsManager
      * @param modelSelector The tab model selector that will be monitored for tab changes.
      * @param resControlContainerHeight The dimension resource ID for the control container height.
      */
-    public void initialize(ControlContainer controlContainer,
+    public void initialize(@Nullable ControlContainer controlContainer,
             ActivityTabProvider activityTabProvider, final TabModelSelector modelSelector,
             int resControlContainerHeight) {
         mHtmlApiHandler.initialize(activityTabProvider, modelSelector);
