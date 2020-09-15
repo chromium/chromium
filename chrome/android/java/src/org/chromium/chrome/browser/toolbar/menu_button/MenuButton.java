@@ -298,6 +298,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
     public void setThemeColorProvider(ThemeColorProvider themeColorProvider) {
         mThemeColorProvider = themeColorProvider;
         mThemeColorProvider.addTintObserver(this);
+        onTintChanged(themeColorProvider.getTint(), themeColorProvider.useLight());
     }
 
     /**
