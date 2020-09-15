@@ -109,7 +109,8 @@ public class DownloadLocationCustomView
             case DownloadLocationDialogType.LOCATION_SUGGESTION:
                 // TODO(vuhung): Add download and storage info to subtitle.
                 // Right now this subtitle is just a placeholder.
-                mSubtitleView.setText(DownloadUtils.getStringForBytes(getContext(), totalBytes));
+                // Putting name too long subtitle here to differentiate with default dialog.
+                mSubtitleView.setText(R.string.download_location_name_too_long);
                 break;
         }
 

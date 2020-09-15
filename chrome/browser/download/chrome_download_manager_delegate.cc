@@ -973,13 +973,6 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
       DownloadLocationDialogType dialog_type =
           DownloadLocationDialogType::DEFAULT;
 
-      // Suggests an alternative location.
-      // TODO(vuhung): Conditions checking will be added in next CL.
-      if (base::FeatureList::IsEnabled(
-              download::features::kSmartSuggestionForLargeDownloads)) {
-        dialog_type = DownloadLocationDialogType::LOCATION_SUGGESTION;
-      }
-
       switch (reason) {
         case DownloadConfirmationReason::TARGET_NO_SPACE:
           dialog_type = DownloadLocationDialogType::LOCATION_FULL;
