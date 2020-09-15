@@ -41,6 +41,11 @@ bool StructuredNamesEnabled() {
       features::kAutofillEnableSupportForMoreStructureInNames);
 }
 
+bool StructuredAddressesEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForMoreStructureInAddresses);
+}
+
 Re2RegExCache::Re2RegExCache() = default;
 
 // static

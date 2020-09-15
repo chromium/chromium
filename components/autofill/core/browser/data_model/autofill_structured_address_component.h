@@ -129,11 +129,11 @@ class AddressComponent {
   bool IsValueAssigned() const;
 
   // Sets the value corresponding to the storage type of this AddressComponent.
-  void SetValue(base::string16 value, VerificationStatus status);
+  virtual void SetValue(base::string16 value, VerificationStatus status);
 
   // Sets the value to an empty string, marks it unassigned and sets the
   // verification status to |kNoStatus|.
-  void UnsetValue();
+  virtual void UnsetValue();
 
   // The method sets the value of the current node if its |storage_type_| is
   // |type| or if |ConvertAndGetTheValueForAdditionalFieldTypeName()| supports
@@ -154,6 +154,20 @@ class AddressComponent {
   // corresponding string representation.
   bool SetValueForTypeIfPossible(const std::string& type_name,
                                  const base::string16& value,
+                                 const VerificationStatus& verification_status,
+                                 bool invalidate_child_nodes = false,
+                                 bool invalidate_parent_nodes = false);
+
+  // Convenience wrapper to allow setting the value using a std::string.
+  bool SetValueForTypeIfPossible(const ServerFieldType& type,
+                                 const std::string& value,
+                                 const VerificationStatus& verification_status,
+                                 bool invalidate_child_nodes = false,
+                                 bool invalidate_parent_nodes = false);
+
+  // Convenience wrapper to allow setting the value using a std::string.
+  bool SetValueForTypeIfPossible(const std::string& type_name,
+                                 const std::string& value,
                                  const VerificationStatus& verification_status,
                                  bool invalidate_child_nodes = false,
                                  bool invalidate_parent_nodes = false);
@@ -222,7 +236,7 @@ class AddressComponent {
 
   // Completes the full tree by calling |RecursivelyCompleteTree()| starting
   // form the root node. Returns true if the completion was successful.
-  bool CompleteFullTree();
+  virtual bool CompleteFullTree();
 
   // Checks if a tree is completable in the sense that there are no conflicting
   // observed or verified types. This means that there is not more than one
@@ -278,6 +292,23 @@ class AddressComponent {
 
   // Recursively unsets all subcomponents.
   void RecursivelyUnsetSubcomponents();
+
+  // Return if the value associated with |field_type_name| is valid.
+  // If |wipe_if_not|, the value is unset if invalid.
+  bool IsValueForTypeValid(const std::string& field_type_name,
+                           bool wipe_if_not = false);
+
+  // Convenience wrapper to work the ServerFieldTypes.
+  bool IsValueForTypeValid(ServerFieldType field_type,
+                           bool wipe_if_not = false);
+
+  // Recursively determines the validity status of a component value associated
+  // with |field_type_name|.  If |wipe_if_not|, the value is unset if invalid.
+  // Returns true if it is possible to determine the validity status of the
+  // value in this subcomponent.
+  bool GetIsValueForTypeValidIfPossible(const std::string& field_type_name,
+                                        bool* validity_status,
+                                        bool wipe_if_not = false);
 
 #ifdef UNIT_TEST
   // Initiates the formatting of the values from the subcomponents.
@@ -378,6 +409,13 @@ class AddressComponent {
 
   // Returns a reference to the root node of the tree.
   const AddressComponent& GetRootNode() const;
+
+  // Function to determine if the value stored in this component is valid.
+  // Return true be default but can be overloaded by a subclass.
+  virtual bool IsValueValid() const;
+
+  // Function to be called post assign to do sanitization.
+  virtual void PostAssignSanitization() {}
 
  private:
   // Unsets the node and all of its children.

@@ -35,6 +35,7 @@ extern const base::Feature kAutofillEnableAugmentedPhoneCountryCode;
 extern const base::Feature kAutofillEnableCompanyName;
 extern const base::Feature kAutofillEnableHideSuggestionsUI;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
+extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
 extern const base::Feature kAutofillEnableSupportForHouseNumbers;
 extern const base::Feature kAutofillEnforceMinRequiredFieldsForHeuristics;

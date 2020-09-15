@@ -93,6 +93,9 @@ struct CaptureOptions {
 // Returns true if the structured names feature is enabled.
 bool StructuredNamesEnabled();
 
+// Returns true if the structured address feature is enabled.
+bool StructuredAddressesEnabled();
+
 // A cache for compiled RE2 regular expressions.
 class Re2RegExCache {
  public:

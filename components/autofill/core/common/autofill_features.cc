@@ -97,6 +97,12 @@ const base::Feature kAutofillEnableSupportForMoreStructureInNames{
     "AutofillEnableSupportForMoreStructureInNames",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if Autofill supports new structure in addresses.
+// TODO(crbug.com/1098943): Remove once launched.
+const base::Feature kAutofillEnableSupportForMoreStructureInAddresses{
+    "AutofillEnableSupportForMoreStructureInAddresses",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Autofill supports merging subset names.
 // TODO(crbug.com/1098943): Remove once launched.
 const base::Feature kAutofillEnableSupportForMergingSubsetNames{

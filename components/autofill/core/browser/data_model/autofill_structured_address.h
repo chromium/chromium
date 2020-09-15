@@ -88,6 +88,13 @@ class StreetAddress : public AddressComponent {
   explicit StreetAddress(AddressComponent* parent);
   ~StreetAddress() override;
 
+  void GetAdditionalSupportedFieldTypes(
+      ServerFieldTypeSet* supported_types) const override;
+
+  void SetValue(base::string16 value, VerificationStatus status) override;
+
+  void UnsetValue() override;
+
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
       const override;
@@ -95,11 +102,36 @@ class StreetAddress : public AddressComponent {
   // Returns the format string to create the full name from its subcomponents.
   base::string16 GetBestFormatString() const override;
 
+  // Recalculates the address line after an assignment.
+  void PostAssignSanitization() override;
+
+ protected:
+  // Implements support for getting the value of the individual address lines.
+  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
+      const std::string& type_name,
+      base::string16* value) const override;
+
+  // Implements support for setting the value of the individual address lines.
+  bool ConvertAndSetValueForAdditionalFieldTypeName(
+      const std::string& type_name,
+      const base::string16& value,
+      const VerificationStatus& status) override;
+
+  // Returns true of the address lines do not contain an empty line.
+  bool IsValueValid() const override;
+
  private:
+  // Calculates the address line from the street address.
+  void CalculateAddressLines();
+
   StreetAndDependentStreetName streets_{this};
   HouseNumber number_{this};
   Premise premise_{this};
   SubPremise sub_premise_{this};
+
+  // Holds the values of the individual address lines.
+  // Must be recalculated if the value of the component changes.
+  std::vector<base::string16> address_lines_;
 };
 
 // Stores the country code of an address profile.
@@ -107,6 +139,13 @@ class CountryCode : public AddressComponent {
  public:
   explicit CountryCode(AddressComponent* parent);
   ~CountryCode() override;
+};
+
+// Stores the city of an address.
+class DependentLocality : public AddressComponent {
+ public:
+  explicit DependentLocality(AddressComponent* parent);
+  ~DependentLocality() override;
 };
 
 // Stores the city of an address.
@@ -130,17 +169,31 @@ class PostalCode : public AddressComponent {
   ~PostalCode() override;
 };
 
+// Stores the sorting code.
+class SortingCode : public AddressComponent {
+ public:
+  explicit SortingCode(AddressComponent* parent);
+  ~SortingCode() override;
+};
+
 // Stores the overall Address that contains the StreetAddress, the PostalCode
 // the City, the State and the CountryCode.
 class Address : public AddressComponent {
  public:
   Address();
+  Address(const Address& other);
   explicit Address(AddressComponent* parent);
   ~Address() override;
+
+  // Migrates from a legacy structure in which name tokens are imported without
+  // a status.
+  void MigrateLegacyStructure(bool is_verified_profile);
 
  private:
   StreetAddress street_address_{this};
   PostalCode postal_code_{this};
+  SortingCode sorting_code_{this};
+  DependentLocality dependent_locality_{this};
   City city_{this};
   State state_{this};
   CountryCode country_code_{this};

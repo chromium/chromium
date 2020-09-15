@@ -43,7 +43,7 @@ class NameMiddle : public AddressComponent {
       ServerFieldTypeSet* supported_types) const override;
 
  protected:
-  // Implements support for getting for a value for the |MIDDLE_NAME_INITIAL|
+  // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|
   // type.
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
       const std::string& type_name,

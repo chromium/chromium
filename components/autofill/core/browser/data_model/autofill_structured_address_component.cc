@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
 #include <algorithm>
-#include <iostream>
 #include <map>
 #include <string>
 #include <utility>
@@ -70,6 +69,8 @@ AddressComponent& AddressComponent::operator=(const AddressComponent& right) {
   for (size_t i = 0; i < right.subcomponents_.size(); i++)
     *subcomponents_[i] = *right.subcomponents_[i];
 
+  PostAssignSanitization();
+
   return *this;
 }
 
@@ -80,9 +81,10 @@ bool AddressComponent::operator==(const AddressComponent& right) const {
   if (GetStorageType() != right.GetStorageType())
     return false;
 
-  if (value_ != right.value_ ||
-      value_verification_status_ != right.value_verification_status_)
+  if (GetValue() != right.GetValue() ||
+      value_verification_status_ != right.value_verification_status_) {
     return false;
+  }
 
   DCHECK(right.subcomponents_.size() == subcomponents_.size());
   for (size_t i = 0; i < right.subcomponents_.size(); i++)
@@ -97,6 +99,43 @@ bool AddressComponent::operator!=(const AddressComponent& right) const {
 
 bool AddressComponent::IsAtomic() const {
   return subcomponents_.empty();
+}
+
+bool AddressComponent::IsValueValid() const {
+  return true;
+}
+
+bool AddressComponent::IsValueForTypeValid(const std::string& field_type_name,
+                                           bool wipe_if_not) {
+  bool validity_status;
+  if (GetIsValueForTypeValidIfPossible(field_type_name, &validity_status,
+                                       wipe_if_not))
+    return validity_status;
+  return false;
+}
+
+bool AddressComponent::IsValueForTypeValid(ServerFieldType field_type,
+                                           bool wipe_if_not) {
+  return IsValueForTypeValid(AutofillType(field_type).ToString(), wipe_if_not);
+}
+
+bool AddressComponent::GetIsValueForTypeValidIfPossible(
+    const std::string& field_type_name,
+    bool* validity_status,
+    bool wipe_if_not) {
+  if (field_type_name == GetStorageTypeName()) {
+    *validity_status = IsValueValid();
+    if (!(*validity_status) && wipe_if_not)
+      UnsetValue();
+    return true;
+  }
+
+  for (auto* subcomponent : subcomponents_) {
+    if (subcomponent->GetIsValueForTypeValidIfPossible(
+            field_type_name, validity_status, wipe_if_not))
+      return true;
+  }
+  return false;
 }
 
 VerificationStatus AddressComponent::GetVerificationStatus() const {
@@ -189,6 +228,17 @@ bool AddressComponent::SetValueForTypeIfPossible(
 }
 
 bool AddressComponent::SetValueForTypeIfPossible(
+    const ServerFieldType& type,
+    const std::string& value,
+    const VerificationStatus& verification_status,
+    bool invalidate_child_nodes,
+    bool invalidate_parent_nodes) {
+  return SetValueForTypeIfPossible(type, base::UTF8ToUTF16(value),
+                                   verification_status, invalidate_child_nodes,
+                                   invalidate_parent_nodes);
+}
+
+bool AddressComponent::SetValueForTypeIfPossible(
     const std::string& type_name,
     const base::string16& value,
     const VerificationStatus& verification_status,
@@ -224,6 +274,17 @@ bool AddressComponent::SetValueForTypeIfPossible(
   }
 
   return false;
+}
+
+bool AddressComponent::SetValueForTypeIfPossible(
+    const std::string& type_name,
+    const std::string& value,
+    const VerificationStatus& verification_status,
+    bool invalidate_child_nodes,
+    bool invalidate_parent_nodes) {
+  return SetValueForTypeIfPossible(type_name, base::UTF8ToUTF16(value),
+                                   verification_status, invalidate_child_nodes,
+                                   invalidate_parent_nodes);
 }
 
 void AddressComponent::UnsetAddressComponentAndItsSubcomponents() {
@@ -283,8 +344,8 @@ base::string16 AddressComponent::GetValueForType(
   base::string16 value;
   bool success = GetValueAndStatusForTypeIfPossible(type_name, &value, nullptr);
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  DCHECK(success ||
-         type_name == AutofillType(NAME_HONORIFIC_PREFIX).ToString());
+  DCHECK(success || type_name == AutofillType(NAME_HONORIFIC_PREFIX).ToString())
+      << type_name;
   return value;
 }
 

@@ -207,6 +207,114 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
     TestAddressLineFormatting(test_case);
 }
 
+// Test setting the first address line.
+TEST(AutofillStructuredAddress, TestSettingsAddressLine1) {
+  Address address;
+  AddressComponentTestValues test_values = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved}};
+
+  SetTestValues(&address, test_values);
+
+  AddressComponentTestValues expectation = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1",
+       .status = VerificationStatus::kObserved}};
+
+  VerifyTestValues(&address, expectation);
+}
+
+// Test settings all three address lines.
+TEST(AutofillStructuredAddress, TestSettingsAddressLines) {
+  Address address;
+  AddressComponentTestValues test_values = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE2,
+       .value = "line2",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE3,
+       .value = "line3",
+       .status = VerificationStatus::kObserved}};
+
+  SetTestValues(&address, test_values);
+
+  AddressComponentTestValues expectation = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE2,
+       .value = "line2",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE3,
+       .value = "line3",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1\nline2\nline3",
+       .status = VerificationStatus::kObserved}};
+
+  VerifyTestValues(&address, expectation);
+}
+
+// Test setting the home street address and retrieving the address lines.
+TEST(AutofillStructuredAddress, TestGettingAddressLines) {
+  Address address;
+  AddressComponentTestValues test_values = {
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1\nline2\nline3",
+       .status = VerificationStatus::kObserved}};
+
+  SetTestValues(&address, test_values);
+
+  AddressComponentTestValues expectation = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE2,
+       .value = "line2",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE3,
+       .value = "line3",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1\nline2\nline3",
+       .status = VerificationStatus::kObserved}};
+
+  VerifyTestValues(&address, expectation);
+}
+
+// Test setting the home street address and retrieving the address lines.
+TEST(AutofillStructuredAddress, TestGettingAddressLines_JoinedAdditionalLines) {
+  Address address;
+  AddressComponentTestValues test_values = {
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1\nline2\nline3\nline4",
+       .status = VerificationStatus::kObserved}};
+
+  SetTestValues(&address, test_values);
+
+  AddressComponentTestValues expectation = {
+      {.type = ADDRESS_HOME_LINE1,
+       .value = "line1",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE2,
+       .value = "line2",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LINE3,
+       .value = "line3 line4",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_STREET_ADDRESS,
+       .value = "line1\nline2\nline3\nline4",
+       .status = VerificationStatus::kObserved}};
+
+  VerifyTestValues(&address, expectation);
+}
+
 }  // namespace
 }  // namespace structured_address
 }  // namespace autofill
