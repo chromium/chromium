@@ -67,6 +67,17 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
     std::move(frame_cb_).Run();
 }
 
+void MockVideoCaptureClient::OnIncomingCapturedExternalBuffer(
+    gfx::GpuMemoryBufferHandle handle,
+    std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
+    const VideoCaptureFormat& format,
+    const gfx::ColorSpace& color_space,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  if (frame_cb_)
+    std::move(frame_cb_).Run();
+}
+
 // Trampoline methods to workaround GMOCK problems with std::unique_ptr<>.
 VideoCaptureDevice::Client::ReserveResult
 MockVideoCaptureClient::ReserveOutputBuffer(

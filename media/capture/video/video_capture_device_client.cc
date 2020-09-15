@@ -118,6 +118,23 @@ gfx::ColorSpace OverrideColorSpaceForLibYuvConversion(
 
 namespace media {
 
+namespace {
+
+class ScopedAccessPermissionEndWithCallback
+    : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
+ public:
+  explicit ScopedAccessPermissionEndWithCallback(base::OnceClosure closure)
+      : closure_(std::move(closure)) {}
+  ~ScopedAccessPermissionEndWithCallback() override {
+    std::move(closure_).Run();
+  }
+
+ private:
+  base::OnceClosure closure_;
+};
+
+}  // anonymous namespace
+
 class BufferPoolBufferHandleProvider
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
@@ -444,6 +461,74 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
       dimensions, frame_format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBuffer(std::move(output_buffer), output_format,
                            reference_time, timestamp);
+}
+
+void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
+    gfx::GpuMemoryBufferHandle handle,
+    std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+        scoped_access_permission_to_wrap,
+    const VideoCaptureFormat& format,
+    const gfx::ColorSpace& color_space,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  // Reserve an ID for this buffer that will not conflict with any of the IDs
+  // used by |buffer_pool_|.
+  std::vector<int> buffer_ids_to_drop;
+  int buffer_id = buffer_pool_->ReserveIdForExternalBuffer(&buffer_ids_to_drop);
+
+  // If a buffer to retire was specified, retire one.
+  for (int buffer_id_to_drop : buffer_ids_to_drop) {
+    auto entry_iter =
+        std::find(buffer_ids_known_by_receiver_.begin(),
+                  buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
+    if (entry_iter != buffer_ids_known_by_receiver_.end()) {
+      buffer_ids_known_by_receiver_.erase(entry_iter);
+      receiver_->OnBufferRetired(buffer_id_to_drop);
+    }
+  }
+
+  // Register the buffer with the receiver.
+  {
+    media::mojom::VideoBufferHandlePtr buffer_handle =
+        media::mojom::VideoBufferHandle::New();
+    buffer_handle->set_gpu_memory_buffer_handle(std::move(handle));
+    receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
+    buffer_ids_known_by_receiver_.push_back(buffer_id);
+  }
+
+  // Wrap |scoped_access_permission_to_wrap| in a ScopedAccessPermission that
+  // will retire |buffer_id| as soon as access ends.
+  std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+      scoped_access_permission;
+  {
+    auto callback_lambda =
+        [](int buffer_id, scoped_refptr<VideoCaptureBufferPool> buffer_pool,
+           std::unique_ptr<
+               VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
+               scoped_access_permission) {
+          buffer_pool->RelinquishExternalBufferReservation(buffer_id);
+        };
+    auto closure = base::BindOnce(callback_lambda, buffer_id, buffer_pool_,
+                                  std::move(scoped_access_permission_to_wrap));
+    scoped_access_permission =
+        std::make_unique<ScopedAccessPermissionEndWithCallback>(
+            std::move(closure));
+  }
+
+  // Tell |receiver_| that the frame has been received.
+  {
+    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New();
+    info->timestamp = timestamp;
+    info->pixel_format = format.pixel_format;
+    info->color_space = color_space;
+    info->coded_size = format.frame_size;
+    info->visible_rect = gfx::Rect(format.frame_size);
+    info->metadata.frame_rate = format.frame_rate;
+    info->metadata.reference_time = reference_time;
+    receiver_->OnFrameReadyInBuffer(buffer_id, 0 /* frame_feedback_id */,
+                                    std::move(scoped_access_permission),
+                                    std::move(info));
+  }
 }
 
 VideoCaptureDevice::Client::ReserveResult

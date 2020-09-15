@@ -178,6 +178,17 @@ class CAPTURE_EXPORT VideoCaptureDevice
         base::TimeDelta timestamp,
         int frame_feedback_id = 0) = 0;
 
+    // Captured a new video frame. The data for this frame is in |handle|,
+    // which is owned by the platform-specific capture device, and is kept valid
+    // by |read_access_permission|.
+    virtual void OnIncomingCapturedExternalBuffer(
+        gfx::GpuMemoryBufferHandle handle,
+        std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
+        const VideoCaptureFormat& format,
+        const gfx::ColorSpace& color_space,
+        base::TimeTicks reference_time,
+        base::TimeDelta timestamp) = 0;
+
     // Reserve an output buffer into which contents can be captured directly.
     // The returned |buffer| will always be allocated with a memory size
     // suitable for holding a packed video frame with pixels of |format| format,

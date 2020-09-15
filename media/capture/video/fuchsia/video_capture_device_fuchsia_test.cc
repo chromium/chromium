@@ -162,6 +162,15 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
                                    int frame_feedback_id) final {
     NOTREACHED();
   }
+  void OnIncomingCapturedExternalBuffer(
+      gfx::GpuMemoryBufferHandle handle,
+      std::unique_ptr<Buffer::ScopedAccessPermission> read_access_permission,
+      const VideoCaptureFormat& format,
+      const gfx::ColorSpace& color_space,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp) override {
+    NOTREACHED();
+  }
   void OnIncomingCapturedBuffer(Buffer buffer,
                                 const VideoCaptureFormat& format,
                                 base::TimeTicks reference_time,

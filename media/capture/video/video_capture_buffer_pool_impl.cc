@@ -22,7 +22,6 @@ VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     int count)
     : buffer_type_(buffer_type),
       count_(count),
-      next_buffer_id_(0),
       buffer_tracker_factory_(
           std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {
   DCHECK_GT(count, 0);
@@ -136,6 +135,31 @@ void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
   }
   DCHECK(tracker->held_by_producer());
   tracker->set_held_by_producer(false);
+}
+
+int VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
+    std::vector<int>* buffer_ids_to_drop) {
+  base::AutoLock lock(lock_);
+  int buffer_id = next_buffer_id_++;
+  external_buffers_[buffer_id] = false;
+
+  for (auto it = external_buffers_.begin(); it != external_buffers_.end();) {
+    if (it->second) {
+      buffer_ids_to_drop->push_back(it->first);
+      it = external_buffers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+  return buffer_id;
+}
+
+void VideoCaptureBufferPoolImpl::RelinquishExternalBufferReservation(
+    int buffer_id) {
+  base::AutoLock lock(lock_);
+  auto found = external_buffers_.find(buffer_id);
+  CHECK(found != external_buffers_.end());
+  found->second = true;
 }
 
 void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,
