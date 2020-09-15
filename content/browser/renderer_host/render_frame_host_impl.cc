@@ -376,13 +376,13 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   bool debug_url_set_ = false;
 };
 
-// This class can be added as a MessageFilter to a mojo receiver to kill the
-// sending process if the associated frame is in the Back-Forward Cache.
-// Documents that are in the bfcache should not be sending mojo messages back to
-// the browser.
-class KillIfInBackForwardCacheMessageFilter : public mojo::MessageFilter {
+// This class can be added as a MessageFilter to a mojo receiver to detect
+// messages received while the the associated frame is in the Back-Forward
+// Cache. Documents that are in the bfcache should not be sending mojo messages
+// back to the browser.
+class BackForwardCacheMessageFilter : public mojo::MessageFilter {
  public:
-  explicit KillIfInBackForwardCacheMessageFilter(
+  explicit BackForwardCacheMessageFilter(
       RenderFrameHostImpl* render_frame_host,
       const char* interface_name,
       BackForwardCacheImpl::MessageHandlingPolicyWhenCached policy)
@@ -390,12 +390,12 @@ class KillIfInBackForwardCacheMessageFilter : public mojo::MessageFilter {
         interface_name_(interface_name),
         policy_(policy) {}
 
-  ~KillIfInBackForwardCacheMessageFilter() override = default;
+  ~BackForwardCacheMessageFilter() override = default;
 
  private:
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
-    if (!IsFrameInBackForwardCache() ||
+    if (!IsFrameInBackForwardCache() || ProcessHoldsNonCachedPages() ||
         policy_ == BackForwardCacheImpl::kMessagePolicyNone) {
       return true;
     }
@@ -404,8 +404,7 @@ class KillIfInBackForwardCacheMessageFilter : public mojo::MessageFilter {
                 << interface_name_ << " from frame in bfcache.";
 
     TRACE_EVENT2(
-        "content",
-        "KillIfInBackForwardCacheMessageFilter::WillDispatch bad_message",
+        "content", "BackForwardCacheMessageFilter::WillDispatch bad_message",
         "interface_name", interface_name_, "message_name", message->name());
 
     base::UmaHistogramSparse(
@@ -419,11 +418,6 @@ class KillIfInBackForwardCacheMessageFilter : public mojo::MessageFilter {
       case BackForwardCacheImpl::kMessagePolicyDump:
         base::debug::DumpWithoutCrashing();
         return true;
-      case BackForwardCacheImpl::kMessagePolicyKill:
-        bad_message::ReceivedBadMessage(
-            render_frame_host_->GetProcess(),
-            bad_message::RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED);
-        return false;
     }
   }
 
@@ -438,6 +432,14 @@ class KillIfInBackForwardCacheMessageFilter : public mojo::MessageFilter {
 
     return mgr->last_acknowledged_state().is_in_back_forward_cache &&
            mgr->last_state_sent_to_renderer().is_in_back_forward_cache;
+  }
+
+  // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
+  // RenderFrame never send IPCs messages, even if there are active pages in the
+  // process.
+  bool ProcessHoldsNonCachedPages() {
+    return RenderViewHostImpl::HasNonBackForwardCachedInstancesForProcess(
+        render_frame_host_->GetProcess());
   }
 
   RenderFrameHostImpl* const render_frame_host_;
@@ -487,9 +489,9 @@ CreateMessageFilterForAssociatedReceiverImpl(
     const char* interface_name,
     BackForwardCacheImpl::MessageHandlingPolicyWhenCached policy) {
   auto filter_chain = std::make_unique<MessageFilterChain>();
-  filter_chain->Add(std::make_unique<KillIfInBackForwardCacheMessageFilter>(
+  filter_chain->Add(std::make_unique<BackForwardCacheMessageFilter>(
       render_frame_host, interface_name, policy));
-  // KillIfInBackForwardCacheMessageFilter might drop messages so add
+  // BackForwardCacheMessageFilter might drop messages so add
   // ActiveURLMessageFilter at the end of the chain as we need to make sure that
   // the debug url is reset, that is, DidDispatchOrReject() is called if
   // WillDispatch().

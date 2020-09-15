@@ -117,7 +117,13 @@ struct FeatureEqualOperator {
 class BackForwardCacheBrowserTest : public ContentBrowserTest,
                                     public WebContentsObserver {
  public:
-  ~BackForwardCacheBrowserTest() override = default;
+  ~BackForwardCacheBrowserTest() override {
+    if (fail_for_unexpected_messages_while_cached_) {
+      ExpectTotalCount(
+          "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
+          0);
+    }
+  }
 
  protected:
   using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
@@ -139,7 +145,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     EnableFeatureAndSetParams(features::kBackForwardCache,
                               "TimeToLiveInBackForwardCacheInSeconds", "3600");
     EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "message_handling_when_cached", "kill");
+                              "message_handling_when_cached", "log");
     EnableFeatureAndSetParams(
         features::kBackForwardCache, "enable_same_site",
         same_site_back_forward_cache_enabled_ ? "true" : "false");
@@ -449,6 +455,12 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
   }
 
+  // Do not fail this test if a message from a renderer arrives at the browser
+  // for a cached page.
+  void DoNotFailForUnexpectedMessagesWhileCached() {
+    fail_for_unexpected_messages_while_cached_ = false;
+  }
+
   base::HistogramTester histogram_tester_;
 
  protected:
@@ -491,6 +503,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   // Indicates whether metrics for all sites regardless of the domains are
   // checked or not.
   bool check_all_sites_ = true;
+  // Whether we should fail the test if a message arrived at the browser from a
+  // renderer for a bfcached page.
+  bool fail_for_unexpected_messages_while_cached_ = true;
 };
 
 // Match RenderFrameHostImpl* that are in the BackForwardCache.
@@ -740,15 +755,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BasicDocumentInitiated) {
 }
 
 // Navigate from back and forward repeatedly.
-// Disable the test due to flaky: crbug.com/1099395.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
-#define MAYBE_NavigateBackForwardRepeatedly \
-  DISABLED_NavigateBackForwardRepeatedly
-#else
-#define MAYBE_NavigateBackForwardRepeatedly _NavigateBackForwardRepeatedly
-#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_NavigateBackForwardRepeatedly) {
+                       NavigateBackForwardRepeatedly) {
+  // Do not check for unexpected messages because the input task queue is not
+  // currently frozen, causing flakes in this test: crbug.com/1099395.
+  DoNotFailForUnexpectedMessagesWhileCached();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -816,8 +827,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // The current page can't enter the BackForwardCache if another page can script
 // it. This can happen when one document opens a popup using window.open() for
 // instance. It prevents the BackForwardCache from being used.
-// Flaky on all platforms. http://crbug.com/1116023
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DISABLED_WindowOpen) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   // This test assumes cross-site navigation staying in the same
   // BrowsingInstance to use a different SiteInstance. Otherwise, it will
   // timeout at step 2).
@@ -6834,14 +6844,12 @@ class EchoFakeWithFilter final : public mojom::Echo {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
-    ProcessKilledIfMessageReceivedOnAssociatedInterfaceWhileCached) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MessageReceivedOnAssociatedInterfaceWhileCached) {
+  DoNotFailForUnexpectedMessagesWhileCached();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  url::Origin origin_a = url::Origin::Create(url_a);
-  url::Origin origin_b = url::Origin::Create(url_b);
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -6861,15 +6869,11 @@ IN_PROC_BROWSER_TEST_F(
       remote.BindNewPipeAndPassReceiver(),
       rfh_a->CreateMessageFilterForAssociatedReceiver(mojom::Echo::Name_));
 
-  ScopedAllowRendererCrashes allow_crash(rfh_a->GetProcess());
-  RenderProcessHostBadIpcMessageWaiter bad_message_waiter(rfh_a->GetProcess());
+  base::RunLoop loop;
+  remote->EchoString(
+      "", base::BindLambdaForTesting([&](const std::string&) { loop.Quit(); }));
+  loop.Run();
 
-  remote->EchoString("", base::NullCallback());
-
-  EXPECT_THAT(bad_message_waiter.Wait(),
-              testing::Optional(
-                  bad_message::RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED));
-  EXPECT_TRUE(delete_observer_rfh_a.deleted());
   ExpectBucketCount(
       "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
       base::HistogramBase::Sample(
@@ -6879,7 +6883,99 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    ProcessNotKilledIfMessageReceivedOnAssociatedInterfaceWhileFreezing) {
+    MessageReceivedOnAssociatedInterfaceWhileCachedForProcessWithNonCachedPages) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("/title2.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  PageLifecycleStateManagerTestDelegate delegate(
+      rfh_a->render_view_host()->GetPageLifecycleStateManager());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  delegate.WaitForInBackForwardCacheAck();
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  ASSERT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // Make sure both pages are on the same process (they are same site so they
+  // should).
+  ASSERT_EQ(rfh_a->GetProcess(), rfh_b->GetProcess());
+
+  mojo::Remote<mojom::Echo> remote;
+  EchoFakeWithFilter echo(
+      remote.BindNewPipeAndPassReceiver(),
+      rfh_a->CreateMessageFilterForAssociatedReceiver(mojom::Echo::Name_));
+
+  remote->EchoString("", base::NullCallback());
+  // Give the killing a chance to run. (We do not expect a kill but need to
+  // "wait" for it to not happen)
+  base::RunLoop().RunUntilIdle();
+
+  // 3) Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    MessageReceivedOnAssociatedInterfaceForProcessWithMultipleCachedPages) {
+  DoNotFailForUnexpectedMessagesWhileCached();
+  web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .set_cache_size_limit_for_testing(10);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Get url_a_1 and url_a_2 into the cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a_1));
+  RenderFrameHostImpl* rfh_a_1 = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a_1(rfh_a_1);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a_2));
+  RenderFrameHostImpl* rfh_a_2 = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a_2(rfh_a_2);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  ASSERT_FALSE(delete_observer_rfh_a_1.deleted());
+  ASSERT_FALSE(delete_observer_rfh_a_2.deleted());
+  EXPECT_TRUE(rfh_a_1->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_a_2->IsInBackForwardCache());
+  ASSERT_EQ(rfh_a_1->GetProcess(), rfh_a_2->GetProcess());
+
+  mojo::Remote<mojom::Echo> remote;
+  EchoFakeWithFilter echo(
+      remote.BindNewPipeAndPassReceiver(),
+      rfh_a_1->CreateMessageFilterForAssociatedReceiver(mojom::Echo::Name_));
+
+  base::RunLoop loop;
+  remote->EchoString(
+      "", base::BindLambdaForTesting([&](const std::string&) { loop.Quit(); }));
+  loop.Run();
+
+  ExpectBucketCount(
+      "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
+      base::HistogramBase::Sample(
+          static_cast<int32_t>(base::HashMetricName(mojom::Echo::Name_))),
+      1);
+
+  EXPECT_FALSE(delete_observer_rfh_b.deleted());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MessageReceivedOnAssociatedInterfaceWhileFreezing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

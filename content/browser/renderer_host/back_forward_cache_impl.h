@@ -51,7 +51,6 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
     kMessagePolicyNone,
     kMessagePolicyLog,
     kMessagePolicyDump,
-    kMessagePolicyKill,
   };
 
   static MessageHandlingPolicyWhenCached

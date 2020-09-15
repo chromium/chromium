@@ -261,8 +261,6 @@ BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy() {
     return kMessagePolicyNone;
   } else if (param == "dump") {
     return kMessagePolicyDump;
-  } else if (param == "kill") {
-    return kMessagePolicyKill;
   } else {
     DLOG(WARNING) << "Failed to parse field trial param " << kFieldTrialParam
                   << " with string value " << param

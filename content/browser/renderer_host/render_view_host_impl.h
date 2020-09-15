@@ -50,6 +50,7 @@ struct WebPreferences;
 namespace content {
 
 class AgentSchedulingGroupHost;
+class RenderProcessHost;
 class TimeoutMonitor;
 
 // A callback which will be called immediately before EnterBackForwardCache
@@ -94,6 +95,14 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   static void GetPlatformSpecificPrefs(
       blink::mojom::RendererPreferences* prefs);
+
+  // Checks whether any RenderViewHostImpl instance associated with a given
+  // process is not currently in the back-forward cache.
+  // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
+  // RenderFrame never send IPCs messages, even if there are active pages in the
+  // process.
+  static bool HasNonBackForwardCachedInstancesForProcess(
+      RenderProcessHost* process);
 
   RenderViewHostImpl(SiteInstance* instance,
                      std::unique_ptr<RenderWidgetHostImpl> widget,
@@ -220,6 +229,8 @@ class CONTENT_EXPORT RenderViewHostImpl
   // record the latency of this navigation.
   void LeaveBackForwardCache(
       blink::mojom::PageRestoreParamsPtr page_restore_params);
+
+  bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
   void SetVisibility(blink::mojom::PageVisibilityState visibility);
 

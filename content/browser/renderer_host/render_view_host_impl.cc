@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -25,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
@@ -161,6 +163,52 @@ bool IsSelectionBufferAvailable() {
 }
 #endif  // defined(USE_OZONE) || defined(USE_X11)
 
+// Set of RenderViewHostImpl* that can be attached as UserData to a
+// RenderProcessHost. Used to keep track of whether any RenderViewHostImpl
+// instances are in the bfcache.
+class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
+ public:
+  static PerProcessRenderViewHostSet* GetOrCreateForProcess(
+      RenderProcessHost* process) {
+    DCHECK(process);
+    auto* set = static_cast<PerProcessRenderViewHostSet*>(
+        process->GetUserData(UserDataKey()));
+    if (!set) {
+      auto new_set = std::make_unique<PerProcessRenderViewHostSet>();
+      set = new_set.get();
+      process->SetUserData(UserDataKey(), std::move(new_set));
+    }
+    return set;
+  }
+
+  void Insert(const RenderViewHostImpl* rvh) {
+    render_view_host_instances_.insert(rvh);
+  }
+
+  void Erase(const RenderViewHostImpl* rvh) {
+    auto it = render_view_host_instances_.find(rvh);
+    DCHECK(it != render_view_host_instances_.end());
+    render_view_host_instances_.erase(it);
+  }
+
+  bool HasNonBackForwardCachedInstances() const {
+    return std::find_if(render_view_host_instances_.begin(),
+                        render_view_host_instances_.end(),
+                        [](const RenderViewHostImpl* rvh) {
+                          return !rvh->is_in_back_forward_cache();
+                        }) != render_view_host_instances_.end();
+  }
+
+ private:
+  static const void* UserDataKey() { return &kUserDataKey; }
+
+  static constexpr int kUserDataKey = 0;
+
+  std::unordered_set<const RenderViewHostImpl*> render_view_host_instances_;
+};
+
+const int PerProcessRenderViewHostSet::kUserDataKey;
+
 }  // namespace
 
 // static
@@ -243,6 +291,13 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
 #endif
 }
 
+// static
+bool RenderViewHostImpl::HasNonBackForwardCachedInstancesForProcess(
+    RenderProcessHost* process) {
+  return PerProcessRenderViewHostSet::GetOrCreateForProcess(process)
+      ->HasNonBackForwardCachedInstances();
+}
+
 RenderViewHostImpl::RenderViewHostImpl(
     SiteInstance* instance,
     std::unique_ptr<RenderWidgetHostImpl> widget,
@@ -259,6 +314,9 @@ RenderViewHostImpl::RenderViewHostImpl(
   DCHECK(instance_.get());
   DCHECK(delegate_);
   DCHECK_NE(GetRoutingID(), render_widget_host_->GetRoutingID());
+
+  PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())
+      ->Insert(this);
 
   std::pair<RoutingIDViewMap::iterator, bool> result =
       g_routing_id_view_map.Get().emplace(
@@ -296,6 +354,8 @@ RenderViewHostImpl::RenderViewHostImpl(
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
+  PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
+
   // We can't release the SessionStorageNamespace until our peer
   // in the renderer has wound down.
   // TODO(crbug.com/1111231): `ReleaseOnCloseACK()` should probably be called on
