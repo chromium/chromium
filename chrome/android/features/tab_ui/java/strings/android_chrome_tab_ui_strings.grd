@@ -221,7 +221,7 @@
         Close tab group with <ph name="NUMBER_OF_TABS">%1$s<ex>2</ex></ph> tabs
       </message>
       <message name="IDS_ACCESSIBILITY_CLOSE_TAB_GROUP_BUTTON_WITH_GROUP_NAME" desc="The accessibility text to read when the close button on a card representing a tab group is focused in grid tab switcher. When this close button is tapped, all tabs within the tab group will be closed. TITLE_OF_GROUP is the title of the group. NUMBER_OF_TABS is the number of tabs within this group. Note that there are always at least two tabs in a group so plural form should always be used.">
-        Close <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> group with <ph name="NUMBER_OF_TABS">%1$s<ex>2</ex></ph> tabs
+        Close <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> group with <ph name="NUMBER_OF_TABS">%2$s<ex>2</ex></ph> tabs
       </message>
 
       <!-- Tab Selection Editor strings -->

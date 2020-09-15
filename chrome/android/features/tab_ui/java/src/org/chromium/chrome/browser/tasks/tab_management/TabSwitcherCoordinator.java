@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -170,6 +171,36 @@ public class TabSwitcherCoordinator
                 TabProperties.UiType.CLOSABLE, null, container, true, COMPONENT_NAME);
         mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                 mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
+
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+                && TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled()) {
+            mMediator.addOverviewModeObserver(new OverviewModeObserver() {
+                @Override
+                public void startedShowing() {}
+
+                @Override
+                public void finishedShowing() {
+                    int selectedIndex = mTabModelSelector.getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter()
+                                                .index();
+                    ViewHolder selectedViewHolder =
+                            mTabListCoordinator.getContainerView().findViewHolderForAdapterPosition(
+                                    selectedIndex);
+
+                    if (selectedViewHolder == null) return;
+
+                    View focusView = selectedViewHolder.itemView;
+                    focusView.requestFocus();
+                    focusView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                }
+
+                @Override
+                public void startedHiding() {}
+
+                @Override
+                public void finishedHiding() {}
+            });
+        }
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(context, (identifier) -> {

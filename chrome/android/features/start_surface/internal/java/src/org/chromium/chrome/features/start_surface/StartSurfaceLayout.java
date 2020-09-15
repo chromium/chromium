@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -185,6 +186,14 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
         Log.d(TAG, "SkipSlowZooming = " + skipSlowZooming);
         if (skipSlowZooming) {
             showShrinkingAnimation &= quick;
+        }
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            // Intentionally disable the shrinking animation when accessibility is enabled. During
+            // the shrinking animation, since the ComponsitorViewHolder is not focusable, I think
+            // we are in a temporary no "valid" focus target state, so the focus shifts to the
+            // omnibox and triggers an accessibility announcement of the URL and a keyboard hiding
+            // event. Disable the animation to avoid this temporary state.
+            showShrinkingAnimation &= !ChromeAccessibilityUtil.get().isAccessibilityEnabled();
         }
 
         // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
@@ -490,5 +499,17 @@ public class StartSurfaceLayout extends Layout implements StartSurface.OverviewM
     @Override
     public boolean onUpdateAnimation(long time, boolean jumpToEnd) {
         return mTabToSwitcherAnimation == null && !mIsAnimating;
+    }
+
+    @Override
+    public boolean canHostBeFocusable() {
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+            // We don't allow this layout to gain focus when accessibility is enabled so that the
+            // CompositorViewHolder doesn't steal focus when entering tab switcher.
+            // (crbug.com/1125185).
+            return false;
+        }
+        return super.canHostBeFocusable();
     }
 }
