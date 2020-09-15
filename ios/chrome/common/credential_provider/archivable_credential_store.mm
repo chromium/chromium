@@ -116,17 +116,16 @@
 }
 
 - (void)updateCredential:(id<Credential>)credential {
-  [self removeCredential:credential];
+  [self removeCredentialWithRecordIdentifier:credential.recordIdentifier];
   [self addCredential:credential];
 }
 
-- (void)removeCredential:(id<Credential>)credential {
-  DCHECK(credential.recordIdentifier)
-      << "credential must have a record identifier";
+- (void)removeCredentialWithRecordIdentifier:(NSString*)recordIdentifier {
+  DCHECK(recordIdentifier.length) << "Invalid |recordIdentifier| was passed.";
   dispatch_barrier_async(self.workingQueue, ^{
-    DCHECK(self.memoryStorage[credential.recordIdentifier])
+    DCHECK(self.memoryStorage[recordIdentifier])
         << "Credential doesn't exist in the storage";
-    self.memoryStorage[credential.recordIdentifier] = nil;
+    self.memoryStorage[recordIdentifier] = nil;
   });
 }
 

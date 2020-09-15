@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
+#import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
@@ -237,7 +238,7 @@ void CredentialProviderService::OnLoginsChanged(
   for (const PasswordStoreChange& change : changes) {
     ArchivableCredential* credential =
         CredentialFromForm(change.form(), account_validation_id_);
-    if (!credential) {
+    if (change.form().blocked_by_user) {
       continue;
     }
     switch (change.type()) {
@@ -248,7 +249,11 @@ void CredentialProviderService::OnLoginsChanged(
         [archivable_credential_store_ updateCredential:credential];
         break;
       case PasswordStoreChange::REMOVE:
-        [archivable_credential_store_ removeCredential:credential];
+        // Using the record identifier from the form, as the credential might
+        // not be valid anymore.
+        [archivable_credential_store_
+            removeCredentialWithRecordIdentifier:
+                RecordIdentifierForPasswordForm(change.form())];
         break;
 
       default:

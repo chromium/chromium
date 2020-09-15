@@ -100,7 +100,8 @@ TEST_F(ArchivableCredentialStoreTest, remove) {
   [credentialStore addCredential:credential];
   EXPECT_EQ(1u, credentialStore.credentials.count);
 
-  [credentialStore removeCredential:credential];
+  [credentialStore
+      removeCredentialWithRecordIdentifier:credential.recordIdentifier];
   EXPECT_EQ(0u, credentialStore.credentials.count);
 }
 

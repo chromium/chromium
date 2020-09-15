@@ -17,6 +17,8 @@ source_set("credential_provider") {
     "credential_provider_service_factory.mm",
     "credential_provider_support.cc",
     "credential_provider_support.h",
+    "credential_provider_util.h",
+    "credential_provider_util.mm",
   ]
   deps = [
     ":buildflags",
