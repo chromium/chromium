@@ -4774,6 +4774,14 @@
       'non_android_chromium_gtests_no_nacl',
     ],
 
+    'chromium_mac_gtests_no_nacl_no_nocompile': [
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'mac_specific_chromium_gtests',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests_no_nacl',
+    ],
+
     'chromium_mac_rel_isolated_scripts': [
       'chromedriver_py_tests_isolated_scripts',
       'components_perftests_isolated_scripts',
