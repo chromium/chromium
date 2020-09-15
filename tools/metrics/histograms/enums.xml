@@ -14048,6 +14048,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Failed VM Stopped"/>
   <int value="3" label="Failed VM Started"/>
   <int value="4" label="Failed Architecture mismatch"/>
+  <int value="5" label="Failed Insufficient Space"/>
 </enum>
 
 <enum name="CrostiniResult">
