@@ -13,6 +13,10 @@
   <release seq="1">
     <includes>
       <!-- Shared Polymer 2 pages-->
+      <include name="IDR_NEARBY_CONTACT_MANAGER_HTML"
+               file="nearby_contact_manager.html" type="BINDATA" compress="false"/>
+      <include name="IDR_NEARBY_CONTACT_MANAGER_JS"
+               file="nearby_contact_manager.js" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_CONTACT_VISIBILITY_HTML"
                file="nearby_contact_visibility.html" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_CONTACT_VISIBILITY_JS"

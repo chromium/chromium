@@ -6,11 +6,13 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/app.js';
 
+import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.m.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {waitAfterNextRender} from '../test_util.m.js';
 
+import {FakeContactManager} from './shared/fake_nearby_contact_manager.m.js';
 import {FakeNearbyShareSettings} from './shared/fake_nearby_share_settings.m.js';
 
 suite('ShareAppTest', function() {
@@ -33,6 +35,11 @@ suite('ShareAppTest', function() {
     let fakeSettings = new FakeNearbyShareSettings();
     fakeSettings.setEnabled(enabled);
     setNearbyShareSettingsForTesting(fakeSettings);
+
+    let fakeContactManager = new FakeContactManager();
+    setContactManagerForTesting(fakeContactManager);
+    fakeContactManager.setupContactRecords();
+
     shareAppElement = /** @type {!NearbyShareAppElement} */ (
         document.createElement('nearby-share-app'));
     document.body.appendChild(shareAppElement);

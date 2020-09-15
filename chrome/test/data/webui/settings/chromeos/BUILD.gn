@@ -87,5 +87,6 @@ js_modulizer("modulize") {
                          "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
                          "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
                          "nearby_share.FakeReceiveManager|FakeReceiveManager",
+                         "nearby_share.FakeContactManager|FakeContactManager",
                        ]
 }

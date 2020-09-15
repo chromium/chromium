@@ -33,6 +33,7 @@ const NearbySharedBrowserTest = class extends PolymerTest {
       '../../test_util.js',
       '../../settings/ensure_lazy_loaded.js',
       'fake_nearby_share_settings.js',
+      'fake_nearby_contact_manager.js',
     ]);
   }
 };

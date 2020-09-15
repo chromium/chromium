@@ -163,7 +163,6 @@ class NearbyShareContactManagerImplTest
     manager_->AddObserver(this);
     manager_->AddDownloadContactsObserver(
         mojo_observer_.receiver_.BindNewPipeAndPassRemote());
-    manager_->Start();
   }
 
   void TearDown() override {
@@ -173,6 +172,8 @@ class NearbyShareContactManagerImplTest
     NearbyShareSchedulerFactory::SetFactoryForTesting(nullptr);
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
+
+  void StartSchedulers() { manager_->Start(); }
 
   void DownloadContacts(bool only_download_if_changed) {
     // Manually reset these before each download.
@@ -681,6 +682,8 @@ TEST_F(NearbyShareContactManagerImplTest,
 
 TEST_F(NearbyShareContactManagerImplTest,
        UploadContacts_Success_FromAllowlistChanged) {
+  // We need to manually start the schedulers first.
+  StartSchedulers();
   // Add contacts to the allowlist, resulting in an upload request.
   std::set<std::string> allowlist = TestContactIds(/*num_contacts=*/1u);
   SetAllowedContacts(allowlist,
@@ -709,6 +712,8 @@ TEST_F(NearbyShareContactManagerImplTest,
 
 TEST_F(NearbyShareContactManagerImplTest,
        UploadContacts_Success_DownloadRequestedWhileUploadInProgress) {
+  // We need to manually start the schedulers here.
+  StartSchedulers();
   // Add contacts to the allowlist, resulting in an upload request.
   SetAllowedContacts(TestContactIds(/*num_contacts=*/2u),
                      /*expected_were_contacts_added_to_allowlist=*/true,

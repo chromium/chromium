@@ -4,7 +4,9 @@
 
 // clang-format off
 // #import 'chrome://nearby/shared/nearby_onboarding_page.m.js';
+// #import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.m.js';
 // #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
+// #import {FakeContactManager} from './fake_nearby_contact_manager.m.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals} from '../../chai_assert.js';
 // clang-format on

@@ -8,6 +8,7 @@ import("../../namespace_rewrites.gni")
 
 js_modulizer("modulize") {
   input_files = [
+    "fake_nearby_contact_manager.js",
     "fake_nearby_share_settings.js",
     "nearby_contact_visibility_test.js",
     "nearby_onboarding_page_test.js",
@@ -17,6 +18,8 @@ js_modulizer("modulize") {
   namespace_rewrites = test_namespace_rewrites + [
                          "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
                          "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+                         "nearby_share.setContactManagerForTesting|setContactManagerForTesting",
+                         "nearby_share.FakeContactManager|FakeContactManager",
                        ]
 }
 
@@ -28,6 +31,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/browser/resources/nearby_share/",
                   ]
   deps = [
+    ":fake_nearby_contact_manager.m",
     ":fake_nearby_share_settings.m",
     ":nearby_contact_visibility_test.m",
     ":nearby_onboarding_page_test.m",
@@ -36,9 +40,16 @@ js_type_check("closure_compile") {
   ]
 }
 
+js_library("fake_nearby_contact_manager.m") {
+  sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_contact_manager.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("nearby_contact_visibility_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js" ]
   deps = [
+    ":fake_nearby_contact_manager.m",
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
     "../..:test_util.m",

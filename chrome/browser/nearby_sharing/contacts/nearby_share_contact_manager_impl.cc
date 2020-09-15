@@ -168,6 +168,10 @@ void NearbyShareContactManagerImpl::DownloadContacts(
   if (!only_download_if_changed)
     only_download_if_changed_ = false;
 
+  // Make sure the schedulers are running so we can retrieve contacts while
+  // onboarding.
+  Start();
+
   contact_download_scheduler_->MakeImmediateRequest();
 }
 

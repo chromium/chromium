@@ -9,6 +9,7 @@ import("./nearby_shared.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":nearby_contact_manager",
     ":nearby_contact_visibility",
     ":nearby_onboarding_page",
     ":nearby_page_template",
@@ -23,13 +24,22 @@ js_type_check("closure_compile") {
       ]
 }
 
+js_library("nearby_contact_manager") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
 js_library("nearby_contact_visibility") {
   deps = [
+    ":nearby_contact_manager",
     ":nearby_share_settings_behavior",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
   ]
 }
@@ -78,6 +88,7 @@ js_type_check("closure_compile_module") {
       ]
 
   deps = [
+    ":nearby_contact_manager.m",
     ":nearby_contact_visibility.m",
     ":nearby_onboarding_page.m",
     ":nearby_page_template.m",
@@ -99,14 +110,25 @@ group("polymer3_elements") {
   ]
 }
 
+js_library("nearby_contact_manager.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_contact_manager.m.js" ]
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("nearby_contact_visibility.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_contact_visibility.m.js" ]
   deps = [
+    ":nearby_contact_manager.m",
     ":nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":nearby_contact_visibility_module" ]
@@ -198,6 +220,7 @@ polymer_modulizer("nearby_visibility_page") {
 
 js_modulizer("modulize") {
   input_files = [
+    "nearby_contact_manager.js",
     "nearby_share_settings.js",
     "nearby_share_settings_behavior.js",
   ]
