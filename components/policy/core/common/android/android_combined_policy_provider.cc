@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/android/android_combined_policy_provider.h"
+#include "components/policy/core/common/android/android_combined_policy_provider.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/policy/android/jni_headers/CombinedPolicyProvider_jni.h"
-#include "components/policy/core/browser/android/policy_converter.h"
+#include "components/policy/core/common/android/policy_converter.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

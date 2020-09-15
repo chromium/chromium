@@ -240,6 +240,10 @@ source_set("internal") {
   }
   if (is_android) {
     sources += [
+      "android/android_combined_policy_provider.cc",
+      "android/android_combined_policy_provider.h",
+      "android/policy_converter.cc",
+      "android/policy_converter.h",
       "android/policy_service_android.cc",
       "android/policy_service_android.h",
     ]
@@ -449,7 +453,11 @@ source_set("unit_tests") {
   }
 
   if (is_android) {
-    sources += [ "android/policy_service_android_unittest.cc" ]
+    sources += [
+      "android/android_combined_policy_provider_unittest.cc",
+      "android/policy_converter_unittest.cc",
+      "android/policy_service_android_unittest.cc",
+    ]
   } else {
     sources += [ "async_policy_provider_unittest.cc" ]
   }

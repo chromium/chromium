@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "components/policy/core/browser/android/policy_converter.h"
+#include "components/policy/core/common/android/policy_converter.h"
 #include "components/policy/core/common/schema.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

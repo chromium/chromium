@@ -14,7 +14,7 @@
 #include "chrome/browser/android/chrome_startup_flags.h"
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
-#include "components/policy/core/browser/android/android_combined_policy_provider.h"
+#include "components/policy/core/common/android/android_combined_policy_provider.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"

@@ -8,15 +8,15 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/values.h"
-#include "components/policy/core/browser/android/android_combined_policy_provider.h"
-#include "components/policy/core/browser/android/policy_converter.h"
+#include "components/policy/core/common/android/android_combined_policy_provider.h"
+#include "components/policy/core/common/android/policy_converter.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::android::ConvertUTF8ToJavaString;
 using base::android::AttachCurrentThread;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 namespace policy {

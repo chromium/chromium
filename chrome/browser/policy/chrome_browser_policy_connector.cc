@@ -48,7 +48,7 @@
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
 #include "components/policy/core/common/config_dir_policy_loader.h"
 #elif defined(OS_ANDROID)
-#include "components/policy/core/browser/android/android_combined_policy_provider.h"
+#include "components/policy/core/common/android/android_combined_policy_provider.h"
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)

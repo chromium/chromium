@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/android/policy_converter.h"
+#include "components/policy/core/common/android/policy_converter.h"
 
 #include <utility>
 #include <vector>

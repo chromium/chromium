@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CORE_BROWSER_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_
-#define COMPONENTS_POLICY_CORE_BROWSER_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_
+#ifndef COMPONENTS_POLICY_CORE_COMMON_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_
+#define COMPONENTS_POLICY_CORE_COMMON_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_
 
 #include <jni.h>
 
@@ -55,7 +55,6 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
   std::unique_ptr<policy::android::PolicyConverter> policy_converter_;
   base::android::ScopedJavaGlobalRef<jobject> java_combined_policy_provider_;
 
-
   DISALLOW_COPY_AND_ASSIGN(AndroidCombinedPolicyProvider);
 };
 
@@ -63,4 +62,4 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
 
 }  // namespace policy
 
-#endif  // COMPONENTS_POLICY_CORE_BROWSER_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_
+#endif  // COMPONENTS_POLICY_CORE_COMMON_ANDROID_ANDROID_COMBINED_POLICY_PROVIDER_H_

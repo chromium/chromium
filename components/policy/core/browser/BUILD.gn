@@ -64,16 +64,6 @@ source_set("internal") {
     "//url",
   ]
 
-  if (is_android) {
-    sources += [
-      "android/android_combined_policy_provider.cc",
-      "android/android_combined_policy_provider.h",
-      "android/policy_converter.cc",
-      "android/policy_converter.h",
-    ]
-    deps += [ "//components/policy/android:jni_headers" ]
-  }
-
   public_deps += [ "//components/policy/core/common:internal" ]
   deps += [
     "//components/proxy_config",
@@ -118,8 +108,6 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "android/android_combined_policy_provider_unittest.cc",
-    "android/policy_converter_unittest.cc",
     "browser_policy_connector_unittest.cc",
     "configuration_policy_handler_list_unittest.cc",
     "configuration_policy_handler_unittest.cc",
