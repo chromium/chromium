@@ -184,3 +184,5 @@ crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/fulls
 crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/stress.py>>test_stress[2] [ Failure Pass ]
 crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/stress.py>>test_stress[3] [ Failure Pass ]
 crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/stress.py>>test_stress[4] [ Failure Pass ]
+crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/stress.py>>test_stress [ Failure Pass ]
+crbug.com/1128104 [ Linux ] external/wpt/webdriver/tests/release_actions/sequence.py>>test_no_release_mouse_sequence_keeps_dblclick_state [ Failure ]
