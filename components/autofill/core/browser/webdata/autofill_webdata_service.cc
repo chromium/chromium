@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -276,6 +277,15 @@ WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardCloudTokenData(
       consumer);
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardOffers(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetCreditCardOffers,
+                     autofill_backend_),
+      consumer);
+}
+
 void AutofillWebDataService::ClearAllServerData() {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllServerData,
@@ -383,8 +393,7 @@ AutofillWebDataService::RemoveExpiredAutocompleteEntries(
       consumer);
 }
 
-AutofillWebDataService::~AutofillWebDataService() {
-}
+AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::NotifyAutofillMultipleChangedOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());

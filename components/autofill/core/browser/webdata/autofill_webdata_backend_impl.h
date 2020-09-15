@@ -33,7 +33,7 @@ class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
 
-// Backend implentation for the AutofillWebDataService. This class runs on the
+// Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
 // in it should only be called from that sequence. Most functions here are just
 // the implementations of the corresponding functions in the Autofill
@@ -197,6 +197,9 @@ class AutofillWebDataBackendImpl
 
   // Returns the CreditCardCloudTokenData from the database.
   std::unique_ptr<WDTypedResult> GetCreditCardCloudTokenData(WebDatabase* db);
+
+  // Returns Credit Card Offers Data from the database.
+  std::unique_ptr<WDTypedResult> GetCreditCardOffers(WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);

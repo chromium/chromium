@@ -31,6 +31,7 @@ namespace autofill {
 class AutofillChange;
 class AutofillEntry;
 struct AutofillMetadata;
+struct AutofillOfferData;
 class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
@@ -352,6 +353,36 @@ struct PaymentsCustomerData;
 //                      https://en.wikipedia.org/wiki/Unified_Payments_Interface
 //
 //   vpa_id             A string representing the UPI ID (a.k.a. VPA) value.
+//
+// offer_data           The data for credit card offers which will be presented
+//                      in payments autofill flows.
+//
+//   offer_id           The unique server ID for this offer data.
+//   offer_reward_amount
+//                      The string including the reward details of the offer.
+//                      Could be either percentage cashback (XXX%) or fixed
+//                      amount cashback (XXX$).
+//   expiry             The timestamp when the offer will go expired. Expired
+//                      offers will not be shown in the frontend.
+//   offer_details_url  The link leading to the offer details page on Gpay app.
+//
+// offer_eligible_instrument
+//                      Contains the mapping of credit cards and card linked
+//                      offers.
+//
+//   offer_id           Int 64 to identify the relevant offer. Matches the
+//                      offer_id in the offer_data table.
+//   instrument_id      The new form of instrument id of the card. Will not be
+//                      used for now.
+//
+// offer_merchant_domain
+//                      Contains the mapping of merchant domains and card linked
+//                      offers.
+//
+//   offer_id           Int 64 to identify the relevant offer. Matches the
+//                      offer_id in the offer_data table.
+//   merchant_domain    List of domain names for merchant websites on which
+//                      this offer would apply.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -519,6 +550,13 @@ class AutofillTable : public WebDatabaseTable,
   // may return true but leave |customer_data| untouched if there is no data.
   bool GetPaymentsCustomerData(
       std::unique_ptr<PaymentsCustomerData>* customer_data) const;
+
+  // |autofill_offer_data| must include all existing offers, since table will
+  // be completely overwritten.
+  void SetCreditCardOffers(
+      const std::vector<AutofillOfferData>& autofill_offer_data);
+  bool GetCreditCardOffers(
+      std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data);
 
   // Adds |upi_id| to the saved UPI IDs.
   bool InsertUpiId(const std::string& upi_id);
@@ -728,6 +766,9 @@ class AutofillTable : public WebDatabaseTable,
   bool InitPaymentsCustomerDataTable();
   bool InitPaymentsUPIVPATable();
   bool InitServerCreditCardCloudTokenDataTable();
+  bool InitOfferDataTable();
+  bool InitOfferEligibleInstrumentTable();
+  bool InitOfferMerchantDomainTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 

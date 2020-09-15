@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/single_thread_task_runner.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -565,6 +566,16 @@ AutofillWebDataBackendImpl::GetCreditCardCloudTokenData(WebDatabase* db) {
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<CreditCardCloudTokenData>>>>(
       AUTOFILL_CLOUDTOKEN_RESULT, std::move(cloud_token_data));
+}
+
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetCreditCardOffers(
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<AutofillOfferData>> offers;
+  AutofillTable::FromWebDatabase(db)->GetCreditCardOffers(&offers);
+  return std::make_unique<
+      WDResult<std::vector<std::unique_ptr<AutofillOfferData>>>>(
+      AUTOFILL_OFFER_DATA, std::move(offers));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

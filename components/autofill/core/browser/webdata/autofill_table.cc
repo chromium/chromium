@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -590,7 +591,8 @@ bool AutofillTable::CreateTablesIfNecessary() {
           InitServerAddressesTable() && InitServerAddressMetadataTable() &&
           InitAutofillSyncMetadataTable() && InitModelTypeStateTable() &&
           InitPaymentsCustomerDataTable() && InitPaymentsUPIVPATable() &&
-          InitServerCreditCardCloudTokenDataTable());
+          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
+          InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable());
 }
 
 bool AutofillTable::IsSyncable() {
@@ -1926,6 +1928,127 @@ bool AutofillTable::GetPaymentsCustomerData(
   return s.Succeeded();
 }
 
+void AutofillTable::SetCreditCardOffers(
+    const std::vector<AutofillOfferData>& autofill_offer_data) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin())
+    return;
+
+  // Delete all old values.
+  sql::Statement delete_offers(
+      db_->GetUniqueStatement("DELETE FROM offer_data"));
+  sql::Statement delete_offer_eligible_instruments(
+      db_->GetUniqueStatement("DELETE FROM offer_eligible_instrument"));
+  sql::Statement delete_offer_merchant_domains(
+      db_->GetUniqueStatement("DELETE FROM offer_merchant_domain"));
+  delete_offers.Run();
+  delete_offer_eligible_instruments.Run();
+  delete_offer_merchant_domains.Run();
+
+  // Insert new values.
+  sql::Statement insert_offers(
+      db_->GetUniqueStatement("INSERT INTO offer_data("
+                              "offer_id, "             // 0
+                              "offer_reward_amount, "  // 1
+                              "expiry, "               // 2
+                              "offer_details_url) "    // 3
+                              "VALUES (?,?,?,?)"));
+
+  for (const AutofillOfferData& data : autofill_offer_data) {
+    insert_offers.BindInt64(0, data.offer_id);
+    insert_offers.BindString(1, data.offer_reward_amount);
+    insert_offers.BindInt64(
+        2, data.expiry.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    insert_offers.BindString(3, data.offer_details_url.spec());
+    insert_offers.Run();
+    insert_offers.Reset(true);
+
+    for (const int64_t instrument_id : data.eligible_instrument_id) {
+      // Insert new offer_eligible_instrument values.
+      sql::Statement insert_offer_eligible_instruments(
+          db_->GetUniqueStatement("INSERT INTO offer_eligible_instrument("
+                                  "offer_id, "       // 0
+                                  "instrument_id) "  // 1
+                                  "VALUES (?,?)"));
+      insert_offer_eligible_instruments.BindInt64(0, data.offer_id);
+      insert_offer_eligible_instruments.BindInt64(1, instrument_id);
+      insert_offer_eligible_instruments.Run();
+      insert_offer_eligible_instruments.Reset(true);
+    }
+
+    for (const GURL& merchant_domain : data.merchant_domain) {
+      // Insert new offer_merchant_domain values.
+      sql::Statement insert_offer_merchant_domains(
+          db_->GetUniqueStatement("INSERT INTO offer_merchant_domain("
+                                  "offer_id, "         // 0
+                                  "merchant_domain) "  // 1
+                                  "VALUES (?,?)"));
+      insert_offer_merchant_domains.BindInt64(0, data.offer_id);
+      insert_offer_merchant_domains.BindString(1, merchant_domain.spec());
+      insert_offer_merchant_domains.Run();
+      insert_offer_merchant_domains.Reset(true);
+    }
+  }
+  transaction.Commit();
+}
+
+bool AutofillTable::GetCreditCardOffers(
+    std::vector<std::unique_ptr<AutofillOfferData>>* autofill_offer_data) {
+  autofill_offer_data->clear();
+
+  sql::Statement s(
+      db_->GetUniqueStatement("SELECT "
+                              "offer_id, "             // 0
+                              "offer_reward_amount, "  // 1
+                              "expiry, "               // 2
+                              "offer_details_url "     // 3
+                              "FROM offer_data"));
+
+  while (s.Step()) {
+    int index = 0;
+    std::unique_ptr<AutofillOfferData> data =
+        std::make_unique<AutofillOfferData>();
+    data->offer_id = s.ColumnInt64(index++);
+    data->offer_reward_amount = s.ColumnString(index++);
+    data->expiry = base::Time::FromDeltaSinceWindowsEpoch(
+        base::TimeDelta::FromMilliseconds(s.ColumnInt64(index++)));
+    data->offer_details_url = GURL(s.ColumnString(index++));
+
+    sql::Statement s_offer_eligible_instrument(
+        db_->GetUniqueStatement("SELECT "
+                                "offer_id, "      // 0
+                                "instrument_id "  // 1
+                                "FROM offer_eligible_instrument "
+                                "WHERE offer_id = ?"));
+    s_offer_eligible_instrument.BindInt64(0, data->offer_id);
+    while (s_offer_eligible_instrument.Step()) {
+      const int64_t instrument_id = s_offer_eligible_instrument.ColumnInt64(1);
+      if (instrument_id != 0) {
+        data->eligible_instrument_id.push_back(instrument_id);
+      }
+    }
+
+    sql::Statement s_offer_merchant_domain(
+        db_->GetUniqueStatement("SELECT "
+                                "offer_id, "        // 0
+                                "merchant_domain "  // 1
+                                "FROM offer_merchant_domain "
+                                "WHERE offer_id = ?"));
+    s_offer_merchant_domain.BindInt64(0, data->offer_id);
+    while (s_offer_merchant_domain.Step()) {
+      const std::string merchant_domain =
+          s_offer_merchant_domain.ColumnString(1);
+      if (!merchant_domain.empty()) {
+        data->merchant_domain.emplace_back(GURL(merchant_domain));
+      }
+    }
+
+    autofill_offer_data->emplace_back(std::move(data));
+  }
+
+  return s.Succeeded();
+}
+
 bool AutofillTable::InsertUpiId(const std::string& upi_id) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
@@ -1990,6 +2113,21 @@ bool AutofillTable::ClearAllServerData() {
   sql::Statement cloud_token_data(
       db_->GetUniqueStatement("DELETE FROM server_card_cloud_token_data"));
   cloud_token_data.Run();
+  changed |= db_->GetLastChangeCount() > 0;
+
+  sql::Statement autofill_offer_data(
+      db_->GetUniqueStatement("DELETE FROM offer_data"));
+  autofill_offer_data.Run();
+  changed |= db_->GetLastChangeCount() > 0;
+
+  sql::Statement autofill_offer_eligible_instrument(
+      db_->GetUniqueStatement("DELETE FROM offer_eligible_instrument"));
+  autofill_offer_eligible_instrument.Run();
+  changed |= db_->GetLastChangeCount() > 0;
+
+  sql::Statement autofill_offer_merchant_domain(
+      db_->GetUniqueStatement("DELETE FROM offer_merchant_domain"));
+  autofill_offer_merchant_domain.Run();
   changed |= db_->GetLastChangeCount() > 0;
 
   transaction.Commit();
@@ -3617,6 +3755,45 @@ bool AutofillTable::InitServerCreditCardCloudTokenDataTable() {
                       "exp_year INTEGER DEFAULT 0, "
                       "card_art_url VARCHAR, "
                       "instrument_token VARCHAR)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::InitOfferDataTable() {
+  if (!db_->DoesTableExist("offer_data")) {
+    if (!db_->Execute("CREATE TABLE offer_data ( "
+                      "offer_id UNSIGNED LONG, "
+                      "offer_reward_amount VARCHAR, "
+                      "expiry UNSIGNED LONG, "
+                      "offer_details_url VARCHAR, "
+                      "merchant_domain VARCHAR)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::InitOfferEligibleInstrumentTable() {
+  if (!db_->DoesTableExist("offer_eligible_instrument")) {
+    if (!db_->Execute("CREATE TABLE offer_eligible_instrument ( "
+                      "offer_id UNSIGNED LONG,"
+                      "instrument_id UNSIGNED LONG)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::InitOfferMerchantDomainTable() {
+  if (!db_->DoesTableExist("offer_merchant_domain")) {
+    if (!db_->Execute("CREATE TABLE offer_merchant_domain ( "
+                      "offer_id UNSIGNED LONG,"
+                      "merchant_domain VARCHAR)")) {
       NOTREACHED();
       return false;
     }

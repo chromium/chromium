@@ -20,6 +20,7 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -260,6 +261,9 @@ class PersonalDataManager : public KeyedService,
   // Returns the credit card cloud token data.
   virtual std::vector<CreditCardCloudTokenData*> GetCreditCardCloudTokenData()
       const;
+
+  // Returns the credit card offer data.
+  virtual std::vector<AutofillOfferData*> GetCreditCardOffers() const;
 
   // Updates the validity states of |profiles| according to server validity map.
   void UpdateProfilesServerValidityMapsIfNeeded(
@@ -541,6 +545,9 @@ class PersonalDataManager : public KeyedService,
   // Loads the saved UPI IDs from the web database.
   virtual void LoadUpiIds();
 
+  // Loads the offer data from the web database.
+  virtual void LoadCreditCardOffers();
+
   // Cancels a pending query to the local web database.  |handle| is a pointer
   // to the query handle.
   void CancelPendingLocalQuery(WebDataServiceBase::Handle* handle);
@@ -606,6 +613,9 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<CreditCardCloudTokenData>>
       server_credit_card_cloud_token_data_;
 
+  // Offer data for user's credit cards.
+  std::vector<std::unique_ptr<AutofillOfferData>> autofill_offer_data_;
+
   // When the manager makes a request from WebDataServiceBase, the database
   // is queried on another sequence, we record the query handle until we
   // get called back.  We store handles for both profile and credit card queries
@@ -618,6 +628,7 @@ class PersonalDataManager : public KeyedService,
       0;
   WebDataServiceBase::Handle pending_customer_data_query_ = 0;
   WebDataServiceBase::Handle pending_upi_ids_query_ = 0;
+  WebDataServiceBase::Handle pending_offer_data_query_ = 0;
 
   // The observers.
   base::ObserverList<PersonalDataManagerObserver>::Unchecked observers_;

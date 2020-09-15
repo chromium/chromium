@@ -404,7 +404,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   DCHECK(pending_profiles_query_ || pending_server_profiles_query_ ||
          pending_creditcards_query_ || pending_server_creditcards_query_ ||
          pending_server_creditcard_cloud_token_data_query_ ||
-         pending_customer_data_query_ || pending_upi_ids_query_);
+         pending_customer_data_query_ || pending_upi_ids_query_ ||
+         pending_offer_data_query_);
 
   if (!result) {
     // Error from the web database.
@@ -422,6 +423,8 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
       pending_customer_data_query_ = 0;
     else if (h == pending_upi_ids_query_)
       pending_upi_ids_query_ = 0;
+    else if (h == pending_offer_data_query_)
+      pending_offer_data_query_ = 0;
   } else {
     switch (result->GetType()) {
       case AUTOFILL_PROFILES_RESULT:
@@ -473,6 +476,12 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
         upi_ids_ =
             static_cast<WDResult<std::vector<std::string>>*>(result.get())
                 ->GetValue();
+        break;
+      case AUTOFILL_OFFER_DATA:
+        DCHECK_EQ(h, pending_offer_data_query_)
+            << "received autofill offer data from invalid request.";
+        ReceiveLoadedDbValues(h, result.get(), &pending_offer_data_query_,
+                              &autofill_offer_data_);
         break;
       default:
         NOTREACHED();
@@ -911,6 +920,7 @@ void PersonalDataManager::ClearAllServerData() {
   server_profiles_.clear();
   payments_customer_data_.reset();
   server_credit_card_cloud_token_data_.clear();
+  autofill_offer_data_.clear();
 }
 
 void PersonalDataManager::ClearAllLocalData() {
@@ -1151,12 +1161,25 @@ PersonalDataManager::GetCreditCardCloudTokenData() const {
   return result;
 }
 
+std::vector<AutofillOfferData*> PersonalDataManager::GetCreditCardOffers()
+    const {
+  if (!IsAutofillWalletImportEnabled())
+    return {};
+
+  std::vector<AutofillOfferData*> result;
+  result.reserve(autofill_offer_data_.size());
+  for (const auto& data : autofill_offer_data_)
+    result.push_back(data.get());
+  return result;
+}
+
 void PersonalDataManager::Refresh() {
   LoadProfiles();
   LoadCreditCards();
   LoadCreditCardCloudTokenData();
   LoadPaymentsCustomerData();
   LoadUpiIds();
+  LoadCreditCardOffers();
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
@@ -1699,6 +1722,16 @@ void PersonalDataManager::LoadUpiIds() {
       database_helper_->GetLocalDatabase()->GetAllUpiIds(this);
 }
 
+void PersonalDataManager::LoadCreditCardOffers() {
+  if (!database_helper_->GetServerDatabase())
+    return;
+
+  CancelPendingServerQuery(&pending_offer_data_query_);
+
+  pending_offer_data_query_ =
+      database_helper_->GetServerDatabase()->GetCreditCardOffers(this);
+}
+
 void PersonalDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
@@ -1728,6 +1761,7 @@ void PersonalDataManager::CancelPendingServerQueries() {
   CancelPendingServerQuery(&pending_server_creditcards_query_);
   CancelPendingServerQuery(&pending_customer_data_query_);
   CancelPendingServerQuery(&pending_server_creditcard_cloud_token_data_query_);
+  CancelPendingServerQuery(&pending_offer_data_query_);
 }
 
 bool PersonalDataManager::HasPendingQueriesForTesting() {
@@ -2591,7 +2625,8 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_server_profiles_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
          pending_server_creditcard_cloud_token_data_query_ != 0 ||
-         pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0;
+         pending_customer_data_query_ != 0 || pending_upi_ids_query_ != 0 ||
+         pending_offer_data_query_ != 0;
 }
 
 void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {

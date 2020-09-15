@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -3616,6 +3617,103 @@ TEST_F(AutofillTableTest, GetAllUpiIds) {
 
   std::vector<std::string> upi_ids = table_->GetAllUpiIds();
   ASSERT_THAT(upi_ids, UnorderedElementsAre(upi_id1, upi_id2));
+}
+
+TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
+  // Create test data.
+  AutofillOfferData credit_card_offer_1;
+  AutofillOfferData credit_card_offer_2;
+  AutofillOfferData credit_card_offer_3;
+
+  // Set Offer ID.
+  credit_card_offer_1.offer_id = 1;
+  credit_card_offer_2.offer_id = 2;
+  credit_card_offer_3.offer_id = 3;
+
+  // Set reward amounts.
+  credit_card_offer_1.offer_reward_amount = "$5";
+  credit_card_offer_2.offer_reward_amount = "10%";
+  credit_card_offer_3.offer_reward_amount = "5%";
+
+  // Set expiry.
+  credit_card_offer_1.expiry = base::Time::FromDoubleT(1000);
+  credit_card_offer_2.expiry = base::Time::FromDoubleT(2000);
+  credit_card_offer_3.expiry = base::Time::FromDoubleT(3000);
+
+  // Set details URL.
+  credit_card_offer_1.offer_details_url =
+      GURL("https://www.offer_1_example.com/");
+  credit_card_offer_2.offer_details_url =
+      GURL("https://www.offer_2_example.com/");
+  credit_card_offer_3.offer_details_url =
+      GURL("https://www.offer_3_example.com/");
+
+  // Set merchant domains for offer 1.
+  credit_card_offer_1.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_1_1.com/"));
+  credit_card_offer_1.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_1_2.com/"));
+  credit_card_offer_1.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_1_3.com/"));
+  // Set merchant domains for offer 2.
+  credit_card_offer_2.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_2_1.com/"));
+  // Set merchant domains for offer 3.
+  credit_card_offer_3.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_3_1.com/"));
+  credit_card_offer_3.merchant_domain.emplace_back(
+      GURL("https://www.merchant_domain_3_2.com/"));
+
+  // Set eligible instrument ID for offer 1.
+  credit_card_offer_1.eligible_instrument_id.push_back(10);
+  credit_card_offer_1.eligible_instrument_id.push_back(11);
+  // Set eligible instrument ID for offer 2.
+  credit_card_offer_2.eligible_instrument_id.push_back(20);
+  credit_card_offer_2.eligible_instrument_id.push_back(21);
+  credit_card_offer_2.eligible_instrument_id.push_back(22);
+  // Set eligible instrument ID for offer 3.
+  credit_card_offer_3.eligible_instrument_id.push_back(30);
+
+  // Create vector of offer data.
+  std::vector<AutofillOfferData> autofill_offer_data;
+  autofill_offer_data.push_back(credit_card_offer_1);
+  autofill_offer_data.push_back(credit_card_offer_2);
+  autofill_offer_data.push_back(credit_card_offer_3);
+
+  table_->SetCreditCardOffers(autofill_offer_data);
+
+  std::vector<std::unique_ptr<AutofillOfferData>> output_offer_data;
+
+  EXPECT_TRUE(table_->GetCreditCardOffers(&output_offer_data));
+  EXPECT_EQ(autofill_offer_data.size(), output_offer_data.size());
+
+  for (const auto& data : autofill_offer_data) {
+    // Find output data with corresponding Offer ID.
+    size_t output_index = 0;
+    while (output_index < output_offer_data.size()) {
+      if (data.offer_id == output_offer_data[output_index]->offer_id) {
+        break;
+      }
+      output_index++;
+    }
+
+    // Expect to find matching Offer ID's.
+    EXPECT_NE(output_index, output_offer_data.size());
+
+    // All corresponding fields must be equal.
+    EXPECT_EQ(data.offer_id, output_offer_data[output_index]->offer_id);
+    EXPECT_EQ(data.offer_reward_amount,
+              output_offer_data[output_index]->offer_reward_amount);
+    EXPECT_EQ(data.expiry, output_offer_data[output_index]->expiry);
+    EXPECT_EQ(data.offer_details_url.spec(),
+              output_offer_data[output_index]->offer_details_url.spec());
+    ASSERT_THAT(data.merchant_domain,
+                testing::UnorderedElementsAreArray(
+                    output_offer_data[output_index]->merchant_domain));
+    ASSERT_THAT(data.eligible_instrument_id,
+                testing::UnorderedElementsAreArray(
+                    output_offer_data[output_index]->eligible_instrument_id));
+  }
 }
 
 }  // namespace autofill
