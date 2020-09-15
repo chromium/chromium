@@ -12,9 +12,15 @@ try_.declare_bucket(settings, branch_selector = branches.ALL_RELEASES)
 try_.set_defaults(
     settings,
     add_to_list_view = True,
+    subproject_list_view = "luci.chromium.try",
 )
 
 # Automatically maintained consoles
+
+try_.list_view(
+    name = "luci.chromium.try",
+    branch_selector = branches.ALL_RELEASES,
+)
 
 try_.list_view(
     name = "tryserver.blink",

@@ -36,6 +36,7 @@ defaults = args.defaults(
     cq_group = None,
     list_view = args.COMPUTE,
     main_list_view = None,
+    subproject_list_view = None,
 )
 
 def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN_ONLY):
@@ -205,6 +206,7 @@ def try_builder(
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
         main_list_view = args.DEFAULT,
+        subproject_list_view = args.DEFAULT,
         tryjob = None,
         **kwargs):
     """Define a try builder.
@@ -227,7 +229,11 @@ def try_builder(
       main_console_view - A string identifying the ID of the main list
         view to add an entry to. Supports a module-level default that
         defaults to None. Note that `add_to_list_view` has no effect on
-        creating an entry to the main list view.
+        adding an entry to the main list view.
+      subproject_list_view - A string identifying the ID of the
+        subproject list view to add an entry to. Suppoers a module-level
+        default that defaults to None. Not that `add_to_list_view` has
+        no effect on adding an entry to the subproject list view.
       tryjob - A struct containing the details of the tryjob verifier for the
         builder, obtained by calling the `tryjob` function.
     """
@@ -288,6 +294,13 @@ def try_builder(
         luci.list_view_entry(
             builder = builder,
             list_view = main_list_view,
+        )
+
+    subproject_list_view = defaults.get_value("subproject_list_view", subproject_list_view)
+    if subproject_list_view:
+        luci.list_view_entry(
+            builder = builder,
+            list_view = subproject_list_view,
         )
 
 def blink_builder(*, name, goma_backend = None, **kwargs):

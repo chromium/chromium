@@ -8,6 +8,7 @@ load("//project.star", "settings")
 try_.set_defaults(
     settings,
     execution_timeout = 2 * time.hour,
+    subproject_list_view = "luci.chromium.try",
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 

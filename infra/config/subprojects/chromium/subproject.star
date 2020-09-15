@@ -36,7 +36,6 @@ branches.exec("./versioned/m85/buckets/try.star")
 # )
 
 branches.exec("./consoles/android.packager.star")
-branches.exec("./consoles/luci.chromium.try.star")
 branches.exec("./consoles/metadata.exporter.star")
 branches.exec("./consoles/sheriff.ios.star")
 
