@@ -56,7 +56,7 @@ public class SyncTest {
 
         // Signing back in should re-enable sync.
         mSyncTestRule.signinAndEnableSync(account);
-        SyncTestUtil.waitForSyncActive();
+        Assert.assertTrue("Sync should be re-enabled.", SyncTestUtil.isSyncActive());
     }
 
     @Test

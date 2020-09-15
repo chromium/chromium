@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -236,7 +237,10 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
     }
 
     public void signinAndEnableSync(final Account account) {
-        signinAndEnableSyncInternal(account, true);
+        SigninTestUtil.signIn(account, mProfileSyncService);
+        enableUKM();
+        SyncTestUtil.waitForSyncActive();
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
     }
 
     public void signOut() {

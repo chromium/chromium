@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Utility class for test signin functionality.
  */
-final class SigninTestUtil {
+public final class SigninTestUtil {
     /**
      * Returns the currently signed in account.
      */
@@ -43,9 +43,11 @@ final class SigninTestUtil {
     }
 
     /**
-     * Sign into an account.
+     * Signs into an account and enables the sync if given a {@link ProfileSyncService} object.
+     *
+     * @param profileSyncService Enable the sync with it if it is not null.
      */
-    static void signIn(Account account, @Nullable ProfileSyncService profileSyncService) {
+    public static void signIn(Account account, @Nullable ProfileSyncService profileSyncService) {
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
