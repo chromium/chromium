@@ -1,6 +1,7 @@
 include_rules = [
   "+components/apdu",
   "+components/cbor",
+  "+components/gcm_driver",
   "+crypto",
   "+dbus",
   "+net/base",

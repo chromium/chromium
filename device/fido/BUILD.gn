@@ -16,6 +16,7 @@ component("fido") {
     "cable/cable_discovery_data.h",
     "cable/noise.cc",
     "cable/noise.h",
+    "cable/v2_constants.h",
     "cable/v2_handshake.cc",
     "cable/v2_handshake.h",
     "cbor_extract.cc",
@@ -261,6 +262,21 @@ component("fido") {
       "//dbus",
     ]
   }
+}
+
+static_library("cablev2_registration") {
+  sources = [
+    "cable/v2_registration.cc",
+    "cable/v2_registration.h",
+  ]
+  deps = [
+    ":fido",
+    "//base",
+    "//components/cbor",
+    "//components/device_event_log",
+    "//components/gcm_driver",
+    "//components/gcm_driver/instance_id",
+  ]
 }
 
 if (is_chromeos) {
