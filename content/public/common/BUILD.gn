@@ -288,6 +288,17 @@ source_set("common_sources") {
   }
 }
 
+_common_param_traits_headers = [ "common_param_traits_macros.h" ]
+_common_param_traits_deps = [
+  "//ipc",
+  "//services/network/public/cpp:cpp_base",
+  "//services/network/public/mojom",
+  "//third_party/blink/public:blink_headers",
+  "//ui/accessibility:ax_enums_mojo",
+  "//ui/base",
+  "//ui/gfx/ipc",
+]
+
 mojom("interfaces") {
   # We don't want Blink variants of these bindings to be generated.
   disable_variants = true
@@ -333,6 +344,46 @@ mojom("interfaces") {
 
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
   component_deps = [ "//third_party/blink/public/common" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.BrowserControlsState"
+          cpp = "::content::BrowserControlsState"
+        },
+      ]
+      traits_headers = [ "browser_controls_state.h" ]
+      traits_private_headers = _common_param_traits_headers
+      traits_deps = _common_param_traits_deps
+    },
+    {
+      types = [
+        {
+          mojom = "content.mojom.DropData"
+          cpp = "::content::DropData"
+        },
+      ]
+      traits_headers = [ "drop_data.h" ]
+      traits_private_headers = _common_param_traits_headers
+      traits_deps = _common_param_traits_deps
+    },
+    {
+      types = [
+        {
+          mojom = "content.mojom.WebPluginInfo"
+          cpp = "::content::WebPluginInfo"
+        },
+      ]
+      traits_headers = [ "webplugininfo.h" ]
+      traits_private_headers = [ "webplugininfo_param_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//skia",
+      ]
+      traits_deps = [ "//ipc" ]
+    },
+  ]
 }
 
 mojom("renderer_type") {
@@ -350,6 +401,22 @@ mojom("web_preferences_mojom") {
 
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
   component_deps = [ "//third_party/blink/public/common" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.WebPreferences"
+          cpp = "::blink::web_pref::WebPreferences"
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/web_preferences/web_preferences.h",
+      ]
+      traits_private_headers = _common_param_traits_headers
+      traits_deps = _common_param_traits_deps
+    },
+  ]
 }
 
 mojom("service_names") {

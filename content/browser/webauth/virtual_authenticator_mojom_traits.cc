@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "virtual_authenticator_mojom_traits.h"
+#include "content/browser/webauth/virtual_authenticator_mojom_traits.h"  // nogncheck
 
 namespace mojo {
 

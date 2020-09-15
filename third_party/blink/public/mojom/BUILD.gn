@@ -663,6 +663,65 @@ mojom("android_mojo_bindings") {
     public_deps += [ "//ui/gfx/geometry/mojom" ]
   }
 
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AuthenticatorTransport"
+          cpp = "::device::FidoTransportProtocol"
+        },
+        {
+          mojom = "blink.mojom.PublicKeyCredentialType"
+          cpp = "::device::CredentialType"
+        },
+        {
+          mojom = "blink.mojom.PublicKeyCredentialParameters"
+          cpp = "::device::PublicKeyCredentialParams::CredentialInfo"
+        },
+        {
+          mojom = "blink.mojom.PublicKeyCredentialDescriptor"
+          cpp = "::device::PublicKeyCredentialDescriptor"
+        },
+        {
+          mojom = "blink.mojom.AuthenticatorAttachment"
+          cpp = "::device::AuthenticatorAttachment"
+        },
+        {
+          mojom = "blink.mojom.UserVerificationRequirement"
+          cpp = "::device::UserVerificationRequirement"
+        },
+        {
+          mojom = "blink.mojom.AuthenticatorSelectionCriteria"
+          cpp = "::device::AuthenticatorSelectionCriteria"
+        },
+        {
+          mojom = "blink.mojom.PublicKeyCredentialRpEntity"
+          cpp = "::device::PublicKeyCredentialRpEntity"
+        },
+        {
+          mojom = "blink.mojom.PublicKeyCredentialUserEntity"
+          cpp = "::device::PublicKeyCredentialUserEntity"
+        },
+        {
+          mojom = "blink.mojom.CableAuthentication"
+          cpp = "::device::CableDiscoveryData"
+        },
+        {
+          mojom = "blink.mojom.AttestationConveyancePreference"
+          cpp = "::device::AttestationConveyancePreference"
+        },
+      ]
+      traits_headers =
+          [ "//content/browser/webauth/authenticator_mojom_traits.h" ]
+      traits_sources =
+          [ "//content/browser/webauth/authenticator_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//device/fido",
+      ]
+    },
+  ]
+
   blink_cpp_typemaps = [
     {
       types = [
@@ -1168,6 +1227,22 @@ mojom("authenticator_test_mojo_bindings") {
 
   # Don't scramble message IDs so they are redistributable to external tests.
   scramble_message_ids = false
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.test.mojom.ClientToAuthenticatorProtocol"
+          cpp = "::device::ProtocolVersion"
+        },
+      ]
+      traits_headers =
+          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.h" ]
+      traits_sources =
+          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.cc" ]
+      traits_public_deps = [ "//device/fido" ]
+    },
+  ]
 }
 
 mojom("memory_usage_monitor_linux_mojo_bindings") {
