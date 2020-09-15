@@ -43,22 +43,26 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   // TODO(https://crbug.com/1113443): This implementation needs to check if the
   // extension is allowlisted via the AttestationExtensionAllowlist policy.
-  auto c = base::BindOnce(
-      &EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKeyLacros,
-      this);
-  chromeos::LacrosChromeServiceImpl::Get()->attestation_remote()->ChallengeKey(
-      StringFromVector(params->challenge),
-      crosapi::mojom::ChallengeKeyType::kDevice, std::move(c));
+  auto c = base::BindOnce(&EnterprisePlatformKeysChallengeMachineKeyFunction::
+                              OnChallengeAttestationOnlyKeystore,
+                          this);
+  chromeos::LacrosChromeServiceImpl::Get()
+      ->keystore_service_remote()
+      ->ChallengeAttestationOnlyKeystore(StringFromVector(params->challenge),
+                                         crosapi::mojom::KeystoreType::kDevice,
+                                         /*migrate=*/*params->register_key,
+                                         std::move(c));
   return RespondLater();
 }
 
-void EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKeyLacros(
-    crosapi::mojom::ChallengeKeyResultPtr result) {
+void EnterprisePlatformKeysChallengeMachineKeyFunction::
+    OnChallengeAttestationOnlyKeystore(ResultPtr result) {
+  using Result = crosapi::mojom::ChallengeAttestationOnlyKeystoreResult;
   switch (result->which()) {
-    case crosapi::mojom::ChallengeKeyResult::Tag::ERROR_MESSAGE:
+    case Result::Tag::ERROR_MESSAGE:
       Respond(Error(result->get_error_message()));
       return;
-    case crosapi::mojom::ChallengeKeyResult::Tag::CHALLENGE_RESPONSE:
+    case Result::Tag::CHALLENGE_RESPONSE:
       Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
           VectorFromString(result->get_challenge_response()))));
       return;

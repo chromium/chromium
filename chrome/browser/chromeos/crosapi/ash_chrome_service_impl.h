@@ -13,7 +13,7 @@
 
 namespace crosapi {
 
-class AttestationAsh;
+class KeystoreServiceAsh;
 class MessageCenterAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
@@ -27,8 +27,8 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
   ~AshChromeServiceImpl() override;
 
   // crosapi::mojom::AshChromeService:
-  void BindAttestation(
-      mojo::PendingReceiver<mojom::Attestation> receiver) override;
+  void BindKeystoreService(
+      mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindMessageCenter(
       mojo::PendingReceiver<mojom::MessageCenter> receiver) override;
   void BindScreenManager(
@@ -41,7 +41,7 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;
 
-  std::unique_ptr<AttestationAsh> attestation_ash_;
+  std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;

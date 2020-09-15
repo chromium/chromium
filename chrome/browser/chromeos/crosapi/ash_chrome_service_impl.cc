@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/crosapi/attestation_ash.h"
+#include "chrome/browser/chromeos/crosapi/keystore_service_ash.h"
 #include "chrome/browser/chromeos/crosapi/message_center_ash.h"
 #include "chrome/browser/chromeos/crosapi/screen_manager_ash.h"
 #include "chrome/browser/chromeos/crosapi/select_file_ash.h"
-#include "chromeos/crosapi/mojom/attestation.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
@@ -32,10 +32,10 @@ AshChromeServiceImpl::AshChromeServiceImpl(
 
 AshChromeServiceImpl::~AshChromeServiceImpl() = default;
 
-void AshChromeServiceImpl::BindAttestation(
-    mojo::PendingReceiver<crosapi::mojom::Attestation> receiver) {
-  attestation_ash_ =
-      std::make_unique<crosapi::AttestationAsh>(std::move(receiver));
+void AshChromeServiceImpl::BindKeystoreService(
+    mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
+  keystore_service_ash_ =
+      std::make_unique<crosapi::KeystoreServiceAsh>(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindMessageCenter(

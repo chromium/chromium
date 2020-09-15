@@ -117,10 +117,10 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindScreenManager(std::move(pending_receiver));
   }
 
-  void BindAttestationReceiver(
-      mojo::PendingReceiver<crosapi::mojom::Attestation> pending_receiver) {
+  void BindKeystoreServiceReceiver(
+      mojo::PendingReceiver<crosapi::mojom::KeystoreService> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ash_chrome_service_->BindAttestation(std::move(pending_receiver));
+    ash_chrome_service_->BindKeystoreService(std::move(pending_receiver));
   }
 
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
@@ -209,14 +209,14 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
           &LacrosChromeServiceNeverBlockingState::BindSelectFileReceiver,
           weak_sequenced_state_, std::move(select_file_pending_receiver)));
 
-  mojo::PendingReceiver<crosapi::mojom::Attestation>
-      attestation_pending_receiver =
-          attestation_remote_.BindNewPipeAndPassReceiver();
+  mojo::PendingReceiver<crosapi::mojom::KeystoreService>
+      keystore_service_pending_receiver =
+          keystore_service_remote_.BindNewPipeAndPassReceiver();
   never_blocking_sequence_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &LacrosChromeServiceNeverBlockingState::BindAttestationReceiver,
-          weak_sequenced_state_, std::move(attestation_pending_receiver)));
+          &LacrosChromeServiceNeverBlockingState::BindKeystoreServiceReceiver,
+          weak_sequenced_state_, std::move(keystore_service_pending_receiver)));
 
   mojo::PendingReceiver<device::mojom::HidManager>
       hid_manager_pending_receiver =

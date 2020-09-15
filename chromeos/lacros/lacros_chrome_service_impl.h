@@ -12,8 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "chromeos/crosapi/mojom/attestation.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
@@ -80,10 +80,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   }
 
   // This must be called on the affine sequence. It exposes a remote that can
-  // be used to perform attestation on challenges.
-  mojo::Remote<crosapi::mojom::Attestation>& attestation_remote() {
+  // be used to query the system keystores.
+  mojo::Remote<crosapi::mojom::KeystoreService>& keystore_service_remote() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    return attestation_remote_;
+    return keystore_service_remote_;
   }
 
   // This must be called on the affine sequence. It exposes a remote that can
@@ -123,10 +123,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::SelectFile> select_file_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
 
-  // This member allows lacros-chrome to use the Attestation interface. This
+  // This member allows lacros-chrome to use the KeystoreService interface. This
   // member is affine to the affine sequence. It is initialized in the
   // constructor and it is immediately available for use.
-  mojo::Remote<crosapi::mojom::Attestation> attestation_remote_;
+  mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
 
   // This member is instantiated on the affine sequence alongside the
   // constructor. All subsequent invocations of this member, including
