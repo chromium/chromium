@@ -3027,9 +3027,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "overscroll_history_navigation_bottom_sheet": "false"
-                    },
                     "enable_features": [
                         "OverscrollHistoryNavigation"
                     ]

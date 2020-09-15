@@ -1495,12 +1495,6 @@ const FeatureEntry::FeatureVariation
          base::size(kTranslateForceTriggerOnEnglishGeo), nullptr},
         {"(Zero threshold)", kTranslateForceTriggerOnEnglishBackoff,
          base::size(kTranslateForceTriggerOnEnglishBackoff), nullptr}};
-
-const FeatureEntry::FeatureParam kOverscrollHistoryNavigationBottomSheet[] = {
-    {"overscroll_history_navigation_bottom_sheet", "true"}};
-const FeatureEntry::FeatureVariation kOverscrollHistoryNavigationVariations[] =
-    {{"Navigation sheet", kOverscrollHistoryNavigationBottomSheet,
-      base::size(kOverscrollHistoryNavigationBottomSheet), nullptr}};
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
@@ -2782,12 +2776,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOverscrollHistoryNavigationName,
      flag_descriptions::kOverscrollHistoryNavigationDescription,
      kOsAura | kOsAndroid,
-#if defined(OS_ANDROID)
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOverscrollHistoryNavigation,
-                                    kOverscrollHistoryNavigationVariations,
-                                    "OverscrollNavigation")},
-#else
      FEATURE_VALUE_TYPE(features::kOverscrollHistoryNavigation)},
+#if !defined(OS_ANDROID)
     {"pull-to-refresh", flag_descriptions::kPullToRefreshName,
      flag_descriptions::kPullToRefreshDescription, kOsAura,
      MULTI_VALUE_TYPE(kPullToRefreshChoices)},

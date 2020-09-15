@@ -163,9 +163,7 @@ public class NavigationSheetTest {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @CommandLineFlags.Add({"enable-features=OverscrollHistoryNavigation<GestureNavigation",
-            "force-fieldtrials=GestureNavigation/Enabled",
-            "force-fieldtrial-params=GestureNavigation.Enabled:"
-                    + "overscroll_history_navigation_bottom_sheet/true"})
+            "force-fieldtrials=GestureNavigation/Enabled"})
     public void
     testLongPressBackTriggering() {
         KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK);
@@ -182,9 +180,7 @@ public class NavigationSheetTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @CommandLineFlags.Add({"enable-features=OverscrollHistoryNavigation<GestureNavigation",
-            "force-fieldtrials=GestureNavigation/Enabled",
-            "force-fieldtrial-params=GestureNavigation.Enabled:"
-                    + "overscroll_history_navigation_bottom_sheet/true"})
+            "force-fieldtrials=GestureNavigation/Enabled"})
     public void
     testLongPressBackTriggering_Cancellation() throws ExecutionException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
