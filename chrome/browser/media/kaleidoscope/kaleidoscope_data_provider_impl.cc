@@ -131,8 +131,15 @@ void KaleidoscopeDataProviderImpl::GetCredentials(GetCredentialsCallback cb) {
 
 void KaleidoscopeDataProviderImpl::GetShouldShowFirstRunExperience(
     GetShouldShowFirstRunExperienceCallback cb) {
-  std::move(cb).Run(kaleidoscope::KaleidoscopeService::Get(profile_)
-                        ->ShouldShowFirstRunExperience());
+  auto* service = kaleidoscope::KaleidoscopeService::Get(profile_);
+
+  // The Kaleidoscope Service would not be available for incognito profiles.
+  if (!service) {
+    std::move(cb).Run(false);
+    return;
+  }
+
+  std::move(cb).Run(service->ShouldShowFirstRunExperience());
 }
 
 void KaleidoscopeDataProviderImpl::SetFirstRunExperienceStep(
