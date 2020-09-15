@@ -54,4 +54,6 @@ luci.realm(
     ],
 )
 
+exec("//dev/swarming.star")
+
 exec("//dev/subprojects/chromium/subproject.star")
