@@ -1728,6 +1728,8 @@ Response InspectorCSSAgent::forcePseudoState(
 
 void InspectorCSSAgent::IncrementFocusedCountForAncestors(Element* element) {
   for (Node& ancestor : FlatTreeTraversal::AncestorsOf(*element)) {
+    if (!IsA<Element>(ancestor))
+      continue;
     int node_id = dom_agent_->BoundNodeId(&ancestor);
     if (!node_id)
       continue;
@@ -1741,6 +1743,8 @@ void InspectorCSSAgent::IncrementFocusedCountForAncestors(Element* element) {
 
 void InspectorCSSAgent::DecrementFocusedCountForAncestors(Element* element) {
   for (Node& ancestor : FlatTreeTraversal::AncestorsOf(*element)) {
+    if (!IsA<Element>(ancestor))
+      continue;
     int node_id = dom_agent_->BoundNodeId(&ancestor);
     if (!node_id)
       continue;

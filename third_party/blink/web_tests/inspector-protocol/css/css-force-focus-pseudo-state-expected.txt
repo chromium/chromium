@@ -1,0 +1,5 @@
+Test CSS.forcePseudoStates method for focus
+Color without forced focus: rgb(0, 0, 0)
+Color with forced focus: rgb(0, 0, 255)
+Didn't fail after disabling the CSS agent (https://crbug.com/1123526).
+
