@@ -33,11 +33,9 @@ class CONTENT_EXPORT DedicatedWorkerService {
 
     // Called when the final response URL (the URL after redirects) was
     // determined when fetching the worker's script.
-    //
-    // TODO(pmonette): Implement this in derived classes and make it pure.
     virtual void OnFinalResponseURLDetermined(
         const blink::DedicatedWorkerToken& worker_token,
-        const GURL& url) {}
+        const GURL& url) = 0;
   };
 
   // Adds/removes an observer.
