@@ -6,4 +6,21 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "account_id.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "signin.mojom.AccountType"
+          cpp = "::AccountType"
+        },
+        {
+          mojom = "signin.mojom.AccountId"
+          cpp = "::AccountId"
+        },
+      ]
+      traits_headers = [ "account_id_traits.h" ]
+      traits_public_deps = [ "//components/account_id" ]
+    },
+  ]
 }

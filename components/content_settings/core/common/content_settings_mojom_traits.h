@@ -9,7 +9,8 @@
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings.mojom.h"
+#include "components/content_settings/core/common/content_settings.mojom-shared.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

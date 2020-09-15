@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_MOJOM_TRAITS_H_
 #define COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_MOJOM_TRAITS_H_
 
-#include "components/spellcheck/common/spellcheck.mojom.h"
+#include "components/spellcheck/common/spellcheck.mojom-shared.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 
 namespace mojo {

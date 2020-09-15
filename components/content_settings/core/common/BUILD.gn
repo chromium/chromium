@@ -65,6 +65,41 @@ mojom("mojo_bindings") {
   sources = [ "content_settings.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content_settings.mojom.PatternParts"
+          cpp = "::ContentSettingsPattern::PatternParts"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingsPattern"
+          cpp = "::ContentSettingsPattern"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingsType"
+          cpp = "::ContentSettingsType"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSetting"
+          cpp = "::ContentSetting"
+        },
+        {
+          mojom = "content_settings.mojom.ContentSettingPatternSource"
+          cpp = "::ContentSettingPatternSource"
+        },
+        {
+          mojom = "content_settings.mojom.RendererContentSettingRules"
+          cpp = "::RendererContentSettingRules"
+        },
+      ]
+      traits_headers = [ "content_settings_mojom_traits.h" ]
+      traits_private_headers = [ "content_settings_param_traits.h" ]
+      traits_sources = [ "content_settings_mojom_traits.cc" ]
+      traits_public_deps = [ ":common" ]
+    },
+  ]
 }
 
 component("features") {

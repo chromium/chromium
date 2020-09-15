@@ -107,6 +107,25 @@ if (enable_nacl) {
 
   mojom("mojo_bindings") {
     sources = [ "nacl.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "nacl.mojom.NaClErrorCode"
+            cpp = "::NaClErrorCode"
+          },
+        ]
+        traits_headers =
+            [ "//native_client/src/trusted/service_runtime/nacl_error_code.h" ]
+        traits_private_headers =
+            [ "//components/nacl/common/nacl_types_param_traits.h" ]
+        traits_public_deps = [
+          ":minimal",
+          ":nacl_error_code",
+        ]
+        traits_deps = [ "//ipc" ]
+      },
+    ]
   }
 }
 

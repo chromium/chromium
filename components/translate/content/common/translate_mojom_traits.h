@@ -7,7 +7,7 @@
 
 #include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "components/translate/content/common/translate.mojom.h"
+#include "components/translate/content/common/translate.mojom-shared.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

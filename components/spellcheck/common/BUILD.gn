@@ -54,4 +54,22 @@ mojom("interfaces") {
   if (use_renderer_spellchecker) {
     enabled_features += [ "USE_RENDERER_SPELLCHECKER" ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "spellcheck.mojom.Decoration"
+          cpp = "::SpellCheckResult::Decoration"
+        },
+        {
+          mojom = "spellcheck.mojom.SpellCheckResult"
+          cpp = "::SpellCheckResult"
+        },
+      ]
+      traits_headers = [ "spellcheck_mojom_traits.h" ]
+      traits_sources = [ "spellcheck_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/spellcheck:buildflags" ]
+    },
+  ]
 }

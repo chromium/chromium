@@ -11,4 +11,21 @@ mojom("common") {
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "translate.mojom.LanguageDetectionDetails"
+          cpp = "::translate::LanguageDetectionDetails"
+        },
+        {
+          mojom = "translate.mojom.TranslateError"
+          cpp = "::translate::TranslateErrors::Type"
+        },
+      ]
+      traits_headers = [ "translate_mojom_traits.h" ]
+      traits_sources = [ "translate_mojom_traits.cc" ]
+    },
+  ]
 }

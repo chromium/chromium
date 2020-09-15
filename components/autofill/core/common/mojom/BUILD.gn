@@ -14,6 +14,83 @@ mojom("mojo_types") {
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "autofill.mojom.FormData"
+          cpp = "::autofill::FormData"
+        },
+        {
+          mojom = "autofill.mojom.FormDataPredictions"
+          cpp = "::autofill::FormDataPredictions"
+        },
+        {
+          mojom = "autofill.mojom.FormFieldData"
+          cpp = "::autofill::FormFieldData"
+        },
+        {
+          mojom = "autofill.mojom.FormFieldDataPredictions"
+          cpp = "::autofill::FormFieldDataPredictions"
+        },
+        {
+          mojom = "autofill.mojom.FormsPredictionsMap"
+          cpp = "::autofill::FormsPredictionsMap"
+        },
+        {
+          mojom = "autofill.mojom.FormRendererId"
+          cpp = "::autofill::FormRendererId"
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "autofill.mojom.FieldRendererId"
+          cpp = "::autofill::FieldRendererId"
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "autofill.mojom.ParsingResult"
+          cpp = "::autofill::ParsingResult"
+        },
+        {
+          mojom = "autofill.mojom.PasswordAndMetadata"
+          cpp = "::autofill::PasswordAndMetadata"
+        },
+        {
+          mojom = "autofill.mojom.PasswordForm"
+          cpp = "::autofill::PasswordForm"
+        },
+        {
+          mojom = "autofill.mojom.PasswordFormFieldPredictionMap"
+          cpp = "::autofill::PasswordFormFieldPredictionMap"
+        },
+        {
+          mojom = "autofill.mojom.PasswordFormFillData"
+          cpp = "::autofill::PasswordFormFillData"
+        },
+        {
+          mojom = "autofill.mojom.PasswordFormGenerationData"
+          cpp = "::autofill::PasswordFormGenerationData"
+        },
+        {
+          mojom = "autofill.mojom.PasswordGenerationUIData"
+          cpp = "::autofill::password_generation::PasswordGenerationUIData"
+        },
+        {
+          mojom = "autofill.mojom.ValueElementPair"
+          cpp = "::autofill::ValueElementPair"
+        },
+      ]
+      traits_headers = [ "autofill_types_mojom_traits.h" ]
+      traits_sources = [ "autofill_types_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//base:i18n",
+        "//components/autofill/core/common",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+      ]
+    },
+  ]
 }
 
 mojom("mojo_test_types") {

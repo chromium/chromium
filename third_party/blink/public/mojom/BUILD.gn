@@ -407,6 +407,32 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.CredentialType"
+          cpp = "::password_manager::CredentialType"
+        },
+        {
+          mojom = "blink.mojom.CredentialMediationRequirement"
+          cpp = "::password_manager::CredentialMediationRequirement"
+        },
+        {
+          mojom = "blink.mojom.CredentialInfo"
+          cpp = "::password_manager::CredentialInfo"
+        },
+        {
+          mojom = "blink.mojom.CredentialManagerError"
+          cpp = "::password_manager::CredentialManagerError"
+        },
+      ]
+      traits_headers = [ "//components/password_manager/content/common/credential_manager_mojom_traits.h" ]
+      traits_sources = [ "//components/password_manager/content/common/credential_manager_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//components/password_manager/core/common",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.FetchAPIDataElement"
           cpp = "::network::DataElement"
           move_only = true

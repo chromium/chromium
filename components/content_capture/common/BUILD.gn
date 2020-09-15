@@ -35,6 +35,24 @@ mojom("mojo_types") {
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content_capture.mojom.ContentCaptureData"
+          cpp = "::content_capture::ContentCaptureData"
+        },
+      ]
+      traits_headers = [ "content_capture_mojom_traits.h" ]
+      traits_sources = [ "content_capture_mojom_traits.cc" ]
+      traits_public_deps = [
+        ":common",
+        "//base",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+      ]
+    },
+  ]
 }
 
 mojom("mojo_test_types") {

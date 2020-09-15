@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "components/content_capture/common/content_capture_data.h"
-#include "components/content_capture/common/content_capture_data.mojom.h"
+#include "components/content_capture/common/content_capture_data.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/rect_f.h"
 

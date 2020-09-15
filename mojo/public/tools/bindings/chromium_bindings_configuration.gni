@@ -18,7 +18,6 @@ _typemap_imports = [
   "//components/media_router/common/mojom/typemaps.gni",
   "//components/services/storage/public/cpp/filesystem/typemaps.gni",
   "//components/sync/mojom/typemaps.gni",
-  "//components/typemaps.gni",
   "//content/browser/typemaps.gni",
   "//content/public/common/typemaps.gni",
 ]
