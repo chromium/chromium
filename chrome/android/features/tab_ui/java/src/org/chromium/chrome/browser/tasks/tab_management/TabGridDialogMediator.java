@@ -227,8 +227,10 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable = () -> {
-            mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
-            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
+                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+            }
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };
@@ -247,7 +249,9 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
 
         mToolbarMenuCallback = result -> {
             if (result == R.id.ungroup_tab) {
-                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
+                if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                    mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
+                }
                 mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
                 List<Tab> tabs = getRelatedTabs(mCurrentTabId);
                 if (mTabSelectionEditorController != null) {
@@ -279,6 +283,12 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
                                                               .build();
                 mShareDelegateSupplier.get().share(shareParams, chromeShareExtras);
             }
+
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                if (result == R.id.edit_group_name) {
+                    mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
+                }
+            }
         };
 
         // Setup toolbar button click listeners.
@@ -308,6 +318,9 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             mTabSelectionEditorController.hide();
         }
         saveCurrentGroupModifiedTitle();
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+        }
         mDialogController.resetWithListOfTabs(null);
     }
 
@@ -431,8 +444,12 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
     private void setupToolbarEditText() {
         mKeyboardVisibilityListener = isShowing -> {
             mModel.set(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY, isShowing);
-            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, isShowing);
-            mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, isShowing);
+            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, isShowing);
+                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, isShowing);
+            } else if (TabUiFeatureUtilities.isLaunchPolishEnabled() && !isShowing) {
+                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+            }
             if (!isShowing) {
                 saveCurrentGroupModifiedTitle();
             }
@@ -455,14 +472,20 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         };
         mModel.set(TabGridPanelProperties.TITLE_TEXT_WATCHER, textWatcher);
 
-        View.OnFocusChangeListener onFocusChangeListener =
-                (v, hasFocus) -> mIsUpdatingTitle = hasFocus;
+        View.OnFocusChangeListener onFocusChangeListener = (v, hasFocus) -> {
+            mIsUpdatingTitle = hasFocus;
+            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) return;
+            mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, hasFocus);
+            mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, hasFocus);
+        };
         mModel.set(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER, onFocusChangeListener);
     }
 
     private View.OnClickListener getCollapseButtonClickListener() {
         return view -> {
-            mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
+            if (!TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                mModel.set(TabGridPanelProperties.IS_KEYBOARD_VISIBLE, false);
+            }
             hideDialog(true);
             RecordUserAction.record("TabGridDialog.Exit");
         };

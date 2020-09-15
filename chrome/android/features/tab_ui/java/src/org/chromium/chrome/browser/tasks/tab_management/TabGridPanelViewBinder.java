@@ -131,11 +131,19 @@ class TabGridPanelViewBinder {
         } else if (TITLE_CURSOR_VISIBILITY == propertyKey) {
             viewHolder.toolbarView.setTitleCursorVisibility(model.get(TITLE_CURSOR_VISIBILITY));
         } else if (IS_TITLE_TEXT_FOCUSED == propertyKey) {
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                viewHolder.toolbarView.updateTitleTextFocus(model.get(IS_TITLE_TEXT_FOCUSED));
+                return;
+            }
             // Don't explicitly request focus since it should happen automatically.
             if (!model.get(IS_TITLE_TEXT_FOCUSED)) {
                 viewHolder.toolbarView.clearTitleTextFocus();
             }
         } else if (IS_KEYBOARD_VISIBLE == propertyKey) {
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                viewHolder.toolbarView.updateKeyboardVisibility(model.get(IS_KEYBOARD_VISIBLE));
+                return;
+            }
             // Don't explicitly show keyboard since it should happen automatically.
             if (!model.get(IS_KEYBOARD_VISIBLE)) {
                 viewHolder.toolbarView.hideKeyboard();
