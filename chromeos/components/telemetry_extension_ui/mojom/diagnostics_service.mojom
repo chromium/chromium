@@ -190,17 +190,16 @@ interface DiagnosticsService {
 enum DiagnosticRoutineEnum {
   kBatteryCapacity = 0,
   kBatteryHealth = 1,
-  kUrandom = 2,
-  kSmartctlCheck = 3,
-  kAcPower = 4,
-  kCpuCache = 5,
-  kCpuStress = 6,
-  kFloatingPointAccuracy = 7,
-  kNvmeWearLevel = 8,
-  kNvmeSelfTest = 9,
-  kDiskRead = 10,
-  kPrimeSearch = 11,
-  kBatteryDischarge = 12,
+  kSmartctlCheck = 2,
+  kAcPower = 3,
+  kCpuCache = 4,
+  kCpuStress = 5,
+  kFloatingPointAccuracy = 6,
+  kNvmeWearLevel = 7,
+  kNvmeSelfTest = 8,
+  kDiskRead = 9,
+  kPrimeSearch = 10,
+  kBatteryDischarge = 11,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

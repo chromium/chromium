@@ -73,7 +73,6 @@ UNTRUSTED_TEST('UntrustedRequestAvailableRoutines', async () => {
   assertDeepEquals(response, [
     'battery-capacity',
     'battery-health',
-    'urandom',
     'smartctl-check',
     'ac-power',
     'cpu-cache',

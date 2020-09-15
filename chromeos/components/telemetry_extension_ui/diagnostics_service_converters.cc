@@ -109,8 +109,6 @@ base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
       return health::mojom::DiagnosticRoutineEnum::kBatteryCapacity;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth:
       return health::mojom::DiagnosticRoutineEnum::kBatteryHealth;
-    case cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom:
-      return health::mojom::DiagnosticRoutineEnum::kUrandom;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck:
       return health::mojom::DiagnosticRoutineEnum::kSmartctlCheck;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower:

@@ -69,7 +69,6 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     std::vector<cros_diagnostics::DiagnosticRoutineEnum> input{
         cros_diagnostics::DiagnosticRoutineEnum::kBatteryCapacity,
         cros_diagnostics::DiagnosticRoutineEnum::kBatteryHealth,
-        cros_diagnostics::DiagnosticRoutineEnum::kUrandom,
         cros_diagnostics::DiagnosticRoutineEnum::kSmartctlCheck,
         cros_diagnostics::DiagnosticRoutineEnum::kAcPower,
         cros_diagnostics::DiagnosticRoutineEnum::kCpuCache,

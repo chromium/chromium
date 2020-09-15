@@ -52,7 +52,6 @@ class DiagnosticsProxy {
     this.enumToRoutineName_ = new Map([
       [routineEnum.kBatteryCapacity, 'battery-capacity'],
       [routineEnum.kBatteryHealth, 'battery-health'],
-      [routineEnum.kUrandom, 'urandom'],
       [routineEnum.kSmartctlCheck, 'smartctl-check'],
       [routineEnum.kAcPower, 'ac-power'],
       [routineEnum.kCpuCache, 'cpu-cache'],
