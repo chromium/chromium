@@ -3009,6 +3009,27 @@ if (!is_android) {
   }
 }
 
+if (chromeos_is_browser_only) {
+  # This test target is intended for lacros chrome specific tests that depend
+  # on crosapi, for generic tests, please use 'browser_tests' target instead.
+  test("lacros_chrome_browsertests") {
+    use_xvfb = use_xvfb_in_this_config
+
+    configs += [ "//build/config:precompiled_headers" ]
+    defines = [
+      "HAS_OUT_OF_PROC_TEST_RUNNER",
+      "CHROME_VERSION_MAJOR=" + chrome_version_major,
+    ]
+
+    sources = [ "../browser/lacros/screen_manager_lacros_browsertest.cc" ]
+
+    deps = [
+      ":browser_tests_runner",
+      ":test_support",
+    ]
+  }
+}
+
 if (is_linux || is_chromeos || is_mac || is_win) {
   import("//tools/binary_size/sizes.gni")
 

@@ -8,6 +8,7 @@
 # you add a new build file, there must be some path of dependencies from this
 # file to your new one or GN won't know about it.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -158,6 +159,10 @@ group("gn_all") {
       "//ui/accessibility/extensions:extension_tests",
       "//ui/accessibility/extensions:extensions",
     ]
+  }
+
+  if (chromeos_is_browser_only) {
+    deps += [ "//chrome/test:lacros_chrome_browsertests" ]
   }
 
   if (!is_ios) {
