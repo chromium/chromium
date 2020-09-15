@@ -5,6 +5,9 @@
 #ifndef CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 #define CC_TREES_IMAGE_ANIMATION_CONTROLLER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"

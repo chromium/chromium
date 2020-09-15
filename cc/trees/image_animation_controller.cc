@@ -4,6 +4,7 @@
 
 #include "cc/trees/image_animation_controller.h"
 
+#include <algorithm>
 #include <sstream>
 
 #include "base/bind.h"
