@@ -11,7 +11,7 @@
 import 'chrome://extensions/extensions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {keyDownOn, keyUpOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isChildVisible} from '../test_util.m.js';
@@ -45,8 +45,8 @@ suite(extension_shortcut_input_tests.suiteName, function() {
     const isClearVisible = isChildVisible.bind(null, input, '#clear', false);
     expectFalse(isClearVisible());
 
-    // Focus the input. Capture should start.
-    field.focus();
+    // Click the input. Capture should start.
+    tap(field);
     return input.delegate.whenCalled('setShortcutHandlingSuspended')
         .then((arg) => {
           assertTrue(arg);
@@ -96,18 +96,16 @@ suite(extension_shortcut_input_tests.suiteName, function() {
           expectTrue(isClearVisible());
 
           // Test clearing the shortcut.
-          input.$['clear'].click();
-          assertEquals(input.$.input, input.shadowRoot.activeElement);
+          tap(input.$['clear']);
           return input.delegate.whenCalled('updateExtensionCommandKeybinding');
         })
         .then((arg) => {
-          field.blur();
           input.delegate.reset();
           expectDeepEquals(['itemid', 'Command', ''], arg);
           assertEquals('', input.shortcut);
           expectFalse(isClearVisible());
 
-          field.focus();
+          tap(field);
           return input.delegate.whenCalled('setShortcutHandlingSuspended');
         })
         .then((arg) => {

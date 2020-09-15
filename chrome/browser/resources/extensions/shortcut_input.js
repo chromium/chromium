@@ -96,7 +96,8 @@ Polymer({
     }
     this.pendingShortcut_ = '';
     this.capturing_ = false;
-    this.$.input.blur();
+    const input = this.$.input;
+    input.blur();
     this.error_ = ShortcutError.NO_ERROR;
     this.delegate.setShortcutHandlingSuspended(false);
   },
@@ -260,12 +261,11 @@ Polymer({
   },
 
   /** @private */
-  onClearClick_() {
+  onClearTap_() {
     assert(this.shortcut);
 
     this.pendingShortcut_ = '';
     this.commitPending_();
     this.endCapture_();
-    this.$.input.focus();
   },
 });

@@ -10,7 +10,6 @@
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -ChromeSitePerProcessTest.PopupWindowFocus
 -ClipboardApiTest.Extension
--CrExtensionsShortcutInputTest.Basic
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -ExtensionDialogTest.TextInputViaKeyEvent
 -ExternalProtocolDialogBrowserTest.TestFocus
