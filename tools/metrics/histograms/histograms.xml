@@ -36669,7 +36669,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="M87">
+    expires_after="M90">
   <owner>slangley@chromium.org</owner>
   <owner>wiefangsun@chromium.org</owner>
   <summary>
@@ -36854,7 +36854,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
-    expires_after="M87">
+    expires_after="M90">
   <owner>vsavu@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
@@ -37053,7 +37053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
-    expires_after="M87">
+    expires_after="M90">
   <owner>vsavu@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
