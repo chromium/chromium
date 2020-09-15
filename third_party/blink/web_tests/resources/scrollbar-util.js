@@ -87,13 +87,21 @@ const SCROLLBAR_SCROLL_PIXELS = 40;
 
 /*
   Getters for the center point in a scroller's scrollbar buttons (CSS visual
-  coordinates).
+  coordinates). An empty argument requests the point for the main frame's
+  scrollbars.
 */
 function downArrow(scroller) {
-  const scrollerRect = scroller.getBoundingClientRect();
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
+  if (typeof(scroller) == 'undefined') {
+    // The main frame's scrollbars don't scale with pinch zoom so there's no
+    // need to convert from client to visual.
+    return { x: window.innerWidth - BUTTON_WIDTH / 2,
+             y: window.innerHeight - SCROLL_CORNER - BUTTON_WIDTH / 2 }
+  }
+
+  const scrollerRect = scroller.getBoundingClientRect();
   const down_arrow = {
     x: scrollerRect.right - BUTTON_WIDTH / 2,
     y: scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2
@@ -102,9 +110,16 @@ function downArrow(scroller) {
 }
 
 function upArrow(scroller) {
-  const scrollerRect = scroller.getBoundingClientRect();
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
+  if (typeof(scroller) == 'undefined') {
+    // The main frame's scrollbars don't scale with pinch zoom so there's no
+    // need to convert from client to visual.
+    return { x: window.innerWidth - BUTTON_WIDTH / 2,
+             y: BUTTON_WIDTH / 2 }
+  }
+
+  const scrollerRect = scroller.getBoundingClientRect();
   const up_arrow = {
     x: scrollerRect.right - BUTTON_WIDTH / 2,
     y: scrollerRect.top + BUTTON_WIDTH / 2
@@ -113,9 +128,16 @@ function upArrow(scroller) {
 }
 
 function leftArrow(scroller) {
-  const scrollerRect = scroller.getBoundingClientRect();
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
+  if (typeof(scroller) == 'undefined') {
+    // The main frame's scrollbars don't scale with pinch zoom so there's no
+    // need to convert from client to visual.
+    return { x: BUTTON_WIDTH / 2,
+             y: window.innerHeight - BUTTON_WIDTH / 2 }
+  }
+
+  const scrollerRect = scroller.getBoundingClientRect();
   const left_arrow = {
     x: scrollerRect.left + BUTTON_WIDTH / 2,
     y: scrollerRect.bottom  - BUTTON_WIDTH / 2
@@ -124,10 +146,17 @@ function leftArrow(scroller) {
 }
 
 function rightArrow(scroller) {
-  const scrollerRect = scroller.getBoundingClientRect();
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
+  if (typeof(scroller) == 'undefined') {
+    // The main frame's scrollbars don't scale with pinch zoom so there's no
+    // need to convert from client to visual.
+    return { x: window.innerWidth - SCROLL_CORNER - BUTTON_WIDTH / 2,
+             y: window.innerHeight - BUTTON_WIDTH / 2 }
+  }
+
+  const scrollerRect = scroller.getBoundingClientRect();
   const right_arrow = {
     x: scrollerRect.right - SCROLL_CORNER - BUTTON_WIDTH / 2,
     y: scrollerRect.bottom  - BUTTON_WIDTH / 2

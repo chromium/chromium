@@ -408,9 +408,12 @@ void ScrollbarController::ResetState() {
   }
 }
 
-void ScrollbarController::DidUnregisterScrollbar(ElementId element_id) {
+void ScrollbarController::DidUnregisterScrollbar(
+    ElementId element_id,
+    ScrollbarOrientation orientation) {
   if (captured_scrollbar_metadata_.has_value() &&
-      captured_scrollbar_metadata_->scroll_element_id == element_id)
+      captured_scrollbar_metadata_->scroll_element_id == element_id &&
+      captured_scrollbar_metadata_->orientation == orientation)
     ResetState();
 }
 
@@ -506,6 +509,7 @@ void ScrollbarController::StartAutoScrollAnimation(
   DCHECK(!drag_state_.has_value());
   DCHECK(captured_scrollbar_metadata_.has_value());
   DCHECK_NE(velocity, 0);
+  DCHECK(ScrollbarLayer());
 
   // scroll_node is set up while handling GSB. If there's no node to scroll, we
   // don't need to create any animation for it.

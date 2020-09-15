@@ -13076,6 +13076,68 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   host_impl_ = nullptr;
 }
 
+// Tests that deleting a horizontal scrollbar doesn't affect the autoscroll task
+// for the vertical scrollbar.
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.compositor_threaded_scrollbar_scrolling = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
+  // Setup the viewport.
+  const gfx::Size viewport_size = gfx::Size(360, 600);
+  const gfx::Size content_size = gfx::Size(345, 3800);
+  SetupViewportLayersOuterScrolls(viewport_size, content_size);
+  LayerImpl* scroll_layer = OuterViewportScrollLayer();
+
+  // Set up the scrollbar and its dimensions.
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
+  SetupScrollbarLayerCommon(scroll_layer, scrollbar);
+  scrollbar->SetHitTestable(true);
+
+  const gfx::Size scrollbar_size = gfx::Size(15, 600);
+  scrollbar->SetBounds(scrollbar_size);
+
+  // Set up the thumb dimensions.
+  scrollbar->SetThumbThickness(15);
+  scrollbar->SetThumbLength(50);
+  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 575));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
+
+  TestInputHandlerClient input_handler_client;
+  host_impl_->BindToClient(&input_handler_client);
+
+  // PointerDown on the scrollbar schedules an autoscroll task.
+  host_impl_->MouseDown(gfx::PointF(350, 580), /*jump_key_modifier*/ false);
+  EXPECT_TRUE(!host_impl_->CurrentlyScrollingNode());
+
+  // Now, unregister the horizontal scrollbar and test that the autoscroll task
+  // that was scheduled for the vertical scrollbar still exists. (Note that
+  // adding a horizontal scrollbar layer is not needed. This test merely checks
+  // the logic inside ScrollbarController::DidUnregisterScrollbar)
+  host_impl_->DidUnregisterScrollbarLayer(scroll_layer->element_id(),
+                                          ScrollbarOrientation::HORIZONTAL);
+  EXPECT_TRUE(host_impl_->scrollbar_controller_for_testing()
+                  ->AutoscrollTaskIsScheduled());
+
+  // If a call comes in to delete the scrollbar layer for which the autoscroll
+  // was scheduled, the autoscroll task should be cancelled.
+  host_impl_->DidUnregisterScrollbarLayer(scroll_layer->element_id(),
+                                          ScrollbarOrientation::VERTICAL);
+  EXPECT_FALSE(host_impl_->scrollbar_controller_for_testing()
+                   ->AutoscrollTaskIsScheduled());
+
+  // End the scroll.
+  host_impl_->MouseUp(gfx::PointF(350, 580));
+  host_impl_->ScrollEnd();
+  EXPECT_TRUE(!host_impl_->CurrentlyScrollingNode());
+
+  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
+  host_impl_->ReleaseLayerTreeFrameSink();
+  host_impl_ = nullptr;
+}
+
 // Tests that a pointerdown followed by pointermove(s) produces
 // InputHandlerPointerResult with scroll_offset > 0 even though the GSB might
 // have been dispatched *after* the first pointermove was handled by the
@@ -15140,7 +15202,8 @@ void LayerTreeHostImplTest::SetupMouseMoveAtTestScrollbarStates(
   // scrollbar_2_animation_controller, then mouse up should not cause crash.
   host_impl_->MouseMoveAt(gfx::Point(40, 150));
   host_impl_->MouseDown(gfx::PointF(40, 150), /*jump_key_modifier*/ false);
-  host_impl_->DidUnregisterScrollbarLayer(root_scroll->element_id());
+  host_impl_->DidUnregisterScrollbarLayer(root_scroll->element_id(),
+                                          ScrollbarOrientation::VERTICAL);
   host_impl_->MouseUp(gfx::PointF(40, 150));
 }
 
