@@ -14,14 +14,18 @@ LOGGER = logging.getLogger(__name__)
 # WARNING: THESE DUPLICATE CONSTANTS IN:
 # //build/scripts/slave/recipe_modules/ios/api.py
 
+# Regex to parse all compiled EG tests, including disabled (prepended with
+# DISABLED_ or FLAKY_).
 TEST_NAMES_DEBUG_APP_PATTERN = re.compile(
     'imp +(?:0[xX][0-9a-fA-F]+ )?-\[(?P<testSuite>[A-Za-z_][A-Za-z0-9_]'
-    '*Test[Case]*) (?P<testMethod>test[A-Za-z0-9_]*)\]')
+    '*Test[Case]*) (?P<testMethod>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]*)\]')
 TEST_CLASS_RELEASE_APP_PATTERN = re.compile(
     r'name +0[xX]\w+ '
     '(?P<testSuite>[A-Za-z_][A-Za-z0-9_]*Test(?:Case|))\n')
+# Regex to parse all compiled EG tests, including disabled (prepended with
+# DISABLED_ or FLAKY_).
 TEST_NAME_RELEASE_APP_PATTERN = re.compile(
-    r'name +0[xX]\w+ (?P<testCase>test[A-Za-z0-9_]+)\n')
+    r'name +0[xX]\w+ (?P<testCase>(?:DISABLED_|FLAKY_)?test[A-Za-z0-9_]+)\n')
 # 'ChromeTestCase' and 'BaseEarlGreyTestCase' are parent classes
 # of all EarlGrey/EarlGrey2 test classes. They have no real tests.
 IGNORED_CLASSES = ['BaseEarlGreyTestCase', 'ChromeTestCase']
@@ -81,7 +85,7 @@ def _execute(cmd):
 
 def fetch_test_names_for_release(stdout):
   """Parse otool output to get all testMethods in all TestCases in the
-     format of (TestCase, testMethod), in release app.
+     format of (TestCase, testMethod) including disabled tests, in release app.
 
      WARNING: This logic is similar to what's found in
       //build/scripts/slave/recipe_modules/ios/api.py
@@ -90,7 +94,7 @@ def fetch_test_names_for_release(stdout):
         stdout: (string) response of 'otool -ov'
 
     Returns:
-        (list) a list of (TestCase, testMethod)
+        (list) a list of (TestCase, testMethod), containing disabled tests.
     """
   # For Release builds `otool -ov` command generates output that is
   # different from Debug builds.
@@ -114,29 +118,30 @@ def fetch_test_names_for_release(stdout):
 
 def fetch_test_names_for_debug(stdout):
   """Parse otool output to get all testMethods in all TestCases in the
-     format of (TestCase, testMethod), in debug app.
+     format of (TestCase, testMethod) including disabled tests, in debug app.
 
     Args:
         stdout: (string) response of 'otool -ov'
 
     Returns:
-        (list) a list of (TestCase, testMethod)
+        (list) a list of (TestCase, testMethod), containing disabled tests.
     """
   test_names = TEST_NAMES_DEBUG_APP_PATTERN.findall(stdout)
   return filter(lambda (test_case, _): test_case not in IGNORED_CLASSES,
                 test_names)
 
 
-def fetch_test_names(app, host_app, release=False):
+def fetch_test_names(app, host_app, release, enabled_tests_only=True):
   """Determine the list of (TestCase, testMethod) for the app.
 
     Args:
         app: (string) path to app
         host_app: (string) path to host app. None or "NO_PATH" for EG1.
         release: (bool) whether this is a release build.
+        enabled_tests_only: (bool) output only enabled tests.
 
     Returns:
-        (list) a list of (TestCase, testMethod)
+        (list) a list of (TestCase, testMethod).
     """
   # Determine what path to use
   app_path = determine_app_path(app, host_app, release)
@@ -147,9 +152,13 @@ def fetch_test_names(app, host_app, release=False):
   LOGGER.info("Ignored test classes: {}".format(IGNORED_CLASSES))
   if release:
     LOGGER.info("Release build detected. Fetching test names for release.")
-    return fetch_test_names_for_release(stdout)
-
-  return fetch_test_names_for_debug(stdout)
+  all_test_names = (
+      fetch_test_names_for_release(stdout)
+      if release else fetch_test_names_for_debug(stdout))
+  enabled_test_names = (
+      filter(lambda (_, test_method): test_method.startswith('test'),
+             all_test_names))
+  return enabled_test_names if enabled_tests_only else all_test_names
 
 
 def balance_into_sublists(test_counts, total_shards):

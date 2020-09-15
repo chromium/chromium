@@ -403,6 +403,12 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       if shard_attempts[-1]['failed']:
         self.logs['failed tests'].extend(shard_attempts[-1]['failed'].keys())
 
+    # Gets disabled tests from test app object if any.
+    self.logs['disabled tests'] = []
+    for launch_command in launch_commands:
+      self.logs['disabled tests'].extend(
+          launch_command.egtests_app.disabled_tests)
+
     # Gets all failures/flakes and lists them in bot summary
     all_failures = set()
     for shard_attempts in attempts_results:
@@ -458,6 +464,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
 
         for test in attempt_results['passed']:
           output.mark_passed(test)
+
+    output.mark_all_skipped(self.logs['disabled tests'])
 
     self.test_results['tests'] = output.tests
 
