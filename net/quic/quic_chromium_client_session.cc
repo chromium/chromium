@@ -1654,6 +1654,15 @@ void QuicChromiumClientSession::LogZeroRttStats() {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttState", state);
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttReason", early_data_reason,
                             ssl_early_data_reason_max_value + 1);
+  if (IsGoogleHost(session_key_.host())) {
+    UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttReasonGoogle",
+                              early_data_reason,
+                              ssl_early_data_reason_max_value + 1);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.ZeroRttReasonNonGoogle",
+                              early_data_reason,
+                              ssl_early_data_reason_max_value + 1);
+  }
 }
 
 void QuicChromiumClientSession::OnCryptoHandshakeMessageSent(
