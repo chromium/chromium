@@ -5856,6 +5856,8 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
       resolved_logical_height = BlockSizeFromAspectRatio(
           border_padding, *StyleRef().LogicalAspectRatio(),
           StyleRef().BoxSizing(), LogicalWidth());
+      resolved_logical_height = std::max(
+          LayoutUnit(), resolved_logical_height - borders_plus_padding);
     } else {
       resolved_logical_height = AdjustContentBoxLogicalHeightForBoxSizing(
           ValueForLength(logical_height_length, container_logical_height));
