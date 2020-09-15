@@ -770,7 +770,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderSearchURL) :
           @"http://www.google.com/search?q={searchTerms}",
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderName) :
-          @"Google",
+          @"TestEngine",
 
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled) : @NO,
 
