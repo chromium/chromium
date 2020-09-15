@@ -39,12 +39,11 @@ STDMETHODIMP UpdateStateImpl::get_appId(BSTR* app_id) {
 STDMETHODIMP UpdateStateImpl::get_nextVersion(BSTR* next_version) {
   DCHECK(next_version);
   *next_version =
-      update_state_.next_version.IsValid()
-          ? base::win::ScopedBstr(
-                base::UTF8ToWide(update_state_.next_version.GetString()))
-                .Release()
-          : nullptr;
-
+      base::win::ScopedBstr(
+          update_state_.next_version.IsValid()
+              ? base::UTF8ToWide(update_state_.next_version.GetString())
+              : L"")
+          .Release();
   return S_OK;
 }
 
@@ -144,7 +143,7 @@ HRESULT UpdaterImpl::Update(const base::char16* app_id,
                                          Microsoft::WRL::Make<UpdateStateImpl>(
                                              update_state)),
                           base::BindOnce([](HRESULT hr) {
-                            DVLOG(2)
+                            DVLOG(4)
                                 << "IUpdaterObserver::OnStateChange returned "
                                 << std::hex << hr;
                           }));
