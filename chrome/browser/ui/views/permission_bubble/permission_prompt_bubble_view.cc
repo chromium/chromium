@@ -34,6 +34,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -94,15 +95,12 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
 
   if (visible_requests_[0]->GetContentSettingsType() ==
       ContentSettingsType::PLUGINS) {
-    auto learn_more_button = views::CreateVectorImageButton(this);
+    auto* learn_more_button =
+        SetExtraView(views::CreateVectorImageButtonWithNativeTheme(
+            this, vector_icons::kHelpOutlineIcon));
     learn_more_button->SetFocusForPlatform();
     learn_more_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    SkColor text_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_LabelEnabledColor);
-    views::SetImageFromVectorIcon(learn_more_button.get(),
-                                  vector_icons::kHelpOutlineIcon, text_color);
-    SetExtraView(std::move(learn_more_button));
   }
 }
 
@@ -168,14 +166,10 @@ void PermissionPromptBubbleView::AddPermissionRequestLine(
                          DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
-  auto* icon =
-      line_container->AddChildView(std::make_unique<views::ImageView>());
-  const gfx::VectorIcon& vector_id = request->GetIconId();
-  const SkColor icon_color = icon->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
   constexpr int kPermissionIconSize = 18;
-  icon->SetImage(
-      gfx::CreateVectorIcon(vector_id, kPermissionIconSize, icon_color));
+  auto* icon = line_container->AddChildView(
+      std::make_unique<views::ColorTrackingIconView>(request->GetIconId(),
+                                                     kPermissionIconSize));
   icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
   auto* label = line_container->AddChildView(
