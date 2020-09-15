@@ -7,9 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <set>
-#include <string>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/memory/singleton.h"
@@ -55,44 +52,44 @@ std::string VariationsIdsProvider::GetClientDataHeader(bool is_signed_in) {
   return variation_ids_header_copy;
 }
 
-std::string VariationsIdsProvider::GetVariationsString(IDCollectionKey key) {
-  InitVariationIDsCacheIfNeeded();
-
+std::string VariationsIdsProvider::GetVariationsString(
+    const std::set<IDCollectionKey>& keys) {
   // Construct a space-separated string with leading and trailing spaces from
-  // the variations set. Note: The ids in it will be in sorted order per the
+  // the VariationIDs set. The IDs in the string are in sorted order as per the
   // std::set contract.
   std::string ids_string = " ";
-  {
-    base::AutoLock scoped_lock(lock_);
-    for (const VariationIDEntry& entry : GetAllVariationIds()) {
-      if (entry.second == key) {
-        ids_string.append(base::NumberToString(entry.first));
-        ids_string.push_back(' ');
-      }
-    }
+
+  for (const VariationID& id : GetVariationsVector(keys)) {
+    ids_string.append(base::NumberToString(id));
+    ids_string.push_back(' ');
   }
+
   return ids_string;
 }
 
 std::string VariationsIdsProvider::GetGoogleAppVariationsString() {
-  return GetVariationsString(GOOGLE_APP);
+  return GetVariationsString({GOOGLE_APP});
 }
 
 std::string VariationsIdsProvider::GetVariationsString() {
-  return GetVariationsString(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
+  return GetVariationsString(
+      {GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, GOOGLE_WEB_PROPERTIES_FIRST_PARTY});
 }
 
 std::vector<VariationID> VariationsIdsProvider::GetVariationsVector(
-    IDCollectionKey key) {
-  return GetVariationsVectorImpl(std::set<IDCollectionKey>{key});
+    const std::set<IDCollectionKey>& keys) {
+  return GetVariationsVectorImpl(keys);
 }
 
 std::vector<VariationID>
 VariationsIdsProvider::GetVariationsVectorForWebPropertiesKeys() {
   const std::set<IDCollectionKey> web_properties_keys{
-      variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
-      variations::GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-      variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT};
+      GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+      GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
+      GOOGLE_WEB_PROPERTIES_SIGNED_IN,
+      GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+      GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
+  };
   return GetVariationsVectorImpl(web_properties_keys);
 }
 
@@ -168,11 +165,7 @@ void VariationsIdsProvider::OnFieldTrialGroupFinalized(
     const std::string& group_name) {
   base::AutoLock scoped_lock(lock_);
   const size_t old_size = variation_ids_set_.size();
-  CacheVariationsId(trial_name, group_name, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
-  CacheVariationsId(trial_name, group_name, GOOGLE_WEB_PROPERTIES_SIGNED_IN);
-  CacheVariationsId(trial_name, group_name,
-                    GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT);
-  CacheVariationsId(trial_name, group_name, GOOGLE_APP);
+  CacheVariationsId(trial_name, group_name);
   if (variation_ids_set_.size() != old_size)
     UpdateVariationIDsHeaderValue();
 }
@@ -215,13 +208,7 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
   base::FieldTrialList::GetActiveFieldTrialGroups(&initial_groups);
 
   for (const auto& entry : initial_groups) {
-    CacheVariationsId(entry.trial_name, entry.group_name,
-                      GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
-    CacheVariationsId(entry.trial_name, entry.group_name,
-                      GOOGLE_WEB_PROPERTIES_SIGNED_IN);
-    CacheVariationsId(entry.trial_name, entry.group_name,
-                      GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT);
-    CacheVariationsId(entry.trial_name, entry.group_name, GOOGLE_APP);
+    CacheVariationsId(entry.trial_name, entry.group_name);
   }
   UpdateVariationIDsHeaderValue();
 
@@ -229,11 +216,13 @@ void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
 }
 
 void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
-                                              const std::string& group_name,
-                                              IDCollectionKey key) {
-  const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
-  if (id != EMPTY_ID)
-    variation_ids_set_.insert(VariationIDEntry(id, key));
+                                              const std::string& group_name) {
+  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+    IDCollectionKey key = static_cast<IDCollectionKey>(i);
+    const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
+    if (id != EMPTY_ID)
+      variation_ids_set_.insert(VariationIDEntry(id, key));
+  }
 }
 
 void VariationsIdsProvider::UpdateVariationIDsHeaderValue() {
@@ -270,15 +259,37 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
       case GOOGLE_WEB_PROPERTIES_ANY_CONTEXT:
         proto.add_variation_id(entry.first);
         break;
+      case GOOGLE_WEB_PROPERTIES_FIRST_PARTY:
+        if (base::FeatureList::IsEnabled(
+                internal::kRestrictGoogleWebVisibility)) {
+          // TODO(crbug/1094303): Send fewer VariationIDs in third-party
+          // contexts by excluding IDs associated with
+          // GOOGLE_WEB_PROPERTIES_FIRST_PARTY.
+          break;
+        }
+        // When the feature is not enabled, treat VariationIDs associated with
+        // GOOGLE_WEB_PROPERTIES_FIRST_PARTY in the same way as those
+        // associated with GOOGLE_WEB_PROPERTIES_ANY_CONTEXT.
+        proto.add_variation_id(entry.first);
+        break;
       case GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT:
+        proto.add_trigger_variation_id(entry.first);
+        break;
+      case GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY:
+        if (base::FeatureList::IsEnabled(
+                internal::kRestrictGoogleWebVisibility)) {
+          // TODO(crbug/1094303): Send fewer VariationIDs in third-party
+          // contexts by excluding IDs associated with
+          // GOOGLE_WEB_PROPERTIES_FIRST_PARTY.
+          break;
+        }
+        // When the feature is not enabled, treat VariationIDs associated with
+        // GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY in the same way as those
+        // associated with GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT.
         proto.add_trigger_variation_id(entry.first);
         break;
       case GOOGLE_APP:
         // These IDs should not be added into Google Web headers.
-        break;
-      case GOOGLE_WEB_PROPERTIES_FIRST_PARTY:
-      case GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY:
-        // TODO(crbug/1094303): Add support for the above IDCollectionKeys.
         break;
       case ID_COLLECTION_COUNT:
         // This case included to get full enum coverage for switch, so that
@@ -385,7 +396,7 @@ std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
       result.push_back(entry.first);
   }
 
-  // Make sure each enry is unique. As a side-effect, the output will be sorted.
+  // Make sure each entry is unique. As a side effect, the output is sorted.
   std::sort(result.begin(), result.end());
   result.erase(std::unique(result.begin(), result.end()), result.end());
   return result;

@@ -27,6 +27,7 @@
 #include "base/test/scoped_field_trial_list_resetter.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
+#include "components/variations/proto/study.pb.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -178,6 +179,23 @@ TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
             base::FieldTrialList::FindFullName(kFlagStudyName));
 
   VariationID id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                        kFlagStudyName, kFlagGroup1Name);
+  EXPECT_EQ(kExperimentId, id);
+}
+
+TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId_FirstParty) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
+
+  Study study = CreateStudyWithFlagGroups(100, 0, 0);
+  Study_Experiment* experiment1 = study.mutable_experiment(1);
+  experiment1->set_google_web_experiment_id(kExperimentId);
+  experiment1->set_google_web_visibility(Study_GoogleWebVisibility_FIRST_PARTY);
+
+  EXPECT_TRUE(CreateTrialFromStudy(study));
+  EXPECT_EQ(kFlagGroup1Name,
+            base::FieldTrialList::FindFullName(kFlagStudyName));
+
+  VariationID id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_FIRST_PARTY,
                                         kFlagStudyName, kFlagGroup1Name);
   EXPECT_EQ(kExperimentId, id);
 }

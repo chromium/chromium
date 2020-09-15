@@ -64,9 +64,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // apps.
   std::string GetGoogleAppVariationsString();
 
-  // Returns the collection of variation ids matching the given |key|. Each
-  // entry in the returned vector will be unique.
-  std::vector<VariationID> GetVariationsVector(IDCollectionKey key);
+  // Returns the collection of VariationIDs associated with |keys|. Each entry
+  // in the returned vector is unique.
+  std::vector<VariationID> GetVariationsVector(
+      const std::set<IDCollectionKey>& keys);
 
   // Returns the collection of variations ids for all Google Web Properties
   // related keys.
@@ -132,7 +133,7 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // Returns a space-separated string containing the list of current active
   // variations (as would be reported in the |variation_id| repeated field of
   // the ClientVariations proto) for a given ID collection.
-  std::string GetVariationsString(IDCollectionKey key);
+  std::string GetVariationsString(const std::set<IDCollectionKey>& keys);
 
   // base::FieldTrialList::Observer:
   // This will add the variation ID associated with |trial_name| and
@@ -149,11 +150,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
   // new variation IDs.
   void InitVariationIDsCacheIfNeeded();
 
-  // Looks up the associated id for the given trial/group and adds an entry for
-  // it to |variation_ids_set_| if found.
+  // Looks up the VariationID associated with |trial_name| and |group_name|, and
+  // if found, adds an entry for it to |variation_ids_set_|.
   void CacheVariationsId(const std::string& trial_name,
-                         const std::string& group_name,
-                         IDCollectionKey key);
+                         const std::string& group_name);
 
   // Takes whatever is currently in |variation_ids_set_| and recreates
   // |variation_ids_header_| with it.  Assumes the the |lock_| is currently

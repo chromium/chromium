@@ -702,7 +702,8 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   variations::VariationsIdsProvider* provider =
       variations::VariationsIdsProvider::GetInstance();
   std::vector<variations::VariationID> ids = provider->GetVariationsVector(
-      variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
+      {variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+       variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY});
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
 }
 
@@ -710,7 +711,8 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   variations::VariationsIdsProvider* provider =
       variations::VariationsIdsProvider::GetInstance();
   std::vector<variations::VariationID> ids = provider->GetVariationsVector(
-      variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT);
+      {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+       variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
 }
 

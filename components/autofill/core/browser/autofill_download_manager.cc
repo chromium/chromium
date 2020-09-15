@@ -1062,7 +1062,8 @@ void AutofillDownloadManager::InitActiveExperiments() {
   delete active_experiments_;
   active_experiments_ = new std::vector<variations::VariationID>(
       variations_ids_provider->GetVariationsVector(
-          variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT));
+          {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
+           variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
   base::EraseIf(*active_experiments_, [](variations::VariationID id) {
     return !IsAutofillExperimentId(id);
   });
