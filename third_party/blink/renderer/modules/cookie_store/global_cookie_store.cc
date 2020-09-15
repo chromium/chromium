@@ -52,7 +52,7 @@ class GlobalCookieStoreImpl final
       mojo::Remote<network::mojom::blink::RestrictedCookieManager> backend;
       execution_context->GetBrowserInterfaceBroker().GetInterface(
           backend.BindNewPipeAndPassReceiver(
-              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+              execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
       cookie_store_ = MakeGarbageCollected<CookieStore>(execution_context,
                                                         std::move(backend));
     }

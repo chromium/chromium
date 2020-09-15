@@ -515,7 +515,7 @@ void CookieStore::StartObserving() {
 
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner =
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+      GetExecutionContext()->GetTaskRunner(TaskType::kDOMManipulation);
   backend_->AddChangeListener(
       default_cookie_url_, default_site_for_cookies_, default_top_frame_origin_,
       change_listener_receiver_.BindNewPipeAndPassRemote(task_runner), {});

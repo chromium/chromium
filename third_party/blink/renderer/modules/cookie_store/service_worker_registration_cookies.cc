@@ -55,11 +55,9 @@ class ServiceWorkerRegistrationCookiesImpl final
       HeapMojoRemote<mojom::blink::CookieStore,
                      HeapMojoWrapperMode::kWithoutContextObserver>
           backend(execution_context);
-      // TODO(pwnall): Replace TaskType::kInternalDefault with the task queue in
-      //               the Cookie Store spec, once that spec is finalized.
       execution_context->GetBrowserInterfaceBroker().GetInterface(
           backend.BindNewPipeAndPassReceiver(
-              execution_context->GetTaskRunner(TaskType::kInternalDefault)));
+              execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
       cookie_store_manager_ = MakeGarbageCollected<CookieStoreManager>(
           registration_, std::move(backend));
     }
