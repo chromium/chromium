@@ -198,6 +198,7 @@ class TabImpl : public Tab,
       const base::android::JavaParamRef<jstring>& js_object_name);
   jboolean CanTranslate(JNIEnv* env);
   void ShowTranslateUi(JNIEnv* env);
+  void RemoveTabFromBrowserBeforeDestroying(JNIEnv* env);
   void SetTranslateTargetLanguage(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& translate_target_lang);

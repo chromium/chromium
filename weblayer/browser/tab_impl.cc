@@ -580,9 +580,10 @@ static jlong JNI_TabImpl_CreateTab(JNIEnv* env,
 static void JNI_TabImpl_DeleteTab(JNIEnv* env, jlong tab) {
   TabImpl* tab_impl = reinterpret_cast<TabImpl*>(tab);
   DCHECK(tab_impl);
-  DCHECK(tab_impl->browser());
-  // Don't call Browser::DestroyTab() as it calls back to the java side.
-  tab_impl->browser()->DestroyTabFromJava(tab_impl);
+  // RemoveTabBeforeDestroyingFromJava() should have been called before this,
+  // which sets browser to null.
+  DCHECK(!tab_impl->browser());
+  delete tab_impl;
 }
 
 ScopedJavaLocalRef<jobject> TabImpl::GetWebContents(JNIEnv* env) {
@@ -806,6 +807,11 @@ jboolean TabImpl::CanTranslate(JNIEnv* env) {
 void TabImpl::ShowTranslateUi(JNIEnv* env) {
   TranslateClientImpl::FromWebContents(web_contents())
       ->ManualTranslateWhenReady();
+}
+
+void TabImpl::RemoveTabFromBrowserBeforeDestroying(JNIEnv* env) {
+  DCHECK(browser_);
+  browser_->RemoveTabBeforeDestroyingFromJava(this);
 }
 
 void TabImpl::SetTranslateTargetLanguage(

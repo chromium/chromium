@@ -11,10 +11,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabListCallback;
+import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.ArrayList;
@@ -137,7 +139,7 @@ public class TabListCallbackTest {
 
     @Test
     @SmallTest
-    public void testDispose() {
+    public void testDestroyTab() {
         initialize("new_browser.html");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -146,6 +148,7 @@ public class TabListCallbackTest {
             browser.registerTabListCallback(callback);
             browser.destroyTab(mActivity.getBrowser().getActiveTab());
             Assert.assertTrue(callback.getObservedValues().contains(TabListCallbackImpl.ACTIVE));
+            Assert.assertTrue(callback.getObservedValues().contains(TabListCallbackImpl.REMOVED));
             Assert.assertEquals(1, browser.getTabs().size());
         });
     }
@@ -165,5 +168,29 @@ public class TabListCallbackTest {
         // Clicking on the tab again to callback to close the tab.
         EventUtils.simulateTouchCenterOfView(mActivity.getWindow().getDecorView());
         closeTabCallback.waitForCloseTab();
+    }
+
+    @Test
+    @SmallTest
+    public void testOnTabRemoved() throws Exception {
+        mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Browser browser = mActivity.getBrowser();
+            browser.registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onTabRemoved(Tab tab) {
+                    if (WebLayer.getSupportedMajorVersion(mActivity) >= 87) {
+                        // |tab| should not be destroyed at this point. getGuid() is a good proxy
+                        // for verifying the tab hasn't been destroyed. Prior to 87 the tab was
+                        // destroyed at this point.
+                        tab.getGuid();
+                    }
+                    callbackHelper.notifyCalled();
+                }
+            });
+            mActivity.getBrowser().destroyTab(mActivity.getBrowser().createTab());
+        });
+        callbackHelper.waitForFirst();
     }
 }

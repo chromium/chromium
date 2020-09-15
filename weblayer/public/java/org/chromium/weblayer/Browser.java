@@ -85,6 +85,9 @@ public class Browser {
 
     // Called prior to notifying IBrowser of destroy().
     void prepareForDestroy() {
+        // See comment in Tab$TabClientImpl.onTabDestroyed for details on this.
+        if (WebLayer.getSupportedMajorVersionInternal() >= 87) return;
+
         for (Tab tab : getTabs()) {
             Tab.unregisterTab(tab);
         }

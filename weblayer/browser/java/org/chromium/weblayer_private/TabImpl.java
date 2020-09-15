@@ -854,6 +854,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
         // Ensure that this method isn't called twice.
         assert mInterceptNavigationDelegate != null;
 
+        TabImplJni.get().removeTabFromBrowserBeforeDestroying(mNativeTab);
+
         if (WebLayerFactoryImpl.getClientMajorVersion() >= 84) {
             // Notify the client that this instance is being destroyed to prevent it from calling
             // back into this object if the embedder mistakenly tries to do so.
@@ -1061,13 +1063,14 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
     @NativeMethods
     interface Natives {
         TabImpl fromWebContents(WebContents webContents);
-        long createTab(long profile, TabImpl caller);
+        long createTab(long tab, TabImpl caller);
+        void removeTabFromBrowserBeforeDestroying(long nativeTabImpl);
+        void deleteTab(long tab);
         void setJavaImpl(long nativeTabImpl, TabImpl impl);
         void onAutofillProviderChanged(long nativeTabImpl, AutofillProvider autofillProvider);
         void setBrowserControlsContainerViews(long nativeTabImpl,
                 long nativeTopBrowserControlsContainerView,
                 long nativeBottomBrowserControlsContainerView);
-        void deleteTab(long tab);
         WebContents getWebContents(long nativeTabImpl);
         void executeScript(long nativeTabImpl, String script, boolean useSeparateIsolate,
                 Callback<String> callback);
