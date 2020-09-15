@@ -323,15 +323,6 @@ class _Session(object):
     tool_prefix = self._ToolPrefixForSymbol(size_info)
     elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix,
                                       elf_path)
-    # Always use Android NDK's objdump because llvm-objdump does not seem to
-    # correctly disassemble.
-    output_directory_finder = self._output_directory_finder
-    if not output_directory_finder.Tentative():
-      output_directory_finder = path_util.OutputDirectoryFinder(
-          any_path_within_output_directory=elf_path)
-    tool_prefix = path_util.ToolPrefixFinder(
-        output_directory_finder=output_directory_finder,
-        linker_name='ld').Finalized()
 
     args = [
         path_util.GetObjDumpPath(tool_prefix),
