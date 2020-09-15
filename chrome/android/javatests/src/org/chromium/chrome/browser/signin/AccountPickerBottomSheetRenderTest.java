@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +16,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -156,7 +155,7 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
         buildAndShowCollapsedBottomSheet();
         expandBottomSheet();
-        onView(withText(R.string.signin_incognito_mode_primary)).perform(click());
+        openIncognitoInterstitialOnExpandedSheet();
         onView(isRoot()).perform(pressBack());
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
     }
@@ -237,6 +236,19 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
+    }
+
+    private void openIncognitoInterstitialOnExpandedSheet() {
+        // RecyclerView: PROFILE_DATA1, PROFILE_DATA2, |Add account to device|, |Sign in
+        // temporarily|
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        RecyclerView accountListView =
+                bottomSheetView.findViewById(R.id.account_picker_account_list);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            accountListView.findViewHolderForAdapterPosition(3).itemView.performClick();
+        });
+        CriteriaHelper.pollUiThread(bottomSheetView.findViewById(
+                R.id.incognito_interstitial_bottom_sheet_view)::isShown);
     }
 
     private void clickContinueButtonAndWaitForErrorView() {
