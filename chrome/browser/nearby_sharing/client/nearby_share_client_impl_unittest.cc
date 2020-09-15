@@ -52,6 +52,8 @@ const char kPhoneNumber1[] = "1231231234";
 const char kPublicKey1[] = "publickey1";
 const char kSecretId1[] = "secretid1";
 const char kSecretId2[] = "secretid2";
+const char kSecretId1Encoded[] = "c2VjcmV0aWQx";
+const char kSecretId2Encoded[] = "c2VjcmV0aWQy";
 const char kSecretKey1[] = "secretkey1";
 const char kTestGoogleApisUrl[] = "https://nearbysharing-pa.testgoogleapis.com";
 const int32_t kNanos1 = 123123123;
@@ -688,7 +690,7 @@ TEST_F(NearbyShareClientImplTest, ListPublicCertificatesSuccess) {
       std::vector<std::string>{kPageToken1},
       ExpectQueryStringValues(request_as_query_parameters(), "page_token"));
   EXPECT_EQ(
-      (std::vector<std::string>{kSecretId1, kSecretId2}),
+      (std::vector<std::string>{kSecretId1Encoded, kSecretId2Encoded}),
       ExpectQueryStringValues(request_as_query_parameters(), "secret_ids"));
 
   nearbyshare::proto::ListPublicCertificatesResponse response_proto;

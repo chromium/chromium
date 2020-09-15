@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -83,8 +84,12 @@ ListPublicCertificatesRequestToQueryParameters(
   if (!request.page_token().empty()) {
     query_parameters.emplace_back(kPageToken, request.page_token());
   }
-  for (int i = 0; i < request.secret_ids_size(); ++i) {
-    query_parameters.emplace_back(kSecretIds, request.secret_ids(i));
+  for (const std::string& id : request.secret_ids()) {
+    // NOTE: One Platform requires that byte fields be URL-safe base64 encoded.
+    std::string encoded_id;
+    base::Base64UrlEncode(id, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                          &encoded_id);
+    query_parameters.emplace_back(kSecretIds, encoded_id);
   }
   return query_parameters;
 }
