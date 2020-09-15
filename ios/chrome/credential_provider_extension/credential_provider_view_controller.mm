@@ -173,7 +173,7 @@
     (ASPasswordCredentialIdentity*)credentialIdentity {
   NSString* identifier = credentialIdentity.recordIdentifier;
   id<Credential> credential =
-      [self.credentialStore credentialWithIdentifier:identifier];
+      [self.credentialStore credentialWithRecordIdentifier:identifier];
   if (credential) {
     NSString* password =
         PasswordWithKeychainIdentifier(credential.keychainIdentifier);

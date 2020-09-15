@@ -129,10 +129,11 @@
   });
 }
 
-- (id<Credential>)credentialWithIdentifier:(NSString*)identifier {
+- (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier {
+  DCHECK(recordIdentifier.length);
   __block id<Credential> credential;
   dispatch_sync(self.workingQueue, ^{
-    credential = self.memoryStorage[identifier];
+    credential = self.memoryStorage[recordIdentifier];
   });
   return credential;
 }

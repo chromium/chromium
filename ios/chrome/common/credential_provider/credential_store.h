@@ -36,8 +36,8 @@
 // to update the data on disk.
 - (void)removeCredentialWithRecordIdentifier:(NSString*)recordIdentifier;
 
-// Returns the credential with matching |identifier| or nil if none.
-- (id<Credential>)credentialWithIdentifier:(NSString*)identifier;
+// Returns the credential with matching |recordIdentifier| or nil if none.
+- (id<Credential>)credentialWithRecordIdentifier:(NSString*)recordIdentifier;
 
 @end
 
