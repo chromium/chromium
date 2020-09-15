@@ -103,7 +103,8 @@ void Shell::SetMainMessageLoopQuitClosure(base::OnceClosure quit_closure) {
 Tab* Shell::tab() {
   if (!browser())
     return nullptr;
-  CHECK(!browser()->GetTabs().empty());
+  if (browser()->GetTabs().empty())
+    return nullptr;
   return browser()->GetTabs()[0];
 }
 

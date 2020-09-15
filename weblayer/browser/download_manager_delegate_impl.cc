@@ -209,6 +209,16 @@ void DownloadManagerDelegateImpl::OnManagerInitialized() {
 
 void DownloadManagerDelegateImpl::OnDownloadUpdated(
     download::DownloadItem* item) {
+  // If this is the first navigation in a tab it should be closed. Wait until
+  // the target path is determined or the download is canceled to check.
+  if (!item->GetTargetFilePath().empty() ||
+      item->GetState() == download::DownloadItem::CANCELLED) {
+    content::WebContents* web_contents =
+        content::DownloadItemUtils::GetWebContents(item);
+    if (web_contents && web_contents->GetController().IsInitialNavigation())
+      web_contents->Close();
+  }
+
   auto* delegate = GetDelegate(item);
   if (item->GetState() == download::DownloadItem::COMPLETE ||
       item->GetState() == download::DownloadItem::CANCELLED ||
