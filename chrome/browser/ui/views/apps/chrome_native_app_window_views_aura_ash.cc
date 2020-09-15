@@ -163,31 +163,6 @@ bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
   return HasFrameColor();
 }
 
-void ChromeNativeAppWindowViewsAuraAsh::
-    AdjustBoundsToBeVisibleOnDisplayForNewWindows(gfx::Rect* out_bounds) {
-  DCHECK(!out_bounds->IsEmpty());
-
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayForNewWindows();
-  // No need to adjust if already on the correct display.
-  if (display == display::Screen::GetScreen()->GetDisplayMatching(*out_bounds))
-    return;
-
-  const gfx::Rect work_area = display.work_area();
-  // Ensure that the title bar is not above the work area.
-  if (out_bounds->y() < work_area.y())
-    out_bounds->set_y(work_area.y());
-
-  // Adjust the bounds so that they are on |display|.
-  out_bounds->set_width(std::min(out_bounds->width(), work_area.width()));
-  out_bounds->set_height(std::min(out_bounds->height(), work_area.height()));
-  out_bounds->set_x(base::ClampToRange(
-      out_bounds->x(), work_area.x(), work_area.right() - out_bounds->width()));
-  out_bounds->set_y(
-      base::ClampToRange(out_bounds->y(), work_area.y(),
-                         work_area.bottom() - out_bounds->height()));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // ui::BaseWindow implementation:
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {

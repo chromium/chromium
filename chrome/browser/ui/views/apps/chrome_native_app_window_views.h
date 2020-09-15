@@ -35,10 +35,6 @@ class ChromeNativeAppWindowViews
   virtual views::NonClientFrameView* CreateStandardDesktopAppFrame();
   virtual views::NonClientFrameView* CreateNonStandardAppFrame() = 0;
   virtual bool ShouldRemoveStandardFrame();
-  // On initialization, we may need to adjust the window bounds so that the
-  // window is on the display for new windows.
-  virtual void AdjustBoundsToBeVisibleOnDisplayForNewWindows(
-      gfx::Rect* out_bounds);
 
   // ui::BaseWindow implementation.
   gfx::Rect GetRestoredBounds() const override;

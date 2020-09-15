@@ -22,8 +22,6 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/display/screen.h"
-#include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/view_observer.h"
 #include "ui/wm/core/window_util.h"
 
@@ -347,85 +345,4 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
   EXPECT_TRUE(window()->IsImmersiveModeEnabled());
   EXPECT_TRUE(window()->exclusive_access_bubble_);
-}
-
-// Tests that the window opens on the correct display.
-IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                       OpenOnTheCorrectDisplay) {
-  // Create two displays side by side.
-  display::DisplayManager* display_manager =
-      ash::ShellTestApi().display_manager();
-  display::test::DisplayManagerTestApi(display_manager)
-      .UpdateDisplay("800x800,800+0-800x800");
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-
-  const extensions::Extension* extension =
-      LoadAndLaunchPlatformApp("launch", "Launched");
-  // A window key is required to use the bounds saving AppWindowGeometryCache.
-  extensions::AppWindow::CreateParams params;
-  params.window_key = "test_key";
-  extensions::AppWindow* app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
-  // Current located on primary display.
-  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
-      app_window->GetNativeWindow()->GetBoundsInScreen()));
-  CloseAppWindow(app_window);
-
-  // Set the display for new windows to be the secondary display.
-  int64_t secondary_id = display::Screen::GetScreen()->GetAllDisplays()[1].id();
-  display::Screen::GetScreen()->SetDisplayForNewWindows(secondary_id);
-
-  // Create the same app. It should be located on the secondary display.
-  app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
-  EXPECT_TRUE(
-      gfx::Rect(800, 0, 800, 800)
-          .Contains(app_window->GetNativeWindow()->GetBoundsInScreen()));
-  CloseAppWindow(app_window);
-
-  // Update the secondary display to be shifted below and smaller than the
-  // window bounds. Test that newly opened windows fit into the display bounds.
-  display::test::DisplayManagerTestApi(display_manager)
-      .UpdateDisplay("800x800,800+400-400x400");
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-  secondary_id = display::Screen::GetScreen()->GetAllDisplays()[1].id();
-  display::Screen::GetScreen()->SetDisplayForNewWindows(secondary_id);
-  app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
-  // The display is physically lower, but the display manager puts all displays
-  // in a horizontal line (i.e. three monitors vertically stacked will look
-  // something like 800x800,800+0-800x800,1600+0-800x800).
-  EXPECT_TRUE(
-      gfx::Rect(800, 0, 400, 400)
-          .Contains(app_window->GetNativeWindow()->GetBoundsInScreen()));
-  EXPECT_EQ(secondary_id,
-            display::Screen::GetScreen()
-                ->GetDisplayNearestWindow(app_window->GetNativeWindow())
-                .id());
-  CloseAppWindow(app_window);
-
-  // Tests that if there are no saved bounds, the window will be centered in the
-  // work area. Shelf height is 48 so a display of size 800x848 will have a work
-  // area of 800x800.
-  display::test::DisplayManagerTestApi(display_manager)
-      .UpdateDisplay("800x848,800+0-800x848");
-  extensions::AppWindow::BoundsSpecification window_spec;
-  window_spec.bounds = gfx::Rect(INT_MIN, INT_MIN, 400, 400);
-  params.window_key = "";
-  params.window_spec = window_spec;
-  app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
-  EXPECT_EQ(gfx::Rect(200, 200, 400, 400),
-            app_window->GetNativeWindow()->GetBoundsInScreen());
-  CloseAppWindow(app_window);
-
-  // Tests that the window will be centered on the secondary display.
-  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
-  secondary_id = display::Screen::GetScreen()->GetAllDisplays()[1].id();
-  display::Screen::GetScreen()->SetDisplayForNewWindows(secondary_id);
-  app_window =
-      CreateAppWindowFromParams(browser()->profile(), extension, params);
-  EXPECT_EQ(gfx::Rect(1000, 200, 400, 400),
-            app_window->GetNativeWindow()->GetBoundsInScreen());
-  CloseAppWindow(app_window);
 }

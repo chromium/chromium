@@ -60,8 +60,6 @@ class ChromeNativeAppWindowViewsAuraAsh
       views::Widget* widget) override;
   views::NonClientFrameView* CreateNonStandardAppFrame() override;
   bool ShouldRemoveStandardFrame() override;
-  void AdjustBoundsToBeVisibleOnDisplayForNewWindows(
-      gfx::Rect* out_bounds) override;
 
   // ui::BaseWindow:
   gfx::Rect GetRestoredBounds() const override;
