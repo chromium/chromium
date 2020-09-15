@@ -97,10 +97,6 @@ class URLLoaderFactoryManager {
       bool is_for_isolated_world,
       network::mojom::URLLoaderFactoryParams* factory_params);
 
-  static void AddExtensionToAllowlistForTesting(const Extension& extension);
-  static void RemoveExtensionFromAllowlistForTesting(
-      const Extension& extension);
-
  private:
   // If |extension|'s manifest declares that it may inject JavaScript content
   // script into the |navigating_frame| / |navigation_target|, then

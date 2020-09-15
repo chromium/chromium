@@ -52,6 +52,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -90,7 +91,7 @@ const char kCorsErrorWhenFetching[] = "error: TypeError: Failed to fetch";
 // The manifest.json used by tests uses |kExpectedKey| that will result in the
 // hash of extension id that is captured in |kExpectedHashedExtensionId|.
 // Knowing the hash constant helps with simulating distributing the hash via
-// field trial param (e.g. via CorbAllowlistAlsoAppliesToOorCorsParamName).
+// field trial param (e.g. via kCorbCorsAllowlistParamName).
 const char kExtensionKey[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8PFf"
     "v8iucWvzO+3xpF/"
@@ -220,18 +221,21 @@ class CorbAndCorsExtensionBrowserTest
     }
 
     if (IsCorsForContentScriptsEnabled()) {
-      base::FieldTrialParams field_trial_params;
-      if (IsExtensionAllowlisted()) {
-        field_trial_params.emplace(
-            network::features::kCorbAllowlistAlsoAppliesToOorCorsParamName,
-            kExpectedHashedExtensionId);
-      }
       enabled_features.emplace_back(
           network::features::kCorbAllowlistAlsoAppliesToOorCors,
-          field_trial_params);
+          base::FieldTrialParams());
     } else {
       disabled_features.push_back(
           network::features::kCorbAllowlistAlsoAppliesToOorCors);
+    }
+
+    if (IsExtensionAllowlisted()) {
+      base::FieldTrialParams field_trial_params;
+      field_trial_params.emplace(
+          extensions_features::kCorbCorsAllowlistParamName,
+          kExpectedHashedExtensionId);
+      enabled_features.emplace_back(extensions_features::kCorbCorsAllowlist,
+                                    field_trial_params);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -308,7 +312,6 @@ class CorbAndCorsExtensionBrowserTest
     extension_ = LoadExtension(dir_.UnpackedPath());
     DCHECK(extension_);
 
-    AllowlistExtensionIfNeeded(*extension_);
     return extension_;
   }
 
@@ -516,7 +519,6 @@ class CorbAndCorsExtensionBrowserTest
     extension_ = LoadExtension(dir_.UnpackedPath());
     DCHECK(extension_);
 
-    AllowlistExtensionIfNeeded(*extension_);
     return extension_;
   }
 
@@ -619,27 +621,6 @@ class CorbAndCorsExtensionBrowserTest
         "chrome.tabs.executeScript($1, { code: $2 });", tab_id, content_script);
     return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
         browser()->profile(), extension_->id(), background_script);
-  }
-
-  void AllowlistExtensionIfNeeded(const Extension& extension) {
-    // Sanity check that the field trial param (which has to be registered via
-    // ScopedFeatureList early) uses the right extension id hash.
-    EXPECT_EQ(kExpectedHashedExtensionId, extension.hashed_id().value());
-
-    if (IsCorsForContentScriptsEnabled()) {
-      // Allowlist has already been populated via field trial param (see the
-      // constructor of CrossOriginReadBlockingExtensionAllowlistingTest).
-      return;
-    }
-
-    // If field trial param cannot be used, fall back to allowlisting via
-    // URLLoaderFactoryManager's test support methods.
-    if (IsExtensionAllowlisted()) {
-      URLLoaderFactoryManager::AddExtensionToAllowlistForTesting(extension);
-    } else {
-      URLLoaderFactoryManager::RemoveExtensionFromAllowlistForTesting(
-          extension);
-    }
   }
 
  protected:
@@ -1735,7 +1716,6 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
   dir_.WriteFile(FILE_PATH_LITERAL("page.html"), "<body>Hello World!</body>");
   const Extension* extension = LoadExtension(dir_.UnpackedPath());
   ASSERT_TRUE(extension);
-  AllowlistExtensionIfNeeded(*extension);
 
   // Navigate a foreground tab to an extension URL, so that from this tab we can
   // ask the background service worker to initiate test fetches.
