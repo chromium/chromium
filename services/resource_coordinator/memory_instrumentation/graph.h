@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is being migrated to the //third_party/perfetto repository
-// as part of the plan in http://crbug.com/1095982. Until the migration
-// is finished, there will be two copies around. Contact
-// mobica-google-contributors@mobica.com if you feel you need to make
-// non-trivial changes to this file.
-
 #ifndef SERVICES_RESOURCE_COORDINATOR_MEMORY_INSTRUMENTATION_GRAPH_H_
 #define SERVICES_RESOURCE_COORDINATOR_MEMORY_INSTRUMENTATION_GRAPH_H_
 
