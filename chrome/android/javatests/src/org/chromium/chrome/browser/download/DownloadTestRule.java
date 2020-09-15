@@ -51,6 +51,7 @@ public class DownloadTestRule extends ChromeActivityTestRule<ChromeActivity> {
     public static final long UPDATE_DELAY_MILLIS = 1000;
 
     private final CustomMainActivityStart mActivityStart;
+    private List<DownloadItem> mAllDownloads;
 
     public DownloadTestRule(CustomMainActivityStart action) {
         super(ChromeActivity.class);
@@ -186,10 +187,18 @@ public class DownloadTestRule extends ChromeActivityTestRule<ChromeActivity> {
         return eventReceived;
     }
 
+    public List<DownloadItem> getAllDownloads() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DownloadManagerService.getDownloadManagerService().getAllDownloads(false);
+        });
+        return mAllDownloads;
+    }
+
     private class TestDownloadManagerServiceObserver
             implements DownloadManagerService.DownloadObserver {
         @Override
         public void onAllDownloadsRetrieved(final List<DownloadItem> list, boolean isOffTheRecord) {
+            mAllDownloads = list;
         }
 
         @Override
