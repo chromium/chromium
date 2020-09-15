@@ -986,7 +986,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)scheduleLowPriorityStartupTasks {
   [_startupTasks initializeOmaha];
-  [_startupTasks donateIntents];
 
   // Deferred tasks.
   [self schedulePrefObserverInitialization];
