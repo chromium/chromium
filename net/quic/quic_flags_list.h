@@ -284,14 +284,6 @@ QUIC_FLAG(
 // If true, disable QUIC version h3-29.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_29, false)
 
-// If true, improve Bbr2Sender::AdjustNetworkParameters by 1) do not inject a
-// bandwidth sample to the bandwidth filter, and 2) re-calculate pacing rate
-// after cwnd updated..
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_bbr2_improve_adjust_network_parameters,
-    true)
-
 // If true, try to coalesce packet of higher space with retransmissions to
 // mitigate RTT inflations.
 QUIC_FLAG(bool,
@@ -304,27 +296,10 @@ QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_record_received_min_ack_delay,
           false)
 
-// If true, QuicSession will no longer need streams_waiting_for_acks_.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_remove_streams_waiting_for_acks,
-          true)
-
-// When true, ParsedQuicVersionToString will print IETF drafts with format
-// draft29 instead of ff00001d.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_print_draft_version, true)
-
 // If true, disable blackhole detection on server side.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_disable_server_blackhole_detection,
           false)
-
-// Remove ACK_DECIMATION_WITH_REORDERING mode and fast_ack_after_quiescence
-// option in QUIC received packet manager.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_remove_unused_ack_options, true)
-
-// If true, QUIC subclasses will no longer directly access stream_map for its
-// content.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_do_not_use_stream_map, true)
 
 // If true,
 //   server accepts GOAWAY (draft-28 behavior),
@@ -346,11 +321,6 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_http3_goaway_new_behavior, true)
 // exists) after two PTOs.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_revert_mtu_after_two_ptos, true)
 
-// Simplify the ACK code in quic_received_packet_manager.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_simplify_received_packet_manager_ack,
-          true)
-
 // If true, when TLPR copt is used, enable half RTT as first PTO timeout.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_half_rtt_as_first_pto, true)
 
@@ -359,9 +329,6 @@ QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_use_half_rtt_as_first_pto, true)
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_enable_overshooting_detection,
           true)
-
-// If true, enable QUIC version h3-T051.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_enable_version_t051, true)
 
 // If true, fix a case where data is marked lost in HANDSHAKE level but
 // HANDSHAKE key gets decrypted later.
@@ -461,4 +428,29 @@ QUIC_FLAG(
 // If true, include stream information in idle timeout connection close detail.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_add_stream_info_to_idle_close_detail,
+          true)
+
+// If true, use IETF QUIC application error codes in STOP_SENDING frames.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_stop_sending_uses_ietf_error_code,
+          false)
+
+// If true, QuicSpdySession's destructor won't need to do cleanup.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_clean_up_spdy_session_destructor,
+          true)
+
+// If true, discard INITIAL packet if the key has been dropped.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_discard_initial_packet_with_key_dropped,
+    true)
+
+// If true, disable QUIC version h3-T051.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_t051, false)
+
+// If true, make sure there is pending timer credit when trying to PTO
+// retransmit any packets.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_fix_pto_pending_timer_count,
           true)
