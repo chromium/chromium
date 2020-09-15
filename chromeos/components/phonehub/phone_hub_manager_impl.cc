@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 
 #include "chromeos/components/phonehub/connection_manager_impl.h"
+#include "chromeos/components/phonehub/connection_scheduler_impl.h"
 #include "chromeos/components/phonehub/do_not_disturb_controller_impl.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/find_my_device_controller_impl.h"
@@ -32,6 +33,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           device_sync_client,
           multidevice_setup_client,
           connection_manager_.get())),
+      connection_scheduler_(std::make_unique<ConnectionSchedulerImpl>(
+          connection_manager_.get(),
+          feature_status_provider_.get())),
       find_my_device_controller_(
           std::make_unique<FindMyDeviceControllerImpl>()),
       notification_access_manager_(
@@ -43,6 +47,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
+
+ConnectionScheduler* PhoneHubManagerImpl::GetConnectionScheduler() {
+  return connection_scheduler_.get();
+}
 
 DoNotDisturbController* PhoneHubManagerImpl::GetDoNotDisturbController() {
   return do_not_disturb_controller_.get();
@@ -84,6 +92,7 @@ void PhoneHubManagerImpl::Shutdown() {
   onboarding_ui_tracker_.reset();
   notification_access_manager_.reset();
   find_my_device_controller_.reset();
+  connection_scheduler_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
   do_not_disturb_controller_.reset();

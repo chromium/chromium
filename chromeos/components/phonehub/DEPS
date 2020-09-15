@@ -6,5 +6,6 @@ include_rules = [
   "+components/keyed_service/core/keyed_service.h",
   "+components/prefs",
   "+device/bluetooth",
+  "+net",
   "+ui/gfx",
 ]

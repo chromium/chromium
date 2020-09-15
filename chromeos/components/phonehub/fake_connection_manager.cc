@@ -25,6 +25,7 @@ ConnectionManager::Status FakeConnectionManager::GetStatus() const {
 }
 
 void FakeConnectionManager::AttemptConnection() {
+  ++num_attempt_connection_calls_;
   if (status_ == Status::kDisconnected)
     SetStatus(Status::kConnecting);
 }

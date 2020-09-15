@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/components/phonehub/fake_find_my_device_controller.h"
@@ -56,6 +57,10 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_tether_controller_;
   }
 
+  FakeConnectionScheduler* fake_connection_scheduler() {
+    return &fake_connection_scheduler_;
+  }
+
  private:
   // PhoneHubManager:
   DoNotDisturbController* GetDoNotDisturbController() override;
@@ -66,6 +71,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   OnboardingUiTracker* GetOnboardingUiTracker() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
+  ConnectionScheduler* GetConnectionScheduler() override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -75,6 +81,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeOnboardingUiTracker fake_onboarding_ui_tracker_;
   MutablePhoneModel mutable_phone_model_;
   FakeTetherController fake_tether_controller_;
+  FakeConnectionScheduler fake_connection_scheduler_;
 };
 
 }  // namespace phonehub

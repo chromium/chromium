@@ -22,6 +22,9 @@ class FakeConnectionManager : public ConnectionManager {
   const std::vector<std::string>& sent_messages() const {
     return sent_messages_;
   }
+  size_t num_attempt_connection_calls() const {
+    return num_attempt_connection_calls_;
+  }
 
  private:
   // ConnectionManager:
@@ -31,6 +34,7 @@ class FakeConnectionManager : public ConnectionManager {
 
   Status status_;
   std::vector<std::string> sent_messages_;
+  size_t num_attempt_connection_calls_ = 0;
 };
 
 }  // namespace phonehub

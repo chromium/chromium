@@ -29,6 +29,7 @@ class SecureChannelClient;
 namespace phonehub {
 
 class ConnectionManager;
+class ConnectionScheduler;
 
 // Implemented as a KeyedService which is keyed by the primary Profile.
 class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
@@ -41,6 +42,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   ~PhoneHubManagerImpl() override;
 
   // PhoneHubManager:
+  ConnectionScheduler* GetConnectionScheduler() override;
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
@@ -57,6 +59,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<ConnectionManager> connection_manager_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
+  std::unique_ptr<ConnectionScheduler> connection_scheduler_;
   std::unique_ptr<FindMyDeviceController> find_my_device_controller_;
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;

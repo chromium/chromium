@@ -8,6 +8,7 @@
 namespace chromeos {
 namespace phonehub {
 
+class ConnectionScheduler;
 class DoNotDisturbController;
 class FeatureStatusProvider;
 class FindMyDeviceController;
@@ -27,6 +28,7 @@ class PhoneHubManager {
   PhoneHubManager& operator=(const PhoneHubManager&) = delete;
 
   // Getters for sub-elements.
+  virtual ConnectionScheduler* GetConnectionScheduler() = 0;
   virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
   virtual FindMyDeviceController* GetFindMyDeviceController() = 0;

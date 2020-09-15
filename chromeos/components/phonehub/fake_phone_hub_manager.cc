@@ -43,5 +43,9 @@ TetherController* FakePhoneHubManager::GetTetherController() {
   return &fake_tether_controller_;
 }
 
+ConnectionScheduler* FakePhoneHubManager::GetConnectionScheduler() {
+  return &fake_connection_scheduler_;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos
