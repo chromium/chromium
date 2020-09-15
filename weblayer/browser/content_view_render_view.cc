@@ -144,6 +144,13 @@ ContentViewRenderView::GetResourceManager(JNIEnv* env) {
   return compositor_->GetResourceManager().GetJavaObject();
 }
 
+void ContentViewRenderView::UpdateBackgroundColor(JNIEnv* env) {
+  if (!compositor_)
+    return;
+  compositor_->SetBackgroundColor(
+      Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+}
+
 void ContentViewRenderView::UpdateLayerTreeHost() {
   // TODO(wkorman): Rename Layout to UpdateLayerTreeHost in all Android
   // Compositor related classes.
@@ -179,6 +186,7 @@ void ContentViewRenderView::InitCompositor() {
       cc::ElementId(root_container_layer_->id()));
   root_container_layer_->SetIsDrawable(false);
   compositor_->SetRootLayer(root_container_layer_);
+  UpdateBackgroundColor(base::android::AttachCurrentThread());
 }
 
 }  // namespace weblayer
