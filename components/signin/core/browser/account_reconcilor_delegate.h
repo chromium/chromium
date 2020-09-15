@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "components/signin/public/base/multilogin_parameters.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -63,6 +64,10 @@ class AccountReconcilorDelegate {
   // Returns true if Reconcile should be aborted when the primary account is in
   // error state. Defaults to false.
   virtual bool ShouldAbortReconcileIfPrimaryHasError() const;
+
+  // Returns the consent level that should be used for obtaining the primary
+  // account. Defaults to ConsentLevel::kSync.
+  virtual ConsentLevel GetConsentLevelForPrimaryAccount() const;
 
   // Returns the first account to add in the Gaia cookie.
   // If this returns an empty string, the user must be logged out of all

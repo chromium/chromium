@@ -5,7 +5,9 @@
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/public/base/account_consistency_method.h"
 
 namespace signin {
 
@@ -14,6 +16,8 @@ MirrorAccountReconcilorDelegate::MirrorAccountReconcilorDelegate(
     : identity_manager_(identity_manager) {
   DCHECK(identity_manager_);
   identity_manager_->AddObserver(this);
+  reconcile_enabled_ =
+      identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
 }
 
 MirrorAccountReconcilorDelegate::~MirrorAccountReconcilorDelegate() {
@@ -21,7 +25,7 @@ MirrorAccountReconcilorDelegate::~MirrorAccountReconcilorDelegate() {
 }
 
 bool MirrorAccountReconcilorDelegate::IsReconcileEnabled() const {
-  return identity_manager_->HasPrimaryAccount();
+  return reconcile_enabled_;
 }
 
 bool MirrorAccountReconcilorDelegate::IsAccountConsistencyEnforced() const {
@@ -35,6 +39,16 @@ gaia::GaiaSource MirrorAccountReconcilorDelegate::GetGaiaApiSource() const {
 bool MirrorAccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError()
     const {
   return true;
+}
+
+ConsentLevel MirrorAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
+    const {
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(kMobileIdentityConsistency)) {
+    return ConsentLevel::kNotRequired;
+  }
+#endif
+  return ConsentLevel::kSync;
 }
 
 CoreAccountId MirrorAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
@@ -61,14 +75,38 @@ MirrorAccountReconcilorDelegate::GetChromeAccountsForReconcile(
                                            gaia_accounts);
 }
 
+// TODO(https://crbug.com/1046746): Replace separate IdentityManager::Observer
+// method overrides below with a single OnPrimaryAccountChanged method and
+// inline UpdateReconcilorStatus.
 void MirrorAccountReconcilorDelegate::OnPrimaryAccountSet(
     const CoreAccountInfo& primary_account_info) {
-  reconcilor()->EnableReconcile();
+  UpdateReconcilorStatus();
 }
 
 void MirrorAccountReconcilorDelegate::OnPrimaryAccountCleared(
     const CoreAccountInfo& previous_primary_account_info) {
-  reconcilor()->DisableReconcile(true /* logout_all_gaia_accounts */);
+  UpdateReconcilorStatus();
+}
+
+void MirrorAccountReconcilorDelegate::OnUnconsentedPrimaryAccountChanged(
+    const CoreAccountInfo& unconsented_primary_account_info) {
+  UpdateReconcilorStatus();
+}
+
+void MirrorAccountReconcilorDelegate::UpdateReconcilorStatus() {
+  // Have to check whether the state has actually changed, as calling
+  // DisableReconcile logs out all accounts even if it was already disabled.
+  bool should_enable_reconcile =
+      identity_manager_->HasPrimaryAccount(GetConsentLevelForPrimaryAccount());
+  if (reconcile_enabled_ == should_enable_reconcile)
+    return;
+
+  reconcile_enabled_ = should_enable_reconcile;
+  if (should_enable_reconcile) {
+    reconcilor()->EnableReconcile();
+  } else {
+    reconcilor()->DisableReconcile(true /* logout_all_gaia_accounts */);
+  }
 }
 
 }  // namespace signin

@@ -31,6 +31,11 @@ bool AccountReconcilorDelegate::ShouldAbortReconcileIfPrimaryHasError() const {
   return false;
 }
 
+ConsentLevel AccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
+    const {
+  return ConsentLevel::kSync;
+}
+
 CoreAccountId AccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
     const std::vector<CoreAccountId>& chrome_accounts,
     const std::vector<gaia::ListedAccount>& gaia_accounts,

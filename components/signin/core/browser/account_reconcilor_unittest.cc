@@ -562,6 +562,10 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     EXPECT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(),
               tokens.size());
 
+    signin::ConsentLevel consent_level =
+        GetMockReconcilor()->delegate_->GetConsentLevelForPrimaryAccount();
+    CoreAccountId primary_account_id =
+        identity_manager->GetPrimaryAccountId(consent_level);
     bool authenticated_account_found = false;
     for (const Token& token : tokens) {
       CoreAccountId account_id =
@@ -572,12 +576,12 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
           identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               account_id));
       if (token.is_authenticated) {
-        EXPECT_EQ(account_id, identity_manager->GetPrimaryAccountId());
+        EXPECT_EQ(account_id, primary_account_id);
         authenticated_account_found = true;
       }
     }
     if (!authenticated_account_found)
-      EXPECT_EQ(CoreAccountId(), identity_manager->GetPrimaryAccountId());
+      EXPECT_EQ(CoreAccountId(), primary_account_id);
   }
 
   void SetupTokens(const char* tokens_string) {
@@ -632,13 +636,13 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     std::vector<Cookie> cookies = ParseCookieString(cookies_);
     ConfigureCookieManagerService(cookies);
 
-    // Setup tokens. This triggers listing cookies so we need to setup cookies
-    // before that.
-    SetupTokens(tokens_);
-
     // Call list accounts now so that the next call completes synchronously.
     identity_test_env()->identity_manager()->GetAccountsInCookieJar();
     base::RunLoop().RunUntilIdle();
+
+    // Setup tokens. This triggers listing cookies so we need to setup cookies
+    // before that.
+    SetupTokens(tokens_);
 
     // Setup expectations.
     testing::InSequence mock_sequence;
@@ -1121,13 +1125,13 @@ TEST_P(AccountReconcilorTestForceDiceMigration, TableRowTestCheckNoOp) {
   std::vector<Cookie> cookies = ParseCookieString(cookies_after_reconcile_);
   ConfigureCookieManagerService(cookies);
 
-  // Setup tokens. This triggers listing cookies so we need to setup cookies
-  // before that.
-  SetupTokens(tokens_after_reconcile_);
-
   // Call list accounts now so that the next call completes synchronously.
   identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   base::RunLoop().RunUntilIdle();
+
+  // Setup tokens. This triggers listing cookies so we need to setup cookies
+  // before that.
+  SetupTokens(tokens_after_reconcile_);
 
   EXPECT_CALL(*GetMockReconcilor(), PerformMergeAction(testing::_)).Times(0);
   EXPECT_CALL(*GetMockReconcilor(), PerformLogoutAllAccountsAction()).Times(0);
@@ -1171,13 +1175,13 @@ TEST_P(AccountReconcilorTestDiceMultilogin, TableRowTest) {
   ConfigureCookieManagerService(cookies);
   std::vector<Cookie> cookies_after_reconcile = cookies;
 
-  // Setup tokens. This triggers listing cookies so we need to setup cookies
-  // before that.
-  SetupTokens(GetParam().tokens);
-
   // Call list accounts now so that the next call completes synchronously.
   identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   base::RunLoop().RunUntilIdle();
+
+  // Setup tokens. This triggers listing cookies so we need to setup cookies
+  // before that.
+  SetupTokens(GetParam().tokens);
 
   // Setup expectations.
   testing::InSequence mock_sequence;
@@ -1669,9 +1673,6 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
   // Enable Mirror.
   SetAccountConsistency(signin::AccountConsistencyMethod::kMirror);
 
-  // Setup tokens.
-  SetupTokens(GetParam().tokens);
-
   // Setup cookies.
   std::vector<Cookie> cookies = ParseCookieString(GetParam().cookies);
   ConfigureCookieManagerService(cookies);
@@ -1679,6 +1680,9 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
   // Call list accounts now so that the next call completes synchronously.
   identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   base::RunLoop().RunUntilIdle();
+
+  // Setup tokens.
+  SetupTokens(GetParam().tokens);
 
   // Setup expectations.
   testing::InSequence mock_sequence;
@@ -1790,10 +1794,6 @@ const std::vector<AccountReconcilorTestTableParam> kActiveDirectoryParams = {
 // clang-format on
 
 TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
-  // Setup tokens.
-  std::vector<Token> tokens = ParseTokenString(GetParam().tokens);
-  SetupTokens(GetParam().tokens);
-
   // Setup cookies.
   std::vector<Cookie> cookies = ParseCookieString(GetParam().cookies);
   ConfigureCookieManagerService(cookies);
@@ -1801,6 +1801,10 @@ TEST_P(AccountReconcilorTestActiveDirectory, TableRowTestMultilogin) {
   // Call list accounts now so that the next call completes synchronously.
   identity_test_env()->identity_manager()->GetAccountsInCookieJar();
   base::RunLoop().RunUntilIdle();
+
+  // Setup tokens.
+  std::vector<Token> tokens = ParseTokenString(GetParam().tokens);
+  SetupTokens(GetParam().tokens);
 
   testing::InSequence mock_sequence;
   MockAccountReconcilor* reconcilor = GetMockReconcilor(
