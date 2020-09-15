@@ -42,7 +42,7 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   class Delegate {
    public:
     virtual void OnAction(const ui::AXActionData& data) const = 0;
-    virtual bool IsScreenReaderEnabled() const = 0;
+    virtual bool UseFullFocusMode() const = 0;
   };
 
   AXTreeSourceArc(Delegate* delegate, float device_scale_factor);
@@ -64,7 +64,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   // When it is enabled, this class exposes an accessibility tree optimized for
   // screen readers such as ChromeVox and SwitchAccess. This intends to have the
   // navigation order and focusabilities similar to TalkBack.
-  bool IsScreenReaderMode() const;
+  // Also, when it is enabled, the accessibility focus in Android is exposed as
+  // the focus of this tree.
+  bool UseFullFocusMode() const;
 
   // Returns true if the node id is the root of the node tree (which can have a
   // parent window).
@@ -121,10 +123,14 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
   AccessibilityInfoDataWrapper* GetSelectedNodeInfoFromAdapterView(
       const mojom::AccessibilityEventData& event_data) const;
 
-  // Update android_focused_id_ from given AccessibilityEventData.
-  // Returns true if it is successfully updated to existing node.
-  // Returns false if we don't dispatch the processing event to chrome
-  // automation.
+  // Updates android_focused_id_ from given AccessibilityEventData.
+  // Having this method, |android_focused_id_| is one of these:
+  // - input focus in Android
+  // - accessibility focus in Android
+  // - the chrome automation client's internal focus (via set sequential focus
+  //   action and replying accessibility focus event from Android).
+  // This returns false if we don't want to dispatch the processing
+  // event to chrome automation. Otherwise, this returns true.
   bool UpdateAndroidFocusedId(const mojom::AccessibilityEventData& event_data);
 
   void UpdateAXNameCache(AccessibilityInfoDataWrapper* source_node,
@@ -172,6 +178,9 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*,
 
   std::map<int32_t, std::string> cached_names_;
   std::map<int32_t, ax::mojom::Role> cached_roles_;
+
+  // Cache of mapping from the root window id to the last focused node id.
+  std::map<int32_t, int32_t> root_window_id_to_last_focus_node_id_;
 
   // Mapping from Chrome node ID to its cached computed bounds.
   // This simplifies bounds calculations.

@@ -517,8 +517,8 @@ void ArcAccessibilityHelperBridge::OnAction(
                      base::Unretained(this), data));
 }
 
-bool ArcAccessibilityHelperBridge::IsScreenReaderEnabled() const {
-  return is_screen_reader_enabled_;
+bool ArcAccessibilityHelperBridge::UseFullFocusMode() const {
+  return use_full_focus_mode_;
 }
 
 void ArcAccessibilityHelperBridge::OnTaskDestroyed(int32_t task_id) {
@@ -729,8 +729,8 @@ void ArcAccessibilityHelperBridge::UpdateEnabledFeature() {
 
   is_focus_highlight_enabled_ =
       accessibility_manager->IsFocusHighlightEnabled();
-  is_screen_reader_enabled_ = accessibility_manager->IsSwitchAccessEnabled() ||
-                              accessibility_manager->IsSpokenFeedbackEnabled();
+  use_full_focus_mode_ = accessibility_manager->IsSwitchAccessEnabled() ||
+                         accessibility_manager->IsSpokenFeedbackEnabled();
 
   bool add_activation_observer =
       filter_type_ == arc::mojom::AccessibilityFilterType::ALL;

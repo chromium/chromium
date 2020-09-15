@@ -198,11 +198,9 @@ class AXTreeSourceArcTest : public testing::Test,
     EXPECT_EQ(expected, tree_text.substr(first_new_line));
   }
 
-  void set_screen_reader_mode(bool enabled) {
-    screen_reader_enabled_ = enabled;
-  }
+  void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
-  bool IsScreenReaderEnabled() const override { return screen_reader_enabled_; }
+  bool UseFullFocusMode() const override { return full_focus_mode_; }
 
  private:
   void OnAction(const ui::AXActionData& data) const override {}
@@ -210,7 +208,7 @@ class AXTreeSourceArcTest : public testing::Test,
   const std::unique_ptr<MockAutomationEventRouter> router_;
   const std::unique_ptr<AXTreeSourceArc> tree_source_;
 
-  bool screen_reader_enabled_ = false;
+  bool full_focus_mode_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AXTreeSourceArcTest);
 };
@@ -715,9 +713,7 @@ TEST_F(AXTreeSourceArcTest, OnViewSelectedEvent) {
 
 TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   auto event = AXEventData::New();
-  event->source_id = 1;  // node1.
   event->task_id = 1;
-  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
 
   event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
   event->window_data->push_back(AXWindowInfoData::New());
@@ -735,7 +731,8 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   event->node_data.push_back(AXNodeInfoData::New());
   AXNodeInfoData* node1 = event->node_data.back().get();
   node1->id = 1;
-  SetProperty(node1, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
+  SetProperty(node1, AXIntListProperty::CHILD_NODE_IDS,
+              std::vector<int>({2, 3}));
   SetProperty(node1, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node1, AXBooleanProperty::VISIBLE_TO_USER, true);
 
@@ -744,16 +741,63 @@ TEST_F(AXTreeSourceArcTest, OnWindowStateChangedEvent) {
   node2->id = 2;
   SetProperty(node2, AXBooleanProperty::IMPORTANCE, true);
   SetProperty(node2, AXBooleanProperty::VISIBLE_TO_USER, true);
-  SetProperty(node2, AXStringProperty::TEXT, "sample string.");
+  SetProperty(node2, AXStringProperty::TEXT, "sample string node2.");
 
+  event->node_data.push_back(AXNodeInfoData::New());
+  AXNodeInfoData* node3 = event->node_data.back().get();
+  node3->id = 3;
+  SetProperty(node3, AXBooleanProperty::IMPORTANCE, true);
+  SetProperty(node3, AXBooleanProperty::VISIBLE_TO_USER, true);
+  SetProperty(node3, AXStringProperty::TEXT, "sample string node3.");
+
+  // Focus will be on the first accessible node (node2).
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());
   ui::AXTreeData data;
 
-  // Focus is now at the first accessible node (node2).
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node2->id, data.focus_id);
 
-  EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));
+  // focus moved to node3 for some reason.
+  event->event_type = AXEventType::VIEW_FOCUSED;
+  event->source_id = node3->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node3->id, data.focus_id);
+
+  // after moved the focus on the window, keep the same focus on
+  // WINDOW_STATE_CHANGED event.
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event->source_id = root->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node3->id, data.focus_id);
+
+  // Simulate opening another window in this task.
+  // This is the same as new WINDOW_STATE_CHANGED event, so focus is at the
+  // first accessible node (node2).
+  root_window->window_id = 200;
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event->source_id = node1->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node2->id, data.focus_id);
+
+  // Simulate closing the second window and coming back to the first window.
+  // The focus back to the last focus node, which is node3.
+  root_window->window_id = 100;
+  event->event_type = AXEventType::WINDOW_STATE_CHANGED;
+  event->source_id = root->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node3->id, data.focus_id);
+
+  EXPECT_EQ(5, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
 TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
@@ -801,14 +845,26 @@ TEST_F(AXTreeSourceArcTest, OnFocusEvent) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node2->id, data.focus_id);
 
-  // Chrome should focus to node2, even if Android sends focus on List.
+  // Chrome should focus to node1, even if Android sends focus on List.
   event->source_id = root->id;
   CallNotifyAccessibilityEvent(event.get());
 
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  EXPECT_EQ(2, GetDispatchedEventCount(ax::mojom::Event::kFocus));
+  // VIEW_ACCESSIBILITY_FOCUSED event also updates the focus in screen reader
+  // mode.
+  set_full_focus_mode(true);
+  SetProperty(node1, AXBooleanProperty::ACCESSIBILITY_FOCUSED, false);
+  SetProperty(node2, AXBooleanProperty::ACCESSIBILITY_FOCUSED, true);
+  event->event_type = AXEventType::VIEW_ACCESSIBILITY_FOCUSED;
+  event->source_id = node2->id;
+  CallNotifyAccessibilityEvent(event.get());
+
+  EXPECT_TRUE(CallGetTreeData(&data));
+  EXPECT_EQ(node2->id, data.focus_id);
+
+  EXPECT_EQ(3, GetDispatchedEventCount(ax::mojom::Event::kFocus));
 }
 
 TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
@@ -912,7 +968,7 @@ TEST_F(AXTreeSourceArcTest, SerializeAndUnserialize) {
   // |node2| is ignored by default because
   // AXBooleanProperty::IMPORTANCE has a default false value.
 
-  set_screen_reader_mode(true);
+  set_full_focus_mode(true);
 
   CallNotifyAccessibilityEvent(event.get());
   EXPECT_EQ(1, GetDispatchedEventCount(ax::mojom::Event::kFocus));

@@ -81,8 +81,8 @@ void AXTreeSourceArc::NotifyGetTextLocationDataResult(
   GetAutomationEventRouter()->DispatchGetTextLocationDataResult(data, rect);
 }
 
-bool AXTreeSourceArc::IsScreenReaderMode() const {
-  return delegate_->IsScreenReaderEnabled();
+bool AXTreeSourceArc::UseFullFocusMode() const {
+  return delegate_->UseFullFocusMode();
 }
 
 void AXTreeSourceArc::InvalidateTree() {
@@ -376,6 +376,7 @@ AXTreeSourceArc::GetSelectedNodeInfoFromAdapterView(
 }
 
 bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
+  // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
     AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
     if (source_node && source_node->IsVisibleToUser()) {
@@ -385,6 +386,11 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
       if (IsValid(adjusted_node))
         android_focused_id_ = adjusted_node->GetId();
     }
+  } else if (event_data.event_type == AXEventType::VIEW_ACCESSIBILITY_FOCUSED &&
+             UseFullFocusMode()) {
+    AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
+    if (source_node && source_node->IsVisibleToUser())
+      android_focused_id_ = source_node->GetId();
   } else if (event_data.event_type == AXEventType::VIEW_SELECTED) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
     // 1. Changing a value in ProgressBar or TimePicker in ARC P.
@@ -411,8 +417,23 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     // The event of WINDOW_STATE_CHANGED is fired only once for each window
     // change and use it as a trigger to move the a11y focus to the first node.
     AccessibilityInfoDataWrapper* source_node = GetFromId(event_data.source_id);
-    AccessibilityInfoDataWrapper* new_focus =
-        FindFirstFocusableNode(source_node);
+    AccessibilityInfoDataWrapper* new_focus = nullptr;
+
+    // If the current window has ever been visited in the current task, try
+    // focus on the last focus node in this window.
+    // We do it for WINDOW_STATE_CHANGED event from a window or a root node.
+    bool from_root_or_window = (source_node && !source_node->IsNode()) ||
+                               IsRootOfNodeTree(event_data.source_id);
+    auto itr = root_window_id_to_last_focus_node_id_.find(*root_id_);
+    if (from_root_or_window &&
+        itr != root_window_id_to_last_focus_node_id_.end()) {
+      new_focus = GetFromId(itr->second);
+    }
+
+    // Otherwise, try focus on the first focusable node.
+    if (!IsValid(new_focus))
+      new_focus = FindFirstFocusableNode(GetFromId(event_data.source_id));
+
     if (IsValid(new_focus))
       android_focused_id_ = new_focus->GetId();
   }
@@ -421,6 +442,12 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     AccessibilityInfoDataWrapper* root = GetRoot();
     DCHECK(IsValid(root));
     android_focused_id_ = root_id_;
+  }
+
+  if (android_focused_id_.has_value()) {
+    root_window_id_to_last_focus_node_id_[*root_id_] = *android_focused_id_;
+  } else {
+    root_window_id_to_last_focus_node_id_.erase(*root_id_);
   }
 
   AccessibilityInfoDataWrapper* focused_node =

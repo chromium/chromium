@@ -121,6 +121,8 @@ base::Optional<mojom::AccessibilityActionType> ConvertToAndroidAction(
     case ax::mojom::Action::kDoDefault:
       return arc::mojom::AccessibilityActionType::CLICK;
     case ax::mojom::Action::kFocus:
+      // Fallthrough
+    case ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint:
       return arc::mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS;
     case ax::mojom::Action::kScrollToMakeVisible:
       return arc::mojom::AccessibilityActionType::SHOW_ON_SCREEN;

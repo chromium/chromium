@@ -70,7 +70,7 @@ bool AccessibilityNodeInfoDataWrapper::IsVirtualNode() const {
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsIgnored() const {
-  if (!tree_source_->IsScreenReaderMode())
+  if (!tree_source_->UseFullFocusMode())
     return !IsImportantInAndroid();
 
   if (!IsImportantInAndroid() || !HasImportantProperty())
@@ -294,7 +294,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXState(
 
 #undef MAP_STATE
 
-  const bool focusable = tree_source_->IsScreenReaderMode()
+  const bool focusable = tree_source_->UseFullFocusMode()
                              ? IsAccessibilityFocusableContainer()
                              : GetProperty(AXBooleanProperty::FOCUSABLE);
   if (focusable)
@@ -537,7 +537,7 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
 
   // If a node is accessibility focusable, but has no name, the name should be
   // computed from its descendants.
-  if (names.empty() && tree_source_->IsScreenReaderMode() &&
+  if (names.empty() && tree_source_->UseFullFocusMode() &&
       IsAccessibilityFocusableContainer())
     ComputeNameFromContents(&names);
 

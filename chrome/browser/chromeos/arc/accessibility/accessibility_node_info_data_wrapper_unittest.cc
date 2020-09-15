@@ -119,18 +119,16 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
   }
 
   // AXTreeSourceArc::Delegate overrides.
-  bool IsScreenReaderEnabled() const override { return screen_reader_enabled_; }
+  bool UseFullFocusMode() const override { return full_focus_mode_; }
   void OnAction(const ui::AXActionData& data) const override {}
 
-  void set_screen_reader_mode(bool enabled) {
-    screen_reader_enabled_ = enabled;
-  }
+  void set_full_focus_mode(bool enabled) { full_focus_mode_ = enabled; }
 
   AXTreeSourceArc* tree_source() { return tree_source_.get(); }
 
  private:
   const std::unique_ptr<TestAXTreeSourceArc> tree_source_;
-  bool screen_reader_enabled_ = true;
+  bool full_focus_mode_ = true;
 };
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, Name) {
@@ -219,7 +217,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
   SetProperty(&child2, AXStringProperty::TEXT, "child2 label text");
 
   // If the screen reader mode is off, do not compute from descendants.
-  set_screen_reader_mode(false);
+  set_full_focus_mode(false);
 
   ui::AXNodeData data = CallSerialize(root_wrapper);
   std::string name;
@@ -240,7 +238,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromDescendants) {
 
   // Enable screen reader.
   // Compute the name of the clickable node from descendants, and ignore them.
-  set_screen_reader_mode(true);
+  set_full_focus_mode(true);
 
   data = CallSerialize(root_wrapper);
   ASSERT_TRUE(
