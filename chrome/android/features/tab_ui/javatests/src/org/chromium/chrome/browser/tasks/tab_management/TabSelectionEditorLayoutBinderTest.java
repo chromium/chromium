@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+
+import static org.junit.Assert.assertNull;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
@@ -133,7 +136,7 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
     @SmallTest
     @UiThreadTest
     public void testSetPositionRect() {
-        Assert.assertNull(mEditorLayoutView.getPositionRectForTesting());
+        assertNull(mEditorLayoutView.getPositionRectForTesting());
 
         Rect rect = new Rect();
         mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT, rect);
@@ -153,5 +156,25 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
         mParentView.getViewTreeObserver().dispatchOnGlobalLayout();
 
         assertTrue(globalLayoutChanged.get());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testActionButtonContentDescriptionBinding() {
+        // Set up action button.
+        Button button = mEditorLayoutView.findViewById(R.id.action_button);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD, 1);
+
+        int expectedResourceId = R.plurals.accessibility_tab_selection_editor_group_button;
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID,
+                expectedResourceId);
+        assertNull(button.getContentDescription());
+
+        // Simulate selection.
+        HashSet<Integer> selectedItem = new HashSet<>(Arrays.asList(1));
+        mSelectionDelegate.setSelectedItems(selectedItem);
+
+        assertNotNull(button.getContentDescription());
     }
 }

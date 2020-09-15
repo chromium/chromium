@@ -109,6 +109,7 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     void review(@NonNull TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         mTabSelectionEditorController.configureToolbar(getActionString(tabSuggestion),
+                getActionButtonContentDescriptionTemplate(tabSuggestion),
                 getActionProvider(tabSuggestion, feedbackCallback),
                 getEnablingThreshold(tabSuggestion),
                 getNavigationProvider(tabSuggestion, feedbackCallback));
@@ -127,6 +128,18 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
                 assert false;
         }
         return null;
+    }
+
+    private int getActionButtonContentDescriptionTemplate(TabSuggestion tabSuggestion) {
+        switch (tabSuggestion.getAction()) {
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return R.plurals.accessibility_tab_suggestion_close_tab_action_button;
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return R.plurals.accessibility_tab_selection_editor_group_button;
+            default:
+                assert false;
+        }
+        return 0;
     }
 
     private int getEnablingThreshold(TabSuggestion tabSuggestion) {

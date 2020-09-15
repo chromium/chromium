@@ -411,7 +411,9 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
 
         String actionButtonText =
                 mContext.getString(R.string.tab_grid_dialog_selection_mode_remove);
-        mTabSelectionEditorController.configureToolbar(actionButtonText, actionProvider, 1, null);
+        mTabSelectionEditorController.configureToolbar(actionButtonText,
+                R.plurals.accessibility_tab_selection_dialog_remove_button, actionProvider, 1,
+                null);
     }
 
     private void setupToolbarEditText() {

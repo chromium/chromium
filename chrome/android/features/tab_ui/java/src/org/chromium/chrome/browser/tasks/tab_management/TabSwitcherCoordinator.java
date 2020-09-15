@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -65,16 +66,17 @@ public class TabSwitcherCoordinator
 
     private class TabGroupManualSelectionMode {
         public final String actionString;
+        public final int actionButtonDescriptionResourceId;
         public final int enablingThreshold;
         public final TabSelectionEditorActionProvider actionProvider;
         public final TabSelectionEditorCoordinator
                 .TabSelectionEditorNavigationProvider navigationProvider;
 
-        TabGroupManualSelectionMode(String actionString, int enablingThreshold,
-                TabSelectionEditorActionProvider actionProvider,
-                TabSelectionEditorCoordinator
-                        .TabSelectionEditorNavigationProvider navigationProvider) {
+        TabGroupManualSelectionMode(String actionString, int actionButtonDescriptionResourceId,
+                int enablingThreshold, TabSelectionEditorActionProvider actionProvider,
+                TabSelectionEditorNavigationProvider navigationProvider) {
             this.actionString = actionString;
+            this.actionButtonDescriptionResourceId = actionButtonDescriptionResourceId;
             this.enablingThreshold = enablingThreshold;
             this.actionProvider = actionProvider;
             this.navigationProvider = navigationProvider;
@@ -117,6 +119,7 @@ public class TabSwitcherCoordinator
 
                         mTabSelectionEditorCoordinator.getController().configureToolbar(
                                 mTabGroupManualSelectionMode.actionString,
+                                mTabGroupManualSelectionMode.actionButtonDescriptionResourceId,
                                 mTabGroupManualSelectionMode.actionProvider,
                                 mTabGroupManualSelectionMode.enablingThreshold,
                                 mTabGroupManualSelectionMode.navigationProvider);
@@ -283,10 +286,11 @@ public class TabSwitcherCoordinator
         mMediator.initWithNative(mTabSelectionEditorCoordinator.getController());
 
         mTabGroupManualSelectionMode = new TabGroupManualSelectionMode(
-                context.getString(R.string.tab_selection_editor_group), 2,
+                context.getString(R.string.tab_selection_editor_group),
+                R.plurals.accessibility_tab_selection_editor_group_button, 2,
                 new TabSelectionEditorActionProvider(mTabSelectionEditorCoordinator.getController(),
                         TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP),
-                new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
+                new TabSelectionEditorNavigationProvider(
                         mTabSelectionEditorCoordinator.getController()));
     }
 
