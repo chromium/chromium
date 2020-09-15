@@ -4,7 +4,7 @@
 
 #include "content/browser/android/dialog_overlay_impl.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/DialogOverlayImpl_jni.h"

@@ -5,7 +5,7 @@
 #include "content/browser/devtools/protocol/background_service_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/frame_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_process_host.h"

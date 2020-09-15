@@ -6,7 +6,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/test/accessibility_notification_waiter.h"
