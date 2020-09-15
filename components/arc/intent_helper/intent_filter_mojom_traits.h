@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom-shared.h"
 
 namespace mojo {
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define COMPONENTS_ARC_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/video_encode_accelerator.mojom.h"
+#include "components/arc/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace mojo {
@@ -21,12 +21,12 @@ struct EnumTraits<arc::mojom::VideoFrameStorageType,
 };
 
 template <>
-struct EnumTraits<arc::mojom::VideoEncodeAccelerator::Error,
+struct EnumTraits<arc::mojom::VideoEncodeAccelerator_Error,
                   media::VideoEncodeAccelerator::Error> {
-  static arc::mojom::VideoEncodeAccelerator::Error ToMojom(
+  static arc::mojom::VideoEncodeAccelerator_Error ToMojom(
       media::VideoEncodeAccelerator::Error input);
 
-  static bool FromMojom(arc::mojom::VideoEncodeAccelerator::Error input,
+  static bool FromMojom(arc::mojom::VideoEncodeAccelerator_Error input,
                         media::VideoEncodeAccelerator::Error* output);
 };
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/arc/mojom/video_common.mojom.h"
+#include "components/arc/mojom/video_common.mojom-shared.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_codecs.h"

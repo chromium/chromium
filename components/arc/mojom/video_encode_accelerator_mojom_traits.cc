@@ -11,10 +11,10 @@ namespace mojo {
 
 // Make sure values in arc::mojom::VideoEncodeAccelerator::Error and
 // media::VideoEncodeAccelerator::Error match.
-#define CHECK_ERROR_ENUM(value)                                             \
-  static_assert(                                                            \
-      static_cast<int>(arc::mojom::VideoEncodeAccelerator::Error::value) == \
-          media::VideoEncodeAccelerator::Error::value,                      \
+#define CHECK_ERROR_ENUM(value)                                            \
+  static_assert(                                                           \
+      static_cast<int>(arc::mojom::VideoEncodeAccelerator_Error::value) == \
+          media::VideoEncodeAccelerator::Error::value,                     \
       "enum ##value mismatch")
 
 CHECK_ERROR_ENUM(kIllegalStateError);
@@ -49,17 +49,17 @@ bool EnumTraits<arc::mojom::VideoFrameStorageType,
 }
 
 // static
-arc::mojom::VideoEncodeAccelerator::Error
-EnumTraits<arc::mojom::VideoEncodeAccelerator::Error,
+arc::mojom::VideoEncodeAccelerator_Error
+EnumTraits<arc::mojom::VideoEncodeAccelerator_Error,
            media::VideoEncodeAccelerator::Error>::
     ToMojom(media::VideoEncodeAccelerator::Error input) {
-  return static_cast<arc::mojom::VideoEncodeAccelerator::Error>(input);
+  return static_cast<arc::mojom::VideoEncodeAccelerator_Error>(input);
 }
 
 // static
-bool EnumTraits<arc::mojom::VideoEncodeAccelerator::Error,
+bool EnumTraits<arc::mojom::VideoEncodeAccelerator_Error,
                 media::VideoEncodeAccelerator::Error>::
-    FromMojom(arc::mojom::VideoEncodeAccelerator::Error input,
+    FromMojom(arc::mojom::VideoEncodeAccelerator_Error input,
               media::VideoEncodeAccelerator::Error* output) {
   NOTIMPLEMENTED();
   return false;

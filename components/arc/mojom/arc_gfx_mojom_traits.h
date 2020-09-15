@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
 #define COMPONENTS_ARC_MOJOM_ARC_GFX_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/gfx.mojom.h"
+#include "components/arc/mojom/gfx.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 

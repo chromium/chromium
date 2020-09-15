@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ARC_FILE_SYSTEM_FILE_SYSTEM_MOJOM_TRAITS_H_
 #define COMPONENTS_ARC_FILE_SYSTEM_FILE_SYSTEM_MOJOM_TRAITS_H_
 
-#include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom-shared.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
 namespace mojo {
