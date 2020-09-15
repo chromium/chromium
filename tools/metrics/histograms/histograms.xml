@@ -28953,8 +28953,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Browser.GPUMemoryForTilingsInKb" units="Kb"
     expires_after="M87">
+  <obsolete>
+    Removed September, 2020. Memory.GPU.PeakMemoryUsage.PageLoad can be used to
+    track overall GPU memory usage.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     The GPU memory allocated for tilings (in a browser process), summed over all
     picture layers. Emitted once per drawing. Nothing is recorded if there are
@@ -28962,8 +28966,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Tilings are used for decomposition of the layer's entire contents at a
     picture screenspace resolution to do threaded rasterization.
-
-    Team: paint-dev@chromium.org.
   </summary>
 </histogram>
 
@@ -29775,9 +29777,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Renderer.GPUMemoryForTilingsInKb" units="Kb"
-    expires_after="M87">
+    expires_after="M90">
   <owner>pdr@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
   <summary>
     The GPU memory allocated for tilings (in a renderer process), summed over
     all picture layers. Emitted once per drawing. Nothing is recorded if there
@@ -29785,8 +29787,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Tilings are used for decomposition of the layer's entire contents at a
     picture screenspace resolution to do threaded rasterization.
-
-    Team: paint-dev@chromium.org.
   </summary>
 </histogram>
 
