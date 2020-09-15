@@ -31,6 +31,7 @@
 #include <algorithm>
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/aom/accessible_node_list.h"
@@ -3987,7 +3988,8 @@ bool AXObject::OnNativeShowContextMenuAction() {
     return false;
 
   ContextMenuAllowedScope scope;
-  document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(element);
+  document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
+      element, kMenuSourceKeyboard);
   return true;
 }
 
