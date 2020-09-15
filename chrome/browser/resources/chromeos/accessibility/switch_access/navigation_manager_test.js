@@ -303,3 +303,32 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
         'button1 should come before button2');
   });
 });
+
+TEST_F(
+    'SwitchAccessNavigationManagerTest', 'NodeUndefinedBeforeTreeChangeRemoved',
+    function() {
+      const website = `<div>
+                     <button id="button1"></button>
+                   </div>`;
+      this.runWithLoadedTree(website, (desktop) => {
+        this.navigator.moveTo_(this.findNodeById('button1'));
+        const button1 = this.navigator.node_;
+        assertFalse(
+            button1 instanceof BackButtonNode,
+            'button1 should not be a BackButtonNode');
+        assertEquals(
+            'button1', button1.automationNode.htmlAttributes.id,
+            'Current node is not button1');
+
+        // Simulate the underlying node's deletion. Note that this is different
+        // than an orphaned node (which can have a valid AutomationNode
+        // instance, but no backing C++ object, so attributes returned like role
+        // are undefined).
+        NavigationManager.instance.node_.baseNode_ = undefined;
+
+        // Tree change removed gets sent by C++ after the tree has already
+        // applied changes (so this comes after the above clearing).
+        NavigationManager.instance.onTreeChange_(
+            {type: chrome.automation.TreeChangeType.NODE_REMOVED});
+      });
+    });

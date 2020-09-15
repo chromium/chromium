@@ -108,8 +108,8 @@ class BasicNode extends SAChildNode {
 
   /** @override */
   isValidAndVisible() {
-    // Nodes without a role are not valid.
-    if (!this.baseNode_.role) {
+    // Nodes may have been deleted or orphaned.
+    if (!this.baseNode_ || !this.baseNode_.role) {
       return false;
     }
     return SwitchAccessPredicate.isVisible(this.baseNode_) &&
