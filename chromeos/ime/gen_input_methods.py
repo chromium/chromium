@@ -9,7 +9,7 @@ This program generates a C++ header file containing the information on
 available input methods.  It parses input_methods.txt, and then generates a
 static array definition from the information extracted. The input and output
 file names are specified on the command line.
-The header input_methods.h is used in input_method_whitelist.cc which is for
+The header input_methods.h is used in input_method_allowlist.cc which is for
 testing purpose.
 
 Run it like:
@@ -104,7 +104,7 @@ def CreateEngineHeader(engines):
 
 def main(argv):
   if len(argv) != 3:
-    print 'Usage: gen_input_methods.py [whitelist] [output]'
+    print 'Usage: gen_input_methods.py [allowlist] [output]'
     sys.exit(1)
   engines = []
   for line in fileinput.input(sys.argv[1]):

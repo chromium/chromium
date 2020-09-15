@@ -28,8 +28,8 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
-#include "ui/base/ime/chromeos/input_method_whitelist.h"
 
 using chromeos::input_method::InputMethodManager;
 
@@ -63,7 +63,7 @@ class TestListener : public content::NotificationObserver {
       // background.
       InputMethodManager* manager = InputMethodManager::Get();
       manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          *chromeos::input_method::InputMethodWhitelist()
+          *chromeos::input_method::InputMethodAllowlist()
                .GetSupportedInputMethods());
 
       std::vector<std::string> keyboard_layouts;

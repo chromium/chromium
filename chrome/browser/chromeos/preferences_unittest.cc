@@ -38,7 +38,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/input_method_whitelist.h"
+#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
 #include "url/gurl.h"
 
@@ -128,7 +128,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
 
   std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
       const override {
-    return whitelist_.GetSupportedInputMethods();
+    return allowlist_.GetSupportedInputMethods();
   }
 
   std::string last_input_method_id_;
@@ -136,7 +136,7 @@ class MyMockInputMethodManager : public MockInputMethodManagerImpl {
  private:
   StringPrefMember* previous_;
   StringPrefMember* current_;
-  InputMethodWhitelist whitelist_;
+  InputMethodAllowlist allowlist_;
 };
 
 }  // anonymous namespace

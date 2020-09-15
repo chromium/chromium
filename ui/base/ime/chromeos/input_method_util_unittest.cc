@@ -16,7 +16,7 @@
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/fake_input_method_delegate.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_whitelist.h"
+#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using base::ASCIIToUTF16;
@@ -48,7 +48,7 @@ class TestableInputMethodUtil : public InputMethodUtil {
 class InputMethodUtilTest : public testing::Test {
  public:
   InputMethodUtilTest()
-      : util_(&delegate_, whitelist_.GetSupportedInputMethods()) {
+      : util_(&delegate_, allowlist_.GetSupportedInputMethods()) {
     delegate_.set_get_localized_string_callback(
         base::BindRepeating(&l10n_util::GetStringUTF16));
     delegate_.set_get_display_language_name_callback(
@@ -85,7 +85,7 @@ class InputMethodUtilTest : public testing::Test {
                                      GURL(""));
     input_methods.push_back(zhuyin_ime);
 
-    util_.InitXkbInputMethodsForTesting(*whitelist_.GetSupportedInputMethods());
+    util_.InitXkbInputMethodsForTesting(*allowlist_.GetSupportedInputMethods());
     util_.AppendInputMethods(input_methods);
   }
 
@@ -117,7 +117,7 @@ class InputMethodUtilTest : public testing::Test {
   }
 
   FakeInputMethodDelegate delegate_;
-  InputMethodWhitelist whitelist_;
+  InputMethodAllowlist allowlist_;
   TestableInputMethodUtil util_;
 };
 

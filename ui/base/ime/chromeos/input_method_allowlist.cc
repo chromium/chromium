@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/ime/chromeos/input_method_whitelist.h"
+#include "ui/base/ime/chromeos/input_method_allowlist.h"
 
 #include <stddef.h>
 
@@ -20,21 +20,21 @@ namespace input_method {
 
 const char kLanguageDelimiter[] = ",";
 
-InputMethodWhitelist::InputMethodWhitelist() {
+InputMethodAllowlist::InputMethodAllowlist() {
   for (const auto& input_method : kInputMethods) {
     supported_input_methods_.insert(input_method.input_method_id);
   }
 }
 
-InputMethodWhitelist::~InputMethodWhitelist() = default;
+InputMethodAllowlist::~InputMethodAllowlist() = default;
 
-bool InputMethodWhitelist::InputMethodIdIsWhitelisted(
+bool InputMethodAllowlist::InputMethodIdIsAllowlisted(
     const std::string& input_method_id) const {
   return supported_input_methods_.count(input_method_id) > 0;
 }
 
 std::unique_ptr<InputMethodDescriptors>
-InputMethodWhitelist::GetSupportedInputMethods() const {
+InputMethodAllowlist::GetSupportedInputMethods() const {
   std::unique_ptr<InputMethodDescriptors> input_methods(
       new InputMethodDescriptors);
   input_methods->reserve(base::size(kInputMethods));

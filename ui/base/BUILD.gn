@@ -786,13 +786,13 @@ static_library("test_support") {
 
   if (is_chromeos) {
     sources += [
-      "ime/chromeos/input_method_whitelist.cc",
-      "ime/chromeos/input_method_whitelist.h",
+      "ime/chromeos/input_method_allowlist.cc",
+      "ime/chromeos/input_method_allowlist.h",
       "ime/chromeos/mock_input_method_manager.cc",
       "ime/chromeos/mock_input_method_manager.h",
     ]
     deps += [
-      # Generates a header used by input_method_whitelist.cc
+      # Generates a header used by input_method_allowlist.cc
       "//chromeos/ime:gencode",
       "//ui/base/ime/chromeos",
     ]
