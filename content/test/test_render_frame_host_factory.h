@@ -11,7 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "content/browser/frame_host/render_frame_host_factory.h"
+#include "content/browser/renderer_host/render_frame_host_factory.h"
 
 namespace content {
 

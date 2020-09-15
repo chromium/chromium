@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"

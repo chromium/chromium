@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "content/browser/frame_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"

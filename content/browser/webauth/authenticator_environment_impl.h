@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

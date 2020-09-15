@@ -8,8 +8,8 @@
 #include <bitset>
 #include <set>
 
-#include "content/browser/frame_host/back_forward_cache_metrics.h"
-#include "content/browser/frame_host/should_swap_browsing_instance.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/should_swap_browsing_instance.h"
 
 namespace content {
 

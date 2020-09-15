@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_client.mojom-forward.h"
 #include "content/common/navigation_params.mojom-forward.h"

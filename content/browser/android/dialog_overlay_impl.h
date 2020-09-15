@@ -9,7 +9,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/unguessable_token.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"

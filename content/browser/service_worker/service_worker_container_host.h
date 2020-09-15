@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "content/browser/frame_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"

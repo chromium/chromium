@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/browser_thread_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
