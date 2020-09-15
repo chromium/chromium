@@ -115,6 +115,7 @@ luci.list_view(
         "try/linux-blink-heap-concurrent-marking-tsan-rel",
         "try/linux-blink-heap-verification-try",
         "try/linux-chromeos-rel",
+        "try/linux-inverse-fieldtrials-fyi-rel",
         "try/linux-libfuzzer-asan-rel",
         "try/linux-ozone-rel",
         "try/linux_android_dbg_ng",

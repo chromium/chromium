@@ -255,6 +255,7 @@
       'Linux remote_run Tester': 'release_bot',
       'Linux Viz': 'release_trybot',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
+      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-tester-fyi-rel': 'lacros_on_linux_release_bot',
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
@@ -902,6 +903,7 @@
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
+      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
       'linux-gcc-rel': 'release_bot_x86_minimal_symbols_no_clang_cxx11',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
@@ -1899,6 +1901,10 @@
       'gpu_tests', 'debug_bot', 'x86', 'no_symbols'
     ],
 
+    'gpu_tests_release_bot': [
+      'gpu_tests', 'release_bot',
+    ],
+
     'gpu_tests_release_bot_minimal_symbols': [
       'gpu_tests', 'release_bot', 'minimal_symbols',
     ],
@@ -1908,11 +1914,12 @@
       'partial_code_coverage_instrumentation',
     ],
 
+    'gpu_tests_release_bot_minimal_symbols_invert_fieldtrials': [
+      'gpu_tests', 'release_bot', 'minimal_symbols', 'invert_fieldtrials',
+    ],
+
     'gpu_tests_release_bot_minimal_symbols_no_nacl': [
-      'gpu_tests',
-      'release_bot',
-      'minimal_symbols',
-      'disable_nacl',
+      'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
     ],
 
     'gpu_tests_release_bot_x86_minimal_symbols': [
@@ -1961,8 +1968,9 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'gpu_tests_release_trybot': [
-      'gpu_tests', 'release_trybot',
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+      'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_ptr_comp': [
@@ -1971,10 +1979,6 @@
 
     'gpu_tests_release_trybot_x86_resource_whitelisting': [
       'gpu_tests', 'release_trybot', 'x86', 'resource_whitelisting',
-    ],
-
-    'gpu_tests_release_bot': [
-      'gpu_tests', 'release_bot',
     ],
 
     'gpu_tests_sk_dawn_release_trybot': [
@@ -2763,6 +2767,10 @@
 
     'internal_gles_conform_tests': {
       'gn_args': 'internal_gles2_conform_tests=true build_angle_gles1_conform_tests=true',
+    },
+
+    'invert_fieldtrials': {
+      'gn_args': 'invert_fieldtrials=true',
     },
 
     'ios': {
