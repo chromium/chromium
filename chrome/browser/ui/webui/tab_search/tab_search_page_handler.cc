@@ -32,12 +32,10 @@ constexpr base::TimeDelta kTabsChangeDelay =
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
     mojo::PendingRemote<tab_search::mojom::Page> page,
-    content::WebUI* web_ui,
     Delegate* delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(chrome::FindLastActive()),
-      web_ui_(web_ui),
       delegate_(delegate),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
           FROM_HERE,
@@ -180,12 +178,11 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
   if (tab_renderer_data.favicon.isNull()) {
     tab_data->is_default_favicon = true;
   } else {
-    tab_data->fav_icon_url = webui::EncodePNGAndMakeDataURI(
-        tab_renderer_data.favicon, web_ui_->GetDeviceScaleFactor());
     tab_data->is_default_favicon =
         tab_renderer_data.favicon.BackedBySameObjectAs(
             favicon::GetDefaultFavicon().AsImageSkia());
   }
+
   tab_data->show_icon = tab_renderer_data.show_icon;
   tab_data->last_active_time_ticks = contents->GetLastActiveTime();
 

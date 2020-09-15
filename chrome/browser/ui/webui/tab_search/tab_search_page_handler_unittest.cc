@@ -60,7 +60,6 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_FALSE(tab->pinned);
   EXPECT_EQ(title, tab->title);
   EXPECT_EQ(url, tab->url);
-  EXPECT_TRUE(tab->fav_icon_url.has_value());
   EXPECT_TRUE(tab->is_default_favicon);
   EXPECT_TRUE(tab->show_icon);
   EXPECT_GT(tab->last_active_time_ticks, base::TimeTicks());
@@ -80,12 +79,10 @@ void ExpectProfileTabs(tab_search::mojom::ProfileTabs* profile_tabs) {
 class TestTabSearchPageHandler : public TabSearchPageHandler {
  public:
   TestTabSearchPageHandler(mojo::PendingRemote<tab_search::mojom::Page> page,
-                           content::WebUI* web_ui,
                            TabSearchPageHandler::Delegate* delegate)
       : TabSearchPageHandler(
             mojo::PendingReceiver<tab_search::mojom::PageHandler>(),
             std::move(page),
-            web_ui,
             delegate) {
     mock_debounce_timer_ = new base::MockRetainingOneShotTimer();
     SetTimerForTesting(base::WrapUnique(mock_debounce_timer_));
@@ -120,7 +117,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
     BrowserList::SetLastActive(browser1());
     handler_delegate_ = std::make_unique<MockTabSearchPageHandlerDelegate>();
     handler_ = std::make_unique<TestTabSearchPageHandler>(
-        page_.BindAndGetRemote(), web_ui(), handler_delegate_.get());
+        page_.BindAndGetRemote(), handler_delegate_.get());
   }
 
   void TearDown() override {

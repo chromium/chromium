@@ -26,7 +26,6 @@ struct Tab {
   bool pinned;
   string title;
   string url;
-  string? fav_icon_url;
   bool is_default_favicon;
   bool show_icon;
   mojo_base.mojom.TimeTicks last_active_time_ticks;

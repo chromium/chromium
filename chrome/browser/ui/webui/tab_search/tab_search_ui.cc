@@ -70,6 +70,6 @@ void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
   DCHECK(page);
-  page_handler_ = std::make_unique<TabSearchPageHandler>(
-      std::move(receiver), std::move(page), web_ui(), this);
+  page_handler_ = std::make_unique<TabSearchPageHandler>(std::move(receiver),
+                                                         std::move(page), this);
 }
