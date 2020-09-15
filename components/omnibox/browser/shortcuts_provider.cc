@@ -123,20 +123,10 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "ShortcutsProvider::Start");
   matches_.clear();
 
-  if (input.focus_type() != OmniboxFocusType::DEFAULT ||
-      (input.type() == metrics::OmniboxInputType::EMPTY) ||
-      input.text().empty() || !initialized_)
-    return;
-
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  GetMatches(input);
-  if (input.text().length() < 6) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    std::string name = "ShortcutsProvider.QueryIndexTime." +
-                       base::NumberToString(input.text().size());
-    base::HistogramBase* counter = base::Histogram::FactoryGet(
-        name, 1, 1000, 50, base::Histogram::kUmaTargetedHistogramFlag);
-    counter->Add(static_cast<int>((end_time - start_time).InMilliseconds()));
+  if (input.focus_type() == OmniboxFocusType::DEFAULT &&
+      input.type() != metrics::OmniboxInputType::EMPTY &&
+      !input.text().empty() && initialized_) {
+    GetMatches(input);
   }
 }
 
