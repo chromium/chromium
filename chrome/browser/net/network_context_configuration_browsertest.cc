@@ -1382,35 +1382,44 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent));
   EXPECT_EQ(::GetUserAgent(), user_agent);
 
-  // Now change the profile a different language, and see if the headers
-  // get updated.
+  // Change AcceptLanguages preferences, and check that headers are updated.
+  // First, A single language.
   browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                              "uk");
+                                              "zu");
   FlushNetworkInterface();
   std::string accept_language2, user_agent2;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
-  if (GetProfile()->IsOffTheRecord()) {
-    EXPECT_EQ(system ? kNoAcceptLanguage : "en-US,en;q=0.9", accept_language2);
-  } else {
-    EXPECT_EQ(system ? kNoAcceptLanguage : "uk", accept_language2);
-  }
+  EXPECT_EQ(system ? kNoAcceptLanguage : "zu", accept_language2);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent2));
   EXPECT_EQ(::GetUserAgent(), user_agent2);
 
-  // Try a more complicated one, with multiple languages.
+  // Second, a single language with locale.
   browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
-                                              "uk, en-US");
+                                              "zu-ZA");
   FlushNetworkInterface();
   std::string accept_language3, user_agent3;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
-  if (GetProfile()->IsOffTheRecord()) {
-    EXPECT_EQ(system ? kNoAcceptLanguage : "en-US,en;q=0.9", accept_language3);
-  } else {
-    EXPECT_EQ(system ? kNoAcceptLanguage : "uk,en-US;q=0.9,en;q=0.8",
-              accept_language3);
-  }
+  EXPECT_EQ(system ? kNoAcceptLanguage : "zu-ZA,zu;q=0.9", accept_language3);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent3));
   EXPECT_EQ(::GetUserAgent(), user_agent3);
+
+  // Third, a list with multiple languages. Incognito mode should return only
+  // the first.
+  browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
+                                              "ar,am,en-GB,ru,zu");
+  FlushNetworkInterface();
+  std::string accept_language4;
+  std::string user_agent4;
+  ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language4));
+  if (GetProfile()->IsOffTheRecord()) {
+    EXPECT_EQ(system ? kNoAcceptLanguage : "ar", accept_language4);
+  } else {
+    EXPECT_EQ(system ? kNoAcceptLanguage
+                     : "ar,am;q=0.9,en-GB;q=0.8,en;q=0.7,ru;q=0.6,zu;q=0.5",
+              accept_language4);
+  }
+  ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent4));
+  EXPECT_EQ(::GetUserAgent(), user_agent4);
 }
 
 // First part of testing enable referrers. Check that referrers are enabled by

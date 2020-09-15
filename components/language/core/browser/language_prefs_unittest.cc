@@ -152,4 +152,11 @@ TEST_F(LanguagePrefsTest, ResetEmptyFluentLanguagesToDefaultTest) {
   ExpectFluentLanguageListContent({"en"});
 }
 
+TEST_F(LanguagePrefsTest, GetFirstLanguageTest) {
+  EXPECT_EQ("a", language::GetFirstLanguage("a,b,c"));
+  EXPECT_EQ("en-US", language::GetFirstLanguage("en-US,en,en-GB"));
+  EXPECT_EQ("en-US", language::GetFirstLanguage("en-US"));
+  EXPECT_EQ("", language::GetFirstLanguage(""));
+}
+
 }  // namespace language

@@ -142,4 +142,9 @@ void ResetLanguagePrefs(PrefService* prefs) {
 #endif
 }
 
+std::string GetFirstLanguage(base::StringPiece language_list) {
+  auto end = language_list.find(",");
+  return std::string(language_list.substr(0, end));
+}
+
 }  // namespace language

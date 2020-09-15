@@ -36,8 +36,8 @@
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/pref_names.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/locale_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -379,8 +379,9 @@ void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
   if (profile_->IsOffTheRecord()) {
+    // In incognito mode return only the first language.
     return ComputeAcceptLanguageFromPref(
-        g_browser_process->GetApplicationLocale());
+        language::GetFirstLanguage(pref_accept_language_.GetValue()));
   }
   return ComputeAcceptLanguageFromPref(pref_accept_language_.GetValue());
 }
