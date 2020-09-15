@@ -70,9 +70,6 @@ _GS_ASH_CHROME_PATH = 'ash-chromium.zip'
 _PREBUILT_ASH_CHROME_DIR = os.path.join(os.path.dirname(__file__),
                                         'prebuilt_ash_chrome')
 
-# Number of seconds to wait for ash-chrome to start.
-ASH_CHROME_TIMEOUT_SECONDS = 10
-
 # List of targets that require ash-chrome as a Wayland server in order to run.
 _TARGETS_REQUIRE_ASH_CHROME = [
     'app_shell_unittests',
@@ -230,49 +227,11 @@ def _GetLatestVersionOfAshChrome():
       return f.read().strip()
 
 
-def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
-                             is_lacros_chrome_browsertests):
-  """Waits for Ash-Chrome to be up and running and returns a boolean indicator.
-
-  Determine whether ash-chrome is up and running by checking whether two files
-  (lock file + socket) have been created in the |XDG_RUNTIME_DIR| and the lacros
-  mojo socket file has been created if running lacros_chrome_browsertests.
-  TODO(crbug.com/1107966): Figure out a more reliable hook to determine the
-  status of ash-chrome, likely through mojo connection.
-
-  Args:
-    tmp_xdg_dir (str): Path to the XDG_RUNTIME_DIR.
-    lacros_mojo_socket_file (str): Path to the lacros mojo socket file.
-    is_lacros_chrome_browsertests (bool): is running lacros_chrome_browsertests.
-
-  Returns:
-    A boolean indicating whether Ash-chrome is up and running.
-  """
-
-  def IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                       is_lacros_chrome_browsertests):
-    return (len(list(tmp_xdg_dir)) >= 2
-            and (not is_lacros_chrome_browsertests
-                 or os.path.exists(lacros_mojo_socket_file)))
-
-  time_counter = 0
-  while not IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                             is_lacros_chrome_browsertests):
-    time.sleep(0.5)
-    time_counter += 0.5
-    if time_counter > ASH_CHROME_TIMEOUT_SECONDS:
-      break
-
-  return IsAshChromeReady(tmp_xdg_dir, lacros_mojo_socket_file,
-                          is_lacros_chrome_browsertests)
-
-
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
-  Args:
-    args (dict): Args for this script.
-    forward_args (dict): Args to be forwarded to the test command.
+  args (dict): Args for this script.
+  forward_args (dict): Args to be forwarded to the test command.
   """
   ash_chrome_version = args.ash_chrome_version or _GetLatestVersionOfAshChrome()
   _DownloadAshChromeIfNecessary(ash_chrome_version)
@@ -281,19 +240,10 @@ def _RunTestWithAshChrome(args, forward_args):
   ash_chrome_file = os.path.join(_GetAshChromeDirPath(ash_chrome_version),
                                  'chrome')
   try:
-    # Starts Ash-Chrome.
     tmp_xdg_dir_name = tempfile.mkdtemp()
     tmp_ash_data_dir_name = tempfile.mkdtemp()
-
-    # Please refer to below file for how mojo connection is set up in testing.
-    # //chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h
-    lacros_mojo_socket_file = '%s/lacros.sock' % tmp_ash_data_dir_name
-    lacros_mojo_socket_arg = ('--lacros-mojo-socket-for-testing=%s' %
-                              lacros_mojo_socket_file)
-    is_lacros_chrome_browsertests = (os.path.basename(
-        args.command) == 'lacros_chrome_browsertests')
-
     ash_process = None
+
     ash_env = os.environ.copy()
     ash_env['XDG_RUNTIME_DIR'] = tmp_xdg_dir_name
     ash_cmd = [
@@ -302,8 +252,6 @@ def _RunTestWithAshChrome(args, forward_args):
         '--enable-wayland-server',
         '--no-startup-window',
     ]
-    if is_lacros_chrome_browsertests:
-      ash_cmd.append(lacros_mojo_socket_arg)
 
     ash_process_has_started = False
     total_tries = 3
@@ -311,14 +259,24 @@ def _RunTestWithAshChrome(args, forward_args):
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
       ash_process = subprocess.Popen(ash_cmd, env=ash_env)
-      ash_process_has_started = _WaitForAshChromeToStart(
-          tmp_xdg_dir_name, lacros_mojo_socket_file,
-          is_lacros_chrome_browsertests)
-      if ash_process_has_started:
+
+      # Determine whether ash-chrome is up and running by checking whether two
+      # files (lock file + socket) have been created in the |XDG_RUNTIME_DIR|.
+      # TODO(crbug.com/1107966): Figure out a more reliable hook to determine
+      # the status of ash-chrome, likely through mojo connection.
+      time_to_wait = 10
+      time_counter = 0
+      while len(os.listdir(tmp_xdg_dir_name)) < 2:
+        time.sleep(0.5)
+        time_counter += 0.5
+        if time_counter > time_to_wait:
+          break
+
+      if len(os.listdir(tmp_xdg_dir_name)) >= 2:
+        ash_process_has_started = True
         break
 
-      logging.warning('Starting ash-chrome timed out after %ds',
-                      ASH_CHROME_TIMEOUT_SECONDS)
+      logging.warning('Starting ash-chrome timed out after %ds', time_to_wait)
       logging.warning('Printing the output of "ps aux" for debugging:')
       subprocess.call(['ps', 'aux'])
       if ash_process and ash_process.poll() is None:
@@ -326,26 +284,6 @@ def _RunTestWithAshChrome(args, forward_args):
 
     if not ash_process_has_started:
       raise RuntimeError('Timed out waiting for ash-chrome to start')
-
-    # Starts tests.
-    if is_lacros_chrome_browsertests:
-      forward_args.append(lacros_mojo_socket_arg)
-
-      reason_of_jobs_1 = (
-          'multiple clients crosapi is not supported yet (crbug.com/1124490), '
-          'lacros_chrome_browsertests has to run tests serially')
-
-      if any('--test-launcher-jobs' in arg for arg in forward_args):
-        raise RuntimeError(
-            'Specifying "--test-launcher-jobs" is not allowed because %s. '
-            'Please remove it and this script will automatically append '
-            '"--test-launcher-jobs=1"' % reason_of_jobs_1)
-
-      # TODO(crbug.com/1124490): Run lacros_chrome_browsertests in parallel once
-      # the bug is fixed.
-      logging.warning('Appending "--test-launcher-jobs=1" because %s',
-                      reason_of_jobs_1)
-      forward_args.append('--test-launcher-jobs=1')
 
     test_env = os.environ.copy()
     test_env['EGL_PLATFORM'] = 'surfaceless'
