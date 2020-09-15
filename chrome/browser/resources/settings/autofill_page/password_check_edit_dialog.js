@@ -36,7 +36,7 @@ Polymer({
   properties: {
     /**
      * The password that the user is interacting with now.
-     * @type {?PasswordManagerProxy.CompromisedCredential}
+     * @type {?PasswordManagerProxy.InsecureCredential}
      */
     item: Object,
 

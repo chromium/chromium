@@ -52,26 +52,26 @@ class PasswordCheckDelegate
   // Obtains information about compromised credentials. This includes the last
   // time a check was run, as well as all compromised credentials that are
   // present in the password store.
-  std::vector<api::passwords_private::CompromisedCredential>
+  std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials();
 
   // Requests the plaintext password for |credential|. If successful, this
   // returns |credential| with its |password| member set. This can fail if no
   // matching compromised credential can be found in the password store.
-  base::Optional<api::passwords_private::CompromisedCredential>
+  base::Optional<api::passwords_private::InsecureCredential>
   GetPlaintextCompromisedPassword(
-      api::passwords_private::CompromisedCredential credential) const;
+      api::passwords_private::InsecureCredential credential) const;
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
   bool ChangeCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential,
+      const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password);
 
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
   bool RemoveCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential);
+      const api::passwords_private::InsecureCredential& credential);
 
   // Requests to start a check for compromised passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().
@@ -117,7 +117,7 @@ class PasswordCheckDelegate
   // nullptr otherwise.
   const password_manager::CredentialWithPassword*
   FindMatchingCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential) const;
+      const api::passwords_private::InsecureCredential& credential) const;
 
   // Tries to notify the PasswordsPrivateEventRouter that the password check
   // status has changed. Invoked after OnSavedPasswordsChanged and
@@ -174,8 +174,8 @@ class PasswordCheckDelegate
                  password_manager::BulkLeakCheckServiceInterface::Observer>
       observed_bulk_leak_check_service_{this};
 
-  // An id generator for compromised credentials. Required to match
-  // api::passwords_private::CompromisedCredential instances passed to the UI
+  // An id generator for insecure credentials. Required to match
+  // api::passwords_private::InsecureCredential instances passed to the UI
   // with the underlying CredentialWithPassword they are based on.
   IdGenerator<password_manager::CredentialWithPassword,
               int,

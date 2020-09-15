@@ -273,7 +273,7 @@ class PasswordsPrivateGetPlaintextCompromisedPasswordFunction
 
  private:
   void GotCredential(
-      base::Optional<api::passwords_private::CompromisedCredential> credential);
+      base::Optional<api::passwords_private::InsecureCredential> credential);
 };
 
 class PasswordsPrivateChangeCompromisedCredentialFunction

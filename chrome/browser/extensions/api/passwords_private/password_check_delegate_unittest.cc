@@ -68,7 +68,8 @@ constexpr char kUsername2[] = "bob";
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char kPassword2[] = "f00b4r";
 
-using api::passwords_private::CompromisedCredential;
+using api::passwords_private::CompromisedInfo;
+using api::passwords_private::InsecureCredential;
 using api::passwords_private::PasswordCheckStatus;
 using autofill::PasswordForm;
 using password_manager::BulkLeakCheckDelegateInterface;
@@ -185,6 +186,19 @@ PasswordForm MakeSavedAndroidPassword(
   return form;
 }
 
+// Creates matcher for a given compromised info.
+auto ExpectCompromisedInfo(
+    base::TimeDelta elapsed_time_since_compromise,
+    const std::string& elapsed_time_since_compromise_str,
+    api::passwords_private::CompromiseType compromise_type) {
+  return AllOf(Field(&CompromisedInfo::compromise_time,
+                     (base::Time::Now() - elapsed_time_since_compromise)
+                         .ToJsTimeIgnoringNull()),
+               Field(&CompromisedInfo::elapsed_time_since_compromise,
+                     elapsed_time_since_compromise_str),
+               Field(&CompromisedInfo::compromise_type, compromise_type));
+}
+
 // Creates matcher for a given compromised credential
 auto ExpectCompromisedCredential(
     const std::string& formatted_origin,
@@ -196,20 +210,17 @@ auto ExpectCompromisedCredential(
     api::passwords_private::CompromiseType compromise_type) {
   auto change_password_url_field_matcher =
       change_password_url.has_value()
-          ? Field(&CompromisedCredential::change_password_url,
+          ? Field(&InsecureCredential::change_password_url,
                   Pointee(change_password_url.value()))
-          : Field(&CompromisedCredential::change_password_url, IsNull());
-  return AllOf(
-      Field(&CompromisedCredential::formatted_origin, formatted_origin),
-      Field(&CompromisedCredential::detailed_origin, detailed_origin),
-      change_password_url_field_matcher,
-      Field(&CompromisedCredential::username, username),
-      Field(&CompromisedCredential::compromise_time,
-            (base::Time::Now() - elapsed_time_since_compromise)
-                .ToJsTimeIgnoringNull()),
-      Field(&CompromisedCredential::elapsed_time_since_compromise,
-            elapsed_time_since_compromise_str),
-      Field(&CompromisedCredential::compromise_type, compromise_type));
+          : Field(&InsecureCredential::change_password_url, IsNull());
+  return AllOf(Field(&InsecureCredential::formatted_origin, formatted_origin),
+               Field(&InsecureCredential::detailed_origin, detailed_origin),
+               change_password_url_field_matcher,
+               Field(&InsecureCredential::username, username),
+               Field(&InsecureCredential::compromised_info,
+                     Pointee(ExpectCompromisedInfo(
+                         elapsed_time_since_compromise,
+                         elapsed_time_since_compromise_str, compromise_type))));
 }
 
 class PasswordCheckDelegateTest : public ::testing::Test {
@@ -487,7 +498,7 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
 
@@ -504,7 +515,7 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(kExampleCom, credential.signon_realm);
 
@@ -521,7 +532,7 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(kUsername1, credential.username);
 
@@ -538,14 +549,14 @@ TEST_F(PasswordCheckDelegateTest,
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   EXPECT_EQ(kExampleCom, credential.signon_realm);
   EXPECT_EQ(kUsername1, credential.username);
   EXPECT_EQ(nullptr, credential.password);
 
-  base::Optional<CompromisedCredential> opt_credential =
+  base::Optional<InsecureCredential> opt_credential =
       delegate().GetPlaintextCompromisedPassword(std::move(credential));
   ASSERT_TRUE(opt_credential.has_value());
   EXPECT_EQ(0, opt_credential->id);
@@ -560,7 +571,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialIdMismatch) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   credential.id = 1;
@@ -575,7 +586,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialStaleData) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
 
   store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1));
@@ -590,7 +601,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialSuccess) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   EXPECT_EQ(kExampleCom, credential.signon_realm);
@@ -615,7 +626,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialRemovesDupes) {
 
   EXPECT_EQ(2u, store().stored_passwords().at(kExampleCom).size());
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_TRUE(delegate().ChangeCompromisedCredential(credential, kPassword2));
   RunUntilIdle();
@@ -633,7 +644,7 @@ TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialIdMismatch) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   credential.id = 1;
@@ -648,7 +659,7 @@ TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialStaleData) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -662,7 +673,7 @@ TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialSuccess) {
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  CompromisedCredential credential =
+  InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_TRUE(delegate().RemoveCompromisedCredential(credential));
   RunUntilIdle();

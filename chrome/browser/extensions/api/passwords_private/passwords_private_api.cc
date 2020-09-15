@@ -295,7 +295,7 @@ ResponseAction PasswordsPrivateGetPlaintextCompromisedPasswordFunction::Run() {
 }
 
 void PasswordsPrivateGetPlaintextCompromisedPasswordFunction::GotCredential(
-    base::Optional<api::passwords_private::CompromisedCredential> credential) {
+    base::Optional<api::passwords_private::InsecureCredential> credential) {
   if (!credential) {
     Respond(Error(
         "Could not obtain plaintext compromised password. Either the user is "

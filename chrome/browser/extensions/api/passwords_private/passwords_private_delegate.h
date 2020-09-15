@@ -41,7 +41,7 @@ class PasswordsPrivateDelegate : public KeyedService {
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
   using PlaintextCompromisedPasswordCallback = base::OnceCallback<void(
-      base::Optional<api::passwords_private::CompromisedCredential>)>;
+      base::Optional<api::passwords_private::InsecureCredential>)>;
 
   ~PasswordsPrivateDelegate() override = default;
 
@@ -128,14 +128,14 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Obtains information about compromised credentials. This includes the last
   // time a check was run, as well as all compromised credentials that are
   // present in the password store.
-  virtual std::vector<api::passwords_private::CompromisedCredential>
+  virtual std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() = 0;
 
   // Requests the plaintext password for |credential| due to |reason|. If
   // successful, |callback| gets invoked with the same |credential|, whose
   // |password| field will be set.
   virtual void GetPlaintextCompromisedPassword(
-      api::passwords_private::CompromisedCredential credential,
+      api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
       PlaintextCompromisedPasswordCallback callback) = 0;
@@ -143,13 +143,13 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
   virtual bool ChangeCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential,
+      const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) = 0;
 
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
   virtual bool RemoveCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential) = 0;
+      const api::passwords_private::InsecureCredential& credential) = 0;
 
   // Requests to start a check for compromised passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().

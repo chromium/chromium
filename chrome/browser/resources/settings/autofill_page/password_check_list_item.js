@@ -40,7 +40,7 @@ Polymer({
 
     /**
      * The password that is being displayed.
-     * @type {!PasswordManagerProxy.CompromisedCredential}
+     * @type {!PasswordManagerProxy.InsecureCredential}
      */
     item: Object,
 
@@ -78,7 +78,7 @@ Polymer({
    * @private
    */
   getCompromiseType_() {
-    switch (this.item.compromiseType) {
+    switch (this.item.compromisedInfo.compromiseType) {
       case chrome.passwordsPrivate.CompromiseType.PHISHED:
         return loadTimeData.getString('phishedPassword');
       case chrome.passwordsPrivate.CompromiseType.LEAKED:
@@ -88,7 +88,8 @@ Polymer({
     }
 
     assertNotReached(
-        'Can\'t find a string for type: ' + this.item.compromiseType);
+        'Can\'t find a string for type: ' +
+        this.item.compromisedInfo.compromiseType);
   },
 
   /**

@@ -253,20 +253,20 @@ PasswordCheckDelegate::PasswordCheckDelegate(Profile* profile)
 
 PasswordCheckDelegate::~PasswordCheckDelegate() = default;
 
-std::vector<api::passwords_private::CompromisedCredential>
+std::vector<api::passwords_private::InsecureCredential>
 PasswordCheckDelegate::GetCompromisedCredentials() {
   std::vector<CompromisedCredentialAndType>
       ordered_compromised_credential_and_types = OrderCompromisedCredentials(
           insecure_credentials_manager_.GetCompromisedCredentials());
 
-  std::vector<api::passwords_private::CompromisedCredential>
+  std::vector<api::passwords_private::InsecureCredential>
       compromised_credentials;
   compromised_credentials.reserve(
       ordered_compromised_credential_and_types.size());
   for (const auto& credential_and_type :
        ordered_compromised_credential_and_types) {
     const auto& credential = credential_and_type.credential;
-    api::passwords_private::CompromisedCredential api_credential;
+    api::passwords_private::InsecureCredential api_credential;
     auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
         credential.signon_realm);
     if (facet.IsValidAndroidFacetURI()) {
@@ -310,20 +310,22 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
         insecure_credential_id_generator_.GenerateId(credential);
     api_credential.signon_realm = credential.signon_realm;
     api_credential.username = base::UTF16ToUTF8(credential.username);
-    api_credential.compromise_time =
+    api_credential.compromised_info =
+        std::make_unique<api::passwords_private::CompromisedInfo>();
+    api_credential.compromised_info->compromise_time =
         credential.create_time.ToJsTimeIgnoringNull();
-    api_credential.compromise_type = credential_and_type.type;
-    api_credential.elapsed_time_since_compromise =
+    api_credential.compromised_info->elapsed_time_since_compromise =
         FormatElapsedTime(credential.create_time);
+    api_credential.compromised_info->compromise_type = credential_and_type.type;
     compromised_credentials.push_back(std::move(api_credential));
   }
 
   return compromised_credentials;
 }
 
-base::Optional<api::passwords_private::CompromisedCredential>
+base::Optional<api::passwords_private::InsecureCredential>
 PasswordCheckDelegate::GetPlaintextCompromisedPassword(
-    api::passwords_private::CompromisedCredential credential) const {
+    api::passwords_private::InsecureCredential credential) const {
   const CredentialWithPassword* compromised_credential =
       FindMatchingCompromisedCredential(credential);
   if (!compromised_credential)
@@ -335,7 +337,7 @@ PasswordCheckDelegate::GetPlaintextCompromisedPassword(
 }
 
 bool PasswordCheckDelegate::ChangeCompromisedCredential(
-    const api::passwords_private::CompromisedCredential& credential,
+    const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
   // Try to obtain the original CredentialWithPassword. Return false if fails.
   const CredentialWithPassword* compromised_credential =
@@ -348,7 +350,7 @@ bool PasswordCheckDelegate::ChangeCompromisedCredential(
 }
 
 bool PasswordCheckDelegate::RemoveCompromisedCredential(
-    const api::passwords_private::CompromisedCredential& credential) {
+    const api::passwords_private::InsecureCredential& credential) {
   // Try to obtain the original CredentialWithPassword. Return false if fails.
   const CredentialWithPassword* compromised_credential =
       FindMatchingCompromisedCredential(credential);
@@ -516,7 +518,7 @@ void PasswordCheckDelegate::OnCredentialDone(
 
 const CredentialWithPassword*
 PasswordCheckDelegate::FindMatchingCompromisedCredential(
-    const api::passwords_private::CompromisedCredential& credential) const {
+    const api::passwords_private::InsecureCredential& credential) const {
   const CredentialWithPassword* compromised_credential =
       insecure_credential_id_generator_.TryGetKey(credential.id);
   if (!compromised_credential)

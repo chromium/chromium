@@ -41,7 +41,7 @@ function createEditDialog(leakedCredential) {
 
 /**
  * Helper method used to create a compromised list item.
- * @param {!chrome.passwordsPrivate.CompromisedCredential} entry
+ * @param {!chrome.passwordsPrivate.InsecureCredential} entry
  * @return {!PasswordCheckListItemElement}
  */
 function createLeakedPasswordItem(entry) {
@@ -60,7 +60,7 @@ function isElementVisible(element) {
 
 /**
  * Helper method used to create a remove password confirmation dialog.
- * @param {!chrome.passwordsPrivate.CompromisedCredential} entry
+ * @param {!chrome.passwordsPrivate.InsecureCredential} entry
  */
 function createRemovePasswordDialog(entry) {
   const element =
@@ -73,8 +73,8 @@ function createRemovePasswordDialog(entry) {
 
 /**
  * Helper method used to randomize array.
- * @param {!Array<!chrome.passwordsPrivate.CompromisedCredential>} array
- * @return {!Array<!chrome.passwordsPrivate.CompromisedCredential>}
+ * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>} array
+ * @return {!Array<!chrome.passwordsPrivate.InsecureCredential>}
  */
 function shuffleArray(array) {
   const copy = array.slice();
@@ -92,7 +92,7 @@ function shuffleArray(array) {
  * list match the expected data.
  * @param {!Element} checkPasswordSection The section element that will be
  *     checked.
- * @param {!Array<!chrome.passwordsPrivate.CompromisedCredential>}
+ * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>}
  * passwordList The expected data.
  * @private
  */
@@ -107,7 +107,8 @@ function validateLeakedPasswordsList(
     assertTrue(!!node);
     assertEquals(
         node.$.elapsedTime.textContent.trim(),
-        compromisedCredentials[index].elapsedTimeSinceCompromise);
+        compromisedCredentials[index]
+            .compromisedInfo.elapsedTimeSinceCompromise);
     assertEquals(
         node.$.leakUsername.textContent.trim(),
         compromisedCredentials[index].username);

@@ -271,7 +271,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     }
 
     const newCredential =
-        /** @type {PasswordManagerProxy.CompromisedCredential} */ (
+        /** @type {PasswordManagerProxy.InsecureCredential} */ (
             Object.assign({}, credential));
     newCredential.password = this.plaintextPassword_;
     return Promise.resolve(newCredential);

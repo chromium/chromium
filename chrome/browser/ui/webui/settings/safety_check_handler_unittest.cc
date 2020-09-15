@@ -123,9 +123,9 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     total_ = total;
   }
 
-  std::vector<extensions::api::passwords_private::CompromisedCredential>
+  std::vector<extensions::api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override {
-    std::vector<extensions::api::passwords_private::CompromisedCredential>
+    std::vector<extensions::api::passwords_private::InsecureCredential>
         compromised(compromised_password_count_);
     for (int i = 0; i < compromised_password_count_; ++i) {
       compromised[i].username = "test" + base::NumberToString(i);

@@ -99,7 +99,7 @@ Polymer({
 
     /**
      * The password that the user is interacting with now.
-     * @private {?PasswordManagerProxy.CompromisedCredential}
+     * @private {?PasswordManagerProxy.InsecureCredential}
      */
     activePassword_: Object,
 
@@ -659,7 +659,7 @@ Polymer({
   },
 
   /**
-   * @param {!PasswordManagerProxy.CompromisedCredential} item
+   * @param {!PasswordManagerProxy.InsecureCredential} item
    * @return {boolean}
    * @private
    */

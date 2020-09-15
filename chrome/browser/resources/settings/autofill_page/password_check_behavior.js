@@ -26,7 +26,7 @@ export const PasswordCheckBehavior = {
 
     /**
      * An array of leaked passwords to display.
-     * @type {!Array<!PasswordManagerProxy.CompromisedCredential>}
+     * @type {!Array<!PasswordManagerProxy.InsecureCredential>}
      */
     leakedPasswords: {
       type: Array,
@@ -53,7 +53,7 @@ export const PasswordCheckBehavior = {
   },
 
   /**
-   * @private {?function(!PasswordManagerProxy.CompromisedCredentials):void}
+   * @private {?function(!PasswordManagerProxy.InsecureCredentials):void}
    */
   leakedCredentialsListener_: null,
 
@@ -106,7 +106,7 @@ export const PasswordCheckBehavior = {
   /**
    * Function to update compromised credentials in a proper way. New entities
    * should appear in the bottom.
-   * @param {!Array<!PasswordManagerProxy.CompromisedCredential>} newList
+   * @param {!Array<!PasswordManagerProxy.InsecureCredential>} newList
    * @private
    */
   updateCompromisedPasswordList(newList) {
@@ -127,16 +127,18 @@ export const PasswordCheckBehavior = {
     const addedResults = Array.from(map.values());
     addedResults.sort((lhs, rhs) => {
       // Phished passwords are always shown above leaked passwords.
-      const isPhished = cred =>
-          cred.compromiseType !== chrome.passwordsPrivate.CompromiseType.LEAKED;
+      const isPhished = cred => cred.compromisedInfo.compromiseType !==
+          chrome.passwordsPrivate.CompromiseType.LEAKED;
       if (isPhished(lhs) !== isPhished(rhs)) {
         return isPhished(lhs) ? -1 : 1;
       }
 
       // Sort by time only if the displayed elapsed time since compromise is
       // different.
-      if (lhs.elapsedTimeSinceCompromise !== rhs.elapsedTimeSinceCompromise) {
-        return rhs.compromiseTime - lhs.compromiseTime;
+      if (lhs.compromisedInfo.elapsedTimeSinceCompromise !==
+          rhs.compromisedInfo.elapsedTimeSinceCompromise) {
+        return rhs.compromisedInfo.compromiseTime -
+            lhs.compromisedInfo.compromiseTime;
       }
 
       // Otherwise sort by origin, or by username in case the origin is the

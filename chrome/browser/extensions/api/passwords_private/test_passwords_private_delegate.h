@@ -47,22 +47,22 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool IsOptedInForAccountStorage() override;
   void SetAccountStorageOptIn(bool opt_in,
                               content::WebContents* web_contents) override;
-  std::vector<api::passwords_private::CompromisedCredential>
+  std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override;
   void GetPlaintextCompromisedPassword(
-      api::passwords_private::CompromisedCredential credential,
+      api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
       PlaintextCompromisedPasswordCallback callback) override;
   // Fake implementation of ChangeCompromisedCredential. This succeeds if the
   // delegate knows of a compromised credential with the same id.
   bool ChangeCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential,
+      const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) override;
   // Fake implementation of RemoveCompromisedCredential. This succeeds if the
   // delegate knows of a compromised credential with the same id.
   bool RemoveCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential) override;
+      const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
@@ -115,7 +115,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       base::ASCIIToUTF16("plaintext");
 
   // List of compromised credentials.
-  std::vector<api::passwords_private::CompromisedCredential>
+  std::vector<api::passwords_private::InsecureCredential>
       compromised_credentials_;
   Profile* profile_ = nullptr;
 

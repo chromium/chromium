@@ -70,18 +70,18 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // TODO(crbug.com/1102294): Mimic the signature in PasswordFeatureManager.
   void SetAccountStorageOptIn(bool opt_in,
                               content::WebContents* web_contents) override;
-  std::vector<api::passwords_private::CompromisedCredential>
+  std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override;
   void GetPlaintextCompromisedPassword(
-      api::passwords_private::CompromisedCredential credential,
+      api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
       PlaintextCompromisedPasswordCallback callback) override;
   bool ChangeCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential,
+      const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) override;
   bool RemoveCompromisedCredential(
-      const api::passwords_private::CompromisedCredential& credential) override;
+      const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;

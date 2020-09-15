@@ -473,13 +473,13 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
       signin_metrics::ReauthAccessPoint::kPasswordSettings, base::DoNothing());
 }
 
-std::vector<api::passwords_private::CompromisedCredential>
+std::vector<api::passwords_private::InsecureCredential>
 PasswordsPrivateDelegateImpl::GetCompromisedCredentials() {
   return password_check_delegate_.GetCompromisedCredentials();
 }
 
 void PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword(
-    api::passwords_private::CompromisedCredential credential,
+    api::passwords_private::InsecureCredential credential,
     api::passwords_private::PlaintextReason reason,
     content::WebContents* web_contents,
     PlaintextCompromisedPasswordCallback callback) {
@@ -498,14 +498,14 @@ void PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword(
 }
 
 bool PasswordsPrivateDelegateImpl::ChangeCompromisedCredential(
-    const api::passwords_private::CompromisedCredential& credential,
+    const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
   return password_check_delegate_.ChangeCompromisedCredential(credential,
                                                               new_password);
 }
 
 bool PasswordsPrivateDelegateImpl::RemoveCompromisedCredential(
-    const api::passwords_private::CompromisedCredential& credential) {
+    const api::passwords_private::InsecureCredential& credential) {
   return password_check_delegate_.RemoveCompromisedCredential(credential);
 }
 

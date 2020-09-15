@@ -601,7 +601,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(credential_callback, Run(Eq(base::nullopt)));
 
   delegate.GetPlaintextCompromisedPassword(
-      api::passwords_private::CompromisedCredential(),
+      api::passwords_private::InsecureCredential(),
       api::passwords_private::PLAINTEXT_REASON_VIEW, nullptr,
       credential_callback.Get());
 }
@@ -621,7 +621,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   store_->AddCompromisedCredentials(compromised_credentials);
   base::RunLoop().RunUntilIdle();
 
-  api::passwords_private::CompromisedCredential credential =
+  api::passwords_private::InsecureCredential credential =
       std::move(delegate.GetCompromisedCredentials().at(0));
 
   MockReauthCallback reauth_callback;
@@ -631,7 +631,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       PasswordsPrivateDelegate::PlaintextCompromisedPasswordCallback>
       credential_callback;
 
-  base::Optional<api::passwords_private::CompromisedCredential> opt_credential;
+  base::Optional<api::passwords_private::InsecureCredential> opt_credential;
   EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
       .WillOnce(Return(true));
   EXPECT_CALL(credential_callback, Run).WillOnce(MoveArg(&opt_credential));

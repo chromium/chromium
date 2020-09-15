@@ -199,7 +199,7 @@ export class PasswordManagerProxy {
 
   /**
    * Requests the latest information about compromised credentials.
-   * @return {!Promise<(PasswordManagerProxy.CompromisedCredentials)>}
+   * @return {!Promise<(PasswordManagerProxy.InsecureCredentials)>}
    */
   getCompromisedCredentials() {}
 
@@ -211,20 +211,20 @@ export class PasswordManagerProxy {
 
   /**
    * Requests to remove |compromisedCredential| from the password store.
-   * @param {!PasswordManagerProxy.CompromisedCredential} compromisedCredential
+   * @param {!PasswordManagerProxy.InsecureCredential} compromisedCredential
    */
   removeCompromisedCredential(compromisedCredential) {}
 
   /**
    * Add an observer to the compromised passwords change.
-   * @param {function(!PasswordManagerProxy.CompromisedCredentials):void}
+   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
    *      listener
    */
   addCompromisedCredentialsListener(listener) {}
 
   /**
    * Remove an observer to the compromised passwords change.
-   * @param {function(!PasswordManagerProxy.CompromisedCredentials):void}
+   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
    *     listener
    */
   removeCompromisedCredentialsListener(listener) {}
@@ -244,17 +244,17 @@ export class PasswordManagerProxy {
   /**
    * Requests the plaintext password for |credential|. |callback| gets invoked
    * with the same |credential|, whose |password| field will be set.
-   * @param {!PasswordManagerProxy.CompromisedCredential} credential
+   * @param {!PasswordManagerProxy.InsecureCredential} credential
    * @param {!chrome.passwordsPrivate.PlaintextReason} reason
-   * @return {!Promise<!PasswordManagerProxy.CompromisedCredential>} A promise
-   *     that resolves to the CompromisedCredential with the password field
+   * @return {!Promise<!PasswordManagerProxy.InsecureCredential>} A promise
+   *     that resolves to the InsecureCredential with the password field
    *     populated.
    */
   getPlaintextCompromisedPassword(credential, reason) {}
 
   /**
    * Requests to change the password of |credential| to |new_password|.
-   * @param {!PasswordManagerProxy.CompromisedCredential} credential
+   * @param {!PasswordManagerProxy.InsecureCredential} credential
    * @param {string} newPassword
    * @return {!Promise<void>} A promise that resolves when the password is
    *     updated.
@@ -293,11 +293,11 @@ PasswordManagerProxy.PasswordExportProgress;
 /** @typedef {chrome.passwordsPrivate.ExportProgressStatus} */
 PasswordManagerProxy.ExportProgressStatus;
 
-/** @typedef {chrome.passwordsPrivate.CompromisedCredential} */
-PasswordManagerProxy.CompromisedCredential;
+/** @typedef {chrome.passwordsPrivate.InsecureCredential} */
+PasswordManagerProxy.InsecureCredential;
 
-/** @typedef {Array<!chrome.passwordsPrivate.CompromisedCredential>} */
-PasswordManagerProxy.CompromisedCredentials;
+/** @typedef {Array<!chrome.passwordsPrivate.InsecureCredential>} */
+PasswordManagerProxy.InsecureCredentials;
 
 /** @typedef {chrome.passwordsPrivate.PasswordCheckStatus} */
 PasswordManagerProxy.PasswordCheckStatus;

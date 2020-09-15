@@ -314,12 +314,15 @@ var availableTests = [
               'https://example.com/change-password',
               compromisedCredential.changePasswordUrl);
           chrome.test.assertEq('alice', compromisedCredential.username);
-          const compromiseTime = new Date(compromisedCredential.compromiseTime);
+          const compromiseTime =
+              new Date(compromisedCredential.compromisedInfo.compromiseTime);
           chrome.test.assertEq(
               'Tue, 03 Mar 2020 12:00:00 GMT', compromiseTime.toUTCString());
           chrome.test.assertEq(
-              '3 days ago', compromisedCredential.elapsedTimeSinceCompromise);
-          chrome.test.assertEq('LEAKED', compromisedCredential.compromiseType);
+              '3 days ago',
+              compromisedCredential.compromisedInfo.elapsedTimeSinceCompromise);
+          chrome.test.assertEq(
+              'LEAKED', compromisedCredential.compromisedInfo.compromiseType);
           chrome.test.succeed();
         });
   },
@@ -332,9 +335,11 @@ var availableTests = [
       isAndroidCredential: false,
       signonRealm: 'https://example.com',
       username: 'alice',
-      compromiseTime: COMPROMISE_TIME,
-      elapsedTimeSinceCompromise: '3 days ago',
-      compromiseType: 'LEAKED',
+      compromisedInfo: {
+        compromiseTime: COMPROMISE_TIME,
+        elapsedTimeSinceCompromise: '3 days ago',
+        compromiseType: 'LEAKED',
+      },
     };
 
     chrome.passwordsPrivate.getPlaintextCompromisedPassword(
@@ -353,9 +358,11 @@ var availableTests = [
       isAndroidCredential: false,
       signonRealm: 'https://example.com',
       username: 'alice',
-      compromiseTime: COMPROMISE_TIME,
-      elapsedTimeSinceCompromise: '3 days ago',
-      compromiseType: 'LEAKED',
+      compromisedInfo: {
+        compromiseTime: COMPROMISE_TIME,
+        elapsedTimeSinceCompromise: '3 days ago',
+        compromiseType: 'LEAKED',
+      },
     };
 
     chrome.passwordsPrivate.getPlaintextCompromisedPassword(
@@ -378,9 +385,11 @@ var availableTests = [
           isAndroidCredential: false,
           signonRealm: 'https://example.com',
           username: 'alice',
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+          },
         },
         '', () => {
           chrome.test.assertLastError(
@@ -399,9 +408,11 @@ var availableTests = [
           isAndroidCredential: false,
           signonRealm: 'https://example.com',
           username: 'alice',
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+          },
         },
         'new_pass', () => {
           chrome.test.assertLastError(
@@ -420,9 +431,11 @@ var availableTests = [
           isAndroidCredential: false,
           signonRealm: 'https://example.com',
           username: 'alice',
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+          },
         },
         'new_pass', () => {
           chrome.test.assertNoLastError();
@@ -439,9 +452,11 @@ var availableTests = [
           isAndroidCredential: false,
           signonRealm: 'https://example.com',
           username: 'alice',
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+          },
         },
         () => {
           chrome.test.assertLastError(
@@ -461,9 +476,11 @@ var availableTests = [
           isAndroidCredential: false,
           signonRealm: 'https://example.com',
           username: 'alice',
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+          },
         },
         () => {
           chrome.test.assertNoLastError();

@@ -250,7 +250,7 @@ export function createCreditCardEntry() {
  * @param {chrome.passwordsPrivate.CompromiseType} type
  * @param {number=} id
  * @param {number=} elapsedMinSinceCompromise
- * @return {chrome.passwordsPrivate.CompromisedCredential}
+ * @return {chrome.passwordsPrivate.InsecureCredential}
  * @private
  */
 export function makeCompromisedCredential(
@@ -260,9 +260,11 @@ export function makeCompromisedCredential(
     formattedOrigin: url,
     changePasswordUrl: `http://${url}/`,
     username: username,
-    elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
-    compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
-    compromiseType: type,
+    compromisedInfo: {
+      compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
+      elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
+      compromiseType: type,
+    },
     detailedOrigin: '',
     isAndroidCredential: false,
     signonRealm: '',

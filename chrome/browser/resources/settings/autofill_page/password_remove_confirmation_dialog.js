@@ -22,7 +22,7 @@ Polymer({
   properties: {
     /**
      * The password that is being displayed.
-     * @private {?PasswordManagerProxy.CompromisedCredential}
+     * @private {?PasswordManagerProxy.InsecureCredential}
      */
     item: Object,
 

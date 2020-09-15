@@ -97,7 +97,7 @@ void PasswordsPrivateEventRouter::OnAccountStorageOptInStateChanged(
 }
 
 void PasswordsPrivateEventRouter::OnCompromisedCredentialsChanged(
-    std::vector<api::passwords_private::CompromisedCredential>
+    std::vector<api::passwords_private::InsecureCredential>
         compromised_credentials) {
   auto extension_event = std::make_unique<Event>(
       events::PASSWORDS_PRIVATE_ON_COMPROMISED_CREDENTIALS_INFO_CHANGED,
