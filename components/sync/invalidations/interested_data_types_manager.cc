@@ -4,22 +4,24 @@
 
 #include "components/sync/invalidations/interested_data_types_manager.h"
 
-#include "components/sync/invalidations/interested_data_types_observer.h"
+#include <utility>
+
+#include "base/bind.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
 
 namespace syncer {
 
 InterestedDataTypesManager::InterestedDataTypesManager() = default;
 
-InterestedDataTypesManager::~InterestedDataTypesManager() = default;
-
-void InterestedDataTypesManager::AddInterestedDataTypesObserver(
-    InterestedDataTypesObserver* observer) {
-  observers_.AddObserver(observer);
+InterestedDataTypesManager::~InterestedDataTypesManager() {
+  DCHECK(!interested_data_types_handler_);
 }
 
-void InterestedDataTypesManager::RemoveInterestedDataTypesObserver(
-    InterestedDataTypesObserver* observer) {
-  observers_.RemoveObserver(observer);
+void InterestedDataTypesManager::SetInterestedDataTypesHandler(
+    InterestedDataTypesHandler* handler) {
+  DCHECK(!interested_data_types_handler_ || !handler);
+  interested_data_types_handler_ = handler;
 }
 
 const ModelTypeSet& InterestedDataTypesManager::GetInterestedDataTypes() const {
@@ -27,10 +29,13 @@ const ModelTypeSet& InterestedDataTypesManager::GetInterestedDataTypes() const {
 }
 
 void InterestedDataTypesManager::SetInterestedDataTypes(
-    const ModelTypeSet& data_types) {
+    const ModelTypeSet& data_types,
+    SyncInvalidationsService::InterestedDataTypesAppliedCallback callback) {
+  ModelTypeSet new_data_types = Difference(data_types, data_types_);
   data_types_ = data_types;
-  for (InterestedDataTypesObserver& observer : observers_) {
-    observer.OnInterestedDataTypesChanged();
+  if (interested_data_types_handler_) {
+    interested_data_types_handler_->OnInterestedDataTypesChanged(
+        base::BindOnce(std::move(callback), new_data_types));
   }
 }
 

@@ -4,16 +4,19 @@
 
 #include "components/sync/invalidations/interested_data_types_manager.h"
 
-#include "components/sync/invalidations/interested_data_types_observer.h"
+#include "base/bind_helpers.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::_;
 
 namespace syncer {
 namespace {
 
-class MockDataTypesObserver : public InterestedDataTypesObserver {
+class MockDataTypesHandler : public InterestedDataTypesHandler {
  public:
-  MOCK_METHOD0(OnInterestedDataTypesChanged, void());
+  MOCK_METHOD1(OnInterestedDataTypesChanged, void(base::OnceClosure callback));
 };
 
 class InterestedDataTypesManagerTest : public testing::Test {
@@ -22,20 +25,23 @@ class InterestedDataTypesManagerTest : public testing::Test {
 };
 
 TEST_F(InterestedDataTypesManagerTest, ShouldReturnGivenDataTypes) {
-  manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES));
+  manager_.SetInterestedDataTypes(ModelTypeSet(BOOKMARKS, PREFERENCES),
+                                  base::DoNothing());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS, PREFERENCES),
             manager_.GetInterestedDataTypes());
-  manager_.SetInterestedDataTypes(ModelTypeSet(PREFERENCES, PASSWORDS));
+  manager_.SetInterestedDataTypes(ModelTypeSet(PREFERENCES, PASSWORDS),
+                                  base::DoNothing());
   EXPECT_EQ(ModelTypeSet(PREFERENCES, PASSWORDS),
             manager_.GetInterestedDataTypes());
 }
 
 TEST_F(InterestedDataTypesManagerTest, ShouldNotifyOnChange) {
-  testing::NiceMock<MockDataTypesObserver> observer;
-  manager_.AddInterestedDataTypesObserver(&observer);
-  EXPECT_CALL(observer, OnInterestedDataTypesChanged());
-  manager_.SetInterestedDataTypes(ModelTypeSet(PASSWORDS, AUTOFILL));
-  manager_.RemoveInterestedDataTypesObserver(&observer);
+  testing::NiceMock<MockDataTypesHandler> handler;
+  manager_.SetInterestedDataTypesHandler(&handler);
+  EXPECT_CALL(handler, OnInterestedDataTypesChanged(_));
+  manager_.SetInterestedDataTypes(ModelTypeSet(PASSWORDS, AUTOFILL),
+                                  base::DoNothing());
+  manager_.SetInterestedDataTypesHandler(nullptr);
 }
 
 }  // namespace

@@ -1466,7 +1466,9 @@ void ProfileSyncService::UpdateDataTypesForInvalidations() {
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
-  invalidations_service->SetInterestedDataTypes(types);
+  invalidations_service->SetInterestedDataTypes(
+      types, base::BindRepeating(&ProfileSyncService::TriggerRefresh,
+                                 sync_enabled_weak_factory_.GetWeakPtr()));
 }
 
 SyncCycleSnapshot ProfileSyncService::GetLastCycleSnapshotForDebugging() const {

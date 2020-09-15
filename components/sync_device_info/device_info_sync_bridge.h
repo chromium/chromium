@@ -51,8 +51,9 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // Refresh local copy of device info in memory, and informs sync of the
   // change. Used when the caller knows a property of local device info has
   // changed (e.g. SharingInfo), and must be sync-ed to other devices as soon as
-  // possible, without waiting for the periodic commits.
-  void RefreshLocalDeviceInfo();
+  // possible, without waiting for the periodic commits. |callback| will be
+  // called when device info is synced.
+  void RefreshLocalDeviceInfo(base::OnceClosure callback);
 
   // ModelTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
@@ -162,6 +163,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // Used to update our local device info once every pulse interval.
   base::OneShotTimer pulse_timer_;
+
+  std::vector<base::OnceClosure> device_info_synced_callback_list_;
 
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;
 

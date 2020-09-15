@@ -46,7 +46,7 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
 
   if (sync_invalidations_service_) {
     sync_invalidations_service_->AddTokenObserver(this);
-    sync_invalidations_service_->AddInterestedDataTypesObserver(this);
+    sync_invalidations_service_->SetInterestedDataTypesHandler(this);
   }
 }
 
@@ -66,22 +66,24 @@ DeviceInfoSyncServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }
 
-void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo() {
-  bridge_->RefreshLocalDeviceInfo();
+void DeviceInfoSyncServiceImpl::RefreshLocalDeviceInfo(
+    base::OnceClosure callback) {
+  bridge_->RefreshLocalDeviceInfo(std::move(callback));
 }
 
 void DeviceInfoSyncServiceImpl::OnFCMRegistrationTokenChanged() {
   RefreshLocalDeviceInfo();
 }
 
-void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged() {
-  RefreshLocalDeviceInfo();
+void DeviceInfoSyncServiceImpl::OnInterestedDataTypesChanged(
+    base::OnceClosure callback) {
+  RefreshLocalDeviceInfo(std::move(callback));
 }
 
 void DeviceInfoSyncServiceImpl::Shutdown() {
   if (sync_invalidations_service_) {
     sync_invalidations_service_->RemoveTokenObserver(this);
-    sync_invalidations_service_->RemoveInterestedDataTypesObserver(this);
+    sync_invalidations_service_->SetInterestedDataTypesHandler(nullptr);
   }
 }
 

@@ -28,13 +28,13 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
               (FCMRegistrationTokenObserver * observer));
   MOCK_METHOD(const std::string&, GetFCMRegistrationToken, (), (const));
   MOCK_METHOD(void,
-              AddInterestedDataTypesObserver,
-              (InterestedDataTypesObserver * observer));
-  MOCK_METHOD(void,
-              RemoveInterestedDataTypesObserver,
-              (InterestedDataTypesObserver * observer));
+              SetInterestedDataTypesHandler,
+              (InterestedDataTypesHandler * handler));
   MOCK_METHOD(const ModelTypeSet&, GetInterestedDataTypes, (), (const));
-  MOCK_METHOD(void, SetInterestedDataTypes, (const ModelTypeSet& data_types));
+  MOCK_METHOD(void,
+              SetInterestedDataTypes,
+              (const ModelTypeSet& data_types,
+               InterestedDataTypesAppliedCallback callback));
 };
 
 }  // namespace syncer

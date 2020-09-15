@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -502,7 +503,9 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
 
   void ForcePulse() { bridge()->ForcePulseForTest(); }
 
-  void RefreshLocalDeviceInfo() { bridge()->RefreshLocalDeviceInfo(); }
+  void RefreshLocalDeviceInfo() {
+    bridge()->RefreshLocalDeviceInfo(base::OnceClosure());
+  }
 
   void CommitToStoreAndWait(std::unique_ptr<WriteBatch> batch) {
     base::RunLoop loop;
@@ -1305,6 +1308,24 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldSendInvalidationFields) {
                       AllOf(HasInstanceIdToken(), HasAnyInterestedDataTypes())),
                   _));
   InitializeAndMergeInitialData(SyncMode::kFull);
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, ShouldNotifyWhenDeviceInfoIsSynced) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  base::MockOnceClosure callback;
+  bridge()->RefreshLocalDeviceInfo(callback.Get());
+
+  std::string guid = local_device()->GetLocalDeviceInfo()->guid();
+  EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(true));
+  EXPECT_CALL(callback, Run()).Times(0);
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityChangeList());
+
+  EXPECT_CALL(*processor(), IsEntityUnsynced(guid)).WillOnce(Return(false));
+  EXPECT_CALL(callback, Run());
+  bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                             EntityChangeList());
 }
 
 }  // namespace

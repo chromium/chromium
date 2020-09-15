@@ -225,7 +225,11 @@ LocalDeviceInfoProvider* DeviceInfoSyncBridge::GetLocalDeviceInfoProvider() {
   return local_device_info_provider_.get();
 }
 
-void DeviceInfoSyncBridge::RefreshLocalDeviceInfo() {
+void DeviceInfoSyncBridge::RefreshLocalDeviceInfo(base::OnceClosure callback) {
+  if (!callback.is_null()) {
+    device_info_synced_callback_list_.push_back(std::move(callback));
+  }
+
   SendLocalData();
 }
 
@@ -318,6 +322,15 @@ base::Optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
   CommitAndNotify(std::move(batch), has_changes);
+
+  DCHECK(!local_cache_guid_.empty());
+  if (!change_processor()->IsEntityUnsynced(local_cache_guid_)) {
+    for (base::OnceClosure& callback : device_info_synced_callback_list_) {
+      std::move(callback).Run();
+    }
+    device_info_synced_callback_list_.clear();
+  }
+
   return base::nullopt;
 }
 

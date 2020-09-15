@@ -4,6 +4,8 @@
 
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 
+#include <utility>
+
 #include "components/sync/invalidations/fcm_handler.h"
 
 namespace syncer {
@@ -62,14 +64,9 @@ const std::string& SyncInvalidationsServiceImpl::GetFCMRegistrationToken()
   return fcm_handler_->GetFCMRegistrationToken();
 }
 
-void SyncInvalidationsServiceImpl::AddInterestedDataTypesObserver(
-    InterestedDataTypesObserver* observer) {
-  data_types_manager_.AddInterestedDataTypesObserver(observer);
-}
-
-void SyncInvalidationsServiceImpl::RemoveInterestedDataTypesObserver(
-    InterestedDataTypesObserver* observer) {
-  data_types_manager_.RemoveInterestedDataTypesObserver(observer);
+void SyncInvalidationsServiceImpl::SetInterestedDataTypesHandler(
+    InterestedDataTypesHandler* handler) {
+  data_types_manager_.SetInterestedDataTypesHandler(handler);
 }
 
 const ModelTypeSet& SyncInvalidationsServiceImpl::GetInterestedDataTypes()
@@ -78,8 +75,9 @@ const ModelTypeSet& SyncInvalidationsServiceImpl::GetInterestedDataTypes()
 }
 
 void SyncInvalidationsServiceImpl::SetInterestedDataTypes(
-    const ModelTypeSet& data_types) {
-  data_types_manager_.SetInterestedDataTypes(data_types);
+    const ModelTypeSet& data_types,
+    InterestedDataTypesAppliedCallback callback) {
+  data_types_manager_.SetInterestedDataTypes(data_types, std::move(callback));
 }
 
 void SyncInvalidationsServiceImpl::Shutdown() {

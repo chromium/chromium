@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 
-#include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace syncer {
-class InterestedDataTypesObserver;
+class InterestedDataTypesHandler;
 
 // Manages for which data types are invalidations sent to this device.
 class InterestedDataTypesManager {
@@ -20,20 +20,18 @@ class InterestedDataTypesManager {
   InterestedDataTypesManager& operator=(const InterestedDataTypesManager&) =
       delete;
 
-  // Add or remove a interested data types change observer. |observer| must not
-  // be nullptr.
-  void AddInterestedDataTypesObserver(InterestedDataTypesObserver* observer);
-  void RemoveInterestedDataTypesObserver(InterestedDataTypesObserver* observer);
+  // Set the interested data types change handler. |handler| can be nullptr to
+  // unregister any existing handler. There can be at most one handler.
+  void SetInterestedDataTypesHandler(InterestedDataTypesHandler* handler);
 
   // Get or set the interested data types.
   const ModelTypeSet& GetInterestedDataTypes() const;
-  void SetInterestedDataTypes(const ModelTypeSet& data_types);
+  void SetInterestedDataTypes(
+      const ModelTypeSet& data_types,
+      SyncInvalidationsService::InterestedDataTypesAppliedCallback callback);
 
  private:
-  base::ObserverList<InterestedDataTypesObserver,
-                     /*check_empty=*/true,
-                     /*allow_reentrancy=*/false>
-      observers_;
+  InterestedDataTypesHandler* interested_data_types_handler_ = nullptr;
 
   ModelTypeSet data_types_;
 };

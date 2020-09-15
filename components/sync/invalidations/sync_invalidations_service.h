@@ -7,13 +7,14 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 
 namespace syncer {
 class FCMRegistrationTokenObserver;
 class InvalidationsListener;
-class InterestedDataTypesObserver;
+class InterestedDataTypesHandler;
 
 // Service which is used to register with FCM. It is used to obtain an FCM token
 // which is used to send invalidations from the server. The service also
@@ -22,6 +23,11 @@ class InterestedDataTypesObserver;
 // should be added.
 class SyncInvalidationsService : public KeyedService {
  public:
+  // Data types which are newly marked as interesting will be passed to the
+  // callback.
+  using InterestedDataTypesAppliedCallback =
+      base::OnceCallback<void(const ModelTypeSet&)>;
+
   // Start or stop listening to invalidations.
   virtual void SetActive(bool active) = 0;
 
@@ -39,16 +45,16 @@ class SyncInvalidationsService : public KeyedService {
   // received yet.
   virtual const std::string& GetFCMRegistrationToken() const = 0;
 
-  // Add or remove an interested data types change observer. |observer| must not
-  // be nullptr.
-  virtual void AddInterestedDataTypesObserver(
-      InterestedDataTypesObserver* observer) = 0;
-  virtual void RemoveInterestedDataTypesObserver(
-      InterestedDataTypesObserver* observer) = 0;
+  // Set the interested data types change handler. |handler| can be nullptr to
+  // unregister any existing handler. There can be at most one handler.
+  virtual void SetInterestedDataTypesHandler(
+      InterestedDataTypesHandler* handler) = 0;
 
   // Get or set for which data types should the device receive invalidations.
   virtual const ModelTypeSet& GetInterestedDataTypes() const = 0;
-  virtual void SetInterestedDataTypes(const ModelTypeSet& data_types) = 0;
+  virtual void SetInterestedDataTypes(
+      const ModelTypeSet& data_types,
+      InterestedDataTypesAppliedCallback callback) = 0;
 };
 
 }  // namespace syncer

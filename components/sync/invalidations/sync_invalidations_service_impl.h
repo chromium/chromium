@@ -38,12 +38,12 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   void AddTokenObserver(FCMRegistrationTokenObserver* observer) override;
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer) override;
   const std::string& GetFCMRegistrationToken() const override;
-  void AddInterestedDataTypesObserver(
-      InterestedDataTypesObserver* observer) override;
-  void RemoveInterestedDataTypesObserver(
-      InterestedDataTypesObserver* observer) override;
+  void SetInterestedDataTypesHandler(
+      InterestedDataTypesHandler* handler) override;
   const ModelTypeSet& GetInterestedDataTypes() const override;
-  void SetInterestedDataTypes(const ModelTypeSet& data_types) override;
+  void SetInterestedDataTypes(
+      const ModelTypeSet& data_types,
+      InterestedDataTypesAppliedCallback callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;

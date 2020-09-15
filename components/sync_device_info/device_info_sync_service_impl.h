@@ -9,7 +9,7 @@
 #include <string>
 
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
-#include "components/sync/invalidations/interested_data_types_observer.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
@@ -23,7 +23,7 @@ class SyncInvalidationsService;
 
 class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
                                   public FCMRegistrationTokenObserver,
-                                  public InterestedDataTypesObserver {
+                                  public InterestedDataTypesHandler {
  public:
   // |local_device_info_provider| must not be null.
   // |device_info_prefs| must not be null.
@@ -43,13 +43,14 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   DeviceInfoTracker* GetDeviceInfoTracker() override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
-  void RefreshLocalDeviceInfo() override;
+  void RefreshLocalDeviceInfo(
+      base::OnceClosure callback = base::OnceClosure()) override;
 
   // FCMRegistrationTokenObserver implementation.
   void OnFCMRegistrationTokenChanged() override;
 
-  // InterestedDataTypesObserver implementation.
-  void OnInterestedDataTypesChanged() override;
+  // InterestedDataTypesHandler implementation.
+  void OnInterestedDataTypesChanged(base::OnceClosure callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;

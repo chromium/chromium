@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -37,8 +38,10 @@ class DeviceInfoSyncService : public KeyedService {
   // Interface to refresh local copy of device info in memory, and informs sync
   // of the change. Used when the caller knows a property of local device info
   // has changed (e.g. SharingInfo), and must be sync-ed to other devices as
-  // soon as possible, without waiting for the periodic commits.
-  virtual void RefreshLocalDeviceInfo() = 0;
+  // soon as possible, without waiting for the periodic commits. |callback| will
+  // be called when device info is synced.
+  virtual void RefreshLocalDeviceInfo(
+      base::OnceClosure callback = base::OnceClosure()) = 0;
 };
 
 }  // namespace syncer

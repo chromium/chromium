@@ -25,8 +25,12 @@ FakeDeviceInfoSyncService::GetControllerDelegate() {
   return fake_model_type_controller_delegate_.GetWeakPtr();
 }
 
-void FakeDeviceInfoSyncService::RefreshLocalDeviceInfo() {
+void FakeDeviceInfoSyncService::RefreshLocalDeviceInfo(
+    base::OnceClosure callback) {
   refresh_local_device_info_count_++;
+  if (!callback.is_null()) {
+    std::move(callback).Run();
+  }
 }
 
 int FakeDeviceInfoSyncService::RefreshLocalDeviceInfoCount() {
