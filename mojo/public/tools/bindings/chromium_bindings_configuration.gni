@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 _typemap_imports = [
-  "//chrome/chrome_cleaner/mojom/typemaps/typemaps.gni",
   "//chrome/common/importer/typemaps.gni",
   "//chrome/typemaps.gni",
   "//chromecast/typemaps.gni",

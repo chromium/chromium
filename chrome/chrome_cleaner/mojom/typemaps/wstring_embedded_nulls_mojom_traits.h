@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "chrome/chrome_cleaner/mojom/wstring_embedded_nulls.mojom.h"
+#include "chrome/chrome_cleaner/mojom/wstring_embedded_nulls.mojom-shared.h"
 #include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"

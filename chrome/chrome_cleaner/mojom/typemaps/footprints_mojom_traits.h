@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "chrome/chrome_cleaner/mojom/footprints.mojom.h"
+#include "chrome/chrome_cleaner/mojom/footprints.mojom-shared.h"
 
 namespace mojo {
 

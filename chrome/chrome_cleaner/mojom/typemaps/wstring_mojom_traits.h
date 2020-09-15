@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "chrome/chrome_cleaner/mojom/wstring.mojom.h"
+#include "chrome/chrome_cleaner/mojom/wstring.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
