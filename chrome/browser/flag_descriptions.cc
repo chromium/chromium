@@ -4186,6 +4186,12 @@ const char kIntentPickerPWAPersistenceName[] = "Intent picker PWA Persistence";
 const char kIntentPickerPWAPersistenceDescription[] =
     "Allow user to always open with PWA in intent picker.";
 
+const char kInteractiveWindowCycleList[] =
+    "Enable Alt-Tab interactivity improvements.";
+const char kInteractiveWindowCycleListDescription[] =
+    "Adds mouse behavior, three-finger touchpad swipe, left/right "
+    "arrow navigation, and space/enter confirmation to Alt-Tab.";
+
 const char kLacrosSupportName[] = "LaCrOS support";
 const char kLacrosSupportDescription[] =
     "Support for the experimental lacros-chrome browser.";

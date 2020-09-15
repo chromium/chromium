@@ -2433,6 +2433,9 @@ extern const char kIntentHandlingSharingDescription[];
 extern const char kIntentPickerPWAPersistenceName[];
 extern const char kIntentPickerPWAPersistenceDescription[];
 
+extern const char kInteractiveWindowCycleList[];
+extern const char kInteractiveWindowCycleListDescription[];
+
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 
