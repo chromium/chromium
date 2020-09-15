@@ -3341,6 +3341,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-bubble-url-suggestions",
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "omnibox-clobber-triggers-contextual-web-zero-suggest",
     "owners": [ "tommycli", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

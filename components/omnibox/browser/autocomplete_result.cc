@@ -222,7 +222,7 @@ void AutocompleteResult::SortAndCull(
 
   DeduplicateMatches(&matches_);
 
-  // Sort the matches.
+  // Sort the matches by relevance and demotions.
   std::sort(matches_.begin(), matches_.end(), comparing_object);
 
   // Find the best match and rotate it to the front to become the default match.
@@ -270,6 +270,7 @@ void AutocompleteResult::SortAndCull(
       CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
   matches_.resize(num_matches);
 
+  // Group search suggestions above URL suggestions.
 #if defined(OS_ANDROID)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
@@ -282,11 +283,13 @@ void AutocompleteResult::SortAndCull(
             matches_.front().type)) {
       while (next != matches_.end() &&
              (AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(
-                 matches_.front().type))) {
+                 next->type))) {
         next = std::next(next);
       }
     }
-    GroupSuggestionsBySearchVsURL(next, matches_.end());
+    auto begin_url = GroupSuggestionsBySearchVsURL(next, matches_.end());
+    if (base::FeatureList::IsEnabled(omnibox::kBubbleUrlSuggestions))
+      BubbleURLSuggestions(next, begin_url, matches_);
   }
 
   // If we have a default match, run some sanity checks. Skip these checks if
@@ -1012,9 +1015,60 @@ void AutocompleteResult::LimitNumberOfURLsShown(
 }
 
 // static
-void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
-                                                       iterator end) {
-  std::stable_partition(begin, end, [](const AutocompleteMatch& match) {
-    return match.IsSearchType(match.type);
+AutocompleteResult::iterator AutocompleteResult::GroupSuggestionsBySearchVsURL(
+    iterator begin,
+    iterator end) {
+  return std::stable_partition(begin, end, [](const AutocompleteMatch& match) {
+    return AutocompleteMatch::IsSearchType(match.type);
   });
+}
+
+// static
+void AutocompleteResult::BubbleURLSuggestions(iterator begin_search,
+                                              iterator begin_url,
+                                              ACMatches& matches) {
+  auto absolute_gap = base::GetFieldTrialParamByFeatureAsInt(
+      omnibox::kBubbleUrlSuggestions,
+      OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteGapParam, 200);
+  auto relative_gap = base::GetFieldTrialParamByFeatureAsDouble(
+      omnibox::kBubbleUrlSuggestions,
+      OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeGapParam, 1);
+  auto absolute_buffer = base::GetFieldTrialParamByFeatureAsInt(
+      omnibox::kBubbleUrlSuggestions,
+      OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteBufferParam, 100);
+  auto relative_buffer = base::GetFieldTrialParamByFeatureAsDouble(
+      omnibox::kBubbleUrlSuggestions,
+      OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeBufferParam, 1);
+
+  // |next_url| tracks the first (i.e. highest scoring) yet unbubbled URL
+  // suggestion.
+  auto next_url = begin_url;
+
+  for (auto next_search = begin_search;
+       next_search != next_url && next_url != matches.end();
+       next_search = std::next(next_search)) {
+    // Only bubble if there's a sufficient score gap between adjacent searches.
+    if (next_search != begin_search &&
+        std::prev(next_search)->relevance <
+            std::max(next_search->relevance + absolute_gap * 1.,
+                     next_search->relevance * relative_gap))
+      continue;
+    // Only bubble if there's a sufficient buffer between the URL and search.
+    if (next_url->relevance <
+        std::max(next_search->relevance + absolute_buffer * 1.,
+                 next_search->relevance * relative_buffer))
+      continue;
+
+    // Find the series of URLs to bubble: [next_url, last_bubble_url).
+    // Although |next_url| must score higher than the |next_search| by at least
+    // the buffer amount, the remaining URls in the series need to score only
+    // as high as |next_search|.
+    auto last_bubble_url = std::find_if(
+        std::next(next_url), matches.end(),
+        [&](auto& match) { return match.relevance < next_search->relevance; });
+
+    // Bubble [next_url, last_bubble_url) above |next_search|.
+    next_search = std::rotate(next_search, next_url, last_bubble_url);
+    next_url = last_bubble_url;
+  }
 }

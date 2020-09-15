@@ -42609,6 +42609,7 @@ from previous Chrome versions.
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
+  <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>
   <int value="15614295" label="Portals:enabled"/>
   <int value="19629326" label="OmniboxExperimentalKeywordMode:enabled"/>
   <int value="19815558" label="EnableSettingsShortcutSearch:disabled"/>
@@ -44535,6 +44536,7 @@ from previous Chrome versions.
   <int value="2032558514"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
+  <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037756154" label="enable-impl-side-painting"/>
   <int value="2038036881" label="NewShortcutMapping:enabled"/>
   <int value="2039276757" label="EnableOverviewRoundedCorners:enabled"/>

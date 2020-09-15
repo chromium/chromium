@@ -203,6 +203,13 @@ const base::Feature kOmniboxMaxURLMatches{
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable bubbling URL suggestions above search suggestions
+// after grouping if 2 conditions are met:
+// 1) There must be a sufficient score gap between the adjacent searches.
+// 2) There must be a sufficient buffer between the URL and search scores.
+const base::Feature kBubbleUrlSuggestions{"OmniboxBubbleUrlSuggestions",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
 // Chrome will request remote ZeroSuggest suggestions for the OTHER page
 // classification (contextual web).

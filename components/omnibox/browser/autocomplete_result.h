@@ -217,6 +217,7 @@ class AutocompleteResult {
                            TestGroupSuggestionsBySearchVsURL);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, BubbleURLSuggestions);
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
@@ -277,7 +278,17 @@ class AutocompleteResult {
   // search types, and their submatches regardless of type, are shifted
   // earlier in the range, while non-search types and their submatches
   // are shifted later.
-  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
+  static iterator GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
+
+  // Bubbles groups of high scoring URLs into gaps between searches. |matches|
+  // should already be grouped (see |GroupSuggestionsBySearchVsURL()|) such that
+  // search suggestions are ordered before URL suggestions. |begin_search|
+  // refers to the first search suggestion to be considered (e.g. excluding the
+  // default or clipboard suggestions). |begin_url| refers to the first URL
+  // suggestion.
+  static void BubbleURLSuggestions(iterator begin_search,
+                                   iterator begin_url,
+                                   ACMatches& matches);
 
   // If we have SearchProvider search suggestions, demote OnDeviceProvider
   // search suggestions, since, which in general have lower quality than

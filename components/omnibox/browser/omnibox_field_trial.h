@@ -522,6 +522,12 @@ extern const char kUIMaxAutocompleteMatchesParam[];
 extern const char kDynamicMaxAutocompleteUrlCutoffParam[];
 extern const char kDynamicMaxAutocompleteIncreasedLimitParam[];
 
+// Parameters used for ranking.
+extern const char kBubbleUrlSuggestionsAbsoluteGapParam[];
+extern const char kBubbleUrlSuggestionsRelativeGapParam[];
+extern const char kBubbleUrlSuggestionsAbsoluteBufferParam[];
+extern const char kBubbleUrlSuggestionsRelativeBufferParam[];
+
 // Parameter names used by on device head provider.
 // These four parameters are shared by both non-incognito and incognito.
 extern const char kOnDeviceHeadModelLocaleConstraint[];

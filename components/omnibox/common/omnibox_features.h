@@ -46,7 +46,7 @@ extern const base::Feature kEntitySuggestionsReduceLatency;
 
 // Num suggestions - these affect how many suggestions are shown based on e.g.
 // focus, page context, provider, or URL v non-URL.
-// Note that all of these are overriden and default values used instead if
+// Note that all of these are overridden and default values used instead if
 // kNewSearchFeatures is disabled.
 extern const base::Feature kMaxZeroSuggestMatches;
 extern const base::Feature kUIExperimentMaxAutocompleteMatches;
@@ -55,6 +55,9 @@ extern const base::Feature kUIExperimentMaxAutocompleteMatches;
 extern const bool kOmniboxMaxURLMatchesEnabledByDefault;
 extern const base::Feature kOmniboxMaxURLMatches;
 extern const base::Feature kDynamicMaxAutocomplete;
+
+// Ranking
+extern const base::Feature kBubbleUrlSuggestions;
 
 // On-Focus Suggestions a.k.a. ZeroSuggest.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
