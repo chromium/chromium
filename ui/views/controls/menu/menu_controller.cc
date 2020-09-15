@@ -2389,13 +2389,16 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
     // This is a top-level menu, position it relative to the anchor bounds.
     const gfx::Rect& anchor_bounds = state_.initial_bounds;
 
+    using MenuPosition = MenuItemView::MenuPosition;
+
     // First the size gets reduced to the possible space.
     if (!monitor_bounds.IsEmpty()) {
       int max_width = monitor_bounds.width();
       int max_height = monitor_bounds.height();
       // In case of bubbles, the maximum width is limited by the space
       // between the display corner and the target area + the tip size.
-      if (state_.anchor == MenuAnchorPosition::kBubbleAbove) {
+      if (state_.anchor == MenuAnchorPosition::kBubbleAbove ||
+          item->actual_menu_position() == MenuPosition::kAboveBounds) {
         // Don't consider |border_and_shadow_insets| because when the max size
         // is enforced, the scroll view is shown and the md shadows are not
         // applied.
@@ -2432,6 +2435,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
         y = anchor_bounds.bottom() - border_and_shadow_insets.top() +
             menu_config.touchable_anchor_offset;
       }
+      item->set_actual_menu_position(MenuPosition::kAboveBounds);
     } else if (state_.anchor == MenuAnchorPosition::kBubbleLeft ||
                state_.anchor == MenuAnchorPosition::kBubbleRight) {
       if (state_.anchor == MenuAnchorPosition::kBubbleLeft) {
@@ -2461,18 +2465,35 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
       const int y_below = anchor_bounds.y() - border_and_shadow_insets.top();
       const int y_above = anchor_bounds.bottom() - menu_size.height() +
                           border_and_shadow_insets.bottom();
-      if (y_below + menu_size.height() <= monitor_bounds.bottom()) {
+
+      const bool able_to_show_below =
+          (y_below + menu_size.height() <= monitor_bounds.bottom());
+      const bool able_to_show_above = (y_above >= monitor_bounds.y());
+
+      // Respect the actual menu position calculated earlier if possible, to
+      // prevent changing positions during menu size updates.
+
+      if (item->actual_menu_position() == MenuPosition::kBelowBounds &&
+          able_to_show_below) {
+        y = y_below;
+      } else if (item->actual_menu_position() == MenuPosition::kAboveBounds &&
+                 able_to_show_above) {
+        y = y_above;
+      } else if (able_to_show_below) {
         // Show below the anchor. Align the top of the menu with the top of the
         // anchor.
         y = y_below;
-      } else if (y_above >= monitor_bounds.y()) {
+        item->set_actual_menu_position(MenuPosition::kBelowBounds);
+      } else if (able_to_show_above) {
         // No room below, but there is room above. Show above the anchor. Align
         // the bottom of the menu with the bottom of the anchor.
         y = y_above;
+        item->set_actual_menu_position(MenuPosition::kAboveBounds);
       } else {
         // No room above or below. Show as low as possible. Align the bottom of
         // the menu with the bottom of the screen.
         y = monitor_bounds.bottom() - menu_size.height();
+        item->set_actual_menu_position(MenuPosition::kBestFit);
       }
     }
     // The above adjustments may have shifted a large menu off the screen.
