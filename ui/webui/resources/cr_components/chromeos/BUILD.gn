@@ -9,21 +9,17 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 group("closure_compile") {
   deps = [
     "bluetooth:closure_compile",
+    "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile",
+    "cellular_setup:closure_compile_module",
     "multidevice_setup:closure_compile",
     "network:closure_compile",
+    "network:closure_compile_module",
     "network_health:closure_compile",
-    "quick_unlock:closure_compile",
-    "smb_shares:closure_compile",
-
-    # Targets for auto-generated Polymer 3 JS Modules
-    # TODO: Uncomment as Polymer3 migration makes progress.
-    # "network:closure_compile_module",
-
-    "quick_unlock:closure_compile_module",
-    "cellular_setup:closure_compile_module",
-    "bluetooth:closure_compile_module",
     "network_health:closure_compile_module",
+    "quick_unlock:closure_compile",
+    "quick_unlock:closure_compile_module",
+    "smb_shares:closure_compile",
     "smb_shares:closure_compile_module",
   ]
 }
