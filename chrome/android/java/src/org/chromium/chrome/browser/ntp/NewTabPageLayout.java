@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGridLayout;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.video_tutorials.NewTabPageVideoIPHManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -76,6 +77,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
     private View mTileGridPlaceholder;
     private View mNoSearchLogoSpacer;
     private QueryTileSection mQueryTileSection;
+    private NewTabPageVideoIPHManager mVideoIPHManager;
     private ImageView mCryptidHolder;
 
     @Nullable
@@ -172,6 +174,8 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         super.onFinishInflate();
         mMiddleSpacer = findViewById(R.id.ntp_middle_spacer);
         mSearchProviderLogoView = findViewById(R.id.search_provider_logo);
+        mVideoIPHManager = new NewTabPageVideoIPHManager(
+                findViewById(R.id.video_iph_stub), Profile.getLastUsedRegularProfile());
         insertSiteSectionView();
 
         int variation = ExploreSitesBridge.getVariation();

@@ -49,9 +49,9 @@ if (is_android) {
     ]
 
     sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/TutorialConversionBridge.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/VideoTutorialServiceBridge.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/VideoTutorialServiceFactory.java",
     ]
 
     deps = [
@@ -69,9 +69,9 @@ if (is_android) {
     visibility = [ ":*" ]
 
     sources = [
+      "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/TutorialConversionBridge.java",
       "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/VideoTutorialServiceBridge.java",
-      "android/java/src/org/chromium/chrome/browser/video_tutorials/bridges/VideoTutorialServiceFactory.java",
     ]
   }
 }

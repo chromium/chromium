@@ -65,6 +65,8 @@ extern const base::Feature kIPHTabGroupsTapToSeeAnotherTabFeature;
 extern const base::Feature kIPHTabGroupsYourTabsAreTogetherFeature;
 extern const base::Feature kIPHTabGroupsDragAndDropFeature;
 extern const base::Feature kIPHTranslateMenuButtonFeature;
+extern const base::Feature kIPHVideoTutorialDownloadFeature;
+extern const base::Feature kIPHVideoTutorialSearchFeature;
 extern const base::Feature kIPHExploreSitesTileFeature;
 extern const base::Feature kIPHFeedHeaderMenuFeature;
 extern const base::Feature kIPHChromeReengagementNotification1Feature;

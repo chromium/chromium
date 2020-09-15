@@ -51,6 +51,15 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
+    <!-- Video tutorial IPH card -->
+    <ViewStub
+        android:id="@+id/video_iph_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout="@layout/video_tutorial_iph_card"
+        android:inflatedId="@+id/video_iph_card"/>
+
     <!-- Middle spacer -->
     <View
         android:id="@+id/ntp_middle_spacer"

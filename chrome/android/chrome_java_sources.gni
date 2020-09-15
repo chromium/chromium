@@ -1638,6 +1638,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/user_education/IPHCommand.java",
   "java/src/org/chromium/chrome/browser/user_education/IPHCommandBuilder.java",
   "java/src/org/chromium/chrome/browser/user_education/UserEducationHelper.java",
+  "java/src/org/chromium/chrome/browser/video_tutorials/NewTabPageVideoIPHManager.java",
   "java/src/org/chromium/chrome/browser/vr/ArDelegate.java",
   "java/src/org/chromium/chrome/browser/vr/ArDelegateProvider.java",
   "java/src/org/chromium/chrome/browser/webapps/ActivateWebApkActivity.java",

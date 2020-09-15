@@ -208052,6 +208052,8 @@ regressions. -->
   <suffix name="OfflinePages"
       label="Showing cache patterns only for OfflinePages."/>
   <suffix name="QueryTiles" label="Showing Query tiles images."/>
+  <suffix name="VideoTutorials"
+      label="Showing thumbnails for video tutorials."/>
   <affected-histogram name="ImageFetcher.Events"/>
   <affected-histogram name="ImageFetcher.ImageLoadFromCacheTime"/>
   <affected-histogram name="ImageFetcher.ImageLoadFromCacheTimeJava"/>

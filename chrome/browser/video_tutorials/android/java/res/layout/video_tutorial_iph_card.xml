@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/video_tutorial_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/hairline_border_card_background"
+    android:paddingTop="@dimen/promo_compact_padding"
+    android:paddingStart="@dimen/promo_compact_padding"
+    android:paddingEnd="@dimen/promo_compact_padding"
+    android:paddingBottom="@dimen/promo_compact_padding">
+
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="80dp"
+        android:layout_height="58dp"
+        android:layout_gravity="center_vertical"
+        android:importantForAccessibility="no"
+        app:roundedfillColor="@color/modern_grey_300"
+        app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
+        app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius" />
+
+    <TextView
+      android:id="@+id/video_length"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@id/thumbnail"
+      android:layout_marginStart="6dp"
+      android:layout_marginBottom="6dp"
+      android:paddingStart="4dp"
+      android:paddingEnd="4dp"
+      android:background="@color/modern_grey_900"
+      android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/thumbnail"
+        android:layout_toStartOf="@id/close_button"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        android:layout_height="24dp"
+        android:layout_width="24dp"
+        android:layout_alignParentEnd="true"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/close" 
+        android:src="@drawable/btn_close" />
+
+</RelativeLayout>

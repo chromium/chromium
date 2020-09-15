@@ -29,6 +29,7 @@ public abstract class ImageFetcher {
     public static final String FEED_UMA_CLIENT_NAME = "Feed";
     public static final String NTP_ANIMATED_LOGO_UMA_CLIENT_NAME = "NewTabPageAnimatedLogo";
     public static final String QUERY_TILE_UMA_CLIENT_NAME = "QueryTiles";
+    public static final String VIDEO_TUTORIALS_UMA_CLIENT_NAME = "VideoTutorials";
 
     /**
      * Encapsulates image fetching customization options. Supports a subset of the native

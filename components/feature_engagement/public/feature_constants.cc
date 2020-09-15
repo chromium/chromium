@@ -93,6 +93,10 @@ const base::Feature kIPHTabGroupsDragAndDropFeature{
     "IPH_TabGroupsDragAndDrop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTranslateMenuButtonFeature{
     "IPH_TranslateMenuButton", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHVideoTutorialDownloadFeature{
+    "IPH_VideoTutorial_Download", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHVideoTutorialSearchFeature{
+    "IPH_VideoTutorial_Search", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedHeaderMenuFeature{

@@ -50,6 +50,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsYourTabsAreTogetherFeature,
     &kIPHTabGroupsDragAndDropFeature,
     &kIPHTranslateMenuButtonFeature,
+    &kIPHVideoTutorialDownloadFeature,
+    &kIPHVideoTutorialSearchFeature,
     &kIPHExploreSitesTileFeature,
     &kIPHFeedHeaderMenuFeature,
 #endif  // defined(OS_ANDROID)

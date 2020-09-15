@@ -175,6 +175,15 @@ public final class EventConstants {
     public static final String NTP_SHOWN = "ntp_shown";
     public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
 
+    /** Video tutorial related events. */
+    public static final String VIDEO_TUTORIAL_DISMISSED_DOWNLOAD =
+            "video_tutorial_iph_dismissed_download";
+    public static final String VIDEO_TUTORIAL_DISMISSED_SEARCH =
+            "video_tutorial_iph_dismissed_search";
+    public static final String VIDEO_TUTORIAL_CLICKED_DOWNLOAD =
+            "video_tutorial_iph_clicked_download";
+    public static final String VIDEO_TUTORIAL_CLICKED_SEARCH = "video_tutorial_iph_clicked_search";
+
     /** Reengagement events. */
     public static final String STARTED_FROM_MAIN_INTENT = "started_from_main_intent";
 

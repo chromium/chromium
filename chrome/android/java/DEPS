@@ -19,6 +19,7 @@ include_rules = [
   "+chrome/browser/performance_hints/android/java",
   "+chrome/browser/settings/android/java",
   "+chrome/browser/tabmodel/android/java",
+  "+chrome/browser/video_tutorials/android",
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android/java/src/org/chromium/components/background_task_scheduler",
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",

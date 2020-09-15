@@ -103,6 +103,10 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsDragAndDropFeature,
                        "IPH_TabGroupsDragAndDrop");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialDownloadFeature,
+                       "IPH_VideoTutorial_Download");
+DEFINE_VARIATION_PARAM(kIPHVideoTutorialSearchFeature,
+                       "IPH_VideoTutorial_Search");
 DEFINE_VARIATION_PARAM(kIPHExploreSitesTileFeature, "IPH_ExploreSitesTile");
 DEFINE_VARIATION_PARAM(kIPHFeedHeaderMenuFeature, "IPH_FeedHeaderMenu");
 #endif  // defined(OS_ANDROID)
@@ -174,6 +178,8 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsYourTabsAreTogetherFeature),
         VARIATION_ENTRY(kIPHTabGroupsDragAndDropFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialDownloadFeature),
+        VARIATION_ENTRY(kIPHVideoTutorialSearchFeature),
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
 #elif defined(OS_IOS)
