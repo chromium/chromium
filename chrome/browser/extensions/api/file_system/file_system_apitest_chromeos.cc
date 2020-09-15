@@ -381,16 +381,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
       << message_;
 }
 
-#if defined(ADDRESS_SANITIZER)
-// Flaky when run under ASan: crbug.com/499233.
-#define MAYBE_FileSystemApiOpenDirectoryWithWriteTest \
-  DISABLED_FileSystemApiOpenDirectoryWithWriteTest
-#else
-#define MAYBE_FileSystemApiOpenDirectoryWithWriteTest \
-  FileSystemApiOpenDirectoryWithWriteTest
-#endif
 IN_PROC_BROWSER_TEST_F(FileSystemApiTestForDrive,
-                       MAYBE_FileSystemApiOpenDirectoryWithWriteTest) {
+                       FileSystemApiOpenDirectoryWithWriteTest) {
   base::FilePath test_directory =
       GetDriveMountPoint().AppendASCII("root/subdir");
   FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
