@@ -150,6 +150,13 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
     // BRK #1
     EXPECT_EQ(0XD4200020, *++it);
 
+#elif defined(OS_MAC)
+
+    // BRK #1
+    EXPECT_EQ(0XD4200020, *++it);
+    // BRK #0
+    EXPECT_EQ(0XD4200000, *++it);
+
 #else
 
     // BRK #0
