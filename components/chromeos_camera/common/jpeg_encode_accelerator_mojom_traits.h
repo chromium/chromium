@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CHROMEOS_CAMERA_COMMON_JPEG_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define COMPONENTS_CHROMEOS_CAMERA_COMMON_JPEG_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
-#include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
+#include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom-shared.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 
 namespace mojo {

@@ -43,6 +43,52 @@ mojom("media_router") {
   }
 
   disable_variants = true
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media_router.mojom.Issue"
+          cpp = "::media_router::IssueInfo"
+        },
+        {
+          mojom = "media_router.mojom.Issue.ActionType"
+          cpp = "::media_router::IssueInfo::Action"
+        },
+        {
+          mojom = "media_router.mojom.Issue.Severity"
+          cpp = "::media_router::IssueInfo::Severity"
+        },
+        {
+          mojom = "media_router.mojom.MediaRoute"
+          cpp = "::media_router::MediaRoute"
+        },
+        {
+          mojom = "media_router.mojom.MediaRouteProvider.Id"
+          cpp = "::media_router::MediaRouteProviderId"
+        },
+        {
+          mojom = "media_router.mojom.MediaSink"
+          cpp = "::media_router::MediaSinkInternal"
+        },
+        {
+          mojom = "media_router.mojom.RouteRequestResultCode"
+          cpp = "::media_router::RouteRequestResult::ResultCode"
+        },
+      ]
+      traits_headers = [ "media_router_mojom_traits.h" ]
+      traits_sources = [ "media_router_mojom_traits.cc" ]
+
+      traits_public_deps = [
+        "//components/media_router/common",
+        "//net",
+      ]
+      traits_deps = [
+        "//services/network/public/cpp",
+        "//url/mojom:url_mojom_gurl",
+      ]
+    },
+  ]
 }
 
 mojom("media_router_test_interfaces") {

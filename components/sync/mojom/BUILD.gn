@@ -6,4 +6,16 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "syncer.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "syncer.mojom.StringOrdinal"
+          cpp = "::syncer::StringOrdinal"
+        },
+      ]
+      traits_headers = [ "syncer_mojom_traits.h" ]
+      traits_public_deps = [ "//components/sync" ]
+    },
+  ]
 }

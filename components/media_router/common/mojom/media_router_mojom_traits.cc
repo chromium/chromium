@@ -5,6 +5,7 @@
 #include "components/media_router/common/mojom/media_router_mojom_traits.h"
 
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "services/network/public/cpp/ip_address_mojom_traits.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"

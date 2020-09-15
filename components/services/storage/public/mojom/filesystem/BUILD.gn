@@ -11,4 +11,19 @@ mojom_component("filesystem") {
   sources = [ "directory.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "storage.mojom.StrictRelativePath"
+          cpp = "::base::FilePath"
+        },
+      ]
+      traits_headers = [ "//components/services/storage/public/cpp/filesystem/strict_relative_path_mojom_traits.h" ]
+      traits_public_deps = [
+        "//components/services/storage/public/cpp/filesystem:typemap_traits",
+      ]
+    },
+  ]
 }

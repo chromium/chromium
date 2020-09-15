@@ -9,7 +9,7 @@
 
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/issue.h"
-#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/media_router.mojom-shared.h"
 #include "components/media_router/common/route_request_result.h"
 #include "net/base/ip_endpoint.h"
 
@@ -18,27 +18,27 @@ namespace mojo {
 // Issue
 
 template <>
-struct EnumTraits<media_router::mojom::Issue::ActionType,
+struct EnumTraits<media_router::mojom::Issue_ActionType,
                   media_router::IssueInfo::Action> {
-  static media_router::mojom::Issue::ActionType ToMojom(
+  static media_router::mojom::Issue_ActionType ToMojom(
       media_router::IssueInfo::Action action) {
     switch (action) {
       case media_router::IssueInfo::Action::DISMISS:
-        return media_router::mojom::Issue::ActionType::DISMISS;
+        return media_router::mojom::Issue_ActionType::DISMISS;
       case media_router::IssueInfo::Action::LEARN_MORE:
-        return media_router::mojom::Issue::ActionType::LEARN_MORE;
+        return media_router::mojom::Issue_ActionType::LEARN_MORE;
     }
     NOTREACHED() << "Unknown issue action type " << static_cast<int>(action);
-    return media_router::mojom::Issue::ActionType::DISMISS;
+    return media_router::mojom::Issue_ActionType::DISMISS;
   }
 
-  static bool FromMojom(media_router::mojom::Issue::ActionType input,
+  static bool FromMojom(media_router::mojom::Issue_ActionType input,
                         media_router::IssueInfo::Action* output) {
     switch (input) {
-      case media_router::mojom::Issue::ActionType::DISMISS:
+      case media_router::mojom::Issue_ActionType::DISMISS:
         *output = media_router::IssueInfo::Action::DISMISS;
         return true;
-      case media_router::mojom::Issue::ActionType::LEARN_MORE:
+      case media_router::mojom::Issue_ActionType::LEARN_MORE:
         *output = media_router::IssueInfo::Action::LEARN_MORE;
         return true;
     }
@@ -47,32 +47,32 @@ struct EnumTraits<media_router::mojom::Issue::ActionType,
 };
 
 template <>
-struct EnumTraits<media_router::mojom::Issue::Severity,
+struct EnumTraits<media_router::mojom::Issue_Severity,
                   media_router::IssueInfo::Severity> {
-  static media_router::mojom::Issue::Severity ToMojom(
+  static media_router::mojom::Issue_Severity ToMojom(
       media_router::IssueInfo::Severity severity) {
     switch (severity) {
       case media_router::IssueInfo::Severity::FATAL:
-        return media_router::mojom::Issue::Severity::FATAL;
+        return media_router::mojom::Issue_Severity::FATAL;
       case media_router::IssueInfo::Severity::WARNING:
-        return media_router::mojom::Issue::Severity::WARNING;
+        return media_router::mojom::Issue_Severity::WARNING;
       case media_router::IssueInfo::Severity::NOTIFICATION:
-        return media_router::mojom::Issue::Severity::NOTIFICATION;
+        return media_router::mojom::Issue_Severity::NOTIFICATION;
     }
     NOTREACHED() << "Unknown issue severity " << static_cast<int>(severity);
-    return media_router::mojom::Issue::Severity::WARNING;
+    return media_router::mojom::Issue_Severity::WARNING;
   }
 
-  static bool FromMojom(media_router::mojom::Issue::Severity input,
+  static bool FromMojom(media_router::mojom::Issue_Severity input,
                         media_router::IssueInfo::Severity* output) {
     switch (input) {
-      case media_router::mojom::Issue::Severity::FATAL:
+      case media_router::mojom::Issue_Severity::FATAL:
         *output = media_router::IssueInfo::Severity::FATAL;
         return true;
-      case media_router::mojom::Issue::Severity::WARNING:
+      case media_router::mojom::Issue_Severity::WARNING:
         *output = media_router::IssueInfo::Severity::WARNING;
         return true;
-      case media_router::mojom::Issue::Severity::NOTIFICATION:
+      case media_router::mojom::Issue_Severity::NOTIFICATION:
         *output = media_router::IssueInfo::Severity::NOTIFICATION;
         return true;
     }
@@ -491,40 +491,40 @@ struct EnumTraits<media_router::mojom::RouteRequestResultCode,
 // MediaRouteProvider
 
 template <>
-struct EnumTraits<media_router::mojom::MediaRouteProvider::Id,
+struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
                   media_router::MediaRouteProviderId> {
-  static media_router::mojom::MediaRouteProvider::Id ToMojom(
+  static media_router::mojom::MediaRouteProvider_Id ToMojom(
       media_router::MediaRouteProviderId provider_id) {
     switch (provider_id) {
       case media_router::MediaRouteProviderId::EXTENSION:
-        return media_router::mojom::MediaRouteProvider::Id::EXTENSION;
+        return media_router::mojom::MediaRouteProvider_Id::EXTENSION;
       case media_router::MediaRouteProviderId::WIRED_DISPLAY:
-        return media_router::mojom::MediaRouteProvider::Id::WIRED_DISPLAY;
+        return media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY;
       case media_router::MediaRouteProviderId::CAST:
-        return media_router::mojom::MediaRouteProvider::Id::CAST;
+        return media_router::mojom::MediaRouteProvider_Id::CAST;
       case media_router::MediaRouteProviderId::DIAL:
-        return media_router::mojom::MediaRouteProvider::Id::DIAL;
+        return media_router::mojom::MediaRouteProvider_Id::DIAL;
       case media_router::MediaRouteProviderId::UNKNOWN:
         break;
     }
-    NOTREACHED() << "Invalid MediaRouteProvider::Id: "
+    NOTREACHED() << "Invalid MediaRouteProvider_Id: "
                  << static_cast<int>(provider_id);
-    return media_router::mojom::MediaRouteProvider::Id::EXTENSION;
+    return media_router::mojom::MediaRouteProvider_Id::EXTENSION;
   }
 
-  static bool FromMojom(media_router::mojom::MediaRouteProvider::Id input,
+  static bool FromMojom(media_router::mojom::MediaRouteProvider_Id input,
                         media_router::MediaRouteProviderId* provider_id) {
     switch (input) {
-      case media_router::mojom::MediaRouteProvider::Id::EXTENSION:
+      case media_router::mojom::MediaRouteProvider_Id::EXTENSION:
         *provider_id = media_router::MediaRouteProviderId::EXTENSION;
         return true;
-      case media_router::mojom::MediaRouteProvider::Id::WIRED_DISPLAY:
+      case media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY:
         *provider_id = media_router::MediaRouteProviderId::WIRED_DISPLAY;
         return true;
-      case media_router::mojom::MediaRouteProvider::Id::CAST:
+      case media_router::mojom::MediaRouteProvider_Id::CAST:
         *provider_id = media_router::MediaRouteProviderId::CAST;
         return true;
-      case media_router::mojom::MediaRouteProvider::Id::DIAL:
+      case media_router::mojom::MediaRouteProvider_Id::DIAL:
         *provider_id = media_router::MediaRouteProviderId::DIAL;
         return true;
     }
