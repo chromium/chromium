@@ -330,9 +330,14 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   return false;
 #else
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (!profile)
+    return false;
+  AdvancedProtectionStatusManager* advanced_protection_status_manager =
+      AdvancedProtectionStatusManagerFactory::GetForProfile(profile);
+  if (!advanced_protection_status_manager)
+    return false;
   return base::FeatureList::IsEnabled(kPromptAppForDeepScanning) &&
-         AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
-             ->IsUnderAdvancedProtection();
+         advanced_protection_status_manager->IsUnderAdvancedProtection();
 #endif
 }
 
