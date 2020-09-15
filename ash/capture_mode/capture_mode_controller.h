@@ -12,6 +12,7 @@
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
@@ -45,6 +46,7 @@ class ASH_EXPORT CaptureModeController {
   void set_user_capture_region(const gfx::Rect& region) {
     user_capture_region_ = region;
   }
+  bool is_recording_in_progress() const { return is_recording_in_progress_; }
 
   // Returns true if a capture mode session is currently active.
   bool IsActive() const { return !!capture_mode_session_; }
@@ -72,6 +74,22 @@ class ASH_EXPORT CaptureModeController {
   // Returns true if doing a screen capture is currently allowed, false
   // otherwise.
   bool IsCaptureAllowed() const;
+
+  // Returns the capture parameters for the capture operation that is about to
+  // be performed (i.e. the window to be captured, and the capture bounds). If
+  // nothing is to be captured (e.g. when there's no window selected in a
+  // kWindow source, or no region is selected in a kRegion source), then a
+  // base::nullopt is returned.
+  struct CaptureParams {
+    aura::Window* window = nullptr;
+    // The capture bounds, either in root coordinates (in kFullscreen or kRegion
+    // capture sources), or window-local coordinates (in a kWindow capture
+    // source). The bounds are never empty when in kImage capture type. However,
+    // in kVideo capture type, they're non-empty only in a kRegion capture
+    // source, since the recording service needs them to crop the frame.
+    gfx::Rect bounds;
+  };
+  base::Optional<CaptureParams> GetCaptureParams() const;
 
   // The below functions start the actual image/video capture. They expect that
   // the capture session is still active when called, so they can retrieve the
@@ -104,8 +122,14 @@ class ASH_EXPORT CaptureModeController {
   void HandleNotificationClicked(const base::FilePath& screen_capture_path,
                                  base::Optional<int> button_index);
 
-  // Builds a path for an image screenshot file that was taken at |timestamp|.
+  // Builds a path for a file of an image screenshot, or a video screen
+  // recording, which were taken at |timestamp|.
   base::FilePath BuildImagePath(base::Time timestamp) const;
+  base::FilePath BuildVideoPath(base::Time timestamp) const;
+  // Used by the above two functions by providing the corresponding file name
+  // |format_string| to a capture type (image or video).
+  base::FilePath BuildPath(const char* const format_string,
+                           base::Time timestamp) const;
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
@@ -118,6 +142,9 @@ class ASH_EXPORT CaptureModeController {
   gfx::Rect user_capture_region_;
 
   std::unique_ptr<CaptureModeSession> capture_mode_session_;
+
+  // True when video recording is in progress.
+  bool is_recording_in_progress_ = false;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

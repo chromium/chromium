@@ -9,14 +9,17 @@
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/stop_recording_button_tray.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/status_area_widget.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -47,8 +50,10 @@ constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
 
 // The format strings of the file names of captured images.
-// TODO(afakhry): Discuss with UX localizing "Screenshot".
+// TODO(afakhry): Discuss with UX localizing "Screenshot" and "Screen
+// recording".
 constexpr char kScreenshotFileNameFmtStr[] = "Screenshot %s %s.png";
+constexpr char kVideoFileNameFmtStr[] = "Screen recording %s %s.webm";
 constexpr char kDateFmtStr[] = "%d-%02d-%02d";
 constexpr char k24HourTimeFmtStr[] = "%02d.%02d.%02d";
 constexpr char kAmPmTimeFmtStr[] = "%d.%02d.%02d";
@@ -182,6 +187,18 @@ void CopyImageToClipboard(const gfx::Image& image) {
   clipboard->WriteClipboardData(std::move(clipboard_data));
 }
 
+// Shows the stop-recording button in the Shelf's status area widget. Note that
+// the button hides itself when clicked.
+void ShowStopRecordingButton(aura::Window* root) {
+  DCHECK(root);
+  DCHECK(root->IsRootWindow());
+
+  auto* stop_recording_button = RootWindowController::ForWindow(root)
+                                    ->GetStatusAreaWidget()
+                                    ->stop_recording_button_tray();
+  stop_recording_button->SetVisiblePreferred(true);
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -243,18 +260,21 @@ void CaptureModeController::PerformCapture() {
     return;
   }
 
-  if (type_ == CaptureModeType::kImage) {
+  if (type_ == CaptureModeType::kImage)
     CaptureImage();
-  } else {
+  else
     CaptureVideo();
-  }
 
   // The above capture functions should have ended the session.
   DCHECK(!IsActive());
 }
 
 void CaptureModeController::EndVideoRecording() {
-  // TODO(afakhry): Fill in here.
+  // TODO(afakhry): We should instead ask the recording service to stop
+  // recording, and only do the below when the service tells us that it's done
+  // with all the frames.
+  is_recording_in_progress_ = false;
+  Shell::Get()->UpdateCursorCompositingEnabled();
 }
 
 bool CaptureModeController::IsCaptureAllowed() const {
@@ -262,9 +282,8 @@ bool CaptureModeController::IsCaptureAllowed() const {
   return true;
 }
 
-void CaptureModeController::CaptureImage() {
-  DCHECK_EQ(CaptureModeType::kImage, type_);
-  DCHECK(IsCaptureAllowed());
+base::Optional<CaptureModeController::CaptureParams>
+CaptureModeController::GetCaptureParams() const {
   DCHECK(IsActive());
 
   aura::Window* window = nullptr;
@@ -274,7 +293,11 @@ void CaptureModeController::CaptureImage() {
       window = capture_mode_session_->current_root();
       DCHECK(window);
       DCHECK(window->IsRootWindow());
-      bounds = window->bounds();
+      // In video mode, the recording service is not given any bounds as it
+      // should just use the same bounds of the frame captured from the root
+      // window.
+      if (type_ == CaptureModeType::kImage)
+        bounds = window->bounds();
       break;
 
     case CaptureModeSource::kWindow:
@@ -282,12 +305,15 @@ void CaptureModeController::CaptureImage() {
       if (!window) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // window was selected.
-        Stop();
-        return;
+        return base::nullopt;
       }
-      // window->bounds() are in root coordinates, but we want to get the
-      // capture area in |window|'s coordinates.
-      bounds = gfx::Rect(window->bounds().size());
+      // Also here, the recording service will use the same frame size as
+      // captured from |window| and does not need any crop bounds.
+      if (type_ == CaptureModeType::kImage) {
+        // window->bounds() are in root coordinates, but we want to get the
+        // capture area in |window|'s coordinates.
+        bounds = gfx::Rect(window->bounds().size());
+      }
       break;
 
     case CaptureModeSource::kRegion:
@@ -297,30 +323,64 @@ void CaptureModeController::CaptureImage() {
       if (user_capture_region_.IsEmpty()) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // region was selected.
-        Stop();
-        return;
+        return base::nullopt;
       }
+      // TODO(afakhry): Consider any special handling of display scale changes
+      // while video recording is in progress.
       bounds = user_capture_region_;
       break;
   }
 
   DCHECK(window);
-  DCHECK(!bounds.IsEmpty());
 
+  return CaptureParams{window, bounds};
+}
+
+void CaptureModeController::CaptureImage() {
+  DCHECK_EQ(CaptureModeType::kImage, type_);
+  DCHECK(IsCaptureAllowed());
+
+  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
   Stop();
 
+  if (!capture_params)
+    return;
+
+  DCHECK(!capture_params->bounds.IsEmpty());
+
   ui::GrabWindowSnapshotAsyncPNG(
-      window, bounds,
+      capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCaptured,
                      weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
 }
 
 void CaptureModeController::CaptureVideo() {
+  DCHECK_EQ(CaptureModeType::kVideo, type_);
   DCHECK(IsCaptureAllowed());
-  // TODO(afakhry): Fill in here.
+
+  const base::Optional<CaptureParams> capture_params = GetCaptureParams();
+  // Stop the capture session now, so the bar doesn't show up in the captured
+  // video.
   Stop();
+
+  if (!capture_params)
+    return;
+
+  // We provide the service with no crop bounds except when we're capturing a
+  // custom region.
+  DCHECK_EQ(source_ != CaptureModeSource::kRegion,
+            capture_params->bounds.IsEmpty());
+
+  // We enable the software-composited cursor, in order for the video capturer
+  // to be able to record it.
+  is_recording_in_progress_ = true;
+  Shell::Get()->UpdateCursorCompositingEnabled();
+
+  // TODO(afakhry): Call into the recording service.
+
+  ShowStopRecordingButton(capture_params->window->GetRootWindow());
 }
 
 void CaptureModeController::OnImageCaptured(
@@ -410,12 +470,22 @@ void CaptureModeController::HandleNotificationClicked(
 
 base::FilePath CaptureModeController::BuildImagePath(
     base::Time timestamp) const {
+  return BuildPath(kScreenshotFileNameFmtStr, timestamp);
+}
+
+base::FilePath CaptureModeController::BuildVideoPath(
+    base::Time timestamp) const {
+  return BuildPath(kVideoFileNameFmtStr, timestamp);
+}
+
+base::FilePath CaptureModeController::BuildPath(const char* const format_string,
+                                                base::Time timestamp) const {
   const base::FilePath path = delegate_->GetActiveUserDownloadsDir();
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
 
   return path.AppendASCII(base::StringPrintf(
-      kScreenshotFileNameFmtStr, GetDateStr(exploded_time).c_str(),
+      format_string, GetDateStr(exploded_time).c_str(),
       GetTimeStr(exploded_time, delegate_->Uses24HourFormat()).c_str()));
 }
 

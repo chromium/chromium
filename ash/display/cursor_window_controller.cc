@@ -4,12 +4,14 @@
 
 #include "ash/display/cursor_window_controller.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/display/display_color_manager.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/fast_ink/cursor/cursor_view.h"
 #include "ash/magnifier/magnification_controller.h"
 #include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -134,6 +136,12 @@ void CursorWindowController::SetCursorColor(SkColor cursor_color) {
 bool CursorWindowController::ShouldEnableCursorCompositing() {
   if (is_cursor_motion_blur_enabled_)
     return true;
+
+  if (features::IsCaptureModeEnabled() &&
+      CaptureModeController::Get()->is_recording_in_progress()) {
+    // To let the video capturer record the cursor.
+    return true;
+  }
 
   // During startup, we may not have a preference service yet. We need to check
   // display manager state first so that we don't accidentally ignore it while
