@@ -48,8 +48,10 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
                                         bool is_capturing_audio);
   static void OnIsBeingMirroredChanged(content::WebContents* contents,
                                        bool is_being_mirrored);
-  static void OnIsCapturingDesktopChanged(content::WebContents* contents,
-                                          bool is_capturing_desktop);
+  static void OnIsCapturingWindowChanged(content::WebContents* contents,
+                                         bool is_capturing_window);
+  static void OnIsCapturingDisplayChanged(content::WebContents* contents,
+                                          bool is_capturing_display);
 
   // Set the auto discardable property. This indicates whether or not the page
   // can be discarded during an intervention.
@@ -80,7 +82,8 @@ class PageLiveStateDecorator::Data {
   virtual bool IsCapturingVideo() const = 0;
   virtual bool IsCapturingAudio() const = 0;
   virtual bool IsBeingMirrored() const = 0;
-  virtual bool IsCapturingDesktop() const = 0;
+  virtual bool IsCapturingWindow() const = 0;
+  virtual bool IsCapturingDisplay() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
   virtual bool WasDiscarded() const = 0;
 

@@ -55,8 +55,11 @@ bool FakePageLiveStateData::IsCapturingAudio() const {
 bool FakePageLiveStateData::IsBeingMirrored() const {
   return is_being_mirrored_;
 }
-bool FakePageLiveStateData::IsCapturingDesktop() const {
-  return is_capturing_desktop_;
+bool FakePageLiveStateData::IsCapturingWindow() const {
+  return is_capturing_window_;
+}
+bool FakePageLiveStateData::IsCapturingDisplay() const {
+  return is_capturing_display_;
 }
 bool FakePageLiveStateData::IsAutoDiscardable() const {
   return is_auto_discardable_;

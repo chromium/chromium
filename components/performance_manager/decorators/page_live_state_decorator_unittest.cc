@@ -61,10 +61,16 @@ TEST_F(PageLiveStateDecoratorTest, OnIsBeingMirroredChanged) {
       &PageLiveStateDecorator::OnIsBeingMirroredChanged);
 }
 
-TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDesktopChanged) {
+TEST_F(PageLiveStateDecoratorTest, OnIsCapturingWindowChanged) {
   testing::EndToEndBooleanPropertyTest(
-      web_contents(), &PageLiveStateDecorator::Data::IsCapturingDesktop,
-      &PageLiveStateDecorator::OnIsCapturingDesktopChanged);
+      web_contents(), &PageLiveStateDecorator::Data::IsCapturingWindow,
+      &PageLiveStateDecorator::OnIsCapturingWindowChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, OnIsCapturingDisplayChanged) {
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::IsCapturingDisplay,
+      &PageLiveStateDecorator::OnIsCapturingDisplayChanged);
 }
 
 TEST_F(PageLiveStateDecoratorTest, SetIsAutoDiscardable) {

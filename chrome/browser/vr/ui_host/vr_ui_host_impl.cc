@@ -422,7 +422,8 @@ void VRUiHostImpl::PollCapturingState() {
           ->GetMediaStreamCaptureIndicator();
   active_capturing.screen_capture_enabled =
       indicator->IsBeingMirrored(web_contents_) ||
-      indicator->IsCapturingDesktop(web_contents_);
+      indicator->IsCapturingWindow(web_contents_) ||
+      indicator->IsCapturingDisplay(web_contents_);
 
   // Bluetooth.
   active_capturing.bluetooth_connected =

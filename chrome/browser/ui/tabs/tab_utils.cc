@@ -37,8 +37,10 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     // alert on a tab.
     // TODO(crbug.com/861961): To show the icon of the highest-priority alert
     // with tooltip that notes all the states in play.
-    if (indicator->IsCapturingDesktop(contents))
+    if (indicator->IsCapturingWindow(contents) ||
+        indicator->IsCapturingDisplay(contents)) {
       states.push_back(TabAlertState::DESKTOP_CAPTURING);
+    }
     if (indicator->IsBeingMirrored(contents))
       states.push_back(TabAlertState::TAB_CAPTURING);
     if (indicator->IsCapturingUserMedia(contents))

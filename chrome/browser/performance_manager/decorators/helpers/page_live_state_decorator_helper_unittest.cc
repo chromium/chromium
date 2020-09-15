@@ -52,6 +52,8 @@ class PageLiveStateDecoratorHelperTest
 
   void EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType stream_type,
+      base::Optional<media::mojom::DisplayMediaInformationPtr>
+          display_media_info,
       bool (PageLiveStateDecorator::Data::*pm_getter)() const);
 
   // Forces deletion of the PageLiveStateDecoratorHelper.
@@ -65,16 +67,18 @@ class PageLiveStateDecoratorHelperTest
 
 void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
     blink::mojom::MediaStreamType stream_type,
+    base::Optional<media::mojom::DisplayMediaInformationPtr> display_media_info,
     bool (PageLiveStateDecorator::Data::*pm_getter)() const) {
   // By default all properties are set to false.
   testing::TestPageNodePropertyOnPMSequence(web_contents(), pm_getter, false);
 
   // Create the fake stream device and start it, this should set the property to
   // true.
-  blink::MediaStreamDevices devices{
-      blink::MediaStreamDevice(stream_type, "fake_device", "fake_device")};
+  blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
+  device.display_media_info = std::move(display_media_info);
+
   std::unique_ptr<content::MediaStreamUI> ui =
-      indicator()->RegisterMediaStream(web_contents(), devices);
+      indicator()->RegisterMediaStream(web_contents(), {device});
   ui->OnStarted(base::OnceClosure(), content::MediaStreamUI::SourceCallback());
   testing::TestPageNodePropertyOnPMSequence(web_contents(), pm_getter, true);
 
@@ -88,25 +92,38 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingVideoChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      /*display_media_info=*/base::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingVideo);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingAudioChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+      /*display_media_info=*/base::nullopt,
       &PageLiveStateDecorator::Data::IsCapturingAudio);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, OnIsBeingMirroredChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
+      /*display_media_info=*/base::nullopt,
       &PageLiveStateDecorator::Data::IsBeingMirrored);
 }
 
-TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDesktopChanged) {
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingWindowChanged) {
   EndToEndStreamPropertyTest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      &PageLiveStateDecorator::Data::IsCapturingDesktop);
+      /*display_media_info=*/base::nullopt,
+      &PageLiveStateDecorator::Data::IsCapturingWindow);
+}
+
+TEST_F(PageLiveStateDecoratorHelperTest, OnIsCapturingDisplayChanged) {
+  EndToEndStreamPropertyTest(
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::MONITOR,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER),
+      &PageLiveStateDecorator::Data::IsCapturingDisplay);
 }
 
 TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToBluetoothDevice) {

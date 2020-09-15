@@ -148,9 +148,17 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageBeingMirrored) {
           page_node()));
 }
 
-TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingDesktop) {
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingWindow) {
   testing::FakePageLiveStateData::GetOrCreate(page_node())
-      ->is_capturing_desktop_ = true;
+      ->is_capturing_window_ = true;
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageCapturingDisplay) {
+  testing::FakePageLiveStateData::GetOrCreate(page_node())
+      ->is_capturing_display_ = true;
   EXPECT_FALSE(
       PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
           page_node()));

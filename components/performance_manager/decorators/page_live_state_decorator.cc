@@ -36,7 +36,8 @@ class PageLiveStateDataImpl
   bool IsCapturingVideo() const override { return is_capturing_video_; }
   bool IsCapturingAudio() const override { return is_capturing_audio_; }
   bool IsBeingMirrored() const override { return is_being_mirrored_; }
-  bool IsCapturingDesktop() const override { return is_capturing_desktop_; }
+  bool IsCapturingWindow() const override { return is_capturing_window_; }
+  bool IsCapturingDisplay() const override { return is_capturing_display_; }
   bool IsAutoDiscardable() const override { return is_auto_discardable_; }
   bool WasDiscarded() const override { return was_discarded_; }
 
@@ -56,8 +57,11 @@ class PageLiveStateDataImpl
   void set_is_being_mirrored(bool is_being_mirrored) {
     is_being_mirrored_ = is_being_mirrored;
   }
-  void set_is_capturing_desktop(bool is_capturing_desktop) {
-    is_capturing_desktop_ = is_capturing_desktop;
+  void set_is_capturing_window(bool is_capturing_window) {
+    is_capturing_window_ = is_capturing_window;
+  }
+  void set_is_capturing_display(bool is_capturing_display) {
+    is_capturing_display_ = is_capturing_display;
   }
   void set_is_auto_discardable(bool is_auto_discardable) {
     is_auto_discardable_ = is_auto_discardable;
@@ -77,7 +81,8 @@ class PageLiveStateDataImpl
   bool is_capturing_video_ = false;
   bool is_capturing_audio_ = false;
   bool is_being_mirrored_ = false;
-  bool is_capturing_desktop_ = false;
+  bool is_capturing_window_ = false;
+  bool is_capturing_display_ = false;
   bool is_auto_discardable_ = true;
   bool was_discarded_ = false;
 };
@@ -132,12 +137,21 @@ void PageLiveStateDecorator::OnIsBeingMirroredChanged(
 }
 
 // static
-void PageLiveStateDecorator::OnIsCapturingDesktopChanged(
+void PageLiveStateDecorator::OnIsCapturingWindowChanged(
     content::WebContents* contents,
-    bool is_capturing_desktop) {
+    bool is_capturing_window) {
   SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_is_capturing_desktop,
-      is_capturing_desktop);
+      contents, &PageLiveStateDataImpl::set_is_capturing_window,
+      is_capturing_window);
+}
+
+// static
+void PageLiveStateDecorator::OnIsCapturingDisplayChanged(
+    content::WebContents* contents,
+    bool is_capturing_display) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_is_capturing_display,
+      is_capturing_display);
 }
 
 // static
@@ -178,7 +192,8 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
   ret.SetBoolKey("IsCapturingVideo", data->IsCapturingVideo());
   ret.SetBoolKey("IsCapturingAudio", data->IsCapturingAudio());
   ret.SetBoolKey("IsBeingMirrored", data->IsBeingMirrored());
-  ret.SetBoolKey("IsCapturingDesktop", data->IsCapturingDesktop());
+  ret.SetBoolKey("IsCapturingWindow", data->IsCapturingWindow());
+  ret.SetBoolKey("IsCapturingDisplay", data->IsCapturingDisplay());
   ret.SetBoolKey("IsAutoDiscardable", data->IsAutoDiscardable());
   ret.SetBoolKey("WasDiscarded", data->WasDiscarded());
 

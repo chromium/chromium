@@ -123,12 +123,20 @@ void PageLiveStateDecoratorHelper::OnIsBeingMirroredChanged(
   PageLiveStateDecorator::OnIsBeingMirroredChanged(contents, is_being_mirrored);
 }
 
-void PageLiveStateDecoratorHelper::OnIsCapturingDesktopChanged(
+void PageLiveStateDecoratorHelper::OnIsCapturingWindowChanged(
     content::WebContents* contents,
-    bool is_capturing_desktop) {
+    bool is_capturing_window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  PageLiveStateDecorator::OnIsCapturingDesktopChanged(contents,
-                                                      is_capturing_desktop);
+  PageLiveStateDecorator::OnIsCapturingWindowChanged(contents,
+                                                     is_capturing_window);
+}
+
+void PageLiveStateDecoratorHelper::OnIsCapturingDisplayChanged(
+    content::WebContents* contents,
+    bool is_capturing_display) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  PageLiveStateDecorator::OnIsCapturingDisplayChanged(contents,
+                                                      is_capturing_display);
 }
 
 void PageLiveStateDecoratorHelper::OnPageNodeCreatedForWebContents(

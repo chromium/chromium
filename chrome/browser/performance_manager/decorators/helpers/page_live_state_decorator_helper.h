@@ -30,8 +30,10 @@ class PageLiveStateDecoratorHelper
                                  bool is_capturing_audio) override;
   void OnIsBeingMirroredChanged(content::WebContents* contents,
                                 bool is_being_mirrored) override;
-  void OnIsCapturingDesktopChanged(content::WebContents* contents,
-                                   bool is_capturing_desktop) override;
+  void OnIsCapturingWindowChanged(content::WebContents* contents,
+                                  bool is_capturing_window) override;
+  void OnIsCapturingDisplayChanged(content::WebContents* contents,
+                                   bool is_capturing_display) override;
 
   // PerformanceManagerMainThreadObserver:
   void OnPageNodeCreatedForWebContents(

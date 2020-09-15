@@ -37,7 +37,8 @@ class FakePageLiveStateData
   bool IsCapturingVideo() const override;
   bool IsCapturingAudio() const override;
   bool IsBeingMirrored() const override;
-  bool IsCapturingDesktop() const override;
+  bool IsCapturingWindow() const override;
+  bool IsCapturingDisplay() const override;
   bool IsAutoDiscardable() const override;
   bool WasDiscarded() const override;
 
@@ -46,7 +47,8 @@ class FakePageLiveStateData
   bool is_capturing_video_ = false;
   bool is_capturing_audio_ = false;
   bool is_being_mirrored_ = false;
-  bool is_capturing_desktop_ = false;
+  bool is_capturing_window_ = false;
+  bool is_capturing_display_ = false;
   bool is_auto_discardable_ = true;
   bool was_discarded_ = false;
 

@@ -261,7 +261,9 @@ bool PageDiscardingHelper::CanUrgentlyDiscard(const PageNode* page_node) const {
       return false;
     if (live_state_data->IsBeingMirrored())
       return false;
-    if (live_state_data->IsCapturingDesktop())
+    if (live_state_data->IsCapturingWindow())
+      return false;
+    if (live_state_data->IsCapturingDisplay())
       return false;
     if (live_state_data->IsConnectedToBluetoothDevice())
       return false;

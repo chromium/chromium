@@ -598,9 +598,10 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
       decision_details->AddReason(DecisionFailureReason::LIVE_STATE_MIRRORING);
   }
 
-  if (media_indicator->IsCapturingDesktop(web_contents())) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE);
+  if (media_indicator->IsCapturingWindow(web_contents()) ||
+      media_indicator->IsCapturingDisplay(web_contents())) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE);
   }
 }
 
