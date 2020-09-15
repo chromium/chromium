@@ -5646,18 +5646,34 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </if>
 
       <!-- Star View menu -->
-      <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
-        Add Bookmark
-      </message>
-      <message name="IDS_STAR_VIEW_MENU_EDIT_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for editing a bookmark.">
-        Edit Bookmark
-      </message>
-      <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
-        Add to Read later
-      </message>
-      <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
-        Mark as Read
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
+          Add Bookmark
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_EDIT_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for editing a bookmark.">
+          Edit Bookmark
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
+          Read Later
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
+          Mark as Read
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_STAR_VIEW_MENU_ADD_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for adding a bookmark.">
+          Add bookmark
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_EDIT_BOOKMARK" desc="The item label of the menu triggered from the star icon in the location bar for editing a bookmark.">
+          Edit bookmark
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_MOVE_TO_READ_LATER" desc="The item label of the menu triggered from the star icon in the location bar for moving the current tab to read later.">
+          Read later
+        </message>
+        <message name="IDS_STAR_VIEW_MENU_MARK_AS_READ" desc="The item label of the menu triggered from the star icon in the location bar for marking the current tab's read later entry as read.">
+          Mark as read
+        </message>
+      </if>
 
       <!--Tooltip strings-->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
