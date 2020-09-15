@@ -35,6 +35,9 @@ apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
     const std::string& mime_type,
     const GURL& drive_share_url);
 
+// Create an intent struct from URL.
+apps::mojom::IntentPtr CreateShareIntentFromText(const std::string& share_text);
+
 // Return true if |value| matches with the |condition_value|, based on the
 // pattern match type in the |condition_value|.
 bool ConditionValueMatches(

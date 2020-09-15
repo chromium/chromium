@@ -329,6 +329,7 @@ struct Intent {
   // The Drive share URL, this is only filled if the intent contains a file
   // from Google Drive.
   url.mojom.Url? drive_share_url;
+  string? share_text; // Text to share. e.g. Share link to other app.
 };
 
 // Represents a group of |app_ids| that is no longer preferred app of their

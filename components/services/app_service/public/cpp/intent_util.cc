@@ -167,6 +167,15 @@ apps::mojom::IntentPtr CreateShareIntentFromDriveFile(
   return intent;
 }
 
+apps::mojom::IntentPtr CreateShareIntentFromText(
+    const std::string& share_text) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = kIntentActionSend;
+  intent->mime_type = "text/plain";
+  intent->share_text = share_text;
+  return intent;
+}
+
 bool ConditionValueMatches(
     const std::string& value,
     const apps::mojom::ConditionValuePtr& condition_value) {
