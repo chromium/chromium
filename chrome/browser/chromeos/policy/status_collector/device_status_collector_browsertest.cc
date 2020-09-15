@@ -152,6 +152,10 @@ constexpr char kFakeBoardName[] = "BoardName";
 constexpr char kFakeBoardVersion[] = "rev1234";
 constexpr uint64_t kFakeChassisType = 9;
 constexpr char kFakeProductName[] = "ProductName";
+constexpr char kFakeVersionMilestone[] = "87";
+constexpr char kFakeVersionBuildNumber[] = "13544";
+constexpr char kFakeVersionPatchNumber[] = "59.0";
+constexpr char kFakeVersionReleaseChannel[] = "stable-channel";
 // CPU test values:
 constexpr uint32_t kFakeNumTotalThreads = 8;
 constexpr char kFakeModelName[] = "fake_cpu_model_name";
@@ -517,7 +521,10 @@ cros_healthd::SystemResultPtr CreateSystemResult() {
           kFakeFirstPowerDate, kFakeManufactureDate, kFakeSkuNumber,
           kFakeMarketingName, kFakeBiosVersion, kFakeBoardName,
           kFakeBoardVersion, cros_healthd::UInt64Value::New(kFakeChassisType),
-          kFakeProductName));
+          kFakeProductName,
+          cros_healthd::OsVersion::New(
+              kFakeVersionMilestone, kFakeVersionBuildNumber,
+              kFakeVersionPatchNumber, kFakeVersionReleaseChannel)));
 }
 
 std::vector<cros_healthd::CpuCStateInfoPtr> CreateCStateInfo() {

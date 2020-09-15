@@ -154,8 +154,15 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         NonRemovableBlockDeviceResult::NewBlockDeviceInfo(std::move(infos));
   }
   {
+    auto os_version = chromeos::cros_healthd::mojom::OsVersion::New();
+    os_version->release_milestone = "87";
+    os_version->build_number = "13544";
+    os_version->patch_number = "59.0";
+    os_version->release_channel = "stable-channel";
+
     auto system_info = chromeos::cros_healthd::mojom::SystemInfo::New();
     system_info->product_sku_number = "sku-18";
+    system_info->os_version = std::move(os_version);
 
     telemetry_info->system_result =
         chromeos::cros_healthd::mojom::SystemResult::NewSystemInfo(
