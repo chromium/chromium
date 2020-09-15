@@ -231,8 +231,17 @@ class BASE_EXPORT PlatformThread {
   // to change the priority of sandboxed threads for improved performance.
   // Warning: Don't use this for a main thread because that will change the
   // whole thread group's (i.e. process) priority.
-  static void SetThreadPriority(PlatformThreadId thread_id,
+  static void SetThreadPriority(PlatformThreadId process_id,
+                                PlatformThreadId thread_id,
                                 ThreadPriority priority);
+#endif
+
+#if defined(OS_CHROMEOS)
+  // Signals that the feature list has been initialized which allows to check
+  // the feature's value now and initialize state. This prevents race
+  // conditions where the feature is being checked while it is being
+  // initialized, which can cause a crash.
+  static void InitThreadPostFieldTrial();
 #endif
 
   // Returns the default thread stack size set by chrome. If we do not

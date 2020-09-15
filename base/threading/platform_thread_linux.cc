@@ -7,11 +7,17 @@
 #include <errno.h>
 #include <sched.h>
 #include <stddef.h>
+#include <cstdint>
+#include <atomic>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
@@ -26,7 +32,73 @@
 #endif
 
 namespace base {
+
+#if defined(OS_CHROMEOS)
+const Feature kSchedUtilHints{"SchedUtilHints", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 namespace {
+
+#if defined(OS_CHROMEOS)
+std::atomic<bool> g_use_sched_util(true);
+std::atomic<bool> g_feature_checked(false);
+
+// sched_attr is used to set scheduler attributes for Linux. It is not a POSIX
+// struct and glibc does not expose it.
+struct sched_attr {
+  uint32_t size;
+
+  uint32_t sched_policy;
+  uint64_t sched_flags;
+
+  /* SCHED_NORMAL, SCHED_BATCH */
+  __s32 sched_nice;
+
+  /* SCHED_FIFO, SCHED_RR */
+  uint32_t sched_priority;
+
+  /* SCHED_DEADLINE */
+  uint64_t sched_runtime;
+  uint64_t sched_deadline;
+  uint64_t sched_period;
+
+  /* Utilization hints */
+  uint32_t sched_util_min;
+  uint32_t sched_util_max;
+};
+
+#if !defined(__NR_sched_setattr)
+#if defined(__x86_64__)
+#define __NR_sched_setattr 314
+#define __NR_sched_getattr 315
+#elif defined(__i386__)
+#define __NR_sched_setattr 351
+#define __NR_sched_getattr 352
+#elif defined(__arm__)
+#define __NR_sched_setattr 380
+#define __NR_sched_getattr 381
+#elif defined(__aarch64__)
+#define __NR_sched_setattr 274
+#define __NR_sched_getattr 275
+#else
+#error "We don't have an __NR_sched_setattr for this architecture."
+#endif
+#endif
+
+int sched_getattr(pid_t pid,
+                  const struct sched_attr* attr,
+                  unsigned int size,
+                  unsigned int flags) {
+  return syscall(__NR_sched_getattr, pid, attr, size, flags);
+}
+
+int sched_setattr(pid_t pid,
+                  const struct sched_attr* attr,
+                  unsigned int flags) {
+  return syscall(__NR_sched_setattr, pid, attr, flags);
+}
+#endif  // OS_CHROMEOS
+
 #if !defined(OS_NACL)
 const FilePath::CharType kCgroupDirectory[] =
     FILE_PATH_LITERAL("/sys/fs/cgroup");
@@ -39,6 +111,7 @@ FilePath ThreadPriorityToCgroupDirectory(const FilePath& cgroup_filepath,
     case ThreadPriority::BACKGROUND:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadPriority::DISPLAY:
+      FALLTHROUGH;
     case ThreadPriority::REALTIME_AUDIO:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
   }
@@ -69,6 +142,98 @@ void SetThreadCgroupForThreadPriority(PlatformThreadId thread_id,
 
   SetThreadCgroup(thread_id, cgroup_directory);
 }
+
+#if defined(OS_CHROMEOS)
+// thread_id should always be the value in the root PID namespace (see
+// FindThreadID).
+void SetThreadLatencySensitivity(ProcessId process_id,
+                                 PlatformThreadId thread_id,
+                                 ThreadPriority priority) {
+  struct sched_attr attr;
+  bool is_urgent = false;
+  int uclamp_min_urgent, uclamp_max_non_urgent, latency_sensitive_urgent;
+
+  // Scheduler boost defaults to true unless disabled.
+  if (!g_use_sched_util.load())
+    return;
+
+  // FieldTrial API can be called only once features were parsed.
+  if (g_feature_checked.load()) {
+    uclamp_min_urgent =
+      GetFieldTrialParamByFeatureAsInt(kSchedUtilHints, "MinUrgent", 0);
+    uclamp_max_non_urgent = GetFieldTrialParamByFeatureAsInt(
+        kSchedUtilHints, "MaxNonUrgent", 100);
+    latency_sensitive_urgent = GetFieldTrialParamByFeatureAsBool(
+        kSchedUtilHints, "LatencySensitive", true);
+  } else {
+    // Use defaults if features were not parsed yet...
+    uclamp_min_urgent = 0;
+    uclamp_max_non_urgent = 100;
+    latency_sensitive_urgent = true;
+  }
+
+  // The thread_id passed in here is either 0 (in which case we ste for current
+  // thread), or is a tid that is not the NS tid but the global one. The
+  // conversion from NS tid to global tid is done by the callers using
+  // FindThreadID().
+  std::string thread_dir;
+  if (thread_id)
+    thread_dir = base::StringPrintf("/proc/%d/task/%d/", process_id, thread_id);
+  else
+    thread_dir = "/proc/thread-self/";
+
+  // Silently ignore request if thread directory doesn't exist.
+  if (!DirectoryExists(FilePath(thread_dir)))
+    return;
+
+  FilePath latency_sensitive_file = FilePath(thread_dir + "latency_sensitive");
+
+  if (!PathExists(latency_sensitive_file))
+    return;
+
+  // Silently ignore if getattr fails due to sandboxing.
+  if (sched_getattr(thread_id, &attr, sizeof(attr), 0) == -1 ||
+      attr.size != sizeof(attr))
+    return;
+
+  switch (priority) {
+    case ThreadPriority::NORMAL:
+      FALLTHROUGH;
+    case ThreadPriority::BACKGROUND:
+      break;
+    case ThreadPriority::DISPLAY:
+      // Display needs a boost for consistent 60 fps compositing.
+      FALLTHROUGH;
+    case ThreadPriority::REALTIME_AUDIO:
+      is_urgent = true;
+      break;
+  }
+
+  if (is_urgent && latency_sensitive_urgent) {
+    PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "1", 1))
+        << "Failed to write latency file.\n";
+  } else {
+    PLOG_IF(ERROR, !WriteFile(latency_sensitive_file, "0", 1))
+        << "Failed to write latency file.\n";
+  }
+
+  if (is_urgent) {
+    attr.sched_util_min = uclamp_min_urgent;
+    attr.sched_util_max = 100;
+  } else {
+    attr.sched_util_min = 0;
+    attr.sched_util_max = uclamp_max_non_urgent;
+  }
+
+  attr.size = sizeof(struct sched_attr);
+  if (sched_setattr(thread_id, &attr, 0) == -1) {
+    // We log it as an error because, if the PathExists above succeeded, we
+    // expect this syscall to also work since the kernel is new'ish.
+    PLOG_IF(ERROR, errno != E2BIG)
+        << "Failed to set sched_util_min, performance may be effected.\n";
+  }
+}
+#endif
 
 void SetThreadCgroupsForThreadPriority(PlatformThreadId thread_id,
                                        ThreadPriority priority) {
@@ -113,7 +278,15 @@ Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
 
 bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority) {
 #if !defined(OS_NACL)
+  // For legacy schedtune interface
   SetThreadCgroupsForThreadPriority(PlatformThread::CurrentId(), priority);
+
+#if defined(OS_CHROMEOS)
+  // For upstream uclamp interface. We try both legacy (schedtune, as done
+  // earlier) and upstream (uclamp) interfaces, and whichever succeeds wins.
+  SetThreadLatencySensitivity(0 /* ignore */, 0 /* thread-self */, priority);
+#endif
+
   return priority == ThreadPriority::REALTIME_AUDIO &&
          pthread_setschedparam(pthread_self(), SCHED_RR, &kRealTimePrio) == 0;
 #else
@@ -163,14 +336,22 @@ void PlatformThread::SetName(const std::string& name) {
 
 #if !defined(OS_NACL) && !defined(OS_AIX)
 // static
-void PlatformThread::SetThreadPriority(PlatformThreadId thread_id,
+void PlatformThread::SetThreadPriority(ProcessId process_id,
+                                       PlatformThreadId thread_id,
                                        ThreadPriority priority) {
   // Changing current main threads' priority is not permitted in favor of
   // security, this interface is restricted to change only non-main thread
   // priority.
-  CHECK_NE(thread_id, getpid());
+  CHECK_NE(thread_id, process_id);
 
+  // For legacy schedtune interface
   SetThreadCgroupsForThreadPriority(thread_id, priority);
+
+#if defined(OS_CHROMEOS)
+  // For upstream uclamp interface. We try both legacy (schedtune, as done
+  // earlier) and upstream (uclamp) interfaces, and whichever succeeds wins.
+  SetThreadLatencySensitivity(process_id, thread_id, priority);
+#endif
 
   const int nice_setting = internal::ThreadPriorityToNiceValue(priority);
   if (setpriority(PRIO_PROCESS, thread_id, nice_setting)) {
@@ -179,6 +360,16 @@ void PlatformThread::SetThreadPriority(PlatformThreadId thread_id,
   }
 }
 #endif  //  !defined(OS_NACL) && !defined(OS_AIX)
+
+#if defined(OS_CHROMEOS)
+void PlatformThread::InitThreadPostFieldTrial() {
+  DCHECK(FeatureList::GetInstance());
+  if (!FeatureList::IsEnabled(kSchedUtilHints)) {
+    g_use_sched_util.store(false);
+  }
+  g_feature_checked.store(true);
+}
+#endif
 
 void InitThreading() {}
 
