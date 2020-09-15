@@ -21,13 +21,19 @@ cr.define('cellularSetup', function() {
   };
 
   /** @enum {number} */
-  /* #export */ const Button = {BACKWARD: 1, CANCEL: 2, FINISH: 3, NEXT: 4, TRY_AGAIN: 5};
+  /* #export */ const Button = {
+    BACKWARD: 1,
+    CANCEL: 2,
+    DONE: 3,
+    NEXT: 4,
+    TRY_AGAIN: 5,
+  };
 
   /**
    * @typedef {{
    *   backward: (!cellularSetup.ButtonState|undefined),
    *   cancel: (!cellularSetup.ButtonState|undefined),
-   *   finish: (!cellularSetup.ButtonState|undefined),
+   *   done: (!cellularSetup.ButtonState|undefined),
    *   next: (!cellularSetup.ButtonState|undefined),
    *   tryAgain: (!cellularSetup.ButtonState|undefined),
    * }}

@@ -57,7 +57,7 @@ Polymer({
   },
 
   /** @private */
-  onFinishButtonClicked_() {
+  onDoneButtonClicked_() {
     this.fire('complete-flow-requested');
   },
 
@@ -78,8 +78,8 @@ Polymer({
         return this.buttonState.backward;
       case cellularSetup.Button.CANCEL:
         return this.buttonState.cancel;
-      case cellularSetup.Button.FINISH:
-        return this.buttonState.finish;
+      case cellularSetup.Button.DONE:
+        return this.buttonState.done;
       case cellularSetup.Button.NEXT:
         return this.buttonState.next;
       case cellularSetup.Button.TRY_AGAIN:

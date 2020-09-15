@@ -37,13 +37,13 @@
         hidden$="[[isButtonHidden_(Button.TRY_AGAIN, buttonState.*)]]">
       [[i18n('tryAgain')]]
     </cr-button>
-    <cr-button id="finish"
-        class="action-button"
-        on-click="onFinishButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.FINISH, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.FINISH, buttonState.*)]]">
-      [[i18n('finish')]]
-    </cr-button>
+    <cr-button id="done"
+          class="action-button"
+          on-click="onDoneButtonClicked_"
+          disabled="[[isButtonDisabled_(Button.DONE, buttonState.*)]]"
+          hidden$="[[isButtonHidden_(Button.DONE, buttonState.*)]]">
+        [[i18n('done')]]
+      </cr-button>
     <cr-button id="cancel"
         class="cancel-button"
         on-click="onBackwardButtonClicked_"

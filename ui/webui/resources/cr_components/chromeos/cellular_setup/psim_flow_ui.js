@@ -133,6 +133,7 @@ cr.define('cellularSetup', function() {
       'updateShowError_(state_)',
       'updateSelectedPage_(state_)',
       'handlePSimUIStateChange_(state_)',
+      'updateButtonBarState_(state_)',
     ],
 
     /**
@@ -180,13 +181,53 @@ cr.define('cellularSetup', function() {
 
     initSubflow() {
       this.state_ = PSimUIState.STARTING_ACTIVATION;
-      this.set('buttonState', {
-        backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-        cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-        finish: cellularSetup.ButtonState.HIDDEN,
-        next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
-        tryAgain: cellularSetup.ButtonState.HIDDEN
-      });
+      this.updateButtonBarState_();
+    },
+
+    /** @private */
+    updateButtonBarState_() {
+      let buttonState;
+      switch (this.state_) {
+        case PSimUIState.IDLE:
+        case PSimUIState.STARTING_ACTIVATION:
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+        case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
+        case PSimUIState.TIMEOUT_PORTAL_LOAD:
+        case PSimUIState.WAITING_FOR_USER_PAYMENT:
+          buttonState = {
+            backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            done: cellularSetup.ButtonState.HIDDEN,
+            next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
+            tryAgain: cellularSetup.ButtonState.HIDDEN,
+          };
+          break;
+        case PSimUIState.ACTIVATION_SUCCESS:
+        case PSimUIState.ALREADY_ACTIVATED:
+        case PSimUIState.ACTIVATION_FAILURE:
+          buttonState = {
+            backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            done: cellularSetup.ButtonState.HIDDEN,
+            next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            tryAgain: cellularSetup.ButtonState.HIDDEN,
+          };
+          break;
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
+        case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+          buttonState = {
+            backward: cellularSetup.ButtonState.HIDDEN,
+            cancel: cellularSetup.ButtonState.HIDDEN,
+            done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+            next: cellularSetup.ButtonState.HIDDEN,
+            tryAgain: cellularSetup.ButtonState.HIDDEN,
+          };
+          break;
+        default:
+          assertNotReached();
+      }
+      this.set('buttonState', buttonState);
     },
 
     /**
@@ -240,11 +281,11 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
         case PSimUIState.TIMEOUT_PORTAL_LOAD:
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
+        case PSimUIState.ACTIVATION_SUCCESS:
           this.selectedPSimPageName_ = PSimPageName.PROVISIONING;
           return;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-        case PSimUIState.ACTIVATION_SUCCESS:
         case PSimUIState.ALREADY_ACTIVATED:
         case PSimUIState.ACTIVATION_FAILURE:
           this.selectedPSimPageName_ = PSimPageName.FINAL;

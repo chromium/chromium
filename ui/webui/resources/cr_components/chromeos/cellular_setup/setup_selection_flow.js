@@ -29,7 +29,7 @@ Polymer({
     this.buttonState = {
       backward: cellularSetup.ButtonState.HIDDEN,
       cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-      finish: cellularSetup.ButtonState.HIDDEN,
+      done: cellularSetup.ButtonState.HIDDEN,
       next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
       tryAgain: cellularSetup.ButtonState.HIDDEN
     };

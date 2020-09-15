@@ -255,8 +255,8 @@
   <message name="IDS_CELLULAR_SETUP_BACK_LABEL" desc="Label for button to go to previous screen during cellular setup">
     Back
   </message>
-  <message name="IDS_CELLULAR_SETUP_FINISH_LABEL" desc="Label for button to finish and exit cellular setup">
-    Finish
+  <message name="IDS_CELLULAR_SETUP_DONE_LABEL" desc="Label for button to finish and exit cellular setup">
+    Done
   </message>
   <message name="IDS_CELLULAR_SETUP_TRY_AGAIN_LABEL" desc="Label for button to retry a step during cellular setup">
     Try again
