@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -18,12 +19,15 @@
 #include "cc/paint/paint_canvas.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
+#include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "ppapi/c/pp_errors.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_rect.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
@@ -85,16 +89,28 @@ class PerProcessInitializer final {
 
 }  // namespace
 
-PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params) {}
+PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params)
+    : initial_params_(params) {}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
+// Modeled on `OutOfProcessInstance::Init()`.
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK_EQ(container->Plugin(), this);
   container_ = container;
 
+  std::string stream_url;
+  for (size_t i = 0; i < initial_params_.attribute_names.size(); ++i) {
+    if (initial_params_.attribute_names[i] == "stream-url")
+      stream_url = initial_params_.attribute_values[i].Utf8();
+  }
+
+  // Contents of `initial_params_` no longer needed.
+  initial_params_ = {};
+
   PerProcessInitializer::GetInstance().Acquire();
   InitializeEngine(/*enable_javascript=*/false);
+  LoadUrl(stream_url, /*is_print_preview=*/false);
   return true;
 }
 
@@ -225,9 +241,13 @@ PdfViewWebPlugin::SearchString(const base::char16* string,
 }
 
 void PdfViewWebPlugin::DocumentLoadComplete(
-    const PDFEngine::DocumentFeatures& document_features) {}
+    const PDFEngine::DocumentFeatures& document_features) {
+  NOTIMPLEMENTED();
+}
 
-void PdfViewWebPlugin::DocumentLoadFailed() {}
+void PdfViewWebPlugin::DocumentLoadFailed() {
+  NOTIMPLEMENTED();
+}
 
 pp::Instance* PdfViewWebPlugin::GetPluginInstance() {
   return nullptr;
@@ -287,9 +307,15 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
   return loader;
 }
 
+// Modeled on `OutOfProcessInstance::DidOpen()`.
 void PdfViewWebPlugin::DidOpen(std::unique_ptr<UrlLoader> loader,
                                int32_t result) {
-  NOTIMPLEMENTED();
+  if (result == PP_OK) {
+    if (!engine()->HandleDocumentLoad(std::move(loader)))
+      DocumentLoadFailed();
+  } else {
+    NOTIMPLEMENTED();
+  }
 }
 
 void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,

@@ -9,10 +9,10 @@
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/public/web/web_plugin_params.h"
 
 namespace blink {
 class WebPluginContainer;
-struct WebPluginParams;
 }  // namespace blink
 
 namespace chrome_pdf {
@@ -117,6 +117,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
+  blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
