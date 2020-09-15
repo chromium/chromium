@@ -403,7 +403,7 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
       << ConsoleMessages().front();
 }
 
-TEST_F(HTMLIFrameElementSimTest, CommaSeparatorIsCounted) {
+TEST_F(HTMLIFrameElementSimTest, CommaSeparatorIsDeprecated) {
   EXPECT_FALSE(
       GetDocument().Loader()->GetUseCounterHelper().HasRecordedMeasurement(
           WebFeature::kCommaSeparatorInAllowAttribute));
@@ -413,6 +413,12 @@ TEST_F(HTMLIFrameElementSimTest, CommaSeparatorIsCounted) {
     <iframe
       allow="fullscreen, geolocation"></iframe>
   )");
+
+  EXPECT_EQ(ConsoleMessages().size(), 1u)
+      << "Comma separator in allow attribute should log a deprecation message "
+         "to the console.";
+  EXPECT_TRUE(ConsoleMessages().front().Contains("5740835259809792"))
+      << "Console message should mention the chromestatus entry.";
 
   EXPECT_TRUE(
       GetDocument().Loader()->GetUseCounterHelper().HasRecordedMeasurement(

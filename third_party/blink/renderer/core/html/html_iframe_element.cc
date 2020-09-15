@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/feature_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/sandbox_flags.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
@@ -271,8 +272,9 @@ void HTMLIFrameElement::ParseAttribute(
                           WebFeature::kFeaturePolicyAllowAttribute);
       }
       if (value.Contains(',')) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kCommaSeparatorInAllowAttribute);
+        Deprecation::CountDeprecation(
+            GetDocument().GetExecutionContext(),
+            WebFeature::kCommaSeparatorInAllowAttribute);
       }
     }
   } else if (name == html_names::kDisallowdocumentaccessAttr &&

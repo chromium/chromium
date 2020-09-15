@@ -67,6 +67,7 @@ enum Milestone {
   kM86 = 86,
   kM87 = 87,
   kM88 = 88,
+  kM89 = 89,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
@@ -112,25 +113,17 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
     case kM83:
       return {2020, 5, 0, 18, 4};
     case kM84:
-      // This release is not yet scheduled, so this date is a guess.
-      // https://groups.google.com/a/chromium.org/d/msg/chromium-dev/N1NxbSVOZas/ySlEKDKkBgAJ
       return {2020, 7, 0, 14, 4};
     case kM85:
-      // This release is not yet scheduled, so this date is a guess.
-      // https://groups.google.com/a/chromium.org/d/msg/chromium-dev/N1NxbSVOZas/ySlEKDKkBgAJ
       return {2020, 8, 0, 25, 4};
     case kM86:
-      // This release is not yet scheduled, so this date is a guess.
-      // https://groups.google.com/a/chromium.org/d/msg/chromium-dev/N1NxbSVOZas/ySlEKDKkBgAJ
       return {2020, 10, 0, 6, 4};
     case kM87:
-      // This release is not yet scheduled, so this date is a guess.
-      // https://groups.google.com/a/chromium.org/d/msg/chromium-dev/N1NxbSVOZas/ySlEKDKkBgAJ
       return {2020, 11, 0, 17, 4};
     case kM88:
-      // This release is not yet scheduled, so this date is a guess.
-      // https://groups.google.com/a/chromium.org/d/msg/chromium-dev/N1NxbSVOZas/ySlEKDKkBgAJ
       return {2021, 1, 0, 19, 4};
+    case kM89:
+      return {2021, 3, 0, 2, 4};
   }
 
   NOTREACHED();
@@ -574,6 +567,11 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   "RTCConfiguration.forceEncodedVideoInsertableStreams",
                   "RTCConfiguration.encodedInsertableStreams", kM88,
                   "6321945865879552")};
+
+    case WebFeature::kCommaSeparatorInAllowAttribute:
+      return {"CommaSeparatorInAllowAttribute", kM89,
+              ReplacedWillBeRemoved("Comma separator in iframe allow attribute",
+                                    "semicolons", kM89, "5740835259809792")};
 
     // Features that aren't deprecated don't have a deprecation message.
     default:
