@@ -300,7 +300,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   bool SyncSurface(VASurfaceID va_surface_id);
 
   // Calls SubmitBuffer_Locked() to request libva to allocate a new VABufferID
-  // of |va_buffer_type| and |size|, and to copy the |data| into it. The
+  // of |va_buffer_type| and |size|, and to map-and-copy the |data| into it. The
   // allocated VABufferIDs stay alive until DestroyPendingBuffers_Locked(). Note
   // that this method does not submit the buffers for execution, they are simply
   // stored until ExecuteAndDestroyPendingBuffers()/Execute_Locked(). The
