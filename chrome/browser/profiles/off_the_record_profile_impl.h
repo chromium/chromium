@@ -126,7 +126,6 @@ class OffTheRecordProfileImpl : public Profile {
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure) override;
   content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
-  bool ShouldEnableOutOfBlinkCors() override;
   content::NativeFileSystemPermissionContext*
   GetNativeFileSystemPermissionContext() override;
 

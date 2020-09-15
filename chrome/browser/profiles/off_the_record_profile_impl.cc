@@ -507,10 +507,6 @@ OffTheRecordProfileImpl::GetSharedCorsOriginAccessList() {
   return profile_->GetSharedCorsOriginAccessList();
 }
 
-bool OffTheRecordProfileImpl::ShouldEnableOutOfBlinkCors() {
-  return profile_->ShouldEnableOutOfBlinkCors();
-}
-
 content::NativeFileSystemPermissionContext*
 OffTheRecordProfileImpl::GetNativeFileSystemPermissionContext() {
   return NativeFileSystemPermissionContextFactory::GetForProfile(this);
