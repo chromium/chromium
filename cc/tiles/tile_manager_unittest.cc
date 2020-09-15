@@ -843,7 +843,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(layer_bounds));
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
+      FakeRasterSource::CreateFilledWithText(layer_bounds);
   SetupPendingTree(pending_raster_source);
 
   auto* pending_child_layer = AddLayer<FakePictureLayerImpl>(

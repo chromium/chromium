@@ -1106,5 +1106,58 @@ TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
   EXPECT_EQ(1u, active_set->tiling_at(0)->AllTilesForTesting().size());
 }
 
+TEST(PictureLayerTilingSetTest, LcdChanges) {
+  gfx::Size tile_size(64, 64);
+  FakePictureLayerTilingClient pending_client;
+  FakePictureLayerTilingClient active_client;
+  pending_client.SetTileSize(tile_size);
+  active_client.SetTileSize(tile_size);
+  std::unique_ptr<PictureLayerTilingSet> pending_set =
+      PictureLayerTilingSet::Create(PENDING_TREE, &pending_client, 0, 1.f, 0,
+                                    0.f);
+  std::unique_ptr<PictureLayerTilingSet> active_set =
+      PictureLayerTilingSet::Create(ACTIVE_TREE, &active_client, 0, 1.f, 0,
+                                    0.f);
+  active_client.set_twin_tiling_set(pending_set.get());
+  pending_client.set_twin_tiling_set(active_set.get());
+
+  gfx::Size layer_bounds(100, 100);
+  scoped_refptr<FakeRasterSource> raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+
+  const bool with_lcd_text = true;
+  const bool without_lcd_text = false;
+
+  gfx::AxisTransform2d raster_transform(1.f, gfx::Vector2dF());
+  pending_set->AddTiling(raster_transform, raster_source, with_lcd_text);
+  pending_set->tiling_at(0)->set_resolution(HIGH_RESOLUTION);
+
+  // Set a priority rect so we get tiles.
+  pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
+                                    Occlusion(), false);
+
+  // Make sure all tiles are generated.
+  EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
+
+  // Clone from the pending to the active tree.
+  active_set->UpdateTilingsToCurrentRasterSourceForActivation(
+      raster_source.get(), pending_set.get(), Region(), 1.f, 1.f);
+
+  // Verifies active tree cloned the tiling correctly.
+  ASSERT_EQ(1u, active_set->num_tilings());
+  EXPECT_EQ(4u, active_set->tiling_at(0)->AllTilesForTesting().size());
+
+  // Change LCD state on the pending tree
+  pending_set->RemoveAllTilings();
+  pending_set->AddTiling(raster_transform, raster_source, without_lcd_text);
+  pending_set->tiling_at(0)->set_resolution(HIGH_RESOLUTION);
+
+  // Set a priority rect so we get tiles.
+  pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
+                                    Occlusion(), false);
+  // We should have created all tiles because lcd state changed.
+  EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
+}
+
 }  // namespace
 }  // namespace cc
