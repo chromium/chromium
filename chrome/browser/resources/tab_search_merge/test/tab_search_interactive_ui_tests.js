@@ -28,7 +28,6 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   get featureList() {
     return {
       enabled: [
-        'network::features::kOutOfBlinkCors',
         'features::kTabSearch',
       ]
     };
