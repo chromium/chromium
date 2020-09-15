@@ -3317,7 +3317,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'Android FYI 32 dEQP Vk Release (Pixel 2)': {
@@ -3356,7 +3356,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_gtests',
-          'isolated_scripts': 'gpu_angle_perf_smoke_isolated_scripts',
+          'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
       'Android FYI 64 dEQP Vk Release (Pixel 2)': {

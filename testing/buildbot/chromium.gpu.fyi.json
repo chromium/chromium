@@ -2847,6 +2847,33 @@
           "shards": 3
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
+      },
+      {
+        "args": [
+          "-v"
+        ],
+        "isolate_name": "standalone_angle_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "standalone_angle_unittests",
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "device_os": "Q",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/"
       }
     ]
   },
@@ -3359,6 +3386,33 @@
           "shards": 3
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
+      },
+      {
+        "args": [
+          "-v"
+        ],
+        "isolate_name": "standalone_angle_unittests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "standalone_angle_unittests",
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "device_os": "Q",
+              "device_os_type": "userdebug",
+              "device_type": "walleye",
+              "os": "Android",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://third_party/angle/src/tests:standalone_angle_unittests/"
       }
     ]
   },

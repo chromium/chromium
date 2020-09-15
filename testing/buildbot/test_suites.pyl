@@ -2752,6 +2752,9 @@
           # http://crbug.com/669196
           '--test-launcher-retry-limit=0'
         ],
+        'android_args': [
+          '-v',
+        ],
         'linux_args': ['--no-xvfb'],
         'should_retry_with_patch': False,
       },
