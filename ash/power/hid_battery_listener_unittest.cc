@@ -122,13 +122,13 @@ TEST_F(HidBatteryListenerTest, RefreshBluetoothBattery) {
 
   // Simulate DeviceAdded observer event.
   chromeos::FakePowerManagerClient::Get()->set_peripheral_battery_refresh_level(
-      60);
+      kAddress, 60);
   adapter_observer_->DeviceAdded(mock_adapter_.get(), mock_device_.get());
   EXPECT_EQ(60, mock_device_->battery_percentage());
 
   // Simulate DeviceAdded observer event with a different battery value.
   chromeos::FakePowerManagerClient::Get()->set_peripheral_battery_refresh_level(
-      50);
+      kAddress, 50);
   adapter_observer_->DeviceAdded(mock_adapter_.get(), mock_device_.get());
   EXPECT_EQ(50, mock_device_->battery_percentage());
 }

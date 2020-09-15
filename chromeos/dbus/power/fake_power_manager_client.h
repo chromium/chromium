@@ -79,8 +79,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void set_user_activity_callback(base::RepeatingClosure callback) {
     user_activity_callback_ = std::move(callback);
   }
-  void set_peripheral_battery_refresh_level(int level) {
-    peripheral_battery_refresh_level_ = level;
+  void set_peripheral_battery_refresh_level(const std::string& address,
+                                            int level) {
+    peripheral_battery_refresh_levels_[address] = level;
   }
 
   // PowerManagerClient overrides:
@@ -313,7 +314,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   bool simulate_start_arc_timer_failure_ = false;
 
   // Used in RefreshBluetoothBattery.
-  int peripheral_battery_refresh_level_ = 0;
+  base::flat_map<std::string, int> peripheral_battery_refresh_levels_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -383,10 +384,13 @@ base::TimeDelta FakePowerManagerClient::GetDarkSuspendDelayTimeout() {
 
 void FakePowerManagerClient::RefreshBluetoothBattery(
     const std::string& address) {
+  if (!base::Contains(peripheral_battery_refresh_levels_, address))
+    return;
+
   for (auto& observer : observers_) {
     observer.PeripheralBatteryStatusReceived(
         SysnameFromBluetoothAddress(address), "somename",
-        peripheral_battery_refresh_level_);
+        peripheral_battery_refresh_levels_[address]);
   }
 }
 
