@@ -695,7 +695,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(params, ContextMenuUma.Action.SHARE_LINK);
             ShareParams linkShareParams =
-                    new ShareParams.Builder(getWindow(), params.getUrl(), params.getUrl()).build();
+                    new ShareParams
+                            .Builder(
+                                    getWindow(), ContextMenuUtils.getTitle(params), params.getUrl())
+                            .build();
             mShareDelegateSupplier.get().share(
                     linkShareParams, new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
         } else if (itemId == R.id.contextmenu_search_with_google_lens) {
@@ -735,7 +738,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     ChromePreferenceKeys.CONTEXT_MENU_SEARCH_SIMILAR_PRODUCTS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_share_image) {
             recordContextMenuSelection(params, ContextMenuUma.Action.SHARE_IMAGE);
-            shareImage(renderFrameHost, params.getSrcUrl());
+            shareImage(renderFrameHost, params);
         } else if (itemId == R.id.contextmenu_open_in_chrome) {
             recordContextMenuSelection(params, ContextMenuUma.Action.OPEN_IN_CHROME);
             mDelegate.onOpenInChrome(params.getUrl(), params.getPageUrl());
@@ -820,9 +823,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * Package-private, allowing access only from the context menu item to ensure that
      * it will use the right activity set when the menu was displayed.
      * @param renderFrameHost {@link RenderFrameHost} to get the encoded images from.
-     * @param srcUrl url of the image.
+     * @param params The {@link ContextMenuParams} for the image.
      */
-    private void shareImage(RenderFrameHost renderFrameHost, String srcUrl) {
+    private void shareImage(RenderFrameHost renderFrameHost, ContextMenuParams params) {
         retrieveImage(renderFrameHost, ContextMenuImageFormat.ORIGINAL, (Uri imageUri) -> {
             if (!mShareDelegateSupplier.get().isSharingHubV15Enabled()) {
                 ShareHelper.shareImage(getWindow(), null, imageUri);
@@ -831,14 +834,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             ContentResolver contentResolver =
                     ContextUtils.getApplicationContext().getContentResolver();
             ShareParams imageShareParams =
-                    new ShareParams.Builder(getWindow(), /*title=*/"", /*url=*/"")
+                    new ShareParams
+                            .Builder(getWindow(), ContextMenuUtils.getTitle(params), /*url=*/"")
                             .setFileUris(new ArrayList<>(Collections.singletonList(imageUri)))
                             .setFileContentType(contentResolver.getType(imageUri))
                             .build();
             mShareDelegateSupplier.get().share(imageShareParams,
                     new ChromeShareExtras.Builder()
                             .setSaveLastUsed(true)
-                            .setImageSrcUrl(srcUrl)
+                            .setImageSrcUrl(params.getSrcUrl())
                             .build());
         });
     }

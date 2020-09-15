@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.webkit.URLUtil;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -26,12 +24,9 @@ class RevampedContextMenuHeaderCoordinator {
     private PropertyModel mModel;
     private RevampedContextMenuHeaderMediator mMediator;
 
-    private Context mContext;
-
     RevampedContextMenuHeaderCoordinator(Activity activity, @PerformanceClass int performanceClass,
             ContextMenuParams params, Profile profile) {
-        mContext = activity;
-        mModel = buildModel(getTitle(params), getUrl(activity, params, profile));
+        mModel = buildModel(ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
         mMediator = new RevampedContextMenuHeaderMediator(
                 activity, mModel, performanceClass, params, profile);
     }
@@ -49,19 +44,6 @@ class RevampedContextMenuHeaderCoordinator {
                 .with(RevampedContextMenuHeaderProperties.IMAGE, null)
                 .with(RevampedContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
                 .build();
-    }
-
-    private String getTitle(ContextMenuParams params) {
-        if (!TextUtils.isEmpty(params.getTitleText())) {
-            return params.getTitleText();
-        }
-        if (!TextUtils.isEmpty(params.getLinkText())) {
-            return params.getLinkText();
-        }
-        if (params.isImage() || params.isVideo() || params.isFile()) {
-            return URLUtil.guessFileName(params.getSrcUrl(), null, null);
-        }
-        return "";
     }
 
     private CharSequence getUrl(Activity activity, ContextMenuParams params, Profile profile) {

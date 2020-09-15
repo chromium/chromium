@@ -6,12 +6,9 @@ package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -27,14 +24,12 @@ import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.favicon.IconType;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -140,8 +135,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
         }
 
-        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, this, params);
-        fetchFavicon(mActivity, params.getUrl());
+        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
 
         mShareStartTime = shareStartTime;
         mContentTypes = ShareSheetPropertyModelBuilder.getContentTypes(params, chromeShareExtras);
@@ -150,7 +144,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         List<PropertyModel> thirdPartyApps = createThirdPartyPropertyModels(
                 mActivity, params, mContentTypes, chromeShareExtras.saveLastUsed());
 
-        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, message);
+        mBottomSheet.createRecyclerViews(firstPartyApps, thirdPartyApps, mContentTypes, message);
 
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
         if (shown) {
@@ -258,58 +252,4 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet.getThirdPartyView().requestLayout();
     }
 
-    /** Fetches the favicon for the given url. **/
-    void fetchFavicon(Activity activity, String url) {
-        if (!url.isEmpty()) {
-            // Update mActivity so it's non-null in onFaviconAvailable in tests.
-            mActivity = activity;
-            mUrl = url;
-            mIconBridge.getLargeIconForStringUrl(url,
-                    activity.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
-                    this::onFaviconAvailable);
-        }
-    }
-
-    /**
-     * Passed as the callback to {@link LargeIconBridge#getLargeIconForStringUrl}
-     * by showShareSheetWithMessage.
-     */
-    void onFaviconAvailable(@Nullable Bitmap icon, @ColorInt int fallbackColor,
-            boolean isColorDefault, @IconType int iconType) {
-        // If we didn't get a favicon, generate a monogram instead
-        if (icon == null) {
-            RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
-            icon = iconGenerator.generateIconForUrl(mUrl);
-            // generateIconForUrl might return null if the URL is empty or the domain cannot be
-            // resolved. See https://crbug.com/987101
-            // TODO(1120093): Handle the case where generating an icon fails.
-            if (icon == null) {
-                return;
-            }
-        }
-
-        int size = mActivity.getResources().getDimensionPixelSize(
-                R.dimen.sharing_hub_preview_monogram_size);
-
-        mIconForPreview = Bitmap.createScaledBitmap(icon, size, size, true);
-
-        if (mBottomSheet != null) {
-            mBottomSheet.setFaviconForPreview(mIconForPreview);
-        }
-    }
-
-    private RoundedIconGenerator createRoundedIconGenerator(@ColorInt int iconColor) {
-        Resources resources = mActivity.getResources();
-        int iconSize = resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_size);
-        int cornerRadius = iconSize / 2;
-        int textSize =
-                resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_text_size);
-
-        return new RoundedIconGenerator(iconSize, iconSize, cornerRadius, iconColor, textSize);
-    }
-
-    @VisibleForTesting
-    Bitmap getIconForPreview() {
-        return mIconForPreview;
-    }
 }

@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +17,32 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
+import org.chromium.chrome.browser.ui.favicon.IconType;
+import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Bottom sheet content to display a 2-row custom share sheet.
@@ -36,20 +50,24 @@ import java.util.List;
 class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private static final int SHARE_SHEET_ITEM = 0;
     private final Context mContext;
+    private final LargeIconBridge mIconBridge;
     private final ShareSheetCoordinator mShareSheetCoordinator;
-    private ViewGroup mToolbarView;
     private ViewGroup mContentView;
     private ShareParams mParams;
+    private String mUrl;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
      *
      * @param context The context the share sheet was launched from.
-     * @param shareSheetCoordinator The Cooredinator that instatiated this BottomSheetContent.
+     * @param iconBridge The {@link LargeIconBridge} to generate the icon in the preview.
+     * @param shareSheetCoordinator The Coordinator that instantiated this BottomSheetContent.
+     * @param params The {@link ShareParams} for the current share.
      */
-    ShareSheetBottomSheetContent(
-            Context context, ShareSheetCoordinator shareSheetCoordinator, ShareParams params) {
+    ShareSheetBottomSheetContent(Context context, LargeIconBridge iconBridge,
+            ShareSheetCoordinator shareSheetCoordinator, ShareParams params) {
         mContext = context;
+        mIconBridge = iconBridge;
         mShareSheetCoordinator = shareSheetCoordinator;
         mParams = params;
         createContentView();
@@ -66,10 +84,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * @param activity The activity the share sheet belongs to.
      * @param firstPartyModels The PropertyModels used to build the top row.
      * @param thirdPartyModels The PropertyModels used to build the bottom row.
+     * @param contentTypes The {@link Set} of {@link ContentType}s to build the preview.
      * @param message The message to show on top of the share sheet.
      */
     void createRecyclerViews(List<PropertyModel> firstPartyModels,
-            List<PropertyModel> thirdPartyModels, String message) {
+            List<PropertyModel> thirdPartyModels, Set<Integer> contentTypes, String message) {
         // A success/failure message can be shown for features such as LinkToText.
         if (!message.isEmpty()) {
             TextView messageView = this.getContentView().findViewById(R.id.message);
@@ -80,10 +99,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
         // If there's no message to be shown, show a preview of the content to be shared.
         else {
-            TextView titleView = this.getContentView().findViewById(R.id.title_preview);
-            titleView.setText(mParams.getTitle());
-            TextView urlView = this.getContentView().findViewById(R.id.url_preview);
-            urlView.setText(mParams.getUrl());
+            createPreview(contentTypes);
         }
 
         createFirstPartyRecyclerViews(firstPartyModels);
@@ -135,9 +151,127 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         }
     }
 
-    void setFaviconForPreview(Bitmap icon) {
+    private void createPreview(Set<Integer> contentTypes) {
+        // Default preview is to show title + url.
+        String title = mParams.getTitle();
+        String subtitle = mParams.getUrl();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
+            fetchFavicon(mParams.getUrl());
+            setTitleStyle(R.style.TextAppearance_TextMediumThick_Primary);
+            setTextForPreview(title, subtitle);
+            return;
+        }
+
+        if (contentTypes.contains(ContentType.IMAGE)) {
+            setImageForPreviewFromUri(mParams.getFileUris().get(0));
+            if (TextUtils.isEmpty(subtitle)) {
+                subtitle = mContext.getResources().getString(
+                        R.string.sharing_hub_image_preview_subtitle);
+            }
+        } else if (contentTypes.contains(ContentType.OTHER_FILE_TYPE)) {
+            // TODO(1120093): Set file icon.
+        } else if (contentTypes.size() == 1
+                && (contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)
+                        || contentTypes.contains(ContentType.TEXT))) {
+            // TODO(1120093): Set text monogram icon.
+            title = "";
+            subtitle = mParams.getText();
+            setSubtitleMaxLines(2);
+        } else {
+            fetchFavicon(mParams.getUrl());
+        }
+
+        if (contentTypes.contains(ContentType.TEXT)
+                && contentTypes.contains(ContentType.LINK_PAGE_NOT_VISIBLE)) {
+            title = mParams.getText();
+            setTitleStyle(R.style.TextAppearance_TextMedium_Primary);
+        } else {
+            setTitleStyle(R.style.TextAppearance_TextMediumThick_Primary);
+        }
+
+        setTextForPreview(title, subtitle);
+    }
+
+    private void setImageForPreviewFromUri(Uri imageUri) {
+        try {
+            setImagePreview(
+                    ApiCompatibilityUtils.getBitmapByUri(mContext.getContentResolver(), imageUri));
+        } catch (IOException e) {
+            // If no image preview available, don't show a preview.
+        }
+    }
+
+    private void setTitleStyle(int resId) {
+        TextView titleView = this.getContentView().findViewById(R.id.title_preview);
+        ApiCompatibilityUtils.setTextAppearance(titleView, resId);
+    }
+
+    private void setTextForPreview(String title, String subtitle) {
+        TextView titleView = this.getContentView().findViewById(R.id.title_preview);
+        titleView.setText(title);
+        TextView subtitleView = this.getContentView().findViewById(R.id.subtitle_preview);
+        subtitleView.setText(subtitle);
+
+        // If there is no title, have subtitleView take up the whole area.
+        if (TextUtils.isEmpty(title)) {
+            titleView.setVisibility(View.GONE);
+        }
+    }
+
+    private void setSubtitleMaxLines(int maxLines) {
+        TextView subtitleView = this.getContentView().findViewById(R.id.subtitle_preview);
+        subtitleView.setMaxLines(maxLines);
+    }
+
+    private void setImagePreview(Bitmap icon) {
         ImageView imageView = this.getContentView().findViewById(R.id.image_preview);
         imageView.setImageBitmap(icon);
+    }
+
+    /**
+     * Fetches the favicon for the given url.
+     **/
+    private void fetchFavicon(String url) {
+        if (!url.isEmpty()) {
+            mUrl = url;
+            mIconBridge.getLargeIconForUrl(new GURL(url),
+                    mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
+                    this::onFaviconAvailable);
+        }
+    }
+
+    /**
+     * Passed as the callback to {@link LargeIconBridge#getLargeIconForStringUrl}
+     * by showShareSheetWithMessage.
+     */
+    private void onFaviconAvailable(@Nullable Bitmap icon, @ColorInt int fallbackColor,
+            boolean isColorDefault, @IconType int iconType) {
+        // If we didn't get a favicon, generate a monogram instead
+        if (icon == null) {
+            RoundedIconGenerator iconGenerator = createRoundedIconGenerator(fallbackColor);
+            icon = iconGenerator.generateIconForUrl(mUrl);
+            // generateIconForUrl might return null if the URL is empty or the domain cannot be
+            // resolved. See https://crbug.com/987101
+            // TODO(1120093): Handle the case where generating an icon fails.
+            if (icon == null) {
+                return;
+            }
+        }
+
+        int size = mContext.getResources().getDimensionPixelSize(
+                R.dimen.sharing_hub_preview_monogram_size);
+
+        setImagePreview(Bitmap.createScaledBitmap(icon, size, size, true));
+    }
+
+    private RoundedIconGenerator createRoundedIconGenerator(@ColorInt int iconColor) {
+        Resources resources = mContext.getResources();
+        int iconSize = resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_size);
+        int cornerRadius = iconSize / 2;
+        int textSize =
+                resources.getDimensionPixelSize(R.dimen.sharing_hub_preview_monogram_text_size);
+
+        return new RoundedIconGenerator(iconSize, iconSize, cornerRadius, iconColor, textSize);
     }
 
     /**

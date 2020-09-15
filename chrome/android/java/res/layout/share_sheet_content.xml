@@ -45,32 +45,30 @@
       <TextView
         android:id="@+id/title_preview"
         android:ellipsize="end"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
         android:maxLines="1"
         android:minHeight="18dp"
         android:paddingEnd="16dp"
         android:paddingStart="12dp"
-        android:gravity="center_vertical"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
+        android:paddingBottom="4dp"
+        android:textAlignment="viewStart"/>
 
       <TextView
-        android:id="@+id/url_preview"
+        android:id="@+id/subtitle_preview"
         android:ellipsize="end"
         android:layout_below="@id/title_preview"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/image_preview"
+        android:layout_centerVertical="true"
         android:maxLines="1"
         android:minHeight="18dp"
         android:paddingEnd="16dp"
         android:paddingStart="12dp"
-        android:paddingTop="4dp"
-        android:gravity="center_vertical"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
   </RelativeLayout>
 
   <View

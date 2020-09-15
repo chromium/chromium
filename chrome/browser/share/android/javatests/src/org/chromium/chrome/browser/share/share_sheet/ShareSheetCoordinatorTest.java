@@ -12,7 +12,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.support.test.rule.ActivityTestRule;
 
 import androidx.test.filters.MediumTest;
@@ -29,8 +28,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.ui.favicon.IconType;
-import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
@@ -74,8 +71,6 @@ public final class ShareSheetCoordinatorTest {
     private Activity mActivity;
     private ShareSheetCoordinator mShareSheetCoordinator;
 
-    private static Bitmap.Config sConfig = Bitmap.Config.ALPHA_8;
-
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
@@ -99,7 +94,7 @@ public final class ShareSheetCoordinatorTest {
                 .thenReturn(thirdPartyPropertyModels);
 
         mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher, null,
-                mPropertyModelBuilder, null, new MockLargeIconBridge(), null, false);
+                mPropertyModelBuilder, null, null, null, false);
     }
 
     @Test
@@ -128,29 +123,5 @@ public final class ShareSheetCoordinatorTest {
         assertEquals("Third property model isn't More.",
                 mActivity.getResources().getString(R.string.sharing_more_icon_label),
                 propertyModels.get(2).get(ShareSheetItemViewProperties.LABEL));
-    }
-
-    @Test
-    @MediumTest
-    public void testFetchFavicon() {
-        Activity activity = mActivityTestRule.getActivity();
-        mShareSheetCoordinator.fetchFavicon(activity, "https://www.example.com");
-
-        Bitmap bitmap = mShareSheetCoordinator.getIconForPreview();
-        int size = activity.getResources().getDimensionPixelSize(
-                R.dimen.sharing_hub_preview_monogram_size);
-        assertEquals(size, bitmap.getWidth());
-        assertEquals(size, bitmap.getHeight());
-        assertEquals(sConfig, bitmap.getConfig());
-    }
-
-    private static class MockLargeIconBridge extends LargeIconBridge {
-        @Override
-        public boolean getLargeIconForStringUrl(String pageUrl, int desiredSizePx,
-                final LargeIconBridge.LargeIconCallback callback) {
-            callback.onLargeIconAvailable(
-                    Bitmap.createBitmap(48, 84, sConfig), 0, false, IconType.INVALID);
-            return true;
-        }
     }
 }
