@@ -202,11 +202,11 @@ class X11WindowTest : public testing::Test {
 
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
-    XSynchronize(gfx::GetXDisplay(), x11::True);
+    XSynchronize(gfx::GetXDisplay(), true);
   }
 
  protected:
-  void TearDown() override { XSynchronize(gfx::GetXDisplay(), x11::False); }
+  void TearDown() override { XSynchronize(gfx::GetXDisplay(), false); }
 
   std::unique_ptr<X11Window> CreateX11Window(
       PlatformWindowDelegate* delegate,

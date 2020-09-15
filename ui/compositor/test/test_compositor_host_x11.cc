@@ -28,7 +28,7 @@ TestCompositorHostX11::~TestCompositorHostX11() = default;
 void TestCompositorHostX11::Show() {
   XDisplay* display = gfx::GetXDisplay();
   XSetWindowAttributes swa;
-  swa.override_redirect = x11::True;
+  swa.override_redirect = true;
   window_ = static_cast<x11::Window>(XCreateWindow(
       display, XDefaultRootWindow(display),  // parent
       bounds_.x(), bounds_.y(), bounds_.width(), bounds_.height(),
@@ -42,7 +42,7 @@ void TestCompositorHostX11::Show() {
   XMapWindow(display, static_cast<uint32_t>(window_));
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the map is complete.
-  XSync(display, x11::False);
+  XSync(display, false);
   allocator_.GenerateId();
   compositor_.SetAcceleratedWidget(
       static_cast<gfx::AcceleratedWidget>(window_));

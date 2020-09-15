@@ -117,13 +117,13 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
 #endif
     // Make X11 synchronous for our display connection. This does not force the
     // window manager to behave synchronously.
-    XSynchronize(xdisplay(), x11::True);
+    XSynchronize(xdisplay(), true);
     DesktopWidgetTestInteractive::SetUp();
   }
 
   void TearDown() override {
     if (!IsSkipped())
-      XSynchronize(xdisplay(), x11::False);
+      XSynchronize(xdisplay(), false);
     DesktopWidgetTestInteractive::TearDown();
   }
 
@@ -400,7 +400,7 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
 
   x11::Window root = ui::GetX11RootWindow();
   XSetWindowAttributes swa;
-  swa.override_redirect = x11::True;
+  swa.override_redirect = true;
   x11::Window menu_window = static_cast<x11::Window>(XCreateWindow(
       xdisplay(), static_cast<uint32_t>(root), 0, 0, 1, 1,
       0,                                                   // border width

@@ -57,10 +57,10 @@ GLXContext CreateContextAttribs(Display* display,
   // errors can be generated. To prevent these errors from crashing our process,
   // we simply ignore them and only look if the GLXContext was created.
   // Sync to ensure any errors generated are processed.
-  XSync(display, x11::False);
+  XSync(display, false);
   auto old_error_handler = XSetErrorHandler(IgnoreX11Errors);
-  GLXContext context = glXCreateContextAttribsARB(display, config, share,
-                                                  x11::True, attribs.data());
+  GLXContext context =
+      glXCreateContextAttribsARB(display, config, share, true, attribs.data());
   XSetErrorHandler(old_error_handler);
 
   return context;
@@ -182,7 +182,7 @@ bool GLContextGLX::Initialize(GLSurface* compatible_surface,
     DVLOG(1) << "GLX_ARB_create_context not supported.";
     context_ = glXCreateNewContext(
         display_, static_cast<GLXFBConfig>(compatible_surface->GetConfig()),
-        GLX_RGBA_TYPE, share_handle, x11::True);
+        GLX_RGBA_TYPE, share_handle, true);
     if (!context_) {
       LOG(ERROR) << "Failed to create GL context with glXCreateNewContext.";
       return false;

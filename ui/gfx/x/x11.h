@@ -376,13 +376,4 @@ inline int XkbBuildCoreState(int m, int g) {
   return ((g & 0x3) << 13) | (m & 0xff);
 }
 
-// Deprecated.
-namespace x11 {
-static constexpr unsigned long None = 0L;
-static constexpr long CurrentTime = 0L;
-static constexpr int False = 0;
-static constexpr int True = 1;
-static constexpr int Success = 0;
-}  // namespace x11
-
 #endif  // UI_GFX_X_X11_H_

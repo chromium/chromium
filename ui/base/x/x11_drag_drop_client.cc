@@ -672,7 +672,7 @@ void XDragDropClient::SendXdndLeave(x11::Window dest_window) {
 
 void XDragDropClient::SendXdndDrop(x11::Window dest_window) {
   auto xev = PrepareXdndClientMessage(kXdndDrop, dest_window);
-  xev.data.data32[2] = x11::CurrentTime;
+  xev.data.data32[2] = static_cast<uint32_t>(x11::Time::CurrentTime);
   SendXClientEvent(dest_window, xev);
 }
 

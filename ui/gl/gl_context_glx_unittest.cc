@@ -34,7 +34,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   XSetWindowAttributes swa;
   memset(&swa, 0, sizeof(swa));
   swa.background_pixmap = 0;
-  swa.override_redirect = x11::True;
+  swa.override_redirect = true;
   auto xwindow = static_cast<x11::Window>(XCreateWindow(
       xdisplay, XDefaultRootWindow(xdisplay), 0, 0, 10,
       10,  // x, y, width, height
@@ -47,7 +47,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   XMapWindow(xdisplay, static_cast<uint32_t>(xwindow));
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the map is complete.
-  XSync(xdisplay, x11::False);
+  XSync(xdisplay, false);
 
   GLImageTestSupport::InitializeGL(base::nullopt);
   auto surface = gl::InitializeGLSurface(base::MakeRefCounted<GLSurfaceGLXX11>(
@@ -64,7 +64,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   XDestroyWindow(xdisplay, static_cast<uint32_t>(xwindow));
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the window is destroyed and unmapped.
-  XSync(xdisplay, x11::False);
+  XSync(xdisplay, false);
   ASSERT_FALSE(error_tracker.FoundNewError());
 
   if (context->MakeCurrent(surface.get())) {
@@ -83,7 +83,7 @@ TEST(GLContextGLXTest, MAYBE_DoNotDestroyOnFailedMakeCurrent) {
   // not destroyed.
   ASSERT_TRUE(context->GetHandle());
   surface = nullptr;
-  XSync(xdisplay, x11::True);
+  XSync(xdisplay, true);
 }
 
 }  // namespace gl

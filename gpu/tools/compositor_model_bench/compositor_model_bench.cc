@@ -191,8 +191,8 @@ class Simulator {
         display_, kVisualIdMask, &visual_info_template, &visual_info_count);
 
     for (int i = 0; i < visual_info_count && !gl_context_; ++i) {
-      gl_context_ = glXCreateContext(display_, visual_info_list + i, 0,
-                                     x11::True /* Direct rendering */);
+      gl_context_ = glXCreateContext(display_, visual_info_list + i, nullptr,
+                                     true /* Direct rendering */);
     }
 
     XFree(visual_info_list);

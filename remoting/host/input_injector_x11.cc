@@ -168,7 +168,6 @@ class InputInjectorX11 : public InputInjector {
     // X11 graphics context.
     x11::Connection connection_;
     Display* display_ = connection_.display();
-    Window root_window_ = x11::None;
 
     // Number of buttons we support.
     // Left, Right, Middle, VScroll Up/Down, HScroll Left/Right, back, forward.
@@ -242,12 +241,6 @@ bool InputInjectorX11::Core::Init() {
   if (!task_runner_->BelongsToCurrentThread())
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&Core::InitClipboard, this));
-
-  root_window_ = XDefaultRootWindow(display_);
-  if (!root_window_) {
-    LOG(ERROR) << "Unable to get the root window";
-    return false;
-  }
 
   if (!IgnoreXServerGrabs(&connection_, true)) {
     LOG(ERROR) << "Server does not support XTest.";
@@ -393,7 +386,7 @@ bool InputInjectorX11::Core::IsLockKey(KeyCode keycode) {
   auto mods = state->baseMods | state->latchedMods | state->lockedMods;
   KeySym keysym;
   if (state && XkbLookupKeySym(display_, keycode, static_cast<unsigned>(mods),
-                               nullptr, &keysym) == x11::True) {
+                               nullptr, &keysym)) {
     return keysym == XK_Caps_Lock || keysym == XK_Num_Lock;
   } else {
     return false;

@@ -114,7 +114,7 @@ void KeyboardHookX11::CaptureKeyForDomCode(DomCode dom_code) {
     // error handler for debugging purposes but are not used to judge success.
     XGrabKey(x_display_, native_key_code, modifier,
              static_cast<uint32_t>(x_window_),
-             /*owner_events=*/x11::False,
+             /*owner_events=*/false,
              /*pointer_mode=*/GrabModeAsync,
              /*keyboard_mode=*/GrabModeAsync);
   }

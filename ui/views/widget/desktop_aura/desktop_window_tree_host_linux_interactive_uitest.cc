@@ -69,23 +69,18 @@ void DispatchMouseMotionEvent(DesktopWindowTreeHostLinux* desktop_host,
   gfx::Rect bounds_in_screen = desktop_host->window()->GetBoundsInScreen();
 
   auto* connection = x11::Connection::Get();
-  xcb_generic_event_t ge;
-  memset(&ge, 0, sizeof(ge));
-  auto* xev = reinterpret_cast<xcb_motion_notify_event_t*>(&ge);
-  xev->response_type = x11::MotionNotifyEvent::opcode;
-  xev->event = static_cast<uint32_t>(desktop_host->GetAcceleratedWidget());
-  xev->root = static_cast<uint32_t>(connection->default_screen().root);
-  xev->child = 0;
-  xev->time = x11::CurrentTime;
-  xev->event_x = point_in_screen.x() - bounds_in_screen.x();
-  xev->event_y = point_in_screen.y() - bounds_in_screen.y();
-  xev->root_x = point_in_screen.x();
-  xev->root_y = point_in_screen.y();
-  xev->state = 0;
-  xev->detail = NotifyNormal;
-  xev->same_screen = x11::True;
+  x11::MotionNotifyEvent xev{
+      .detail = x11::Motion::Normal,
+      .root = connection->default_root(),
+      .event = static_cast<x11::Window>(desktop_host->GetAcceleratedWidget()),
+      .root_x = point_in_screen.x(),
+      .root_y = point_in_screen.y(),
+      .event_x = point_in_screen.x() - bounds_in_screen.x(),
+      .event_y = point_in_screen.y() - bounds_in_screen.y(),
+      .same_screen = true,
+  };
 
-  x11::Event x11_event(&ge, connection);
+  x11::Event x11_event(xev);
   ui::X11EventSource::GetInstance()->ProcessXEvent(&x11_event);
 }
 

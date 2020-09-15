@@ -111,7 +111,7 @@ bool GlobalShortcutListenerX11::RegisterAcceleratorImpl(
   // Caps lock, Scroll lock. See comment about |kModifiersMasks|.
   for (unsigned int kModifiersMask : kModifiersMasks) {
     XGrabKey(x_display_, keycode, modifiers | kModifiersMask,
-             static_cast<uint32_t>(x_root_window_), x11::False, GrabModeAsync,
+             static_cast<uint32_t>(x_root_window_), false, GrabModeAsync,
              GrabModeAsync);
   }
 

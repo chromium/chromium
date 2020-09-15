@@ -281,7 +281,7 @@ class SGIVideoSyncThread : public base::Thread,
     DCHECK(task_runner()->BelongsToCurrentThread());
     if (!context_) {
       context_ = glXCreateNewContext(GetDisplay(), config, GLX_RGBA_TYPE,
-                                     nullptr, x11::True);
+                                     nullptr, true);
     }
     LOG_IF(ERROR, !context_) << "video_sync: glXCreateNewContext failed";
   }
@@ -337,7 +337,7 @@ class SGIVideoSyncProviderThreadShim {
         vsync_lock_() {
     // This ensures that creation of |parent_window_| has occured when this shim
     // is executing in the same thread as the call to create |parent_window_|.
-    XSync(gfx::GetXDisplay(), x11::False);
+    XSync(gfx::GetXDisplay(), false);
   }
 
   ~SGIVideoSyncProviderThreadShim() {
