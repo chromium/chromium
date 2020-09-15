@@ -425,6 +425,10 @@ void WebSettingsImpl::SetTouchDragDropEnabled(bool enabled) {
   settings_->SetTouchDragDropEnabled(enabled);
 }
 
+void WebSettingsImpl::SetTouchDragEndContextMenu(bool enabled) {
+  settings_->SetTouchDragEndContextMenu(enabled);
+}
+
 void WebSettingsImpl::SetBarrelButtonForDragEnabled(bool enabled) {
   settings_->SetBarrelButtonForDragEnabled(enabled);
 }

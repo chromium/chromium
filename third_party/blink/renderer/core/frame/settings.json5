@@ -322,6 +322,14 @@
       initial: false,
     },
 
+    // Fires a contextmenu event when a touch-drag ends, which by default shows
+    // a context-menu.  When implementation issues have been resolved, this
+    // should be merged to touchDragDropEnabled.  See crbug.com/1126473.
+    {
+      name: "touchDragEndContextMenu",
+      initial: false,
+    },
+
     // Some apps could have a default video poster if it is not set.
     {
       name: "defaultVideoPosterURL",

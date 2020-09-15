@@ -940,6 +940,7 @@ void RenderView::ApplyWebPreferences(const WebPreferences& prefs,
   }
 
   settings->SetTouchDragDropEnabled(prefs.touch_drag_drop_enabled);
+  settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
 
 #if defined(OS_MAC)
   web_view->SetMaximumLegibleScale(prefs.default_maximum_page_scale_factor);

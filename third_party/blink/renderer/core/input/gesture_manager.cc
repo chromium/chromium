@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -37,6 +38,14 @@
 
 namespace blink {
 
+namespace {
+
+// The amount of drag (in pixels) that is considered to be within a slop region.
+// This allows firing touch dragend contextmenu events for shaky fingers.
+const int kTouchDragSlop = 8;
+
+}  // namespace
+
 GestureManager::GestureManager(LocalFrame& frame,
                                ScrollManager& scroll_manager,
                                MouseEventManager& mouse_event_manager,
@@ -52,7 +61,12 @@ GestureManager::GestureManager(LocalFrame& frame,
 
 void GestureManager::Clear() {
   suppress_mouse_events_from_gestures_ = false;
-  long_tap_should_invoke_context_menu_ = false;
+  ResetLongTapContextMenuStates();
+}
+
+void GestureManager::ResetLongTapContextMenuStates() {
+  gesture_context_menu_deferred_ = false;
+  long_press_position_in_root_frame_ = gfx::PointF();
 }
 
 void GestureManager::Trace(Visitor* visitor) const {
@@ -139,8 +153,8 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
   return WebInputEventResult::kNotHandled;
 }
 
-bool GestureManager::LongTapShouldInvokeContextMenu() const {
-  return long_tap_should_invoke_context_menu_;
+bool GestureManager::GestureContextMenuDeferred() const {
+  return gesture_context_menu_deferred_;
 }
 
 WebInputEventResult GestureManager::HandleGestureTapDown(
@@ -339,19 +353,20 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
   // overhaul of the touch drag-and-drop code and LongPress is such a special
   // scenario that it's unlikely to matter much in practice.
 
+  long_press_position_in_root_frame_ = gesture_event.PositionInRootFrame();
   HitTestLocation location(frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(gesture_event.PositionInRootFrame())));
+      FlooredIntPoint(long_press_position_in_root_frame_)));
   HitTestResult hit_test_result =
       frame_->GetEventHandler().HitTestResultAtLocation(location);
 
-  long_tap_should_invoke_context_menu_ = false;
+  gesture_context_menu_deferred_ = false;
+
   bool hit_test_contains_links = hit_test_result.URLElement() ||
                                  !hit_test_result.AbsoluteImageURL().IsNull() ||
                                  !hit_test_result.AbsoluteMediaURL().IsNull();
-
   if (!hit_test_contains_links &&
       mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
-    long_tap_should_invoke_context_menu_ = true;
+    gesture_context_menu_deferred_ = true;
     return WebInputEventResult::kHandledSystem;
   }
 
@@ -363,7 +378,7 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   if (frame_->GetSettings() &&
       frame_->GetSettings()->GetShowContextMenuOnMouseUp()) {
-    long_tap_should_invoke_context_menu_ = true;
+    gesture_context_menu_deferred_ = true;
     return WebInputEventResult::kNotHandled;
   }
 
@@ -375,8 +390,8 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
 WebInputEventResult GestureManager::HandleGestureLongTap(
     const GestureEventWithHitTestResults& targeted_event) {
-  if (LongTapShouldInvokeContextMenu()) {
-    long_tap_should_invoke_context_menu_ = false;
+  if (gesture_context_menu_deferred_) {
+    gesture_context_menu_deferred_ = false;
     return SendContextMenuEventForGesture(targeted_event);
   }
   return WebInputEventResult::kNotHandled;
@@ -388,6 +403,29 @@ WebInputEventResult GestureManager::HandleGestureTwoFingerTap(
   if (inner_node && inner_node->GetLayoutObject())
     selection_controller_->HandleGestureTwoFingerTap(targeted_event);
   return SendContextMenuEventForGesture(targeted_event);
+}
+
+void GestureManager::SendContextMenuEventTouchDragEnd(
+    const WebMouseEvent& mouse_event) {
+  if (!gesture_context_menu_deferred_ || suppress_mouse_events_from_gestures_) {
+    return;
+  }
+
+  const gfx::PointF& positon_in_root_frame = mouse_event.PositionInWidget();
+
+  // Don't send contextmenu event if tap position is not within a slop region.
+  //
+  // TODO(mustaq): We should be reusing gesture touch-slop region here but it
+  // seems non-trivial because this code path is called at drag-end, and the
+  // drag controller does not sync well with gesture recognizer.  See the
+  // blocked-on bugs in https://crbug.com/1096189.
+  if ((positon_in_root_frame - long_press_position_in_root_frame_).Length() >
+      kTouchDragSlop)
+    return;
+
+  ContextMenuAllowedScope scope;
+  frame_->GetEventHandler().SendContextMenuEvent(mouse_event);
+  ResetLongTapContextMenuStates();
 }
 
 WebInputEventResult GestureManager::SendContextMenuEventForGesture(
