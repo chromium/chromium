@@ -9,7 +9,6 @@ import "services/viz/public/mojom/compositing/copy_output_request.mojom";
 import "services/viz/public/mojom/compositing/filter_operations.mojom";
 import "services/viz/public/mojom/compositing/quads.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
@@ -22,7 +21,6 @@ struct CompositorRenderPass {
   FilterOperations filters;
   FilterOperations backdrop_filters;
   gfx.mojom.RRectF? backdrop_filter_bounds;
-  gfx.mojom.ContentColorUsage content_color_usage;
   bool has_transparent_background;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;

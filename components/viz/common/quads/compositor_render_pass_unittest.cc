@@ -21,26 +21,6 @@
 namespace viz {
 namespace {
 
-struct RenderPassSize {
-  // If you add a new field to this class, make sure to add it to the
-  // Copy() tests.
-  uint64_t id;
-  gfx::Rect output_rect;
-  gfx::Rect damage_rect;
-  gfx::Transform transform_to_root_target;
-  cc::FilterOperations filters;
-  cc::FilterOperations backdrop_filters;
-  base::Optional<gfx::RRectF> backdrop_filter_bounds;
-  gfx::ContentColorUsage content_color_usage;
-  bool has_transparent_background;
-  bool cache_render_pass;
-  bool has_damage_from_contributing_component;
-  bool generate_mipmap;
-  std::vector<std::unique_ptr<CopyOutputRequest>> copy_callbacks;
-  QuadList quad_list;
-  SharedQuadStateList shared_quad_state_list;
-};
-
 static void CompareRenderPassLists(
     const CompositorRenderPassList& expected_list,
     const CompositorRenderPassList& actual_list) {
@@ -75,7 +55,8 @@ static void CompareRenderPassLists(
   }
 }
 
-TEST(CompositorRenderPassTest, CopyShouldBeIdenticalExceptIdAndQuads) {
+TEST(CompositorRenderPassTest,
+     AggregatedCopyShouldBeIdenticalExceptIdAndQuads) {
   AggregatedRenderPassId render_pass_id{3u};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
@@ -133,8 +114,6 @@ TEST(CompositorRenderPassTest, CopyShouldBeIdenticalExceptIdAndQuads) {
   // The copy request should not be copied/duplicated.
   EXPECT_EQ(1u, pass->copy_requests.size());
   EXPECT_EQ(0u, copy->copy_requests.size());
-
-  EXPECT_EQ(sizeof(RenderPassSize), sizeof(CompositorRenderPass));
 }
 
 TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
@@ -151,7 +130,6 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
   base::Optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
-  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kHDR;
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
@@ -159,7 +137,7 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
 
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
-               backdrop_filters, backdrop_filter_bounds, content_color_usage,
+               backdrop_filters, backdrop_filter_bounds,
                has_transparent_background, cache_render_pass,
                has_damage_from_contributing_content, generate_mipmap);
 
@@ -207,20 +185,18 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   contrib_backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(1));
   base::Optional<gfx::RRectF> contrib_backdrop_filter_bounds(
       {20, 30, 140, 150, 1, 2, 3, 4, 5, 6, 7, 8});
-  gfx::ContentColorUsage contrib_content_color_usage =
-      gfx::ContentColorUsage::kHDR;
   bool contrib_has_transparent_background = true;
   bool contrib_cache_render_pass = false;
   bool contrib_has_damage_from_contributing_content = false;
   bool contrib_generate_mipmap = false;
 
   auto contrib = CompositorRenderPass::Create();
-  contrib->SetAll(
-      contrib_id, contrib_output_rect, contrib_damage_rect,
-      contrib_transform_to_root, contrib_filters, contrib_backdrop_filters,
-      contrib_backdrop_filter_bounds, contrib_content_color_usage,
-      contrib_has_transparent_background, contrib_cache_render_pass,
-      contrib_has_damage_from_contributing_content, contrib_generate_mipmap);
+  contrib->SetAll(contrib_id, contrib_output_rect, contrib_damage_rect,
+                  contrib_transform_to_root, contrib_filters,
+                  contrib_backdrop_filters, contrib_backdrop_filter_bounds,
+                  contrib_has_transparent_background, contrib_cache_render_pass,
+                  contrib_has_damage_from_contributing_content,
+                  contrib_generate_mipmap);
 
   SharedQuadState* contrib_shared_state =
       contrib->CreateAndAppendSharedQuadState();
@@ -264,7 +240,6 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
   base::Optional<gfx::RRectF> backdrop_filter_bounds(
       {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
-  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kHDR;
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
@@ -272,7 +247,7 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
 
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
-               backdrop_filters, backdrop_filter_bounds, content_color_usage,
+               backdrop_filters, backdrop_filter_bounds,
                has_transparent_background, cache_render_pass,
                has_damage_from_contributing_content, generate_mipmap);
 

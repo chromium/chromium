@@ -58,11 +58,6 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->backdrop_filter_bounds;
   }
 
-  static gfx::ContentColorUsage content_color_usage(
-      const std::unique_ptr<viz::CompositorRenderPass>& input) {
-    return input->content_color_usage;
-  }
-
   static bool has_transparent_background(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->has_transparent_background;
