@@ -17,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -376,6 +377,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1128298")
     public void rejectCacheIfSubtypesAreMalformed() {
         List<OmniboxSuggestion> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
@@ -403,6 +405,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisabledTest(message = "https://crbug.com/1128298")
     public void rejectCacheIfSubtypesIncludeNull() {
         List<OmniboxSuggestion> list = Arrays.asList(
                 createSuggestionBuilder(1, OmniboxSuggestionType.SEARCH_SUGGEST_PERSONALIZED)
