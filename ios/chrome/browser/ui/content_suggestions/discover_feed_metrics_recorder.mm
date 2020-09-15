@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -81,66 +83,125 @@ namespace {
 const char kDiscoverFeedInfiniteFeedTriggered[] =
     "ContentSuggestions.Feed.LoadStreamStatus.LoadMore";
 
-// Histogram name for the feed header items.
-const char kDiscoverFeedUserAction[] = "ContentSuggestions.Feed.UserActions";
+// Histogram name for the Discover feed user actions.
+const char kDiscoverFeedUserActionHistogram[] =
+    "ContentSuggestions.Feed.UserActions";
 
+// User action names for toggling the feed visibility from the header menu.
+const char kDiscoverFeedUserActionTurnOn[] =
+    "Suggestions.ExpandableHeader.Expanded";
+const char kDiscoverFeedUserActionTurnOff[] =
+    "Suggestions.ExpandableHeader.Collapsed";
+
+// User action names for feed back of card items.
+const char kDiscoverFeedUserActionLearnMoreTapped[] =
+    "ContentSuggestions.Feed.CardAction.LearnMore";
+const char kDiscoverFeedUserActionOpenSameTab[] =
+    "ContentSuggestions.Feed.CardAction.Open";
+const char kDiscoverFeedUserActionOpenIncognitoTab[] =
+    "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab";
+const char kDiscoverFeedUserActionOpenNewTab[] =
+    "ContentSuggestions.Feed.CardAction.OpenInNewTab";
+const char kDiscoverFeedUserActionReadLaterTapped[] =
+    "ContentSuggestions.Feed.CardAction.ReadLater";
+const char kDiscoverFeedUserActionSendFeedbackOpened[] =
+    "ContentSuggestions.Feed.CardAction.SendFeedback";
+
+// User action names for feed header menu.
+const char kDiscoverFeedUserActionManageActivityTapped[] =
+    "ContentSuggestions.Feed.HeaderAction.ManageActivity";
+const char kDiscoverFeedUserActionManageInterestsTapped[] =
+    "ContentSuggestions.Feed.HeaderAction.ManageInterests";
+
+// User action name for infinite feed triggering.
+const char kDiscoverFeedUserActionInfiniteFeedTriggered[] =
+    "ContentSuggestions.Feed.InfiniteFeedTriggered";
 }  // namespace
 
 @implementation DiscoverFeedMetricsRecorder
 
+#pragma mark - Public
+
 - (void)recordInfiniteFeedTriggered {
   UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedInfiniteFeedTriggered,
                             FeedLoadStreamStatus::kLoadedFromNetwork);
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionInfiniteFeedTriggered));
 }
 
 - (void)recordHeaderMenuLearnMoreTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedLearnMore);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedLearnMore];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionLearnMoreTapped));
 }
 
 - (void)recordHeaderMenuManageActivityTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedManageActivity);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedManageActivity];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManageActivityTapped));
 }
 
 - (void)recordHeaderMenuManageInterestsTapped {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedManageInterests);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedManageInterests];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionManageInterestsTapped));
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
   if (visible) {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                              FeedUserActionType::kTappedTurnOn);
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kTappedTurnOn];
+    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOn));
   } else {
-    UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                              FeedUserActionType::kTappedTurnOff);
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kTappedTurnOff];
+    base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionTurnOff));
   }
 }
 
 - (void)recordOpenURLInSameTab {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedOnCard);
+  [self
+      recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedOnCard];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionOpenSameTab));
 }
 
 - (void)recordOpenURLInNewTab {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedOpenInNewTab);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedOpenInNewTab];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionOpenNewTab));
 }
 
 - (void)recordOpenURLInIncognitoTab {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedOpenInNewIncognitoTab);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedOpenInNewIncognitoTab];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionOpenIncognitoTab));
 }
 
 - (void)recordAddURLToReadLater {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kAddedToReadLater);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kAddedToReadLater];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionReadLaterTapped));
 }
 
 - (void)recordTapSendFeedback {
-  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserAction,
-                            FeedUserActionType::kTappedSendFeedback);
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kTappedSendFeedback];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionSendFeedbackOpened));
+}
+
+#pragma mark - Private
+
+// Records histogram metrics for Discover feed user actions.
+- (void)recordDiscoverFeedUserActionHistogram:(FeedUserActionType)actionType {
+  UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedUserActionHistogram, actionType);
 }
 
 @end
