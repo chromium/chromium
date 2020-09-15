@@ -9,8 +9,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -34,9 +37,14 @@ class WellKnownChangePasswordState {
       password_manager::WellKnownChangePasswordStateDelegate* delegate);
   ~WellKnownChangePasswordState();
   // Request the status code from a path that is expected to return 404.
+  // In order to avoid security issues `request_initiator` and `trusted_params`
+  // need to be derived from the initial navigation. These are not set on iOS.
   void FetchNonExistingResource(
       network::SharedURLLoaderFactory* url_loader_factory,
-      const GURL& origin);
+      const GURL& origin,
+      base::Optional<url::Origin> request_initiator = base::nullopt,
+      base::Optional<network::ResourceRequest::TrustedParams> trusted_params =
+          base::nullopt);
   // Prefetch change password URLs from |affiliation_service|.
   void PrefetchChangePasswordURLs(AffiliationService* affiliation_service,
                                   const std::vector<GURL>& urls);

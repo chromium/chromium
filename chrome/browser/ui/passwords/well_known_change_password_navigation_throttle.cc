@@ -19,6 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -109,8 +110,19 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
       content::BrowserContext::GetDefaultStoragePartition(
           navigation_handle()->GetWebContents()->GetBrowserContext())
           ->GetURLLoaderFactoryForBrowserProcess();
+  // In order to avoid bypassing Sec-Fetch-Site headers and extracting user data
+  // across redirects, we need to set both the initiator origin and network
+  // isolation key when fetching the well-known non-existing resource.
+  // See the discussion in blink-dev/UN1BRg4qTbs for more details.
+  // TODO(crbug.com/1127520): Confirm that this works correctly within
+  // redirects.
+  network::ResourceRequest::TrustedParams trusted_params;
+  trusted_params.isolation_info = net::IsolationInfo::CreatePartial(
+      net::IsolationInfo::RedirectMode::kUpdateNothing,
+      navigation_handle()->GetIsolationInfo().network_isolation_key());
   well_known_change_password_state_.FetchNonExistingResource(
-      url_loader_factory.get(), navigation_handle()->GetURL());
+      url_loader_factory.get(), navigation_handle()->GetURL(),
+      navigation_handle()->GetInitiatorOrigin(), std::move(trusted_params));
   return NavigationThrottle::PROCEED;
 }
 

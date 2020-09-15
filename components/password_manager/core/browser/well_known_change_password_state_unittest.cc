@@ -7,12 +7,16 @@
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -23,7 +27,7 @@ struct ResponseDelayParams {
   int not_exist_delay;
 };
 
-constexpr char kOrigin[] = "foo.bar";
+constexpr char kOrigin[] = "https://foo.bar";
 
 class MockWellKnownChangePasswordStateDelegate
     : public WellKnownChangePasswordStateDelegate {
@@ -39,8 +43,13 @@ class WellKnownChangePasswordStateTest
       public testing::WithParamInterface<ResponseDelayParams> {
  public:
   WellKnownChangePasswordStateTest() {
-    state_.FetchNonExistingResource(test_shared_loader_factory_.get(),
-                                    GURL(kOrigin));
+    auto origin = url::Origin::Create(GURL(kOrigin));
+    trusted_params_.isolation_info = net::IsolationInfo::CreatePartial(
+        net::IsolationInfo::RedirectMode::kUpdateNothing,
+        net::NetworkIsolationKey(origin, origin));
+    state_.FetchNonExistingResource(
+        test_shared_loader_factory_.get(), GURL(kOrigin),
+        url::Origin::Create(GURL(kOrigin)), trusted_params_);
   }
   // Mocking and sending the response for the non_existing request with status
   // code |status| after a time delay |delay|.
@@ -61,6 +70,7 @@ class WellKnownChangePasswordStateTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockWellKnownChangePasswordStateDelegate delegate_;
   WellKnownChangePasswordState state_{&delegate_};
+  network::ResourceRequest::TrustedParams trusted_params_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -70,7 +80,14 @@ class WellKnownChangePasswordStateTest
 void WellKnownChangePasswordStateTest::RespondeToNonExistingRequest(
     net::HttpStatusCode status,
     int delay) {
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  EXPECT_EQ(CreateWellKnownNonExistingResourceURL(GURL(kOrigin)), request.url);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit, request.credentials_mode);
+  EXPECT_EQ(net::LOAD_DISABLE_CACHE, request.load_flags);
+  EXPECT_EQ(url::Origin::Create(GURL(kOrigin)), request.request_initiator);
+  EXPECT_TRUE(request.trusted_params->EqualsForTesting(trusted_params_));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
