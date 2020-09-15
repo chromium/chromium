@@ -328,6 +328,8 @@ class OmniboxViewViews : public OmniboxView,
       NoStaleGradientMask);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsHideOnInteractionTest, ModifierKeys);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsHideOnInteractionTest,
+                           ErrorPageNavigation);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsHideOnInteractionTest,
                            SameDocNavigations);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsHideOnInteractionTest,
                            SameDocNavigationDuringAnimation);

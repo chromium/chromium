@@ -1997,13 +1997,26 @@ void OmniboxViewViews::DidFinishNavigation(
   if (!navigation->IsInMainFrame())
     return;
 
+  // If the navigation didn't commit, and it was renderer-initiated, then no
+  // action is needed, as the URL won't have been updated. But if it was
+  // browser-initiated, then the URL would have been updated to show the URL of
+  // the in-progress navigation; in this case, reset to show the full URL now
+  // that the navigation has finished without committing.
+  if (!navigation->HasCommitted()) {
+    if (navigation->IsRendererInitiated()) {
+      return;
+    }
+    ResetToHideOnInteraction();
+    return;
+  }
+
   // Once a navigation finishes that changes the visible URL (besides just the
   // ref), unelide and reset state so that we'll show the simplified domain on
   // interaction. Same-document navigations that only change the ref are treated
   // specially and don't cause the elision/unelision state to be altered. This
   // is to avoid frequent eliding/uneliding within single-page apps that do
   // frequent fragment navigations.
-  if (!navigation->IsSameDocument() ||
+  if (navigation->IsErrorPage() || !navigation->IsSameDocument() ||
       !navigation->GetPreviousURL().EqualsIgnoringRef(navigation->GetURL())) {
     ResetToHideOnInteraction();
   }

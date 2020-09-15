@@ -292,6 +292,7 @@ void TestingOmniboxView::NavigateAndExpectElided(
   location_bar_model_->set_url_for_display(base::ASCIIToUTF16(url.spec()));
   model()->ResetDisplayTexts();
   RevertAll();
+  navigation.set_has_committed(true);
   DidFinishNavigation(&navigation);
   ExpectElidedToSimplifiedDomain(this, scheme, subdomain, hostname_and_scheme,
                                  path, should_elide_to_registrable_domain);
@@ -311,6 +312,7 @@ void TestingOmniboxView::NavigateAndExpectUnelided(
   location_bar_model_->set_url_for_display(url);
   model()->ResetDisplayTexts();
   RevertAll();
+  navigation.set_has_committed(true);
   DidFinishNavigation(&navigation);
   ExpectUnelidedFromSimplifiedDomain(this->GetRenderText(),
                                      gfx::Range(scheme.size(), url.size()));
@@ -2157,6 +2159,56 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   }
 }
 
+// Tests that the hide-on-interaction simplified domain field trial handles
+// non-committed navigations properly.
+TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
+       NonCommittedNavigations) {
+  SetUpSimplifiedDomainTest();
+
+  ASSERT_NO_FATAL_FAILURE(omnibox_view()->NavigateAndExpectUnelided(
+      kSimplifiedDomainDisplayUrl,
+      /*is_same_document=*/false, GURL(), kSimplifiedDomainDisplayUrlScheme));
+  // Simulate a user interaction to elide the URL.
+  omnibox_view()->DidGetUserInteraction(blink::WebKeyboardEvent());
+  ASSERT_NO_FATAL_FAILURE(
+      omnibox_view()->StepSimplifiedDomainInteractionAnimation(
+          /*step_ms=*/1000));
+  ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
+      omnibox_view(), kSimplifiedDomainDisplayUrlScheme,
+      kSimplifiedDomainDisplayUrlSubdomain,
+      kSimplifiedDomainDisplayUrlHostnameAndScheme,
+      kSimplifiedDomainDisplayUrlPath, ShouldElideToRegistrableDomain()));
+
+  // When a renderer-initiated navigation finishes without committing, the URL
+  // should remain elided; we don't update the display URL until the navigation
+  // commits.
+  {
+    content::MockNavigationHandle navigation;
+    navigation.set_is_renderer_initiated(true);
+    navigation.set_has_committed(false);
+    omnibox_view()->DidStartNavigation(&navigation);
+    omnibox_view()->DidFinishNavigation(&navigation);
+    ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
+        omnibox_view(), kSimplifiedDomainDisplayUrlScheme,
+        kSimplifiedDomainDisplayUrlSubdomain,
+        kSimplifiedDomainDisplayUrlHostnameAndScheme,
+        kSimplifiedDomainDisplayUrlPath, ShouldElideToRegistrableDomain()));
+  }
+
+  // When a browser-initiated navigation finishes without committing, the URL
+  // updates before commit, so we should reset back to the on-page-load state if
+  // the navigation doesn't eventually commit.
+  content::MockNavigationHandle navigation;
+  navigation.set_is_renderer_initiated(false);
+  navigation.set_has_committed(false);
+  omnibox_view()->DidStartNavigation(&navigation);
+  omnibox_view()->DidFinishNavigation(&navigation);
+  ASSERT_NO_FATAL_FAILURE(ExpectUnelidedFromSimplifiedDomain(
+      omnibox_view()->GetRenderText(),
+      gfx::Range(kSimplifiedDomainDisplayUrlScheme.size(),
+                 kSimplifiedDomainDisplayUrl.size())));
+}
+
 // Tests that mouse clicks do not count as user interactions and do not elide
 // the URL.
 TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest, MouseClick) {
@@ -2877,6 +2929,37 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, ModifierKeys) {
   OmniboxViewViews::ElideAnimation* elide_animation =
       omnibox_view()->GetElideAfterInteractionAnimationForTesting();
   EXPECT_FALSE(elide_animation);
+}
+
+// Tests that in the hide-on-interaction field trial, the URL is unelided when
+// navigating to an error page.
+TEST_P(OmniboxViewViewsHideOnInteractionTest, ErrorPageNavigation) {
+  SetUpSimplifiedDomainTest();
+  omnibox_view()->NavigateAndExpectUnelided(kSimplifiedDomainDisplayUrl,
+                                            /*is_same_document=*/false, GURL(),
+                                            kSimplifiedDomainDisplayUrlScheme);
+
+  omnibox_view()->NavigateAndExpectUnelided(kSimplifiedDomainDisplayUrl,
+                                            /*is_same_document=*/false, GURL(),
+                                            kSimplifiedDomainDisplayUrlScheme);
+  // Simulate a user interaction to elide to the simplified domain.
+  omnibox_view()->DidGetUserInteraction(blink::WebKeyboardEvent());
+  OmniboxViewViews::ElideAnimation* elide_animation =
+      omnibox_view()->GetElideAfterInteractionAnimationForTesting();
+  ASSERT_TRUE(elide_animation);
+  EXPECT_TRUE(elide_animation->IsAnimating());
+
+  // Now simulate a navigation to an error page and check that the URL is
+  // unelided.
+  content::MockNavigationHandle navigation;
+  navigation.set_url(GURL(kSimplifiedDomainDisplayUrl));
+  navigation.set_is_error_page(true);
+  omnibox_view()->DidStartNavigation(&navigation);
+  omnibox_view()->DidFinishNavigation(&navigation);
+  ExpectUnelidedFromSimplifiedDomain(
+      omnibox_view()->GetRenderText(),
+      gfx::Range(kSimplifiedDomainDisplayUrlScheme.size(),
+                 kSimplifiedDomainDisplayUrl.size()));
 }
 
 // Tests that in the hide-on-interaction field trial, the URL is simplified on
