@@ -152,7 +152,8 @@
     <dimen name="fre_margin">24dp</dimen>
 
     <dimen name="fre_image_bottom_margin">36dp</dimen>
-    <dimen name="fre_image_height">110dp</dimen>
+    <dimen name="fre_image_height">120dp</dimen>
+    <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_tos_checkbox_padding">12dp</dimen>
     <dimen name="fre_tos_bottom_margin">16dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>
@@ -160,9 +161,10 @@
     <dimen name="fre_bottom_loading_spinner_size">24dp</dimen>
 
     <dimen name="fre_button_vertical_margin">24dp</dimen>
+    <dimen name="fre_button_bar_height">62dp</dimen>
     <!-- fre_button_bar_height = button_height(48dp) + fre_button_vertical_margin * 2-->
-    <dimen name="fre_button_bar_height">96dp</dimen>
-    <!-- fre_bottom_loading_spinner_margin = (fre_button_bar_height - fre_bottom_loading_spinner_size) / 2-->
+    <dimen name="fre_tos_button_bar_height">96dp</dimen>
+    <!-- fre_bottom_loading_spinner_margin = (fre_tos_button_bar_height - fre_bottom_loading_spinner_size) / 2-->
     <dimen name='fre_bottom_loading_spinner_margin'>36dp</dimen>
 
     <!-- Account Signin dimensions -->
