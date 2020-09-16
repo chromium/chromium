@@ -39,6 +39,7 @@
 #include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/url_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -275,6 +276,13 @@ base::string16 SupervisedUserService::GetExtensionsLockedMessage() const {
 bool SupervisedUserService::IsSupervisedUserIframeFilterEnabled() const {
   return base::FeatureList::IsEnabled(
       supervised_users::kSupervisedUserIframeFilter);
+}
+
+// static
+std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
+  return base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)
+             ? chrome::kChromeUIEDUCoexistenceLoginURLV2
+             : chrome::kChromeUIEDUCoexistenceLoginURLV1;
 }
 
 bool SupervisedUserService::IsChild() const {

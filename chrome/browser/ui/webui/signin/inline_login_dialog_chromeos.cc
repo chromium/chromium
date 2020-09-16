@@ -16,6 +16,8 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_pref_names.h"
@@ -86,7 +88,8 @@ GURL GetInlineLoginUrl(const std::string& email,
       source == InlineLoginDialogChromeOS::Source::kArc) {
     return GURL(chrome::kChromeUIAccountManagerErrorURL);
   }
-  return GetUrlWithEmailParam(chrome::kChromeUIEDUCoexistenceLoginURL, email);
+  return GetUrlWithEmailParam(
+      SupervisedUserService::GetEduCoexistenceLoginUrl(), email);
 }
 
 }  // namespace

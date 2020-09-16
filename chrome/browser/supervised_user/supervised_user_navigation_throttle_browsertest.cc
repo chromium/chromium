@@ -275,12 +275,13 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
   GURL manually_blocked_url = embedded_test_server()->GetURL(
       kExampleHost2, "/supervised_user/with_iframes.html");
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(chrome::kChromeUIEDUCoexistenceLoginURL));
+  ui_test_utils::NavigateToURL(
+      browser(), GURL(SupervisedUserService::GetEduCoexistenceLoginUrl()));
   // Get the top level WebContents.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(contents->GetURL(), GURL(chrome::kChromeUIEDUCoexistenceLoginURL));
+  EXPECT_EQ(contents->GetURL(),
+            GURL(SupervisedUserService::GetEduCoexistenceLoginUrl()));
 
   InnerWebContentsAttachedWaiter web_contents_attached_waiter(
       browser()->tab_strip_model()->GetActiveWebContents());

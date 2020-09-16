@@ -13,6 +13,8 @@ extern const base::Feature kSupervisedUserIframeFilter;
 
 extern const base::Feature kSupervisedUserInitiatedExtensionInstall;
 
+extern const base::Feature kEduCoexistenceFlowV2;
+
 }  // namespace supervised_users
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_FEATURES_H_

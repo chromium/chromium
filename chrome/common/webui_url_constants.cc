@@ -68,7 +68,9 @@ const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIDownloadsHost[] = "downloads";
 const char kChromeUIDownloadsURL[] = "chrome://downloads/";
 const char kChromeUIDriveInternalsHost[] = "drive-internals";
-const char kChromeUIEDUCoexistenceLoginURL[] = "chrome://chrome-signin/edu";
+const char kChromeUIEDUCoexistenceLoginURLV1[] = "chrome://chrome-signin/edu";
+const char kChromeUIEDUCoexistenceLoginURLV2[] =
+    "chrome://chrome-signin/edu-coexistence";
 const char kChromeUIExtensionIconHost[] = "extension-icon";
 const char kChromeUIExtensionIconURL[] = "chrome://extension-icon/";
 const char kChromeUIExtensionsHost[] = "extensions";

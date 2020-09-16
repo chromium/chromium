@@ -159,6 +159,8 @@ class SupervisedUserService : public KeyedService,
 
   bool IsSupervisedUserIframeFilterEnabled() const;
 
+  static std::string GetEduCoexistenceLoginUrl();
+
   // Returns true if the user is a type of Family Link Child account,
   // but will not return true for a Legacy Supervised user (or non child users).
   bool IsChild() const;

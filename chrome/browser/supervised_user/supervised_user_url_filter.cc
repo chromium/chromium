@@ -26,8 +26,11 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
+#include "chrome/browser/supervised_user/supervised_user_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/policy/core/browser/url_util.h"
@@ -239,7 +242,7 @@ bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
       contents->GetOutermostWebContents();
 
   return outer_most_content->GetURL() ==
-         GURL(chrome::kChromeUIEDUCoexistenceLoginURL);
+         GURL(SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
 
 // static
