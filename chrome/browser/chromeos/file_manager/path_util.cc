@@ -463,6 +463,12 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
     force_external = true;
   }
 
+  // Force external URL for files under /media/archive.
+  if (base::FilePath(kArchiveMountPath)
+          .AppendRelativePath(path, &relative_path)) {
+    force_external = true;
+  }
+
   // Force external URL for smbfs.
   chromeos::smb_client::SmbService* smb_service =
       chromeos::smb_client::SmbServiceFactory::Get(primary_profile);
