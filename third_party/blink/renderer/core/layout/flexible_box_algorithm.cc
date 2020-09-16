@@ -746,9 +746,6 @@ bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
                                          : child.StyleRef().MinHeight();
   bool main_axis_is_childs_block_axis =
       IsHorizontalFlow() != child.StyleRef().IsHorizontalWritingMode();
-  // TODO(dgrogan) Move this closer to ng_flex_layout_algorithm.cc:616.
-  if (child.IsTable() && !main_axis_is_childs_block_axis)
-    return true;
   bool intrinsic_in_childs_block_axis =
       main_axis_is_childs_block_axis &&
       (min.IsMinContent() || min.IsMaxContent() || min.IsMinIntrinsic() ||

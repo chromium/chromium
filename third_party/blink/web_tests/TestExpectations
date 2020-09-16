@@ -728,6 +728,7 @@ crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure 
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1111708 external/wpt/css/css-flexbox/flexbox_justifycontent-center-overflow.html [ Failure ]
 crbug.com/1111128 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-min-height-auto-002b.html [ Failure ]
+crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-specified-width.html [ Failure ]
 
 # These have some incorrect expectations and will supposedly be deleted soon (Sep 2020) by mozilla.
 crbug.com/704294 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-intrinsic-ratio-003.html [ Failure ]

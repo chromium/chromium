@@ -614,111 +614,97 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
                                             : child.Style().MinHeight();
     if (algorithm_->ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
-      // TODO(dgrogan): This should probably apply to column flexboxes also,
-      // but that's not what legacy does.
-      if (child.IsTable() && !is_column_) {
-        MinMaxSizes table_preferred_widths =
-            ComputeMinAndMaxContentContribution(
-                Style(), child,
-                MinMaxSizesInput(child_percentage_size_.block_size,
-                                 MinMaxSizesType::kIntrinsic))
-                .sizes;
-        min_max_sizes_in_main_axis_direction.min_size =
-            table_preferred_widths.min_size;
+      LayoutUnit content_size_suggestion;
+      if (MainAxisIsInlineAxis(child)) {
+        content_size_suggestion =
+            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size;
       } else {
-        LayoutUnit content_size_suggestion;
-        if (MainAxisIsInlineAxis(child)) {
-          content_size_suggestion =
-              MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size;
+        LayoutUnit intrinsic_block_size;
+        if (child.IsReplaced()) {
+          base::Optional<LayoutUnit> computed_inline_size;
+          base::Optional<LayoutUnit> computed_block_size;
+          child.IntrinsicSize(&computed_inline_size, &computed_block_size);
+
+          // The 150 is for replaced elements that have no size, which SVG
+          // can have (maybe others?).
+          intrinsic_block_size =
+              computed_block_size.value_or(LayoutUnit(150)) +
+              border_padding_in_child_writing_mode.BlockSum();
         } else {
-          LayoutUnit intrinsic_block_size;
-          if (child.IsReplaced()) {
-            base::Optional<LayoutUnit> computed_inline_size;
-            base::Optional<LayoutUnit> computed_block_size;
-            child.IntrinsicSize(&computed_inline_size, &computed_block_size);
-
-            // The 150 is for replaced elements that have no size, which SVG
-            // can have (maybe others?).
-            intrinsic_block_size =
-                computed_block_size.value_or(LayoutUnit(150)) +
-                border_padding_in_child_writing_mode.BlockSum();
-          } else {
-            intrinsic_block_size = IntrinsicBlockSizeFunc();
-          }
-          content_size_suggestion = intrinsic_block_size;
+          intrinsic_block_size = IntrinsicBlockSizeFunc();
         }
-        DCHECK_GE(content_size_suggestion, main_axis_border_padding);
-
-        if (child.HasAspectRatio()) {
-          content_size_suggestion =
-              AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
-                  child, content_size_suggestion,
-                  min_max_sizes_in_cross_axis_direction.min_size,
-                  min_max_sizes_in_cross_axis_direction.max_size,
-                  main_axis_border_padding, cross_axis_border_padding);
-        }
-
-        LayoutUnit specified_size_suggestion = LayoutUnit::Max();
-        // If the item’s computed main size property is definite, then the
-        // specified size suggestion is that size.
-        if (MainAxisIsInlineAxis(child)) {
-          if (!specified_length_in_main_axis.IsAuto()) {
-            // TODO(dgrogan): Optimization opportunity: we may have already
-            // resolved specified_length_in_main_axis in the flex basis
-            // calculation. Reuse that if possible.
-            specified_size_suggestion = ResolveMainInlineLength(
-                flex_basis_space, child_style,
-                border_padding_in_child_writing_mode, MinMaxSizesFunc,
-                specified_length_in_main_axis);
-          }
-        } else if (!BlockLengthUnresolvable(flex_basis_space,
-                                            specified_length_in_main_axis,
-                                            LengthResolvePhase::kLayout)) {
-          specified_size_suggestion = ResolveMainBlockLength(
-              flex_basis_space, child_style,
-              border_padding_in_child_writing_mode,
-              specified_length_in_main_axis, IntrinsicBlockSizeFunc,
-              LengthResolvePhase::kLayout);
-          DCHECK_NE(specified_size_suggestion, kIndefiniteSize);
-        }
-
-        LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
-        if (specified_size_suggestion == LayoutUnit::Max() &&
-            child.HasAspectRatio()) {
-          const Length& cross_axis_length =
-              is_horizontal_flow_ ? child_style.Height() : child_style.Width();
-          if (IsItemCrossAxisLengthDefinite(child, cross_axis_length)) {
-            LayoutUnit cross_axis_size;
-            if (MainAxisIsInlineAxis(child)) {
-              cross_axis_size = ResolveMainBlockLength(
-                  flex_basis_space, child_style,
-                  border_padding_in_child_writing_mode, cross_axis_length,
-                  kIndefiniteSize, LengthResolvePhase::kLayout);
-              DCHECK_NE(cross_axis_size, kIndefiniteSize);
-            } else {
-              cross_axis_size =
-                  ResolveMainInlineLength(flex_basis_space, child_style,
-                                          border_padding_in_child_writing_mode,
-                                          MinMaxSizesFunc, cross_axis_length);
-            }
-            double ratio = GetMainOverCrossAspectRatio(child);
-            transferred_size_suggestion = LayoutUnit(
-                main_axis_border_padding +
-                ratio *
-                    (min_max_sizes_in_cross_axis_direction.ClampSizeToMinAndMax(
-                         cross_axis_size) -
-                     cross_axis_border_padding));
-          }
-        }
-
-        DCHECK(specified_size_suggestion == LayoutUnit::Max() ||
-               transferred_size_suggestion == LayoutUnit::Max());
-
-        min_max_sizes_in_main_axis_direction.min_size =
-            std::min({specified_size_suggestion, content_size_suggestion,
-                      transferred_size_suggestion,
-                      min_max_sizes_in_main_axis_direction.max_size});
+        content_size_suggestion = intrinsic_block_size;
       }
+      DCHECK_GE(content_size_suggestion, main_axis_border_padding);
+
+      if (child.HasAspectRatio()) {
+        content_size_suggestion =
+            AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+                child, content_size_suggestion,
+                min_max_sizes_in_cross_axis_direction.min_size,
+                min_max_sizes_in_cross_axis_direction.max_size,
+                main_axis_border_padding, cross_axis_border_padding);
+      }
+
+      LayoutUnit specified_size_suggestion = LayoutUnit::Max();
+      // If the item’s computed main size property is definite, then the
+      // specified size suggestion is that size.
+      if (MainAxisIsInlineAxis(child)) {
+        if (!specified_length_in_main_axis.IsAuto()) {
+          // TODO(dgrogan): Optimization opportunity: we may have already
+          // resolved specified_length_in_main_axis in the flex basis
+          // calculation. Reuse that if possible.
+          specified_size_suggestion = ResolveMainInlineLength(
+              flex_basis_space, child_style,
+              border_padding_in_child_writing_mode, MinMaxSizesFunc,
+              specified_length_in_main_axis);
+        }
+      } else if (!BlockLengthUnresolvable(flex_basis_space,
+                                          specified_length_in_main_axis,
+                                          LengthResolvePhase::kLayout)) {
+        specified_size_suggestion = ResolveMainBlockLength(
+            flex_basis_space, child_style, border_padding_in_child_writing_mode,
+            specified_length_in_main_axis, IntrinsicBlockSizeFunc,
+            LengthResolvePhase::kLayout);
+        DCHECK_NE(specified_size_suggestion, kIndefiniteSize);
+      }
+
+      LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
+      if (specified_size_suggestion == LayoutUnit::Max() &&
+          child.HasAspectRatio()) {
+        const Length& cross_axis_length =
+            is_horizontal_flow_ ? child_style.Height() : child_style.Width();
+        if (IsItemCrossAxisLengthDefinite(child, cross_axis_length)) {
+          LayoutUnit cross_axis_size;
+          if (MainAxisIsInlineAxis(child)) {
+            cross_axis_size = ResolveMainBlockLength(
+                flex_basis_space, child_style,
+                border_padding_in_child_writing_mode, cross_axis_length,
+                kIndefiniteSize, LengthResolvePhase::kLayout);
+            DCHECK_NE(cross_axis_size, kIndefiniteSize);
+          } else {
+            cross_axis_size =
+                ResolveMainInlineLength(flex_basis_space, child_style,
+                                        border_padding_in_child_writing_mode,
+                                        MinMaxSizesFunc, cross_axis_length);
+          }
+          double ratio = GetMainOverCrossAspectRatio(child);
+          transferred_size_suggestion = LayoutUnit(
+              main_axis_border_padding +
+              ratio *
+                  (min_max_sizes_in_cross_axis_direction.ClampSizeToMinAndMax(
+                       cross_axis_size) -
+                   cross_axis_border_padding));
+        }
+      }
+
+      DCHECK(specified_size_suggestion == LayoutUnit::Max() ||
+             transferred_size_suggestion == LayoutUnit::Max());
+
+      min_max_sizes_in_main_axis_direction.min_size =
+          std::min({specified_size_suggestion, content_size_suggestion,
+                    transferred_size_suggestion,
+                    min_max_sizes_in_main_axis_direction.max_size});
     } else if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.min_size = ResolveMinInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
@@ -728,6 +714,23 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           min, LengthResolvePhase::kLayout);
     }
+    // Flex needs to never give a table a flexed main size that is less than its
+    // min-content size, so floor min-width by min-content size.
+    // TODO(dgrogan): This should probably apply to column flexboxes also,
+    // but that's not what legacy does.
+    if (child.IsTable() && !is_column_) {
+      MinMaxSizes table_intrinsic_widths =
+          child
+              .ComputeMinMaxSizes(
+                  ConstraintSpace().GetWritingMode(),
+                  MinMaxSizesInput(child_percentage_size_.block_size,
+                                   MinMaxSizesType::kContent))
+              .sizes;
+
+      min_max_sizes_in_main_axis_direction.Encompass(
+          table_intrinsic_widths.min_size);
+    }
+
     min_max_sizes_in_main_axis_direction -= main_axis_border_padding;
     DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, 0);
     DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, 0);
