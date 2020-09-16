@@ -14,6 +14,13 @@ const USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR = 'update-accept-cellular';
 const USER_ACTION_REJECT_UPDATE_OVER_CELLUAR = 'update-reject-cellular';
 const USER_ACTION_CANCEL_UPDATE_SHORTCUT = 'cancel-update';
 
+const UNREACHABLE_PERCENT = 1000;
+// Thresholds which are used to determine when update status announcement should
+// take place. Last element is not reachable to simplify implementation.
+const PERCENT_THRESHOLDS = [
+  0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100, UNREACHABLE_PERCENT
+];
+
 /**
  * Enum for the UI states corresponding to sub steps inside update screen.
  * These values must be kept in sync with UpdateView::UIState in C++ code.
@@ -43,9 +50,7 @@ Polymer({
     'setCancelUpdateShortcutEnabled',
     'showLowBatteryWarningMessage',
     'setUIState',
-    'setUpdateStatusMessagePercent',
-    'setUpdateStatusMessageTimeLeft',
-    'setBetterUpdateProgress',
+    'setUpdateStatus',
     'setAutoTransition',
   ],
 
@@ -184,6 +189,14 @@ Polymer({
       type: Boolean,
       value: true,
     },
+
+    /**
+     * Index of threshold that has been already achieved.
+     */
+    thresholdIndex: {
+      type: Number,
+      value: 0,
+    }
   },
 
   ready() {
@@ -289,22 +302,6 @@ Polymer({
   },
 
   /**
-   * Sets message above the progress bar.
-   * @param {string} message Message that should be set.
-   */
-  setUpdateStatusMessagePercent(message) {
-    this.updateStatusMessagePercent = message;
-  },
-
-  /**
-   * Sets message above the progress bar.
-   * @param {string} message Message that should be set.
-   */
-  setUpdateStatusMessageTimeLeft(message) {
-    this.updateStatusMessageTimeLeft = message;
-  },
-
-  /**
    * Sets which dialog should be shown.
    * @param {UpdateUIState} value Current UI state.
    */
@@ -314,10 +311,27 @@ Polymer({
 
   /**
    * Sets percent to be shown in progress bar.
-   * @param {number} value Current progress
+   * @param {number} percent Current progress
+   * @param {string} messagePercent Message describing current progress.
+   * @param {string} messageTimeLeft Message describing time left.
    */
-  setBetterUpdateProgress(value) {
-    this.betterUpdateProgressValue = value;
+  setUpdateStatus(percent, messagePercent, messageTimeLeft) {
+    // Sets aria-live polite on percent and timeleft container every time new
+    // threshold has been achieved otherwise do not initiate spoken feedback
+    // update by setting aria-live off.
+    if (percent >= PERCENT_THRESHOLDS[this.thresholdIndex]) {
+      while (percent >= PERCENT_THRESHOLDS[this.thresholdIndex]) {
+        this.thresholdIndex = this.thresholdIndex + 1;
+      }
+      this.$['better-update-percent'].setAttribute('aria-live', 'polite');
+      this.$['better-update-timeleft'].setAttribute('aria-live', 'polite');
+    } else {
+      this.$['better-update-timeleft'].setAttribute('aria-live', 'off');
+      this.$['better-update-percent'].setAttribute('aria-live', 'off');
+    }
+    this.betterUpdateProgressValue = percent;
+    this.updateStatusMessagePercent = messagePercent;
+    this.updateStatusMessageTimeLeft = messageTimeLeft;
   },
 
   /**

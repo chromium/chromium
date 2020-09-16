@@ -441,20 +441,23 @@ void UpdateScreen::SetUpdateStatusMessage(int percent,
                                           base::TimeDelta time_left) {
   if (!view_)
     return;
-  view_->SetUpdateStatusMessagePercent(l10n_util::GetStringFUTF16(
-      IDS_UPDATE_STATUS_SUBTITLE_PERCENT, base::FormatPercent(percent)));
+  base::string16 time_left_message;
   if (time_left.InMinutes() == 0) {
-    view_->SetUpdateStatusMessageTimeLeft(l10n_util::GetStringFUTF16(
+    time_left_message = l10n_util::GetStringFUTF16(
         IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
         l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS,
-                                         time_left.InSeconds())));
+                                         time_left.InSeconds()));
   } else {
-    view_->SetUpdateStatusMessageTimeLeft(l10n_util::GetStringFUTF16(
+    time_left_message = l10n_util::GetStringFUTF16(
         IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,
         l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_MINS,
-                                         time_left.InMinutes())));
+                                         time_left.InMinutes()));
   }
-  view_->SetBetterUpdateProgress(percent);
+  view_->SetUpdateStatus(
+      percent,
+      l10n_util::GetStringFUTF16(IDS_UPDATE_STATUS_SUBTITLE_PERCENT,
+                                 base::FormatPercent(percent)),
+      time_left_message);
 }
 
 void UpdateScreen::UpdateBatteryWarningVisibility() {

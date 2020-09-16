@@ -71,18 +71,12 @@ void UpdateScreenHandler::SetUIState(UpdateView::UIState value) {
   CallJS("login.UpdateScreen.setUIState", static_cast<int>(value));
 }
 
-void UpdateScreenHandler::SetUpdateStatusMessagePercent(
-    const base::string16& value) {
-  CallJS("login.UpdateScreen.setUpdateStatusMessagePercent", value);
-}
-
-void UpdateScreenHandler::SetUpdateStatusMessageTimeLeft(
-    const base::string16& value) {
-  CallJS("login.UpdateScreen.setUpdateStatusMessageTimeLeft", value);
-}
-
-void UpdateScreenHandler::SetBetterUpdateProgress(int value) {
-  CallJS("login.UpdateScreen.setBetterUpdateProgress", value);
+void UpdateScreenHandler::SetUpdateStatus(
+    int percent,
+    const base::string16& percent_message,
+    const base::string16& timeleft_message) {
+  CallJS("login.UpdateScreen.setUpdateStatus", percent, percent_message,
+         timeleft_message);
 }
 
 void UpdateScreenHandler::SetEstimatedTimeLeft(int value) {
