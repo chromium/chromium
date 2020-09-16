@@ -7,8 +7,11 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
+#include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
+#include "weblayer/public/navigation.h"
+#include "weblayer/public/navigation_observer.h"
 
 class GURL;
 
@@ -60,6 +63,42 @@ void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data);
+
+class OneShotNavigationObserver : public NavigationObserver {
+ public:
+  explicit OneShotNavigationObserver(Shell* shell);
+
+  ~OneShotNavigationObserver() override;
+
+  void WaitForNavigation();
+
+  bool completed() { return completed_; }
+  bool is_error_page() { return is_error_page_; }
+  bool is_download() { return is_download_; }
+  bool is_reload() { return is_reload_; }
+  bool was_stop_called() { return was_stop_called_; }
+  Navigation::LoadError load_error() { return load_error_; }
+  int http_status_code() { return http_status_code_; }
+  NavigationState navigation_state() { return navigation_state_; }
+
+ private:
+  // NavigationObserver implementation:
+  void NavigationCompleted(Navigation* navigation) override;
+  void NavigationFailed(Navigation* navigation) override;
+
+  void Finish(Navigation* navigation);
+
+  base::RunLoop run_loop_;
+  Tab* tab_;
+  bool completed_ = false;
+  bool is_error_page_ = false;
+  bool is_download_ = false;
+  bool is_reload_ = false;
+  bool was_stop_called_ = false;
+  Navigation::LoadError load_error_ = Navigation::kNoError;
+  int http_status_code_ = 0;
+  NavigationState navigation_state_ = NavigationState::kWaitingResponse;
+};
 
 }  // namespace weblayer
 
