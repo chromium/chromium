@@ -31,9 +31,13 @@ namespace chrome_pdf {
 namespace {
 
 using ::testing::_;
+using ::testing::Each;
+using ::testing::ElementsAreArray;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::ReturnNull;
+
+constexpr base::span<const char> kFakeData = "fake data";
 
 class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
  public:
@@ -158,31 +162,146 @@ TEST_F(BlinkUrlLoaderTest, DidReceiveResponse) {
   EXPECT_EQ(204, loader_->response().status_code);
 }
 
+TEST_F(BlinkUrlLoaderTest, DidReceiveData) {
+  char buffer[kFakeData.size()] = {};
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+
+  EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidReceiveDataWithZeroLength) {
+  char buffer[kFakeData.size()] = {};
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+
+  loader_->DidReceiveData(kFakeData.data(), 0);
+
+  EXPECT_THAT(buffer, Each(0));
+}
+
 TEST_F(BlinkUrlLoaderTest, ReadResponseBody) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+
+  char buffer[kFakeData.size()] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
+
+  // Verify no more data returned on next call.
+  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithoutData) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   EXPECT_CALL(mock_callback_, Run(_)).Times(0);
 
-  char buffer[1];
+  char buffer[kFakeData.size()] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, Each(0));
 }
 
 TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithEmptyBuffer) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  EXPECT_CALL(mock_callback_, Run(PP_ERROR_BADARGUMENT));
 
   loader_->ReadResponseBody(base::span<char>(), mock_callback_.Get());
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
+  static constexpr size_t kTailSize = 1;
+  static constexpr size_t kBufferSize = kFakeData.size() - kTailSize;
+
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  EXPECT_CALL(mock_callback_, Run(kBufferSize));
+
+  char buffer[kBufferSize] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, ElementsAreArray(kFakeData.first(kBufferSize)));
+
+  // Verify remaining data returned on next call.
+  char tail_buffer[kTailSize];
+  EXPECT_CALL(mock_callback_, Run(kTailSize));
+  loader_->ReadResponseBody(tail_buffer, mock_callback_.Get());
+  EXPECT_THAT(tail_buffer, ElementsAreArray(kFakeData.subspan(kBufferSize)));
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+
+  char buffer[kFakeData.size() + 1] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  base::span<char> buffer_span = buffer;
+  EXPECT_THAT(buffer_span.first(kFakeData.size()), ElementsAreArray(kFakeData));
+  EXPECT_THAT(buffer_span.subspan(kFakeData.size()), Each(0));
+
+  // Verify no more data returned on next call.
+  EXPECT_CALL(mock_callback_, Run(_)).Times(0);
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
 }
 
 TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadComplete) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
   loader_->DidFinishLoading();
-  EXPECT_CALL(mock_callback_, Run(0));  // Result represents read bytes.
+  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
 
-  char buffer[1];
+  char buffer[kFakeData.size()] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
+
+  // Verify no more data returned on next call.
+  char tail_buffer[kFakeData.size()] = {};
+  EXPECT_CALL(mock_callback_, Run(0));
+  loader_->ReadResponseBody(tail_buffer, mock_callback_.Get());
+  EXPECT_THAT(tail_buffer, Each(0));
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithoutData) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidFinishLoading();
+  EXPECT_CALL(mock_callback_, Run(0));
+
+  char buffer[kFakeData.size()] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, Each(0));
+}
+
+TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
+  loader_->Close();
+  EXPECT_CALL(mock_callback_, Run(PP_ERROR_ABORTED));
+
+  char buffer[kFakeData.size()] = {};
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+
+  EXPECT_THAT(buffer, Each(0));
 }
 
 TEST_F(BlinkUrlLoaderTest, DidFinishLoading) {

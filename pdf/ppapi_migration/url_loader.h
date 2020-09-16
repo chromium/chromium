@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -186,7 +187,10 @@ class BlinkUrlLoader final : public UrlLoader,
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
 
   ResultCallback open_callback_;
+
+  base::circular_deque<char> buffer_;
   ResultCallback read_callback_;
+  base::span<char> client_buffer_;
 };
 
 // A Pepper URL loader.

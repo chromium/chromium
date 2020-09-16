@@ -4,8 +4,10 @@
 
 #include "pdf/ppapi_migration/url_loader.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -109,11 +111,17 @@ void BlinkUrlLoader::ReadResponseBody(base::span<char> buffer,
          state_ == LoadingState::kLoadComplete)
       << static_cast<int>(state_);
 
+  if (buffer.empty()) {
+    std::move(callback).Run(PP_ERROR_BADARGUMENT);
+    return;
+  }
+
   DCHECK(!read_callback_);
   DCHECK(callback);
   read_callback_ = std::move(callback);
+  client_buffer_ = buffer;
 
-  if (state_ == LoadingState::kLoadComplete)
+  if (!buffer_.empty() || state_ == LoadingState::kLoadComplete)
     RunReadCallback();
 }
 
@@ -151,8 +159,16 @@ void BlinkUrlLoader::DidDownloadData(uint64_t data_length) {
   NOTREACHED();
 }
 
+// Modeled on `content::PepperURLLoaderHost::DidReceiveData()`.
 void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(state_, LoadingState::kStreamingData);
+
+  // It's surprisingly difficult to guarantee that this is always >0.
+  if (data_length < 1)
+    return;
+
+  buffer_.insert(buffer_.end(), data, data + data_length);
+  RunReadCallback();
 }
 
 void BlinkUrlLoader::DidReceiveCachedMetadata(const char* data,
@@ -177,19 +193,38 @@ void BlinkUrlLoader::AbortLoad(int32_t result) {
   DCHECK_LT(result, 0);
 
   SetLoadComplete(result);
+  buffer_.clear();
 
   if (open_callback_) {
     DCHECK(!read_callback_);
     std::move(open_callback_).Run(complete_result_);
   } else if (read_callback_) {
-    std::move(read_callback_).Run(complete_result_);
+    RunReadCallback();
   }
 }
 
-// TODO(crbug.com/1099022): Need to handle buffered data.
+// Modeled on `ppapi::proxy::URLLoaderResource::FillUserBuffer()`.
 void BlinkUrlLoader::RunReadCallback() {
-  if (read_callback_)
-    std::move(read_callback_).Run(complete_result_);
+  if (!read_callback_)
+    return;
+
+  DCHECK(!client_buffer_.empty());
+  int32_t num_bytes = std::min(
+      {buffer_.size(), client_buffer_.size(), static_cast<size_t>(INT32_MAX)});
+  if (num_bytes > 0) {
+    auto read_begin = buffer_.begin();
+    auto read_end = read_begin + num_bytes;
+    std::copy(read_begin, read_end, client_buffer_.data());
+    buffer_.erase(read_begin, read_end);
+  } else {
+    DCHECK_EQ(state_, LoadingState::kLoadComplete);
+    num_bytes = complete_result_;
+    DCHECK_LE(num_bytes, 0);
+    static_assert(PP_OK == 0, "PP_OK should be equivalent to 0 bytes");
+  }
+
+  client_buffer_ = {};
+  std::move(read_callback_).Run(num_bytes);
 }
 
 void BlinkUrlLoader::SetLoadComplete(int32_t result) {
