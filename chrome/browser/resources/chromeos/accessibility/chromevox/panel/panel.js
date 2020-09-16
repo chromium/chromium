@@ -291,6 +291,9 @@ Panel = class {
           Panel.openAnnotationsUI(command.data);
         }
         break;
+      case PanelCommandType.CLOSE_CHROMEVOX:
+        Panel.onClose();
+        break;
     }
   }
 

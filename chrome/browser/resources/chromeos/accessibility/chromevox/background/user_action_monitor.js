@@ -8,8 +8,11 @@
 
 goog.provide('UserActionMonitor');
 
+goog.require('KeyCode');
 goog.require('KeySequence');
 goog.require('Output');
+goog.require('PanelCommand');
+goog.require('PanelCommandType');
 
 /**
  * The types of actions we want to monitor.
@@ -65,6 +68,12 @@ UserActionMonitor = class {
    * @return {boolean}
    */
   onKeySequence(actualSequence) {
+    if (actualSequence.equals(
+            UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_)) {
+      UserActionMonitor.closeChromeVox_();
+      return true;
+    }
+
     const expectedAction = this.getExpectedAction_();
     if (expectedAction.type !== ActionType.KEY_SEQUENCE) {
       return false;
@@ -126,7 +135,20 @@ UserActionMonitor = class {
 
     throw new Error('UserActionMonitor: actionIndex_ is invalid.');
   }
+
+  /** @private */
+  static closeChromeVox_() {
+    (new PanelCommand(PanelCommandType.CLOSE_CHROMEVOX)).send();
+  }
 };
+
+/**
+ * The key sequence used to close ChromeVox.
+ * @const {!KeySequence}
+ * @private
+ */
+UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
+    {keys: {keyCode: [KeyCode.Z], ctrlKey: [true], altKey: [true]}});
 
 /**
  * Defines an object that is used to create a UserActionMonitor.Action.

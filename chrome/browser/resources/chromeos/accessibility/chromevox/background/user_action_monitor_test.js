@@ -407,3 +407,37 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'BlockCommands', function() {
         .replay();
   });
 });
+
+// Tests that a user can close ChromeVox (Ctrl + Alt + Z) when UserActionMonitor
+// is active.
+TEST_F('ChromeVoxUserActionMonitorTest', 'CloseChromeVox', function() {
+  this.runWithLoadedTree(this.simpleDoc, function() {
+    const keyboardHandler = new BackgroundKeyboardHandler();
+    let finished = false;
+    let closed = false;
+    const actions =
+        [{type: 'key_sequence', value: {'keys': {'keyCode': [KeyCode.A]}}}];
+    const onFinished = () => finished = true;
+    ChromeVoxState.instance.createUserActionMonitor(actions, onFinished);
+    // Swap in the below function so we don't actually close ChromeVox.
+    UserActionMonitor.closeChromeVox_ = () => {
+      closed = true;
+    };
+
+    assertFalse(closed);
+    assertFalse(finished);
+    keyboardHandler.onKeyDown(
+        this.createMockKeyDownEvent(KeyCode.CONTROL, {ctrlKey: true}));
+    assertFalse(closed);
+    assertFalse(finished);
+    keyboardHandler.onKeyDown(this.createMockKeyDownEvent(
+        KeyCode.ALT, {ctrlKey: true, altKey: true}));
+    assertFalse(closed);
+    assertFalse(finished);
+    keyboardHandler.onKeyDown(
+        this.createMockKeyDownEvent(KeyCode.Z, {ctrlKey: true, altKey: true}));
+    assertTrue(closed);
+    // |finished| remains false since we didn't press the expected key sequence.
+    assertFalse(finished);
+  });
+});

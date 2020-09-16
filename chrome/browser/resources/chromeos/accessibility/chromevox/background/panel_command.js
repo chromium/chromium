@@ -73,6 +73,7 @@ PanelCommandType = {
   CLEAR_SPEECH: 'clear_speech',
   ADD_NORMAL_SPEECH: 'add_normal_speech',
   ADD_ANNOTATION_SPEECH: 'add_annotation_speech',
+  CLOSE_CHROMEVOX: 'close_chromevox',
   UPDATE_BRAILLE: 'update_braille',
   OPEN_ANNOTATIONS_UI: 'open_annotations_ui',
   OPEN_MENUS: 'open_menus',
