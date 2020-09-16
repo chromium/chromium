@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_DETECTION_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_DETECTION_MANAGER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -52,6 +53,9 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   metrics_util::PasswordType GetReusedPasswordType(
       base::Optional<PasswordHashData> reused_protected_password_hash,
       size_t match_domain_count);
+
+  void CheckStoresForReuse(const base::string16& input);
+
   PasswordManagerClient* client_;
   base::string16 input_characters_;
   GURL main_frame_url_;
@@ -59,6 +63,11 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   // Used to retrieve the current time, in base::Time units.
   base::Clock* clock_;
   bool reuse_on_this_page_was_found_ = false;
+
+  // Caches the results returned from each store until all stores
+  // respond. All credentials are then forwarded to the `client_`.
+  base::flat_set<MatchingReusedCredential> all_matching_reused_credentials_;
+  int wait_counter_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordReuseDetectionManager);
 };

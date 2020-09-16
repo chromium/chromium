@@ -84,10 +84,7 @@ void PasswordReuseDetectionManager::OnKeyPressed(const base::string16& text,
   const base::string16 text_to_check =
       is_committed ? input_characters_ : input_characters_ + text;
 
-  PasswordStore* store = client_->GetProfilePasswordStore();
-  if (!store)
-    return;
-  store->CheckReuse(text_to_check, main_frame_url_.GetOrigin().spec(), this);
+  CheckStoresForReuse(text_to_check);
 }
 
 void PasswordReuseDetectionManager::OnPaste(const base::string16 text) {
@@ -97,10 +94,8 @@ void PasswordReuseDetectionManager::OnPaste(const base::string16 text) {
   base::string16 input = std::move(text);
   if (input.size() > kMaxNumberOfCharactersToStore)
     input = input.substr(input.size() - kMaxNumberOfCharactersToStore);
-  PasswordStore* store = client_->GetProfilePasswordStore();
-  if (!store)
-    return;
-  store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
+
+  CheckStoresForReuse(input);
 }
 
 void PasswordReuseDetectionManager::OnReuseCheckDone(
@@ -109,18 +104,30 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
     base::Optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords) {
-  if (!is_reuse_found)
+  // Cache the results.
+  all_matching_reused_credentials_.insert(matching_reused_credentials.begin(),
+                                          matching_reused_credentials.end());
+  reuse_on_this_page_was_found_ |= is_reuse_found;
+
+  // If we're still waiting for more results, nothing to be done yet.
+  if (--wait_counter_ > 0)
     return;
-  reuse_on_this_page_was_found_ = true;
+
+  // If no reuse was found, we're done.
+  if (!reuse_on_this_page_was_found_) {
+    all_matching_reused_credentials_.clear();
+    return;
+  }
+
   metrics_util::PasswordType reused_password_type = GetReusedPasswordType(
-      reused_protected_password_hash, matching_reused_credentials.size());
+      reused_protected_password_hash, all_matching_reused_credentials_.size());
 
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     std::vector<std::string> domains_to_log;
-    domains_to_log.reserve(matching_reused_credentials.size());
+    domains_to_log.reserve(all_matching_reused_credentials_.size());
     for (const MatchingReusedCredential& credential :
-         matching_reused_credentials) {
+         all_matching_reused_credentials_) {
       domains_to_log.push_back(credential.signon_realm);
     }
     switch (reused_password_type) {
@@ -153,7 +160,7 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
           : false;
 
   metrics_util::LogPasswordReuse(password_length, saved_passwords,
-                                 matching_reused_credentials.size(),
+                                 all_matching_reused_credentials_.size(),
                                  password_field_detected, reused_password_type);
 #if defined(PASSWORD_REUSE_WARNING_ENABLED)
   if (reused_password_type ==
@@ -166,10 +173,12 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
                              ? reused_protected_password_hash->username
                              : "";
 
-  client_->CheckProtectedPasswordEntry(reused_password_type, username,
-                                       matching_reused_credentials,
-                                       password_field_detected);
+  client_->CheckProtectedPasswordEntry(
+      reused_password_type, username,
+      std::move(all_matching_reused_credentials_).extract(),
+      password_field_detected);
 #endif
+  all_matching_reused_credentials_.clear();
 }
 
 void PasswordReuseDetectionManager::SetClockForTesting(base::Clock* clock) {
@@ -191,6 +200,21 @@ metrics_util::PasswordType PasswordReuseDetectionManager::GetReusedPasswordType(
     return metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD;
   } else {
     return metrics_util::PasswordType::OTHER_GAIA_PASSWORD;
+  }
+}
+
+void PasswordReuseDetectionManager::CheckStoresForReuse(
+    const base::string16& input) {
+  PasswordStore* profile_store = client_->GetProfilePasswordStore();
+  if (profile_store) {
+    ++wait_counter_;
+    profile_store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
+  }
+
+  PasswordStore* account_store = client_->GetAccountPasswordStore();
+  if (account_store) {
+    ++wait_counter_;
+    account_store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
   }
 }
 
