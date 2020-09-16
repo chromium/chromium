@@ -56,11 +56,11 @@ bool ShouldIgnoreContents(const Node& node) {
 Node* GetNonSearchableAncestor(const Node& node) {
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
     const ComputedStyle* style = ancestor.EnsureComputedStyle();
+    if (ancestor.IsDocumentNode())
+      return nullptr;
     if ((style && style->Display() == EDisplay::kNone) ||
         ShouldIgnoreContents(ancestor))
       return &ancestor;
-    if (ancestor.IsDocumentNode())
-      return nullptr;
   }
   return nullptr;
 }
@@ -76,15 +76,16 @@ bool IsBlockLevel(EDisplay display) {
          display == EDisplay::kFlex || display == EDisplay::kListItem;
 }
 
-// Returns the next node after |start_node| (including start node) that is a
-// text node and is searchable and visible.
+// Returns the next/previous node after |start_node| (including start node) that
+// is a text node and is searchable and visible.
+template <class Direction>
 Node* GetVisibleTextNode(Node& start_node) {
   Node* node = &start_node;
   // Move to outside display none subtree if we're inside one.
   while (Node* ancestor = GetNonSearchableAncestor(*node)) {
-    if (ancestor->IsDocumentNode())
+    if (!ancestor)
       return nullptr;
-    node = FlatTreeTraversal::NextSkippingChildren(*ancestor);
+    node = Direction::NextSkippingChildren(*ancestor);
     if (!node)
       return nullptr;
   }
@@ -94,7 +95,7 @@ Node* GetVisibleTextNode(Node& start_node) {
     if (ShouldIgnoreContents(*node) ||
         (style && style->Display() == EDisplay::kNone)) {
       // This element and its descendants are not visible, skip it.
-      node = FlatTreeTraversal::NextSkippingChildren(*node);
+      node = Direction::NextSkippingChildren(*node);
       continue;
     }
     if (style && style->Visibility() == EVisibility::kVisible &&
@@ -103,7 +104,7 @@ Node* GetVisibleTextNode(Node& start_node) {
     }
     // This element is hidden, but node might be visible,
     // or this is not a text node, so we move on.
-    node = FlatTreeTraversal::Next(*node);
+    node = Direction::Next(*node);
   }
   return nullptr;
 }
@@ -195,6 +196,30 @@ Node& FindBuffer::GetFirstBlockLevelAncestorInclusive(const Node& start_node) {
   return *start_node.GetDocument().documentElement();
 }
 
+Node* FindBuffer::ForwardVisibleTextNode(Node& start_node) {
+  struct ForwardDirection {
+    static Node* Next(const Node& node) {
+      return FlatTreeTraversal::Next(node);
+    }
+    static Node* NextSkippingChildren(const Node& node) {
+      return FlatTreeTraversal::NextSkippingChildren(node);
+    }
+  };
+  return GetVisibleTextNode<ForwardDirection>(start_node);
+}
+
+Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
+  struct BackwardDirection {
+    static Node* Next(const Node& node) {
+      return FlatTreeTraversal::Previous(node);
+    }
+    static Node* NextSkippingChildren(const Node& node) {
+      return FlatTreeTraversal::PreviousSkippingChildren(node);
+    }
+  };
+  return GetVisibleTextNode<BackwardDirection>(start_node);
+}
+
 FindBuffer::Results FindBuffer::FindMatches(const WebString& search_text,
                                             const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
@@ -223,7 +248,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
     return;
   // Get first visible text node from |start_position|.
   Node* node =
-      GetVisibleTextNode(*range.StartPosition().NodeAsRangeFirstNode());
+      ForwardVisibleTextNode(*range.StartPosition().NodeAsRangeFirstNode());
   if (!node || !node->isConnected())
     return;
 

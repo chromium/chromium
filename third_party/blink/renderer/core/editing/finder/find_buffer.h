@@ -35,6 +35,10 @@ class CORE_EXPORT FindBuffer {
   // that is block level.
   static Node& GetFirstBlockLevelAncestorInclusive(const Node& start_node);
 
+  // See |GetVisibleTextNode|.
+  static Node* ForwardVisibleTextNode(Node& start_node);
+  static Node* BackwardVisibleTextNode(Node& start_node);
+
   // A match result, containing the starting position of the match and
   // the length of the match.
   struct BufferMatchResult {
