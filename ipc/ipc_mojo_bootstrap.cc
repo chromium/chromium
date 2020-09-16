@@ -916,6 +916,8 @@ class ChannelAssociatedGroupController
 
   void AcceptOnProxyThread(mojo::Message message) {
     DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
+                 "ChannelAssociatedGroupController::AcceptOnProxyThread");
 
     mojo::InterfaceId id = message.interface_id();
     DCHECK(mojo::IsValidInterfaceId(id) && !mojo::IsPrimaryInterfaceId(id));
@@ -929,6 +931,9 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
+    // Using client->interface_name() is safe here because this is a static
+    // string defined for each mojo interface.
+    TRACE_EVENT0("mojom", client->interface_name());
     DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence());
 
     // Sync messages should never make their way to this method.
@@ -946,6 +951,8 @@ class ChannelAssociatedGroupController
 
   void AcceptSyncMessage(mojo::InterfaceId interface_id, uint32_t message_id) {
     DCHECK(proxy_task_runner_->BelongsToCurrentThread());
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
+                 "ChannelAssociatedGroupController::AcceptSyncMessage");
 
     base::AutoLock locker(lock_);
     Endpoint* endpoint = FindEndpoint(interface_id);
@@ -958,6 +965,9 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
+    // Using client->interface_name() is safe here because this is a static
+    // string defined for each mojo interface.
+    TRACE_EVENT0("mojom", client->interface_name());
     DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence());
     MessageWrapper message_wrapper = endpoint->PopSyncMessage(message_id);
 
