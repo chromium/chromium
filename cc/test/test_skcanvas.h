@@ -46,7 +46,6 @@ class MockCanvas : public SkNoDrawCanvas {
   void onDrawRect(const SkRect& rect, const SkPaint& paint) override {
     OnDrawRectWithColor(paint.getColor());
   }
-  GrContext* getGrContext() override { return context_.get(); }
   GrRecordingContext* recordingContext() override { return context_.get(); }
 
   MOCK_METHOD1(OnDrawPaintWithColor, void(SkColor));
