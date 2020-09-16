@@ -167,8 +167,6 @@ const CGFloat kClearButtonSize = 28.0f;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  [self updateCachedClipboardState];
-
   [NSNotificationCenter.defaultCenter
       addObserver:self
          selector:@selector(pasteboardDidChange:)
@@ -299,6 +297,8 @@ const CGFloat kClearButtonSize = 28.0f;
 // change).  In this case, OnDidBeginEditing will be called multiple times.
 // If that becomes an issue a boolean should be added to track editing state.
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
+  [self updateCachedClipboardState];
+
   // Update the clear button state.
   [self updateClearButtonVisibility];
   [self.view setLeadingImage:self.textField.text.length
