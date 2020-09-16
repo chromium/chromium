@@ -5,8 +5,8 @@
 #include <bitset>
 #include "base/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
@@ -217,7 +217,7 @@ class ThreadedWorkletMessagingProxyForTest
             GetExecutionContext()->AddressSpace(),
             OriginTrialContext::GetTokens(GetExecutionContext()).get(),
             base::UnguessableToken::Create(), std::move(worker_settings),
-            mojom::blink::V8CacheOptions::kDefault,
+            kV8CacheOptionsDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
             BeginFrameProviderParams(), nullptr /* parent_feature_policy */,

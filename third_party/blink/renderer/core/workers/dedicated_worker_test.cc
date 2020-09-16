@@ -9,9 +9,9 @@
 #include "base/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
@@ -139,7 +139,7 @@ class DedicatedWorkerMessagingProxyForTest
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
         network::mojom::IPAddressSpace::kLocal,
         nullptr /* origin_trial_tokens */, base::UnguessableToken::Create(),
-        std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
+        std::move(worker_settings), kV8CacheOptionsDefault,
         nullptr /* worklet_module_responses_map */);
     params->parent_context_token =
         GetExecutionContext()->GetExecutionContextToken();

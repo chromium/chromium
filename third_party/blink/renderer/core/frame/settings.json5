@@ -612,8 +612,8 @@
     // V8 supports different types of caching. Used by V8 bindings.
     {
       name: "v8CacheOptions",
-      initial: "mojom::blink::V8CacheOptions::kDefault",
-      type: "mojom::blink::V8CacheOptions",
+      initial: "kV8CacheOptionsDefault",
+      type: "V8CacheOptions",
     },
 
     // These values are bit fields for the properties of available pointing devices

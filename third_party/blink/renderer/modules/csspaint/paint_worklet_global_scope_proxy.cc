@@ -48,7 +48,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       frame->Client()->CreateWorkerContentSettingsClient(),
       window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
       base::UnguessableToken::Create(), nullptr /* worker_settings */,
-      mojom::blink::V8CacheOptions::kDefault, module_responses_map,
+      kV8CacheOptionsDefault, module_responses_map,
       mojo::NullRemote() /* browser_interface_broker */,
       BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
       window->GetAgentClusterID(), window->GetExecutionContextToken());

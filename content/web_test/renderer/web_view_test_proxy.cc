@@ -11,7 +11,6 @@
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "net/base/filename_util.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -145,8 +144,8 @@ void WebViewTestProxy::SetTestConfiguration(
     test_runner_->SetIsWebPlatformTestsMode();
 
   GetWebView()->GetSettings()->SetV8CacheOptions(
-      is_devtools_test ? blink::mojom::V8CacheOptions::kNone
-                       : blink::mojom::V8CacheOptions::kDefault);
+      is_devtools_test ? blink::WebSettings::V8CacheOptions::kNone
+                       : blink::WebSettings::V8CacheOptions::kDefault);
 
   if (starting_test) {
     DCHECK(GetMainRenderFrame());

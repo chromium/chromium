@@ -27,7 +27,7 @@ class WorkerModulatorImpl final : public ModulatorImplBase {
  private:
   // Implements ModulatorImplBase.
   bool IsDynamicImportForbidden(String* reason) override;
-  mojom::blink::V8CacheOptions GetV8CacheOptions() const override;
+  V8CacheOptions GetV8CacheOptions() const override;
 };
 
 }  // namespace blink

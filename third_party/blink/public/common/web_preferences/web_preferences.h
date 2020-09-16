@@ -15,7 +15,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "url/gurl.h"
 

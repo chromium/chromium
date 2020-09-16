@@ -28,7 +28,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
@@ -372,7 +371,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunScript(
     const KURL& base_url,
     SanitizeScriptErrors sanitize_script_errors,
     const ScriptFetchOptions& fetch_options,
-    mojom::blink::V8CacheOptions v8_cache_options) {
+    V8CacheOptions v8_cache_options) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
 
   // Omit storing base URL if it is same as source URL.
@@ -433,8 +432,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
-      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+      V8CodeCache::GetCompileOptions(kV8CacheOptionsDefault, source_code);
   // Currently internal scripts don't have cache handlers. So we should not
   // produce cache for them.
   DCHECK_EQ(produce_cache_options,

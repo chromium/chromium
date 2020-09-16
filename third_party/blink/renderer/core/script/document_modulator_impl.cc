@@ -26,12 +26,12 @@ bool DocumentModulatorImpl::IsDynamicImportForbidden(String* reason) {
   return false;
 }
 
-mojom::blink::V8CacheOptions DocumentModulatorImpl::GetV8CacheOptions() const {
+V8CacheOptions DocumentModulatorImpl::GetV8CacheOptions() const {
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   const Settings* settings = window->GetFrame()->GetSettings();
   if (settings)
     return settings->GetV8CacheOptions();
-  return mojom::blink::V8CacheOptions::kDefault;
+  return kV8CacheOptionsDefault;
 }
 
 }  // namespace blink

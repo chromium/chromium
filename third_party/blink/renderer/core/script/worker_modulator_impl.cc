@@ -55,7 +55,7 @@ bool WorkerModulatorImpl::IsDynamicImportForbidden(String* reason) {
   return true;
 }
 
-mojom::blink::V8CacheOptions WorkerModulatorImpl::GetV8CacheOptions() const {
+V8CacheOptions WorkerModulatorImpl::GetV8CacheOptions() const {
   auto* scope = To<WorkerGlobalScope>(GetExecutionContext());
   return scope->GetV8CacheOptions();
 }

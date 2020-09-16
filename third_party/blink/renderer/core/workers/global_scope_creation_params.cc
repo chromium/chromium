@@ -31,7 +31,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const Vector<String>* origin_trial_tokens,
     const base::UnguessableToken& parent_devtools_token,
     std::unique_ptr<WorkerSettings> worker_settings,
-    mojom::blink::V8CacheOptions v8_cache_options,
+    V8CacheOptions v8_cache_options,
     WorkletModuleResponsesMap* module_responses_map,
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
         browser_interface_broker,

@@ -121,6 +121,7 @@ bindings_core_v8_files =
                     "core/v8/v0_custom_element_constructor_builder.h",
                     "core/v8/v8_binding_for_core.cc",
                     "core/v8/v8_binding_for_core.h",
+                    "core/v8/v8_cache_options.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_context_snapshot.cc",

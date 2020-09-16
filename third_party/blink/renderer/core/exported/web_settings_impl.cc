@@ -660,8 +660,8 @@ void WebSettingsImpl::SetMainFrameResizesAreOrientationChanges(bool enabled) {
   dev_tools_emulator_->SetMainFrameResizesAreOrientationChanges(enabled);
 }
 
-void WebSettingsImpl::SetV8CacheOptions(mojom::blink::V8CacheOptions options) {
-  settings_->SetV8CacheOptions(options);
+void WebSettingsImpl::SetV8CacheOptions(V8CacheOptions options) {
+  settings_->SetV8CacheOptions(static_cast<blink::V8CacheOptions>(options));
 }
 
 void WebSettingsImpl::SetViewportStyle(WebViewportStyle style) {

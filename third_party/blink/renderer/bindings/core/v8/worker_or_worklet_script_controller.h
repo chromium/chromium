@@ -32,12 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WORKER_OR_WORKLET_SCRIPT_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/classic_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -99,7 +99,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   ClassicEvaluationResult EvaluateAndReturnValue(
       const ScriptSourceCode&,
       SanitizeScriptErrors sanitize_script_errors,
-      mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
+      V8CacheOptions = kV8CacheOptionsDefault,
       RethrowErrorsOption = RethrowErrorsOption::DoNotRethrow());
 
   // Prevents future JavaScript execution.

@@ -16,12 +16,12 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -97,7 +97,7 @@ class AudioWorkletThreadTest : public PageTestBase {
             nullptr /* worker_clients */, nullptr /* content_settings_client */,
             window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
             base::UnguessableToken::Create(), nullptr /* worker_settings */,
-            mojom::blink::V8CacheOptions::kDefault,
+            kV8CacheOptionsDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
             BeginFrameProviderParams(), nullptr /* parent_feature_policy */,

@@ -221,7 +221,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       nullptr /* OriginTrialTokens */, worker_start_data->devtools_worker_token,
       std::move(worker_settings),
       // Generate the full code cache in the first execution of the script.
-      mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,
+      kV8CacheOptionsFullCodeWithoutHeatCheck,
       nullptr /* worklet_module_respones_map */,
       std::move(browser_interface_broker), BeginFrameProviderParams(),
       nullptr /* parent_feature_policy */,

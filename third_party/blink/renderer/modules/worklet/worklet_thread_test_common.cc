@@ -38,7 +38,7 @@ CreateAnimationAndPaintWorkletThread(
           nullptr /* content_settings_client */, window->AddressSpace(),
           OriginTrialContext::GetTokens(window).get(),
           base::UnguessableToken::Create(), nullptr /* worker_settings */,
-          mojom::blink::V8CacheOptions::kDefault,
+          kV8CacheOptionsDefault,
           MakeGarbageCollected<WorkletModuleResponsesMap>(),
           mojo::NullRemote() /* browser_interface_broker */,
           BeginFrameProviderParams(), nullptr /* parent_feature_policy */,

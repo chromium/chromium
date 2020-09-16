@@ -182,7 +182,7 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     Agent* agent,
     const String& name,
     const base::UnguessableToken& parent_devtools_token,
-    mojom::blink::V8CacheOptions v8_cache_options,
+    V8CacheOptions v8_cache_options,
     WorkerClients* worker_clients,
     std::unique_ptr<WebContentSettingsClient> content_settings_client,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,

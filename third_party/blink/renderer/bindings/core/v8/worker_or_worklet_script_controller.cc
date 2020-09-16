@@ -315,7 +315,7 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
 ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     const ScriptSourceCode& source_code,
     SanitizeScriptErrors sanitize_script_errors,
-    mojom::blink::V8CacheOptions v8_cache_options,
+    V8CacheOptions v8_cache_options,
     RethrowErrorsOption rethrow_errors) {
   if (IsExecutionForbidden())
     return ClassicEvaluationResult();

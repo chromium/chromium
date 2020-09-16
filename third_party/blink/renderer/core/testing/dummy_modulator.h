@@ -32,7 +32,7 @@ class DummyModulator : public Modulator {
   ModuleRecordResolver* GetModuleRecordResolver() override;
   base::SingleThreadTaskRunner* TaskRunner() override;
   ScriptState* GetScriptState() override;
-  mojom::blink::V8CacheOptions GetV8CacheOptions() const override;
+  V8CacheOptions GetV8CacheOptions() const override;
   bool IsScriptingDisabled() const override;
 
   bool ImportMapsEnabled() const override;
