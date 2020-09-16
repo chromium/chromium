@@ -120,7 +120,8 @@ CreditCard::CreditCard(const std::string& guid, const std::string& origin)
       expiration_month_(0),
       expiration_year_(0),
       server_status_(OK),
-      card_issuer_(ISSUER_UNKNOWN) {}
+      card_issuer_(ISSUER_UNKNOWN),
+      instrument_id_(0) {}
 
 CreditCard::CreditCard(RecordType type, const std::string& server_id)
     : CreditCard() {

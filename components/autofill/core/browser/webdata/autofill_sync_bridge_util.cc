@@ -103,6 +103,7 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
       static_cast<CreditCard::Issuer>(card.card_issuer().issuer()));
   if (!card.nickname().empty())
     result.SetNickname(base::UTF8ToUTF16(card.nickname()));
+  result.set_instrument_id(card.instrument_id());
   return result;
 }
 
@@ -247,6 +248,7 @@ void SetAutofillWalletSpecificsFromServerCard(
     wallet_card->set_nickname(base::UTF16ToUTF8(card.nickname()));
   wallet_card->mutable_card_issuer()->set_issuer(
       static_cast<sync_pb::CardIssuer::Issuer>(card.card_issuer()));
+  wallet_card->set_instrument_id(card.instrument_id());
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(

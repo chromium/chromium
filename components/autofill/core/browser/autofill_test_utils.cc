@@ -487,6 +487,7 @@ CreditCard GetMaskedServerCard() {
                           "2109" /* Mastercard */, NextMonth().c_str(),
                           NextYear().c_str(), "1");
   credit_card.SetNetworkForMaskedCard(kMasterCard);
+  credit_card.set_instrument_id(1);
   return credit_card;
 }
 
@@ -707,6 +708,7 @@ void SetServerCreditCards(AutofillTable* table,
     card.set_record_type(CreditCard::MASKED_SERVER_CARD);
     card.SetNumber(card.LastFourDigits());
     card.SetNetworkForMaskedCard(card.network());
+    card.set_instrument_id(card.instrument_id());
   }
   table->SetServerCreditCards(as_masked_cards);
 
