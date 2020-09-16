@@ -23,7 +23,9 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/separator.h"
@@ -274,7 +276,9 @@ void AccessibilityDetailedView::AppendAccessibilityList() {
         ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED);
   }
 
-  if (controller->IsSwitchAccessSettingVisibleInTray()) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalAccessibilitySwitchAccess) &&
+      controller->IsSwitchAccessSettingVisibleInTray()) {
     switch_access_enabled_ = controller->switch_access_enabled();
     switch_access_view_ = AddScrollListCheckableItem(
         kSwitchAccessIcon,
