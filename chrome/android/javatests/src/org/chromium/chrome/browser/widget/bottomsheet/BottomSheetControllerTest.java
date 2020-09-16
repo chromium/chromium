@@ -81,6 +81,7 @@ public class BottomSheetControllerTest {
     private TestBottomSheetContent mNonPeekableContent;
     private TestBottomSheetContent mBackInterceptingContent;
     private ScrimCoordinator mScrimCoordinator;
+    private int mSuppressionToken;
 
     @Before
     public void setUp() throws Exception {
@@ -575,6 +576,37 @@ public class BottomSheetControllerTest {
 
         assertEquals("The sheet should be peeking if the content didn't handle the back event.",
                 BottomSheetController.SheetState.PEEK, mSheetController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testSheetPriorityDuringSuppression() throws TimeoutException {
+        requestContentInSheet(mLowPriorityContent, true);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetController.expandSheet();
+            mTestSupport.endAllAnimations();
+        });
+
+        assertTrue("The sheet should be open.", mSheetController.isSheetOpen());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mSuppressionToken =
+                    mTestSupport.suppressSheet(BottomSheetController.StateChangeReason.NONE);
+        });
+
+        assertEquals("The sheet should be hidden.", BottomSheetController.SheetState.HIDDEN,
+                mSheetController.getSheetState());
+
+        requestContentInSheet(mHighPriorityContent, true);
+
+        assertEquals("The sheet should still be hidden.", BottomSheetController.SheetState.HIDDEN,
+                mSheetController.getSheetState());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mTestSupport.unsuppressSheet(mSuppressionToken));
+
+        assertEquals("The high priority content should be shown.", mHighPriorityContent,
+                mSheetController.getCurrentSheetContent());
     }
 
     /**

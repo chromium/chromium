@@ -497,7 +497,6 @@ class BottomSheet extends FrameLayout
      * Show content in the bottom sheet's content area.
      * @param content The {@link BottomSheetContent} to show, or null if no content should be shown.
      */
-    @VisibleForTesting
     void showContent(@Nullable final BottomSheetContent content) {
         // If the desired content is already showing, do nothing.
         if (mSheetContent == content) return;

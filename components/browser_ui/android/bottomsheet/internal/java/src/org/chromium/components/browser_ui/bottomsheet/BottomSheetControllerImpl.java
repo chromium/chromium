@@ -386,7 +386,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         // If already showing the requested content, do nothing.
         if (content == mBottomSheet.getCurrentSheetContent()) return true;
 
-        boolean shouldSuppressExistingContent = mBottomSheet.getCurrentSheetContent() != null
+        boolean shouldSwapForPriorityContent = mBottomSheet.getCurrentSheetContent() != null
                 && content.getPriority() < mBottomSheet.getCurrentSheetContent().getPriority()
                 && canBottomSheetSwitchContent();
 
@@ -394,13 +394,20 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         // necessary. If already hidden, |showNextContent| will handle the request.
         mContentQueue.add(content);
 
-        if (mBottomSheet.getCurrentSheetContent() == null) {
+        if (mBottomSheet.getCurrentSheetContent() == null && !mSuppressionTokens.hasTokens()) {
             showNextContent(animate);
             return true;
-        } else if (shouldSuppressExistingContent) {
+        } else if (shouldSwapForPriorityContent) {
             mContentQueue.add(mBottomSheet.getCurrentSheetContent());
-            mBottomSheet.setSheetState(SheetState.HIDDEN, animate);
-            return true;
+            if (!mSuppressionTokens.hasTokens()) {
+                mBottomSheet.setSheetState(SheetState.HIDDEN, animate);
+                return true;
+            } else {
+                // Since the sheet is already suppressed and hidden, clear the sheet's content if
+                // the requested content is higher priority. The unsuppression logic will figure out
+                // which content to show next.
+                mBottomSheet.showContent(null);
+            }
         }
         return false;
     }

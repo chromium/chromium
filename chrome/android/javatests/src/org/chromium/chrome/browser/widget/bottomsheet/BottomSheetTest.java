@@ -260,8 +260,19 @@ public class BottomSheetTest {
 
     /** @param content The content to show in the bottom sheet. */
     private void showContent(BottomSheetContent content, @SheetState int targetState) {
-        runOnUiThreadBlocking(() -> { mSheetController.requestShowContent(content, false); });
-        mTestSupport.setSheetState(targetState, false);
-        pollUiThread(() -> mSheetController.getSheetState() == targetState);
+        runOnUiThreadBlocking(() -> {
+            boolean shown = mSheetController.requestShowContent(content, false);
+            if (shown) {
+                mTestSupport.setSheetState(targetState, false);
+            } else {
+                assertEquals("The sheet should still be hidden.", SheetState.HIDDEN,
+                        mSheetController.getSheetState());
+            }
+        });
+
+        // If the content switched, wait for the desired state.
+        if (mSheetController.getCurrentSheetContent() == content) {
+            pollUiThread(() -> mSheetController.getSheetState() == targetState);
+        }
     }
 }
