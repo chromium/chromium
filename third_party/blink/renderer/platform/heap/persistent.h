@@ -784,7 +784,9 @@ template <typename U>
 CrossThreadPersistent<T>& CrossThreadPersistent<T>::operator=(
     const CrossThreadWeakPersistent<U>& other) {
   MutexLocker locker(ProcessHeap::CrossThreadPersistentMutex());
-  this->AssignUnsafe(other.Parent::Get());
+  using ParentU = PersistentBase<U, kWeakPersistentConfiguration,
+                                 kCrossThreadPersistentConfiguration>;
+  this->AssignUnsafe(static_cast<const ParentU&>(other).Get());
   return *this;
 }
 
