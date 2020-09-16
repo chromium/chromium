@@ -42,26 +42,27 @@ namespace arc {
 
 namespace {
 
+// The storage path inside ARC container. This will be the path that is used in
+// MediaScanner.scanFile request.
+constexpr base::FilePath::CharType kAndroidStorageDir[] =
+    FILE_PATH_LITERAL("/storage");
+
 // The Downloads path inside ARC container. This will be the path that
 // is used in MediaScanner.scanFile request.
 constexpr base::FilePath::CharType kAndroidDownloadDir[] =
     FILE_PATH_LITERAL("/storage/emulated/0/Download");
 
+// TODO(crbug.com/929031): Move this to arc_volume_mounter_bridge.h.
 // The MyFiles path inside ARC container. This will be the path that is used in
-// MediaScanner.scanFile request. MediaScanner scans MyFiles under
-// /storage/MyFiles-read instead of /storage/MyFiles because non-system apps has
-// no access to /storage/MyFiles.
+// MediaScanner.scanFile request. UUID for the MyFiles volume is taken from
+// components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr base::FilePath::CharType kAndroidMyFilesDir[] =
-    FILE_PATH_LITERAL("/storage/MyFiles-read");
+    FILE_PATH_LITERAL("/storage/0000000000000000000000000000CAFEF00D2019");
 
 // The path for Downloads under MyFiles inside ARC container.
 constexpr base::FilePath::CharType kAndroidMyFilesDownloadsDir[] =
-    FILE_PATH_LITERAL("/storage/MyFiles-read/Downloads/");
-
-// The removable media path inside ARC container. This will be the path that
-// is used in MediaScanner.scanFile request.
-constexpr base::FilePath::CharType kAndroidRemovableMediaDir[] =
-    FILE_PATH_LITERAL("/storage");
+    FILE_PATH_LITERAL(
+        "/storage/0000000000000000000000000000CAFEF00D2019/Downloads/");
 
 // How long to wait for new inotify events before building the updated timestamp
 // map.
@@ -121,24 +122,9 @@ TimestampMap BuildTimestampMap(base::FilePath cros_dir,
     if (!HasAndroidSupportedMediaExtension(cros_path))
       continue;
 
-    // TODO(b/163951541): Temporary hack, this will be changed when we change
-    // the path to UUID. The cros_dir for removable media is now changed to
-    // /media/removable/volume_name instead of just /media/removable.
-    // Meanwhile, the GetAndroidPath function accept the second parameter
-    // cros_dir as a way to identify if it is a removable media directory.
-    // Since the second parameter is only used for identification,
-    // and the identification happens through equality check with
-    // kCrosRemovableMediaDir string, it is safe to just pass
-    // kCrosRemovableMediaDir string directly when we know it is a removable
-    // media. In other word, the cros_removable_media_dir below is used as
-    // the ChromeOS analogue for the Android /storage directory.
-    base::FilePath cros_removable_media_dir =
-        base::FilePath(kCrosRemovableMediaDir);
-    base::FilePath android_path = GetAndroidPath(
-        cros_path,
-        cros_removable_media_dir.IsParent(cros_dir) ? cros_removable_media_dir
-                                                    : cros_dir,
-        android_dir);
+    base::FilePath android_path(android_dir);
+    cros_dir.AppendRelativePath(cros_path, &android_path);
+
     const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
     timestamp_map[android_path] = info.GetLastModifiedTime();
   }
@@ -453,13 +439,10 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
 
   // Make sure the callback is triggered after the file system is attached in
   // file_task_runner.
-  // TODO(b/163951541): Temporary hack, this will be changed when we change the
-  // path to UUID. The kAndroidRemovableMediaDir is hardcoded here because
-  // CreateAndStartFileSystemWatcher accepts the removable media's volume's
-  // directory's parent in Android as second argument (i.e., /storage).
+  base::FilePath android_path =
+      base::FilePath(kAndroidStorageDir).Append(fs_uuid);
   removable_media_watchers_[fs_uuid] = CreateAndStartFileSystemWatcher(
-      base::FilePath(mount_path), base::FilePath(kAndroidRemovableMediaDir),
-      std::move(callback));
+      base::FilePath(mount_path), android_path, std::move(callback));
 }
 
 void ArcFileSystemWatcherService::StopWatchingRemovableMedia(
