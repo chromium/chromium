@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"
-#include "remoting/signaling/signaling_tracker.h"
 
 namespace google {
 namespace protobuf {
@@ -35,16 +34,18 @@ class MessageReceptionChannel;
 class OAuthTokenGetter;
 class RegistrationManager;
 class ScopedProtobufHttpRequest;
+class SignalingTracker;
 
 // A class for sending and receiving messages via the FTL API.
 class FtlMessagingClient final : public MessagingClient {
  public:
-  // |token_getter| and |registration_manager| must outlive |this|.
+  // |signaling_tracker| is nullable.
+  // Raw pointers must outlive |this|.
   FtlMessagingClient(
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       RegistrationManager* registration_manager,
-      SignalingTracker* signaling_tracker);
+      SignalingTracker* signaling_tracker = nullptr);
   ~FtlMessagingClient() override;
 
   // MessagingClient implementations.

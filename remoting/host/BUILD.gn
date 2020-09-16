@@ -299,6 +299,8 @@ static_library("common") {
     "xmpp_register_support_host_request.h",
     "xsession_chooser_linux.cc",
     "xsession_chooser_ui.inc",
+    "zombie_host_detector.cc",
+    "zombie_host_detector.h",
   ]
 
   libs = []
@@ -531,6 +533,7 @@ source_set("unit_tests") {
     "token_validator_factory_impl_unittest.cc",
     "touch_injector_win_unittest.cc",
     "xmpp_register_support_host_request_unittest.cc",
+    "zombie_host_detector_unittest.cc",
   ]
 
   if (use_ozone || is_chromeos) {

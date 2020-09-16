@@ -85,6 +85,7 @@
 #include "remoting/host/token_validator_factory_impl.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/username.h"
+#include "remoting/host/zombie_host_detector.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -197,6 +198,7 @@ const char kHostOfflineReasonPolicyReadError[] = "POLICY_READ_ERROR";
 const char kHostOfflineReasonPolicyChangeRequiresRestart[] =
     "POLICY_CHANGE_REQUIRES_RESTART";
 const char kHostOfflineReasonRemoteRestartHost[] = "REMOTE_RESTART_HOST";
+const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 
 // The default email domain for Googlers. Used to determine whether the host's
 // email address is Google-internal or not.
@@ -332,6 +334,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   void OnAuthFailed() override;
   void OnRemoteRestartHost() override;
 
+  void OnZombieStateDetected();
+
   void RestartHost(const std::string& host_offline_reason);
   void ShutdownHost(HostExitCodes exit_code);
 
@@ -404,6 +408,9 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // Must outlive |host_status_logger_|.
   std::unique_ptr<LogToServer> log_to_server_;
+
+  // Must outlive |signal_strategy_| and |heartbeat_sender_|.
+  std::unique_ptr<ZombieHostDetector> zombie_host_detector_;
 
   // Signal strategies must outlive |ftl_signaling_connector_|.
   std::unique_ptr<SignalStrategy> signal_strategy_;
@@ -1400,11 +1407,14 @@ void HostProcess::InitializeSignaling() {
       std::make_unique<OAuthTokenGetterProxy>(
           oauth_token_getter_->GetWeakPtr()),
       context_->url_loader_factory());
+  zombie_host_detector_ = std::make_unique<ZombieHostDetector>(base::BindOnce(
+      &HostProcess::OnZombieStateDetected, base::Unretained(this)));
   auto ftl_signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(
           oauth_token_getter_->GetWeakPtr()),
       context_->url_loader_factory(),
-      std::make_unique<FtlHostDeviceIdProvider>(host_id_));
+      std::make_unique<FtlHostDeviceIdProvider>(host_id_),
+      zombie_host_detector_.get());
   ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
       ftl_signal_strategy.get(),
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
@@ -1416,8 +1426,10 @@ void HostProcess::InitializeSignaling() {
 
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
-      context_->url_loader_factory(), is_googler);
+      zombie_host_detector_.get(), context_->url_loader_factory(), is_googler);
   signal_strategy_ = std::move(ftl_signal_strategy);
+
+  zombie_host_detector_->Start();
 }
 
 void HostProcess::StartHostIfReady() {
@@ -1552,6 +1564,10 @@ void HostProcess::OnRemoteRestartHost() {
   RestartHost(kHostOfflineReasonRemoteRestartHost);
 }
 
+void HostProcess::OnZombieStateDetected() {
+  RestartHost(kHostOfflineReasonZombieStateDetected);
+}
+
 void HostProcess::RestartHost(const std::string& host_offline_reason) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK(!host_offline_reason.empty());
@@ -1632,6 +1648,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   ftl_signaling_connector_.reset();
   ftl_echo_message_listener_.reset();
   signal_strategy_.reset();
+  zombie_host_detector_.reset();
 
   if (state_ == HOST_GOING_OFFLINE_TO_RESTART) {
     SetState(HOST_STARTING);

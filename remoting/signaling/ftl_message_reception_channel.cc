@@ -21,9 +21,7 @@ constexpr base::TimeDelta FtlMessageReceptionChannel::kPongTimeout;
 FtlMessageReceptionChannel::FtlMessageReceptionChannel(
     SignalingTracker* signaling_tracker)
     : reconnect_retry_backoff_(&FtlServicesContext::GetBackoffPolicy()),
-      signaling_tracker_(signaling_tracker) {
-  DCHECK(signaling_tracker_);
-}
+      signaling_tracker_(signaling_tracker) {}
 
 FtlMessageReceptionChannel::~FtlMessageReceptionChannel() = default;
 
@@ -74,7 +72,9 @@ FtlMessageReceptionChannel::GetReconnectRetryBackoffEntryForTesting() const {
 void FtlMessageReceptionChannel::OnReceiveMessagesStreamReady() {
   DCHECK_EQ(State::STARTING, state_);
   state_ = State::STARTED;
-  signaling_tracker_->OnChannelActive();
+  if (signaling_tracker_) {
+    signaling_tracker_->OnSignalingActive();
+  }
   RunStreamReadyCallbacks();
   BeginStreamTimers();
 }
@@ -118,7 +118,9 @@ void FtlMessageReceptionChannel::OnMessageReceived(
     case ftl::ReceiveMessagesResponse::BodyCase::kPong:
       VLOG(1) << "Received pong";
       stream_pong_timer_->Reset();
-      signaling_tracker_->OnChannelActive();
+      if (signaling_tracker_) {
+        signaling_tracker_->OnSignalingActive();
+      }
       break;
     case ftl::ReceiveMessagesResponse::BodyCase::kStartOfBatch:
       VLOG(1) << "Received start of batch";

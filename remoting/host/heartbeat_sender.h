@@ -71,12 +71,25 @@ class HeartbeatSender final : public SignalStrategy::Listener {
     Delegate() = default;
   };
 
+  // Interface to track heartbeat events for diagnosis purpose.
+  class Observer {
+   public:
+    virtual ~Observer() = default;
+
+    // Invoked when the heartbeat sender has sent a heartbeat.
+    virtual void OnHeartbeatSent() = 0;
+
+   protected:
+    Observer() = default;
+  };
+
   // All raw pointers must be non-null and outlive this object.
   HeartbeatSender(
       Delegate* delegate,
       const std::string& host_id,
       SignalStrategy* signal_strategy,
       OAuthTokenGetter* oauth_token_getter,
+      Observer* observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool is_googler);
   ~HeartbeatSender() override;
@@ -136,6 +149,7 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   SignalStrategy* const signal_strategy_;
   std::unique_ptr<HeartbeatClient> client_;
   OAuthTokenGetter* const oauth_token_getter_;
+  Observer* observer_;
 
   base::OneShotTimer heartbeat_timer_;
 

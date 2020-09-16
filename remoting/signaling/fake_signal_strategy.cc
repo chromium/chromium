@@ -185,15 +185,6 @@ bool FakeSignalStrategy::IsSignInError() const {
   return is_sign_in_error_;
 }
 
-const SignalingTracker& FakeSignalStrategy::signaling_tracker() const {
-  if (!signaling_tracker_) {
-    // Returns the base class' real tracker implementation if caller hasn't
-    // overridden it.
-    return SignalStrategy::signaling_tracker();
-  }
-  return *signaling_tracker_;
-}
-
 // static
 void FakeSignalStrategy::DeliverMessageOnThread(
     scoped_refptr<base::SingleThreadTaskRunner> thread,

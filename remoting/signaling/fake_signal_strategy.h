@@ -16,7 +16,6 @@
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/signaling_tracker.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -42,10 +41,6 @@ class FakeSignalStrategy : public SignalStrategy {
 
   void set_send_delay(base::TimeDelta delay) {
     send_delay_ = delay;
-  }
-
-  void set_signaling_tracker(SignalingTracker* signaling_tracker) {
-    signaling_tracker_ = signaling_tracker;
   }
 
   void SetError(Error error);
@@ -86,7 +81,6 @@ class FakeSignalStrategy : public SignalStrategy {
                    const ftl::ChromotingMessage& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
-  const SignalingTracker& signaling_tracker() const override;
 
  private:
   static void DeliverMessageOnThread(
@@ -116,8 +110,6 @@ class FakeSignalStrategy : public SignalStrategy {
 
   // All received messages, includes thouse still in |pending_messages_|.
   std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> received_messages_;
-
-  SignalingTracker* signaling_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

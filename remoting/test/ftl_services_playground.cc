@@ -120,7 +120,7 @@ void FtlServicesPlayground::ResetServices(base::OnceClosure on_done) {
   message_subscription_.reset();
   messaging_client_ = std::make_unique<FtlMessagingClient>(
       token_getter_.get(), url_loader_factory_owner_->GetURLLoaderFactory(),
-      registration_manager_.get(), &signaling_tracker_);
+      registration_manager_.get());
   message_subscription_ = messaging_client_->RegisterMessageCallback(
       base::BindRepeating(&FtlServicesPlayground::OnMessageReceived,
                           weak_factory_.GetWeakPtr()));

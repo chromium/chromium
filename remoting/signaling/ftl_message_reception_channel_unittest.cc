@@ -23,7 +23,7 @@
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/ftl_services_context.h"
-#include "remoting/signaling/mock_signaling_tracker.h"
+#include "remoting/signaling/signaling_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +40,11 @@ using ::testing::Return;
 using ReceiveMessagesResponseCallback = base::RepeatingCallback<void(
     std::unique_ptr<ftl::ReceiveMessagesResponse>)>;
 using StatusCallback = base::OnceCallback<void(const ProtobufHttpStatus&)>;
+
+class MockSignalingTracker : public SignalingTracker {
+ public:
+  MOCK_METHOD0(OnSignalingActive, void());
+};
 
 // Fake stream implementation to allow probing if a stream is closed by client.
 class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
@@ -330,12 +335,12 @@ TEST_F(FtlMessageReceptionChannelTest, StreamsTwoMessages) {
   run_loop.Run();
 }
 
-TEST_F(FtlMessageReceptionChannelTest, ReceivedOnePong_OnChannelActiveTwice) {
+TEST_F(FtlMessageReceptionChannelTest, ReceivedOnePong_OnSignalingActiveTwice) {
   base::RunLoop run_loop;
 
   base::MockCallback<base::OnceClosure> stream_ready_callback;
 
-  EXPECT_CALL(mock_signaling_tracker_, OnChannelActive())
+  EXPECT_CALL(mock_signaling_tracker_, OnSignalingActive())
       .WillOnce(Return())
       .WillOnce([&]() { run_loop.Quit(); });
 

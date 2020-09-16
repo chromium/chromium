@@ -38,10 +38,7 @@ static_library("signaling") {
     "signaling_address.h",
     "signaling_id_util.cc",
     "signaling_id_util.h",
-    "signaling_tracker.cc",
     "signaling_tracker.h",
-    "signaling_tracker_impl.cc",
-    "signaling_tracker_impl.h",
     "xmpp_log_to_server.cc",
     "xmpp_log_to_server.h",
   ]

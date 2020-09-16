@@ -164,6 +164,7 @@ HeartbeatSender::HeartbeatSender(
     const std::string& host_id,
     SignalStrategy* signal_strategy,
     OAuthTokenGetter* oauth_token_getter,
+    Observer* observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     bool is_googler)
     : delegate_(delegate),
@@ -172,9 +173,11 @@ HeartbeatSender::HeartbeatSender(
       client_(std::make_unique<HeartbeatClientImpl>(oauth_token_getter,
                                                     url_loader_factory)),
       oauth_token_getter_(oauth_token_getter),
+      observer_(observer),
       backoff_(&kBackoffPolicy) {
   DCHECK(delegate_);
   DCHECK(signal_strategy_);
+  DCHECK(observer_);
 
   signal_strategy_->AddListener(this);
   OnSignalStrategyStateChange(signal_strategy_->GetState());
@@ -252,20 +255,7 @@ void HeartbeatSender::SendHeartbeat() {
     return;
   }
 
-  base::TimeDelta last_reported_active_duration =
-      signal_strategy_->signaling_tracker()
-          .GetLastReportedChannelActiveDuration();
-  if (!signal_strategy_->signaling_tracker().IsChannelActive()) {
-    LOG(ERROR) << "Signaling channel appears to be inactive but it claims it's "
-                  "connected. Last reported active "
-               << last_reported_active_duration << " ago.";
-    signal_strategy_->Disconnect();
-    return;
-  } else {
-    VLOG(1)
-        << "About to send heartbeat. Signaling channel last reported active "
-        << last_reported_active_duration << " ago.";
-  }
+  VLOG(1) << "About to send heartbeat.";
 
   // Drop previous heartbeat and timer so that it doesn't interfere with the
   // current one.
@@ -275,6 +265,7 @@ void HeartbeatSender::SendHeartbeat() {
   client_->Heartbeat(
       CreateHeartbeatRequest(),
       base::BindOnce(&HeartbeatSender::OnResponse, base::Unretained(this)));
+  observer_->OnHeartbeatSent();
 }
 
 void HeartbeatSender::OnResponse(

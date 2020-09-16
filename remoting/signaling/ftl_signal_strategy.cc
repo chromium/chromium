@@ -467,7 +467,8 @@ void FtlSignalStrategy::Core::OnStanza(
 FtlSignalStrategy::FtlSignalStrategy(
     std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<FtlDeviceIdProvider> device_id_provider) {
+    std::unique_ptr<FtlDeviceIdProvider> device_id_provider,
+    SignalingTracker* signaling_tracker) {
   // TODO(yuweih): Just make FtlMessagingClient own FtlRegistrationManager and
   // call SignInGaia() transparently.
   auto registration_manager = std::make_unique<FtlRegistrationManager>(
@@ -475,7 +476,7 @@ FtlSignalStrategy::FtlSignalStrategy(
       std::move(device_id_provider));
   auto messaging_client = std::make_unique<FtlMessagingClient>(
       oauth_token_getter.get(), url_loader_factory, registration_manager.get(),
-      &signaling_tracker_);
+      signaling_tracker);
   CreateCore(std::move(oauth_token_getter), std::move(registration_manager),
              std::move(messaging_client));
 }

@@ -25,6 +25,7 @@ class FtlMessageReceptionChannel final : public MessageReceptionChannel {
   static constexpr base::TimeDelta kPongTimeout =
       base::TimeDelta::FromSeconds(15);
 
+  // |signaling_tracker| is nullable.
   explicit FtlMessageReceptionChannel(SignalingTracker* signaling_tracker);
   ~FtlMessageReceptionChannel() override;
 
@@ -75,7 +76,7 @@ class FtlMessageReceptionChannel final : public MessageReceptionChannel {
   net::BackoffEntry reconnect_retry_backoff_;
   base::OneShotTimer reconnect_retry_timer_;
   std::unique_ptr<base::DelayTimer> stream_pong_timer_;
-  SignalingTracker* signaling_tracker_;
+  SignalingTracker* signaling_tracker_;  // nullable.
 
   base::WeakPtrFactory<FtlMessageReceptionChannel> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FtlMessageReceptionChannel);
