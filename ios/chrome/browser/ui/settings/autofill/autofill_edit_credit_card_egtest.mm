@@ -24,6 +24,7 @@
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
+using chrome_test_util::PaymentMethodsButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 
 // Tests for Settings Autofill edit credit cards screen.
@@ -31,12 +32,6 @@ using chrome_test_util::TextFieldForCellWithLabelId;
 @end
 
 namespace {
-
-// Matcher for 'Payment Methods' in the settings menu.
-id<GREYMatcher> SettingsPaymentMethodsButton() {
-  return ButtonWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_AUTOFILL_PAYMENT_METHODS));
-}
 
 // Matcher for the 'Nickname' text field in the add credit card view.
 id<GREYMatcher> NicknameTextField() {
@@ -69,8 +64,8 @@ id<GREYMatcher> NavigationBarEditButton() {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey selectElementWithMatcher:SettingsPaymentMethodsButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
+
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(lastDigits)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
@@ -98,8 +93,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 // Tests that invalid nicknames are not allowed when editing a card.
-// TODO(crbug.com/1108809): Re-enable the test.
-- (void)DISABLED_testInvalidNickname {
+- (void)testInvalidNickname {
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
       performAction:grey_typeText(@"1233")];
 
@@ -109,8 +103,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 }
 
 // Tests that clearing a nickname is allowed.
-// Disabled due to: crbug.com/1106766
-- (void)DISABLED_testEmptyNickname {
+- (void)testEmptyNickname {
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
       performAction:grey_typeText(@"To be removed")];
 
