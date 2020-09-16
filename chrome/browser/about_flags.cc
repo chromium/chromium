@@ -3901,7 +3901,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          chrome::android::kTabbedAppOverflowMenuRegroup,
          kTabbedAppOverflowMenuRegroupVariations,
-         "TabbedAppOverflowMenuRegroup")},
+         "AndroidAppMenuUiRework")},
 #endif  // OS_ANDROID
 
     {"omnibox-display-title-for-current-url",
