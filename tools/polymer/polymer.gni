@@ -71,5 +71,9 @@ template("polymer_modulizer") {
     if (defined(invoker.migrated_imports)) {
       args += [ "--migrated_imports" ] + invoker.migrated_imports
     }
+
+    if (defined(invoker.preserve_url_scheme) && invoker.preserve_url_scheme) {
+      args += [ "--preserve_url_scheme" ]
+    }
   }
 }
