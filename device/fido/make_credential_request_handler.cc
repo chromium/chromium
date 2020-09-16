@@ -453,12 +453,9 @@ void MakeCredentialRequestHandler::DispatchRequest(
   if (!request->is_u2f_only &&
       request->user_verification != UserVerificationRequirement::kDiscouraged &&
       authenticator->CanGetUvToken()) {
-    base::Optional<std::string> rp_id(request->rp.id);
-    authenticator->GetUvToken(
-        std::move(rp_id),
-        base::BindOnce(&MakeCredentialRequestHandler::OnHaveUvToken,
-                       weak_factory_.GetWeakPtr(), authenticator,
-                       std::move(request)));
+    authenticator->GetUvRetries(base::BindOnce(
+        &MakeCredentialRequestHandler::OnStartUvTokenOrFallback,
+        weak_factory_.GetWeakPtr(), authenticator, std::move(request)));
     return;
   }
 
@@ -864,6 +861,42 @@ void MakeCredentialRequestHandler::OnEnrollmentComplete(
   DispatchRequestWithToken(std::move(request), std::move(token));
 }
 
+void MakeCredentialRequestHandler::OnStartUvTokenOrFallback(
+    FidoAuthenticator* authenticator,
+    std::unique_ptr<CtapMakeCredentialRequest> request,
+    CtapDeviceResponseCode status,
+    base::Optional<pin::RetriesResponse> response) {
+  size_t retries;
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "OnStartUvTokenOrFallback() failed for "
+                    << authenticator_->GetDisplayName()
+                    << ", assuming authenticator locked.";
+    retries = 0;
+  } else {
+    retries = response->retries;
+  }
+
+  if (retries == 0) {
+    if (authenticator->WillNeedPINToMakeCredential(*request, observer()) ==
+        MakeCredentialPINDisposition::kUsePINForFallback) {
+      authenticator->GetTouch(base::BindOnce(
+          &MakeCredentialRequestHandler::StartPINFallbackForInternalUv,
+          weak_factory_.GetWeakPtr(), authenticator, std::move(request)));
+      return;
+    }
+    authenticator->GetTouch(
+        base::BindOnce(&MakeCredentialRequestHandler::HandleInternalUvLocked,
+                       weak_factory_.GetWeakPtr(), authenticator));
+  }
+
+  base::Optional<std::string> rp_id(request->rp.id);
+  authenticator->GetUvToken(
+      std::move(rp_id),
+      base::BindOnce(&MakeCredentialRequestHandler::OnHaveUvToken,
+                     weak_factory_.GetWeakPtr(), authenticator,
+                     std::move(request)));
+}
+
 void MakeCredentialRequestHandler::OnUvRetriesResponse(
     std::unique_ptr<CtapMakeCredentialRequest> request,
     CtapDeviceResponseCode status,
@@ -907,28 +940,19 @@ void MakeCredentialRequestHandler::OnHaveUvToken(
     return;
   }
 
-  if (status == CtapDeviceResponseCode::kCtap2ErrPinInvalid ||
+  if (status == CtapDeviceResponseCode::kCtap2ErrUvInvalid ||
       status == CtapDeviceResponseCode::kCtap2ErrOperationDenied ||
       status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
     if (status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
-      // This error is returned immediately without user interaction. Ask for a
-      // touch and fall back to PIN.
-      FIDO_LOG(DEBUG) << "Internal UV blocked for "
-                      << authenticator->GetDisplayName()
-                      << ", falling back to PIN.";
       if (authenticator->WillNeedPINToMakeCredential(*request, observer()) ==
           MakeCredentialPINDisposition::kUsePINForFallback) {
-        authenticator->GetTouch(base::BindOnce(
-            &MakeCredentialRequestHandler::StartPINFallbackForInternalUv,
-            weak_factory_.GetWeakPtr(), authenticator, std::move(request)));
+        StartPINFallbackForInternalUv(authenticator, std::move(request));
         return;
       }
-      authenticator->GetTouch(
-          base::BindOnce(&MakeCredentialRequestHandler::HandleInternalUvLocked,
-                         weak_factory_.GetWeakPtr(), authenticator));
+      HandleInternalUvLocked(authenticator);
       return;
     }
-    DCHECK(status == CtapDeviceResponseCode::kCtap2ErrPinInvalid ||
+    DCHECK(status == CtapDeviceResponseCode::kCtap2ErrUvInvalid ||
            status == CtapDeviceResponseCode::kCtap2ErrOperationDenied);
     CancelActiveAuthenticators(authenticator->GetId());
     authenticator_ = authenticator;

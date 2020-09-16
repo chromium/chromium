@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   // |CtapMakeCredentialRequest|.
   struct COMPONENT_EXPORT(DEVICE_FIDO) Options {
     Options();
-    Options(
+    explicit Options(
         const AuthenticatorSelectionCriteria& authenticator_selection_criteria);
     ~Options();
     Options(const Options&);
@@ -181,6 +181,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
                       base::Optional<pin::TokenResponse> response);
   void OnEnrollmentComplete(std::unique_ptr<CtapMakeCredentialRequest> request);
   void OnEnrollmentDismissed();
+  void OnStartUvTokenOrFallback(
+      FidoAuthenticator* authenticator,
+      std::unique_ptr<CtapMakeCredentialRequest> request,
+      CtapDeviceResponseCode status,
+      base::Optional<pin::RetriesResponse> response);
   void OnUvRetriesResponse(std::unique_ptr<CtapMakeCredentialRequest> request,
                            CtapDeviceResponseCode status,
                            base::Optional<pin::RetriesResponse> response);

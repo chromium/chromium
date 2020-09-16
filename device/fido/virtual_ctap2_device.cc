@@ -1735,7 +1735,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
         return base::nullopt;
       }
       if (!config_.user_verification_succeeds) {
-        return CtapDeviceResponseCode::kCtap2ErrPinInvalid;
+        return CtapDeviceResponseCode::kCtap2ErrUvInvalid;
       }
 
       mutable_state()->pin_retries = kMaxPinRetries;

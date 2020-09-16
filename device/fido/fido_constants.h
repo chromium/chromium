@@ -117,6 +117,7 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrRequestTooLarge = 0x39,
   kCtap2ErrUvBlocked = 0x3C,
   kCtap2ErrIntegrityFailure = 0x3D,
+  kCtap2ErrUvInvalid = 0x3F,
   kCtap2ErrOther = 0x7F,
   kCtap2ErrSpecLast = 0xDF,
   kCtap2ErrExtensionFirst = 0xE0,
@@ -125,7 +126,7 @@ enum class CtapDeviceResponseCode : uint8_t {
   kCtap2ErrVendorLast = 0xFF
 };
 
-constexpr std::array<CtapDeviceResponseCode, 50> kCtapResponseCodeList{
+constexpr std::array<CtapDeviceResponseCode, 51> kCtapResponseCodeList{
     CtapDeviceResponseCode::kSuccess,
     CtapDeviceResponseCode::kCtap1ErrInvalidCommand,
     CtapDeviceResponseCode::kCtap1ErrInvalidParameter,
@@ -170,6 +171,7 @@ constexpr std::array<CtapDeviceResponseCode, 50> kCtapResponseCodeList{
     CtapDeviceResponseCode::kCtap2ErrRequestTooLarge,
     CtapDeviceResponseCode::kCtap2ErrUvBlocked,
     CtapDeviceResponseCode::kCtap2ErrIntegrityFailure,
+    CtapDeviceResponseCode::kCtap2ErrUvInvalid,
     CtapDeviceResponseCode::kCtap2ErrOther,
     CtapDeviceResponseCode::kCtap2ErrSpecLast,
     CtapDeviceResponseCode::kCtap2ErrExtensionFirst,

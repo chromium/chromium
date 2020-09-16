@@ -106,6 +106,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   void OnHavePIN(std::string pin);
   void OnHavePINToken(CtapDeviceResponseCode status,
                       base::Optional<pin::TokenResponse> response);
+  void OnStartUvTokenOrFallback(FidoAuthenticator* authenticator,
+                                CtapDeviceResponseCode status,
+                                base::Optional<pin::RetriesResponse> response);
   void OnUvRetriesResponse(CtapDeviceResponseCode status,
                            base::Optional<pin::RetriesResponse> response);
   void OnHaveUvToken(FidoAuthenticator* authenticator,

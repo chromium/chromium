@@ -337,11 +337,8 @@ void GetAssertionRequestHandler::DispatchRequest(
   CtapGetAssertionRequest request(request_);
   if (request.user_verification != UserVerificationRequirement::kDiscouraged &&
       authenticator->CanGetUvToken()) {
-    FIDO_LOG(DEBUG) << "Getting UV token from "
-                    << authenticator->GetDisplayName();
-    authenticator->GetUvToken(
-        request_.rp_id,
-        base::BindOnce(&GetAssertionRequestHandler::OnHaveUvToken,
+    authenticator->GetUvRetries(
+        base::BindOnce(&GetAssertionRequestHandler::OnStartUvTokenOrFallback,
                        weak_factory_.GetWeakPtr(), authenticator));
     return;
   }
@@ -703,6 +700,40 @@ void GetAssertionRequestHandler::OnHavePINToken(
   DispatchRequestWithToken(std::move(*response));
 }
 
+void GetAssertionRequestHandler::OnStartUvTokenOrFallback(
+    FidoAuthenticator* authenticator,
+    CtapDeviceResponseCode status,
+    base::Optional<pin::RetriesResponse> response) {
+  size_t retries;
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    FIDO_LOG(ERROR) << "OnStartUvTokenOrFallback() failed for "
+                    << authenticator_->GetDisplayName()
+                    << ", assuming authenticator locked.";
+    retries = 0;
+  } else {
+    retries = response->retries;
+  }
+
+  if (retries == 0) {
+    if (authenticator->WillNeedPINToGetAssertion(request_, observer()) ==
+        PINDisposition::kUsePINForFallback) {
+      authenticator->GetTouch(base::BindOnce(
+          &GetAssertionRequestHandler::StartPINFallbackForInternalUv,
+          weak_factory_.GetWeakPtr(), authenticator));
+      return;
+    }
+    authenticator->GetTouch(base::BindOnce(
+        &GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch,
+        weak_factory_.GetWeakPtr(), authenticator));
+  }
+
+  base::Optional<std::string> rp_id(request_.rp_id);
+  authenticator->GetUvToken(
+      std::move(rp_id),
+      base::BindOnce(&GetAssertionRequestHandler::OnHaveUvToken,
+                     weak_factory_.GetWeakPtr(), authenticator));
+}
+
 void GetAssertionRequestHandler::OnUvRetriesResponse(
     CtapDeviceResponseCode status,
     base::Optional<pin::RetriesResponse> response) {
@@ -746,29 +777,19 @@ void GetAssertionRequestHandler::OnHaveUvToken(
     return;
   }
 
-  if (status == CtapDeviceResponseCode::kCtap2ErrPinInvalid ||
+  if (status == CtapDeviceResponseCode::kCtap2ErrUvInvalid ||
       status == CtapDeviceResponseCode::kCtap2ErrOperationDenied ||
       status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
     if (status == CtapDeviceResponseCode::kCtap2ErrUvBlocked) {
-      // This error is returned immediately without user interaction. Ask for a
-      // touch and fall back to PIN or terminate the request if the device does
-      // not support PIN.
-      FIDO_LOG(DEBUG) << "Internal UV blocked for "
-                      << authenticator->GetDisplayName()
-                      << ", falling back to PIN.";
       if (authenticator->WillNeedPINToGetAssertion(request_, observer()) ==
           PINDisposition::kUsePINForFallback) {
-        authenticator->GetTouch(base::BindOnce(
-            &GetAssertionRequestHandler::StartPINFallbackForInternalUv,
-            weak_factory_.GetWeakPtr(), authenticator));
+        StartPINFallbackForInternalUv(authenticator);
         return;
       }
-      authenticator->GetTouch(base::BindOnce(
-          &GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch,
-          weak_factory_.GetWeakPtr(), authenticator));
+      TerminateUnsatisfiableRequestPostTouch(authenticator);
       return;
     }
-    DCHECK(status == CtapDeviceResponseCode::kCtap2ErrPinInvalid ||
+    DCHECK(status == CtapDeviceResponseCode::kCtap2ErrUvInvalid ||
            status == CtapDeviceResponseCode::kCtap2ErrOperationDenied);
     CancelActiveAuthenticators(authenticator->GetId());
     authenticator_ = authenticator;
