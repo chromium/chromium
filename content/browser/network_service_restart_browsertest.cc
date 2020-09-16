@@ -41,6 +41,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
+#include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/io_thread_shared_url_loader_factory_owner.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1220,6 +1221,55 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   // Sync call should be fine, even though network process is still starting up.
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   network_service_test->AddRules({});
+}
+
+// Tests handling of a NetworkService crash that happens after a navigation
+// triggers sending a Commit IPC to the renderer process, but before a DidCommit
+// IPC from the renderer process is handled.  See also
+// https://crbug.com/1056949#c75.
+IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
+                       BetweenCommitNavigationAndDidCommit) {
+  if (IsInProcessNetworkService())
+    return;
+
+  GURL initial_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Crash the NetworkService while CommitNavigation IPC is in-flight and before
+  // DidCommit IPC is handled.  This tests how RenderFrameHostImpl recreates the
+  // URLLoaderFactory after NetworkService crash.  In particular,
+  // RenderFrameHostImpl::UpdateSubresourceLoaderFactories needs to use the
+  // |request_initiator_origin_lock| associated with the in-flight IPC (because
+  // the |RFHI::last_committed_origin_| won't be updated until DidCommit IPC is
+  // handled).
+  auto pre_did_commit_lambda = [&](RenderFrameHost* frame) {
+    // Crash the NetworkService process. Existing interfaces should receive
+    // error notifications at some point.
+    SimulateNetworkServiceCrash();
+
+    // Flush the interface to make sure the error notification was received.
+    StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+        BrowserContext::GetDefaultStoragePartition(browser_context()));
+    partition->FlushNetworkInterfaceForTesting();
+  };
+  CommitMessageDelayer::DidCommitCallback pre_did_commit_callback =
+      base::BindLambdaForTesting(std::move(pre_did_commit_lambda));
+  GURL final_page_url(
+      embedded_test_server()->GetURL("bar.com", "/title2.html"));
+  CommitMessageDelayer did_commit_delayer(shell()->web_contents(),
+                                          final_page_url,
+                                          std::move(pre_did_commit_callback));
+  ASSERT_TRUE(ExecJs(shell(), JsReplace("location = $1", final_page_url)));
+  did_commit_delayer.Wait();
+
+  // Test if subresources requests work fine (e.g. if |request_initiator|
+  // matches |request_initiator_origin_lock|).
+  GURL final_resource_url(
+      embedded_test_server()->GetURL("bar.com", "/site_isolation/json.txt"));
+  EXPECT_EQ(
+      "{ \"name\" : \"chromium\" }\n",
+      EvalJs(shell(), JsReplace("fetch($1).then(response => response.text())",
+                                final_resource_url)));
 }
 
 }  // namespace content

@@ -2101,28 +2101,29 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const mojom::CommonNavigationParams& common_params,
       const mojom::CommitNavigationParams& commit_params);
 
-  // Calculates main world origin that will use the URLLoaderFactory if the
-  // factory is sent at this point to the renderer process.  This may be
-  // different from |last_committed_origin_| between ReadyToCommit and DidCommit
-  // states of a navigation.
-  //
-  // TODO(lukasza): https://crbug.com/729021: This method should not be needed
-  // once we swap RenderFrameHost on every document or origin change.  See also
-  // https://crbug.com/1047436.
-  //
-  // TODO(lukasza): Rename and make it more general purpose if we find more
-  // cases where this origin needs to be used instead of GetLastCommittedOrigin
-  // - currently URLLoaderFactory/request_initiator_origin_lock computations are
-  // the only known case.  See also https://crbug.com/1047436#c1.
-  url::Origin GetExpectedMainWorldOriginForUrlLoaderFactory();
+  // Returns the latest NavigationRequest that has resulted in sending a Commit
+  // IPC to the renderer process that hasn't yet been acked by the DidCommit IPC
+  // from the renderer process.  Returns null if no such NavigationRequest
+  // exists.
+  NavigationRequest* FindLatestNavigationRequestThatIsStillCommitting();
 
+  // Extracts all the |out_...| values from either the |navigation_request| (if
+  // present) or from |this| (if |navigation_request| is null).
+  void ExtractFactoryParamsFromNavigationRequestOrLastCommittedNavigation(
+      NavigationRequest* navigation_request,
+      url::Origin* out_main_world_origin,
+      network::mojom::ClientSecurityStatePtr* out_client_security_state,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>*
+          coep_reporter_pending_remote,
+      network::mojom::TrustTokenRedemptionPolicy*
+          out_trust_token_redemption_policy);
+
+  // Creates URLLoaderFactoryParams for main world of |this|, either based on
+  // the |navigation_request|, or (if |navigation_request| is null) on the last
+  // committed navigation.
   network::mojom::URLLoaderFactoryParamsPtr
   CreateURLLoaderFactoryParamsForMainWorld(
-      const url::Origin& main_world_origin,
-      network::mojom::ClientSecurityStatePtr client_security_state,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter,
-      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy,
+      NavigationRequest* navigation_request,
       base::StringPiece debug_tag);
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|
@@ -2384,12 +2385,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
       FrameHostMsg_DidCommitProvisionalLoad_Params* params) const;
 
   // Creates URLLoaderFactory objects for |isolated_world_origins|.
+  //
+  // Properties of the factories (e.g. their client security state) are either
+  // based on the |navigation_request|, or (if |navigation_request| is null) on
+  // the last committed navigation.
   blink::PendingURLLoaderFactoryBundle::OriginMap
   CreateURLLoaderFactoriesForIsolatedWorlds(
-      const url::Origin& main_world_origin,
-      const base::flat_set<url::Origin>& isolated_world_origins,
-      network::mojom::ClientSecurityStatePtr client_security_state,
-      network::mojom::TrustTokenRedemptionPolicy trust_token_redemption_policy);
+      NavigationRequest* navigation_request,
+      const base::flat_set<url::Origin>& isolated_world_origins);
 
   // Based on the termination |status| and |exit_code|, may generate a crash
   // report to be routed to the Reporting API.

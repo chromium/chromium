@@ -8549,53 +8549,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SetBrowserClientForTesting(old_client);
 }
 
-namespace {
-
-// A helper class to run a predefined callback just before processing the
-// DidCommitProvisionalLoad IPC for |deferred_url|.
-class CommitMessageDelayer : public DidCommitNavigationInterceptor {
- public:
-  using DidCommitCallback = base::OnceCallback<void(RenderFrameHost*)>;
-
-  explicit CommitMessageDelayer(WebContents* web_contents,
-                                const GURL& deferred_url,
-                                DidCommitCallback deferred_action)
-      : DidCommitNavigationInterceptor(web_contents),
-        deferred_url_(deferred_url),
-        deferred_action_(std::move(deferred_action)) {}
-
-  void Wait() {
-    run_loop_.reset(new base::RunLoop());
-    run_loop_->Run();
-    run_loop_.reset();
-  }
-
- private:
-  // DidCommitNavigationInterceptor:
-  bool WillProcessDidCommitNavigation(
-      RenderFrameHost* render_frame_host,
-      NavigationRequest* navigation_request,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
-      override {
-    if (params->url == deferred_url_) {
-      std::move(deferred_action_).Run(render_frame_host);
-      if (run_loop_)
-        run_loop_->Quit();
-    }
-    return true;
-  }
-
-  std::unique_ptr<base::RunLoop> run_loop_;
-
-  const GURL deferred_url_;
-  DidCommitCallback deferred_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitMessageDelayer);
-};
-
-}  // namespace
-
 // TODO(crbug.com/1110497): flaky on Android builders since 2020-07-28.
 #if defined(OS_ANDROID)
 #define MAYBE_NavigationRacesWithCommitInUnassignedSiteInstance \

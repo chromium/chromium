@@ -28,6 +28,15 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   GURL initial_url = GURL("https://initial.example.test/");
   GURL final_url = GURL("https://final.example.test/");
 
+  auto get_expected_main_world_origin = [](RenderFrameHost* rfh) {
+    NavigationRequest* in_flight_request =
+        static_cast<RenderFrameHostImpl*>(rfh)
+            ->FindLatestNavigationRequestThatIsStillCommitting();
+
+    return in_flight_request ? in_flight_request->GetOriginForURLLoaderFactory()
+                             : rfh->GetLastCommittedOrigin();
+  };
+
   // Start the test with a simple navigation.
   {
     std::unique_ptr<NavigationSimulator> simulator =
@@ -46,8 +55,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   // Verify expected main world origin in a steady state - after a commit it
   // should be the same as the last committed origin.
   EXPECT_EQ(url::Origin::Create(initial_url),
-            static_cast<RenderFrameHostImpl*>(main_rfh())
-                ->GetExpectedMainWorldOriginForUrlLoaderFactory());
+            get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(initial_url),
             main_rfh()->GetLastCommittedOrigin());
 
@@ -57,8 +65,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
       NavigationSimulator::CreateRendererInitiated(final_url, main_rfh());
   simulator2->Start();
   EXPECT_EQ(url::Origin::Create(initial_url),
-            static_cast<RenderFrameHostImpl*>(main_rfh())
-                ->GetExpectedMainWorldOriginForUrlLoaderFactory());
+            get_expected_main_world_origin(main_rfh()));
 
   // Verify expected main world origin when a pending navigation has reached the
   // ready-to-commit state.  Note that the last committed origin shouldn't
@@ -66,8 +73,7 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   simulator2->ReadyToCommit();
   simulator2->Wait();
   EXPECT_EQ(url::Origin::Create(final_url),
-            static_cast<RenderFrameHostImpl*>(main_rfh())
-                ->GetExpectedMainWorldOriginForUrlLoaderFactory());
+            get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(initial_url),
             main_rfh()->GetLastCommittedOrigin());
 
@@ -75,15 +81,14 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   // after a commit.
   simulator2->Commit();
   EXPECT_EQ(url::Origin::Create(final_url),
-            static_cast<RenderFrameHostImpl*>(main_rfh())
-                ->GetExpectedMainWorldOriginForUrlLoaderFactory());
+            get_expected_main_world_origin(main_rfh()));
   EXPECT_EQ(url::Origin::Create(final_url),
             main_rfh()->GetLastCommittedOrigin());
 
   // As a test sanity check, verify that there was no RFH swap (the bug this
   // test protects against would only happen if there is no swap).  In fact,
-  // GetExpectedMainWorldOriginForUrlLoaderFactory can be removed entirely once
-  // we swap on all document changes.
+  // FindLatestNavigationRequestThatIsStillCommitting might possibly be removed
+  // entirely once we swap on all document changes.
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 
