@@ -163,13 +163,13 @@ DesksController* DesksController::Get() {
 }
 
 const Desk* DesksController::GetTargetActiveDesk() const {
-  if (!animations_.empty())
-    return desks_[animations_.back()->ending_desk_index()].get();
+  if (animation_)
+    return desks_[animation_->ending_desk_index()].get();
   return active_desk();
 }
 
 void DesksController::Shutdown() {
-  animations_.clear();
+  animation_.reset();
 }
 
 void DesksController::AddObserver(Observer* observer) {
@@ -181,7 +181,7 @@ void DesksController::RemoveObserver(Observer* observer) {
 }
 
 bool DesksController::AreDesksBeingModified() const {
-  return are_desks_being_modified_ || !animations_.empty();
+  return are_desks_being_modified_ || !!animation_;
 }
 
 bool DesksController::CanCreateDesks() const {
@@ -256,9 +256,9 @@ void DesksController::RemoveDesk(const Desk* desk,
         current_desk_index + ((current_desk_index > 0) ? -1 : 1);
     DCHECK_GE(target_desk_index, 0);
     DCHECK_LT(target_desk_index, static_cast<int>(desks_.size()));
-    animations_.emplace_back(std::make_unique<DeskRemovalAnimation>(
-        this, current_desk_index, target_desk_index, source));
-    animations_.back()->Launch();
+    animation_ = std::make_unique<DeskRemovalAnimation>(
+        this, current_desk_index, target_desk_index, source);
+    animation_->Launch();
     return;
   }
 
@@ -267,7 +267,7 @@ void DesksController::RemoveDesk(const Desk* desk,
 
 void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   DCHECK(HasDesk(desk));
-  DCHECK(animations_.empty());
+  DCHECK(!animation_);
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
@@ -300,9 +300,9 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   }
 
   const int starting_desk_index = GetDeskIndex(active_desk());
-  animations_.emplace_back(std::make_unique<DeskActivationAnimation>(
-      this, starting_desk_index, target_desk_index, source));
-  animations_.back()->Launch();
+  animation_ = std::make_unique<DeskActivationAnimation>(
+      this, starting_desk_index, target_desk_index, source);
+  animation_->Launch();
 }
 
 bool DesksController::ActivateAdjacentDesk(bool going_left,
@@ -316,15 +316,9 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
     return false;
 
   // Try replacing an ongoing desk animation of the same source.
-  if (is_enhanced_desk_animations_) {
-    for (const auto& animation : animations_) {
-      if (animation->Replace(going_left, source))
-        return true;
-    }
-    // If there is no current animation of the same source but there is an
-    // animation running, skip this animation.
-    if (!animations_.empty())
-      return false;
+  if (is_enhanced_desk_animations_ && animation_ &&
+      animation_->Replace(going_left, source)) {
+    return true;
   }
 
   const Desk* desk_to_activate = going_left ? GetPreviousDesk() : GetNextDesk();
@@ -349,18 +343,14 @@ bool DesksController::StartAnimationForGesture(bool move_left) {
 
 void DesksController::UpdateAnimationForGesture(float scroll_delta_x) {
   DCHECK(is_enhanced_desk_animations_);
-  for (const auto& animation : animations_) {
-    if (animation->Update(scroll_delta_x))
-      return;
-  }
+  if (animation_)
+    animation_->Update(scroll_delta_x);
 }
 
 void DesksController::EndAnimationForGesture() {
   DCHECK(is_enhanced_desk_animations_);
-  for (const auto& animation : animations_) {
-    if (animation->End())
-      return;
-  }
+  if (animation_)
+    animation_->End();
 }
 
 bool DesksController::MoveWindowFromActiveDeskTo(
@@ -503,7 +493,8 @@ void DesksController::OnFirstSessionStarted() {
 }
 
 void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
-  base::EraseIf(animations_, base::MatchesUniquePtr(animation));
+  DCHECK_EQ(animation_.get(), animation);
+  animation_.reset();
 }
 
 bool DesksController::HasDesk(const Desk* desk) const {

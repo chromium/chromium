@@ -230,9 +230,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // mode as a result of desks modifications.
   bool are_desks_being_modified_ = false;
 
-  // List of on-going desks animations.
-  // TODO(sammiequon): Investigate if this needs to still be a list.
-  std::vector<std::unique_ptr<DeskAnimationBase>> animations_;
+  // Not null if there is an on-going desks animation.
+  std::unique_ptr<DeskAnimationBase> animation_;
 
   // A free list of desk container IDs to be used for newly-created desks. New
   // desks pops from this queue and removed desks's associated container IDs are
