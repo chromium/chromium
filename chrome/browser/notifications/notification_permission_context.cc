@@ -7,24 +7,19 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/rand_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/visibility_timer_tab_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/page_visibility_state.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -37,146 +32,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-namespace {
-
-// At most one of these is attached to each WebContents. It allows posting
-// delayed tasks whose timer only counts down whilst the WebContents is visible
-// (and whose timer is reset whenever the WebContents stops being visible).
-class VisibilityTimerTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<VisibilityTimerTabHelper> {
- public:
-  VisibilityTimerTabHelper(const VisibilityTimerTabHelper&) = delete;
-  VisibilityTimerTabHelper& operator=(const VisibilityTimerTabHelper&) = delete;
-  ~VisibilityTimerTabHelper() override {}
-
-  // Runs |task| after the WebContents has been visible for a consecutive
-  // duration of at least |visible_delay|.
-  void PostTaskAfterVisibleDelay(const base::Location& from_here,
-                                 base::OnceClosure task,
-                                 base::TimeDelta visible_delay,
-                                 const permissions::PermissionRequestID& id);
-
-  // Deletes any earlier task(s) that match |id|.
-  void CancelTask(const permissions::PermissionRequestID& id);
-
-  // WebContentsObserver:
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void WebContentsDestroyed() override;
-
- private:
-  friend class content::WebContentsUserData<VisibilityTimerTabHelper>;
-  explicit VisibilityTimerTabHelper(content::WebContents* contents);
-
-  void RunTask(base::OnceClosure task);
-
-  bool is_visible_;
-
-  struct Task {
-    Task(const permissions::PermissionRequestID& id,
-         std::unique_ptr<base::RetainingOneShotTimer> timer)
-        : id(id), timer(std::move(timer)) {}
-
-    // Move-only.
-    Task(Task&&) noexcept = default;
-    Task(const Task&) = delete;
-
-    Task& operator=(Task&& other) {
-      id = other.id;
-      timer = std::move(other.timer);
-      return *this;
-    }
-
-    permissions::PermissionRequestID id;
-    std::unique_ptr<base::RetainingOneShotTimer> timer;
-  };
-  base::circular_deque<Task> task_queue_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper)
-
-VisibilityTimerTabHelper::VisibilityTimerTabHelper(
-    content::WebContents* contents)
-    : content::WebContentsObserver(contents) {
-  if (!contents->GetMainFrame()) {
-    is_visible_ = false;
-  } else {
-    switch (contents->GetMainFrame()->GetVisibilityState()) {
-      case content::PageVisibilityState::kHidden:
-      case content::PageVisibilityState::kHiddenButPainting:
-        is_visible_ = false;
-        break;
-      case content::PageVisibilityState::kVisible:
-        is_visible_ = true;
-        break;
-    }
-  }
-}
-
-void VisibilityTimerTabHelper::PostTaskAfterVisibleDelay(
-    const base::Location& from_here,
-    base::OnceClosure task,
-    base::TimeDelta visible_delay,
-    const permissions::PermissionRequestID& id) {
-  if (web_contents()->IsBeingDestroyed())
-    return;
-
-  // Safe to use Unretained, as destroying |this| will destroy task_queue_,
-  // hence cancelling all timers.
-  // RetainingOneShotTimer is used which needs a RepeatingCallback, but we
-  // only have it run this callback a single time, and destroy it after.
-  auto timer = std::make_unique<base::RetainingOneShotTimer>(
-      from_here, visible_delay,
-      base::AdaptCallbackForRepeating(
-          base::BindOnce(&VisibilityTimerTabHelper::RunTask,
-                         base::Unretained(this), std::move(task))));
-  DCHECK(!timer->IsRunning());
-
-  task_queue_.emplace_back(id, std::move(timer));
-
-  if (is_visible_ && task_queue_.size() == 1)
-    task_queue_.front().timer->Reset();
-}
-
-void VisibilityTimerTabHelper::CancelTask(
-    const permissions::PermissionRequestID& id) {
-  bool deleting_front = task_queue_.front().id == id;
-
-  base::EraseIf(task_queue_, [id](const Task& task) { return task.id == id; });
-
-  if (!task_queue_.empty() && is_visible_ && deleting_front)
-    task_queue_.front().timer->Reset();
-}
-
-void VisibilityTimerTabHelper::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::VISIBLE) {
-    if (!is_visible_ && !task_queue_.empty())
-      task_queue_.front().timer->Reset();
-    is_visible_ = true;
-  } else {
-    if (is_visible_ && !task_queue_.empty())
-      task_queue_.front().timer->Stop();
-    is_visible_ = false;
-  }
-}
-
-void VisibilityTimerTabHelper::WebContentsDestroyed() {
-  task_queue_.clear();
-}
-
-void VisibilityTimerTabHelper::RunTask(base::OnceClosure task) {
-  DCHECK(is_visible_);
-  std::move(task).Run();
-  task_queue_.pop_front();
-  if (!task_queue_.empty())
-    task_queue_.front().timer->Reset();
-}
-
-}  // namespace
 
 // static
 void NotificationPermissionContext::UpdatePermission(
@@ -300,7 +155,7 @@ void NotificationPermissionContext::DecidePermission(
                            requesting_origin, embedding_origin,
                            std::move(callback), true /* persist */,
                            CONTENT_SETTING_BLOCK),
-            base::TimeDelta::FromSecondsD(delay_seconds), id);
+            base::TimeDelta::FromSecondsD(delay_seconds));
     return;
   }
 

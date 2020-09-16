@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_IDLE_IDLE_DETECTION_PERMISSION_CONTEXT_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_context_base.h"
 
 class IdleDetectionPermissionContext
@@ -21,6 +22,15 @@ class IdleDetectionPermissionContext
                         const GURL& requesting_frame,
                         bool allowed) override;
   bool IsRestrictedToSecureOrigins() const override;
+  void DecidePermission(
+      content::WebContents* web_contents,
+      const permissions::PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      bool user_gesture,
+      permissions::BrowserPermissionCallback callback) override;
+
+  base::WeakPtrFactory<IdleDetectionPermissionContext> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IdleDetectionPermissionContext);
 };

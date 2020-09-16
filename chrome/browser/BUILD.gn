@@ -1806,6 +1806,8 @@ static_library("browser") {
     "usb/web_usb_service_impl.h",
     "video_tutorials/video_tutorial_service_factory.cc",
     "video_tutorials/video_tutorial_service_factory.h",
+    "visibility_timer_tab_helper.cc",
+    "visibility_timer_tab_helper.h",
     "vr/ui_suppressed_element.h",
     "vr/vr_tab_helper.cc",
     "vr/vr_tab_helper.h",

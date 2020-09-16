@@ -79,8 +79,10 @@ void PermissionMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
 bool PermissionMenuModel::ShouldShowAllow(const GURL& url) {
   switch (permission_.type) {
-    // Notifications does not support CONTENT_SETTING_ALLOW in incognito.
+    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
+    // incognito.
     case ContentSettingsType::NOTIFICATIONS:
+    case ContentSettingsType::IDLE_DETECTION:
       return !permission_.is_incognito;
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
     case ContentSettingsType::MEDIASTREAM_MIC:
