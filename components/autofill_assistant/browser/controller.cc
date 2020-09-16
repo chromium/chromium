@@ -1949,6 +1949,7 @@ void Controller::WriteUserData(
   for (ControllerObserver& observer : observers_) {
     observer.OnUserDataChanged(user_data_.get(), field_change);
   }
+  UpdateCollectUserDataActions();
 }
 
 bool Controller::StateNeedsUI(AutofillAssistantState state) {

@@ -1883,6 +1883,53 @@ TEST_F(ControllerTest, UserDataFormCreditCard) {
               Eq(0));
 }
 
+TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
+  auto options = std::make_unique<MockCollectUserDataOptions>();
+  auto user_data = std::make_unique<UserData>();
+
+  options->request_payer_name = true;
+  options->request_payer_email = true;
+  options->request_payer_phone = true;
+  options->contact_details_name = "selected_profile";
+
+  testing::InSequence sequence;
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
+                                  Property(&UserAction::enabled, Eq(false)))))
+      .Times(1);
+  controller_->SetCollectUserDataOptions(options.get());
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
+                                  Property(&UserAction::enabled, Eq(true)))))
+      .Times(1);
+  autofill::AutofillProfile contact_profile;
+  contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
+                             base::UTF8ToUTF16("joedoe@example.com"));
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL,
+                             base::UTF8ToUTF16("Joe Doe"));
+  contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+                             base::UTF8ToUTF16("+1 23 456 789 01"));
+  controller_->SetContactInfo(
+      std::make_unique<autofill::AutofillProfile>(contact_profile));
+  EXPECT_THAT(controller_->GetUserData()
+                  ->selected_address("selected_profile")
+                  ->Compare(contact_profile),
+              Eq(0));
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(UnorderedElementsAre(
+                                  Property(&UserAction::enabled, Eq(false)))))
+      .Times(1);
+  // Can be called by a PDM update.
+  controller_->WriteUserData(base::BindOnce(
+      [](UserData* user_data, UserData::FieldChange* field_change) {
+        auto it = user_data->selected_addresses_.find("selected_profile");
+        if (it != user_data->selected_addresses_.end()) {
+          user_data->selected_addresses_.erase(it);
+          *field_change = UserData::FieldChange::CONTACT_PROFILE;
+        }
+      }));
+}
+
 TEST_F(ControllerTest, SetTermsAndConditions) {
   auto options = std::make_unique<MockCollectUserDataOptions>();
   auto user_data = std::make_unique<UserData>();
