@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -59,7 +59,7 @@ public class MenuButtonCoordinatorTest {
     ThemeColorProvider mThemeColorProvider;
 
     private UpdateMenuItemHelper.MenuUiState mMenuUiState;
-    private ObservableSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
+    private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private MenuButtonCoordinator mMenuButtonCoordinator;
 
     @Before
@@ -71,7 +71,7 @@ public class MenuButtonCoordinatorTest {
                 .when(mAppMenuCoordinator)
                 .getAppMenuPropertiesDelegate();
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
-        mAppMenuSupplier = new ObservableSupplierImpl<>();
+        mAppMenuSupplier = new OneshotSupplierImpl<>();
         mMenuUiState = new UpdateMenuItemHelper.MenuUiState();
         doReturn(mMenuUiState).when(mUpdateMenuItemHelper).getUiState();
         doReturn(mMenuButton)

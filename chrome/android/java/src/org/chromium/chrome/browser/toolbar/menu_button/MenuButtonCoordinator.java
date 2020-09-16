@@ -11,10 +11,10 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
@@ -38,8 +38,6 @@ public class MenuButtonCoordinator implements AppMenuObserver {
         void setFocus(boolean focus, int reason);
     }
 
-    private ObservableSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
-    private Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
     private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     private AppMenuButtonHelper mAppMenuButtonHelper;
     private ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
@@ -71,7 +69,7 @@ public class MenuButtonCoordinator implements AppMenuObserver {
      * @param themeColorProvider Provider of theme color changes.
      * @param menuButtonId Resource id that should be used to locate the underlying view.
      */
-    public MenuButtonCoordinator(ObservableSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
+    public MenuButtonCoordinator(OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             Activity activity, SetFocusFunction setUrlBarFocusFunction,
             Runnable requestRenderRunnable, boolean shouldShowAppUpdateBadge,
@@ -80,9 +78,7 @@ public class MenuButtonCoordinator implements AppMenuObserver {
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         mActivity = activity;
         mSetUrlBarFocusFunction = setUrlBarFocusFunction;
-        mAppMenuCoordinatorSupplier = appMenuCoordinatorSupplier;
-        mAppMenuCoordinatorSupplierObserver = this::onAppMenuInitialized;
-        appMenuCoordinatorSupplier.addObserver(mAppMenuCoordinatorSupplierObserver);
+        appMenuCoordinatorSupplier.onAvailable(this::onAppMenuInitialized);
         mRequestRenderRunnable = requestRenderRunnable;
         mShouldShowAppUpdateBadge = shouldShowAppUpdateBadge;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
@@ -304,12 +300,6 @@ public class MenuButtonCoordinator implements AppMenuObserver {
 
         mAppMenuButtonHelperSupplier.set(mAppMenuButtonHelper);
         mAppMenuPropertiesDelegate = appMenuCoordinator.getAppMenuPropertiesDelegate();
-
-        // TODO(pnoland, https://crbug.com/1084528): replace this with a one shot supplier so we can
-        // express that we don't handle the menu coordinator being set more than once.
-        mAppMenuCoordinatorSupplier.removeObserver(mAppMenuCoordinatorSupplierObserver);
-        mAppMenuCoordinatorSupplier = null;
-        mAppMenuCoordinatorSupplierObserver = null;
     }
 
     /**
