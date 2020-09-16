@@ -123,13 +123,6 @@ void SameThreadMediaSourceAttachment::Close(MediaSourceTracer* tracer) {
   GetMediaSource(tracer)->Close();
 }
 
-double SameThreadMediaSourceAttachment::duration(
-    MediaSourceTracer* tracer) const {
-  VerifyCalledWhileContextsAliveForDebugging();
-
-  return GetMediaSource(tracer)->duration();
-}
-
 WebTimeRanges SameThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* tracer) const {
   VerifyCalledWhileContextsAliveForDebugging();
@@ -142,13 +135,6 @@ WebTimeRanges SameThreadMediaSourceAttachment::SeekableInternal(
   VerifyCalledWhileContextsAliveForDebugging();
 
   return GetMediaSource(tracer)->SeekableInternal();
-}
-
-TimeRanges* SameThreadMediaSourceAttachment::Buffered(
-    MediaSourceTracer* tracer) const {
-  VerifyCalledWhileContextsAliveForDebugging();
-
-  return GetMediaSource(tracer)->Buffered();
 }
 
 void SameThreadMediaSourceAttachment::OnTrackChanged(MediaSourceTracer* tracer,

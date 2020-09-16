@@ -19,7 +19,6 @@ namespace blink {
 
 class HTMLMediaElement;
 class MediaSourceRegistry;
-class TimeRanges;
 class TrackBase;
 class WebMediaSource;
 
@@ -95,13 +94,12 @@ class CORE_EXPORT MediaSourceAttachment
       std::unique_ptr<WebMediaSource>) = 0;
 
   virtual void Close(MediaSourceTracer* tracer) = 0;
-  virtual double duration(MediaSourceTracer* tracer) const = 0;
 
   // 'Internal' in these methods doesn't mean private, it means that they are
   // internal to chromium and are not exposed to JavaScript.
   virtual WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const = 0;
   virtual WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const = 0;
-  virtual TimeRanges* Buffered(MediaSourceTracer* tracer) const = 0;
+
   virtual void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) = 0;
 
   // Provide state updates to the MediaSource that are necessary for its

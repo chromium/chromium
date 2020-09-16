@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_ATTACHMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_SAME_THREAD_MEDIA_SOURCE_ATTACHMENT_H_
 
+#include <memory>
+
+#include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 
@@ -32,10 +35,8 @@ class SameThreadMediaSourceAttachment final
       std::unique_ptr<WebMediaSource>) override;
 
   void Close(MediaSourceTracer* tracer) override;
-  double duration(MediaSourceTracer* tracer) const override;
   WebTimeRanges BufferedInternal(MediaSourceTracer* tracer) const override;
   WebTimeRanges SeekableInternal(MediaSourceTracer* tracer) const override;
-  TimeRanges* Buffered(MediaSourceTracer* tracer) const override;
   void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) override;
 
   void OnElementTimeUpdate(double time) final;
