@@ -23527,7 +23527,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceUnaffiliatedCrostiniAllowed': 'device_unaffiliated_crostini_allowed.device_unaffiliated_crostini_allowed',
     'PluginVmAllowed': 'plugin_vm_allowed.plugin_vm_allowed',
     'DeviceLoginScreenAutoSelectCertificateForUrls': 'device_login_screen_auto_select_certificate_for_urls.login_screen_auto_select_certificate_rules',
-    'DeviceWiFiFastTransitionEnabled': 'device_wifi_fast_transition_enabled.enabled',
     'DeviceTransferSAMLCookies': 'saml_settings.transfer_saml_cookies',
     'LoginVideoCaptureAllowedUrls': 'login_video_capture_allowed_urls.urls',
     'DeviceHostnameTemplate': 'network_hostname.device_hostname_template',
