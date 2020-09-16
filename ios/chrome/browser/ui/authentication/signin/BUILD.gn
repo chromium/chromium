@@ -50,6 +50,7 @@ source_set("signin_impl") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
     "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin",
     "//ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication",
     "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",

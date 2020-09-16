@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/upgrade_signin_logger.h"
@@ -118,6 +119,15 @@ using signin_metrics::PromoAction;
       initWithBaseViewController:viewController
                          browser:browser
                 retrievalTrigger:retrievalTrigger];
+}
+
++ (instancetype)
+    consistencyPromoSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                                    browser:(Browser*)browser {
+  return [[ConsistencyPromoSigninCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser];
 }
 
 - (void)dealloc {

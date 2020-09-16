@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("consistency_promo_signin") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "consistency_promo_signin_coordinator.h",
+    "consistency_promo_signin_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/authentication/signin:signin_protected",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/authentication/signin:signin_headers" ]
+}

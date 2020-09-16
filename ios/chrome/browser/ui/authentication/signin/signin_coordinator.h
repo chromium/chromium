@@ -112,6 +112,14 @@ enum class KeyRetrievalTriggerForUMA;
                                                           KeyRetrievalTriggerForUMA)
                                                          retrievalTrigger;
 
+// Returns a coordinator to display the account consistency promo with a list
+// of accounts available on the device for sign-in.
+// |viewController| presents the promo.
++ (instancetype)
+    consistencyPromoSigninCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                                    browser:(Browser*)browser;
+
 // Interrupts the sign-in flow.
 // |signinCompletion(SigninCoordinatorResultInterrupted, nil)| is guaranteed to
 // be called before |completion()|.
