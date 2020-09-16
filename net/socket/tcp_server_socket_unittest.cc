@@ -74,7 +74,7 @@ TEST_F(TCPServerSocketTest, Accept) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
@@ -111,7 +111,7 @@ TEST_F(TCPServerSocketTest, AcceptAsync) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 
@@ -137,7 +137,7 @@ TEST_F(TCPServerSocketTest, AcceptClientDisconnectAfterConnect) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 
@@ -167,12 +167,12 @@ TEST_F(TCPServerSocketTest, Accept2Connections) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback connect_callback2;
   TCPClientSocket connecting_socket2(local_address_list(), nullptr, nullptr,
-                                     NetLogSource());
+                                     nullptr, NetLogSource());
   int connect_result2 =
       connecting_socket2.Connect(connect_callback2.callback());
 
@@ -209,7 +209,7 @@ TEST_F(TCPServerSocketTest, AcceptIPv6) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
@@ -237,7 +237,7 @@ TEST_F(TCPServerSocketTest, AcceptIO) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;

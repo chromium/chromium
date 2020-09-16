@@ -108,7 +108,7 @@ class FakeSSLClientSocketTest : public testing::Test {
 
   std::unique_ptr<net::StreamSocket> MakeClientSocket() {
     return mock_client_socket_factory_.CreateTransportClientSocket(
-        net::AddressList(), NULL, NULL, net::NetLogSource());
+        net::AddressList(), nullptr, nullptr, nullptr, net::NetLogSource());
   }
 
   void SetData(const net::MockConnect& mock_connect,

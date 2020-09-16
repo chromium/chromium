@@ -241,6 +241,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
       const AddressList& addresses,
       std::unique_ptr<
           SocketPerformanceWatcher> /* socket_performance_watcher */,
+      NetworkQualityEstimator* /* network_quality_estimator */,
       NetLog* /* net_log */,
       const NetLogSource& /*source*/) override {
     allocation_count_++;
@@ -375,7 +376,7 @@ class TestConnectJob : public ConnectJob {
   int ConnectInternal() override {
     AddressList ignored;
     client_socket_factory_->CreateTransportClientSocket(
-        ignored, nullptr, nullptr, NetLogSource());
+        ignored, nullptr, nullptr, nullptr, NetLogSource());
     switch (job_type_) {
       case kMockJob:
         return DoConnect(true /* successful */, false /* sync */,

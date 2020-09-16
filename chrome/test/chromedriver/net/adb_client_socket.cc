@@ -505,8 +505,8 @@ void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
   net::AddressList address_list = net::AddressList::CopyWithPort(
       ip_list, port_);
 
-  socket_.reset(new net::TCPClientSocket(address_list, NULL, NULL,
-                                         net::NetLogSource()));
+  socket_.reset(new net::TCPClientSocket(address_list, nullptr, nullptr,
+                                         nullptr, net::NetLogSource()));
 
   net::CompletionRepeatingCallback copyable_callback =
       base::AdaptCallbackForRepeating(std::move(callback));

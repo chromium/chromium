@@ -256,8 +256,8 @@ class SocketTunnel {
   void OnResolved(net::AddressList resolved_addresses) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-    host_socket_.reset(new net::TCPClientSocket(resolved_addresses, nullptr,
-                                                nullptr, net::NetLogSource()));
+    host_socket_.reset(new net::TCPClientSocket(
+        resolved_addresses, nullptr, nullptr, nullptr, net::NetLogSource()));
     int result = host_socket_->Connect(
         base::BindOnce(&SocketTunnel::OnConnected, base::Unretained(this)));
     if (result != net::ERR_IO_PENDING)

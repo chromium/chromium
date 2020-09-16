@@ -505,6 +505,7 @@ class TestSocketFactory : public net::ClientSocketFactory {
   std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
       const net::AddressList&,
       std::unique_ptr<net::SocketPerformanceWatcher>,
+      net::NetworkQualityEstimator* network_quality_estimator,
       net::NetLog*,
       const net::NetLogSource&) override {
     providers_.push_back(std::make_unique<net::StaticSocketDataProvider>(

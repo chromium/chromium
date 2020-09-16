@@ -238,8 +238,12 @@ int WebSocketTransportConnectSubJob::DoTransportConnect() {
   // ConnectInterval.
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   AddressList one_address(CurrentAddress());
+  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+  NetworkQualityEstimator* network_quality_estimator = nullptr;
+
   transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
-      one_address, nullptr, net_log().net_log(), net_log().source());
+      one_address, nullptr, network_quality_estimator, net_log().net_log(),
+      net_log().source());
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.
   return transport_socket_->Connect(base::BindOnce(

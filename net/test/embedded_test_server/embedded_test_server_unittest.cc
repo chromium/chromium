@@ -299,7 +299,7 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerAccept) {
 
   std::unique_ptr<StreamSocket> socket =
       ClientSocketFactory::GetDefaultFactory()->CreateTransportClientSocket(
-          address_list, nullptr, &net_log, NetLogSource());
+          address_list, nullptr, nullptr, &net_log, NetLogSource());
   TestCompletionCallback callback;
   ASSERT_THAT(callback.GetResult(socket->Connect(callback.callback())), IsOk());
 

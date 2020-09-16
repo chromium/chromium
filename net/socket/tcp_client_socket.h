@@ -44,6 +44,7 @@ class IPEndPoint;
 class NetLog;
 struct NetLogSource;
 class SocketPerformanceWatcher;
+class NetworkQualityEstimator;
 
 // A client socket that uses TCP as the transport layer.
 class NET_EXPORT TCPClientSocket : public TransportClientSocket,
@@ -55,6 +56,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
       const net::NetLogSource& source);
 
@@ -67,7 +69,8 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   static std::unique_ptr<TCPClientSocket> CreateFromBoundSocket(
       std::unique_ptr<TCPSocket> bound_socket,
       const AddressList& addresses,
-      const IPEndPoint& bound_address);
+      const IPEndPoint& bound_address,
+      NetworkQualityEstimator* network_quality_estimator);
 
   ~TCPClientSocket() override;
 
@@ -135,7 +138,8 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   TCPClientSocket(std::unique_ptr<TCPSocket> socket,
                   const AddressList& addresses,
                   int current_address_index,
-                  std::unique_ptr<IPEndPoint> bind_address);
+                  std::unique_ptr<IPEndPoint> bind_address,
+                  NetworkQualityEstimator* network_quality_estimator);
 
   // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
   // set to true, ReadIfReady() will be used instead of Read().

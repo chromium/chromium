@@ -28,8 +28,9 @@ std::unique_ptr<net::StreamSocket> AudioSocketService::Connect(
     const std::string& endpoint,
     int port) {
   net::IPEndPoint ip_endpoint(net::IPAddress::IPv4Localhost(), port);
-  return std::make_unique<net::TCPClientSocket>(
-      net::AddressList(ip_endpoint), nullptr, nullptr, net::NetLogSource());
+  return std::make_unique<net::TCPClientSocket>(net::AddressList(ip_endpoint),
+                                                nullptr, nullptr, nullptr,
+                                                net::NetLogSource());
 }
 
 AudioSocketService::AudioSocketService(const std::string& endpoint,

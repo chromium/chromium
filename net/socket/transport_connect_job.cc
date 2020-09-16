@@ -323,8 +323,8 @@ int TransportConnectJob::DoTransportConnect() {
   }
   transport_socket_ = client_socket_factory()->CreateTransportClientSocket(
       request_->GetAddressResults().value(),
-      std::move(socket_performance_watcher), net_log().net_log(),
-      net_log().source());
+      std::move(socket_performance_watcher), network_quality_estimator(),
+      net_log().net_log(), net_log().source());
 
   // If the list contains IPv6 and IPv4 addresses, and the first address
   // is IPv6, the IPv4 addresses will be tried as fallback addresses, per
@@ -412,7 +412,7 @@ void TransportConnectJob::DoIPv6FallbackTransportConnect() {
   fallback_transport_socket_ =
       client_socket_factory()->CreateTransportClientSocket(
           *fallback_addresses_, std::move(socket_performance_watcher),
-          net_log().net_log(), net_log().source());
+          network_quality_estimator(), net_log().net_log(), net_log().source());
   fallback_connect_start_time_ = base::TimeTicks::Now();
   int rv = fallback_transport_socket_->Connect(base::BindOnce(
       &TransportConnectJob::DoIPv6FallbackTransportConnectComplete,

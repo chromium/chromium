@@ -155,6 +155,7 @@ class TestSocketFactory : public ClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList&,
       std::unique_ptr<SocketPerformanceWatcher>,
+      net::NetworkQualityEstimator*,
       NetLog*,
       const NetLogSource&) override {
     NOTIMPLEMENTED();

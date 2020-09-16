@@ -392,6 +392,7 @@ std::unique_ptr<TransportClientSocket>
 MockTransportClientSocketFactory::CreateTransportClientSocket(
     const AddressList& addresses,
     std::unique_ptr<SocketPerformanceWatcher> /* socket_performance_watcher */,
+    NetworkQualityEstimator* /* network_quality_estimator */,
     NetLog* /* net_log */,
     const NetLogSource& /* source */) {
   allocation_count_++;

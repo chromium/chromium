@@ -118,8 +118,8 @@ void TransportClientSocketTest::SetUp() {
 
   AddressList addr = AddressList::CreateFromIPAddress(
       IPAddress::IPv4Localhost(), listen_port_);
-  sock_ = socket_factory_->CreateTransportClientSocket(addr, nullptr, &net_log_,
-                                                       NetLogSource());
+  sock_ = socket_factory_->CreateTransportClientSocket(
+      addr, nullptr, nullptr, &net_log_, NetLogSource());
 }
 
 int TransportClientSocketTest::DrainClientSocket(

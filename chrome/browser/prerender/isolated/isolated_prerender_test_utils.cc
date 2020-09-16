@@ -112,7 +112,7 @@ bool TestProxyTunnelConnection::ConnectToPeerOnLocalhost(int port) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_socket_ = std::make_unique<net::TCPClientSocket>(
       net::AddressList(net::IPEndPoint(net::IPAddress::IPv4Localhost(), port)),
-      nullptr, nullptr, net::NetLogSource());
+      nullptr, nullptr, nullptr, net::NetLogSource());
 
   int result = client_socket_->Connect(base::BindOnce(
       &TestProxyTunnelConnection::HandleConnectResult, base::Unretained(this)));

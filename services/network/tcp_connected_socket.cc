@@ -113,10 +113,13 @@ void TCPConnectedSocket::Connect(
   DCHECK(!socket_);
   DCHECK(callback);
 
+  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+  net::NetworkQualityEstimator* network_quality_estimator = nullptr;
+
   std::unique_ptr<net::TransportClientSocket> socket =
       client_socket_factory_->CreateTransportClientSocket(
-          remote_addr_list, nullptr /*socket_performance_watcher*/, net_log_,
-          net::NetLogSource());
+          remote_addr_list, nullptr /*socket_performance_watcher*/,
+          network_quality_estimator, net_log_, net::NetLogSource());
 
   if (local_addr) {
     int result = socket->Bind(local_addr.value());

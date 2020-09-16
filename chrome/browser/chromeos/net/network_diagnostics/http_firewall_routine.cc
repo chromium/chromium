@@ -283,8 +283,12 @@ void HttpFirewallRoutine::AttemptSocketConnections() {
     resolved_address =
         net::AddressList::CopyWithPort(resolved_address, kHttpPort);
 
+    // TODO(crbug.com/1123197): Pass non-null NetworkQualityEstimator.
+    net::NetworkQualityEstimator* network_quality_estimator = nullptr;
+
     sockets_.emplace_back(client_socket_factory_->CreateTransportClientSocket(
-        resolved_address, nullptr, net_log_.net_log(), net_log_.source()));
+        resolved_address, nullptr, network_quality_estimator,
+        net_log_.net_log(), net_log_.source()));
   }
 
   // Connect the sockets.

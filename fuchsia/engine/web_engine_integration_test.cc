@@ -437,7 +437,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
     net::TCPClientSocket connecting_socket(
         net::AddressList(net::IPEndPoint(net::IPAddress::IPv4Localhost(),
                                          remote_debugging_port)),
-        nullptr, nullptr, net::NetLogSource());
+        nullptr, nullptr, nullptr, net::NetLogSource());
     int connect_result = connecting_socket.Connect(connect_callback.callback());
     connect_result = connect_callback.GetResult(connect_result);
 

@@ -144,6 +144,7 @@ class FakeClientSocketFactory : public net::ClientSocketFactory {
   std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
       const net::AddressList& addresses,
       std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher,
+      net::NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
       const net::NetLogSource& source) override {
     net::SocketDataProvider* socket_data_provider =

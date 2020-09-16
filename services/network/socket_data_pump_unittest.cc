@@ -91,7 +91,8 @@ class SocketDataPumpTest : public testing::Test,
     send_handle_ = std::move(send_pipe.producer_handle);
     socket_ = mock_client_socket_factory_.CreateTransportClientSocket(
         net::AddressList(), nullptr /*socket_performance_watcher*/,
-        nullptr /*netlog*/, net::NetLogSource());
+        nullptr /*network_quality_estimator*/, nullptr /*netlog*/,
+        net::NetLogSource());
     net::TestCompletionCallback callback;
     int result = socket_->Connect(callback.callback());
     if (result == net::ERR_IO_PENDING)

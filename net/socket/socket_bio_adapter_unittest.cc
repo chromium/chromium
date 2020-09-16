@@ -50,7 +50,7 @@ class SocketBIOAdapterTest : public testing::TestWithParam<ReadIfReadySupport>,
     data->set_connect_data(MockConnect(SYNCHRONOUS, OK));
     factory_.AddSocketDataProvider(data);
     std::unique_ptr<StreamSocket> socket = factory_.CreateTransportClientSocket(
-        AddressList(), nullptr, nullptr, NetLogSource());
+        AddressList(), nullptr, nullptr, nullptr, NetLogSource());
     CHECK_EQ(OK, socket->Connect(CompletionOnceCallback()));
     return socket;
   }

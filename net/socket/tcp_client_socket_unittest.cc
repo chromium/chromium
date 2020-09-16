@@ -93,7 +93,7 @@ class TCPClientSocketTest : public testing::Test {
     ASSERT_THAT(server_socket->GetLocalAddress(&server_address), IsOk());
 
     *client_socket = std::make_unique<TCPClientSocket>(
-        AddressList(server_address), nullptr, nullptr, NetLogSource());
+        AddressList(server_address), nullptr, nullptr, nullptr, NetLogSource());
 
     EXPECT_THAT((*client_socket)->Bind(IPEndPoint(local_address, 0)), IsOk());
 
@@ -135,7 +135,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToLoopback) {
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
 
-  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr,
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
                          NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
@@ -167,7 +167,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToLoopback) {
 TEST_F(TCPClientSocketTest, BindLoopbackToExternal) {
   IPAddress external_ip(72, 14, 213, 105);
   TCPClientSocket socket(AddressList::CreateFromIPAddress(external_ip, 80),
-                         nullptr, nullptr, NetLogSource());
+                         nullptr, nullptr, nullptr, NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());
 
@@ -193,7 +193,7 @@ TEST_F(TCPClientSocketTest, BindLoopbackToIPv6) {
 
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
-  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr,
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
                          NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());
@@ -211,7 +211,7 @@ TEST_F(TCPClientSocketTest, WasEverUsed) {
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
 
-  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr,
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
                          NetLogSource());
 
   EXPECT_FALSE(socket.WasEverUsed());
@@ -291,7 +291,7 @@ TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
 
   TCPClientSocket socket(
       AddressList::CreateFromIPAddressList(ip_list, "example.com"),
-      std::move(watcher), nullptr, NetLogSource());
+      std::move(watcher), nullptr, nullptr, NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(IPAddress::IPv4Localhost(), 0)), IsOk());
 
@@ -319,7 +319,7 @@ TEST_F(TCPClientSocketTest, Tag) {
 
   AddressList addr_list;
   ASSERT_TRUE(test_server.GetAddressList(&addr_list));
-  TCPClientSocket s(addr_list, NULL, NULL, NetLogSource());
+  TCPClientSocket s(addr_list, nullptr, nullptr, nullptr, NetLogSource());
 
   // Verify TCP connect packets are tagged and counted properly.
   int32_t tag_val1 = 0x12345678;
@@ -376,7 +376,7 @@ TEST_F(TCPClientSocketTest, TagAfterConnect) {
 
   AddressList addr_list;
   ASSERT_TRUE(test_server.GetAddressList(&addr_list));
-  TCPClientSocket s(addr_list, NULL, NULL, NetLogSource());
+  TCPClientSocket s(addr_list, nullptr, nullptr, nullptr, NetLogSource());
 
   // Connect socket.
   TestCompletionCallback connect_callback;
@@ -430,7 +430,7 @@ TEST_F(TCPClientSocketTest, SuspendBeforeConnect) {
   IPEndPoint server_address;
   ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
 
-  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr,
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
                          NetLogSource());
 
   EXPECT_THAT(socket.Bind(IPEndPoint(lo_address, 0)), IsOk());
@@ -471,6 +471,7 @@ class NeverConnectingTCPClientSocket : public TCPClientSocket {
       const net::NetLogSource& source)
       : TCPClientSocket(addresses,
                         std::move(socket_performance_watcher),
+                        nullptr,
                         net_log,
                         source) {}
 

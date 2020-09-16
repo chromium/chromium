@@ -689,6 +689,7 @@ class MockClientSocketFactory : public ClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
       const NetLogSource& source) override;
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(
@@ -1403,6 +1404,7 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
       const NetLogSource& source) override;
 

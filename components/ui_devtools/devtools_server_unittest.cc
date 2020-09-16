@@ -50,7 +50,7 @@ TEST(UIDevToolsServerTest, MAYBE_ConnectionToViewsServer) {
   net::AddressList addr(
       net::IPEndPoint(net::IPAddress(127, 0, 0, 1), fake_port));
   auto client_socket = std::make_unique<net::TCPClientSocket>(
-      addr, nullptr, nullptr, net::NetLogSource());
+      addr, nullptr, nullptr, nullptr, net::NetLogSource());
   net::TestCompletionCallback callback;
   int connect_result =
       callback.GetResult(client_socket->Connect(callback.callback()));

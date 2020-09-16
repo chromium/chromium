@@ -68,8 +68,12 @@ std::unique_ptr<StreamSocket> DnsSocketAllocator::CreateTcpSocket(
     const NetLogSource& source) {
   DCHECK_LT(server_index, nameservers_.size());
 
+  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+  NetworkQualityEstimator* network_quality_estimator = nullptr;
+
   return socket_factory_->CreateTransportClientSocket(
-      AddressList(nameservers_[server_index]), nullptr, net_log_, source);
+      AddressList(nameservers_[server_index]), nullptr,
+      network_quality_estimator, net_log_, source);
 }
 
 }  // namespace net

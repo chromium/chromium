@@ -37,10 +37,12 @@ class DefaultClientSocketFactory : public ClientSocketFactory {
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetworkQualityEstimator* network_quality_estimator,
       NetLog* net_log,
       const NetLogSource& source) override {
     return std::make_unique<TCPClientSocket>(
-        addresses, std::move(socket_performance_watcher), net_log, source);
+        addresses, std::move(socket_performance_watcher),
+        network_quality_estimator, net_log, source);
   }
 
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(

@@ -153,7 +153,8 @@ bool StreamPacketSocket::InitClientTcp(
   }
 
   auto socket = std::make_unique<net::TCPClientSocket>(
-      net::AddressList(remote_endpoint), nullptr, nullptr, net::NetLogSource());
+      net::AddressList(remote_endpoint), nullptr, nullptr, nullptr,
+      net::NetLogSource());
 
   int result = socket->Bind(local_endpoint);
   if (result != net::OK) {

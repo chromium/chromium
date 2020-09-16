@@ -64,7 +64,8 @@ class TestHttpClient {
   int ConnectAndWait(const IPEndPoint& address) {
     AddressList addresses(address);
     NetLogSource source;
-    socket_.reset(new TCPClientSocket(addresses, nullptr, nullptr, source));
+    socket_.reset(
+        new TCPClientSocket(addresses, nullptr, nullptr, nullptr, source));
 
     TestCompletionCallback callback;
     int rv = socket_->Connect(callback.callback());

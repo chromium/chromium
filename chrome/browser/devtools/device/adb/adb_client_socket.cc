@@ -189,8 +189,8 @@ void AdbClientSocket::Connect(net::CompletionOnceCallback callback) {
 
   net::AddressList address_list =
       net::AddressList::CreateFromIPAddress(ip_address, port_);
-  socket_.reset(
-      new net::TCPClientSocket(address_list, NULL, NULL, net::NetLogSource()));
+  socket_.reset(new net::TCPClientSocket(address_list, nullptr, nullptr,
+                                         nullptr, net::NetLogSource()));
   connect_callback_ = std::move(callback);
   int result = socket_->Connect(base::BindOnce(
       &AdbClientSocket::RunConnectCallback, base::Unretained(this)));

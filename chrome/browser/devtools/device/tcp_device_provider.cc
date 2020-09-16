@@ -79,8 +79,9 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
       delete this;
       return;
     }
-    std::unique_ptr<net::StreamSocket> socket(new net::TCPClientSocket(
-        resolved_addresses.value(), nullptr, nullptr, net::NetLogSource()));
+    std::unique_ptr<net::StreamSocket> socket(
+        new net::TCPClientSocket(resolved_addresses.value(), nullptr, nullptr,
+                                 nullptr, net::NetLogSource()));
     net::StreamSocket* socket_ptr = socket.get();
     net::CompletionRepeatingCallback on_connect =
         base::AdaptCallbackForRepeating(

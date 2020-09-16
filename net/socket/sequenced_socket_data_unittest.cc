@@ -250,7 +250,8 @@ void SequencedSocketDataTest::Initialize(base::span<const MockRead> reads,
   socket_factory_.AddSocketDataProvider(data_.get());
   sock_ = socket_factory_.CreateTransportClientSocket(
       AddressList(IPEndPoint(IPAddress::IPv4Localhost(), 443)),
-      nullptr /* socket_performance_watcher */, nullptr /* net_log */,
+      nullptr /* socket_performance_watcher */,
+      nullptr /* network_quality_estimator */, nullptr /* net_log */,
       NetLogSource());
   TestCompletionCallback callback;
   EXPECT_EQ(OK, sock_->Connect(callback.callback()));

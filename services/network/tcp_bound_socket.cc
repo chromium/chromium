@@ -123,7 +123,7 @@ void TCPBoundSocket::Connect(
       nullptr /* client_socket_factory */, traffic_annotation_);
   connecting_socket_->ConnectWithSocket(
       net::TCPClientSocket::CreateFromBoundSocket(
-          std::move(socket_), remote_addr_list, bind_address_),
+          std::move(socket_), remote_addr_list, bind_address_, nullptr),
       std::move(tcp_connected_socket_options),
       base::BindOnce(&TCPBoundSocket::OnConnectComplete,
                      base::Unretained(this)));

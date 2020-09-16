@@ -30,6 +30,7 @@ class NetLogWithSource;
 TCPClientSocket::TCPClientSocket(
     const AddressList& addresses,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetworkQualityEstimator* network_quality_estimator,
     net::NetLog* net_log,
     const net::NetLogSource& source)
     : TCPClientSocket(
@@ -38,14 +39,18 @@ TCPClientSocket::TCPClientSocket(
                                       source),
           addresses,
           -1 /* current_address_index */,
-          nullptr /* bind_address */) {}
+          nullptr /* bind_address */,
+          network_quality_estimator) {}
 
 TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                                  const IPEndPoint& peer_address)
     : TCPClientSocket(std::move(connected_socket),
                       AddressList(peer_address),
                       0 /* current_address_index */,
-                      nullptr /* bind_address */) {}
+                      nullptr /* bind_address */,
+                      // TODO(https://crbug.com/1123197: Pass non-null
+                      // NetworkQualityEstimator
+                      nullptr /* network_quality_estimator */) {}
 
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();
@@ -57,10 +62,11 @@ TCPClientSocket::~TCPClientSocket() {
 std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
     std::unique_ptr<TCPSocket> bound_socket,
     const AddressList& addresses,
-    const IPEndPoint& bound_address) {
+    const IPEndPoint& bound_address,
+    NetworkQualityEstimator* network_quality_estimator) {
   return base::WrapUnique(new TCPClientSocket(
       std::move(bound_socket), addresses, -1 /* current_address_index */,
-      std::make_unique<IPEndPoint>(bound_address)));
+      std::make_unique<IPEndPoint>(bound_address), network_quality_estimator));
 }
 
 int TCPClientSocket::Bind(const IPEndPoint& address) {
@@ -131,10 +137,12 @@ int TCPClientSocket::Connect(CompletionOnceCallback callback) {
   return rv;
 }
 
-TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> socket,
-                                 const AddressList& addresses,
-                                 int current_address_index,
-                                 std::unique_ptr<IPEndPoint> bind_address)
+TCPClientSocket::TCPClientSocket(
+    std::unique_ptr<TCPSocket> socket,
+    const AddressList& addresses,
+    int current_address_index,
+    std::unique_ptr<IPEndPoint> bind_address,
+    NetworkQualityEstimator* network_quality_estimator)
     : socket_(std::move(socket)),
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
