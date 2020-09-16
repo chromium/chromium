@@ -109,4 +109,30 @@ TEST_F(ForceLegacyLayoutTest, ForceLegacyBfcRecalcAncestorStyle) {
   EXPECT_EQ(UsesNGLayout(*child), EditingNGEnabled());
 }
 
+TEST_F(ForceLegacyLayoutTest, ForceLegacyMulticolSlot) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="host">
+      <p id="slotted"></p>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <style>
+      slot { columns: 2; display: block }
+    </style>
+    <slot></slot>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(UsesNGLayout(*GetDocument().getElementById("slotted")));
+}
+
 }  // namespace blink
