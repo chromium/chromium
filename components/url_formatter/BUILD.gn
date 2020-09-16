@@ -6,6 +6,12 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 static_library("skeleton_generator") {
   sources = [
     "spoof_checks/skeleton_generator.cc",
@@ -27,7 +33,6 @@ static_library("url_formatter") {
     "url_fixer.h",
     "url_formatter.cc",
     "url_formatter.h",
-    "url_formatter_android.cc",
   ]
 
   configs += [
@@ -54,6 +59,7 @@ static_library("url_formatter") {
   public_deps = [ "//third_party/icu" ]
 
   if (is_android) {
+    sources += [ "url_formatter_android.cc" ]
     deps += [
       "android:jni_headers",
       "//url:gurl_android",
