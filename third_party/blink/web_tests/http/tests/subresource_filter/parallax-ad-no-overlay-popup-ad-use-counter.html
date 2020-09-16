@@ -40,6 +40,7 @@ p {
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -52,53 +53,43 @@ p {
 
 <script>
 if (window.testRunner) {
-  // Inject a subresource filter to mark 'overlay-interstitial-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["overlay-interstitial-ad-testharness.js"], false /* block_subresources */);
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-promise_test(() => {
-  return new Promise((resolve, reject) => {
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/overlay-interstitial-ad-testharness.js";
-    ad_script.onload = async() => {
-      // After 1500ms, force a layout update so that the interstitial detector
-      // is aware of the first meaningful paint, and future overlay candidates
-      // will be considered for pop-ups rather than for prestitials.
-      await timeout(1500);
-      await forceLayoutUpdate();
+async_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
 
-      // Create the parallax-ad, which is below the "content" div and above the
-      // "empty" div.
-      appendAdFrameTo(document.body);
+  // Create the parallax-ad, which is below the "content" div and above the
+  // "empty" div.
+  appendAdFrameTo(document.body);
 
-      // Scroll down to the position where the parallax-ad is no longer covered
-      // by "content1" and becomes visible.
-      window.scrollTo(0, document.documentElement.clientHeight);
+  // Scroll down to the position where the parallax-ad is no longer covered
+  // by "content1" and becomes visible.
+  window.scrollTo(0, document.documentElement.clientHeight);
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay ad candidate.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate.
+  await forceLayoutUpdate();
 
-      // Scroll further down to the position where the parallax-ad is covered by
-      // "content2" and becomes invisible again.
-      window.scrollTo(0, document.documentElement.clientHeight * 2);
+  // Scroll further down to the position where the parallax-ad is covered by
+  // "content2" and becomes invisible again.
+  window.scrollTo(0, document.documentElement.clientHeight * 2);
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay ad candidate's dismissal.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
 
-      // Expect no kOverlayPopupAd UseCounter as the scroll offset has changed
-      // since the candidate's appearance.
-      if (internals.isUseCounted(document, kOverlayPopupAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // Expect no kOverlayPopupAd UseCounter as the scroll offset has changed
+  // since the candidate's appearance.
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
   });
+
+  t.done();
 }, "Test parallax-ad while scrolling over the page. In this case, we expect no use counter for kOverlayPopupAd.");
 
 </script>

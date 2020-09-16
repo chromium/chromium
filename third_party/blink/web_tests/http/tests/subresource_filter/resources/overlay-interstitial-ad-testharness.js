@@ -15,5 +15,6 @@ function forceLayoutUpdate() {
 function appendAdFrameTo(parent)  {
   let ad_frame = document.createElement('iframe');
   parent.appendChild(ad_frame);
+  internals.setIsAdSubframe(ad_frame);
   return ad_frame;
 }

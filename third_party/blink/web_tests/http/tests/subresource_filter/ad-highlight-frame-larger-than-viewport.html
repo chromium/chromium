@@ -7,35 +7,27 @@ body {
     margin: 0;
 }
 </style>
+<script src="resources/ad-iframe-writer.js"></script>
 </head>
 <body>
 <script type="text/javascript">
 if (window.testRunner) {
-  // Inject a subresource filter to mark 'ad-iframe-writer.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["ad-iframe-writer.js"], false /* block_subresources */);
   testRunner.setHighlightAds();
 }
 
-// Script must be loaded after disallowed paths are set to be marked as an ad.
-let ad_script = document.createElement("script");
-ad_script.async = false;
-ad_script.src = "resources/ad-iframe-writer.js";
-ad_script.onload = function () {
-  ad_frame = createAdFrame();
-  ad_frame.style.borderWidth = 0;
-  ad_frame.width = 100;
-  ad_frame.height = 1000;
-  // Scroll down to verify that the overlay is drawn correctly for the portion of the
-  // frame that is larger than the viewport.
-  window.scrollTo(0, 400);
-  // Finish the test once the ad frame is loaded.
-  ad_frame.onload = function () {
-    if (window.testRunner)
-      testRunner.notifyDone();
-  }
-  ad_frame.src = "about:blank";
-};
-document.body.appendChild(ad_script);
+ad_frame = createAdFrame();
+ad_frame.style.borderWidth = 0;
+ad_frame.width = 100;
+ad_frame.height = 1000;
+// Scroll down to verify that the overlay is drawn correctly for the portion of the
+// frame that is larger than the viewport.
+window.scrollTo(0, 400);
+// Finish the test once the ad frame is loaded.
+ad_frame.onload = function () {
+  if (window.testRunner)
+    testRunner.notifyDone();
+}
+ad_frame.src = "about:blank";
 
 if (window.testRunner)
   testRunner.waitUntilDone();

@@ -27,6 +27,7 @@ div.bottom {
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -41,47 +42,37 @@ div.bottom {
 
 <script>
 if (window.testRunner) {
-  // Inject a subresource filter to mark 'overlay-interstitial-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["overlay-interstitial-ad-testharness.js"], false /* block_subresources */);
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-promise_test(() => {
-  return new Promise((resolve, reject) => {
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/overlay-interstitial-ad-testharness.js";
-    ad_script.onload = async() => {
-      // After 1500ms, force a layout update so that the interstitial detector
-      // is aware of the first meaningful paint, and future overlay candidates
-      // will be considered for pop-ups rather than for prestitials.
-      await timeout(1500);
-      await forceLayoutUpdate();
+async_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
 
-      // Create the overlay pop-up ad.
-      appendAdFrameTo(document.getElementsByTagName('div')[0]);
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay candidate.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate.
+  await forceLayoutUpdate();
 
-      // Hide the pop-up.
-      document.getElementsByTagName('iframe')[0].style.display = 'none';
+  // Hide the pop-up.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay candidate's dismissal.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate's dismissal.
+  await forceLayoutUpdate();
 
-      // Expect that the use counter kOverlayPopupAd is not recorded, as the
-      // ad size is too small relative to the viewport size.
-      if (internals.isUseCounted(document, kOverlayPopupAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // Expect that the use counter kOverlayPopupAd is not recorded, as the
+  // ad size is too small relative to the viewport size.
+  t.step(function() {
+    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
   });
+
+  t.done();
 }, "Test overlay-popup-ad when the frame itself has a fixed position and the size is less than 10% of the viewport size. In this case, we expect no use counter for kOverlayPopupAd.");
 
 </script>

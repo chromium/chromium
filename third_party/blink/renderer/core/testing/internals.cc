@@ -3526,4 +3526,19 @@ void Internals::generateTestReport(const String& message) {
   ReportingContext::From(document_->domWindow())->QueueReport(report);
 }
 
+void Internals::setIsAdSubframe(HTMLIFrameElement* iframe,
+                                ExceptionState& exception_state) {
+  if (!iframe->ContentFrame() || !iframe->ContentFrame()->IsLocalFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Frame cannot be accessed.");
+    return;
+  }
+  LocalFrame* parent_frame = iframe->GetDocument().GetFrame();
+  LocalFrame* child_frame = To<LocalFrame>(iframe->ContentFrame());
+  bool parent_is_ad = parent_frame && parent_frame->IsAdSubframe();
+  child_frame->SetIsAdSubframe(parent_is_ad
+                                   ? blink::mojom::AdFrameType::kChildAd
+                                   : blink::mojom::AdFrameType::kRootAd);
+}
+
 }  // namespace blink

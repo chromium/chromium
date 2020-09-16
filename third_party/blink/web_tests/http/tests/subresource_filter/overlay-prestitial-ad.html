@@ -16,6 +16,7 @@ p {
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -24,46 +25,36 @@ p {
 
 <script>
 if (window.testRunner) {
-  // Inject a subresource filter to mark 'overlay-interstitial-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["overlay-interstitial-ad-testharness.js"], false /* block_subresources */);
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-promise_test(() => {
-  return new Promise((resolve, reject) => {
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/overlay-interstitial-ad-testharness.js";
-    ad_script.onload = async() => {
-      // Create the overlay pop-up ad.
-      let ad_frame = appendAdFrameTo(document.body);
+async_test(async function(t) {
+  // Create the overlay pop-up ad.
+  let ad_frame = appendAdFrameTo(document.body);
 
-      // After 1500ms, force a layout update so that the interstitial detector
-      // is aware of the first meaningful paint and the prestitial.
-      await timeout(1500);
-      await forceLayoutUpdate();
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint and the prestitial.
+  await timeout(1500);
+  await forceLayoutUpdate();
 
-      // Ensure the detection is triggered at least once after the first
-      // meaningful paint is seen.
-      await forceLayoutUpdate();
+  // Ensure the detection is triggered at least once after the first
+  // meaningful paint is seen.
+  await forceLayoutUpdate();
 
-      // Hide the pop-up.
-      document.getElementsByTagName('iframe')[0].style.display = 'none';
+  // Hide the pop-up.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay ad candidate's dismissal.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay ad candidate's dismissal.
+  await forceLayoutUpdate();
 
-      // Expect no kOverlayPopupAd UseCounter as the candidate is considered to
-      // be 'prestitial' instead of 'pop-up'.
-      if (internals.isUseCounted(document, kOverlayPopupAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // Expect no kOverlayPopupAd UseCounter as the candidate is considered to
+  // be 'prestitial' instead of 'pop-up'.
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kOverlayPopupAd));
   });
+
+  t.done();
 }, "Test overlay-prestitial-ad when the frame itself has a fixed position. In this case we expect no use counter for kOverlayPopupAd.");
 
 </script>

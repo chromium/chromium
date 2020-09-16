@@ -450,4 +450,6 @@
 
     // Request generation of a Reporting report.
     void generateTestReport(DOMString message);
+
+    [RaisesException] void setIsAdSubframe(HTMLIFrameElement iframe);
 };

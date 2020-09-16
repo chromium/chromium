@@ -611,6 +611,9 @@ class Internals final : public ScriptWrappable {
 
   void generateTestReport(const String& message);
 
+  void setIsAdSubframe(HTMLIFrameElement* iframe,
+                       ExceptionState& exception_state);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;

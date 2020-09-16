@@ -4,24 +4,21 @@
   await dp.Page.enable();
   session.evaluate(`
     if (window.testRunner) {
-      // Inject a subresource filter to mark 'ad-iframe-writer.js' as a would be disallowed resource.
-      testRunner.setDisallowedSubresourcePathSuffixes(["ad-iframe-writer.js"], false /* block_subresources */);
       testRunner.setHighlightAds();
     }
 
-    // Script must be loaded after disallowed paths are set to be marked as an ad.
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "../resources/ad-iframe-writer.js";
-    ad_script.onload = function () {
-      ad_frame = createAdFrame();
-      ad_frame.width = 100;
-      ad_frame.height = 200;
-    };
-    document.body.appendChild(ad_script);
+    let ad_frame = document.createElement('iframe');
+    document.body.appendChild(ad_frame);
+    internals.setIsAdSubframe(ad_frame);
+    ad_frame.width = 100;
+    ad_frame.height = 200;
+    ad_frame.src = "about:blank";
   `);
+
+  // The first navigation will occur before the frame is set as an ad subframe.
+  // So, we wait for the second navigation before logging the adFrameType.
+  await dp.Page.onceFrameNavigated();
   const { params } = await dp.Page.onceFrameNavigated();
   testRunner.log({ adFrameType: params.frame.adFrameType });
-
   testRunner.completeTest();
 })

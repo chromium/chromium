@@ -40,6 +40,7 @@ p {
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/large-sticky-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 
@@ -51,50 +52,37 @@ p {
 <div class="content2">some content</div>
 
 <script>
-if (window.testRunner) {
-  // Inject a subresource filter to mark 'overlay-interstitial-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["large-sticky-ad-testharness.js"], false /* block_subresources */);
-}
+async_test(async function(t) {
+  // Create the large-sticky-ad.
+  appendAdFrameTo(document.body);
 
-promise_test(() => {
-  return new Promise((resolve, reject) => {
+  // Scroll down to the position where the parallax-ad is no longer
+  // covered by "content1" and becomes visible.
+  window.scrollTo(0, window.innerHeight);
 
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/large-sticky-ad-testharness.js";
-    ad_script.onload = async() => {
-      // Create the large-sticky-ad.
-      appendAdFrameTo(document.body);
-
-      // Scroll down to the position where the parallax-ad is no longer
-      // covered by "content1" and becomes visible.
-      window.scrollTo(0, window.innerHeight);
-
-      // After 1500ms, force a layout update so that the large-sticky-ad
-      // detector is aware of the candidate.
-      await timeout(1500);
-      await forceLayoutUpdate();
-      if (internals.isUseCounted(document, kLargeStickyAd)) {
-        reject();
-      }
-
-      // Scroll further down to the position where the parallax-ad is covered by
-      // "content2" and becomes invisible again.
-      window.scrollTo(0, window.innerHeight * 2);
-
-      // After 1500ms, force a layout update so that the large-sticky-ad
-      // detector is aware of the dismissal of the candidate. We expect no use
-      // counter for kLargeStickyAd.
-      await timeout(1500);
-      await forceLayoutUpdate();
-      if (internals.isUseCounted(document, kLargeStickyAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // After 1500ms, force a layout update so that the large-sticky-ad
+  // detector is aware of the candidate.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kLargeStickyAd));
   });
+
+  // Scroll further down to the position where the parallax-ad is covered by
+  // "content2" and becomes invisible again.
+  window.scrollTo(0, window.innerHeight * 2);
+
+  // After 1500ms, force a layout update so that the large-sticky-ad
+  // detector is aware of the dismissal of the candidate. We expect no use
+  // counter for kLargeStickyAd.
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kLargeStickyAd));
+  });
+
+  t.done();
 }, "Test parallax-ad while scrolling over the page. In this case, we expect no use counter for kLargeStickyAd.");
 
 </script>

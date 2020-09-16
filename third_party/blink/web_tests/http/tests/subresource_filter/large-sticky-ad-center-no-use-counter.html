@@ -23,6 +23,7 @@ p {
 </style>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/large-sticky-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0">
 <!-- To trigger the first contentful paint at the very start -->
@@ -30,45 +31,30 @@ p {
 <!-- To be positioned further down in the main page to make the page scrollable -->
 <div class="bottom"></div>
 <script>
+async_test(async function(t) {
+  // Create the large-sticky-ad.
+  appendAdFrameTo(document.body);
 
-if (window.testRunner) {
-  // Inject a subresource filter to mark 'large-sticky-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["large-sticky-ad-testharness.js"], false /* block_subresources */);
-}
-
-promise_test(() => {
-  return new Promise((resolve, reject) => {
-
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/large-sticky-ad-testharness.js";
-    ad_script.onload = async() => {
-      // Create the large-sticky-ad.
-      appendAdFrameTo(document.body);
-
-      // After 1500ms, force a layout update.
-      await timeout(1500);
-      await forceLayoutUpdate();
-      if (internals.isUseCounted(document, kLargeStickyAd)) {
-        reject();
-      }
-
-      // Scroll down to 5000px.
-      window.scrollTo(0, 5000);
-
-      // After 1500ms, force a layout update. At this point the scrolling
-      // position has changed by a distance greater than the candidate's height.
-      // We expect no kLargeStickyAd use counter.
-      await timeout(1500);
-      await forceLayoutUpdate();
-      if (internals.isUseCounted(document, kLargeStickyAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // After 1500ms, force a layout update.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kLargeStickyAd));
   });
+
+  // Scroll down to 5000px.
+  window.scrollTo(0, 5000);
+
+  // After 1500ms, force a layout update. At this point the scrolling
+  // position has changed by a distance greater than the candidate's height.
+  // We expect no kLargeStickyAd use counter.
+  await timeout(1500);
+  await forceLayoutUpdate();
+  t.step(function () {
+    assert_false(internals.isUseCounted(document, kLargeStickyAd));
+  });
+
+  t.done();
 }, "Test a large-sticky-ad at the center. In this case, we expect no use counter for kLargeStickyAd.");
 </script>
 </body>

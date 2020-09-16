@@ -20,6 +20,7 @@ p {
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="resources/overlay-interstitial-ad-testharness.js"></script>
 </head>
 <body marginwidth="0" marginheight="0" overflow="hidden">
 
@@ -31,43 +32,32 @@ p {
 
 <script>
 if (window.testRunner) {
-  // Inject a subresource filter to mark 'overlay-interstitial-ad-testharness.js' as a would be disallowed resource.
-  testRunner.setDisallowedSubresourcePathSuffixes(["overlay-interstitial-ad-testharness.js"], false /* block_subresources */);
   internals.DisableFrequencyCappingForOverlayPopupDetection();
 }
 
-promise_test(() => {
-  return new Promise((resolve, reject) => {
-    let ad_script = document.createElement("script");
-    ad_script.async = false;
-    ad_script.src = "resources/overlay-interstitial-ad-testharness.js";
-    ad_script.onload = async() => {
-      // After 1500ms, force a layout update so that the interstitial detector
-      // is aware of the first meaningful paint, and future overlay candidates
-      // will be considered for pop-ups rather than for prestitials.
-      await timeout(1500);
-      await forceLayoutUpdate();
+async_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // is aware of the first meaningful paint, and future overlay candidates
+  // will be considered for pop-ups rather than for prestitials.
+  await timeout(1500);
+  await forceLayoutUpdate();
 
-      document.body.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
 
-      // Create the overlay pop-up ad.
-      appendAdFrameTo(document.getElementsByTagName('div')[0]);
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.getElementsByTagName('div')[0]);
 
-      // Force a layout update, so that the interstitial detector is aware of
-      // the overlay candidate.
-      await forceLayoutUpdate();
+  // Force a layout update, so that the interstitial detector is aware of
+  // the overlay candidate.
+  await forceLayoutUpdate();
 
-      // Expect the OverlayPopupAd UseCounter.
-      if (!internals.isUseCounted(document, kOverlayPopupAd)) {
-        reject();
-      }
-
-      resolve();
-    };
-    document.body.appendChild(ad_script);
+  // Expect the OverlayPopupAd UseCounter.
+  t.step(function () {
+    assert_true(internals.isUseCounted(document, kOverlayPopupAd));
   });
-}, "Test UseCounter for overlay-popup-ad when the frame has position:absolute and the <body> has overflow:hidden.");
 
+  t.done();
+}, "Test UseCounter for overlay-popup-ad when the frame has position:absolute and the <body> has overflow:hidden.");
 </script>
 </body>
 </html>
