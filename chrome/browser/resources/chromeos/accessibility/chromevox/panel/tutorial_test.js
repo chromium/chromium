@@ -107,3 +107,38 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
         .replay();
   });
 });
+
+// Tests that different lessons are shown when choosing an experience from the
+// main menu.
+TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    const Panel = this.getPanel();
+    assertTrue(Panel.iTutorialEnabled_);
+    new PanelCommand(PanelCommandType.TUTORIAL).send();
+    await this.waitForTutorial();
+    const tutorial = Panel.iTutorial;
+    mockFeedback.expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('New user', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('New User Tutorial, 8 Lessons')
+        .call(doCmd('nextObject'))
+        .expectSpeech('On, Off, and Stop')
+        .call(() => {
+          // Call from the tutorial directly, instead of navigating to and
+          // clicking on the main menu button.
+          tutorial.showMainMenu();
+        })
+        .expectSpeech('Choose your tutorial experience')
+        .call(doCmd('nextObject'))
+        .expectSpeech('New user', 'Button')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Experienced user', 'Button')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Experienced User Tutorial, 2 Lessons')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Text fields')
+        .replay();
+  });
+});

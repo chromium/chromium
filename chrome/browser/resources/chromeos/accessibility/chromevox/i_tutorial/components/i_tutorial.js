@@ -9,6 +9,7 @@ import {TutorialLesson} from './tutorial_lesson.js';
 
 /** @enum {string} */
 const Curriculum = {
+  NONE: 'none',
   OOBE: 'oobe',
   NEW_USER: 'new_user',
   EXPERIENCED_USER: 'experienced_user',
@@ -57,7 +58,11 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
-    curriculum: {type: String, observer: 'updateIncludedLessons'},
+    curriculum: {
+      type: String,
+      value: Curriculum.NONE,
+      observer: 'updateIncludedLessons'
+    },
 
     medium: {
       type: String,
@@ -648,6 +653,8 @@ Polymer({
    */
   shouldHideLessonMenuButton(activeScreen) {
     return !this.curriculum || this.curriculum === Curriculum.OOBE ||
+        this.curriculum === Curriculum.NONE ||
+        activeScreen === Screen.MAIN_MENU ||
         activeScreen === Screen.LESSON_MENU;
   },
 
@@ -702,12 +709,25 @@ Polymer({
 
   /**
    * @param {Curriculum} curriculum
-   * @param {InteractionMedium} medium
    * @return {string}
    * @private
    */
-  computeLessonMenuHeader(curriculum, medium) {
-    return 'Lessons for the ' + curriculum + ' ' + medium + ' experience';
+  computeLessonMenuHeader(curriculum) {
+    // TODO (akihiroota): localize. (http://crbug.com/1124068).
+    let numLessons = 0;
+    for (let i = 0; i < this.lessonData.length; ++i) {
+      if (this.lessonData[i].curriculums.includes(curriculum)) {
+        numLessons += 1;
+      }
+    }
+    // Remove underscores and capitalize the first letter of each word.
+    const words = curriculum.split('_');
+    for (let i = 0; i < words.length; ++i) {
+      words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+    }
+    const curriculumCopy = words.join(' ');
+    return `${curriculumCopy} Tutorial, ${numLessons} ${
+        numLessons > 1 ? 'Lessons' : 'Lesson'}`;
   },
 
   /** @private */
