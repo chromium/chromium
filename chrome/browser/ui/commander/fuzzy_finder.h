@@ -12,21 +12,15 @@
 
 namespace commander {
 
-// TODO(lgrey): Make this actually fuzzy find.
 // Returns a score from 0 to 1 based on how well |needle| matches |haystack|.
 // 0 means no match. |matched_ranges| will be filled with the ranges of
 // |haystack| that match |needle| so they can be highlighted in the UI; see
 // comment on commander::CommandItem |matched_ranges| for a worked example.
-// *** TEMPORARY ***
-// Temporarily, a non-zero match means that |needle| is a substring of
-// |haystack|, with a penalty applied based on how far into |haystack|
-// |needle| begins. Exact matches are 1.0 (vs. a max of .99 for non-exact
-// prefix).
-// This will be replaced with a more sophisticated implementation in the
-// near future.
-// *** END TEMPORARY ***
 // |needle| is expected to already be case folded (this is DCHECKED) to save
-// redundant processing, as the needle will be checked with many haystacks.
+// redundant processing, as one needle will be checked against many haystacks.
+// TODO(lgrey): This currently uses an algorithm which is not guaranteed to
+// return the optimal match. Update this to use a more comprehensive method
+// when inputs are small enough.
 double FuzzyFind(const base::string16& needle,
                  const base::string16& haystack,
                  std::vector<gfx::Range>* matched_ranges);
