@@ -450,6 +450,7 @@ group("closure_compile") {
     ":closure_compile_local",
     "cr_components:closure_compile",
     "cr_elements:closure_compile",
+    "inline_login:closure_compile",
     "nearby_share:closure_compile",
     "nearby_share/shared:closure_compile",
     "new_tab_page:closure_compile",

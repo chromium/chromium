@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.m.js';
 import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
@@ -16,9 +15,20 @@ export function getFakeAccountsList() {
 export class TestAuthenticator extends EventTarget {
   constructor() {
     super();
-    /** @type {?AuthMode} */
+    // Note: We cannot import types from authenticator.m.js because we replace
+    // "chrome://chrome-signin/" with "chrome/browser/resources/inline_login/"
+    // and authenticator is in "chrome/browser/resources/gaia_auth_host/"
+    // folder.
+
+    /**
+     * Type AuthMode (see Authenticator).
+     * @type {?Object}
+     */
     this.authMode = null;
-    /** @type {?AuthParams} */
+    /**
+     * Type AuthParams (see Authenticator).
+     * @type {?Object}
+     */
     this.data = null;
     /** @type {number} */
     this.loadCalls = 0;
@@ -29,8 +39,9 @@ export class TestAuthenticator extends EventTarget {
   }
 
   /**
-   * @param {AuthMode} authMode Authorization mode.
-   * @param {AuthParams} data Parameters for the authorization flow.
+   * @param {Object} authMode Authorization mode (type AuthMode).
+   * @param {Object} data Parameters for the authorization flow (type
+   *     AuthParams).
    */
   load(authMode, data) {
     this.loadCalls++;

@@ -11,10 +11,10 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-
 import {getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 window.inline_login_test = {};
+const inline_login_test = window.inline_login_test;
 inline_login_test.suiteName = 'InlineLoginTest';
 
 /** @enum {string} */
@@ -34,10 +34,12 @@ suite(inline_login_test.suiteName, () => {
   let testAuthenticator;
 
   setup(() => {
+    document.body.innerHTML = '';
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     InlineLoginBrowserProxyImpl.instance_ = testBrowserProxy;
     document.body.innerHTML = '';
-    inlineLoginComponent = document.createElement('inline-login-app');
+    inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
+        document.createElement('inline-login-app'));
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();
     inlineLoginComponent.setAuthExtHostForTest(testAuthenticator);
@@ -64,14 +66,15 @@ suite(inline_login_test.suiteName, () => {
     assertEquals(fakeAuthExtensionData, testAuthenticator.data);
     assertEquals(fakeAuthExtensionData.authMode, testAuthenticator.authMode);
 
-    const fakeLstFetchResults = '{result: "fakeLstFetchResults"}';
-    webUIListenerCallback('send-lst-fetch-results', fakeLstFetchResults);
-    assertEquals(
-        1,
-        testBrowserProxy.getCallCount('lstFetchResults', fakeLstFetchResults));
-
     webUIListenerCallback('close-dialog');
     assertEquals(1, testBrowserProxy.getCallCount('dialogClose'));
+
+    const fakeLstFetchResults = '{result: "fakeLstFetchResults"}';
+    webUIListenerCallback('send-lst-fetch-results', fakeLstFetchResults);
+    assertEquals(1, testBrowserProxy.getCallCount('lstFetchResults'));
+    return testBrowserProxy.whenCalled('lstFetchResults').then(args => {
+      assertEquals(fakeLstFetchResults, args);
+    });
   });
 
   test(assert(inline_login_test.TestNames.AuthExtHostCallbacks), async () => {
@@ -101,7 +104,7 @@ suite(inline_login_test.suiteName, () => {
 
     testAuthenticator.dispatchEvent(new Event('getAccounts'));
     assertEquals(1, testBrowserProxy.getCallCount('getAccounts'));
-    testBrowserProxy.whenCalled('getAccounts').then(function() {
+    return testBrowserProxy.whenCalled('getAccounts').then(function() {
       assertEquals(1, testAuthenticator.getAccountsResponseCalls);
       assertDeepEquals(
           getFakeAccountsList(), testAuthenticator.getAccountsResponseResult);
@@ -117,10 +120,10 @@ suite(inline_login_test.suiteName, () => {
     }
 
     let backInWebviewCalls = 0;
-    inlineLoginComponent.$.signinFrame.back = () => backInWebviewCalls++;
+    inlineLoginComponent.$$('#signinFrame').back = () => backInWebviewCalls++;
 
     // If we cannot go back in the webview - we should close the dialog.
-    inlineLoginComponent.$.signinFrame.canGoBack = () => false;
+    inlineLoginComponent.$$('#signinFrame').canGoBack = () => false;
     backButton.click();
     assertEquals(1, testBrowserProxy.getCallCount('dialogClose'));
     assertEquals(0, backInWebviewCalls);
@@ -128,7 +131,7 @@ suite(inline_login_test.suiteName, () => {
     testBrowserProxy.reset();
 
     // Go back in the webview if possible.
-    inlineLoginComponent.$.signinFrame.canGoBack = () => true;
+    inlineLoginComponent.$$('#signinFrame').canGoBack = () => true;
     backButton.click();
     assertEquals(0, testBrowserProxy.getCallCount('dialogClose'));
     assertEquals(1, backInWebviewCalls);

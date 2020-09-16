@@ -219,9 +219,9 @@ Polymer({
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
   },
 
-  /** @param {!Authenticator} authExtHost */
+  /** @param {Object} authExtHost */
   setAuthExtHostForTest(authExtHost) {
-    this.authExtHost_ = authExtHost;
+    this.authExtHost_ = /** @type {!Authenticator} */ (authExtHost);
     this.addAuthExtHostListeners_();
   },
 });

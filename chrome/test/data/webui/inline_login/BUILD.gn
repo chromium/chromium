@@ -1,0 +1,39 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/inline_login/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
+                  ]
+  deps = [
+    ":inline_login_test",
+    ":inline_login_test_util",
+  ]
+}
+
+js_library("inline_login_test") {
+  deps = [
+    ":inline_login_test_util",
+    "..:chai_assert",
+    "//chrome/browser/resources/inline_login:inline_login_app",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("inline_login_test_util") {
+  deps = [
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
