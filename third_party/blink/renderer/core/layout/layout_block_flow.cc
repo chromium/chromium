@@ -4407,6 +4407,10 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (IsLayoutNGCustom())
     return;
 
+  // MathML layout objects don't support multicol.
+  if (IsMathML())
+    return;
+
   auto* flow_thread = LayoutMultiColumnFlowThread::CreateAnonymous(
       GetDocument(), StyleRef(), !CanTraversePhysicalFragments());
   AddChild(flow_thread);
