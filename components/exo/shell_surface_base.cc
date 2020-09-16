@@ -316,6 +316,8 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   SetRootSurface(surface);
   host_window()->Show();
   set_owned_by_client();
+
+  SetShowTitle(false);
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
@@ -352,18 +354,12 @@ void ShellSurfaceBase::Activate() {
 void ShellSurfaceBase::SetTitle(const base::string16& title) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetTitle", "title",
                base::UTF16ToUTF8(title));
-
-  title_ = title;
-  if (widget_)
-    widget_->UpdateWindowTitle();
+  WidgetDelegate::SetTitle(title);
 }
 
 void ShellSurfaceBase::SetIcon(const gfx::ImageSkia& icon) {
   TRACE_EVENT0("exo", "ShellSurfaceBase::SetIcon");
-
-  icon_ = icon;
-  if (widget_)
-    widget_->UpdateWindowIcon();
+  WidgetDelegate::SetIcon(icon);
 }
 
 void ShellSurfaceBase::SetSystemModal(bool system_modal) {
@@ -521,7 +517,7 @@ std::unique_ptr<base::trace_event::TracedValue>
 ShellSurfaceBase::AsTracedValue() const {
   std::unique_ptr<base::trace_event::TracedValue> value(
       new base::trace_event::TracedValue());
-  value->SetString("title", base::UTF16ToUTF8(title_));
+  value->SetString("title", base::UTF16ToUTF8(GetWindowTitle()));
   if (GetWidget() && GetWidget()->GetNativeWindow()) {
     const std::string* application_id =
         GetShellApplicationId(GetWidget()->GetNativeWindow());
@@ -692,18 +688,6 @@ bool ShellSurfaceBase::CanMaximize() const {
 bool ShellSurfaceBase::CanMinimize() const {
   // Non-transient shell surfaces can be minimized.
   return !parent_ && can_minimize_;
-}
-
-base::string16 ShellSurfaceBase::GetWindowTitle() const {
-  return title_;
-}
-
-bool ShellSurfaceBase::ShouldShowWindowTitle() const {
-  return false;
-}
-
-gfx::ImageSkia ShellSurfaceBase::GetWindowIcon() {
-  return icon_;
 }
 
 bool ShellSurfaceBase::OnCloseRequested(

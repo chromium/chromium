@@ -159,9 +159,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool CanResize() const override;
   bool CanMaximize() const override;
   bool CanMinimize() const override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  gfx::ImageSkia GetWindowIcon() override;
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
   void WindowClosing() override;
   views::Widget* GetWidget() override;
@@ -269,7 +266,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   int64_t pending_display_id_ = display::kInvalidDisplayId;
   base::Optional<gfx::Rect> shadow_bounds_;
   bool shadow_bounds_changed_ = false;
-  base::string16 title_;
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
   bool has_grab_ = false;
@@ -309,7 +305,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   base::OnceClosure surface_destroyed_callback_;
   bool system_modal_ = false;
   bool non_system_modal_window_was_active_ = false;
-  gfx::ImageSkia icon_;
   gfx::Size minimum_size_;
   gfx::Size pending_minimum_size_;
   gfx::Size maximum_size_;

@@ -140,7 +140,7 @@ void ShellSurface::AcknowledgeConfigure(uint32_t serial) {
 
 void ShellSurface::SetParent(ShellSurface* parent) {
   TRACE_EVENT1("exo", "ShellSurface::SetParent", "parent",
-               parent ? base::UTF16ToASCII(parent->title_) : "null");
+               parent ? base::UTF16ToASCII(parent->GetWindowTitle()) : "null");
 
   SetParentWindow(parent ? parent->GetWidget()->GetNativeWindow() : nullptr);
 }
