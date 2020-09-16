@@ -78,17 +78,14 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const Type type = static_cast<Type>(dict.FindIntPath(kTypePath).value());
-
-  const base::Optional<base::FilePath> file_path =
-      util::ValueToFilePath(dict.FindPath(kFilePathPath));
-  DCHECK(file_path.has_value());
+  const base::FilePath file_path = DeserializeFilePath(dict);
 
   // NOTE: `std::make_unique` does not work with private constructors.
-  return base::WrapUnique(new HoldingSpaceItem(
-      type, DeserializeId(dict), file_path.value(),
-      std::move(file_system_url_resolver).Run(file_path.value()),
-      file_path->BaseName().LossyDisplayName(),
-      std::move(image_resolver).Run(type, file_path.value())));
+  return base::WrapUnique(
+      new HoldingSpaceItem(type, DeserializeId(dict), file_path,
+                           std::move(file_system_url_resolver).Run(file_path),
+                           file_path.BaseName().LossyDisplayName(),
+                           std::move(image_resolver).Run(type, file_path)));
 }
 
 // static
@@ -103,6 +100,21 @@ const std::string& HoldingSpaceItem::DeserializeId(
   DCHECK(id);
 
   return *id;
+}
+
+// static
+// NOTE: This method must remain in sync with `Serialize()`. If multiple
+// serialization versions are supported, care must be taken to handle each.
+base::FilePath HoldingSpaceItem::DeserializeFilePath(
+    const base::DictionaryValue& dict) {
+  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  DCHECK(version.has_value() && version.value() == kVersion);
+
+  const base::Optional<base::FilePath> file_path =
+      util::ValueToFilePath(dict.FindPath(kFilePathPath));
+  DCHECK(file_path.has_value());
+
+  return file_path.value();
 }
 
 // NOTE: This method must remain in sync with `Deserialize()`. The

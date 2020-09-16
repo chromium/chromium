@@ -67,8 +67,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       FileSystemUrlResolver file_system_url_resolver,
       ImageResolver image_resolver);
 
-  // Deserializes id from a serialized `HoldingSpaceItem`.
+  // Deserializes `id_` from a serialized `HoldingSpaceItem`.
   static const std::string& DeserializeId(const base::DictionaryValue& dict);
+
+  // Deserializes `file_path_` from a serialized `HoldingSpaceItem`.
+  static base::FilePath DeserializeFilePath(const base::DictionaryValue& dict);
 
   // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
   base::DictionaryValue Serialize() const;

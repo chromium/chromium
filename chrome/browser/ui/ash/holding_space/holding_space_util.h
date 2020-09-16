@@ -23,26 +23,26 @@ namespace ash {
 class HoldingSpaceImage;
 class HoldingSpaceThumbnailLoader;
 
-using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
-using HoldingSpaceItemPtrList = std::vector<HoldingSpaceItemPtr>;
-
 // A utility for holding space.
 namespace holding_space_util {
 
-// Checks `item` existence, returning the result via `callback`.
-using ItemExistsCallback = base::OnceCallback<void(bool)>;
-void ItemExists(Profile* profile,
-                const HoldingSpaceItem* item,
-                ItemExistsCallback callback);
+using FilePathList = std::vector<base::FilePath>;
 
-// Partitions `items` into `existing_items` and `non_existing_items`, returning
-// the result via `callback`.
-using PartitionItemsByExistenceCallback =
-    base::OnceCallback<void(HoldingSpaceItemPtrList existing_items,
-                            HoldingSpaceItemPtrList non_existing_items)>;
-void PartitionItemsByExistence(Profile* profile,
-                               HoldingSpaceItemPtrList items,
-                               PartitionItemsByExistenceCallback callback);
+// Checks `file_path` existence, returning the result via `callback`.
+using FilePathExistsCallback = base::OnceCallback<void(bool)>;
+void FilePathExists(Profile* profile,
+                    const base::FilePath& file_path,
+                    FilePathExistsCallback callback);
+
+// Partitions `file_paths` into `existing_file_paths` and
+// `non_existing_file_paths`, returning the result via `callback`.
+using PartitionFilePathsByExistenceCallback =
+    base::OnceCallback<void(FilePathList existing_file_paths,
+                            FilePathList non_existing_file_paths)>;
+void PartitionFilePathsByExistence(
+    Profile* profile,
+    FilePathList file_paths,
+    PartitionFilePathsByExistenceCallback callback);
 
 // Resolves the file system URL associated with the specified `file_path`.
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);

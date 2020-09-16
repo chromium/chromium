@@ -88,6 +88,8 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   }
 
   std::vector<HoldingSpaceItemPtr> holding_space_items;
+  std::vector<base::FilePath> holding_space_file_paths;
+
   for (const auto& persisted_holding_space_item :
        persisted_holding_space_items->GetList()) {
     holding_space_items.push_back(HoldingSpaceItem::Deserialize(
@@ -96,36 +98,38 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
                        base::Unretained(profile())),
         base::BindOnce(&holding_space_util::ResolveImage,
                        base::Unretained(thumbnail_loader_))));
+    holding_space_file_paths.push_back(holding_space_items.back()->file_path());
   }
 
-  holding_space_util::PartitionItemsByExistence(
-      profile(), std::move(holding_space_items),
+  holding_space_util::PartitionFilePathsByExistence(
+      profile(), std::move(holding_space_file_paths),
       base::BindOnce(&HoldingSpacePersistenceDelegate::RestoreModelByExistence,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(holding_space_items)));
 }
 
 void HoldingSpacePersistenceDelegate::RestoreModelByExistence(
-    std::vector<HoldingSpaceItemPtr> existing_items,
-    std::vector<HoldingSpaceItemPtr> non_existing_items) {
+    std::vector<HoldingSpaceItemPtr> holding_space_items,
+    std::vector<base::FilePath> existing_file_paths,
+    std::vector<base::FilePath> non_existing_file_paths) {
   DCHECK(model()->items().empty());
 
   // Restore existing holding space items.
-  for (auto& holding_space_item : existing_items)
-    item_restored_callback_.Run(std::move(holding_space_item));
+  for (auto& holding_space_item : holding_space_items) {
+    if (base::Contains(existing_file_paths, holding_space_item->file_path()))
+      item_restored_callback_.Run(std::move(holding_space_item));
+  }
 
   // Clean up non-existing holding space items from persistence.
-  if (!non_existing_items.empty()) {
+  if (!non_existing_file_paths.empty()) {
     ListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
-    update->EraseListValueIf([&non_existing_items](
-                                 const base::Value& persisted_item) {
-      const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
-          base::Value::AsDictionaryValue(persisted_item));
-      return std::any_of(
-          non_existing_items.begin(), non_existing_items.end(),
-          [&persisted_item_id](const HoldingSpaceItemPtr& non_existing_item) {
-            return non_existing_item->id() == persisted_item_id;
-          });
-    });
+    update->EraseListValueIf(
+        [&non_existing_file_paths](const base::Value& persisted_item) {
+          base::FilePath persisted_file_path =
+              HoldingSpaceItem::DeserializeFilePath(
+                  base::Value::AsDictionaryValue(persisted_item));
+          return base::Contains(non_existing_file_paths, persisted_file_path);
+        });
   }
 
   // Notify completion of persistence restoration.

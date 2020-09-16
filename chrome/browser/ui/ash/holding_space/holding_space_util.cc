@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
-#include <map>
-
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -51,19 +49,19 @@ gfx::ImageSkia GetPlaceholderImage(HoldingSpaceItem::Type type,
 
 // Utilities -------------------------------------------------------------------
 
-void ItemExists(Profile* profile,
-                const HoldingSpaceItem* item,
-                ItemExistsCallback callback) {
-  if (!item) {
+void FilePathExists(Profile* profile,
+                    const base::FilePath& file_path,
+                    FilePathExistsCallback callback) {
+  if (file_path.empty()) {
     std::move(callback).Run(/*exists=*/false);
     return;
   }
   file_manager::util::GetMetadataForPath(
       file_manager::util::GetFileSystemContextForExtensionId(
           profile, file_manager::kFileManagerAppId),
-      item->file_path(), storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
+      file_path, storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(
-          [](ItemExistsCallback callback, base::File::Error result,
+          [](FilePathExistsCallback callback, base::File::Error result,
              const base::File::Info& file_info) {
             // Absence of error is confirmation of existence.
             bool exists = result == base::File::Error::FILE_OK;
@@ -72,76 +70,73 @@ void ItemExists(Profile* profile,
           std::move(callback)));
 }
 
-void PartitionItemsByExistence(Profile* profile,
-                               HoldingSpaceItemPtrList items,
-                               PartitionItemsByExistenceCallback callback) {
-  if (items.empty()) {
-    std::move(callback).Run(/*existing_items=*/{}, /*non_existing_items=*/{});
+void PartitionFilePathsByExistence(
+    Profile* profile,
+    FilePathList file_paths,
+    PartitionFilePathsByExistenceCallback callback) {
+  if (file_paths.empty()) {
+    std::move(callback).Run(/*existing_file_paths=*/{},
+                            /*non_existing_file_paths=*/{});
     return;
   }
 
-  // Cache the original indices of the `items` being partitioned so that we can
-  // return them back in the same order after checking for existence.
-  std::map<std::string, size_t> indices_by_id;
-  for (size_t i = 0; i < items.size(); ++i)
-    indices_by_id[items.at(i)->id()] = i;
+  auto existing_file_paths = std::make_unique<FilePathList>();
+  auto non_existing_file_paths = std::make_unique<FilePathList>();
 
-  auto existing_items = std::make_unique<HoldingSpaceItemPtrList>();
-  auto non_existing_items = std::make_unique<HoldingSpaceItemPtrList>();
-
-  auto* existing_items_ptr = existing_items.get();
-  auto* non_existing_items_ptr = non_existing_items.get();
+  auto* existing_file_paths_ptr = existing_file_paths.get();
+  auto* non_existing_file_paths_ptr = non_existing_file_paths.get();
 
   // This `barrier_closure` will be run after verifying the existence of all
-  // holding space `items`. It is expected that both `existing_items` and
-  // `non_existing_items` will have been populated by the time of invocation.
+  // `file_paths`. It is expected that both `existing_file_paths` and
+  // `non_existing_file_paths` will have been populated by the time of
+  // invocation.
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      items.size(),
+      file_paths.size(),
       base::BindOnce(
-          [](std::unique_ptr<HoldingSpaceItemPtrList> existing_items,
-             std::unique_ptr<HoldingSpaceItemPtrList> non_existing_items,
-             std::map<std::string, size_t> indices_by_id,
-             PartitionItemsByExistenceCallback callback) {
+          [](FilePathList sorted_file_paths,
+             std::unique_ptr<FilePathList> existing_file_paths,
+             std::unique_ptr<FilePathList> non_existing_file_paths,
+             PartitionFilePathsByExistenceCallback callback) {
             // We need to sort our partitioned vectors to match the original
             // order that was provided at call time. This is necessary as the
             // original order may have been lost due to race conditions when
-            // checking for item existence.
-            auto sort = [&indices_by_id](HoldingSpaceItemPtrList* items) {
-              std::sort(items->begin(), items->end(),
-                        [&indices_by_id](const auto& a, const auto& b) {
-                          return indices_by_id[a->id()] <
-                                 indices_by_id[b->id()];
-                        });
+            // checking for file path existence.
+            auto sort = [&sorted_file_paths](FilePathList* file_paths) {
+              FilePathList temp_file_paths;
+              temp_file_paths.swap(*file_paths);
+              for (const auto& file_path : sorted_file_paths) {
+                if (base::Contains(temp_file_paths, file_path))
+                  file_paths->push_back(file_path);
+              }
             };
-            sort(existing_items.get());
-            sort(non_existing_items.get());
+            sort(existing_file_paths.get());
+            sort(non_existing_file_paths.get());
 
             // Ownership of the partitioned vectors is passed to `callback`.
-            std::move(callback).Run(std::move(*existing_items),
-                                    std::move(*non_existing_items));
+            std::move(callback).Run(std::move(*existing_file_paths),
+                                    std::move(*non_existing_file_paths));
           },
-          std::move(existing_items), std::move(non_existing_items),
-          std::move(indices_by_id), std::move(callback)));
+          /*sorted_file_paths=*/file_paths, std::move(existing_file_paths),
+          std::move(non_existing_file_paths), std::move(callback)));
 
-  // Verify existence of each holding space `item`. Upon successful check of
-  // existence, each `item` should be pushed into either `existing_items` or
-  // `non_existing_items` as appropriate.
-  for (auto& item : items) {
-    HoldingSpaceItem* item_ptr = item.get();
-    ItemExists(profile, item_ptr,
-               base::BindOnce(
-                   [](HoldingSpaceItemPtr item,
-                      HoldingSpaceItemPtrList* existing_items,
-                      HoldingSpaceItemPtrList* non_existing_items,
-                      base::RepeatingClosure barrier_closure, bool exists) {
-                     if (exists)
-                       existing_items->push_back(std::move(item));
-                     else
-                       non_existing_items->push_back(std::move(item));
-                     barrier_closure.Run();
-                   },
-                   std::move(item), base::Unretained(existing_items_ptr),
-                   base::Unretained(non_existing_items_ptr), barrier_closure));
+  // Verify existence of each `file_path`. Upon successful check of existence,
+  // each `file_path` should be pushed into either `existing_file_paths` or
+  // `non_existing_file_paths` as appropriate.
+  for (auto& file_path : file_paths) {
+    FilePathExists(
+        profile, file_path,
+        base::BindOnce(
+            [](base::FilePath file_path, FilePathList* existing_file_paths,
+               FilePathList* non_existing_file_paths,
+               base::RepeatingClosure barrier_closure, bool exists) {
+              if (exists)
+                existing_file_paths->push_back(file_path);
+              else
+                non_existing_file_paths->push_back(file_path);
+              barrier_closure.Run();
+            },
+            file_path, base::Unretained(existing_file_paths_ptr),
+            base::Unretained(non_existing_file_paths_ptr), barrier_closure));
   }
 }
 

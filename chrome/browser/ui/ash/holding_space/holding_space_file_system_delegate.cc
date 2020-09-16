@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -89,18 +90,31 @@ void HoldingSpaceFileSystemDelegate::Init() {
                  weak_factory_.GetWeakPtr()));
 }
 
-// TODO(dmblack): Watch `item`'s parent directory instead of its backing file so
-// that we can reuse the same watcher across multiple holding space items.
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AddWatch(item->file_path());
+
+  // Watch the directory containing `items`'s backing file. If the directory is
+  // already being watched, this will no-op.
+  AddWatch(item->file_path().DirName());
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RemoveWatch(item->file_path());
+
+  // Since we were watching the directory containing `item`'s backing file and
+  // not the backing file itself, we only need to remove the associated watch if
+  // there are no other holding space items backed by the same directory.
+  const bool remove_watch =
+      std::none_of(model()->items().begin(), model()->items().end(),
+                   [removed_item = item](const auto& item) {
+                     return item->file_path().DirName() ==
+                            removed_item->file_path().DirName();
+                   });
+
+  if (remove_watch)
+    RemoveWatch(item->file_path().DirName());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
@@ -109,8 +123,31 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!error);
 
-  // Currently `OnFilePathChanged()` is only called on removal of `file_path`.
-  file_removed_callback_.Run(file_path);
+  // The `file_path` that changed is a directory containing backing files for
+  // one or more holding space items. Changes to this directory may indicate
+  // that some, all, or none of these backing files have been removed. We need
+  // to verify the existence of these backing files and remove any holding space
+  // items that no longer exist.
+
+  std::vector<base::FilePath> file_paths;
+  for (const auto& item : model()->items()) {
+    if (file_path.IsParent(item->file_path()))
+      file_paths.push_back(item->file_path());
+  }
+
+  holding_space_util::PartitionFilePathsByExistence(
+      profile(), std::move(file_paths),
+      base::BindOnce(
+          [](const base::WeakPtr<HoldingSpaceFileSystemDelegate>& weak_ptr,
+             std::vector<base::FilePath> existing_file_paths,
+             std::vector<base::FilePath> non_existing_file_paths) {
+            if (weak_ptr) {
+              auto file_removed_callback = weak_ptr->file_removed_callback_;
+              for (const auto& non_existing_file_path : non_existing_file_paths)
+                file_removed_callback.Run(non_existing_file_path);
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 }
 
 void HoldingSpaceFileSystemDelegate::AddWatch(const base::FilePath& file_path) {
