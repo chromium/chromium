@@ -3046,6 +3046,8 @@ if (chromeos_is_browser_only) {
       ":browser_tests_runner",
       ":test_support",
     ]
+
+    data_deps = [ "//chrome:packed_resources" ]
   }
 }
 

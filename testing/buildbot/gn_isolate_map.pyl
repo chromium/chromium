@@ -1050,6 +1050,10 @@
     "label": "//ash/keyboard/ui:keyboard_unittests",
     "type": "windowed_test_launcher",
   },
+  "lacros_chrome_browsertests": {
+    "label": "//chrome/test:lacros_chrome_browsertests",
+    "type": "windowed_test_launcher",
+  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",

@@ -3434,7 +3434,12 @@
           'shards': 3,
         },
       },
+      'lacros_chrome_browsertests': {},
       'unit_tests': {},
+    },
+
+    'linux_lacros_specific_gtests': {
+      'lacros_chrome_browsertests': {},
     },
 
     'linux_ozone_common_gtests': {
@@ -5466,12 +5471,14 @@
       # This is:
       #   linux_chromeos_gtests
       #   - linux_chromeos_specific_gtests
+      #   + linux_lacros_specific_gtests
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
       'linux_flavor_specific_chromium_gtests',
+      'linux_lacros_specific_gtests',
       'non_android_chromium_gtests',
       'storage_service_gtests',
     ],
