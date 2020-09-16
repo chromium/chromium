@@ -1423,6 +1423,8 @@ crbug.com/830901 fast/webgl/video-metadata/texImage-video-last-uploaded-metadata
 virtual/webgl-extra-video-texture-metadata/fast/webgl/video-metadata/texImage-video-last-uploaded-metadata.html [ Pass ]
 
 # Below are manual tests from web-platform-tests without automation.
+external/wpt/css/CSS2/tables/table-footer-group-004.xht [ Skip ]
+external/wpt/css/CSS2/tables/table-header-group-004.xht [ Skip ]
 external/wpt/html/canvas/element/manual/drawing-paths-to-the-canvas/canvas_focus_drawFocusIfNeeded_AAPI_001-manual.html [ Skip ]
 external/wpt/FileAPI/FileReader/test_notreadableerrors-manual.html [ Skip ]
 external/wpt/FileAPI/FileReader/test_securityerrors-manual.html [ Skip ]
