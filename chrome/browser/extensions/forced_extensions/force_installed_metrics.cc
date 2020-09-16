@@ -161,6 +161,22 @@ void ReportErrorCodes(const InstallStageTracker::InstallationData& installation,
                                 ExtensionDownloader::kMaxRetries);
 }
 
+// Reports installation stage and downloading stage for extensions which are
+// currently in progress of the installation.
+void ReportCurrentStage(
+    const InstallStageTracker::InstallationData& installation) {
+  InstallStageTracker::Stage install_stage = installation.install_stage.value();
+  base::UmaHistogramEnumeration("Extensions.ForceInstalledStage",
+                                install_stage);
+  if (install_stage == InstallStageTracker::Stage::DOWNLOADING) {
+    DCHECK(installation.downloading_stage);
+    ExtensionDownloaderDelegate::Stage downloading_stage =
+        installation.downloading_stage.value();
+    base::UmaHistogramEnumeration("Extensions.ForceInstalledDownloadingStage",
+                                  downloading_stage);
+  }
+}
+
 }  // namespace
 
 ForceInstalledMetrics::ForceInstalledMetrics(
@@ -268,17 +284,7 @@ void ForceInstalledMetrics::ReportMetrics() {
             ExtensionDownloaderDelegate::CacheStatus::CACHE_UNKNOWN));
     if (!installation.failure_reason && installation.install_stage) {
       installation.failure_reason = FailureReason::IN_PROGRESS;
-      InstallStageTracker::Stage install_stage =
-          installation.install_stage.value();
-      base::UmaHistogramEnumeration("Extensions.ForceInstalledStage",
-                                    install_stage);
-      if (install_stage == InstallStageTracker::Stage::DOWNLOADING) {
-        DCHECK(installation.downloading_stage);
-        ExtensionDownloaderDelegate::Stage downloading_stage =
-            installation.downloading_stage.value();
-        base::UmaHistogramEnumeration(
-            "Extensions.ForceInstalledDownloadingStage", downloading_stage);
-      }
+      ReportCurrentStage(installation);
     }
     if (tracker_->IsMisconfiguration(installation, extension_id))
       misconfigured_extensions++;
