@@ -29,6 +29,8 @@
 namespace {
 
 constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
+constexpr FourCharCode kDefaultFourCCPixelFormat =
+    kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;  // NV12 (a.k.a. 420v)
 
 base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
   const CMTime cm_timestamp =
@@ -49,6 +51,23 @@ std::string MacFourCCToString(OSType fourcc) {
 }  // anonymous namespace
 
 @implementation VideoCaptureDeviceAVFoundation
+
+#pragma mark Class methods
+
++ (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code {
+  switch (code) {
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return media::PIXEL_FORMAT_NV12;  // Mac fourcc: "420v".
+    case kCVPixelFormatType_422YpCbCr8:
+      return media::PIXEL_FORMAT_UYVY;  // Mac fourcc: "2vuy".
+    case kCMPixelFormat_422YpCbCr8_yuvs:
+      return media::PIXEL_FORMAT_YUY2;
+    case kCMVideoCodecType_JPEG_OpenDML:
+      return media::PIXEL_FORMAT_MJPEG;  // Mac fourcc: "dmb1".
+    default:
+      return media::PIXEL_FORMAT_UNKNOWN;
+  }
+}
 
 #pragma mark Public methods
 
@@ -155,11 +174,12 @@ std::string MacFourCCToString(OSType fourcc) {
   _frameHeight = height;
   _frameRate = frameRate;
   _bestCaptureFormat.reset(
-      media::FindBestCaptureFormat([_captureDevice formats], width, height,
+      media::FindBestCaptureFormat([VideoCaptureDeviceAVFoundation class],
+                                   [_captureDevice formats], width, height,
                                    frameRate),
       base::scoped_policy::RETAIN);
-
-  FourCharCode best_fourcc = kCMPixelFormat_422YpCbCr8;
+  // Default to NV12, a pixel format commonly supported by web cameras.
+  FourCharCode best_fourcc = kDefaultFourCCPixelFormat;
   if (_bestCaptureFormat) {
     best_fourcc = CMFormatDescriptionGetMediaSubType(
         [_bestCaptureFormat formatDescription]);
@@ -439,7 +459,7 @@ std::string MacFourCCToString(OSType fourcc) {
       CMVideoFormatDescriptionGetDimensions(formatDescription);
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), _frameRate,
-      media::FourCCToChromiumPixelFormat(pixelFormat));
+      [VideoCaptureDeviceAVFoundation FourCCToChromiumPixelFormat:pixelFormat]);
   base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
   base::AutoLock lock(_lock);
   if (_frameReceiver && baseAddress) {
@@ -473,10 +493,27 @@ std::string MacFourCCToString(OSType fourcc) {
       kCVReturnSuccess) {
     return [self processRawSample:sampleBuffer];
   }
-  void* baseAddress =
-      static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
-  size_t frameSize = CVPixelBufferGetHeight(videoFrame) *
-                     CVPixelBufferGetBytesPerRow(videoFrame);
+  char* baseAddress = 0;
+  size_t frameSize = 0;
+  if (!CVPixelBufferIsPlanar(videoFrame)) {
+    // For nonplanar buffers, CVPixelBufferGetBaseAddress returns a pointer
+    // to (0,0). (For planar buffers, it returns something else.)
+    // https://developer.apple.com/documentation/corevideo/1457115-cvpixelbuffergetbaseaddress?language=objc
+    baseAddress = static_cast<char*>(CVPixelBufferGetBaseAddress(videoFrame));
+  } else {
+    // For planar buffers, CVPixelBufferGetBaseAddressOfPlane() is used. If
+    // the buffer is contiguous (CHECK'd below) then we only need to know
+    // the address of the first plane, regardless of
+    // CVPixelBufferGetPlaneCount().
+    baseAddress =
+        static_cast<char*>(CVPixelBufferGetBaseAddressOfPlane(videoFrame, 0));
+  }
+  // CVPixelBufferGetDataSize() works for both nonplanar and planar buffers
+  // as long as they are contiguous in memory. If it is not contiguous, 0 is
+  // returned.
+  frameSize = CVPixelBufferGetDataSize(videoFrame);
+  // Only contiguous buffers are supported.
+  CHECK(frameSize);
   [self processRamSample:sampleBuffer
              baseAddress:baseAddress
                frameSize:frameSize

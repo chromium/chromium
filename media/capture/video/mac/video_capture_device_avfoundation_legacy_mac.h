@@ -77,6 +77,10 @@ class VideoCaptureDeviceMac;
   base::ThreadChecker _main_thread_checker;
 }
 
+// This function translates Mac Core Video pixel formats to Chromium pixel
+// formats. This legacy implementation does not recognize NV12.
++ (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code;
+
 // Returns a dictionary of capture devices with friendly name and unique id.
 + (NSDictionary*)deviceNames;
 

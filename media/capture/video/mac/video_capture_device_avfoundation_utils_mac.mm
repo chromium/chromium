@@ -164,6 +164,7 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
 }  // namespace
 
 AVCaptureDeviceFormat* FindBestCaptureFormat(
+    Class implementation,
     NSArray<AVCaptureDeviceFormat*>* formats,
     int width,
     int height,
@@ -176,7 +177,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   for (AVCaptureDeviceFormat* captureFormat in formats) {
     const FourCharCode fourcc =
         CMFormatDescriptionGetMediaSubType([captureFormat formatDescription]);
-    VideoPixelFormat pixelFormat = FourCCToChromiumPixelFormat(fourcc);
+    VideoPixelFormat pixelFormat =
+        [implementation FourCCToChromiumPixelFormat:fourcc];
     CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(
         [captureFormat formatDescription]);
     Float64 maxFrameRate = 0;
@@ -234,19 +236,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   return bestCaptureFormat;
 }
 
-media::VideoPixelFormat FourCCToChromiumPixelFormat(FourCharCode code) {
-  switch (code) {
-    case kCVPixelFormatType_422YpCbCr8:
-      return media::PIXEL_FORMAT_UYVY;
-    case kCMPixelFormat_422YpCbCr8_yuvs:
-      return media::PIXEL_FORMAT_YUY2;
-    case kCMVideoCodecType_JPEG_OpenDML:
-      return media::PIXEL_FORMAT_MJPEG;
-    default:
-      return media::PIXEL_FORMAT_UNKNOWN;
-  }
-}
-
 void ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
                                  CMSampleBufferRef sample_buffer) {
@@ -270,6 +259,7 @@ base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {
 }
 
 media::VideoCaptureFormats GetDeviceSupportedFormats(
+    Class implementation,
     const media::VideoCaptureDeviceDescriptor& descriptor) {
   media::VideoCaptureFormats formats;
   NSArray* devices = [AVCaptureDevice devices];
@@ -283,8 +273,9 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
   for (AVCaptureDeviceFormat* format in device.formats) {
     // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
     // as well according to CMFormatDescription.h
-    const media::VideoPixelFormat pixelFormat = FourCCToChromiumPixelFormat(
-        CMFormatDescriptionGetMediaSubType([format formatDescription]));
+    const media::VideoPixelFormat pixelFormat = [implementation
+        FourCCToChromiumPixelFormat:CMFormatDescriptionGetMediaSubType(
+                                        [format formatDescription])];
 
     CMVideoDimensions dimensions =
         CMVideoFormatDescriptionGetDimensions([format formatDescription]);

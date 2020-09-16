@@ -90,6 +90,9 @@ namespace media {
 // Test the behavior of the function FindBestCaptureFormat which is used to
 // determine the capture format.
 TEST(VideoCaptureDeviceMacTest, FindBestCaptureFormat) {
+  // We are only interested in the modern implementation here.
+  Class impl = [VideoCaptureDeviceAVFoundation class];
+
   base::scoped_nsobject<FakeAVCaptureDeviceFormat> fmt_320_240_xyzw_30(
       [[FakeAVCaptureDeviceFormat alloc] initWithWidth:320
                                                 height:240
@@ -136,68 +139,68 @@ TEST(VideoCaptureDeviceMacTest, FindBestCaptureFormat) {
   AVCaptureDeviceFormat* result = nil;
 
   // If we can't find a valid format, we should return nil;
-  result = FindBestCaptureFormat(@[ fmt_320_240_xyzw_30 ], 320, 240, 30);
+  result = FindBestCaptureFormat(impl, @[ fmt_320_240_xyzw_30 ], 320, 240, 30);
   EXPECT_EQ(result, nil);
 
   // Can't find a matching resolution
-  result = FindBestCaptureFormat(@[ fmt_320_240_yuvs_30, fmt_320_240_2vuy_30 ],
-                                 640, 480, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_320_240_yuvs_30, fmt_320_240_2vuy_30 ], 640, 480, 30);
   EXPECT_EQ(result, nil);
-  result = FindBestCaptureFormat(@[ fmt_320_240_2vuy_30, fmt_320_240_yuvs_30 ],
-                                 640, 480, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_320_240_2vuy_30, fmt_320_240_yuvs_30 ], 640, 480, 30);
   EXPECT_EQ(result, nil);
 
   // Simple exact match.
-  result = FindBestCaptureFormat(@[ fmt_640_480_yuvs_30, fmt_320_240_yuvs_30 ],
-                                 320, 240, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_yuvs_30, fmt_320_240_yuvs_30 ], 320, 240, 30);
   EXPECT_EQ(result, fmt_320_240_yuvs_30.get());
-  result = FindBestCaptureFormat(@[ fmt_320_240_yuvs_30, fmt_640_480_yuvs_30 ],
-                                 320, 240, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_320_240_yuvs_30, fmt_640_480_yuvs_30 ], 320, 240, 30);
   EXPECT_EQ(result, fmt_320_240_yuvs_30.get());
 
   // Different frame rate.
-  result = FindBestCaptureFormat(@[ fmt_640_480_2vuy_30 ], 640, 480, 60);
+  result = FindBestCaptureFormat(impl, @[ fmt_640_480_2vuy_30 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_30.get());
 
   // Prefer the same frame rate.
-  result = FindBestCaptureFormat(@[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_60 ],
-                                 640, 480, 60);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_60 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_60.get());
-  result = FindBestCaptureFormat(@[ fmt_640_480_2vuy_60, fmt_640_480_yuvs_30 ],
-                                 640, 480, 60);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_2vuy_60, fmt_640_480_yuvs_30 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_60.get());
 
   // Prefer version with matching frame rate.
-  result = FindBestCaptureFormat(@[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_60 ],
-                                 640, 480, 60);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_60 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_60.get());
-  result = FindBestCaptureFormat(@[ fmt_640_480_2vuy_60, fmt_640_480_yuvs_30 ],
-                                 640, 480, 60);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_2vuy_60, fmt_640_480_yuvs_30 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_60.get());
 
   // Prefer version with matching frame rate when there are multiple framerates.
   result = FindBestCaptureFormat(
-      @[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_30_60 ], 640, 480, 60);
+      impl, @[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_30_60 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_30_60.get());
   result = FindBestCaptureFormat(
-      @[ fmt_640_480_2vuy_30_60, fmt_640_480_yuvs_30 ], 640, 480, 60);
+      impl, @[ fmt_640_480_2vuy_30_60, fmt_640_480_yuvs_30 ], 640, 480, 60);
   EXPECT_EQ(result, fmt_640_480_2vuy_30_60.get());
 
   // Prefer version with the lower maximum framerate when there are multiple
   // framerates.
   result = FindBestCaptureFormat(
-      @[ fmt_640_480_2vuy_30, fmt_640_480_2vuy_30_60 ], 640, 480, 30);
+      impl, @[ fmt_640_480_2vuy_30, fmt_640_480_2vuy_30_60 ], 640, 480, 30);
   EXPECT_EQ(result, fmt_640_480_2vuy_30.get());
   result = FindBestCaptureFormat(
-      @[ fmt_640_480_2vuy_30_60, fmt_640_480_2vuy_30 ], 640, 480, 30);
+      impl, @[ fmt_640_480_2vuy_30_60, fmt_640_480_2vuy_30 ], 640, 480, 30);
   EXPECT_EQ(result, fmt_640_480_2vuy_30.get());
 
   // Prefer the Chromium format order.
-  result = FindBestCaptureFormat(@[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_30 ],
-                                 640, 480, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_yuvs_30, fmt_640_480_2vuy_30 ], 640, 480, 30);
   EXPECT_EQ(result, fmt_640_480_2vuy_30.get());
-  result = FindBestCaptureFormat(@[ fmt_640_480_2vuy_30, fmt_640_480_yuvs_30 ],
-                                 640, 480, 30);
+  result = FindBestCaptureFormat(
+      impl, @[ fmt_640_480_2vuy_30, fmt_640_480_yuvs_30 ], 640, 480, 30);
   EXPECT_EQ(result, fmt_640_480_2vuy_30.get());
 }
 

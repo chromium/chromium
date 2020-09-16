@@ -130,8 +130,8 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
     devices_info.emplace_back(descriptor);
 
     // Get supported formats
-    devices_info.back().supported_formats =
-        GetDeviceSupportedFormats(descriptor);
+    devices_info.back().supported_formats = GetDeviceSupportedFormats(
+        GetVideoCaptureDeviceAVFoundationImplementationClass(), descriptor);
   }
 
   // Also retrieve Blackmagic devices, if present, via DeckLink SDK API.

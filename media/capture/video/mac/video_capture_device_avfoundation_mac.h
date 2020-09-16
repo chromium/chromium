@@ -56,6 +56,10 @@ CAPTURE_EXPORT
   scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
 }
 
+// This function translates Mac Core Video pixel formats to Chromium pixel
+// formats. This implementation recognizes NV12.
++ (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code;
+
 - (void)setOnStillImageOutputStoppedForTesting:
     (base::RepeatingCallback<void()>)onStillImageOutputStopped;
 

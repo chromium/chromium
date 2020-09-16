@@ -144,21 +144,6 @@ void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
   device_count_at_last_attempt = device_count;
 }
 
-// This function translates Mac Core Video pixel formats to Chromium pixel
-// formats.
-media::VideoPixelFormat FourCCToChromiumPixelFormat(FourCharCode code) {
-  switch (code) {
-    case kCVPixelFormatType_422YpCbCr8:
-      return media::PIXEL_FORMAT_UYVY;
-    case kCMPixelFormat_422YpCbCr8_yuvs:
-      return media::PIXEL_FORMAT_YUY2;
-    case kCMVideoCodecType_JPEG_OpenDML:
-      return media::PIXEL_FORMAT_MJPEG;
-    default:
-      return media::PIXEL_FORMAT_UNKNOWN;
-  }
-}
-
 // Extracts |base_address| and |length| out of a SampleBuffer.
 void ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
@@ -180,6 +165,19 @@ void ExtractBaseAddressAndLength(char** base_address,
 @implementation VideoCaptureDeviceAVFoundationLegacy
 
 #pragma mark Class methods
+
++ (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code {
+  switch (code) {
+    case kCVPixelFormatType_422YpCbCr8:
+      return media::PIXEL_FORMAT_UYVY;
+    case kCMPixelFormat_422YpCbCr8_yuvs:
+      return media::PIXEL_FORMAT_YUY2;
+    case kCMVideoCodecType_JPEG_OpenDML:
+      return media::PIXEL_FORMAT_MJPEG;
+    default:
+      return media::PIXEL_FORMAT_UNKNOWN;
+  }
+}
 
 + (void)getDeviceNames:(NSMutableDictionary*)deviceNames {
   // At this stage we already know that AVFoundation is supported and the whole
@@ -225,8 +223,10 @@ void ExtractBaseAddressAndLength(char** base_address,
   for (AVCaptureDeviceFormat* format in device.formats) {
     // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
     // as well according to CMFormatDescription.h
-    const media::VideoPixelFormat pixelFormat = FourCCToChromiumPixelFormat(
-        CMFormatDescriptionGetMediaSubType([format formatDescription]));
+    const media::VideoPixelFormat pixelFormat =
+        [VideoCaptureDeviceAVFoundationLegacy
+            FourCCToChromiumPixelFormat:CMFormatDescriptionGetMediaSubType(
+                                            [format formatDescription])];
 
     CMVideoDimensions dimensions =
         CMVideoFormatDescriptionGetDimensions([format formatDescription]);
@@ -354,8 +354,10 @@ void ExtractBaseAddressAndLength(char** base_address,
         CMFormatDescriptionGetMediaSubType([format formatDescription]);
     // Compare according to Chromium preference.
     if (media::VideoCaptureFormat::ComparePixelFormatPreference(
-            FourCCToChromiumPixelFormat(fourcc),
-            FourCCToChromiumPixelFormat(best_fourcc))) {
+            [VideoCaptureDeviceAVFoundationLegacy
+                FourCCToChromiumPixelFormat:fourcc],
+            [VideoCaptureDeviceAVFoundationLegacy
+                FourCCToChromiumPixelFormat:best_fourcc])) {
       best_fourcc = fourcc;
     }
   }
@@ -484,7 +486,8 @@ void ExtractBaseAddressAndLength(char** base_address,
       CMVideoFormatDescriptionGetDimensions(formatDescription);
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), _frameRate,
-      FourCCToChromiumPixelFormat(fourcc));
+      [VideoCaptureDeviceAVFoundationLegacy
+          FourCCToChromiumPixelFormat:fourcc]);
   gfx::ColorSpace colorSpace;
 
   // We have certain format expectation for capture output:

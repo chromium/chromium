@@ -17,8 +17,11 @@ namespace media {
 
 // Find the best capture format from |formats| for the specified dimensions and
 // frame rate. Returns an element of |formats|, or nil.
+// |implementation| is a class implementing FourCCToChromiumPixelFormat, which
+// our VideoCaptureDeviceAVFoundationProtocol implementations do.
 AVCaptureDeviceFormat* CAPTURE_EXPORT
-FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
+FindBestCaptureFormat(Class implementation,
+                      NSArray<AVCaptureDeviceFormat*>* formats,
                       int width,
                       int height,
                       float frame_rate);
@@ -30,12 +33,11 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames();
 
 // Retrieve the capture supported formats for a given device |descriptor|.
+// |implementation| is a class implementing FourCCToChromiumPixelFormat, which
+// our VideoCaptureDeviceAVFoundationProtocol implementations do.
 media::VideoCaptureFormats GetDeviceSupportedFormats(
+    Class implementation,
     const media::VideoCaptureDeviceDescriptor& descriptor);
-
-// This function translates Mac Core Video pixel formats to Chromium pixel
-// formats.
-media::VideoPixelFormat FourCCToChromiumPixelFormat(FourCharCode code);
 
 // Extracts |base_address| and |length| out of a SampleBuffer.
 void ExtractBaseAddressAndLength(char** base_address,
