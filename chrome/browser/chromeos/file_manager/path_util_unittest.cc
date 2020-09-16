@@ -29,6 +29,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/disks/disk.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -597,6 +598,23 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
                                      storage::FileSystemMountOption(),
                                      crostini_mount_point_);
 
+    chromeos::disks::DiskMountManager::InitializeForTesting(
+        new FakeDiskMountManager);
+
+    // Add the disk and mount point for a fake removable device.
+    ASSERT_TRUE(
+        chromeos::disks::DiskMountManager::GetInstance()->AddDiskForTest(
+            chromeos::disks::Disk::Builder()
+                .SetDevicePath("/device/source_path")
+                .SetFileSystemUUID("0123-abcd")
+                .Build()));
+    ASSERT_TRUE(
+        chromeos::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
+            chromeos::disks::DiskMountManager::MountPointInfo(
+                "/device/source_path", "/media/removable/a",
+                chromeos::MOUNT_TYPE_DEVICE,
+                chromeos::disks::MOUNT_CONDITION_NONE)));
+
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.
     base::RunLoop().RunUntilIdle();
@@ -610,6 +628,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 
     // Run all pending tasks before destroying testing profile.
     base::RunLoop().RunUntilIdle();
+
+    chromeos::disks::DiskMountManager::Shutdown();
   }
 
  protected:
@@ -634,7 +654,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Removable) {
   GURL url;
   EXPECT_TRUE(ConvertPathToArcUrl(
       base::FilePath::FromUTF8Unsafe("/media/removable/a/b/c"), &url));
-  EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/removable/a/b/c"),
+  EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/0123-abcd/b/c"),
             url);
 }
 
@@ -646,7 +666,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
       chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url));
-  EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/MyFiles/a/b/c"),
+  EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                 "0000000000000000000000000000CAFEF00D2019/"
+                 "a/b/c"),
             url);
 }
 
@@ -729,9 +751,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
           [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
-            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
-                           "removable/a/b/c"),
-                      urls[0]);
+            EXPECT_EQ(
+                GURL("content://org.chromium.arc.volumeprovider/0123-abcd/b/c"),
+                urls[0]);
           },
           &run_loop));
   run_loop.Run();
@@ -751,9 +773,10 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
           [](base::RunLoop* run_loop, const std::vector<GURL>& urls) {
             run_loop->Quit();
             ASSERT_EQ(1U, urls.size());
-            EXPECT_EQ(
-                GURL("content://org.chromium.arc.volumeprovider/MyFiles/a/b/c"),
-                urls[0]);
+            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                           "0000000000000000000000000000CAFEF00D2019/"
+                           "a/b/c"),
+                      urls[0]);
           },
           &run_loop));
   run_loop.Run();
@@ -935,9 +958,9 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MultipleUrls) {
             run_loop->Quit();
             ASSERT_EQ(4U, urls.size());
             EXPECT_EQ(GURL(), urls[0]);  // Invalid URL.
-            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
-                           "removable/a/b/c"),
-                      urls[1]);
+            EXPECT_EQ(
+                GURL("content://org.chromium.arc.volumeprovider/0123-abcd/b/c"),
+                urls[1]);
             EXPECT_EQ(GURL("content://org.chromium.arc.chromecontentprovider/"
                            "externalfile%3Adrivefs-b1f44746e7144c3caafeacaa8bb5"
                            "c569%2Fa%2Fb%2Fc"),

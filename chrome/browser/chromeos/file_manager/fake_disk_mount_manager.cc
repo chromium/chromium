@@ -164,7 +164,14 @@ bool FakeDiskMountManager::AddDiskForTest(
 
 bool FakeDiskMountManager::AddMountPointForTest(
     const MountPointInfo& mount_point) {
-  return false;
+  if (mount_point.mount_type == chromeos::MOUNT_TYPE_DEVICE &&
+      disks_.find(mount_point.source_path) == disks_.end()) {
+    // Device mount point must have a disk entry.
+    return false;
+  }
+
+  mount_points_.insert(std::make_pair(mount_point.mount_path, mount_point));
+  return true;
 }
 
 void FakeDiskMountManager::InvokeDiskEventForTest(

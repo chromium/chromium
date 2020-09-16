@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
+#include "chrome/browser/chromeos/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/note_taking_controller_client.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -30,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/disks/disk.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -964,6 +966,21 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
 }
 
 TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
+  chromeos::disks::DiskMountManager::InitializeForTesting(
+      new file_manager::FakeDiskMountManager);
+
+  ASSERT_TRUE(chromeos::disks::DiskMountManager::GetInstance()->AddDiskForTest(
+      chromeos::disks::Disk::Builder()
+          .SetDevicePath("/device/source_path")
+          .SetFileSystemUUID("0123-abcd")
+          .Build()));
+  ASSERT_TRUE(
+      chromeos::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
+          chromeos::disks::DiskMountManager::MountPointInfo(
+              "/device/source_path", "/media/removable/UNTITLED",
+              chromeos::MOUNT_TYPE_DEVICE,
+              chromeos::disks::MOUNT_CONDITION_NONE)));
+
   const std::string kPackage = "org.chromium.package";
   std::vector<IntentHandlerInfoPtr> handlers;
   handlers.emplace_back(CreateIntentHandlerInfo("App", kPackage));
@@ -993,7 +1010,7 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
 
   const base::FilePath kRemovablePath =
       base::FilePath(file_manager::util::kRemovableMediaPath)
-          .Append("image.jpg");
+          .Append("UNTITLED/image.jpg");
   intent_helper_.clear_handled_intents();
   file_system_->clear_handled_requests();
   helper()->LaunchAppForNewNote(profile(), kRemovablePath);
@@ -1024,6 +1041,8 @@ TEST_F(NoteTakingHelperTest, LaunchAndroidAppWithPath) {
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::ANDROID_FAILED_TO_CONVERT_PATH), 1);
+
+  chromeos::disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(NoteTakingHelperTest, NoAppsAvailable) {

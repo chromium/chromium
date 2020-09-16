@@ -33,6 +33,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/disks/disk.h"
+#include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/user_manager/user.h"
@@ -70,9 +72,13 @@ constexpr base::FilePath::CharType kArcExternalFilesRoot[] =
     FILE_PATH_LITERAL("/external_files");
 // Sync with the volume provider in ARC++ side.
 constexpr char kArcRemovableMediaContentUrlPrefix[] =
-    "content://org.chromium.arc.volumeprovider/removable/";
+    "content://org.chromium.arc.volumeprovider/";
+// The dummy UUID of the MyFiles volume is taken from
+// components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
-    "content://org.chromium.arc.volumeprovider/MyFiles/";
+    "content://org.chromium.arc.volumeprovider/"
+    "0000000000000000000000000000CAFEF00D2019/";
 constexpr char kArcDriveContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/MyDrive/";
 
@@ -138,6 +144,51 @@ base::FilePath ExtractLegacyDrivePath(const base::FilePath& path) {
   for (size_t i = 3; i < components.size(); ++i)
     drive_path = drive_path.Append(components[i]);
   return drive_path;
+}
+
+// Extracts the volume name of a removable device. |relative_path| is expected
+// to be of the form <volume name>/..., which is relative to /media/removable.
+std::string ExtractVolumeNameFromRelativePathForRemovableMedia(
+    const base::FilePath& relative_path) {
+  std::vector<base::FilePath::StringType> components;
+  relative_path.GetComponents(&components);
+  if (components.empty()) {
+    LOG(WARNING) << "Failed to extract volume name from relative path: "
+                 << relative_path;
+    return std::string();
+  }
+  return components[0];
+}
+
+// Returns the source path of a removable device using its volume name as a key.
+// An empty string is returned when it fails to get a valid mount point from
+// DiskMountManager.
+std::string GetSourcePathForRemovableMedia(const std::string& volume_name) {
+  const std::string mount_path(
+      base::StringPrintf("%s/%s", kRemovableMediaPath, volume_name.c_str()));
+  const auto& mount_points =
+      chromeos::disks::DiskMountManager::GetInstance()->mount_points();
+  const auto found = mount_points.find(mount_path);
+  return found == mount_points.end() ? std::string()
+                                     : found->second.source_path;
+}
+
+// Returns the UUID of a removable device using its volume name as a key.
+// An empty string is returned when it fails to get valid source path and disk
+// from DiskMountManager.
+std::string GetFsUuidForRemovableMedia(const std::string& volume_name) {
+  const std::string source_path = GetSourcePathForRemovableMedia(volume_name);
+  if (source_path.empty()) {
+    LOG(WARNING) << "No source path is found for volume name: " << volume_name;
+    return std::string();
+  }
+  const chromeos::disks::Disk* disk =
+      chromeos::disks::DiskMountManager::GetInstance()->FindDiskBySourcePath(
+          source_path);
+  std::string fs_uuid = disk == nullptr ? std::string() : disk->fs_uuid();
+  if (fs_uuid.empty())
+    LOG(WARNING) << "No UUID is found for volume name: " << volume_name;
+  return fs_uuid;
 }
 
 }  // namespace
@@ -422,12 +473,29 @@ bool ConvertPathToArcUrl(const base::FilePath& path, GURL* arc_url_out) {
   base::FilePath relative_path;
   if (base::FilePath(kRemovableMediaPath)
           .AppendRelativePath(path, &relative_path)) {
-    *arc_url_out = GURL(kArcRemovableMediaContentUrlPrefix)
-                       .Resolve(net::EscapePath(relative_path.AsUTF8Unsafe()));
+    const std::string volume_name =
+        ExtractVolumeNameFromRelativePathForRemovableMedia(relative_path);
+    if (volume_name.empty())
+      return false;
+    const std::string fs_uuid = GetFsUuidForRemovableMedia(volume_name);
+    if (fs_uuid.empty())
+      return false;
+    // Replace the volume name in the relative path with the UUID.
+    base::FilePath relative_path_with_uuid = base::FilePath(fs_uuid);
+    if (!base::FilePath(volume_name)
+             .AppendRelativePath(relative_path, &relative_path_with_uuid)) {
+      LOG(WARNING) << "Failed to replace volume name \"" << volume_name
+                   << "\" in relative path \"" << relative_path
+                   << "\" with UUID \"" << fs_uuid << "\"";
+      return false;
+    }
+    *arc_url_out =
+        GURL(kArcRemovableMediaContentUrlPrefix)
+            .Resolve(net::EscapePath(relative_path_with_uuid.AsUTF8Unsafe()));
     return true;
   }
 
-  // Convert paths under MyFiles
+  // Convert paths under MyFiles.
   if (base::FilePath(GetMyFilesFolderForProfile(primary_profile))
           .AppendRelativePath(path, &relative_path)) {
     *arc_url_out = GURL(kArcMyFilesContentUrlPrefix)
