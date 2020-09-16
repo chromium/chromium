@@ -42,6 +42,7 @@ struct ResultMetadata {
   ResultMetadata();
   ~ResultMetadata();
 
+  base::Optional<uint8_t> awb_mode;
   base::Optional<int32_t> brightness;
   base::Optional<int32_t> contrast;
   base::Optional<int32_t> pan;
@@ -240,6 +241,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
   // States of SetPhotoOptions
+  bool is_set_awb_mode_;
   bool is_set_brightness_;
   bool is_set_contrast_;
   bool is_set_pan_;

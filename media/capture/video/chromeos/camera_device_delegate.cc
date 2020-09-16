@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,6 +47,38 @@ constexpr char kTilt[] = "com.google.control.tilt";
 constexpr char kTiltRange[] = "com.google.control.tiltRange";
 constexpr char kZoom[] = "com.google.control.zoom";
 constexpr char kZoomRange[] = "com.google.control.zoomRange";
+constexpr int32_t kColorTemperatureStep = 100;
+
+using AwbModeTemperatureMap = std::map<uint8_t, int32_t>;
+
+const AwbModeTemperatureMap& GetAwbModeTemperatureMap() {
+  // https://source.android.com/devices/camera/camera3_3Amodes#auto-wb
+  static const base::NoDestructor<AwbModeTemperatureMap> kAwbModeTemperatureMap(
+      {
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_INCANDESCENT),
+           2700},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_FLUORESCENT),
+           5000},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_WARM_FLUORESCENT),
+           3000},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_DAYLIGHT),
+           5500},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_CLOUDY_DAYLIGHT),
+           6500},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_TWILIGHT),
+           15000},
+          {static_cast<uint8_t>(cros::mojom::AndroidControlAwbMode::
+                                    ANDROID_CONTROL_AWB_MODE_SHADE),
+           7500},
+      });
+  return *kAwbModeTemperatureMap;
+}
 
 std::pair<int32_t, int32_t> GetTargetFrameRateRange(
     const cros::mojom::CameraMetadataPtr& static_metadata,
@@ -253,6 +286,7 @@ void CameraDeviceDelegate::AllocateAndStart(
 
   result_metadata_frame_number_for_photo_state_ = 0;
   result_metadata_frame_number_ = 0;
+  is_set_awb_mode_ = false;
   is_set_brightness_ = false;
   is_set_contrast_ = false;
   is_set_pan_ = false;
@@ -260,6 +294,7 @@ void CameraDeviceDelegate::AllocateAndStart(
   is_set_sharpness_ = false;
   is_set_tilt_ = false;
   is_set_zoom_ = false;
+
   chrome_capture_params_ = params;
   device_context_ = device_context;
   device_context_->SetState(CameraDeviceContext::State::kStarting);
@@ -445,6 +480,33 @@ void CameraDeviceDelegate::SetPhotoOptions(
   } else {
     is_set_zoom_ =
         set_vendor_int(kZoom, settings->has_zoom, settings->zoom, is_set_zoom_);
+  }
+
+  if (settings->has_white_balance_mode &&
+      settings->white_balance_mode == mojom::MeteringMode::MANUAL &&
+      settings->has_color_temperature) {
+    const AwbModeTemperatureMap& map = GetAwbModeTemperatureMap();
+    cros::mojom::AndroidControlAwbMode awb_mode =
+        cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO;
+    auto awb_available_modes = GetMetadataEntryAsSpan<uint8_t>(
+        static_metadata_,
+        cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_AVAILABLE_MODES);
+    int32_t min_diff = std::numeric_limits<int32_t>::max();
+    for (const auto& mode : awb_available_modes) {
+      auto it = map.find(mode);
+      // Find the nearest awb mode
+      int32_t diff = std::abs(settings->color_temperature - it->second);
+      if (diff < min_diff) {
+        awb_mode = static_cast<cros::mojom::AndroidControlAwbMode>(mode);
+        min_diff = diff;
+      }
+    }
+    camera_3a_controller_->SetAutoWhiteBalanceMode(awb_mode);
+    is_set_awb_mode_ = true;
+  } else if (is_set_awb_mode_) {
+    camera_3a_controller_->SetAutoWhiteBalanceMode(
+        cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO);
+    is_set_awb_mode_ = false;
   }
 
   bool is_resolution_specified = settings->has_width && settings->has_height;
@@ -1180,6 +1242,14 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
         gfx::Rect(rect[0], rect[1], rect[2], rect[3]);
   }
 
+  result_metadata_.awb_mode.reset();
+  auto awb_mode = GetMetadataEntryAsSpan<uint8_t>(
+      result_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_MODE);
+  if (awb_mode.size() == 1) {
+    result_metadata_.awb_mode = awb_mode[0];
+  }
+
   result_metadata_frame_number_ = frame_number;
   // We need to wait the new result metadata for new settings.
   if (result_metadata_frame_number_ >
@@ -1271,6 +1341,45 @@ void CameraDeviceDelegate::DoGetPhotoState(
     photo_state->zoom =
         GetControlRangeByVendorTagName(kZoomRange, result_metadata_.zoom);
     use_digital_zoom_ = false;
+  }
+
+  auto awb_available_modes = GetMetadataEntryAsSpan<uint8_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_AVAILABLE_MODES);
+
+  // Only enable white balance control when there are more than 1 control modes.
+  if (awb_available_modes.size() > 1 && result_metadata_.awb_mode) {
+    photo_state->supported_white_balance_modes.push_back(
+        mojom::MeteringMode::MANUAL);
+    photo_state->supported_white_balance_modes.push_back(
+        mojom::MeteringMode::CONTINUOUS);
+    const AwbModeTemperatureMap& map = GetAwbModeTemperatureMap();
+    int32_t current_temperature = 0;
+    if (result_metadata_.awb_mode ==
+        static_cast<uint8_t>(
+            cros::mojom::AndroidControlAwbMode::ANDROID_CONTROL_AWB_MODE_AUTO))
+      photo_state->current_white_balance_mode = mojom::MeteringMode::CONTINUOUS;
+    else {
+      // Need to find current color temperature.
+      photo_state->current_white_balance_mode = mojom::MeteringMode::MANUAL;
+      current_temperature = map.at(result_metadata_.awb_mode.value());
+    }
+
+    int32_t min = std::numeric_limits<int32_t>::max();
+    int32_t max = std::numeric_limits<int32_t>::min();
+    for (const auto& mode : awb_available_modes) {
+      auto it = map.find(mode);
+      if (it == map.end())
+        continue;
+      if (it->second < min)
+        min = it->second;
+      else if (it->second > max)
+        max = it->second;
+    }
+    photo_state->color_temperature->min = min;
+    photo_state->color_temperature->max = max;
+    photo_state->color_temperature->step = kColorTemperatureStep;
+    photo_state->color_temperature->current = current_temperature;
   }
 
   std::move(callback).Run(std::move(photo_state));

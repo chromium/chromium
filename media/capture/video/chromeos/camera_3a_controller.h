@@ -42,6 +42,9 @@ class CAPTURE_EXPORT Camera3AController
   // Enable the auto-focus mode suitable for video recording.
   void SetAutoFocusModeForVideoRecording();
 
+  // Set auto white balance mode.
+  void SetAutoWhiteBalanceMode(cros::mojom::AndroidControlAwbMode mode);
+
   bool IsPointOfInterestSupported();
 
   // Set point of interest. The coordinate system is based on the active
