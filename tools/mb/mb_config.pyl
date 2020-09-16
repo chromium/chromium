@@ -2162,7 +2162,7 @@
     ],
 
     'official_goma_mac_perf': [
-      'official', 'goma', 'no_keystone_registration_framework', 'full_symbols',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols',
     ],
 
     'official_goma_mac_pgo': [
@@ -2895,6 +2895,10 @@
 
     'no_symbols': {
       'gn_args': 'symbol_level=0',
+    },
+
+    'no_widevine_cdm_host_verification': {
+      'gn_args': 'enable_widevine_cdm_host_verification=false',
     },
 
     'official': {
