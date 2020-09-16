@@ -90,11 +90,12 @@ void HoldingSpaceClientImpl::PinItem(const HoldingSpaceItem& item) {
 }
 
 void HoldingSpaceClientImpl::UnpinItem(const HoldingSpaceItem& item) {
-  DCHECK_EQ(item.type(), HoldingSpaceItem::Type::kPinnedFile);
   const storage::FileSystemURL& file_system_url =
       file_manager::util::GetFileSystemContextForExtensionId(
           profile_, file_manager::kFileManagerAppId)
           ->CrackURL(item.file_system_url());
+  DCHECK(GetHoldingSpaceKeyedService(profile_)->ContainsPinnedFile(
+      file_system_url));
   GetHoldingSpaceKeyedService(profile_)->RemovePinnedFile(file_system_url);
 }
 

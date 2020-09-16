@@ -4,12 +4,14 @@
 
 #include "ash/system/holding_space/holding_space_item_context_menu.h"
 
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -45,16 +47,18 @@ void HoldingSpaceItemContextMenu::ExecuteCommand(int command_id,
                                                  int event_flags) {
   switch (command_id) {
     case HoldingSpaceCommandId::kCopyToClipboard:
-      // TODO(crbug.com/1127240): Hookup API for copy to clipboard
+      HoldingSpaceController::Get()->client()->CopyToClipboard(
+          *item_, base::DoNothing());
       break;
     case HoldingSpaceCommandId::kPinItem:
-      // TODO(crbug.com/1127240): Hookup API for toggling pin
+      HoldingSpaceController::Get()->client()->PinItem(*item_);
       break;
     case HoldingSpaceCommandId::kShowInFolder:
-      // TODO(crbug.com/1127240): Hookup API for show in folder
+      HoldingSpaceController::Get()->client()->OpenItemInFolder(
+          *item_, base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
-      // TODO(crbug.com/1127240): Hookup API for toggling pin
+      HoldingSpaceController::Get()->client()->UnpinItem(*item_);
       break;
   }
 }
