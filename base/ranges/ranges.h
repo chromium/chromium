@@ -10,12 +10,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/ranges/iterator.h"
-#include "base/ranges/ranges_internal.h"
+#include "base/template_util.h"
 
 namespace base {
-
-namespace ranges {
 
 namespace internal {
 
@@ -90,6 +87,8 @@ constexpr auto end(Range&& range, priority_tag<0>)
 }
 
 }  // namespace internal
+
+namespace ranges {
 
 // Simplified implementation of C++20's std::ranges::begin.
 // As opposed to std::ranges::begin, this implementation does does not check

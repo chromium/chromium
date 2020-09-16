@@ -89,6 +89,15 @@ struct is_iterator<T,
                    void_t<typename std::iterator_traits<T>::iterator_category>>
     : std::true_type {};
 
+// Helper to express preferences in an overload set. If more than one overload
+// are available for a given set of parameters the overload with the higher
+// priority will be chosen.
+template <size_t I>
+struct priority_tag : priority_tag<I - 1> {};
+
+template <>
+struct priority_tag<0> {};
+
 }  // namespace internal
 
 // is_trivially_copyable is especially hard to get right.
@@ -223,6 +232,59 @@ struct disjunction<B1, Bn...>
 // Specification: https://wg21.link/meta.logical#itemdecl:3
 template <typename B>
 struct negation : bool_constant<!static_cast<bool>(B::value)> {};
+
+// Implementation of C++17's std::invoke_result_t.
+//
+// This implementation adds references to `Functor` and `Args` to work around
+// some quirks of std::result_of_t. See the #Notes section of [1] for details.
+//
+// References:
+// [1] https://en.cppreference.com/w/cpp/types/result_of
+// [2] https://wg21.link/meta.type.synop#lib:invoke_result_t
+template <typename Functor, typename... Args>
+using invoke_result_t = std::result_of_t<Functor && (Args && ...)>;
+
+// Simplified implementation of C++20's std::iter_value_t.
+// As opposed to std::iter_value_t, this implementation does not restrict
+// the type of `Iter` and does not consider specializations of
+// `indirectly_readable_traits`.
+//
+// Reference: https://wg21.link/readable.traits#2
+template <typename Iter>
+using iter_value_t = typename std::iterator_traits<
+    std::remove_cv_t<std::remove_reference_t<Iter>>>::value_type;
+
+// Simplified implementation of C++20's std::iter_reference_t.
+// As opposed to std::iter_reference_t, this implementation does not restrict
+// the type of `Iter`.
+//
+// Reference: https://wg21.link/iterator.synopsis#:~:text=iter_reference_t
+template <typename Iter>
+using iter_reference_t = decltype(*std::declval<Iter&>());
+
+// Simplified implementation of C++20's std::indirect_result_t. As opposed to
+// std::indirect_result_t, this implementation does not restrict the type of
+// `Func` and `Iters`.
+//
+// Reference: https://wg21.link/iterator.synopsis#:~:text=indirect_result_t
+template <typename Func, typename... Iters>
+using indirect_result_t = invoke_result_t<Func, iter_reference_t<Iters>...>;
+
+// Simplified implementation of C++20's std::projected. As opposed to
+// std::projected, this implementation does not explicitly restrict the type of
+// `Iter` and `Proj`, but rather does so implicitly by requiring
+// `indirect_result_t<Proj, Iter>` is a valid type. This is required for SFINAE
+// friendliness.
+//
+// Reference: https://wg21.link/projected
+template <typename Iter,
+          typename Proj,
+          typename IndirectResultT = indirect_result_t<Proj, Iter>>
+struct projected {
+  using value_type = std::remove_cv_t<std::remove_reference_t<IndirectResultT>>;
+
+  IndirectResultT operator*() const;  // not defined
+};
 
 }  // namespace base
 

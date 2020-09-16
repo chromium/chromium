@@ -12,13 +12,11 @@
 #include <utility>
 
 #include "base/ranges/functional.h"
-#include "base/ranges/iterator.h"
 #include "base/ranges/ranges.h"
-#include "base/ranges/ranges_internal.h"
+#include "base/stl_util.h"
+#include "base/template_util.h"
 
 namespace base {
-
-namespace ranges {
 
 namespace internal {
 
@@ -28,7 +26,8 @@ namespace internal {
 template <typename Pred, typename Proj>
 constexpr auto ProjectedUnaryPredicate(Pred& pred, Proj& proj) noexcept {
   return [&pred, &proj](auto&& arg) -> bool {
-    return invoke(pred, invoke(proj, std::forward<decltype(arg)>(arg)));
+    return base::invoke(pred,
+                        base::invoke(proj, std::forward<decltype(arg)>(arg)));
   };
 }
 
@@ -101,8 +100,8 @@ class BinaryPredicateProjector {
   template <typename T, typename U>
   constexpr bool operator()(T&& lhs, U&& rhs) const {
     auto projs = GetProjs<T, U>(priority_tag<3>());
-    return invoke(pred_, invoke(projs.first, std::forward<T>(lhs)),
-                  invoke(projs.second, std::forward<U>(rhs)));
+    return base::invoke(pred_, base::invoke(projs.first, std::forward<T>(lhs)),
+                        base::invoke(projs.second, std::forward<U>(rhs)));
   }
 
  private:
@@ -144,9 +143,11 @@ using iterator_category_t =
 // e.g. transform. In spirit this is similar to C++20's std::ranges::range, a
 // concept that each range should satisfy.
 template <typename Range>
-using range_category_t = iterator_category_t<iterator_t<Range>>;
+using range_category_t = iterator_category_t<ranges::iterator_t<Range>>;
 
 }  // namespace internal
+
+namespace ranges {
 
 // C++14 implementation of std::ranges::in_fun_result. Note the because C++14
 // lacks the `no_unique_address` attribute it is commented out.
