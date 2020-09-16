@@ -448,7 +448,7 @@ TEST_F('SwitchAccessPredicateTest', 'Cache', function() {
         return null;
       }
     }
-    const group = new TestRoot();
+    const group = new TestRoot(t.root);
 
     assertTrue(
         SwitchAccessPredicate.isGroup(t.root, group, cache),

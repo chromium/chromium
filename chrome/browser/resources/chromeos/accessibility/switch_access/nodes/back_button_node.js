@@ -88,13 +88,11 @@ class BackButtonNode extends SAChildNode {
         true /* show */, this.group_.location);
     BackButtonNode.findAutomationNode_();
 
-    if (this.group_.automationNode) {
-      this.locationChangedHandler_ = new RepeatedEventHandler(
-          this.group_.automationNode,
-          chrome.automation.EventType.LOCATION_CHANGED,
-          () => FocusRingManager.setFocusedNode(this),
-          {exactMatch: true, allAncestors: true});
-    }
+    this.locationChangedHandler_ = new RepeatedEventHandler(
+        this.group_.automationNode,
+        chrome.automation.EventType.LOCATION_CHANGED,
+        () => FocusRingManager.setFocusedNode(this),
+        {exactMatch: true, allAncestors: true});
   }
 
   /** @override */

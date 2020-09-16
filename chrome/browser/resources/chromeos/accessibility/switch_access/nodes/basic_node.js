@@ -232,10 +232,7 @@ class BasicRootNode extends SARootNode {
    * @param {!AutomationNode} baseNode
    */
   constructor(baseNode) {
-    super();
-
-    /** @private {!AutomationNode} */
-    this.baseNode_ = baseNode;
+    super(baseNode);
 
     /** @private {boolean} */
     this.invalidated_ = false;
@@ -247,13 +244,8 @@ class BasicRootNode extends SARootNode {
   // ================= Getters and setters =================
 
   /** @override */
-  get automationNode() {
-    return this.baseNode_;
-  }
-
-  /** @override */
   get location() {
-    return this.baseNode_.location || super.location;
+    return this.automationNode.location || super.location;
   }
 
   // ================= General methods =================
@@ -263,38 +255,37 @@ class BasicRootNode extends SARootNode {
     if (!(other instanceof BasicRootNode)) {
       return false;
     }
-
-    other = /** @type {!BasicRootNode} */ (other);
-    return super.equals(other) && this.baseNode_ === other.baseNode_;
+    return super.equals(other) && this.automationNode === other.automationNode;
   }
 
   /** @override */
   isEquivalentTo(node) {
     if (node instanceof BasicRootNode || node instanceof BasicNode) {
-      return this.baseNode_ === node.baseNode_;
+      return this.automationNode === node.automationNode;
     }
 
     if (node instanceof SAChildNode) {
       return node.isEquivalentTo(this);
     }
-    return this.baseNode_ === node;
+    return this.automationNode === node;
   }
 
   /** @override */
   isValidGroup() {
-    if (!this.baseNode_.role) {
+    if (!this.automationNode.role) {
       // If the underlying automation node has been invalidated, return false.
       return false;
     }
     return !this.invalidated_ &&
-        SwitchAccessPredicate.isVisible(this.baseNode_) && super.isValidGroup();
+        SwitchAccessPredicate.isVisible(this.automationNode) &&
+        super.isValidGroup();
   }
 
   /** @override */
   onFocus() {
     super.onFocus();
     this.childrenChangedHandler_ = new RepeatedEventHandler(
-        this.baseNode_, chrome.automation.EventType.CHILDREN_CHANGED,
+        this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
         this.refresh.bind(this));
   }
 
@@ -398,7 +389,7 @@ class BasicRootNode extends SARootNode {
    */
   static getInterestingChildren(root) {
     if (root instanceof BasicRootNode) {
-      root = root.baseNode_;
+      root = root.automationNode;
     }
 
     if (root.children.length === 0) {

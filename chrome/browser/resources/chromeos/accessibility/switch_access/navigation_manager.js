@@ -190,12 +190,11 @@ class NavigationManager {
       return;
     }
     const navigator = NavigationManager.instance;
-    const baseNode = node.automationNode;
-    if (!(node instanceof BasicNode) || !baseNode) {
+    if (!(node instanceof BasicNode)) {
       navigator.setNode_(node);
       return;
     }
-    if (!SwitchAccessPredicate.isWindow(baseNode)) {
+    if (!SwitchAccessPredicate.isWindow(node.automationNode)) {
       navigator.setNode_(node);
       return;
     }
@@ -212,9 +211,7 @@ class NavigationManager {
     // possible that other parts of the window are occluded, but in Chrome we
     // can't drag windows off the top of the screen.
     navigator.desktop_.hitTestWithReply(center.x, location.top, (hitNode) => {
-      if (AutomationUtil.isDescendantOf(
-              hitNode,
-              /** @type {!AutomationNode} */ (baseNode))) {
+      if (AutomationUtil.isDescendantOf(hitNode, node.automationNode)) {
         navigator.setNode_(node);
       } else if (node.isValidAndVisible()) {
         NavigationManager.tryMoving(getNext(node), getNext, startingNode);
@@ -241,11 +238,8 @@ class NavigationManager {
     if (nodeIsValid && !(navigator.node_ instanceof BackButtonNode)) {
       // Our group has been invalidated. Move to navigator node to repair the
       // group stack.
-      const node = navigator.node_.automationNode;
-      if (node) {
-        navigator.moveTo_(node);
-        return;
-      }
+      navigator.moveTo_(navigator.node_.automationNode);
+      return;
     }
 
     // Make sure the menu isn't open.

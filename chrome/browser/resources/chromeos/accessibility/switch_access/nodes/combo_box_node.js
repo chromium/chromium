@@ -31,13 +31,11 @@ class ComboBoxNode extends BasicNode {
 
   /** @override */
   onFocus() {
-    if (this.automationNode) {
-      this.expandedChangedHandler_ = new RepeatedEventHandler(
-          this.automationNode, chrome.automation.EventType.EXPANDED_CHANGED,
-          () => this.onExpandedChanged(), {exactMatch: true});
-    }
-
     super.onFocus();
+
+    this.expandedChangedHandler_ = new RepeatedEventHandler(
+        this.automationNode, chrome.automation.EventType.EXPANDED_CHANGED,
+        () => this.onExpandedChanged(), {exactMatch: true});
     this.automationNode.focus();
   }
 

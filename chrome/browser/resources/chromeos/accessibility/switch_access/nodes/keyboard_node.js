@@ -177,8 +177,8 @@ class KeyboardRootNode extends BasicRootNode {
     const interestingChildren =
         root.automationNode.findAll({role: chrome.automation.RoleType.BUTTON});
     /** @type {!Array<!SAChildNode>} */
-    const children =
-        GroupNode.separateByRow(interestingChildren.map(childConstructor));
+    const children = GroupNode.separateByRow(
+        interestingChildren.map(childConstructor), root.automationNode);
 
     children.push(new BackButtonNode(root));
     root.children = children;

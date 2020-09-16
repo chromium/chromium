@@ -37,8 +37,8 @@ class SAChildNode {
   get actions() {}
 
   /**
-   * Returns the underlying automation node, if one exists.
-   * @return {AutomationNode}
+   * The automation node that most closely contains this node.
+   * @return {!AutomationNode}
    * @abstract
    */
   get automationNode() {}
@@ -217,9 +217,8 @@ class SAChildNode {
 
     let str = this.role + ' ';
 
-    const autoNode = this.automationNode;
-    if (autoNode && autoNode.name) {
-      str += 'name(' + autoNode.name + ') ';
+    if (this.automationNode.name) {
+      str += 'name(' + this.automationNode.name + ') ';
     }
 
     const loc = this.location;
@@ -251,15 +250,27 @@ class SAChildNode {
  * This class represents the root node of a Switch Access traversal group.
  */
 class SARootNode {
-  constructor() {
+  /**
+   * @param {!AutomationNode} autoNode The automation node that most closely
+   *     contains all of this node's children.
+   */
+  constructor(autoNode) {
     /** @private {!Array<!SAChildNode>} */
     this.children_ = [];
+
+    /** @private {!AutomationNode} */
+    this.automationNode_ = autoNode;
   }
 
   // ================= Getters and setters =================
 
-  /** @return {AutomationNode} */
-  get automationNode() {}
+  /**
+   * @return {!AutomationNode} The automation node that most closely
+   *     contains all of this node's children.
+   */
+  get automationNode() {
+    return this.automationNode_;
+  }
 
   /** @param {!Array<!SAChildNode>} newVal */
   set children(newVal) {
@@ -402,20 +413,15 @@ class SARootNode {
    * @return {string}
    */
   debugString(wholeTree = false, prefix = '', currentNode = null) {
-    const autoNode = this.automationNode;
-    let str = 'Root: ';
-    if (autoNode && autoNode.role) {
-      str += autoNode.role + ' ';
-    }
-    if (autoNode && autoNode.name) {
-      str += 'name(' + autoNode.name + ') ';
+    let str = 'Root: ' + this.automationNode.role + ' ';
+    if (this.automationNode.name) {
+      str += 'name(' + this.automationNode.name + ') ';
     }
 
     const loc = this.location;
     if (loc) {
       str += 'loc(' + RectUtil.toString(loc) + ') ';
     }
-
 
     for (const child of this.children) {
       str += '\n' + prefix + ((child.equals(currentNode)) ? ' * ' : ' - ');
