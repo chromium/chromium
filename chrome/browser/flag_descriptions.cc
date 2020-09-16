@@ -3679,10 +3679,10 @@ const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";
 const char kChromeOSDirectVideoDecoderDescription[] =
     "Enables the hardware-accelerated ChromeOS direct media::VideoDecoder "
     "implementation. Note that this might be entirely disallowed by the "
-    "--force-disable-new-accelerated-video-decoder command line switch which "
-    "is added for platforms where said direct VideoDecoder does not work or is "
-    "not well tested (see the disable_cros_video_decoder USE flag in Chrome "
-    "OS)";
+    "--platform-disallows-chromeos-direct-video-decoder command line switch "
+    "which is added for platforms where said direct VideoDecoder does not work "
+    "or is not well tested (see the disable_cros_video_decoder USE flag in "
+    "Chrome OS)";
 #endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";

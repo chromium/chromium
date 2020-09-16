@@ -193,8 +193,7 @@ const char kEnableLiveCaptionPrefForTesting[] =
 // specific configurations that are signalled via this command line flag.
 // TODO(b/159825227): remove when the "old" video decoder is fully launched.
 const char kPlatformDisallowsChromeOSDirectVideoDecoder[] =
-    // TODO(mcasas): Rename the flag string when crrev.com/c/2268600 lands.
-    "force-disable-new-accelerated-video-decoder";
+    "platform-disallows-chromeos-direct-video-decoder";
 #endif
 
 namespace autoplay {
