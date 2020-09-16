@@ -49,7 +49,8 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       nullptr,  // No file types
       0,        // Hence no file type index.
-      false  // show_android_picker_apps
+      "",       // search_query
+      false     // show_android_picker_apps
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
@@ -63,6 +64,7 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
                 "   \"allowedPaths\": \"nativePath\",\n"
                 "   \"currentDirectoryURL\": "
                 "\"filesystem:chrome-extension://abc/Downloads/\",\n"
+                "   \"searchQuery\": \"\",\n"
                 "   \"selectionURL\": "
                 "\"filesystem:chrome-extension://abc/Downloads/foo.txt\",\n"
                 "   \"showAndroidPickerApps\": false,\n"
@@ -97,6 +99,7 @@ TEST(FileManagerUrlUtilTest,
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       &file_types,
       1,  // The file type index is 1-based.
+      "search query",
       true  // show_android_picker_apps
   );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
@@ -112,6 +115,7 @@ TEST(FileManagerUrlUtilTest,
       "   \"currentDirectoryURL\": "
       "\"filesystem:chrome-extension://abc/Downloads/\",\n"
       "   \"includeAllFiles\": false,\n"
+      "   \"searchQuery\": \"search query\",\n"
       "   \"selectionURL\": "
       "\"filesystem:chrome-extension://abc/Downloads/foo.txt\",\n"
       "   \"showAndroidPickerApps\": true,\n"

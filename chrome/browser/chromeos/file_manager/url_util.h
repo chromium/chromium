@@ -29,6 +29,7 @@ GURL GetFileManagerMainPageUrlWithParams(
     const std::string& target_name,
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
+    const std::string& search_query,
     bool show_android_picker_apps);
 
 }  // namespace util

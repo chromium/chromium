@@ -308,6 +308,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     int file_type_index,
     void* params,
     const Owner& owner,
+    const std::string& search_query,
     bool show_android_picker_apps) {
   if (owner_window_) {
     LOG(ERROR) << "File dialog already in use!";
@@ -394,7 +395,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       file_manager::util::GetFileManagerMainPageUrlWithParams(
           type, title, current_directory_url, selection_url,
           default_path.BaseName().value(), file_types, file_type_index,
-          show_android_picker_apps);
+          search_query, show_android_picker_apps);
 
   ExtensionDialog::InitParams dialog_params(
       {kFileManagerWidth, kFileManagerHeight});
@@ -442,6 +443,7 @@ void SelectFileDialogExtension::SelectFileImpl(
   owner.window = owner_window;
   SelectFileWithFileManagerParams(type, title, default_path, file_types,
                                   file_type_index, params, owner,
+                                  /*search_query=*/"",
                                   /*show_android_picker_apps=*/false);
 }
 

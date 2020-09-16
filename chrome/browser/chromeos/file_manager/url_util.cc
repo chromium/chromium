@@ -77,6 +77,7 @@ GURL GetFileManagerMainPageUrlWithParams(
     const std::string& target_name,
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
+    const std::string& search_query,
     bool show_android_picker_apps) {
   base::DictionaryValue arg_value;
   arg_value.SetString("type", GetDialogTypeAsString(type));
@@ -84,6 +85,7 @@ GURL GetFileManagerMainPageUrlWithParams(
   arg_value.SetString("currentDirectoryURL", current_directory_url.spec());
   arg_value.SetString("selectionURL", selection_url.spec());
   arg_value.SetString("targetName", target_name);
+  arg_value.SetString("searchQuery", search_query);
   arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
 
   if (file_types) {

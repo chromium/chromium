@@ -89,6 +89,7 @@ class SelectFileDialogExtension
                                        int file_type_index,
                                        void* params,
                                        const Owner& owner,
+                                       const std::string& search_query,
                                        bool show_android_picker_apps);
 
  protected:
