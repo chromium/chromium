@@ -34,6 +34,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
@@ -843,6 +844,10 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY)) {
     DCHECK(!editable);
     AppendCopyItem();
+
+    if (base::FeatureList::IsEnabled(features::kCopyLinkToText)) {
+      AppendCopyLinkToTextItem();
+    }
   }
 
   if (!content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_LINK))
@@ -1563,6 +1568,11 @@ void RenderViewContextMenu::AppendCopyItem() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPY,
                                   IDS_CONTENT_CONTEXT_COPY);
+}
+
+void RenderViewContextMenu::AppendCopyLinkToTextItem() {
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
+                                  IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
 }
 
 void RenderViewContextMenu::AppendPrintItem() {

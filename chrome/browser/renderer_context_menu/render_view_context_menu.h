@@ -175,6 +175,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendPageItems();
   void AppendExitFullscreenItem();
   void AppendCopyItem();
+  void AppendCopyLinkToTextItem();
   void AppendPrintItem();
   void AppendMediaRouterItem();
   void AppendRotationItems();
