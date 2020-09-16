@@ -498,7 +498,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TabSpecificBrowserActionState) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest,
+                       TabSpecificBrowserActionState) {
   ASSERT_TRUE(RunExtensionTest("browser_action/tab_specific_state")) <<
       message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -530,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TabSpecificBrowserActionState) {
 
 // Test that calling chrome.browserAction.setPopup() can enable and change
 // a popup.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionAddPopup) {
   ASSERT_TRUE(RunExtensionTest("browser_action/add_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionAddPopup) {
 }
 
 // Test that calling chrome.browserAction.setPopup() can remove a popup.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionRemovePopup) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionRemovePopup) {
   // Load the extension, which has a browser action with a default popup.
   ASSERT_TRUE(RunExtensionTest("browser_action/remove_popup")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -737,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoUpdate) {
 
 // Tests that events are dispatched to the correct profile for split mode
 // extensions.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoSplit) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoSplit) {
   ResultCatcher catcher;
   const Extension* extension = LoadExtensionWithFlags(
       test_data_dir_.AppendASCII("browser_action/split_mode"),
@@ -817,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
             action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BadgeBackgroundColor) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("browser_action/color")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -866,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Getters) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Getters) {
   ASSERT_TRUE(RunExtensionTest("browser_action/getters")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
@@ -887,7 +888,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Getters) {
 }
 
 // Verify triggering browser action.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, TestTriggerBrowserAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(RunExtensionTest("trigger_actions/browser_action")) << message_;
@@ -923,7 +924,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, TestTriggerBrowserAction) {
   EXPECT_EQ(result, "red");
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionWithRectangularIcon) {
+IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest,
+                       BrowserActionWithRectangularIcon) {
   ExtensionTestMessageListener ready_listener("ready", true);
 
   const Extension* extension = LoadExtension(
