@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.payments.AddressEditor;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentAppCreator;
-import org.chromium.chrome.browser.payments.AutofillPaymentAppFactory;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.CardEditor;
 import org.chromium.chrome.browser.payments.ContactEditor;
@@ -52,6 +51,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
@@ -561,7 +561,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     public void onPaymentRequestParamsInitiated(PaymentRequestParams params) {
         // Checks whether the merchant supports autofill cards before show is called.
         mMerchantSupportsAutofillCards =
-                AutofillPaymentAppFactory.merchantSupportsBasicCard(params.getMethodData());
+                BasicCardUtils.merchantSupportsBasicCard(params.getMethodData());
 
         // If in strict mode, don't give user an option to add an autofill card during the checkout
         // to avoid the "unhappy" basic-card flow.

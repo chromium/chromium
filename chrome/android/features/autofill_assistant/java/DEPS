@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/browser/ui/messages/android/java",
   "+components/autofill/android",
   "+components/browser_ui/widget/android",
+  "+components/payments/content/android",
   "+content/public/android/java/src/org/chromium/content_public/browser",
   "+content/public/android/java/src/org/chromium/content/browser/input",
   "+content/public/android/java/src/org/chromium/content/browser/picker",

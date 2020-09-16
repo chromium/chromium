@@ -78,6 +78,7 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/Address.java",
+    "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/ComponentPaymentRequestImpl.java",
@@ -136,6 +137,7 @@ android_library("java") {
   ]
   srcjar_deps = [
     ":error_strings_generated_srcjar",
+    ":method_strings_generated_srcjar",
     ":payment_app_type_generated_enum",
     ":payment_details_update_service_aidl",
     ":payments_journey_logger_enum_javagen",

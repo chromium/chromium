@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryParams;
@@ -104,21 +105,6 @@ public class AutofillPaymentAppFactory implements PaymentAppFactoryInterface {
             return new AutofillPaymentInstrument(mDelegate.getParams().getWebContents(), card,
                     billingAddress, MethodStrings.BASIC_CARD);
         }
-    }
-
-    /** @return True if the merchant methodDataMap supports basic card payment method. */
-    public static boolean merchantSupportsBasicCard(Map<String, PaymentMethodData> methodDataMap) {
-        assert methodDataMap != null;
-        PaymentMethodData basicCardData = methodDataMap.get(MethodStrings.BASIC_CARD);
-        if (basicCardData != null) {
-            Set<String> basicCardNetworks =
-                    BasicCardUtils.convertBasicCardToNetworks(basicCardData);
-            if (basicCardNetworks != null && !basicCardNetworks.isEmpty()) return true;
-        }
-
-        // Card issuer networks as payment method names was removed in Chrome 77.
-        // https://www.chromestatus.com/feature/5725727580225536
-        return false;
     }
 
     /**

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorVa
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.ComponentPaymentRequestImpl;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;

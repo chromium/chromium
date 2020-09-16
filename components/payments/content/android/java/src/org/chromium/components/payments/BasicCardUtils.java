@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import org.chromium.payments.mojom.BasicCardNetwork;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -71,6 +71,20 @@ public class BasicCardUtils {
             networksByString.put(entry.getValue(), entry.getKey());
         }
         return networksByString;
+    }
+
+    /** @return True if the merchant methodDataMap supports basic card payment method. */
+    public static boolean merchantSupportsBasicCard(Map<String, PaymentMethodData> methodDataMap) {
+        assert methodDataMap != null;
+        PaymentMethodData basicCardData = methodDataMap.get(MethodStrings.BASIC_CARD);
+        if (basicCardData != null) {
+            Set<String> basicCardNetworks = convertBasicCardToNetworks(basicCardData);
+            if (basicCardNetworks != null && !basicCardNetworks.isEmpty()) return true;
+        }
+
+        // Card issuer networks as payment method names was removed in Chrome 77.
+        // https://www.chromestatus.com/feature/5725727580225536
+        return false;
     }
 
     private BasicCardUtils() {}

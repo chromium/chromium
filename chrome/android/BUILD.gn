@@ -526,7 +526,6 @@ android_library("chrome_java") {
     "//components/ntp_snippets:ntp_snippets_java_enums_srcjar",
     "//components/ntp_tiles:ntp_tiles_enums_java",
     "//components/offline_pages/core:offline_page_model_enums_java",
-    "//components/payments/content/android:method_strings_generated_srcjar",
     "//components/search_engines:search_engine_type_java",
     "//components/ui_metrics:ui_metrics_enums_java",
     "//net:effective_connection_type_java",
