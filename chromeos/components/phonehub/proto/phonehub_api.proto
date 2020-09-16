@@ -150,3 +150,38 @@ message PhoneStatusUpdate {
   // IDs of notification which have been removed since the last update.
   repeated int64 removed_notification_ids = 3;
 }
+
+message UpdateNotificationModeRequest {
+  NotificationMode notification_mode = 1;
+}
+
+message UpdateNotificationModeResponse {}
+
+message RingDeviceRequest {
+  FindMyDeviceRingStatus ring_status = 1;
+}
+
+message RingDeviceResponse {}
+
+message UpdateBatteryModeRequest {
+  BatteryMode battery_mode = 1;
+}
+
+message UpdateBatteryModeResponse {}
+
+message DismissNotificationRequest {
+  int64 notification_id = 1;
+}
+
+message DismissNotificationResponse {}
+
+message NotificationInlineReplyRequest {
+  int64 notification_id = 1;
+  string reply_text = 2;
+}
+
+message NotificationInlineReplyResponse {}
+
+message ShowNotificationAccessSetupRequest {}
+
+message ShowNotificationAccessSetupResponse {}
