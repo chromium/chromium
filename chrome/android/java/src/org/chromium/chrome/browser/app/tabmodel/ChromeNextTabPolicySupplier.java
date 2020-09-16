@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -20,10 +19,8 @@ public class ChromeNextTabPolicySupplier implements NextTabPolicySupplier {
     private OverviewModeBehavior mOverviewModeBehavior;
 
     public ChromeNextTabPolicySupplier(
-            ObservableSupplier<OverviewModeBehavior> overviewModeControllerObservableSupplier) {
-        // TODO(crbug.com/1084528): Replace this with OneShotSupplier when it is available.
-        new OneShotCallback<>(
-                overviewModeControllerObservableSupplier, this::setOverviewModeBehavior);
+            OneshotSupplier<OverviewModeBehavior> overviewModeControllerObservableSupplier) {
+        overviewModeControllerObservableSupplier.onAvailable(this::setOverviewModeBehavior);
     }
 
     private void setOverviewModeBehavior(@NonNull OverviewModeBehavior overviewModeBehavior) {

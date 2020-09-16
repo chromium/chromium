@@ -16,9 +16,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -48,10 +49,9 @@ class TabbedNavigationBarColorController implements VrModeObserver {
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
-    private @Nullable ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
-    private @Nullable Callback<OverviewModeBehavior> mOverviewModeSupplierCallback;
     private @Nullable OverviewModeBehavior mOverviewModeBehavior;
     private @Nullable OverviewModeObserver mOverviewModeObserver;
+    private CallbackController mCallbackController = new CallbackController();
 
     private boolean mUseLightNavigation;
     private boolean mOverviewModeHiding;
@@ -66,7 +66,7 @@ class TabbedNavigationBarColorController implements VrModeObserver {
      *         {@link OverviewModeBehavior} associated with the containing activity.
      */
     TabbedNavigationBarColorController(Window window, TabModelSelector tabModelSelector,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mWindow = window;
@@ -93,9 +93,8 @@ class TabbedNavigationBarColorController implements VrModeObserver {
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeSupplierCallback = this::setOverviewModeBehavior;
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeSupplierCallback);
+        overviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
 
         // TODO(https://crbug.com/806054): Observe tab loads to restrict black bottom nav to
         // incognito NTP.
@@ -110,11 +109,12 @@ class TabbedNavigationBarColorController implements VrModeObserver {
      */
     public void destroy() {
         if (mTabModelSelector != null) mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeSupplierCallback);
-        }
         if (mOverviewModeBehavior != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
         VrModuleProvider.unregisterVrModeObserver(this);
     }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -37,7 +38,7 @@ public class BaseCustomTabRootUiCoordinator
             Supplier<CustomTabActivityNavigationController> customTabNavigationController,
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier) {
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
                 bookmarkBridgeSupplier, overviewModeBehaviorSupplier,

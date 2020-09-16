@@ -15,9 +15,10 @@ import android.widget.ImageButton;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.Invalidator;
@@ -78,10 +79,9 @@ public class TopToolbarCoordinator implements Toolbar {
     private final IdentityDiscController mIdentityDiscController;
     private OptionalBrowsingModeButtonController mOptionalButtonController;
 
-    private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
+    private CallbackController mCallbackController = new CallbackController();
 
     private HomepageManager.HomepageStateListener mHomepageStateListener =
             new HomepageManager.HomepageStateListener() {
@@ -108,7 +108,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ToolbarLayout toolbarLayout, IdentityDiscController identityDiscController,
             ToolbarDataProvider toolbarDataProvider, ToolbarTabController tabController,
             UserEducationHelper userEducationHelper, List<ButtonDataProvider> buttonDataProviders,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ThemeColorProvider normalThemeColorProvider,
             ThemeColorProvider overviewThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
@@ -120,15 +120,14 @@ public class TopToolbarCoordinator implements Toolbar {
         mOptionalButtonController = new OptionalBrowsingModeButtonController(buttonDataProviders,
                 userEducationHelper, mToolbarLayout, () -> toolbarDataProvider.getTab());
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplierObserver = this::setOverviewModeBehavior;
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        overviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
 
         if (mToolbarLayout instanceof ToolbarPhone) {
             if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
                 mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        mIdentityDiscController, userEducationHelper, mOverviewModeBehaviorSupplier,
+                        mIdentityDiscController, userEducationHelper, overviewModeBehaviorSupplier,
                         overviewThemeColorProvider, startSurfaceMenuButtonCoordinator);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
@@ -232,16 +231,16 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void destroy() {
         HomepageManager.getInstance().removeListener(mHomepageStateListener);
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
-            mOverviewModeBehaviorSupplier = null;
-            mOverviewModeBehaviorSupplierObserver = null;
-        }
         mToolbarLayout.destroy();
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.destroy();
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.destroy();
+        }
+
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
 
         if (mOptionalButtonController != null) {

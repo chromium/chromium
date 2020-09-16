@@ -42,9 +42,10 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
@@ -285,8 +286,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
 
-    private final ObservableSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
-            new ObservableSupplierImpl<>();
+    private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
+            new OneshotSupplierImpl<>();
     private OverviewModeController mOverviewModeController;
 
     private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier =
@@ -848,7 +849,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!mPendingInitialTabCreation
                 && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
                         && shouldShowTabSwitcherOnStart())) {
-            setInitialOverviewState();
+            setInitialOverviewStateAsync();
         }
 
         if (TabUiFeatureUtilities.isConditionalTabStripEnabled()
@@ -902,7 +903,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     @Override
-    public @Nullable ObservableSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
+    public @Nullable OneshotSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
         return mOverviewModeBehaviorSupplier;
     }
 
@@ -925,7 +926,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private void setInitialOverviewState() {
+    // Posts a call to setInitialOverviewStateSync that will trigger after observers of
+    // mOverviewModeBehaviorSupplier have a chance to process the supplied OverviewModeBehavior and
+    // add themselves as observers.
+    private void setInitialOverviewStateAsync() {
+        mOverviewModeBehaviorSupplier.onAvailable((unused) -> setInitalOverviewStateSync());
+    }
+
+    private void setInitalOverviewStateSync() {
         boolean isOverviewVisible = mOverviewModeController.overviewVisible();
 
         if (shouldShowTabSwitcherOnStart() && !isOverviewVisible) {
@@ -1137,7 +1145,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (hasStartWithNativeBeenCalled()
                 && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
                         && shouldShowTabSwitcherOnStart())) {
-            setInitialOverviewState();
+            setInitialOverviewStateAsync();
         }
     }
 
@@ -1521,7 +1529,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (shouldShowTabSwitcherOnStart()) {
                 mLayoutManager.setTabModelSelector(mTabModelSelectorImpl);
                 mIsAccessibilityTabSwitcherEnabled = DeviceClassManager.enableAccessibilityLayout();
-                setInitialOverviewState();
+                setInitialOverviewStateAsync();
             }
         }
     }

@@ -50,6 +50,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
@@ -1376,7 +1377,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return {@link ObservableSupplier} for the {@link OverviewModeBehavior} for this activity
      *         if it supports an overview mode, null otherwise.
      */
-    public @Nullable ObservableSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
+
+    public @Nullable OneshotSupplier<OverviewModeBehavior> getOverviewModeBehaviorSupplier() {
         return null;
     }
 

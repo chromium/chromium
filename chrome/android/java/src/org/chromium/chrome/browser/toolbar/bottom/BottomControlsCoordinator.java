@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -85,7 +86,7 @@ public class BottomControlsCoordinator {
             ObservableSupplier<AppMenuButtonHelper> menuButtonHelperSupplier,
             Supplier<Boolean> showStartSurfaceCallable, Runnable openHomepageAction,
             Callback<Integer> setUrlBarFocusAction,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ScrimCoordinator scrimCoordinator) {
         final ScrollingBottomViewResourceFrameLayout root =
                 (ScrollingBottomViewResourceFrameLayout) stub.inflate();

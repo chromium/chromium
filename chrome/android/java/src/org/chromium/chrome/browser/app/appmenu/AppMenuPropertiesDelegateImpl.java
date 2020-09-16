@@ -25,10 +25,12 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -83,9 +85,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     protected final TabModelSelector mTabModelSelector;
     protected final ToolbarManager mToolbarManager;
     protected final View mDecorView;
-    private final @Nullable ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private CallbackController mCallbackController = new CallbackController();
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
-    private @Nullable Callback<OverviewModeBehavior> mOverviewModeSupplierCallback;
     private Callback<BookmarkBridge> mBookmarkBridgeSupplierCallback;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
@@ -129,7 +130,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            @Nullable ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
@@ -139,12 +140,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeSupplierCallback = overviewModeBehavior -> {
-                mOverviewModeBehavior = overviewModeBehavior;
-            };
-            mOverviewModeBehaviorSupplier.addObserver(mOverviewModeSupplierCallback);
+        if (overviewModeBehaviorSupplier != null) {
+            overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
+                    overviewModeBehavior -> { mOverviewModeBehavior = overviewModeBehavior; }));
         }
 
         mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
@@ -155,10 +153,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public void destroy() {
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeSupplierCallback);
-        }
         mBookmarkBridgeSupplier.removeObserver(mBookmarkBridgeSupplierCallback);
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
     }
 
     @Override

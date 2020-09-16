@@ -21,6 +21,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -114,8 +115,7 @@ public class RootUiCoordinator
     private OverlayPanelManager.OverlayPanelManagerObserver mOverlayPanelManagerObserver;
 
     private OverviewModeBehavior mOverviewModeBehavior;
-    private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
 
     /** A means of providing the theme color to different features. */
@@ -168,7 +168,7 @@ public class RootUiCoordinator
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             ActivityTabProvider tabProvider, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<ContextualSearchManager> contextualSearchManagerSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
@@ -195,8 +195,8 @@ public class RootUiCoordinator
         mOmniboxFocusStateSupplier.set(false);
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplierObserver = this::setOverviewModeBehavior;
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        mOverviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -221,9 +221,7 @@ public class RootUiCoordinator
         }
 
         if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
             mOverviewModeBehaviorSupplier = null;
-            mOverviewModeBehaviorSupplierObserver = null;
         }
 
         if (mToolbarManager != null) {

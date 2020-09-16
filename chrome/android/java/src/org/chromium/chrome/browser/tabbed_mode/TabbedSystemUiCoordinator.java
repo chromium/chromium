@@ -10,6 +10,7 @@ import android.view.Window;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -32,7 +33,7 @@ public class TabbedSystemUiCoordinator {
      *         {@link OverviewModeBehavior} associated with the containing activity.
      */
     public TabbedSystemUiCoordinator(Window window, TabModelSelector tabModelSelector,
-            @Nullable ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+            @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert overviewModeBehaviorSupplier != null;
             mNavigationBarColorController = new TabbedNavigationBarColorController(

@@ -21,8 +21,10 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.ActionBar;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -142,8 +144,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private OverviewModeObserver mOverviewModeObserver;
 
     private OverviewModeBehavior mOverviewModeBehavior;
-    private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
+    private CallbackController mCallbackController = new CallbackController();
 
     private SceneChangeObserver mSceneChangeObserver;
     private final ActionBarDelegate mActionBarDelegate;
@@ -219,7 +221,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             FindToolbarManager findToolbarManager, ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ObservableSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             boolean shouldShowUpdateBadge) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
@@ -248,8 +250,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
         mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplierObserver = this::setOverviewModeBehavior;
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        mOverviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
 
         mComponentCallbacks = new ComponentCallbacks() {
             @Override
@@ -823,9 +825,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
             mOverviewModeBehaviorSupplier = null;
-            mOverviewModeBehaviorSupplierObserver = null;
         }
 
         if (mLayoutManager != null) {
@@ -888,6 +888,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
+        }
+
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
 
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
@@ -1233,13 +1238,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void setOverviewModeBehavior(OverviewModeBehavior overviewModeBehavior) {
-        assert overviewModeBehavior != null;
-        assert mOverviewModeBehavior
-                == null
-            : "TODO(https://crbug.com/1084528): the overview mode manager should set at most once.";
         mOverviewModeBehavior = overviewModeBehavior;
         mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
-
         mAppThemeColorProvider.setOverviewModeBehavior(mOverviewModeBehavior);
         mLocationBarModel.setOverviewModeBehavior(mOverviewModeBehavior);
     }

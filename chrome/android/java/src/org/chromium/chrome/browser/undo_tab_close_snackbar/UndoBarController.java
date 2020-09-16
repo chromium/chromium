@@ -8,9 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.CallbackController;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -49,8 +48,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     private final TabModelObserver mTabModelObserver;
     private final SnackbarManager.SnackbarManageable mSnackbarManagable;
     private final Context mContext;
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
-    private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
+    private CallbackController mCallbackController = new CallbackController();
     private OverviewModeBehavior mOverviewModeBehavior;
 
     /**
@@ -65,25 +63,13 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
      */
     public UndoBarController(Context context, TabModelSelector selector,
             SnackbarManager.SnackbarManageable snackbarManageable,
-            ObservableSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @Nullable Supplier<Boolean> dialogVisibilitySupplier) {
         mSnackbarManagable = snackbarManageable;
         mTabModelSelector = selector;
         mContext = context;
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplierObserver = new Callback<OverviewModeBehavior>() {
-            @Override
-            public void onResult(OverviewModeBehavior overviewModeBehavior) {
-                assert overviewModeBehavior != null;
-
-                mOverviewModeBehavior = overviewModeBehavior;
-                // TODO(crbug.com/1084528): Replace with OneShotSupplier when it is available.
-                mOverviewModeBehaviorSupplier.removeObserver(this);
-                mOverviewModeBehaviorSupplier = null;
-            }
-        };
-
-        overviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
+                overviewModeBehavior -> mOverviewModeBehavior = overviewModeBehavior));
 
         mTabModelObserver = new TabModelObserver() {
             /**
@@ -172,8 +158,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     public void destroy() {
         TabModel model = mTabModelSelector.getModel(false);
         if (model != null) model.removeObserver(mTabModelObserver);
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
     }
 

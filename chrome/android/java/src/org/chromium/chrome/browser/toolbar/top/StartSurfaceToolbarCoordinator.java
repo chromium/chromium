@@ -11,9 +11,9 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -49,19 +49,17 @@ public class StartSurfaceToolbarCoordinator {
     private ThemeColorProvider mThemeColorProvider;
     private OnClickListener mTabSwitcherClickListener;
     private OnLongClickListener mTabSwitcherLongClickListener;
-    private Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
     private MenuButtonCoordinator mMenuButtonCoordinator;
+    private CallbackController mCallbackController = new CallbackController();
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             IdentityDiscController identityDiscController, UserEducationHelper userEducationHelper,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ThemeColorProvider provider, MenuButtonCoordinator menuButtonCoordinator) {
         mStub = startSurfaceToolbarStub;
 
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
-        mOverviewModeBehaviorSupplierObserver = this::setOverviewModeBehavior;
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        overviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::setOverviewModeBehavior));
 
         mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
@@ -100,17 +98,16 @@ public class StartSurfaceToolbarCoordinator {
      * Cleans up any code and removes observers as necessary.
      */
     void destroy() {
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
-            mOverviewModeBehaviorSupplier = null;
-            mOverviewModeBehaviorSupplierObserver = null;
-        }
         mToolbarMediator.destroy();
         if (mIncognitoSwitchCoordinator != null) mIncognitoSwitchCoordinator.destroy();
         if (mTabSwitcherButtonCoordinator != null) mTabSwitcherButtonCoordinator.destroy();
         if (mMenuButtonCoordinator != null) {
             mMenuButtonCoordinator.destroy();
             mMenuButtonCoordinator = null;
+        }
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
         mTabSwitcherButtonCoordinator = null;
         mTabSwitcherButtonView = null;

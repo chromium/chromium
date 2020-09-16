@@ -14,10 +14,10 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -113,8 +113,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
     private final SnackbarManager.SnackbarManageable mSnackbarManageable;
     private final Snackbar mUndoClosureSnackBar;
 
-    private ObservableSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier;
-    private final Callback<OverviewModeBehavior> mOverviewModeBehaviorSupplierObserver;
+    private CallbackController mCallbackController = new CallbackController();
     private final OverviewModeBehavior.OverviewModeObserver mOverviewModeObserver;
     private OverviewModeBehavior mOverviewModeBehavior;
 
@@ -129,7 +128,7 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             ResetHandler resetHandler, PropertyModel model, TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             ThemeColorProvider themeColorProvider,
             @Nullable TabGridDialogMediator.DialogController dialogController,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -139,7 +138,6 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mModel = model;
         mTabModelSelector = tabModelSelector;
         mTabCreatorManager = tabCreatorManager;
-        mOverviewModeBehaviorSupplier = overviewModeBehaviorSupplier;
         mVisibilityController = visibilityController;
         mThemeColorProvider = themeColorProvider;
         mTabGridDialogController = dialogController;
@@ -342,19 +340,11 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mOverviewModeBehaviorSupplierObserver = new Callback<OverviewModeBehavior>() {
-            @Override
-            public void onResult(OverviewModeBehavior overviewModeBehavior) {
-                assert overviewModeBehavior != null;
-                mOverviewModeBehavior = overviewModeBehavior;
-                mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
-
-                // TODO(crbug.com/1084528): Replace with OneShotSupplier when it is available.
-                mOverviewModeBehaviorSupplier.removeObserver(this);
-                mOverviewModeBehaviorSupplier = null;
-            }
-        };
-        mOverviewModeBehaviorSupplier.addObserver(mOverviewModeBehaviorSupplierObserver);
+        overviewModeBehaviorSupplier.onAvailable(
+                mCallbackController.makeCancelable((overviewModeBehavior) -> {
+                    mOverviewModeBehavior = overviewModeBehavior;
+                    mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
+                }));
 
         mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.addTintObserver(mTintObserver);
@@ -530,8 +520,9 @@ public class TabGroupUiMediator implements SnackbarManager.SnackbarController {
         if (mOverviewModeBehavior != null) {
             mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
         }
-        if (mOverviewModeBehaviorSupplier != null) {
-            mOverviewModeBehaviorSupplier.removeObserver(mOverviewModeBehaviorSupplierObserver);
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
         }
         mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.removeTintObserver(mTintObserver);

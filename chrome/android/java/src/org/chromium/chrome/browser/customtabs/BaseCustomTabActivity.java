@@ -22,7 +22,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
@@ -83,8 +84,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected Verifier mVerifier;
-    private ObservableSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
-            new ObservableSupplierImpl<>();
+    private OneshotSupplier<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
+            new OneshotSupplierImpl<>();
 
     // This is to give the right package name while using the client's resources during an
     // overridePendingTransition call.

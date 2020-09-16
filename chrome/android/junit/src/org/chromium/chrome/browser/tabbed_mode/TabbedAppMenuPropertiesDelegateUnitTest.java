@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -92,8 +93,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     Profile mProfileMock;
 
-    private ObservableSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
-            new ObservableSupplierImpl<>();
+    private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
+            new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
 
