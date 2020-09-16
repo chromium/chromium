@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -1727,14 +1728,14 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
         matching_reused_credentials) {
   if (!profile_)
     return;
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      GetProfilePasswordStore();
 
-  // Password store can be null in tests.
-  if (!password_store) {
-    return;
-  }
   for (const auto& credential : matching_reused_credentials) {
+    password_manager::PasswordStore* password_store =
+        GetStoreForReusedCredential(credential);
+    // Password store can be null in tests.
+    if (!password_store) {
+      continue;
+    }
     password_store->AddCompromisedCredentials(
         {credential.signon_realm, credential.username, base::Time::Now(),
          password_manager::CompromiseType::kPhished});
@@ -1746,14 +1747,14 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
         matching_reused_credentials) {
   if (!profile_)
     return;
-  scoped_refptr<password_manager::PasswordStore> password_store =
-      GetProfilePasswordStore();
 
-  // Password store can be null in tests.
-  if (!password_store) {
-    return;
-  }
   for (const auto& credential : matching_reused_credentials) {
+    password_manager::PasswordStore* password_store =
+        GetStoreForReusedCredential(credential);
+    // Password store can be null in tests.
+    if (!password_store) {
+      continue;
+    }
     password_store->RemoveCompromisedCredentials(
         credential.signon_realm, credential.username,
         password_manager::RemoveCompromisedCredentialsReason::
@@ -1767,6 +1768,15 @@ ChromePasswordProtectionService::GetProfilePasswordStore() const {
   // itself when it shouldn't access the PasswordStore.
   return PasswordStoreFactory::GetForProfile(profile_,
                                              ServiceAccessType::EXPLICIT_ACCESS)
+      .get();
+}
+
+password_manager::PasswordStore*
+ChromePasswordProtectionService::GetAccountPasswordStore() const {
+  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // itself when it shouldn't access the PasswordStore.
+  return AccountPasswordStoreFactory::GetForProfile(
+             profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
@@ -1828,5 +1838,16 @@ gfx::Size ChromePasswordProtectionService::GetCurrentContentAreaSize() const {
       ->GetContentsSize();
 }
 #endif  // FULL_SAFE_BROWSING
+
+password_manager::PasswordStore*
+ChromePasswordProtectionService::GetStoreForReusedCredential(
+    const password_manager::MatchingReusedCredential& reused_credential) {
+  if (!profile_)
+    return nullptr;
+  return reused_credential.in_store ==
+                 autofill::PasswordForm::Store::kAccountStore
+             ? GetAccountPasswordStore()
+             : GetProfilePasswordStore();
+}
 
 }  // namespace safe_browsing

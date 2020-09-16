@@ -254,9 +254,8 @@ class ChromePasswordProtectionServiceTest
         PasswordProtectionTrigger::PHISHING_REUSE);
     HostContentSettingsMap::RegisterProfilePrefs(test_pref_service_.registry());
     content_setting_map_ = new HostContentSettingsMap(
-        &test_pref_service_, false /* is_off_the_record */,
-        false /* store_last_modified */,
-        false /* restore_session*/);
+        &test_pref_service_, /*is_off_the_record=*/false,
+        /*store_last_modified=*/false, /*restore_session=*/false);
 
     cache_manager_ = std::make_unique<VerdictCacheManager>(
         nullptr, content_setting_map_.get());
@@ -1620,5 +1619,55 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
                   GURL("about:blank"), reused_password_type));
   }
 }
+
+namespace {
+
+class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
+    : public ChromePasswordProtectionServiceTest {
+ public:
+  ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kEnablePasswordsAccountStorage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
+       VerifyPersistPhishedSavedPasswordCredential) {
+  service_->ConfigService(/*is_incognito=*/false,
+                          /*is_extended_reporting=*/true);
+  std::vector<password_manager::MatchingReusedCredential> credentials = {
+      {.signon_realm = "http://example.test",
+       .in_store = autofill::PasswordForm::Store::kAccountStore},
+      {.signon_realm = "http://2.example.test",
+       .in_store = autofill::PasswordForm::Store::kAccountStore}};
+
+  EXPECT_CALL(*account_password_store_, AddCompromisedCredentialsImpl(_))
+      .Times(2);
+  service_->PersistPhishedSavedPasswordCredential(credentials);
+}
+
+TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
+       VerifyRemovePhishedSavedPasswordCredential) {
+  service_->ConfigService(/*is_incognito=*/false,
+                          /*is_extended_reporting=*/true);
+  std::vector<password_manager::MatchingReusedCredential> credentials = {
+      {"http://example.test", base::ASCIIToUTF16("username1"),
+       autofill::PasswordForm::Store::kAccountStore},
+      {"http://2.example.test", base::ASCIIToUTF16("username2"),
+       autofill::PasswordForm::Store::kAccountStore}};
+
+  EXPECT_CALL(*account_password_store_,
+              RemoveCompromisedCredentialsImpl(
+                  _, _,
+                  password_manager::RemoveCompromisedCredentialsReason::
+                      kMarkSiteAsLegitimate))
+      .Times(2);
+  service_->RemovePhishedSavedPasswordCredential(credentials);
+}
+
+}  // namespace
 
 }  // namespace safe_browsing
