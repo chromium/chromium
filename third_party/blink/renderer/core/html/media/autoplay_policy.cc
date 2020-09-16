@@ -395,11 +395,11 @@ void AutoplayPolicy::Trace(Visitor* visitor) const {
   visitor->Trace(autoplay_uma_helper_);
 }
 
-STATIC_ASSERT_ENUM(WebSettings::AutoplayPolicy::kNoUserGestureRequired,
+STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kNoUserGestureRequired,
                    AutoplayPolicy::Type::kNoUserGestureRequired);
-STATIC_ASSERT_ENUM(WebSettings::AutoplayPolicy::kUserGestureRequired,
+STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kUserGestureRequired,
                    AutoplayPolicy::Type::kUserGestureRequired);
-STATIC_ASSERT_ENUM(WebSettings::AutoplayPolicy::kDocumentUserActivationRequired,
+STATIC_ASSERT_ENUM(web_pref::AutoplayPolicy::kDocumentUserActivationRequired,
                    AutoplayPolicy::Type::kDocumentUserActivationRequired);
 
 }  // namespace blink

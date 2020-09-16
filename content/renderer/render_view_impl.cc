@@ -798,22 +798,7 @@ void RenderView::ApplyWebPreferences(
   settings->SetForceDarkModeEnabled(prefs.force_dark_mode_enabled);
 
   settings->SetAccessibilityAlwaysShowFocus(prefs.always_show_focus);
-
-  switch (prefs.autoplay_policy) {
-    case blink::web_pref::AutoplayPolicy::kNoUserGestureRequired:
-      settings->SetAutoplayPolicy(
-          WebSettings::AutoplayPolicy::kNoUserGestureRequired);
-      break;
-    case blink::web_pref::AutoplayPolicy::kUserGestureRequired:
-      settings->SetAutoplayPolicy(
-          WebSettings::AutoplayPolicy::kUserGestureRequired);
-      break;
-    case blink::web_pref::AutoplayPolicy::kDocumentUserActivationRequired:
-      settings->SetAutoplayPolicy(
-          WebSettings::AutoplayPolicy::kDocumentUserActivationRequired);
-      break;
-  }
-
+  settings->SetAutoplayPolicy(prefs.autoplay_policy);
   settings->SetViewportEnabled(prefs.viewport_enabled);
   settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
   settings->SetViewportStyle(

@@ -35,6 +35,7 @@
 
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/preferred_color_scheme.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/pointer_properties.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -95,14 +96,6 @@ class WebSettings {
     kForceAllTrue  // Force all values to be true even when specified.
   };
 
-  // Defines the autoplay policy to be used. Should match the enum class in
-  // web_preferences.h
-  enum class AutoplayPolicy {
-    kNoUserGestureRequired = 0,
-    kUserGestureRequired,
-    kDocumentUserActivationRequired,
-  };
-
   // Sets value of a setting by its string identifier from Settings.in and
   // string representation of value. An enum's string representation is the
   // string representation of the integer value of the enum.
@@ -133,7 +126,7 @@ class WebSettings {
   virtual void SetAlwaysShowContextMenuOnTouch(bool) = 0;
   virtual void SetAntialiased2dCanvasEnabled(bool) = 0;
   virtual void SetAntialiasedClips2dCanvasEnabled(bool) = 0;
-  virtual void SetAutoplayPolicy(AutoplayPolicy) = 0;
+  virtual void SetAutoplayPolicy(web_pref::AutoplayPolicy) = 0;
   virtual void SetAutoZoomFocusedNodeToLegibleScale(bool) = 0;
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;

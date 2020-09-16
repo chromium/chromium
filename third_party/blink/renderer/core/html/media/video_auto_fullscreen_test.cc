@@ -71,7 +71,7 @@ class VideoAutoFullscreen : public testing::Test,
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
     GetWebView()->GetSettings()->SetAutoplayPolicy(
-        WebSettings::AutoplayPolicy::kUserGestureRequired);
+        web_pref::AutoplayPolicy::kUserGestureRequired);
 
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
