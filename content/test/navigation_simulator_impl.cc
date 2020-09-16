@@ -1399,6 +1399,10 @@ void NavigationSimulatorImpl::
     return;
   if (drop_unload_ack_)
     return;
+  // The previous RenderFrameHost is not live, we will not attempt to unload
+  // it.
+  if (!previous_rfh->IsRenderFrameLive())
+    return;
   // The previous RenderFrameHost entered the back-forward cache and hasn't been
   // requested to unload. The browser process do not expect
   // FrameHostMsg_Unload_ACK.
