@@ -170,7 +170,19 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
 std::unique_ptr<base::DictionaryValue>
 AccessibilityTreeFormatterMac::BuildAccessibilityTreeForPattern(
     const base::StringPiece& pattern) {
-  NOTREACHED();
+  NSArray* windows = (NSArray*)CGWindowListCopyWindowInfo(
+      kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
+      kCGNullWindowID);
+
+  for (NSDictionary* window_info in windows) {
+    NSString* window_name =
+        (NSString*)[window_info objectForKey:@"kCGWindowOwnerName"];
+    if (SysNSStringToUTF8(window_name) == pattern) {
+      NSNumber* pid =
+          (NSNumber*)[window_info objectForKey:@"kCGWindowOwnerPID"];
+      return BuildAccessibilityTreeForWindow([pid intValue]);
+    }
+  }
   return nullptr;
 }
 
