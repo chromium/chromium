@@ -251,9 +251,12 @@ void UpdateSupervisionTransitionResultUMA(
     mojom::SupervisionChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state);
-void UpdateAuthTiming(const char* histogram_name, base::TimeDelta elapsed_time);
-void UpdateAuthCheckinAttempts(int32_t num_attempts);
-void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status);
+void UpdateAuthTiming(const char* histogram_name,
+                      base::TimeDelta elapsed_time,
+                      const Profile* profile);
+void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile);
+void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
+                                  const Profile* profile);
 void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status);

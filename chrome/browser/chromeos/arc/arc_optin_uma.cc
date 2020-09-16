@@ -153,21 +153,26 @@ void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
 }
 
 void UpdateAuthTiming(const char* histogram_name,
-                      base::TimeDelta elapsed_time) {
-  base::UmaHistogramCustomTimes(histogram_name, elapsed_time,
-                                base::TimeDelta::FromSeconds(1) /* minimum */,
-                                base::TimeDelta::FromMinutes(3) /* maximum */,
-                                50 /* bucket_count */);
+                      base::TimeDelta elapsed_time,
+                      const Profile* profile) {
+  base::UmaHistogramCustomTimes(
+      GetHistogramNameByUserType(histogram_name, profile), elapsed_time,
+      base::TimeDelta::FromSeconds(1) /* minimum */,
+      base::TimeDelta::FromMinutes(3) /* maximum */, 50 /* bucket_count */);
 }
 
-void UpdateAuthCheckinAttempts(int32_t num_attempts) {
-  base::UmaHistogramSparse("ArcAuth.CheckinAttempts", num_attempts);
+void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile) {
+  base::UmaHistogramSparse(
+      GetHistogramNameByUserType("ArcAuth.CheckinAttempts", profile),
+      num_attempts);
 }
 
-void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status) {
+void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
+                                  const Profile* profile) {
   DCHECK_LE(status, mojom::AccountCheckStatus::CHECK_FAILED);
   UMA_HISTOGRAM_ENUMERATION(
-      "ArcAuth.AccountCheckStatus", static_cast<int>(status),
+      GetHistogramNameByUserType("ArcAuth.AccountCheckStatus", profile),
+      static_cast<int>(status),
       static_cast<int>(mojom::AccountCheckStatus::CHECK_FAILED) + 1);
 }
 
