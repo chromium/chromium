@@ -116,6 +116,10 @@ enum class StatusCode : StatusCodeType {
   kVaapiBadImageSize = 0x0000070C,
   kVaapiNoTexture = 0x0000070D,
 
+  // Format errors: 0x08
+  kH264ParsingError = 0x00000801,
+  kH264BufferTooSmall = 0x00000802,
+
   // Special codes
   kGenericErrorPleaseRemove = 0x79999999,
   kCodeOnlyForTesting = std::numeric_limits<StatusCodeType>::max(),

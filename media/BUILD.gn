@@ -162,7 +162,10 @@ test("media_unittests") {
     "//media/webrtc:unit_tests",
   ]
 
-  data = [ "test/data/" ]
+  data = [
+    "test/data/",
+    "formats/mp4/h264_annex_b_fuzz_corpus",
+  ]
 
   data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]
 

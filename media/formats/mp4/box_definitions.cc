@@ -720,7 +720,8 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
   return true;
 }
 
-bool AVCDecoderConfigurationRecord::Serialize(std::vector<uint8_t>& output) {
+bool AVCDecoderConfigurationRecord::Serialize(
+    std::vector<uint8_t>& output) const {
   // See ISO/IEC 14496-15 5.3.3.1.2 for the format description
   constexpr uint8_t sps_list_size_mask = (1 << 5) - 1;  // 5 bits
   if (sps_list.size() > sps_list_size_mask)

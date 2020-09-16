@@ -227,7 +227,7 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
   //       in |data|.
   // Returns true if |data| was successfully parsed.
   bool Parse(const uint8_t* data, int data_size);
-  bool Serialize(std::vector<uint8_t>& output);
+  bool Serialize(std::vector<uint8_t>& output) const;
 
   uint8_t version;
   uint8_t profile_indication;
