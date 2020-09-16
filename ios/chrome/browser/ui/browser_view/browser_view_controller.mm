@@ -4357,8 +4357,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       dispatch_async(dispatch_get_main_queue(), ^{
         // Test existence again as the block may have been deleted.
         if (self.foregroundTabWasAddedCompletionBlock) {
-          self.foregroundTabWasAddedCompletionBlock();
+          // Clear the property before executing the completion, in case the
+          // completion calls appendTabAddedCompletion:tabAddedCompletion.
+          // Clearing the property after running the completion would cause any
+          // newly appended completion to be immediately cleared without ever
+          // getting run. An example where this would happen is when opening
+          // multiple tabs via the "Open URLs in Chrome" Siri Shortcut.
+          ProceduralBlock completion =
+              self.foregroundTabWasAddedCompletionBlock;
           self.foregroundTabWasAddedCompletionBlock = nil;
+          completion();
         }
       });
     }
