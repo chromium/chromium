@@ -269,6 +269,10 @@ void DeepScanningRequest::OnScanComplete(
         extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
         DeepScanAccessPoint::DOWNLOAD, item_->GetTotalBytes(), result, response,
         event_result);
+
+    item_->SetUserData(
+        enterprise_connectors::ScanResult::kKey,
+        std::make_unique<enterprise_connectors::ScanResult>(response));
   }
 
   FinishRequest(download_result);

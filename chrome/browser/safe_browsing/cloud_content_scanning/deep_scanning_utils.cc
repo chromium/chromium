@@ -224,6 +224,10 @@ void ReportAnalysisConnectorWarningBypass(
 
   auto results = ContentAnalysisResponseToResults(response);
   for (auto result : results) {
+    // Only report results with triggered rules.
+    if (result.triggers.empty())
+      continue;
+
     extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
         ->OnAnalysisConnectorWarningBypassed(
             url, file_name, download_digest_sha256, mime_type, trigger,

@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -16,7 +17,6 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
-#include "components/safe_browsing/core/proto/webprotect.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -93,14 +93,19 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile) {
     std::string raw_digest_sha256 = download->GetHash();
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
-        ->OnAnalysisConnectorWarningBypassed(
-            download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
-            base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-            download->GetMimeType(),
-            extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
-            DeepScanAccessPoint::DOWNLOAD, ContentAnalysisScanResult(),
-            download->GetTotalBytes());
+    enterprise_connectors::ScanResult* stored_result =
+        static_cast<enterprise_connectors::ScanResult*>(
+            download->GetUserData(enterprise_connectors::ScanResult::kKey));
+
+    ReportAnalysisConnectorWarningBypass(
+        profile, download->GetURL(),
+        download->GetTargetFilePath().AsUTF8Unsafe(),
+        base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+        download->GetMimeType(),
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        DeepScanAccessPoint::DOWNLOAD, download->GetTotalBytes(),
+        stored_result ? stored_result->response
+                      : enterprise_connectors::ContentAnalysisResponse());
   }
 }
 

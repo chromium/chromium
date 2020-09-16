@@ -82,4 +82,9 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   return TriggeredRule::ACTION_UNSPECIFIED;
 }
 
+const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";
+ScanResult::ScanResult(const ContentAnalysisResponse& response)
+    : response(response) {}
+ScanResult::~ScanResult() = default;
+
 }  // namespace enterprise_connectors

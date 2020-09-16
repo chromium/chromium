@@ -535,8 +535,6 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   if (!IsRealtimeReportingEnabled())
     return;
 
-  DCHECK_EQ("dlp", result.tag);
-
   ReportRealtimeEvent(
       kKeySensitiveDataEvent,
       base::BindOnce(

@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/supports_user_data.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "url/gurl.h"
 
@@ -79,6 +80,15 @@ TriggeredRule::Action GetHighestPrecedenceAction(
 TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2);
+
+// User data class to persist ContentAnalysisResponses in base::SupportsUserData
+// objects.
+struct ScanResult : public base::SupportsUserData::Data {
+  explicit ScanResult(const ContentAnalysisResponse& response);
+  ~ScanResult() override;
+  static const char kKey[];
+  ContentAnalysisResponse response;
+};
 
 }  // namespace enterprise_connectors
 
