@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
 

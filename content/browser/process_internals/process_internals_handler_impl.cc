@@ -10,10 +10,10 @@
 
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/frame_host/back_forward_cache_impl.h"
-#include "content/browser/frame_host/navigation_controller_impl.h"
-#include "content/browser/frame_host/navigation_entry_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"

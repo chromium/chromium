@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/url_formatter/elide_url.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 #include "content/public/browser/contacts_picker_properties_requested.h"
 #include "content/public/browser/web_contents.h"

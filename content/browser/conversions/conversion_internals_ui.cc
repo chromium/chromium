@@ -5,7 +5,7 @@
 #include "content/browser/conversions/conversion_internals_ui.h"
 
 #include "content/browser/conversions/conversion_internals_handler_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

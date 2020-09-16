@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "components/download/public/common/download_task_runner.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"

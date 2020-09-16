@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/optional.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/sms/sms_metrics.h"
 #include "content/browser/sms/user_consent_handler.h"
 #include "content/public/browser/navigation_details.h"

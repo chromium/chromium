@@ -4,10 +4,10 @@
 
 #include "content/browser/media/session/media_session_controller.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/media/media_player_delegate_messages.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
