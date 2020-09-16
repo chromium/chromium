@@ -113,8 +113,6 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kSuccess;
     case InstallerError::kErrorLoadingTermina:
       return SetupResult::kErrorLoadingTermina;
-    case InstallerError::kErrorStartingConcierge:
-      return SetupResult::kErrorStartingConcierge;
     case InstallerError::kErrorCreatingDiskImage:
       return SetupResult::kErrorCreatingDiskImage;
     case InstallerError::kErrorStartingTermina:
@@ -149,8 +147,6 @@ SetupResult InstallStateToCancelledSetupResult(
       return SetupResult::kUserCancelledStart;
     case InstallerState::kInstallImageLoader:
       return SetupResult::kUserCancelledInstallImageLoader;
-    case InstallerState::kStartConcierge:
-      return SetupResult::kUserCancelledStartConcierge;
     case InstallerState::kCreateDiskImage:
       return SetupResult::kUserCancelledCreateDiskImage;
     case InstallerState::kStartTerminaVm:
@@ -326,15 +322,6 @@ void CrostiniInstaller::OnComponentLoaded(CrostiniResult result) {
     }
     return;
   }
-  UpdateInstallingState(InstallerState::kStartConcierge);
-}
-
-void CrostiniInstaller::OnConciergeStarted(bool success) {
-  DCHECK_EQ(installing_state_, InstallerState::kStartConcierge);
-  if (!success) {
-    HandleError(InstallerError::kErrorStartingConcierge);
-    return;
-  }
   UpdateInstallingState(InstallerState::kCreateDiskImage);
 }
 
@@ -499,12 +486,8 @@ void CrostiniInstaller::RunProgressCallback() {
       state_end_mark = 0.20;
       state_max_time = base::TimeDelta::FromSeconds(30);
       break;
-    case InstallerState::kStartConcierge:
-      state_start_mark = 0.20;
-      state_end_mark = 0.21;
-      break;
     case InstallerState::kCreateDiskImage:
-      state_start_mark = 0.21;
+      state_start_mark = 0.20;
       state_end_mark = 0.22;
       break;
     case InstallerState::kStartTerminaVm:

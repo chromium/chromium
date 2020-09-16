@@ -97,11 +97,6 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   TestDebugDaemonClient() = default;
   ~TestDebugDaemonClient() override = default;
 
-  void StartConcierge(ConciergeCallback callback) override {
-    start_concierge_called_ = true;
-    std::move(callback).Run(start_concierge_result_);
-  }
-
   void BackupArcBugReport(const std::string& userhash,
                           chromeos::VoidDBusMethodCallback callback) override {
     backup_arc_bug_report_called_ = true;
@@ -115,14 +110,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
     backup_arc_bug_report_result_ = result;
   }
 
-  bool start_concierge_called() const { return start_concierge_called_; }
-  void set_start_concierge_result(bool result) {
-    start_concierge_result_ = result;
-  }
-
  private:
-  bool start_concierge_called_ = false;
-  bool start_concierge_result_ = true;
   bool backup_arc_bug_report_called_ = false;
   bool backup_arc_bug_report_result_ = true;
 
@@ -313,14 +301,6 @@ class ArcVmClientAdapterTest : public testing::Test,
   }
 
  protected:
-  bool GetStartConciergeCalled() {
-    return GetTestDebugDaemonClient()->start_concierge_called();
-  }
-
-  void SetStartConciergeResponse(bool response) {
-    GetTestDebugDaemonClient()->set_start_concierge_result(response);
-  }
-
   void SetValidUserInfo() { SetUserInfo(kUserIdHash, kSerialNumber); }
 
   void SetUserInfo(const std::string& hash, const std::string& serial) {
@@ -755,7 +735,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmProxyFailure) {
   InjectUpstartStartJobFailure(kArcVmServerProxyJobName);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -781,7 +760,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StopArcVmAdbdFailure) {
 
   // Upgrade should still succeed.
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 }
@@ -796,7 +774,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmAdbdFailure) {
 
   EnableAdbOverUsbForTesting();
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -821,7 +798,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcCreateDataFailure) {
   InjectUpstartStartJobFailure(kArcCreateDataJobName);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -847,7 +823,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmMountMyFilesJobFail) {
   InjectUpstartStartJobFailure(kArcVmMountMyFilesJobName);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -874,30 +849,6 @@ TEST_F(ArcVmClientAdapterTest,
   InjectUpstartStartJobFailure(kArcVmMountRemovableMediaJobName);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
-  EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
-  EXPECT_FALSE(arc_instance_stopped_called());
-
-  // Try to stop the VM. StopVm will fail in this case because
-  // no VM is running.
-  vm_tools::concierge::StopVmResponse response;
-  response.set_success(false);
-  GetTestConciergeClient()->set_stop_vm_response(response);
-  adapter()->StopArcInstance(/*on_shutdown=*/false,
-                             /*should_backup_log=*/false);
-  run_loop()->Run();
-  EXPECT_TRUE(GetTestConciergeClient()->stop_vm_called());
-  EXPECT_TRUE(arc_instance_stopped_called());
-}
-
-// Tests that UpgradeArc() handles StartConcierge() failures properly.
-TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartConciergeFailure) {
-  SetValidUserInfo();
-  StartMiniArc();
-  // Inject failure to StartConcierge().
-  SetStartConciergeResponse(false);
-  UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -921,7 +872,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoUserId) {
   StartMiniArc();
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -945,7 +895,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_NoSerial) {
   StartMiniArc();
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -971,7 +920,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmFailure) {
   GetTestConciergeClient()->set_start_vm_response(start_vm_response);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -994,7 +942,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_StartArcVmFailureEmptyReply) {
   GetTestConciergeClient()->set_start_vm_response(base::nullopt);
 
   UpgradeArc(false);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1015,7 +962,6 @@ TEST_F(ArcVmClientAdapterTest, UpgradeArc_Success) {
   SetValidUserInfo();
   StartMiniArc();
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1040,7 +986,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_VariousParams) {
 
   UpgradeParams params(GetPopulatedUpgradeParams());
   UpgradeArcWithParams(true, std::move(params));
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 }
@@ -1064,7 +1009,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_VariousParams2) {
   params.preferred_languages = {"en_US"};
 
   UpgradeArcWithParams(true, std::move(params));
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 }
@@ -1084,7 +1028,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
   params.demo_session_apps_path = base::FilePath(kDemoImage);
 
   UpgradeArcWithParams(true, std::move(params));
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1108,7 +1051,6 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableSystemDefaultApp) {
   StartMiniArcWithParams(true, std::move(start_params));
   UpgradeParams params(GetPopulatedUpgradeParams());
   UpgradeArcWithParams(true, std::move(params));
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
   EXPECT_TRUE(
@@ -1141,7 +1083,6 @@ TEST_F(ArcVmClientAdapterTest, CrosvmCrash) {
   SetValidUserInfo();
   StartMiniArc();
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1156,7 +1097,6 @@ TEST_F(ArcVmClientAdapterTest, ConciergeCrash) {
   SetValidUserInfo();
   StartMiniArc();
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1171,7 +1111,6 @@ TEST_F(ArcVmClientAdapterTest, CrosvmAndConciergeCrashes) {
   SetValidUserInfo();
   StartMiniArc();
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 
@@ -1194,7 +1133,6 @@ TEST_F(ArcVmClientAdapterTest, VmStoppedSignal_UnknownCid) {
   SetValidUserInfo();
   StartMiniArc();
   UpgradeArc(true);
-  EXPECT_TRUE(GetStartConciergeCalled());
   EXPECT_TRUE(GetTestConciergeClient()->start_arc_vm_called());
   EXPECT_FALSE(arc_instance_stopped_called());
 

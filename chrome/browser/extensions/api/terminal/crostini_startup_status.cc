@@ -100,9 +100,6 @@ void CrostiniStartupStatus::OnStageStarted(InstallerState stage) {
           {InstallerState::kInstallImageLoader,
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_INSTALL_IMAGE_LOADER)},
-          {InstallerState::kStartConcierge,
-           l10n_util::GetStringUTF8(
-               IDS_CROSTINI_TERMINAL_STATUS_START_CONCIERGE)},
           {InstallerState::kCreateDiskImage,
            l10n_util::GetStringUTF8(
                IDS_CROSTINI_TERMINAL_STATUS_CREATE_DISK_IMAGE)},

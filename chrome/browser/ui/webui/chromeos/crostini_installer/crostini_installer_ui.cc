@@ -49,7 +49,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"errorTitle", IDS_CROSTINI_INSTALLER_ERROR_TITLE},
 
       {"loadTerminaError", IDS_CROSTINI_INSTALLER_LOAD_TERMINA_ERROR},
-      {"startConciergeError", IDS_CROSTINI_INSTALLER_START_CONCIERGE_ERROR},
       {"createDiskImageError", IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_ERROR},
       {"startTerminaVmError", IDS_CROSTINI_INSTALLER_START_TERMINA_VM_ERROR},
       {"startContainerError", IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR},
@@ -61,7 +60,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"unknownError", IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR},
 
       {"loadTerminaMessage", IDS_CROSTINI_INSTALLER_LOAD_TERMINA_MESSAGE},
-      {"startConciergeMessage", IDS_CROSTINI_INSTALLER_START_CONCIERGE_MESSAGE},
       {"createDiskImageMessage",
        IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_MESSAGE},
       {"startTerminaVmMessage",

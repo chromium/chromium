@@ -531,16 +531,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        std::move(error_callback)));
   }
 
-  void StartConcierge(ConciergeCallback callback) override {
-    dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kStartVmConcierge);
-    dbus::MessageWriter writer(&method_call);
-    debugdaemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DebugDaemonClientImpl::OnStartConcierge,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
   void StartPluginVmDispatcher(const std::string& owner_id,
                                const std::string& lang,
                                PluginVmDispatcherCallback callback) override {
@@ -868,15 +858,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       std::move(callback).Run(result);
     else
       std::move(error_callback).Run();
-  }
-
-  void OnStartConcierge(ConciergeCallback callback, dbus::Response* response) {
-    bool result = false;
-    if (response) {
-      dbus::MessageReader reader(response);
-      reader.PopBool(&result);
-    }
-    std::move(callback).Run(result);
   }
 
   void OnStartPluginVmDispatcher(PluginVmDispatcherCallback callback,

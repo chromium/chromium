@@ -88,7 +88,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void CupsRemovePrinter(const std::string& name,
                          CupsRemovePrinterCallback callback,
                          base::OnceClosure error_callback) override;
-  void StartConcierge(ConciergeCallback callback) override;
   void StartPluginVmDispatcher(const std::string& owner_id,
                                const std::string& lang,
                                PluginVmDispatcherCallback callback) override;
