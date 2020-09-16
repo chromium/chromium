@@ -190,7 +190,7 @@ public class CallbackHelper {
                     Assert.fail(s);
                 }
             }
-            if (callCountWhenDoneWaiting > mCallCount) {
+            if (timer.isTimedOut()) {
                 throw new TimeoutException(msg == null ? "waitForCallback timed out!" : msg);
             }
         }
