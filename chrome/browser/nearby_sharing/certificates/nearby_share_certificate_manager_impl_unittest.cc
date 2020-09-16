@@ -411,7 +411,7 @@ class NearbyShareCertificateManagerImplTest
 };
 
 TEST_F(NearbyShareCertificateManagerImplTest, GetValidPrivateCertificate) {
-  cert_store_->SetPrivateCertificates(private_certificates_);
+  cert_store_->ReplacePrivateCertificates(private_certificates_);
   FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
   auto cert = cert_manager_->GetValidPrivateCertificate(
       nearby_share::mojom::Visibility::kAllContacts);
@@ -504,7 +504,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ValidCertificates) {
-  cert_store_->SetPrivateCertificates(private_certificates_);
+  cert_store_->ReplacePrivateCertificates(private_certificates_);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/false,
@@ -514,7 +514,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadSuccess) {
-  cert_store_->SetPrivateCertificates(
+  cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
   cert_manager_->Start();
@@ -526,7 +526,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_NoCertificates_UploadFailure) {
-  cert_store_->SetPrivateCertificates(
+  cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
   cert_manager_->Start();
@@ -548,11 +548,11 @@ TEST_F(NearbyShareCertificateManagerImplTest,
       contact_manager_->NotifyAllowlistChanged(
           were_contacts_added_to_allowlist,
           were_contacts_removed_from_allowlist);
-      if (were_contacts_removed_from_allowlist)
+      if (were_contacts_removed_from_allowlist) {
         ++num_expected_calls;
+        EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
+      }
 
-      EXPECT_EQ(num_expected_calls,
-                cert_store_->num_clear_private_certificates_calls());
       EXPECT_EQ(num_expected_calls,
                 private_cert_exp_scheduler_->num_immediate_requests());
     }
@@ -569,11 +569,11 @@ TEST_F(NearbyShareCertificateManagerImplTest,
   for (bool did_contacts_change_since_last_upload : {true, false}) {
     contact_manager_->NotifyContactsUploaded(
         did_contacts_change_since_last_upload);
-    if (did_contacts_change_since_last_upload)
+    if (did_contacts_change_since_last_upload) {
       ++num_expected_calls;
+      EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
+    }
 
-    EXPECT_EQ(num_expected_calls,
-              cert_store_->num_clear_private_certificates_calls());
     EXPECT_EQ(num_expected_calls,
               private_cert_exp_scheduler_->num_immediate_requests());
   }
@@ -594,10 +594,9 @@ TEST_F(NearbyShareCertificateManagerImplTest,
         if (did_device_name_change || did_full_name_change ||
             did_icon_url_change) {
           ++num_expected_calls;
+          EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
         }
 
-        EXPECT_EQ(num_expected_calls,
-                  cert_store_->num_clear_private_certificates_calls());
         EXPECT_EQ(num_expected_calls,
                   private_cert_exp_scheduler_->num_immediate_requests());
       }
@@ -609,7 +608,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_ExpiredCertificate) {
   // First certificates are expired;
   FastForward(kNearbyShareCertificateValidityPeriod * 1.5);
-  cert_store_->SetPrivateCertificates(private_certificates_);
+  cert_store_->ReplacePrivateCertificates(private_certificates_);
 
   cert_manager_->Start();
   HandlePrivateCertificateRefresh(/*expect_private_cert_refresh=*/true,
@@ -620,7 +619,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidDeviceName) {
-  cert_store_->SetPrivateCertificates(
+  cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
   // Device name is missing in local device data manager.
@@ -635,7 +634,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_InvalidBluetoothMacAddress) {
-  cert_store_->SetPrivateCertificates(
+  cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
   // The bluetooth adapter returns an invalid Bluetooth MAC address.
@@ -655,7 +654,7 @@ TEST_F(NearbyShareCertificateManagerImplTest,
 
 TEST_F(NearbyShareCertificateManagerImplTest,
        RefreshPrivateCertificates_MissingFullNameAndIconUrl) {
-  cert_store_->SetPrivateCertificates(
+  cert_store_->ReplacePrivateCertificates(
       std::vector<NearbySharePrivateCertificate>());
 
   // Full name and icon URL are missing in local device data manager.

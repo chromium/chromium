@@ -66,8 +66,6 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   void GetPublicCertificates(PublicCertificateCallback callback) override;
   base::Optional<std::vector<NearbySharePrivateCertificate>>
   GetPrivateCertificates() const override;
-  base::Optional<base::Time> NextPrivateCertificateExpirationTime()
-      const override;
   base::Optional<base::Time> NextPublicCertificateExpirationTime()
       const override;
   void ReplacePrivateCertificates(
@@ -83,7 +81,6 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
       ResultCallback callback) override;
   void RemoveExpiredPublicCertificates(base::Time now,
                                        ResultCallback callback) override;
-  void ClearPrivateCertificates() override;
   void ClearPublicCertificates(ResultCallback callback) override;
 
  private:
@@ -131,7 +128,6 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
       leveldb_proto::ProtoDatabase<nearbyshare::proto::PublicCertificate>>
       db_;
 
-  std::vector<NearbySharePrivateCertificate> private_certificates_;
   ExpirationList public_certificate_expirations_;
   base::queue<base::OnceClosure> deferred_callbacks_;
 };

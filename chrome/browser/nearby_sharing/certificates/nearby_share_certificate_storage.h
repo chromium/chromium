@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 // Stores local-device private certificates and remote-device public
 // certificates. Provides methods to help manage certificate expiration. Due to
@@ -39,8 +40,7 @@ class NearbyShareCertificateStorage {
 
   // Returns the next time a certificate expires or base::nullopt if no
   // certificates are present.
-  virtual base::Optional<base::Time> NextPrivateCertificateExpirationTime()
-      const = 0;
+  base::Optional<base::Time> NextPrivateCertificateExpirationTime();
   virtual base::Optional<base::Time> NextPublicCertificateExpirationTime()
       const = 0;
 
@@ -57,6 +57,13 @@ class NearbyShareCertificateStorage {
           public_certificates,
       ResultCallback callback) = 0;
 
+  // Overwrites an existing record with |private_certificate| if that records
+  // has the same ID . If no such record exists in storage, no action is taken.
+  // This method is necessary for updating the private certificate's list of
+  // consumed salts.
+  void UpdatePrivateCertificate(
+      const NearbySharePrivateCertificate& private_certificate);
+
   // Adds public certificates, or replaces existing certificates
   // by secret_id
   virtual void AddPublicCertificates(
@@ -64,13 +71,22 @@ class NearbyShareCertificateStorage {
           public_certificates,
       ResultCallback callback) = 0;
 
+  // Removes all private certificates from storage with expiration date after
+  // |now|.
+  void RemoveExpiredPrivateCertificates(base::Time now);
+
   // Removes all public certificates from storage with expiration date after
   // |now|.
   virtual void RemoveExpiredPublicCertificates(base::Time now,
                                                ResultCallback callback) = 0;
 
   // Delete all private certificates from memory and persistent storage.
-  virtual void ClearPrivateCertificates() = 0;
+  void ClearPrivateCertificates();
+
+  // Delete private certificates with |visibility| from memory and persistent
+  // storage.
+  void ClearPrivateCertificatesOfVisibility(
+      nearby_share::mojom::Visibility visibility);
 
   // Delete all public certificates from memory and persistent storage.
   virtual void ClearPublicCertificates(ResultCallback callback) = 0;

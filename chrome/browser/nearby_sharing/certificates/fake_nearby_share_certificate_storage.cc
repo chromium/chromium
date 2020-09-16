@@ -87,12 +87,6 @@ FakeNearbyShareCertificateStorage::GetPrivateCertificates() const {
 }
 
 base::Optional<base::Time>
-FakeNearbyShareCertificateStorage::NextPrivateCertificateExpirationTime()
-    const {
-  return next_private_certificate_expiration_time_;
-}
-
-base::Optional<base::Time>
 FakeNearbyShareCertificateStorage::NextPublicCertificateExpirationTime() const {
   return next_public_certificate_expiration_time_;
 }
@@ -125,10 +119,6 @@ void FakeNearbyShareCertificateStorage::RemoveExpiredPublicCertificates(
                                                          std::move(callback));
 }
 
-void FakeNearbyShareCertificateStorage::ClearPrivateCertificates() {
-  ++num_clear_private_certificates_calls_;
-}
-
 void FakeNearbyShareCertificateStorage::ClearPublicCertificates(
     ResultCallback callback) {
   clear_public_certificates_callbacks_.push_back(std::move(callback));
@@ -137,17 +127,6 @@ void FakeNearbyShareCertificateStorage::ClearPublicCertificates(
 void FakeNearbyShareCertificateStorage::SetPublicCertificateIds(
     const std::vector<std::string>& ids) {
   public_certificate_ids_ = ids;
-}
-
-void FakeNearbyShareCertificateStorage::SetPrivateCertificates(
-    base::Optional<std::vector<NearbySharePrivateCertificate>>
-        private_certificates) {
-  private_certificates_ = std::move(private_certificates);
-}
-
-void FakeNearbyShareCertificateStorage::SetNextPrivateCertificateExpirationTime(
-    base::Optional<base::Time> time) {
-  next_private_certificate_expiration_time_ = time;
 }
 
 void FakeNearbyShareCertificateStorage::SetNextPublicCertificateExpirationTime(

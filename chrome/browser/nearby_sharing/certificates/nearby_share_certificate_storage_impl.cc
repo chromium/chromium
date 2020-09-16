@@ -442,28 +442,9 @@ NearbyShareCertificateStorageImpl::GetPrivateCertificates() const {
     if (!cert)
       return base::nullopt;
 
-    certs.emplace_back(*std::move(cert));
+    certs.push_back(*std::move(cert));
   }
   return certs;
-}
-
-base::Optional<base::Time>
-NearbyShareCertificateStorageImpl::NextPrivateCertificateExpirationTime()
-    const {
-  const base::Value* list =
-      pref_service_->Get(prefs::kNearbySharingPrivateCertificateListPrefName);
-  if (!list || list->GetList().empty())
-    return base::nullopt;
-
-  base::Time min_time = base::Time::Max();
-  for (const base::Value& cert_dict : list->GetList()) {
-    auto cert(NearbySharePrivateCertificate::FromDictionary(cert_dict));
-    if (!cert)
-      return base::nullopt;
-
-    min_time = std::min(min_time, cert->not_after());
-  }
-  return min_time;
 }
 
 base::Optional<base::Time>
@@ -481,8 +462,8 @@ void NearbyShareCertificateStorageImpl::ReplacePrivateCertificates(
   for (const NearbySharePrivateCertificate& cert : private_certificates) {
     list.Append(cert.ToDictionary());
   }
-  NS_LOG(VERBOSE) << __func__ << ": Overwriting private certificates pref. "
-                  << private_certificates.size() << " new certificates.";
+  NS_LOG(VERBOSE) << __func__ << ": Overwriting private certificates pref with "
+                  << private_certificates.size() << " certificates.";
   pref_service_->Set(prefs::kNearbySharingPrivateCertificateListPrefName, list);
 }
 
@@ -610,10 +591,6 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificates(
                          RemoveExpiredPublicCertificatesCallback,
                      base::Unretained(this), std::move(ids_to_remove_set),
                      std::move(callback)));
-}
-
-void NearbyShareCertificateStorageImpl::ClearPrivateCertificates() {
-  pref_service_->ClearPref(prefs::kNearbySharingPrivateCertificateListPrefName);
 }
 
 void NearbyShareCertificateStorageImpl::ClearPublicCertificates(

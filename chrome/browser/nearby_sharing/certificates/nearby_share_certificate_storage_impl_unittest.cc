@@ -104,12 +104,14 @@ nearbyshare::proto::PublicCertificate CreatePublicCertificate(
   return cert;
 }
 
-std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(size_t n) {
+std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(
+    size_t n,
+    nearby_share::mojom::Visibility visibility) {
   std::vector<NearbySharePrivateCertificate> certs;
   certs.reserve(n);
   for (size_t i = 0; i < n; ++i) {
-    certs.emplace_back(nearby_share::mojom::Visibility::kAllContacts,
-                       base::Time::Now(), GetNearbyShareTestMetadata());
+    certs.emplace_back(visibility, base::Time::Now(),
+                       GetNearbyShareTestMetadata());
   }
   return certs;
 }
@@ -119,6 +121,7 @@ base::Time TimestampToTime(nearbyshare::proto::Timestamp timestamp) {
          base::TimeDelta::FromSeconds(timestamp.seconds()) +
          base::TimeDelta::FromNanoseconds(timestamp.nanos());
 }
+
 }  // namespace
 
 class NearbyShareCertificateStorageImplTest : public ::testing::Test {
@@ -431,6 +434,33 @@ TEST_F(NearbyShareCertificateStorageImplTest, ClearPublicCertificates) {
   ASSERT_EQ(0u, db_entries_.size());
 }
 
+TEST_F(NearbyShareCertificateStorageImplTest,
+       RemoveExpiredPrivateCertificates) {
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+
+  std::vector<NearbySharePrivateCertificate> certs = CreatePrivateCertificates(
+      3, nearby_share::mojom::Visibility::kAllContacts);
+  cert_store_->ReplacePrivateCertificates(certs);
+
+  std::vector<base::Time> expiration_times;
+  for (const NearbySharePrivateCertificate& cert : certs) {
+    expiration_times.push_back(cert.not_after());
+  }
+  std::sort(expiration_times.begin(), expiration_times.end());
+
+  // Set current time to exceed the expiration times of the first two
+  // certificates.
+  base::Time now = expiration_times[1];
+
+  cert_store_->RemoveExpiredPrivateCertificates(now);
+
+  certs = *cert_store_->GetPrivateCertificates();
+  ASSERT_EQ(1u, certs.size());
+  for (const NearbySharePrivateCertificate& cert : certs) {
+    EXPECT_LE(now, cert.not_after());
+  }
+}
+
 TEST_F(NearbyShareCertificateStorageImplTest, RemoveExpiredPublicCertificates) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
@@ -464,7 +494,8 @@ TEST_F(NearbyShareCertificateStorageImplTest, RemoveExpiredPublicCertificates) {
 TEST_F(NearbyShareCertificateStorageImplTest, ReplaceGetPrivateCertificates) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  auto certs_before = CreatePrivateCertificates(3);
+  auto certs_before = CreatePrivateCertificates(
+      3, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs_before);
   auto certs_after = cert_store_->GetPrivateCertificates();
 
@@ -474,7 +505,8 @@ TEST_F(NearbyShareCertificateStorageImplTest, ReplaceGetPrivateCertificates) {
     EXPECT_EQ(certs_before[i].ToDictionary(), (*certs_after)[i].ToDictionary());
   }
 
-  certs_before = CreatePrivateCertificates(1);
+  certs_before = CreatePrivateCertificates(
+      1, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs_before);
   certs_after = cert_store_->GetPrivateCertificates();
 
@@ -485,11 +517,37 @@ TEST_F(NearbyShareCertificateStorageImplTest, ReplaceGetPrivateCertificates) {
   }
 }
 
+TEST_F(NearbyShareCertificateStorageImplTest, UpdatePrivateCertificates) {
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+
+  std::vector<NearbySharePrivateCertificate> initial_certs =
+      CreatePrivateCertificates(3,
+                                nearby_share::mojom::Visibility::kAllContacts);
+  cert_store_->ReplacePrivateCertificates(initial_certs);
+
+  NearbySharePrivateCertificate cert_to_update = initial_certs[1];
+  EXPECT_EQ(initial_certs[1].ToDictionary(), cert_to_update.ToDictionary());
+  cert_to_update.EncryptMetadataKey();
+  EXPECT_NE(initial_certs[1].ToDictionary(), cert_to_update.ToDictionary());
+
+  cert_store_->UpdatePrivateCertificate(cert_to_update);
+
+  std::vector<NearbySharePrivateCertificate> new_certs =
+      *cert_store_->GetPrivateCertificates();
+  EXPECT_EQ(initial_certs.size(), new_certs.size());
+  for (size_t i = 0; i < new_certs.size(); ++i) {
+    NearbySharePrivateCertificate expected_cert =
+        i == 1 ? cert_to_update : initial_certs[i];
+    EXPECT_EQ(expected_cert.ToDictionary(), new_certs[i].ToDictionary());
+  }
+}
+
 TEST_F(NearbyShareCertificateStorageImplTest,
        NextPrivateCertificateExpirationTime) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  auto certs = CreatePrivateCertificates(3);
+  auto certs = CreatePrivateCertificates(
+      3, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs);
   base::Optional<base::Time> next_expiration =
       cert_store_->NextPrivateCertificateExpirationTime();
@@ -526,11 +584,70 @@ TEST_F(NearbyShareCertificateStorageImplTest, ClearPrivateCertificates) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
   std::vector<NearbySharePrivateCertificate> certs_before =
-      CreatePrivateCertificates(3);
+      CreatePrivateCertificates(3,
+                                nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs_before);
   cert_store_->ClearPrivateCertificates();
   auto certs_after = cert_store_->GetPrivateCertificates();
 
   ASSERT_TRUE(certs_after.has_value());
   EXPECT_EQ(0u, certs_after->size());
+}
+
+TEST_F(NearbyShareCertificateStorageImplTest,
+       ClearPrivateCertificatesOfVisibility) {
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+
+  std::vector<NearbySharePrivateCertificate> certs_all_contacts =
+      CreatePrivateCertificates(3,
+                                nearby_share::mojom::Visibility::kAllContacts);
+  std::vector<NearbySharePrivateCertificate> certs_selected_contacts =
+      CreatePrivateCertificates(
+          3, nearby_share::mojom::Visibility::kSelectedContacts);
+  std::vector<NearbySharePrivateCertificate> all_certs;
+  all_certs.reserve(certs_all_contacts.size() + certs_selected_contacts.size());
+  all_certs.insert(all_certs.end(), certs_all_contacts.begin(),
+                   certs_all_contacts.end());
+  all_certs.insert(all_certs.end(), certs_selected_contacts.begin(),
+                   certs_selected_contacts.end());
+
+  // Remove all-contacts certs then selected-contacts certs.
+  {
+    cert_store_->ReplacePrivateCertificates(all_certs);
+    cert_store_->ClearPrivateCertificatesOfVisibility(
+        nearby_share::mojom::Visibility::kAllContacts);
+    auto certs_after = cert_store_->GetPrivateCertificates();
+    ASSERT_TRUE(certs_after.has_value());
+    ASSERT_EQ(certs_selected_contacts.size(), certs_after->size());
+    for (size_t i = 0; i < certs_selected_contacts.size(); ++i) {
+      EXPECT_EQ(certs_selected_contacts[i].ToDictionary(),
+                (*certs_after)[i].ToDictionary());
+    }
+
+    cert_store_->ClearPrivateCertificatesOfVisibility(
+        nearby_share::mojom::Visibility::kSelectedContacts);
+    certs_after = cert_store_->GetPrivateCertificates();
+    ASSERT_TRUE(certs_after.has_value());
+    EXPECT_EQ(0u, certs_after->size());
+  }
+
+  // Remove selected-contacts certs then all-contacts certs.
+  {
+    cert_store_->ReplacePrivateCertificates(all_certs);
+    cert_store_->ClearPrivateCertificatesOfVisibility(
+        nearby_share::mojom::Visibility::kSelectedContacts);
+    auto certs_after = cert_store_->GetPrivateCertificates();
+    ASSERT_TRUE(certs_after.has_value());
+    ASSERT_EQ(certs_all_contacts.size(), certs_after->size());
+    for (size_t i = 0; i < certs_all_contacts.size(); ++i) {
+      EXPECT_EQ(certs_all_contacts[i].ToDictionary(),
+                (*certs_after)[i].ToDictionary());
+    }
+
+    cert_store_->ClearPrivateCertificatesOfVisibility(
+        nearby_share::mojom::Visibility::kAllContacts);
+    certs_after = cert_store_->GetPrivateCertificates();
+    ASSERT_TRUE(certs_after.has_value());
+    EXPECT_EQ(0u, certs_after->size());
+  }
 }

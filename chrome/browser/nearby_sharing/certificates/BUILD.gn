@@ -12,6 +12,7 @@ source_set("certificates") {
     "nearby_share_certificate_manager.h",
     "nearby_share_certificate_manager_impl.cc",
     "nearby_share_certificate_manager_impl.h",
+    "nearby_share_certificate_storage.cc",
     "nearby_share_certificate_storage.h",
     "nearby_share_certificate_storage_impl.cc",
     "nearby_share_certificate_storage_impl.h",
