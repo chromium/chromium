@@ -104,6 +104,12 @@ class WebDatabaseHostImplTest : public ::testing::Test {
   BrowserContext* browser_context() { return &browser_context_; }
   base::SequencedTaskRunner* task_runner() { return task_runner_.get(); }
 
+  void LockProcessToURL(const GURL& url) {
+    ChildProcessSecurityPolicyImpl::GetInstance()->LockProcessForTesting(
+        IsolationContext(BrowsingInstanceId(1), browser_context()),
+        process_id(), url);
+  }
+
  private:
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
@@ -128,8 +134,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   security_policy->AddIsolatedOrigins(
       {correct_origin, incorrect_origin},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-  security_policy->LockProcessForTesting(IsolationContext(browser_context()),
-                                         process_id(), correct_url);
+  LockProcessToURL(correct_url);
+
   ASSERT_TRUE(
       security_policy->CanAccessDataForOrigin(process_id(), correct_origin));
   ASSERT_FALSE(
@@ -214,8 +220,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
   security_policy->AddIsolatedOrigins(
       {correct_origin, incorrect_origin},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
-  security_policy->LockProcessForTesting(IsolationContext(browser_context()),
-                                         process_id(), correct_url);
+  LockProcessToURL(correct_url);
 
   bool success_callback_was_called = false;
   auto success_callback = base::BindLambdaForTesting(

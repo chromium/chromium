@@ -3180,10 +3180,10 @@ void RenderProcessHostImpl::SetProcessLock(
 
   // Note that SetProcessLock is only called once per RenderProcessHostImpl
   // (when committing a navigation into an empty renderer).  Therefore, the
-  // call to NotifyRendererIfLockedToSite below is insufficient for setting up
-  // renderers respawned after crashing - this is handled by another call to
-  // NotifyRendererIfLockedToSite from OnProcessLaunched.
-  NotifyRendererIfLockedToSite();
+  // call to NotifyRendererOfLockedStateUpdate below is insufficient for setting
+  // up renderers respawned after crashing - this is handled by another call to
+  // NotifyRendererOfLockedStateUpdate from OnProcessLaunched.
+  NotifyRendererOfLockedStateUpdate();
 }
 
 bool RenderProcessHostImpl::IsProcessLockedForTesting() {
@@ -3192,12 +3192,17 @@ bool RenderProcessHostImpl::IsProcessLockedForTesting() {
   return !lock.is_empty();
 }
 
-void RenderProcessHostImpl::NotifyRendererIfLockedToSite() {
+void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+
+  if (process_lock.is_invalid())
+    return;
+
   if (!process_lock.IsASiteOrOrigin())
     return;
 
+  CHECK(process_lock.is_locked_to_site());
   GetRendererInterface()->SetIsLockedToSite();
 }
 
@@ -4145,7 +4150,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
     if (host_has_web_ui_bindings != url_requires_web_ui_bindings)
       return false;
 
-    if (!process_lock.is_empty()) {
+    if (process_lock.is_locked_to_site()) {
       // If this process is locked to a site, it cannot be reused for a
       // destination that doesn't require a dedicated process, even for the
       // same site. This can happen with dynamic isolated origins (see
@@ -4970,7 +4975,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       GetContentClient()->browser()->GetUserAgentMetadata());
   GetRendererInterface()->SetCorsExemptHeaderList(
       storage_partition_impl_->cors_exempt_header_list());
-  NotifyRendererIfLockedToSite();
+  NotifyRendererOfLockedStateUpdate();
 
   // Send the initial system color info to the renderer.
   ThemeHelper::GetInstance()->SendSystemColorInfo(GetRendererInterface());

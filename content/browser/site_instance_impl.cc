@@ -449,8 +449,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
                id_, "process id", process_->GetID());
   GetContentClient()->browser()->SiteInstanceGotProcess(this);
 
-  if (has_site_)
-    LockProcessIfNeeded();
+  LockProcessIfNeeded();
 }
 
 bool SiteInstanceImpl::CanAssociateWithSpareProcess() {
@@ -1307,6 +1306,25 @@ void SiteInstanceImpl::RenderProcessExited(
 }
 
 void SiteInstanceImpl::LockProcessIfNeeded() {
+  ChildProcessSecurityPolicyImpl* policy =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  ProcessLock process_lock = policy->GetProcessLock(process_->GetID());
+  if (!has_site_) {
+    CHECK(!process_lock.is_locked_to_site())
+        << "A process that's already locked to " << process_lock.ToString()
+        << " cannot be updated to a more permissive lock";
+    if (process_lock.is_invalid()) {
+      // Update the process lock state to signal that the process has been
+      // associated with a SiteInstance that is not locked to a site yet.
+      auto new_process_lock = ProcessLock::CreateAllowAnySite();
+      process_->SetProcessLock(GetIsolationContext(), new_process_lock);
+    } else {
+      CHECK(process_lock.allows_any_site())
+          << "Unexpected process lock " << process_lock.ToString();
+    }
+    return;
+  }
+
   DCHECK(HasSite());
 
   // From now on, this process should be considered "tainted" for future
@@ -1321,16 +1339,13 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // preassigned site.
   process_->SetIsUsed();
 
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock = policy->GetProcessLock(process_->GetID());
   if (ShouldLockProcess(GetIsolationContext(), site_info_, IsGuest())) {
     // Sanity check that this won't try to assign an origin lock to a <webview>
     // process, which can't be locked.
     CHECK(!process_->IsForGuestsOnly());
 
     ProcessLock lock_to_set = GetProcessLock();
-    if (process_lock.is_empty()) {
+    if (!process_lock.is_locked_to_site()) {
       // TODO(nick): When all sites are isolated, this operation provides
       // strong protection. If only some sites are isolated, we need
       // additional logic to prevent the non-isolated sites from requesting
@@ -1352,15 +1367,22 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // happen for commits to |site_info_| after the first one.
     }
   } else {
-    // If the site that we've just committed doesn't require a dedicated
-    // process, make sure we aren't putting it in a process for a site that
-    // does.
-    if (!process_lock.is_empty()) {
+    if (process_lock.is_locked_to_site()) {
+      // The site that we're committing doesn't require a dedicated
+      // process, but it has been put in a process for a site that does.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
       policy->LogKilledProcessOriginLock(process_->GetID());
       CHECK(false) << "Trying to commit non-isolated site " << site_info_
-                   << " in process locked to " << process_lock.lock_url();
+                   << " in process locked to " << process_lock.ToString();
+    } else if (process_lock.is_invalid()) {
+      // Update the process lock state to signal that the process has been
+      // associated with a SiteInstance that is not locked to a site yet.
+      auto new_process_lock = ProcessLock::CreateAllowAnySite();
+      process_->SetProcessLock(GetIsolationContext(), new_process_lock);
+    } else {
+      CHECK(process_lock.allows_any_site())
+          << "Unexpected process lock " << process_lock.ToString();
     }
   }
 

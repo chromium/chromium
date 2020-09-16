@@ -276,8 +276,8 @@ class AppCacheStorageImplTest : public testing::Test {
       : interceptor_(base::BindRepeating(&InterceptRequest)),
         weak_partition_factory_(static_cast<StoragePartitionImpl*>(
             BrowserContext::GetDefaultStoragePartition(&browser_context_))) {
-    ChildProcessSecurityPolicyImpl::GetInstance()->Add(kProcessId,
-                                                       &browser_context_);
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(
+        kProcessId, &browser_context_);
     appcache_require_origin_trial_feature_.InitAndDisableFeature(
         blink::features::kAppCacheRequireOriginTrial);
   }

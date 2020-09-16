@@ -501,7 +501,13 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
 
-  // Used to restrict a process' origin access rights.
+  // Used to restrict a process' origin access rights. This method gets called
+  // when a process gets assigned to this SiteInstance and when the
+  // SiteInfo is explicitly set. If the SiteInfo hasn't been set yet and
+  // the current process lock is invalid, then this method sets the process
+  // to an "allow_any_site" lock. If the SiteInfo gets set to something that
+  // restricts access to a specific site, then the lock will be upgraded to a
+  // "lock_to_site" lock.
   void LockProcessIfNeeded();
 
   // Returns the URL to which a process should be locked for the given URL.

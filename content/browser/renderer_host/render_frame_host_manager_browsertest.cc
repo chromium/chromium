@@ -8703,7 +8703,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(siteless_url, web_contents->GetMainFrame()->GetLastCommittedURL());
   RenderProcessHost* process1 = web_contents->GetMainFrame()->GetProcess();
   EXPECT_FALSE(web_contents->GetMainFrame()->GetSiteInstance()->HasSite());
-  EXPECT_EQ(ProcessLock(), policy->GetProcessLock(process1->GetID()));
+  auto process1_lock = policy->GetProcessLock(process1->GetID());
+  EXPECT_FALSE(process1_lock.is_invalid());
+  EXPECT_TRUE(process1_lock.allows_any_site());
 
   // Now wait for second navigation to finish and ensure it also succeeds.
   foo_manager.WaitForNavigationFinished();

@@ -784,8 +784,8 @@ class AppCacheUpdateJobTest : public testing::Test,
                 BrowserContext::GetDefaultStoragePartition(
                     browser_context_.get())));
 
-    ChildProcessSecurityPolicyImpl::GetInstance()->Add(process_id_,
-                                                       browser_context_.get());
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(
+        process_id_, browser_context_.get());
     blink::TrialTokenValidator::SetOriginTrialPolicyGetter(base::BindRepeating(
         []() -> blink::OriginTrialPolicy* { return &g_origin_trial_policy; }));
   }

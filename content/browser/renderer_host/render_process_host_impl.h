@@ -901,7 +901,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<network::mojom::MdnsResponder> receiver);
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-  void NotifyRendererIfLockedToSite();
+  void NotifyRendererOfLockedStateUpdate();
   void PopulateTerminationInfoRendererFields(ChildProcessTerminationInfo* info);
 
   static void OnMojoError(int render_process_id, const std::string& error);

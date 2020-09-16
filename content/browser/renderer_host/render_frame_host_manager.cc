@@ -931,7 +931,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
                                             base::debug::CrashKeySize::Size32),
         use_current_rfh ? "true" : "false");
     NOTREACHED() << "Picked an incompatible process for URL: "
-                 << process_lock.lock_url() << " lock vs "
+                 << process_lock.ToString() << " lock vs "
                  << request->common_params().url.GetOrigin();
     base::debug::DumpWithoutCrashing();
   }

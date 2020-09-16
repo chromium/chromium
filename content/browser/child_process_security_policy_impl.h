@@ -52,9 +52,18 @@ class ResourceContext;
 // ProcessLock is a core part of Site Isolation, which is used to determine
 // which documents are allowed to load in a process and which site data the
 // process is allowed to access, based on the SiteInfo principal. If a process
-// has a non-empty ProcessLock, documents with incompatible SiteInfos will not
-// be allowed into the process, and the process will not be able to access site
-// data from other sites.
+// has a ProcessLock in the "invalid" state, then no SiteInstances have been
+// associated with the process and access should not be granted to anything.
+// Once a process is associated with its first SiteInstance, it transitions to
+// the "locked_to_site" or "allow_any_site" state depending on whether the
+// SiteInstance requires the process to be locked to a specific site or not.
+// If the SiteInstance does not require the process to be locked to a site, the
+// process will transition to the "allow_any_site" state and will allow any
+// site to commit in the process. Such a process can later be upgraded to the
+// "locked_to_site" state if something later determines that the process should
+// only allow access to a single site. Once the process is in the
+// "locked_to_site" state, the process will not be able to access site data from
+// other sites.
 //
 // ProcessLock is currently defined in terms of a single SiteInfo with a process
 // lock URL, but it could be possible to define it in terms of multiple
@@ -68,26 +77,55 @@ class CONTENT_EXPORT ProcessLock {
   // real pages into the process.
   static ProcessLock CreateForErrorPage();
 
-  explicit ProcessLock(const SiteInfo& site_info);
+  // Create a lock that that represents a process that is associated with at
+  // least one SiteInstance, but is not locked to a specific site.
+  static ProcessLock CreateAllowAnySite();
+
   ProcessLock();
+  explicit ProcessLock(const SiteInfo& site_info);
+  ProcessLock(const ProcessLock& rhs);
+  ProcessLock& operator=(const ProcessLock& rhs);
+
+  ~ProcessLock();
 
   // An empty ProcessLock indicates that a process is not restricted to pages
   // from a particular SiteInfo.
-  bool is_empty() const { return lock_url().is_empty(); }
+  // Note: This method is deprecated and new callers should not be added.
+  // TODO(acolwell): Remove this method and update all callers to use
+  // is_invalid(), allows_any_site(), or is_locked_to_site() instead.
+  bool is_empty() const { return !is_locked_to_site(); }
+
+  // Returns true if no information has been set on the lock.
+  bool is_invalid() const { return !site_info_.has_value(); }
+
+  // Returns true if the process is locked, but it is not restricted to a
+  // specific site. Any site is allowed to commit in the process.
+  bool allows_any_site() const {
+    return site_info_.has_value() && site_info_->process_lock_url().is_empty();
+  }
+
+  // Returns true if the lock is restricted to a specific site.
+  bool is_locked_to_site() const {
+    return site_info_.has_value() && !site_info_->process_lock_url().is_empty();
+  }
 
   // Returns the url that corresponds to the SiteInfo the lock is used with. It
   // will always be the same as the site URL, except in cases where effective
   // urls are in use. Always empty if the SiteInfo uses the default site url.
   // TODO(wjmaclean): Delete this accessor once we get to the point where we can
   // safely just compare ProcessLocks directly.
-  const GURL lock_url() const { return site_info_.process_lock_url(); }
+  const GURL lock_url() const {
+    return site_info_.has_value() ? site_info_->process_lock_url() : GURL();
+  }
 
   // Returns whether this ProcessLock is specific to an origin rather than
   // including subdomains, such as due to opt-in origin isolation. This resolves
   // an ambiguity of whether a process with a lock_url() like
   // "https://foo.example" is allowed to include "https://sub.foo.example" or
   // not.
-  bool is_origin_keyed() const { return site_info_.is_origin_keyed(); }
+  bool is_origin_keyed() const {
+    return site_info_.has_value() && site_info_->is_origin_keyed();
+  }
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,
   // a scheme plus eTLD+1, like https://google.com).  Also returns true if the
@@ -108,15 +146,13 @@ class CONTENT_EXPORT ProcessLock {
   bool operator==(const ProcessLock& rhs) const;
   bool operator!=(const ProcessLock& rhs) const;
 
-  std::string ToString() const {
-    return site_info_.process_lock_url().possibly_invalid_spec();
-  }
+  std::string ToString() const;
 
  private:
   // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
   // (e.g., multiple extensions). This can better restrict what the process has
   // access to in cases that we don't currently use a ProcessLock.
-  SiteInfo site_info_;
+  base::Optional<SiteInfo> site_info_;
 };
 
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
@@ -408,6 +444,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Upon creation, child processes should register themselves by calling this
   // this method exactly once. This call must be made on the UI thread.
   void Add(int child_id, BrowserContext* browser_context);
+
+  // Helper method for unit tests that calls Add() and
+  // LockProcess() with an "allow_any_site" lock. This ensures that the process
+  // policy is always in a state where it is valid to call
+  // CanAccessDataForOrigin().
+  void AddForTesting(int child_id, BrowserContext* browser_context);
 
   // Upon destruction, child processes should unregister themselves by calling
   // this method exactly once. This call must be made on the UI thread.
