@@ -540,7 +540,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
     if (should_backup_log) {
       GetDebugDaemonClient()->BackupArcBugReport(
-          user_id_hash_,
+          cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_),
           base::BindOnce(&ArcVmClientAdapter::OnArcBugReportBackedUp,
                          weak_factory_.GetWeakPtr()));
     } else {

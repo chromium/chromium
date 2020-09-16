@@ -263,12 +263,12 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        pipe_reader->AsWeakPtr()));
   }
 
-  void BackupArcBugReport(const std::string& userhash,
+  void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
                           VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kBackupArcBugReport);
     dbus::MessageWriter writer(&method_call);
-    writer.AppendString(userhash);
+    writer.AppendString(id.account_id());
 
     DVLOG(1) << "Backing up ARC bug report";
     debugdaemon_proxy_->CallMethod(

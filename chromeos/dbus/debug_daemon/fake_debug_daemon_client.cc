@@ -128,7 +128,7 @@ void FakeDebugDaemonClient::GetScrubbedBigLogs(
 }
 
 void FakeDebugDaemonClient::BackupArcBugReport(
-    const std::string& userhash,
+    const cryptohome::AccountIdentifier& id,
     VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));

@@ -109,8 +109,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // and saves it in debugd daemon store.
   // If a backup already exists, it is overwritten.
   // If backup operation fails, an error is logged.
-  // |userhash|: Cryptohome sanitized username.
-  virtual void BackupArcBugReport(const std::string& userhash,
+  // |id|: Cryptohome Account identifier for the user to get
+  // logs for.
+  virtual void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
                                   VoidDBusMethodCallback callback) = 0;
 
   // Gets all logs collected by debugd.

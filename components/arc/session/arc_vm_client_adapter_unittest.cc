@@ -97,7 +97,7 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   TestDebugDaemonClient() = default;
   ~TestDebugDaemonClient() override = default;
 
-  void BackupArcBugReport(const std::string& userhash,
+  void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
                           chromeos::VoidDBusMethodCallback callback) override {
     backup_arc_bug_report_called_ = true;
     std::move(callback).Run(backup_arc_bug_report_result_);
