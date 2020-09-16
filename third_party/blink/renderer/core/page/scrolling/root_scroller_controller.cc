@@ -238,7 +238,7 @@ bool RootScrollerController::IsValidRootScroller(const Element& element) const {
   if (element.GetLayoutObject()->IsInsideFlowThread())
     return false;
 
-  if (!element.GetLayoutObject()->HasNonVisibleOverflow() &&
+  if (!element.GetLayoutObject()->IsScrollContainer() &&
       !element.IsFrameOwnerElement())
     return false;
 

@@ -651,7 +651,7 @@ NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
 
 void NGBlockNode::PrepareForLayout() const {
   auto* block = DynamicTo<LayoutBlock>(box_);
-  if (block && block->HasNonVisibleOverflow()) {
+  if (block && block->IsScrollContainer()) {
     DCHECK(block->GetScrollableArea());
     if (block->GetScrollableArea()->ShouldPerformScrollAnchoring())
       block->GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();

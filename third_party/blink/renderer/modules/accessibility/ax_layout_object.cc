@@ -120,10 +120,9 @@ LayoutBoxModelObject* AXLayoutObject::GetLayoutBoxModelObject() const {
 }
 
 bool IsProgrammaticallyScrollable(LayoutBox* box) {
-  if (!box->HasNonVisibleOverflow()) {
-    // If overflow is visible it is not scrollable.
+  if (!box->IsScrollContainer())
     return false;
-  }
+
   // Return true if the content is larger than the available space.
   return box->PixelSnappedScrollWidth() != box->PixelSnappedClientWidth() ||
          box->PixelSnappedScrollHeight() != box->PixelSnappedClientHeight();

@@ -1981,7 +1981,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   RasterEffectOutset VisualRectOutsetForRasterEffects() const override;
 
   inline bool CanSkipComputeScrollbars() const {
-    return (StyleRef().IsOverflowVisible() || !HasNonVisibleOverflow() ||
+    return (StyleRef().IsOverflowVisibleAlongBothAxes() ||
+            !HasNonVisibleOverflow() ||
             (GetScrollableArea() &&
              !GetScrollableArea()->HasHorizontalScrollbar() &&
              !GetScrollableArea()->HasVerticalScrollbar())) &&

@@ -137,7 +137,7 @@ void ScrollableAreaPainter::PaintOverflowControls(
     const IntPoint& paint_offset) {
   // Don't do anything if we have no overflow.
   const auto& box = *GetScrollableArea().GetLayoutBox();
-  if (!box.HasNonVisibleOverflow() ||
+  if (!box.IsScrollContainer() ||
       box.StyleRef().Visibility() != EVisibility::kVisible)
     return;
 

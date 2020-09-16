@@ -37,7 +37,7 @@ LayoutBox* FindSnapContainer(const LayoutBox& origin_box) {
   // containing block chain) scroll container".
   Element* document_element = origin_box.GetDocument().documentElement();
   LayoutBox* box = origin_box.ContainingBlock();
-  while (box && !box->HasNonVisibleOverflow() && !IsA<LayoutView>(box) &&
+  while (box && !box->IsScrollContainer() && !IsA<LayoutView>(box) &&
          box->GetNode() != document_element) {
     box = box->ContainingBlock();
   }

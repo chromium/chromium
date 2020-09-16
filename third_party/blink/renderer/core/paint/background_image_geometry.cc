@@ -59,7 +59,7 @@ PhysicalOffset AccumulatedScrollOffsetForFixedBackground(
   for (const LayoutBlock* block = object.ContainingBlock(&skip_info);
        block && !skip_info.AncestorSkipped();
        block = block->ContainingBlock(&skip_info)) {
-    if (block->HasNonVisibleOverflow())
+    if (block->IsScrollContainer())
       result += PhysicalOffsetToBeNoop(block->ScrolledContentOffset());
     if (block == container)
       break;

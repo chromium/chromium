@@ -2155,9 +2155,20 @@ class ComputedStyle : public ComputedStyleBase,
   // Returns true if 'overflow' is 'visible' along both axes. When 'clip' is
   // used the other axis may be 'visible'. In other words, if one axis is
   // 'visible' the other axis is not necessarily 'visible.'
-  bool IsOverflowVisible() const {
+  bool IsOverflowVisibleAlongBothAxes() const {
+    // Overflip clip and overflow visible may be used along different axis.
     return OverflowX() == EOverflow::kVisible &&
            OverflowY() == EOverflow::kVisible;
+  }
+
+  // An overflow value of visible or clip is not a scroll container, all other
+  // values result in a scroll container. Also note that if visible or clip is
+  // set on one axis, then the other axis must also be visible or clip. For
+  // example, "overflow-x: clip; overflow-y: visible" is allowed, but
+  // "overflow-x: clip; overflow-y: hidden" is not.
+  bool IsScrollContainer() const {
+    return OverflowX() != EOverflow::kVisible &&
+           OverflowX() != EOverflow::kClip;
   }
 
   bool IsDisplayTableRowOrColumnType() const {
@@ -2352,9 +2363,11 @@ class ComputedStyle : public ComputedStyleBase,
   // approach is different from the spec to maintain backwards compatibility.
   // TODO(chrishtr): replace this with |HasGroupingProperty()|.
   CORE_EXPORT bool HasGroupingPropertyForUsedTransformStyle3D() const {
-    if (RuntimeEnabledFeatures::TransformInteropEnabled())
-      return HasGroupingProperty(BoxReflect()) || !IsOverflowVisible();
-    return !IsOverflowVisible() || HasFilterInducingProperty() ||
+    if (RuntimeEnabledFeatures::TransformInteropEnabled()) {
+      return HasGroupingProperty(BoxReflect()) ||
+             !IsOverflowVisibleAlongBothAxes();
+    }
+    return !IsOverflowVisibleAlongBothAxes() || HasFilterInducingProperty() ||
            HasNonInitialOpacity();
   }
 

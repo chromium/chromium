@@ -96,7 +96,7 @@ LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
 bool LayoutBoxModelObject::UsesCompositedScrolling() const {
-  return HasNonVisibleOverflow() && HasLayer() &&
+  return IsScrollContainer() && HasLayer() &&
          Layer()->GetScrollableArea()->UsesCompositedScrolling();
 }
 

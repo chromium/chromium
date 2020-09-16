@@ -221,15 +221,14 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     if (!Base::IsEffectiveRootScroller()) {
       // Check if we need to do anything at all.
       // If we have clipping, then we can't have any spillout.
-      PhysicalRect overflow_box = Base::HasNonVisibleOverflow()
+      PhysicalRect overflow_box = Base::IsScrollContainer()
                                       ? Base::PhysicalBorderBoxRect()
                                       : Base::PhysicalVisualOverflowRect();
       overflow_box.Move(accumulated_offset);
       if (!hit_test_location.Intersects(overflow_box))
         return false;
     }
-    if (Base::IsInSelfHitTestingPhase(action) &&
-        Base::HasNonVisibleOverflow() &&
+    if (Base::IsInSelfHitTestingPhase(action) && Base::IsScrollContainer() &&
         Base::HitTestOverflowControl(result, hit_test_location,
                                      accumulated_offset))
       return true;

@@ -12,7 +12,7 @@ namespace blink {
 
 void ListItemPainter::Paint(const PaintInfo& paint_info) {
   if (!layout_list_item_.LogicalHeight() &&
-      layout_list_item_.HasNonVisibleOverflow())
+      layout_list_item_.IsScrollContainer())
     return;
 
   BlockPainter(layout_list_item_).Paint(paint_info);

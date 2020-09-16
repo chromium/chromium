@@ -964,7 +964,8 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       BackfaceVisibility() != other.BackfaceVisibility() ||
       UsedTransformStyle3D() != other.UsedTransformStyle3D() ||
       ContainsPaint() != other.ContainsPaint() ||
-      IsOverflowVisible() != other.IsOverflowVisible() ||
+      IsOverflowVisibleAlongBothAxes() !=
+          other.IsOverflowVisibleAlongBothAxes() ||
       WillChangeProperties() != other.WillChangeProperties()) {
     diff.SetCompositingReasonsChanged();
   }

@@ -61,7 +61,7 @@ PhysicalOffset MapCoordinatesTest::AdjustForFrameScroll(
     const PhysicalOffset& point) const {
   PhysicalOffset result(point);
   LayoutView* layout_view = GetDocument().GetLayoutView();
-  if (layout_view->HasNonVisibleOverflow())
+  if (layout_view->IsScrollContainer())
     result -= PhysicalOffset(layout_view->ScrolledContentOffset());
   return result;
 }

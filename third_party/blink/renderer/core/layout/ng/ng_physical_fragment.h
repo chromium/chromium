@@ -258,6 +258,12 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->HasNonVisibleOverflow();
   }
 
+  // True if this is considered a scroll-container. See
+  // ComputedStyle::IsScrollContainer() for details.
+  bool IsScrollContainer() const {
+    return IsCSSBox() && layout_object_->IsScrollContainer();
+  }
+
   bool ShouldClipOverflow() const {
     return IsCSSBox() && layout_object_->ShouldClipOverflow();
   }

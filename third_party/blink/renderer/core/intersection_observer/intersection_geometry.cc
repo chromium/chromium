@@ -88,7 +88,7 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
     // 2) An element wider than the ICB can cause us to resize the FrameView so
     // we can zoom out to fit the entire element width.
     result = layout_view->OverflowClipRect(PhysicalOffset());
-  } else if (root->IsBox() && root->HasNonVisibleOverflow()) {
+  } else if (root->IsBox() && root->IsScrollContainer()) {
     result = ToLayoutBox(root)->PhysicalContentBoxRect();
   } else {
     result = PhysicalRect(ToLayoutBoxModelObject(root)->BorderBoundingBox());
@@ -474,7 +474,7 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   if (does_intersect) {
     intersection_rect = unclipped_intersection_rect;
     if (local_ancestor) {
-      if (local_ancestor->HasNonVisibleOverflow()) {
+      if (local_ancestor->IsScrollContainer()) {
         PhysicalOffset scroll_offset = -PhysicalOffset(
             LayoutPoint(local_ancestor->ScrollOrigin()) +
             local_ancestor->PixelSnappedScrolledContentOffset());

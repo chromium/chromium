@@ -589,8 +589,8 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
 }
 
 PhysicalOffset LayoutView::OffsetForFixedPosition() const {
-  return HasNonVisibleOverflow() ? PhysicalOffset(ScrolledContentOffset())
-                                 : PhysicalOffset();
+  return IsScrollContainer() ? PhysicalOffset(ScrolledContentOffset())
+                             : PhysicalOffset();
 }
 
 PhysicalOffset LayoutView::PixelSnappedOffsetForFixedPosition() const {
@@ -634,7 +634,7 @@ PhysicalRect LayoutView::OverflowClipRect(
   }
 
   rect.offset = location;
-  if (HasNonVisibleOverflow())
+  if (IsScrollContainer())
     ExcludeScrollbars(rect, overlay_scrollbar_clip_behavior);
 
   return rect;
@@ -807,7 +807,7 @@ void LayoutView::UpdateAfterLayout() {
     GetFrameView()->AdjustViewSize();
   if (frame.IsMainFrame())
     frame.GetChromeClient().ResizeAfterLayout();
-  if (HasNonVisibleOverflow())
+  if (IsScrollContainer())
     GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
   LayoutBlockFlow::UpdateAfterLayout();
 }

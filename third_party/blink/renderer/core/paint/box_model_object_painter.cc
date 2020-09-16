@@ -134,7 +134,7 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     sides_to_include = flow_box_->SidesToInclude();
   return BoxPainterBase::FillLayerInfo(
       box_model_.GetDocument(), box_model_.StyleRef(),
-      box_model_.HasNonVisibleOverflow(), color, bg_layer, bleed_avoidance,
+      box_model_.IsScrollContainer(), color, bg_layer, bleed_avoidance,
       LayoutObject::ShouldRespectImageOrientation(&box_model_),
       sides_to_include, box_model_.IsLayoutInline(),
       is_painting_scrolling_background);

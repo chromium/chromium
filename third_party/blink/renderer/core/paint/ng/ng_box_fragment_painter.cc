@@ -474,7 +474,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   // We paint scrollbars after we painted other things, so that the scrollbars
   // will sit above them.
   info.phase = original_phase;
-  if (box_fragment_.HasNonVisibleOverflow()) {
+  if (box_fragment_.IsScrollContainer()) {
     ScrollableAreaPainter(*PhysicalFragment().Layer()->GetScrollableArea())
         .PaintOverflowControls(info, RoundedIntPoint(paint_offset));
   }
@@ -1864,7 +1864,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
 
   bool hit_test_self = fragment.IsInSelfHitTestingPhase(hit_test.action);
 
-  if (hit_test_self && box_fragment_.HasNonVisibleOverflow() &&
+  if (hit_test_self && box_fragment_.IsScrollContainer() &&
       HitTestOverflowControl(hit_test, physical_offset))
     return true;
 
@@ -1890,7 +1890,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   }
 
   if (!skip_children) {
-    if (!box_fragment_.HasNonVisibleOverflow()) {
+    if (!box_fragment_.IsScrollContainer()) {
       if (HitTestChildren(hit_test, physical_offset))
         return true;
     } else {

@@ -542,12 +542,14 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     if (child_recursion_data.subtree_is_compositing_ ||
         RequiresCompositingOrSquashing(reasons_to_composite)) {
 #if DCHECK_IS_ON()
-      // The reason for compositing should not be due to composited scrolling.
-      // It should only be compositing in order to represent composited content
-      // within a composited subframe.
-      bool was = layer->NeedsCompositedScrolling();
-      layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(true);
-      DCHECK(was == layer->NeedsCompositedScrolling());
+      if (layer->GetScrollableArea()) {
+        // The reason for compositing should not be due to composited scrolling.
+        // It should only be compositing in order to represent composited
+        // content within a composited subframe.
+        bool was = layer->NeedsCompositedScrolling();
+        layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(true);
+        DCHECK(was == layer->NeedsCompositedScrolling());
+      }
 #endif
 
       reasons_to_composite |= CompositingReason::kRoot;

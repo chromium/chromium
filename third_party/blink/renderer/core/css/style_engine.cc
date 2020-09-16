@@ -2079,7 +2079,7 @@ void StyleEngine::ViewportDefiningElementDidChange() {
     // need a recalc, this will not be updated as its done as part of setting
     // ComputedStyle on the LayoutObject. Force a SetStyle for body when the
     // ViewportDefiningElement changes in order to trigger an update of
-    // HasNonVisibleOverflow() and the PaintLayer in StyleDidChange().
+    // IsScrollContainer() and the PaintLayer in StyleDidChange().
     layout_object->SetStyle(ComputedStyle::Clone(*layout_object->Style()));
   }
 }

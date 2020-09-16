@@ -323,6 +323,12 @@ bool NGFragmentItem::HasNonVisibleOverflow() const {
   return false;
 }
 
+bool NGFragmentItem::IsScrollContainer() const {
+  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+    return fragment->IsScrollContainer();
+  return false;
+}
+
 bool NGFragmentItem::HasSelfPaintingLayer() const {
   if (const NGPhysicalBoxFragment* fragment = BoxFragment())
     return fragment->HasSelfPaintingLayer();

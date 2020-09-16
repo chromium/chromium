@@ -298,7 +298,7 @@ bool DefinitelyNewFormattingContext(const Node& node,
     if (!IsA<HTMLDetailsElement>(node) && !IsA<HTMLSummaryElement>(node))
       return true;
   }
-  if (!style.IsOverflowVisible())
+  if (style.IsScrollContainer())
     return node.GetDocument().ViewportDefiningElement() != &node;
   if (style.HasOutOfFlowPosition() ||
       (style.IsFloating() && !style.IsFlexOrGridItem()) ||
@@ -1359,7 +1359,7 @@ int Element::clientHeight() {
 
 LayoutBox* Element::GetLayoutBoxForScrolling() const {
   LayoutBox* box = GetLayoutBox();
-  if (!box || (!box->HasNonVisibleOverflow() &&
+  if (!box || (!box->IsScrollContainer() &&
                !box->StyleRef().ScrollbarGutterIsForce())) {
     return nullptr;
   }

@@ -108,7 +108,7 @@ class AbstractLineBox {
     // TODO(yosin): Is kIgnoreTransforms correct here?
     PhysicalOffset absolute_block_point = containing_block.LocalToAbsolutePoint(
         PhysicalOffset(), kIgnoreTransforms);
-    if (containing_block.HasNonVisibleOverflow()) {
+    if (containing_block.IsScrollContainer()) {
       absolute_block_point -=
           PhysicalOffset(containing_block.ScrolledContentOffset());
     }

@@ -1698,7 +1698,7 @@ Element* Document::ScrollingElementNoLayout() {
              lifecycle_.GetState() >= DocumentLifecycle::kStyleClean);
       HTMLBodyElement* body = FirstBodyElement();
       if (body && body->GetLayoutObject() &&
-          body->GetLayoutObject()->HasNonVisibleOverflow())
+          body->GetLayoutObject()->IsScrollContainer())
         return nullptr;
 
       return body;
@@ -2219,7 +2219,7 @@ void Document::PropagateStyleToViewport() {
         // viewport.  This is a bit of a weird edge case in the CSS spec that we
         // might want to try to eliminate some day (eg. for ScrollTopLeftInterop
         // - see http://crbug.com/157855).
-        if (body_style && !body_style->IsOverflowVisible()) {
+        if (body_style && body_style->IsScrollContainer()) {
           UseCounter::Count(*this,
                             WebFeature::kBodyScrollsInAdditionToViewport);
         }
@@ -3699,7 +3699,7 @@ Element* Document::ViewportDefiningElement() const {
   const ComputedStyle* root_style = root_element->GetComputedStyle();
   if (!root_style || root_style->IsEnsuredInDisplayNone())
     return nullptr;
-  if (body_element && root_style->IsOverflowVisible() &&
+  if (body_element && root_style->IsOverflowVisibleAlongBothAxes() &&
       IsA<HTMLHtmlElement>(root_element))
     return body_element;
   return root_element;

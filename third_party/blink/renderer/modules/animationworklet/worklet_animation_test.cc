@@ -178,7 +178,7 @@ TEST_F(WorkletAnimationTest,
   LayoutBoxModelObject* scroller =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
-  ASSERT_TRUE(scroller->HasNonVisibleOverflow());
+  ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
@@ -295,7 +295,7 @@ TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRate) {
   LayoutBoxModelObject* scroller =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
-  ASSERT_TRUE(scroller->HasNonVisibleOverflow());
+  ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
@@ -351,7 +351,7 @@ TEST_F(WorkletAnimationTest, ScrollTimelineSetPlaybackRateWhilePlaying) {
   LayoutBoxModelObject* scroller =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
-  ASSERT_TRUE(scroller->HasNonVisibleOverflow());
+  ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
@@ -472,7 +472,7 @@ TEST_F(WorkletAnimationTest, ScrollTimelineNewlyInactive) {
   LayoutBoxModelObject* scroller =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
-  ASSERT_TRUE(scroller->HasNonVisibleOverflow());
+  ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(0, 40),

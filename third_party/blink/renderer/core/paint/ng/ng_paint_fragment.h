@@ -177,6 +177,10 @@ class CORE_EXPORT NGPaintFragment : public RefCounted<NGPaintFragment>,
   bool HasNonVisibleOverflow() const {
     return PhysicalFragment().HasNonVisibleOverflow();
   }
+
+  bool IsScrollContainer() const {
+    return PhysicalFragment().IsScrollContainer();
+  }
   bool ShouldClipOverflow() const;
   bool HasSelfPaintingLayer() const;
 

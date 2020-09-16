@@ -426,7 +426,7 @@ TEST_P(LayoutBoxTest, LocalVisualRectWithMaskAndOverflowClip) {
 
   LayoutBox* target = GetLayoutBoxByElementId("target");
   EXPECT_TRUE(target->HasMask());
-  EXPECT_TRUE(target->HasNonVisibleOverflow());
+  EXPECT_TRUE(target->IsScrollContainer());
   EXPECT_EQ(PhysicalRect(0, 0, 100, 100), target->LocalVisualRect());
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->VisualOverflowRect());
 }
@@ -463,7 +463,7 @@ TEST_P(LayoutBoxTest, LocalVisualRectWithMaskWithOutsetAndOverflowClip) {
 
   LayoutBox* target = GetLayoutBoxByElementId("target");
   EXPECT_TRUE(target->HasMask());
-  EXPECT_TRUE(target->HasNonVisibleOverflow());
+  EXPECT_TRUE(target->IsScrollContainer());
   EXPECT_EQ(PhysicalRect(-20, -10, 140, 120), target->LocalVisualRect());
   EXPECT_EQ(LayoutRect(-20, -10, 140, 120), target->VisualOverflowRect());
 }

@@ -298,7 +298,7 @@ class FragmentPaintPropertyTreeBuilder {
 static bool NeedsScrollOrScrollTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
-  if (!object.HasNonVisibleOverflow())
+  if (!object.IsScrollContainer())
     return false;
 
   const LayoutBox& box = ToLayoutBox(object);
@@ -1526,7 +1526,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
 }
 
 bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
-  if (!object_.HasNonVisibleOverflow())
+  if (!object_.IsScrollContainer())
     return false;
 
   const auto& box = ToLayoutBox(object_);

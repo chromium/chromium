@@ -148,7 +148,7 @@ LayoutObject* GetParentOfFirstLineBox(LayoutBlockFlow* curr) {
     if (curr_child->IsFloating() || curr_child->IsOutOfFlowPositioned())
       continue;
 
-    if (curr->HasNonVisibleOverflow())
+    if (curr->IsScrollContainer())
       return curr;
 
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(curr_child);
@@ -278,7 +278,7 @@ bool LayoutListItem::UpdateMarkerLocation() {
 
   if (marker->IsOutsideListMarker())
     line_box_parent = GetParentOfFirstLineBox(this);
-  if (line_box_parent && (line_box_parent->HasNonVisibleOverflow() ||
+  if (line_box_parent && (line_box_parent->IsScrollContainer() ||
                           !line_box_parent->IsLayoutBlockFlow() ||
                           (line_box_parent->IsBox() &&
                            ToLayoutBox(line_box_parent)->IsWritingModeRoot())))

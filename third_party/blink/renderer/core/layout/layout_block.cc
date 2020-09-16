@@ -243,10 +243,10 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
 void LayoutBlock::UpdateFromStyle() {
   LayoutBox::UpdateFromStyle();
 
-  bool should_clip_overflow =
-      !StyleRef().IsOverflowVisible() && AllowsNonVisibleOverflow();
+  bool should_clip_overflow = !StyleRef().IsOverflowVisibleAlongBothAxes() &&
+                              AllowsNonVisibleOverflow();
   if (should_clip_overflow != HasNonVisibleOverflow()) {
-    if (!should_clip_overflow)
+    if (GetScrollableArea())
       GetScrollableArea()->InvalidateAllStickyConstraints();
     // The overflow clip paint property depends on whether overflow clip is
     // present so we need to update paint properties if this changes.
@@ -394,7 +394,7 @@ void LayoutBlock::UpdateLayout() {
   LayoutAnalyzer::Scope analyzer(*this);
 
   bool needs_scroll_anchoring =
-      HasNonVisibleOverflow() &&
+      IsScrollContainer() &&
       GetScrollableArea()->ShouldPerformScrollAnchoring();
   if (needs_scroll_anchoring)
     GetScrollableArea()->GetScrollAnchor()->NotifyBeforeLayout();
@@ -1218,7 +1218,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
 
   DCHECK(!ChildrenInline());
   PhysicalOffset scrolled_offset = accumulated_offset;
-  if (HasNonVisibleOverflow())
+  if (IsScrollContainer())
     scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
   HitTestAction child_hit_test = hit_test_action;
   if (hit_test_action == kHitTestChildBlockBackgrounds)
@@ -1405,7 +1405,7 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
 }
 
 void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
-  if (HasNonVisibleOverflow())
+  if (IsScrollContainer())
     offset += PhysicalOffset(PixelSnappedScrolledContentOffset());
 }
 
@@ -1837,7 +1837,7 @@ bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
   // We likewise avoid using the last line box in the case of size containment,
   // where the block's contents shouldn't be considered when laying out its
   // ancestors or siblings.
-  return (!StyleRef().IsOverflowVisible() &&
+  return (!StyleRef().IsOverflowVisibleAlongBothAxes() &&
           !StyleRef().ShouldIgnoreOverflowPropertyForInlineBlockBaseline()) ||
          ShouldApplyLayoutContainment();
 }
@@ -2219,7 +2219,7 @@ bool LayoutBlock::RecalcSelfLayoutOverflow() {
 
   LayoutUnit old_client_after_edge = LayoutClientAfterEdge();
   ComputeLayoutOverflow(old_client_after_edge, true);
-  if (HasNonVisibleOverflow())
+  if (IsScrollContainer())
     Layer()->GetScrollableArea()->UpdateAfterOverflowRecalc();
 
   return !HasNonVisibleOverflow() || self_needs_layout_overflow_recalc;

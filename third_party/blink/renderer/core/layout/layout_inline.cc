@@ -1505,7 +1505,7 @@ PhysicalOffset LayoutInline::OffsetFromContainerInternal(
   if (IsInFlowPositioned())
     offset += OffsetForInFlowPosition();
 
-  if (container->HasNonVisibleOverflow())
+  if (container->IsScrollContainer())
     offset += OffsetFromScrollableContainer(container, ignore_scroll_offset);
 
   return offset;

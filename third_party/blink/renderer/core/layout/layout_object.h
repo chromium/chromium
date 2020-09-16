@@ -1172,6 +1172,11 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   bool ShouldClipOverflow() const { return bitfields_.ShouldClipOverflow(); }
   bool HasClipRelatedProperty() const;
+  bool IsScrollContainer() const {
+    // Always check HasNonVisibleOverflow() in case the object is not allowed to
+    // have non-visible overflow.
+    return HasNonVisibleOverflow() && StyleRef().IsScrollContainer();
+  }
 
   // Not returning StyleRef().HasTransformRelatedProperty() because some objects
   // ignore the transform-related styles (e.g. LayoutInline, LayoutSVGBlock).

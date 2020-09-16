@@ -211,8 +211,7 @@ bool ScrollTimeline::ComputeIsActive() const {
   LayoutBox* layout_box = resolved_scroll_source_
                               ? resolved_scroll_source_->GetLayoutBox()
                               : nullptr;
-  return layout_box && layout_box->HasNonVisibleOverflow() &&
-         layout_box->GetScrollableArea();
+  return layout_box && layout_box->IsScrollContainer();
 }
 
 ScrollTimelineOffset* ScrollTimeline::StartScrollOffset() const {

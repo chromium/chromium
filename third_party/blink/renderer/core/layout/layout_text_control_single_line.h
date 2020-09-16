@@ -107,7 +107,7 @@ class LayoutTextControlInnerEditor : public LayoutBlockFlow {
       ScrollbarOrientation orientation) const override {
     return orientation == kHorizontalScrollbar;
   }
-  bool ScrollsOverflowX() const override { return HasNonVisibleOverflow(); }
+  bool ScrollsOverflowX() const override { return IsScrollContainer(); }
   bool ScrollsOverflowY() const override { return false; }
 };
 

@@ -202,6 +202,7 @@ class CORE_EXPORT NGFragmentItem {
   }
 
   bool HasNonVisibleOverflow() const;
+  bool IsScrollContainer() const;
   bool HasSelfPaintingLayer() const;
 
   // TODO(kojii): Avoid using this function in outside of this class as much as
