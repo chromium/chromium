@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.payments;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.payments.ComponentPaymentRequestImpl;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.OriginSecurityChecker;
@@ -20,6 +17,7 @@ import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
@@ -40,7 +38,7 @@ import org.chromium.services.service_manager.InterfaceFactory;
  */
 public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
     // Tests can inject behaviour on future PaymentRequests via these objects.
-    public static PaymentRequestImpl.Delegate sDelegateForTest;
+    public static ComponentPaymentRequestImpl.Delegate sDelegateForTest;
 
     private final RenderFrameHost mRenderFrameHost;
 
@@ -108,8 +106,9 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
      * Production implementation of the PaymentRequestImpl's Delegate. Gives true answers
      * about the system.
      */
-    public static class PaymentRequestDelegateImpl implements PaymentRequestImpl.Delegate {
-        private final TwaPackageManagerDelegate mPackageManager = new TwaPackageManagerDelegate();
+    public static class PaymentRequestDelegateImpl implements ComponentPaymentRequestImpl.Delegate {
+        private final TwaPackageManagerDelegate mPackageManagerDelegate =
+                new TwaPackageManagerDelegate();
         private final RenderFrameHost mRenderFrameHost;
 
         /* package */ PaymentRequestDelegateImpl(RenderFrameHost renderFrameHost) {
@@ -117,39 +116,42 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
         }
 
         @Override
-        public boolean isOffTheRecord(WebContents webContents) {
-            // To be conservative, a request which we don't know its profile is considered
-            // off-the-record, and thus user data would not be recorded in this case.
-            ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
-            if (activity == null) return true;
-            TabModel tabModel = activity.getCurrentTabModel();
-            assert tabModel != null;
-            Profile profile = tabModel.getProfile();
+        public boolean isOffTheRecord() {
+            // TODO(crbug.com/1128658): Try getting around the Profile dependency, as in C++ where
+            // we can do web_contents->GetBrowserContext()->IsOffTheRecord().
+            WebContents liveWebContents = getLiveWebContents();
+            if (liveWebContents == null) return true;
+            Profile profile = Profile.fromWebContents(liveWebContents);
             if (profile == null) return true;
             return profile.isOffTheRecord();
         }
 
         @Override
         public String getInvalidSslCertificateErrorMessage() {
-            WebContents webContents = getWebContents();
-            if (webContents == null || webContents.isDestroyed()) return null;
-            if (!OriginSecurityChecker.isSchemeCryptographic(webContents.getLastCommittedUrl())) {
+            WebContents liveWebContents = getLiveWebContents();
+            if (liveWebContents == null) return null;
+            if (!OriginSecurityChecker.isSchemeCryptographic(
+                        liveWebContents.getLastCommittedUrl())) {
                 return null;
             }
-            return SslValidityChecker.getInvalidSslCertificateErrorMessage(webContents);
+            return SslValidityChecker.getInvalidSslCertificateErrorMessage(liveWebContents);
         }
 
         @Override
-        public boolean isWebContentsActive(@NonNull ChromeActivity activity) {
-            return TabModelUtils.getCurrentWebContents(activity.getCurrentTabModel())
-                    == getWebContents();
+        public boolean isWebContentsActive() {
+            // TODO(crbug.com/1128658): Try making the WebContents inactive for instrumentation
+            // tests rather than mocking it with this method.
+            WebContents liveWebContents = getLiveWebContents();
+            return liveWebContents != null && liveWebContents.getVisibility() == Visibility.VISIBLE;
         }
 
         @Override
         public boolean prefsCanMakePayment() {
-            WebContents webContents = getWebContents();
-            return webContents != null && !webContents.isDestroyed()
-                    && UserPrefs.get(Profile.fromWebContents(webContents))
+            // TODO(crbug.com/1128658): Try replacing Profile with BrowserContextHandle, which
+            // represents a Chrome Profile or WebLayer ProfileImpl, and which UserPrefs operates on.
+            WebContents liveWebContents = getLiveWebContents();
+            return liveWebContents != null
+                    && UserPrefs.get(Profile.fromWebContents(liveWebContents))
                                .getBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED);
         }
 
@@ -160,13 +162,17 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
 
         @Override
         @Nullable
-        public String getTwaPackageName(@Nullable ChromeActivity activity) {
-            return activity != null ? mPackageManager.getTwaPackageName(activity) : null;
+        public String getTwaPackageName() {
+            WebContents liveWebContents = getLiveWebContents();
+            if (liveWebContents == null) return null;
+            ChromeActivity activity = ChromeActivity.fromWebContents(liveWebContents);
+            return activity != null ? mPackageManagerDelegate.getTwaPackageName(activity) : null;
         }
 
         @Nullable
-        private WebContents getWebContents() {
-            return WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+        private WebContents getLiveWebContents() {
+            WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+            return webContents != null && !webContents.isDestroyed() ? webContents : null;
         }
     }
 
@@ -192,7 +198,7 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
             return new InvalidPaymentRequest();
         }
 
-        PaymentRequestImpl.Delegate delegate;
+        ComponentPaymentRequestImpl.Delegate delegate;
         if (sDelegateForTest != null) {
             delegate = sDelegateForTest;
         } else {
@@ -203,8 +209,8 @@ public class PaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
 
         return ComponentPaymentRequestImpl.createPaymentRequest(mRenderFrameHost,
-                /*isOffTheRecord=*/delegate.isOffTheRecord(webContents),
-                /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(),
+                /*isOffTheRecord=*/delegate.isOffTheRecord(),
+                /*skipUiForBasicCard=*/delegate.skipUiForBasicCard(), delegate,
                 (componentPaymentRequest)
                         -> new PaymentRequestImpl(componentPaymentRequest, delegate));
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.components.payments;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +20,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -55,6 +58,13 @@ public class ComponentPaymentRequestImpl {
     @Nullable
     private final byte[][] mCertificateChain;
     private final boolean mIsOffTheRecord;
+    @Nullable
+    private final PaymentOptions mPaymentOptions;
+    private final boolean mRequestShipping;
+    private final boolean mRequestPayerName;
+    private final boolean mRequestPayerPhone;
+    private final boolean mRequestPayerEmail;
+    private final Delegate mDelegate;
     private boolean mSkipUiForNonUrlPaymentMethodIdentifiers;
     private PaymentRequestLifecycleObserver mPaymentRequestLifecycleObserver;
     private boolean mHasClosed;
@@ -83,6 +93,50 @@ public class ComponentPaymentRequestImpl {
         void onAbortCalled();
         void onCompleteCalled();
         void onMinimalUIReady();
+    }
+
+    /**
+     * A delegate to ask questions about the system, that allows tests to inject behaviour without
+     * having to modify the entire system. This partially mirrors a similar C++
+     * (Content)PaymentRequestDelegate for the C++ implementation, allowing the test harness to
+     * override behaviour in both in a similar fashion.
+     */
+    public interface Delegate {
+        /**
+         * @return Whether the merchant's WebContents is currently showing an off-the-record tab.
+         *         Return true if the tab profile is not accessible from the WebContents.
+         */
+        boolean isOffTheRecord();
+
+        /**
+         * @return A non-null string if there is an invalid SSL certificate on the currently loaded
+         *         page.
+         */
+        String getInvalidSslCertificateErrorMessage();
+
+        /**
+         * @return True if the merchant's web contents that initiated the payment request is active.
+         */
+        boolean isWebContentsActive();
+
+        /**
+         * @return Whether the preferences allow CAN_MAKE_PAYMENT.
+         */
+        boolean prefsCanMakePayment();
+
+        /**
+         * @return True if the UI can be skipped for "basic-card" scenarios. This will only ever be
+         *         true in tests.
+         */
+        boolean skipUiForBasicCard();
+
+        /**
+         * @return If the merchant's WebContents is running inside of a Trusted Web Activity,
+         *         returns the package name for Trusted Web Activity. Otherwise returns an empty
+         *         string or null.
+         */
+        @Nullable
+        String getTwaPackageName();
     }
 
     /**
@@ -156,20 +210,21 @@ public class ComponentPaymentRequestImpl {
      * @param renderFrameHost The RenderFrameHost of the merchant page.
      * @param isOffTheRecord Whether the merchant page is in a off-the-record (e.g., incognito,
      *         guest mode) Tab.
+     * @param delegate The delegate of this class.
      * @param skipUiForBasicCard True if the PaymentRequest UI should be skipped when the request
      *         only supports basic-card methods.
      * @param browserPaymentRequestFactory The factory that generates BrowserPaymentRequest.
      * @return The created instance.
      */
     public static PaymentRequest createPaymentRequest(RenderFrameHost renderFrameHost,
-            boolean isOffTheRecord, boolean skipUiForBasicCard,
+            boolean isOffTheRecord, boolean skipUiForBasicCard, Delegate delegate,
             BrowserPaymentRequest.Factory browserPaymentRequestFactory) {
         return new MojoPaymentRequestGateKeeper(
                 (client, methodData, details, options, googlePayBridgeEligible, onClosedListener)
                         -> ComponentPaymentRequestImpl.createIfParamsValid(renderFrameHost,
                                 isOffTheRecord, skipUiForBasicCard, browserPaymentRequestFactory,
                                 client, methodData, details, options, googlePayBridgeEligible,
-                                onClosedListener));
+                                onClosedListener, delegate));
     }
 
     /**
@@ -182,7 +237,7 @@ public class ComponentPaymentRequestImpl {
             BrowserPaymentRequest.Factory browserPaymentRequestFactory,
             @Nullable PaymentRequestClient client, @Nullable PaymentMethodData[] methodData,
             @Nullable PaymentDetails details, @Nullable PaymentOptions options,
-            boolean googlePayBridgeEligible, Runnable onClosedListener) {
+            boolean googlePayBridgeEligible, Runnable onClosedListener, Delegate delegate) {
         assert renderFrameHost != null;
         assert browserPaymentRequestFactory != null;
         assert onClosedListener != null;
@@ -223,7 +278,7 @@ public class ComponentPaymentRequestImpl {
 
         ComponentPaymentRequestImpl instance =
                 new ComponentPaymentRequestImpl(client, renderFrameHost, webContents, journeyLogger,
-                        skipUiForBasicCard, isOffTheRecord, onClosedListener);
+                        options, skipUiForBasicCard, isOffTheRecord, onClosedListener, delegate);
         instance.onCreated();
         boolean valid = instance.initAndValidate(renderFrameHost, browserPaymentRequestFactory,
                 methodData, details, options, googlePayBridgeEligible, isOffTheRecord);
@@ -250,11 +305,13 @@ public class ComponentPaymentRequestImpl {
 
     private ComponentPaymentRequestImpl(PaymentRequestClient client,
             RenderFrameHost renderFrameHost, WebContents webContents, JourneyLogger journeyLogger,
-            boolean skipUiForBasicCard, boolean isOffTheRecord, Runnable onClosedListener) {
+            @Nullable PaymentOptions options, boolean skipUiForBasicCard, boolean isOffTheRecord,
+            Runnable onClosedListener, Delegate delegate) {
         assert client != null;
         assert renderFrameHost != null;
         assert webContents != null;
         assert journeyLogger != null;
+        assert delegate != null;
 
         mRenderFrameHost = renderFrameHost;
         mPaymentRequestSecurityOrigin = mRenderFrameHost.getLastCommittedOrigin();
@@ -266,6 +323,12 @@ public class ComponentPaymentRequestImpl {
         mTopLevelOrigin =
                 UrlFormatter.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
+        mPaymentOptions = options;
+        mRequestShipping = options != null && options.requestShipping;
+        mRequestPayerName = options != null && options.requestPayerName;
+        mRequestPayerPhone = options != null && options.requestPayerPhone;
+        mRequestPayerEmail = options != null && options.requestPayerEmail;
+
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
         mIsOffTheRecord = isOffTheRecord;
@@ -273,6 +336,7 @@ public class ComponentPaymentRequestImpl {
         mClient = client;
         mJourneyLogger = journeyLogger;
         mOnClosedListener = onClosedListener;
+        mDelegate = delegate;
         mHasClosed = false;
     }
 
@@ -297,6 +361,38 @@ public class ComponentPaymentRequestImpl {
             @Nullable PaymentDetails details, @Nullable PaymentOptions options,
             boolean googlePayBridgeEligible, boolean isOffTheRecord) {
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
+        mJourneyLogger.recordCheckoutStep(
+                org.chromium.components.payments.CheckoutFunnelStep.INITIATED);
+
+        if (!UrlUtil.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
+            Log.d(TAG, org.chromium.components.payments.ErrorStrings.PROHIBITED_ORIGIN);
+            Log.d(TAG,
+                    org.chromium.components.payments.ErrorStrings
+                            .PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
+            mJourneyLogger.setAborted(
+                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                    ErrorStrings.PROHIBITED_ORIGIN,
+                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
+            return false;
+        }
+
+        mJourneyLogger.setRequestedInformation(
+                mRequestShipping, mRequestPayerEmail, mRequestPayerPhone, mRequestPayerName);
+
+        String rejectShowErrorMessage = mDelegate.getInvalidSslCertificateErrorMessage();
+        if (!TextUtils.isEmpty(rejectShowErrorMessage)) {
+            Log.d(TAG, rejectShowErrorMessage);
+            Log.d(TAG,
+                    org.chromium.components.payments.ErrorStrings
+                            .PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
+            mJourneyLogger.setAborted(
+                    org.chromium.components.payments.AbortReason.INVALID_DATA_FROM_RENDERER);
+            mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
+                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
+            return false;
+        }
+
         return mBrowserPaymentRequest.initAndValidate(
                 methodData, details, options, googlePayBridgeEligible);
     }
@@ -421,7 +517,8 @@ public class ComponentPaymentRequestImpl {
         assert mBrowserPaymentRequest != null;
 
         mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-        mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(debugMessage);
+        mBrowserPaymentRequest.disconnectFromClientWithDebugMessage(
+                debugMessage, PaymentErrorReason.USER_CANCEL);
     }
 
     /**
@@ -613,6 +710,12 @@ public class ComponentPaymentRequestImpl {
     /** @return The origin of the top level frame of the merchant page. */
     public String getTopLevelOrigin() {
         return mTopLevelOrigin;
+    }
+
+    /** @return The payment options requested by the merchant, can be null. */
+    @Nullable
+    public PaymentOptions getPaymentOptions() {
+        return mPaymentOptions;
     }
 
     /** @return The RendererFrameHost of the merchant page. */

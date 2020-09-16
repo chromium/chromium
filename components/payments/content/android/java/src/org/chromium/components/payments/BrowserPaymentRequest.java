@@ -7,6 +7,7 @@ package org.chromium.components.payments;
 import androidx.annotation.Nullable;
 
 import org.chromium.payments.mojom.PaymentDetails;
+import org.chromium.payments.mojom.PaymentErrorReason;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
@@ -83,8 +84,12 @@ public interface BrowserPaymentRequest {
     /** The browser part of the {@link PaymentRequest#canMakePayment} implementation. */
     void canMakePayment();
 
-    /** Delegate to the same method of PaymentRequestImpl. */
-    void disconnectFromClientWithDebugMessage(String debugMessage);
+    /**
+     * Delegate to the same method of PaymentRequestImpl.
+     * @param debugMessage The debug message shown for web developers.
+     * @param reason The reason of the disconnection defined in {@link PaymentErrorReason}.
+     */
+    void disconnectFromClientWithDebugMessage(String debugMessage, int reason);
 
     /**
      * Close this instance. The callers of this method should stop referencing this instance upon

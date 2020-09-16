@@ -8,7 +8,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
@@ -36,6 +35,7 @@ import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.CanMakePaymentQuery;
 import org.chromium.components.payments.CheckoutFunnelStep;
 import org.chromium.components.payments.ComponentPaymentRequestImpl;
+import org.chromium.components.payments.ComponentPaymentRequestImpl.Delegate;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
@@ -98,43 +98,6 @@ public class PaymentRequestImpl
                    PaymentResponseHelper.PaymentResponseRequesterDelegate,
                    PaymentDetailsConverter.MethodChecker, PaymentUIsManager.Delegate,
                    PaymentUIsObserver {
-    /**
-     * A delegate to ask questions about the system, that allows tests to inject behaviour without
-     * having to modify the entire system. This partially mirrors a similar C++
-     * (Content)PaymentRequestDelegate for the C++ implementation, allowing the test harness to
-     * override behaviour in both in a similar fashion.
-     */
-    public interface Delegate {
-        /**
-         * Returns whether the WebContents is currently showing an off-the-record tab. Return true
-         * if the tab profile is not accessible from the WebContents.
-         */
-        boolean isOffTheRecord(WebContents webContents);
-        /**
-         * Returns a non-null string if there is an invalid SSL certificate on the currently
-         * loaded page.
-         */
-        String getInvalidSslCertificateErrorMessage();
-        /**
-         * Returns true if the web contents that initiated the payment request is active.
-         */
-        boolean isWebContentsActive(@NonNull ChromeActivity activity);
-        /**
-         * Returns whether the preferences allow CAN_MAKE_PAYMENT.
-         */
-        boolean prefsCanMakePayment();
-        /**
-         * Returns true if the UI can be skipped for "basic-card" scenarios. This will only ever
-         * be true in tests.
-         */
-        boolean skipUiForBasicCard();
-        /**
-         * If running inside of a Trusted Web Activity, returns the package name for Trusted Web
-         * Activity. Otherwise returns an empty string or null.
-         */
-        @Nullable
-        String getTwaPackageName(@Nullable ChromeActivity activity);
-    }
 
     private static final String TAG = "PaymentRequest";
     private static boolean sIsLocalCanMakePaymentQueryQuotaEnforcedForTest;
@@ -164,11 +127,13 @@ public class PaymentRequestImpl
 
     private final PaymentUIsManager mPaymentUIsManager;
 
-    private PaymentOptions mPaymentOptions;
-    private boolean mRequestShipping;
-    private boolean mRequestPayerName;
-    private boolean mRequestPayerPhone;
-    private boolean mRequestPayerEmail;
+    @Nullable
+    private final PaymentOptions mPaymentOptions;
+    private final boolean mRequestShipping;
+    private final boolean mRequestPayerName;
+    private final boolean mRequestPayerPhone;
+    private final boolean mRequestPayerEmail;
+    private final int mShippingType;
 
     private boolean mIsCanMakePaymentResponsePending;
     private boolean mIsHasEnrolledInstrumentResponsePending;
@@ -178,7 +143,6 @@ public class PaymentRequestImpl
     private boolean mHasClosed;
 
     private PaymentRequestSpec mSpec;
-    private int mShippingType;
     private boolean mIsFinishedQueryingPaymentApps;
     private List<PaymentApp> mPendingApps = new ArrayList<>();
     private PaymentApp mInvokedPaymentApp;
@@ -263,6 +227,14 @@ public class PaymentRequestImpl
         mWebContents = componentPaymentRequestImpl.getWebContents();
         mMerchantName = mWebContents.getTitle();
         mJourneyLogger = componentPaymentRequestImpl.getJourneyLogger();
+
+        mPaymentOptions = componentPaymentRequestImpl.getPaymentOptions();
+        mRequestShipping = PaymentOptionsUtils.requestShipping(mPaymentOptions);
+        mRequestPayerName = PaymentOptionsUtils.requestPayerName(mPaymentOptions);
+        mRequestPayerPhone = PaymentOptionsUtils.requestPayerPhone(mPaymentOptions);
+        mRequestPayerEmail = PaymentOptionsUtils.requestPayerEmail(mPaymentOptions);
+        mShippingType = PaymentOptionsUtils.getShippingType(mPaymentOptions);
+
         mComponentPaymentRequestImpl = componentPaymentRequestImpl;
         mPaymentUIsManager = new PaymentUIsManager(/*delegate=*/this,
                 /*params=*/this, mWebContents, mIsOffTheRecord, mJourneyLogger, mTopLevelOrigin,
@@ -275,36 +247,6 @@ public class PaymentRequestImpl
     public boolean initAndValidate(PaymentMethodData[] rawMethodData, PaymentDetails details,
             @Nullable PaymentOptions options, boolean googlePayBridgeEligible) {
         assert mComponentPaymentRequestImpl != null;
-        mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.INITIATED);
-
-        mPaymentOptions = options;
-        mRequestShipping = options != null && options.requestShipping;
-        mRequestPayerName = options != null && options.requestPayerName;
-        mRequestPayerPhone = options != null && options.requestPayerPhone;
-        mRequestPayerEmail = options != null && options.requestPayerEmail;
-        mShippingType = PaymentOptionsUtils.getShippingType(options);
-
-        if (!UrlUtil.isOriginAllowedToUseWebPaymentApis(mWebContents.getLastCommittedUrl())) {
-            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN);
-            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.PROHIBITED_ORIGIN,
-                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
-            return false;
-        }
-
-        mJourneyLogger.setRequestedInformation(
-                mRequestShipping, mRequestPayerEmail, mRequestPayerPhone, mRequestPayerName);
-
-        String rejectShowErrorMessage = mDelegate.getInvalidSslCertificateErrorMessage();
-        if (!TextUtils.isEmpty(rejectShowErrorMessage)) {
-            Log.d(TAG, rejectShowErrorMessage);
-            Log.d(TAG, ErrorStrings.PROHIBITED_ORIGIN_OR_INVALID_SSL_EXPLANATION);
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(rejectShowErrorMessage,
-                    PaymentErrorReason.NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL);
-            return false;
-        }
 
         boolean googlePayBridgeActivated = googlePayBridgeEligible
                 && SkipToGPayHelper.canActivateExperiment(mWebContents, rawMethodData);
@@ -396,7 +338,7 @@ public class PaymentRequestImpl
     /** @return Whether the UI was built. */
     private boolean buildUI(ChromeActivity activity) {
         String error = mPaymentUIsManager.buildPaymentRequestUI(activity,
-                /*isWebContentsActive=*/mDelegate.isWebContentsActive(activity),
+                /*isWebContentsActive=*/mDelegate.isWebContentsActive(),
                 /*waitForUpdatedDetails=*/mWaitForUpdatedDetails);
         if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
@@ -1129,15 +1071,15 @@ public class PaymentRequestImpl
         disconnectFromClientWithDebugMessage(ErrorStrings.USER_CANCELLED);
     }
 
+    private void disconnectFromClientWithDebugMessage(String debugMessage) {
+        disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
+    }
+
     // Implement BrowserPaymentRequest:
     // This method is not supposed to be used outside this class and
     // ComponentPaymentRequestImpl.
     @Override
-    public void disconnectFromClientWithDebugMessage(String debugMessage) {
-        disconnectFromClientWithDebugMessage(debugMessage, PaymentErrorReason.USER_CANCEL);
-    }
-
-    private void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
+    public void disconnectFromClientWithDebugMessage(String debugMessage, int reason) {
         Log.d(TAG, debugMessage);
         if (mComponentPaymentRequestImpl != null) {
             mComponentPaymentRequestImpl.onError(reason, debugMessage);
@@ -1441,7 +1383,7 @@ public class PaymentRequestImpl
     @Override
     @Nullable
     public String getTwaPackageName() {
-        return mDelegate.getTwaPackageName(ChromeActivity.fromWebContents(mWebContents));
+        return mDelegate.getTwaPackageName();
     }
 
     // PaymentAppFactoryDelegate implementation.

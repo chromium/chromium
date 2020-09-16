@@ -7,12 +7,10 @@ package org.chromium.chrome.test_support;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.payments.PaymentRequestFactory;
 import org.chromium.chrome.browser.payments.PaymentRequestImpl;
 import org.chromium.components.autofill.EditableOption;
@@ -33,7 +31,8 @@ public class PaymentRequestTestBridge {
      * about the state of the system, in order to control which paths should be tested in the
      * PaymentRequestImpl.
      */
-    private static class PaymentRequestDelegateForTest implements PaymentRequestImpl.Delegate {
+    private static class PaymentRequestDelegateForTest
+            implements ComponentPaymentRequestImpl.Delegate {
         private final boolean mIsOffTheRecord;
         private final boolean mIsValidSsl;
         private final boolean mIsWebContentsActive;
@@ -50,7 +49,7 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
-        public boolean isOffTheRecord(WebContents webContents) {
+        public boolean isOffTheRecord() {
             return mIsOffTheRecord;
         }
 
@@ -61,7 +60,7 @@ public class PaymentRequestTestBridge {
         }
 
         @Override
-        public boolean isWebContentsActive(@NonNull ChromeActivity activity) {
+        public boolean isWebContentsActive() {
             return mIsWebContentsActive;
         }
 
@@ -77,7 +76,7 @@ public class PaymentRequestTestBridge {
 
         @Override
         @Nullable
-        public String getTwaPackageName(@Nullable ChromeActivity activity) {
+        public String getTwaPackageName() {
             return mTwaPackageName;
         }
     }
