@@ -22,6 +22,12 @@ class AccountPickerBottomSheetViewBinder {
             @ViewState
             int viewState = model.get(AccountPickerBottomSheetProperties.VIEW_STATE);
             switchToState(view, viewState);
+            if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
+                // This is needed when the view state changes from SIGNIN_AUTH_ERROR to
+                // COLLAPSED_ACCOUNT_LIST
+                view.updateSelectedAccount(
+                        model.get(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA));
+            }
         } else if (propertyKey == AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA) {
             DisplayableProfileData profileData =
                     model.get(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA);

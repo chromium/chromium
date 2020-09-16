@@ -139,10 +139,15 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Collapses the account list to the selected account.
      */
     void collapseAccountList() {
+        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
+        mAccountPickerTitle.setText(R.string.signin_account_picker_dialog_title);
+        mAccountPickerSubtitle.setText(R.string.signin_account_picker_bottom_sheet_subtitle);
+        mHorizontalDivider.setVisibility(View.VISIBLE);
         mSelectedAccountView.setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
         mAccountListView.setVisibility(View.GONE);
+        mSpinnerView.setVisibility(View.GONE);
     }
 
     /**

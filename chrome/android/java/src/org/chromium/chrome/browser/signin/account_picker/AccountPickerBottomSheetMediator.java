@@ -196,6 +196,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             signIn();
         } else if (viewState == ViewState.NO_ACCOUNTS) {
             addAccount();
+        } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {
+            updateCredentials();
         }
     }
 
@@ -220,5 +222,14 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
                 });
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void updateCredentials() {
+        mAccountPickerDelegate.updateCredentials(mSelectedAccountName, (isSuccess) -> {
+            if (isSuccess) {
+                mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
+                        ViewState.COLLAPSED_ACCOUNT_LIST);
+            }
+        });
     }
 }

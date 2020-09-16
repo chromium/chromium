@@ -15,6 +15,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.accounts.Account;
 
+import androidx.fragment.app.FragmentActivity;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,6 +44,8 @@ import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * This class tests the {@link AccountPickerDelegate}.
@@ -76,6 +81,8 @@ public class AccountPickerDelegateTest {
     @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    private FragmentActivity mActivity;
+
     private AccountPickerDelegate mDelegate;
 
     private final IdentityManager mIdentityManager =
@@ -84,6 +91,9 @@ public class AccountPickerDelegateTest {
     @Before
     public void setUp() {
         initMocks(this);
+        mActivity = Robolectric.setupActivity(FragmentActivity.class);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
         Profile.setLastUsedProfileForTesting(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any())).thenReturn(mIdentityManager);

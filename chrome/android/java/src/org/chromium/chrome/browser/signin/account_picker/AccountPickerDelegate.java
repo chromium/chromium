@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -37,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class AccountPickerDelegate implements WebSigninBridge.Listener {
     private final WindowAndroid mWindowAndroid;
+    private final Activity mActivity;
     private final Tab mCurrentTab;
     private final TabCreator mIncognitoTabCreator;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
@@ -49,6 +51,8 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
             TabCreator incognitoTabCreator, WebSigninBridge.Factory webSigninBridgeFactory,
             String continueUrl) {
         mWindowAndroid = windowAndroid;
+        mActivity = mWindowAndroid.getActivity().get();
+        assert mActivity != null : "Activity should not be null!";
         mCurrentTab = currentTab;
         mIncognitoTabCreator = incognitoTabCreator;
         mWebSigninBridgeFactory = webSigninBridgeFactory;
@@ -62,9 +66,8 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
      */
     public IncognitoInterstitialDelegate getIncognitoInterstitialDelegate() {
         IncognitoInterstitialDelegate incognitoInterstitialDelegate =
-                new IncognitoInterstitialDelegate(mWindowAndroid.getActivity().get(),
-                        mIncognitoTabCreator, HelpAndFeedback.getInstance(),
-                        mCurrentTab.getUrlString());
+                new IncognitoInterstitialDelegate(mActivity, mIncognitoTabCreator,
+                        HelpAndFeedback.getInstance(), mCurrentTab.getUrlString());
         return incognitoInterstitialDelegate;
     }
 
@@ -123,9 +126,19 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
                     } else {
                         // AccountManagerFacade couldn't create intent, use SigninUtils to open
                         // settings instead.
-                        SigninUtils.openSettingsForAllAccounts(mWindowAndroid.getContext().get());
+                        SigninUtils.openSettingsForAllAccounts(mActivity);
                     }
                 });
+    }
+
+    /**
+     * Updates credentials of the given account name.
+     */
+    public void updateCredentials(
+            String accountName, Callback<Boolean> onUpdateCredentialsCallback) {
+        AccountManagerFacadeProvider.getInstance().updateCredentials(
+                AccountUtils.createAccountFromName(accountName), mActivity,
+                onUpdateCredentialsCallback);
     }
 
     /**

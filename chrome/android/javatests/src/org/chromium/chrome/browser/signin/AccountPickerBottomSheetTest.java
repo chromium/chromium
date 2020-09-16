@@ -368,6 +368,34 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    public void testSigninAgainButtonOnSigninAuthErrorSheet() {
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+        // Throws an auth error during the sign-in action
+        doAnswer(invocation -> {
+            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
+            onSignInErrorCallback.onResult(
+                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(coreAccountInfo), any());
+
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorSheet();
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(1);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .updateCredentials(eq(PROFILE_DATA1.getAccountName()), any());
+        onView(withText(R.string.auth_error_card_button)).perform(click());
+        checkCollapsedAccountList(PROFILE_DATA1);
+    }
+
+    @Test
+    @MediumTest
     public void testAddAccountOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
