@@ -271,6 +271,14 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
+  /** @private */
+  onSearchFocus_() {
+    if (this.$.selector.selected === undefined &&
+        this.filteredOpenTabs_.length > 0) {
+      this.$.selector.selectIndex(0);
+    }
+  }
+
   /**
    * Handles key events when the search field has focus.
    * @param {!KeyboardEvent} e

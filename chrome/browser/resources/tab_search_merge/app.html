@@ -55,8 +55,8 @@
   </svg>
 </iron-iconset-svg>
 <tab-search-search-field id="searchField" autofocus clear-label="Clear search"
-    label="Search tabs [[getKeyboardShortcut_()]]" on-keydown="onSearchKeyDown_"
-    on-search-changed="onSearchChanged_">
+    label="Search tabs [[getKeyboardShortcut_()]]" on-focus="onSearchFocus_"
+    on-keydown="onSearchKeyDown_" on-search-changed="onSearchChanged_">
 </tab-search-search-field>
 <div id="tabs">
   <iron-selector id="selector" on-keydown="onItemKeyDown_"
