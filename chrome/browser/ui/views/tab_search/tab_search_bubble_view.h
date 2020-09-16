@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_TAB_SEARCH_BUBBLE_VIEW_H_
 
 #include "base/scoped_observer.h"
+#include "base/timer/elapsed_timer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -37,7 +38,7 @@ class TabSearchBubbleView : public views::BubbleDialogDelegateView {
 
   TabSearchBubbleView(content::BrowserContext* browser_context,
                       views::View* anchor_view);
-  ~TabSearchBubbleView() override = default;
+  ~TabSearchBubbleView() override;
 
   // views::BubbleDialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
@@ -46,7 +47,12 @@ class TabSearchBubbleView : public views::BubbleDialogDelegateView {
   void OnWebViewSizeChanged();
 
  private:
+  void ShowBubble();
+
   views::WebView* web_view_;
+
+  // Time the Tab Search window has been open.
+  base::Optional<base::ElapsedTimer> timer_;
 
   DISALLOW_COPY_AND_ASSIGN(TabSearchBubbleView);
 };

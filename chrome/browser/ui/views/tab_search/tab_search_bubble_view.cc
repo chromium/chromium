@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -28,12 +27,7 @@ class TabSearchWebView : public views::WebView {
                    TabSearchBubbleView* parent)
       : WebView(browser_context), parent_(parent) {}
 
-  ~TabSearchWebView() override {
-    if (timer_.has_value()) {
-      UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration",
-                              timer_->Elapsed());
-    }
-  }
+  ~TabSearchWebView() override = default;
 
   // views::WebView:
   void PreferredSizeChanged() override {
@@ -41,44 +35,8 @@ class TabSearchWebView : public views::WebView {
     parent_->OnWebViewSizeChanged();
   }
 
-  void OnWebContentsAttached() override { SetVisible(false); }
-
-  void ResizeDueToAutoResize(content::WebContents* web_contents,
-                             const gfx::Size& new_size) override {
-    // Don't actually do anything with this information until we have been
-    // shown. Size changes will not be honored by lower layers while we are
-    // hidden.
-    if (!GetVisible()) {
-      pending_preferred_size_ = new_size;
-      return;
-    }
-    WebView::ResizeDueToAutoResize(web_contents, new_size);
-  }
-
-  void DocumentOnLoadCompletedInMainFrame() override {
-    GetWidget()->Show();
-    GetWebContents()->Focus();
-
-    // Track window open times from when the bubble is first shown.
-    timer_ = base::ElapsedTimer();
-  }
-
-  void DidStopLoading() override {
-    if (GetVisible())
-      return;
-
-    SetVisible(true);
-    ResizeDueToAutoResize(web_contents(), pending_preferred_size_);
-  }
-
  private:
   TabSearchBubbleView* parent_;
-
-  // What we should set the preferred width to once TabSearch has loaded.
-  gfx::Size pending_preferred_size_;
-
-  // Time the Tab Search window has been open.
-  base::Optional<base::ElapsedTimer> timer_;
 };
 
 }  // namespace
@@ -103,6 +61,18 @@ TabSearchBubbleView::TabSearchBubbleView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   web_view_->EnableSizingFromWebContents(kMinSize, kMaxSize);
   web_view_->LoadInitialURL(GURL(chrome::kChromeUITabSearchURL));
+
+  TabSearchUI* const tab_search_ui = static_cast<TabSearchUI*>(
+      web_view_->GetWebContents()->GetWebUI()->GetController());
+  tab_search_ui->AddShowUICallback(
+      base::BindOnce(&TabSearchBubbleView::ShowBubble, base::Unretained(this)));
+}
+
+TabSearchBubbleView::~TabSearchBubbleView() {
+  if (timer_.has_value()) {
+    UmaHistogramMediumTimes("Tabs.TabSearch.WindowDisplayedDuration2",
+                            timer_->Elapsed());
+  }
 }
 
 gfx::Size TabSearchBubbleView::CalculatePreferredSize() const {
@@ -120,4 +90,11 @@ void TabSearchBubbleView::AddedToWidget() {
 
 void TabSearchBubbleView::OnWebViewSizeChanged() {
   SizeToContents();
+}
+
+void TabSearchBubbleView::ShowBubble() {
+  DCHECK(GetWidget());
+  GetWidget()->Show();
+  web_view_->GetWebContents()->Focus();
+  timer_ = base::ElapsedTimer();
 }
