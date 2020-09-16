@@ -35,12 +35,14 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
 #include "third_party/blink/renderer/core/html/portal/portal_contents.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -120,6 +122,28 @@ void ForEachRemoteFrameChildrenControlledByWidget(
       }
     }
   }
+}
+
+viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
+  Node* node = result.InnerNode();
+  auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node);
+  if (!frame_owner || !frame_owner->ContentFrame() ||
+      !frame_owner->ContentFrame()->IsRemoteFrame())
+    return viz::FrameSinkId();
+
+  RemoteFrame* remote_frame = To<RemoteFrame>(frame_owner->ContentFrame());
+  if (remote_frame->IsIgnoredForHitTest())
+    return viz::FrameSinkId();
+  LayoutObject* object = result.GetLayoutObject();
+  DCHECK(object);
+  if (!object->IsBox())
+    return viz::FrameSinkId();
+
+  IntPoint local_point = RoundedIntPoint(result.LocalPoint());
+  if (!ToLayoutBox(object)->ComputedCSSContentBoxRect().Contains(local_point))
+    return viz::FrameSinkId();
+
+  return remote_frame->GetFrameSinkId();
 }
 
 }  // namespace
@@ -376,6 +400,64 @@ void WebFrameWidgetBase::BindWidgetCompositor(
   widget_base_->BindWidgetCompositor(std::move(receiver));
 }
 
+void WebFrameWidgetBase::BindInputTargetClient(
+    mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver) {
+  DCHECK(!input_target_receiver_.is_bound());
+  input_target_receiver_.Bind(
+      std::move(receiver),
+      local_root_->GetTaskRunner(TaskType::kInternalDefault));
+}
+
+void WebFrameWidgetBase::FrameSinkIdAt(const gfx::PointF& point,
+                                       const uint64_t trace_id,
+                                       FrameSinkIdAtCallback callback) {
+  TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Event.Pipeline",
+                         TRACE_ID_GLOBAL(trace_id),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+                         "step", "FrameSinkIdAt");
+
+  gfx::PointF local_point;
+  viz::FrameSinkId id = GetFrameSinkIdAtPoint(point, &local_point);
+  std::move(callback).Run(id, local_point);
+}
+
+viz::FrameSinkId WebFrameWidgetBase::GetFrameSinkIdAtPoint(
+    const gfx::PointF& point_in_dips,
+    gfx::PointF* local_point_in_dips) {
+  HitTestResult result =
+      CoreHitTestResultAt(widget_base_->DIPsToBlinkSpace(point_in_dips));
+
+  Node* result_node = result.InnerNode();
+  *local_point_in_dips = gfx::PointF(point_in_dips);
+
+  // TODO(crbug.com/797828): When the node is null the caller may
+  // need to do extra checks. Like maybe update the layout and then
+  // call the hit-testing API. Either way it might be better to have
+  // a DCHECK for the node rather than a null check here.
+  if (!result_node) {
+    return client_->GetFrameSinkId();
+  }
+
+  viz::FrameSinkId frame_sink_id = GetRemoteFrameSinkId(result);
+  if (frame_sink_id.is_valid()) {
+    FloatPoint local_point = FloatPoint(result.LocalPoint());
+    LayoutObject* object = result.GetLayoutObject();
+    if (object->IsBox()) {
+      LayoutBox* box = ToLayoutBox(object);
+      local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
+    }
+
+    *local_point_in_dips =
+        widget_base_->BlinkSpaceToDIPs(gfx::PointF(local_point));
+    return frame_sink_id;
+  }
+
+  // Return the FrameSinkId for the current widget if the point did not hit
+  // test to a remote frame, or the point is outside of the remote frame's
+  // content box, or the remote frame doesn't have a valid FrameSinkId yet.
+  return client_->GetFrameSinkId();
+}
+
 void WebFrameWidgetBase::SetActive(bool active) {
   View()->SetIsActive(active);
 }
@@ -506,6 +588,7 @@ void WebFrameWidgetBase::Trace(Visitor* visitor) const {
   visitor->Trace(current_drag_data_);
   visitor->Trace(frame_widget_host_);
   visitor->Trace(receiver_);
+  visitor->Trace(input_target_receiver_);
 }
 
 void WebFrameWidgetBase::SetNeedsRecalculateRasterScales() {

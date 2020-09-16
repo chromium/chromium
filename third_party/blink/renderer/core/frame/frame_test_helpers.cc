@@ -117,6 +117,9 @@ T* CreateDefaultClientIfNeeded(T* client, std::unique_ptr<T>& owned_client) {
   return owned_client.get();
 }
 
+// A static increasing count of frame sinks created so they are all unique.
+static uint32_t s_frame_sink_count = 0;
+
 }  // namespace
 
 cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings() {
@@ -747,7 +750,8 @@ void TestWebRemoteFrameClient::FrameDetached(DetachType type) {
   self_owned_.reset();
 }
 
-TestWebWidgetClient::TestWebWidgetClient() = default;
+TestWebWidgetClient::TestWebWidgetClient()
+    : frame_sink_id_(viz::FrameSinkId(++s_frame_sink_count, 1)) {}
 
 void TestWebWidgetClient::SetFrameWidget(
     WebFrameWidget* widget,
@@ -781,7 +785,7 @@ bool TestWebWidgetClient::HaveScrollEventHandlers() const {
 }
 
 viz::FrameSinkId TestWebWidgetClient::GetFrameSinkId() {
-  return viz::FrameSinkId();
+  return frame_sink_id_;
 }
 
 void TestWebWidgetClient::RequestNewLayerTreeFrameSink(

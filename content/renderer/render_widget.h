@@ -303,17 +303,11 @@ class CONTENT_EXPORT RenderWidget
 
   void DidNavigate(ukm::SourceId source_id, const GURL& url);
 
-  viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
-                                         gfx::PointF* local_point);
-
   void SetActive(bool active);
 
   void UseSynchronousResizeModeForTesting(bool enable);
   void SetDeviceScaleFactorForTesting(float factor);
   void SetWindowRectSynchronouslyForTesting(const gfx::Rect& new_window_rect);
-
-  // Do a hit test for a given point in viewport coordinate.
-  blink::WebHitTestResult GetHitTestResultAtPoint(const gfx::PointF& point);
 
   // Forces a redraw and invokes the callback once the frame's been displayed
   // to the user in the display compositor.

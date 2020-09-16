@@ -177,39 +177,44 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPI) {
     // Hit the root
     EXPECT_EQ(GetCompositorElementId(),
               widget()
-                  ->GetHitTestResultAtPoint(gfx::PointF(10, 10))
+                  ->GetWebWidget()
+                  ->HitTestResultAt(gfx::PointF(10, 10))
                   .GetScrollableContainerId());
 
     // Hit non-scrollable div
     EXPECT_EQ(GetCompositorElementId(),
               widget()
-                  ->GetHitTestResultAtPoint(GetCenterPointOfElement("green"))
+                  ->GetWebWidget()
+                  ->HitTestResultAt(GetCenterPointOfElement("green"))
                   .GetScrollableContainerId());
 
     // Hit scrollable div
     EXPECT_EQ(GetCompositorElementId("red"),
               widget()
-                  ->GetHitTestResultAtPoint(GetCenterPointOfElement("red"))
+                  ->GetWebWidget()
+                  ->HitTestResultAt(GetCenterPointOfElement("red"))
                   .GetScrollableContainerId());
 
     // Hit overflow:hidden div
     EXPECT_EQ(GetCompositorElementId(),
               widget()
-                  ->GetHitTestResultAtPoint(GetCenterPointOfElement("blue"))
+                  ->GetWebWidget()
+                  ->HitTestResultAt(GetCenterPointOfElement("blue"))
                   .GetScrollableContainerId());
 
     // Hit position fixed div
     EXPECT_EQ(GetCompositorElementId(),
               widget()
-                  ->GetHitTestResultAtPoint(GetCenterPointOfElement("yellow"))
+                  ->GetWebWidget()
+                  ->HitTestResultAt(GetCenterPointOfElement("yellow"))
                   .GetScrollableContainerId());
 
     // Hit inner scroller inside another scroller
-    EXPECT_EQ(
-        GetCompositorElementId("cyan"),
-        widget()
-            ->GetHitTestResultAtPoint(GetCenterPointOfElement("cyan-parent"))
-            .GetScrollableContainerId());
+    EXPECT_EQ(GetCompositorElementId("cyan"),
+              widget()
+                  ->GetWebWidget()
+                  ->HitTestResultAt(GetCenterPointOfElement("cyan-parent"))
+                  .GetScrollableContainerId());
   }
 }
 
@@ -243,46 +248,9 @@ TEST_F(RenderWidgetTest, CompositorIdHitTestAPIWithImplicitRootScroller) {
                 ->GetDocument()
                 .GetVisualViewportScrollingElementIdForTesting(),
             widget()
-                ->GetHitTestResultAtPoint(GetCenterPointOfElement("white"))
+                ->GetWebWidget()
+                ->HitTestResultAt(GetCenterPointOfElement("white"))
                 .GetScrollableContainerId());
-}
-
-TEST_F(RenderWidgetTest, FrameSinkIdHitTestAPI) {
-  LoadHTML(
-      R"HTML(
-      <style>
-      html, body {
-        margin :0px;
-        padding: 0px;
-      }
-      </style>
-
-      <div style='background: green; padding: 100px; margin: 0px;'>
-        <iframe style='width: 200px; height: 100px;'
-          srcdoc='<body style="margin : 0px; height : 100px; width : 200px;">
-          </body>'>
-        </iframe>
-      </div>
-
-      )HTML");
-
-  gfx::PointF point;
-  viz::FrameSinkId main_frame_sink_id =
-      widget()->GetFrameSinkIdAtPoint(gfx::PointF(10.43, 10.74), &point);
-  EXPECT_EQ(static_cast<uint32_t>(widget()->routing_id()),
-            main_frame_sink_id.sink_id());
-  EXPECT_EQ(static_cast<uint32_t>(RenderThreadImpl::Get()->GetClientId()),
-            main_frame_sink_id.client_id());
-  EXPECT_EQ(gfx::PointF(10.43, 10.74), point);
-
-  // Targeting a child frame should also return the FrameSinkId for the main
-  // widget.
-  viz::FrameSinkId frame_sink_id =
-      widget()->GetFrameSinkIdAtPoint(gfx::PointF(150.27, 150.25), &point);
-  EXPECT_EQ(static_cast<uint32_t>(widget()->routing_id()),
-            frame_sink_id.sink_id());
-  EXPECT_EQ(main_frame_sink_id.client_id(), frame_sink_id.client_id());
-  EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
 }
 
 TEST_F(RenderWidgetTest, GetCompositionRangeValidComposition) {

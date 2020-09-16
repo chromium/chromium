@@ -605,6 +605,8 @@ void RenderWidgetHostImpl::Init() {
   if (blink_frame_widget_) {
     widget_input_handler_->GetFrameWidgetInputHandler(
         frame_widget_input_handler_.BindNewEndpointAndPassReceiver());
+    blink_frame_widget_->BindInputTargetClient(
+        input_target_client_.BindNewPipeAndPassReceiver());
   }
 
   SendScreenRects();
@@ -650,6 +652,7 @@ RenderWidgetHostImpl::BindNewFrameWidgetInterfaces() {
   blink_frame_widget_host_receiver_.reset();
   blink_frame_widget_.reset();
   frame_widget_input_handler_.reset();
+  input_target_client_.reset();
   widget_compositor_.reset();
   return std::make_pair(
       blink_frame_widget_host_receiver_.BindNewEndpointAndPassRemote(),
@@ -665,6 +668,7 @@ void RenderWidgetHostImpl::BindFrameWidgetInterfaces(
   blink_frame_widget_host_receiver_.reset();
   blink_frame_widget_.reset();
   frame_widget_input_handler_.reset();
+  input_target_client_.reset();
   widget_compositor_.reset();
   blink_frame_widget_host_receiver_.Bind(std::move(frame_widget_host));
   blink_frame_widget_.Bind(std::move(frame_widget));
@@ -684,6 +688,8 @@ void RenderWidgetHostImpl::InitForFrame() {
         input_router_->BindNewHost());
     widget_input_handler_->GetFrameWidgetInputHandler(
         frame_widget_input_handler_.BindNewEndpointAndPassReceiver());
+    blink_frame_widget_->BindInputTargetClient(
+        input_target_client_.BindNewPipeAndPassReceiver());
   }
 
   if (view_)
@@ -3291,7 +3297,7 @@ void RenderWidgetHostImpl::SetForceEnableZoom(bool enabled) {
   input_router_->SetForceEnableZoom(enabled);
 }
 
-void RenderWidgetHostImpl::SetInputTargetClient(
+void RenderWidgetHostImpl::SetInputTargetClientForTesting(
     mojo::Remote<viz::mojom::InputTargetClient> input_target_client) {
   input_target_client_ = std::move(input_target_client);
 }

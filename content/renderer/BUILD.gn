@@ -85,8 +85,6 @@ target(link_target_type, "renderer") {
     "impression_conversions.h",
     "in_process_renderer_thread.cc",
     "in_process_renderer_thread.h",
-    "input/input_target_client_impl.cc",
-    "input/input_target_client_impl.h",
     "internal_document_state_data.cc",
     "internal_document_state_data.h",
     "java/gin_java_bridge_dispatcher.cc",

@@ -212,20 +212,6 @@ blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
 }
 #endif
 
-viz::FrameSinkId GetRemoteFrameSinkId(const blink::WebHitTestResult& result) {
-  const blink::WebNode& node = result.GetNode();
-  DCHECK(!node.IsNull());
-  blink::WebFrame* result_frame = blink::WebFrame::FromFrameOwnerElement(node);
-  if (!result_frame || !result_frame->IsWebRemoteFrame())
-    return viz::FrameSinkId();
-
-  blink::WebRemoteFrame* remote_frame = result_frame->ToWebRemoteFrame();
-  if (remote_frame->IsIgnoredForHitTest() || !result.ContentBoxContainsPoint())
-    return viz::FrameSinkId();
-
-  return RenderFrameProxy::FromWebFrame(remote_frame)->frame_sink_id();
-}
-
 }  // namespace
 
 // RenderWidget ---------------------------------------------------------------
@@ -500,38 +486,6 @@ void RenderWidget::OnRequestSetBoundsAck() {
 void RenderWidget::RequestPresentation(PresentationTimeCallback callback) {
   layer_tree_host_->RequestPresentationTimeForNextFrame(std::move(callback));
   layer_tree_host_->SetNeedsCommitWithForcedRedraw();
-}
-
-viz::FrameSinkId RenderWidget::GetFrameSinkIdAtPoint(const gfx::PointF& point,
-                                                     gfx::PointF* local_point) {
-  blink::WebHitTestResult result = GetHitTestResultAtPoint(point);
-
-  blink::WebNode result_node = result.GetNode();
-  *local_point = gfx::PointF(point);
-
-  // TODO(crbug.com/797828): When the node is null the caller may
-  // need to do extra checks. Like maybe update the layout and then
-  // call the hit-testing API. Either way it might be better to have
-  // a DCHECK for the node rather than a null check here.
-  if (result_node.IsNull()) {
-    return GetFrameSinkId();
-  }
-
-  viz::FrameSinkId frame_sink_id = GetRemoteFrameSinkId(result);
-  if (frame_sink_id.is_valid()) {
-    *local_point = gfx::PointF(result.LocalPointWithoutContentBoxOffset());
-    if (compositor_deps()->IsUseZoomForDSFEnabled()) {
-      *local_point = gfx::ConvertPointToDIP(
-          GetWebWidget()->GetOriginalScreenInfo().device_scale_factor,
-          *local_point);
-    }
-    return frame_sink_id;
-  }
-
-  // Return the FrameSinkId for the current widget if the point did not hit
-  // test to a remote frame, or the point is outside of the remote frame's
-  // content box, or the remote frame doesn't have a valid FrameSinkId yet.
-  return GetFrameSinkId();
 }
 
 void RenderWidget::SetActive(bool active) {
@@ -1143,17 +1097,6 @@ blink::WebInputMethodController* RenderWidget::GetInputMethodController()
 
 void RenderWidget::UseSynchronousResizeModeForTesting(bool enable) {
   synchronous_resize_mode_for_testing_ = enable;
-}
-
-blink::WebHitTestResult RenderWidget::GetHitTestResultAtPoint(
-    const gfx::PointF& point) {
-  gfx::PointF point_in_pixel(point);
-  if (compositor_deps()->IsUseZoomForDSFEnabled()) {
-    point_in_pixel = gfx::ConvertPointToPixel(
-        GetWebWidget()->GetOriginalScreenInfo().device_scale_factor,
-        point_in_pixel);
-  }
-  return GetWebWidget()->HitTestResultAt(point_in_pixel);
 }
 
 void RenderWidget::SetDeviceScaleFactorForTesting(float factor) {

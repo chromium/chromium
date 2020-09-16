@@ -6674,16 +6674,20 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestNestedFrames) {
     gfx::PointF returned_point;
     base::OnceClosure quit_closure =
         content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    DCHECK_NE(child_node->current_frame_host()->GetInputTargetClient(),
-              nullptr);
-    child_node->current_frame_host()->GetInputTargetClient()->FrameSinkIdAt(
-        point_in_child, 0,
-        base::BindLambdaForTesting(
-            [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-              received_frame_sink_id = id;
-              returned_point = point;
-              std::move(quit_closure).Run();
-            }));
+    DCHECK(child_node->current_frame_host()
+               ->GetRenderWidgetHost()
+               ->input_target_client());
+    child_node->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_child, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  returned_point = point;
+                  std::move(quit_closure).Run();
+                }));
     content::RunThisRunLoop(&run_loop);
     // |point_in_child| should hit test to the view for |child_node|.
     ASSERT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
@@ -6697,16 +6701,20 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestNestedFrames) {
     gfx::PointF returned_point;
     base::OnceClosure quit_closure =
         content::GetDeferredQuitTaskForRunLoop(&run_loop);
-    DCHECK_NE(child_node->current_frame_host()->GetInputTargetClient(),
-              nullptr);
-    child_node->current_frame_host()->GetInputTargetClient()->FrameSinkIdAt(
-        point_in_nested_child_transformed, 0,
-        base::BindLambdaForTesting(
-            [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-              received_frame_sink_id = id;
-              returned_point = point;
-              std::move(quit_closure).Run();
-            }));
+    DCHECK(child_node->current_frame_host()
+               ->GetRenderWidgetHost()
+               ->input_target_client());
+    child_node->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_nested_child_transformed, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  returned_point = point;
+                  std::move(quit_closure).Run();
+                }));
     content::RunThisRunLoop(&run_loop);
     // |point_in_nested_child_transformed| should hit test to |rwhv_grandchild|.
     ASSERT_EQ(rwhv_grandchild->GetFrameSinkId(), received_frame_sink_id);
@@ -6760,13 +6768,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     gfx::PointF point_in_border = child_origin + gfx::Vector2dF(-30, -30);
     base::RunLoop run_loop;
     viz::FrameSinkId received_frame_sink_id;
-    root->current_frame_host()->GetInputTargetClient()->FrameSinkIdAt(
-        point_in_border, 0,
-        base::BindLambdaForTesting(
-            [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-              received_frame_sink_id = id;
-              run_loop.Quit();
-            }));
+    root->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_border, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  run_loop.Quit();
+                }));
     run_loop.Run();
     EXPECT_EQ(rwhv_parent->GetFrameSinkId(), received_frame_sink_id);
   }
@@ -6775,13 +6786,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     gfx::PointF point_in_padding = child_origin + gfx::Vector2dF(-10, -10);
     base::RunLoop run_loop;
     viz::FrameSinkId received_frame_sink_id;
-    root->current_frame_host()->GetInputTargetClient()->FrameSinkIdAt(
-        point_in_padding, 0,
-        base::BindLambdaForTesting(
-            [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-              received_frame_sink_id = id;
-              run_loop.Quit();
-            }));
+    root->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_padding, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  run_loop.Quit();
+                }));
     run_loop.Run();
     EXPECT_EQ(rwhv_parent->GetFrameSinkId(), received_frame_sink_id);
   }
@@ -6790,13 +6804,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     gfx::PointF point_in_content_box = child_origin + gfx::Vector2dF(10, 10);
     base::RunLoop run_loop;
     viz::FrameSinkId received_frame_sink_id;
-    root->current_frame_host()->GetInputTargetClient()->FrameSinkIdAt(
-        point_in_content_box, 0,
-        base::BindLambdaForTesting(
-            [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
-              received_frame_sink_id = id;
-              run_loop.Quit();
-            }));
+    root->current_frame_host()
+        ->GetRenderWidgetHost()
+        ->input_target_client()
+        ->FrameSinkIdAt(
+            point_in_content_box, 0,
+            base::BindLambdaForTesting(
+                [&](const viz::FrameSinkId& id, const gfx::PointF& point) {
+                  received_frame_sink_id = id;
+                  run_loop.Quit();
+                }));
     run_loop.Run();
     EXPECT_EQ(rwhv_child->GetFrameSinkId(), received_frame_sink_id);
   }

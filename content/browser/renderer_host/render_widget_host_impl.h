@@ -702,7 +702,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return input_target_client_;
   }
 
-  void SetInputTargetClient(
+  void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
 
   // InputRouterImplClient overrides.

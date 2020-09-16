@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
+namespace viz {
+class FrameSinkId;
+}
+
 namespace blink {
 class AssociatedInterfaceProvider;
 class IntRect;
@@ -62,6 +66,8 @@ class RemoteFrameClient : public FrameClient {
       const ViewportIntersectionState& intersection_state) = 0;
 
   virtual AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() = 0;
+
+  virtual viz::FrameSinkId GetFrameSinkId() = 0;
 };
 
 }  // namespace blink

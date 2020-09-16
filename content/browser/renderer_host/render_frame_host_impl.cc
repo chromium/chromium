@@ -2296,12 +2296,6 @@ void RenderFrameHostImpl::SetRenderFrameCreated(bool created) {
   if (created && GetLocalRenderWidgetHost()) {
     GetLocalRenderWidgetHost()->input_router()->SetFrameTreeNodeId(
         frame_tree_node_->frame_tree_node_id());
-    mojo::Remote<viz::mojom::InputTargetClient> input_target_client;
-    remote_interfaces_->GetInterface(
-        input_target_client.BindNewPipeAndPassReceiver());
-    input_target_client_ = input_target_client.get();
-    GetLocalRenderWidgetHost()->SetInputTargetClient(
-        std::move(input_target_client));
     GetLocalRenderWidgetHost()->InitForFrame();
   }
 

@@ -68,6 +68,8 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void BindWidgetCompositor(
       mojo::PendingReceiver<blink::mojom::WidgetCompositor> receiver) override {
   }
+  void BindInputTargetClient(
+      mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver) override {}
 
   mojo::AssociatedReceiver<blink::mojom::FrameWidget> receiver_;
   base::i18n::TextDirection text_direction_ =

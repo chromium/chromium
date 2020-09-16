@@ -40,6 +40,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -257,6 +258,7 @@ class TestWebWidgetClient : public WebWidgetClient,
       injected_scroll_events_;
   std::unique_ptr<TestWidgetInputHandlerHost> widget_input_handler_host_;
   bool animation_scheduled_ = false;
+  viz::FrameSinkId frame_sink_id_;
   mojo::AssociatedReceiver<mojom::blink::WidgetHost> receiver_{this};
 };
 

@@ -753,6 +753,10 @@ void RemoteFrame::WasAttachedAsRemoteMainFrame() {
       &RemoteFrame::BindToMainFrameReceiver, WrapWeakPersistent(this)));
 }
 
+viz::FrameSinkId RemoteFrame::GetFrameSinkId() {
+  return Client()->GetFrameSinkId();
+}
+
 bool RemoteFrame::IsIgnoredForHitTest() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   if (!owner || !owner->GetLayoutObject())

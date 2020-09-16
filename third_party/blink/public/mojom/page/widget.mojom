@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id_allocation.mojom";
+import "services/viz/public/mojom/hit_test/input_target_client.mojom";
 import "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/page/drag.mojom";
@@ -102,6 +103,9 @@ interface FrameWidget {
 
   // Binds an WidgetCompositor interface.
   BindWidgetCompositor(pending_receiver<WidgetCompositor> host);
+
+  // Binds an InputTargetClient interface.
+  BindInputTargetClient(pending_receiver<viz.mojom.InputTargetClient> host);
 };
 
 // Implemented in Browser, this interface defines frame-widget-specific methods that

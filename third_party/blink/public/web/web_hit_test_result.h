@@ -53,13 +53,6 @@ class WebHitTestResult {
   // The node that was hit (only one for point-based tests).
   BLINK_EXPORT WebNode GetNode() const;
 
-  // Coordinates of the point that was hit. Relative to the node, but with
-  // ContentBoxOffset removed if the node has box layout.
-  BLINK_EXPORT gfx::PointF LocalPointWithoutContentBoxOffset() const;
-
-  // Returns whether the content box contains the hit test point.
-  BLINK_EXPORT bool ContentBoxContainsPoint() const;
-
   // If a link (eg. anchor or area tag) is hit, return the element.
   // Return null otheriwse.
   BLINK_EXPORT WebElement UrlElement() const;

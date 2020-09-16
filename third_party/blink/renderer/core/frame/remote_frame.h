@@ -23,6 +23,10 @@ namespace cc {
 class Layer;
 }
 
+namespace viz {
+class FrameSinkId;
+}
+
 namespace blink {
 
 class AssociatedInterfaceProvider;
@@ -187,6 +191,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   RemoteFrameToken GetRemoteFrameToken() const {
     return RemoteFrameToken(GetFrameToken());
   }
+
+  viz::FrameSinkId GetFrameSinkId();
 
  private:
   // Frame protected overrides:

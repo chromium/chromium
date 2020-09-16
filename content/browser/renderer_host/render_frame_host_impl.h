@@ -89,7 +89,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
-#include "services/viz/public/mojom/hit_test/input_target_client.mojom.h"
 #include "third_party/blink/public/common/feature_policy/document_policy.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
@@ -461,10 +460,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
   bool RequiresPerformActionPointInPixels() const override;
-
-  viz::mojom::InputTargetClient* GetInputTargetClient() {
-    return input_target_client_;
-  }
 
   // Creates a RenderFrame in the renderer process.
   bool CreateRenderFrame(
@@ -2970,8 +2965,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // IPC-friendly token that represents this host.
   const base::UnguessableToken frame_token_;
-
-  viz::mojom::InputTargetClient* input_target_client_ = nullptr;
 
   // Binding to remote implementation of mojom::RenderAccessibility. Note that
   // this binding is done on-demand (in UpdateAccessibilityMode()) and will only

@@ -6,6 +6,7 @@
 
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
 namespace blink {
@@ -50,6 +51,44 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
                   .MainFrameWidgetBase()
                   ->LayerTreeHost()
                   ->new_local_surface_id_request_for_testing());
+}
+
+TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <style>
+      html, body {
+        margin :0px;
+        padding: 0px;
+      }
+      </style>
+
+      <div style='background: green; padding: 100px; margin: 0px;'>
+        <iframe style='width: 200px; height: 100px;'
+          srcdoc='<body style="margin : 0px; height : 100px; width : 200px;">
+          </body>'>
+        </iframe>
+      </div>
+
+      )HTML");
+
+  gfx::PointF point;
+  viz::FrameSinkId main_frame_sink_id =
+      WebView().MainFrameWidgetBase()->GetFrameSinkIdAtPoint(
+          gfx::PointF(10.43, 10.74), &point);
+  EXPECT_EQ(WebView().MainFrameWidgetBase()->Client()->GetFrameSinkId(),
+            main_frame_sink_id);
+  EXPECT_EQ(gfx::PointF(10.43, 10.74), point);
+
+  // Targeting a child frame should also return the FrameSinkId for the main
+  // widget.
+  viz::FrameSinkId frame_sink_id =
+      WebView().MainFrameWidgetBase()->GetFrameSinkIdAtPoint(
+          gfx::PointF(150.27, 150.25), &point);
+  EXPECT_EQ(main_frame_sink_id, frame_sink_id);
+  EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
 }
 
 }  // namespace blink

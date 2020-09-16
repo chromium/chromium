@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "cc/paint/paint_canvas.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -83,6 +84,11 @@ class WebRemoteFrameClient {
   // Called when the local root's visible viewport changes size.
   virtual void DidChangeVisibleViewportSize(
       const gfx::Size& visible_viewport_size) {}
+
+  virtual viz::FrameSinkId GetFrameSinkId() {
+    NOTREACHED();
+    return viz::FrameSinkId();
+  }
 
  protected:
   virtual ~WebRemoteFrameClient() = default;

@@ -172,8 +172,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
     return pending_visual_properties_.screen_info;
   }
 
-  const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
-
   // blink::WebRemoteFrameClient implementation:
   void FrameDetached(DetachType type) override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
@@ -198,6 +196,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   void UpdateCaptureSequenceNumber(uint32_t capture_sequence_number) override;
   void PageScaleFactorChanged(float page_scale_factor,
                               bool is_pinch_gesture_active) override;
+  viz::FrameSinkId GetFrameSinkId() override;
 
   void DidStartLoading();
 

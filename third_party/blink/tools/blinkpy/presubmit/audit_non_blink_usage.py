@@ -592,6 +592,7 @@ _CONFIG = [
             'cc::TaskGraphRunner',
             'gfx::DisplayColorSpaces',
             'ui::ImeTextSpan',
+            'viz::FrameSinkId',
             'viz::LocalSurfaceIdAllocation',
         ],
     },

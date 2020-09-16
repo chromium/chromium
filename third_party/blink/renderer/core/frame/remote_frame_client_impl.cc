@@ -148,4 +148,8 @@ RemoteFrameClientImpl::GetRemoteAssociatedInterfaces() {
   return web_frame_->Client()->GetRemoteAssociatedInterfaces();
 }
 
+viz::FrameSinkId RemoteFrameClientImpl::GetFrameSinkId() {
+  return web_frame_->Client()->GetFrameSinkId();
+}
+
 }  // namespace blink

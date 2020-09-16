@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
+#include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace blink {
@@ -1167,4 +1168,17 @@ bool WidgetBase::ComputePreferCompositingToLCDText() {
 #endif
 }
 
+gfx::PointF WidgetBase::DIPsToBlinkSpace(const gfx::PointF& point) {
+  if (!use_zoom_for_dsf_)
+    return point;
+  return gfx::ConvertPointToPixel(
+      client_->GetOriginalScreenInfo().device_scale_factor, point);
+}
+
+gfx::PointF WidgetBase::BlinkSpaceToDIPs(const gfx::PointF& point) {
+  if (!use_zoom_for_dsf_)
+    return point;
+  return gfx::ConvertPointToDIP(
+      client_->GetOriginalScreenInfo().device_scale_factor, point);
+}
 }  // namespace blink

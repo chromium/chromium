@@ -259,6 +259,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
     visible_viewport_size_ = size;
   }
 
+  // Converts from DIPs to Blink coordinate space (ie. Viewport/Physical
+  // pixels).
+  gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point);
+
+  // Converts from Blink coordinate space (ie. Viewport/Physical pixels) to
+  // DIPS.
+  gfx::PointF BlinkSpaceToDIPs(const gfx::PointF& point);
+
   // Returns whether Zoom for DSF is enabled for the widget.
   bool UseZoomForDsf() { return use_zoom_for_dsf_; }
 

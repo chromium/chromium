@@ -46,6 +46,7 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   void UpdateRemoteViewportIntersection(
       const ViewportIntersectionState& intersection_state) override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
+  viz::FrameSinkId GetFrameSinkId() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 

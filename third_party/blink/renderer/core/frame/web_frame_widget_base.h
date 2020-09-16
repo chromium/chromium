@@ -11,6 +11,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/trees/layer_tree_host.h"
+#include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -58,6 +60,7 @@ class CORE_EXPORT WebFrameWidgetBase
       public WebFrameWidget,
       public WidgetBaseClient,
       public mojom::blink::FrameWidget,
+      public viz::mojom::blink::InputTargetClient,
       public FrameWidget {
  public:
   WebFrameWidgetBase(
@@ -416,6 +419,15 @@ class CORE_EXPORT WebFrameWidgetBase
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver) override;
 
+  void BindInputTargetClient(
+      mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)
+      override;
+
+  // viz::mojom::blink::InputTargetClient:
+  void FrameSinkIdAt(const gfx::PointF& point,
+                     const uint64_t trace_id,
+                     FrameSinkIdAtCallback callback) override;
+
   // Called when the FrameView for this Widget's local root is created.
   virtual void DidCreateLocalRootView() {}
 
@@ -539,6 +551,8 @@ class CORE_EXPORT WebFrameWidgetBase
   virtual ScreenMetricsEmulator* DeviceEmulator() { return nullptr; }
 
   void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
+  viz::FrameSinkId GetFrameSinkIdAtPoint(const gfx::PointF& point,
+                                         gfx::PointF* local_point);
 
  protected:
   enum DragAction { kDragEnter, kDragOver };
@@ -647,6 +661,10 @@ class CORE_EXPORT WebFrameWidgetBase
                              WebFrameWidgetBase,
                              HeapMojoWrapperMode::kWithoutContextObserver>
       receiver_{this, nullptr};
+  HeapMojoReceiver<viz::mojom::blink::InputTargetClient,
+                   WebFrameWidgetBase,
+                   HeapMojoWrapperMode::kWithoutContextObserver>
+      input_target_receiver_{this, nullptr};
 
   // Different consumers in the browser process makes different assumptions, so
   // must always send the first IPC regardless of value.

@@ -332,6 +332,10 @@ void RenderFrameProxy::PageScaleFactorChanged(float page_scale_factor,
   SynchronizeVisualProperties();
 }
 
+viz::FrameSinkId RenderFrameProxy::GetFrameSinkId() {
+  return frame_sink_id_;
+}
+
 void RenderFrameProxy::DidChangeVisibleViewportSize(
     const gfx::Size& visible_viewport_size) {
   DCHECK(ancestor_render_widget_);

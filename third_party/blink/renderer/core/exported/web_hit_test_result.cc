@@ -61,26 +61,6 @@ WebNode WebHitTestResult::GetNode() const {
   return WebNode(private_->Result().InnerNode());
 }
 
-gfx::PointF WebHitTestResult::LocalPointWithoutContentBoxOffset() const {
-  FloatPoint local_point = FloatPoint(private_->Result().LocalPoint());
-  LayoutObject* object = private_->Result().GetLayoutObject();
-  if (object->IsBox()) {
-    LayoutBox* box = ToLayoutBox(object);
-    local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
-  }
-  return local_point;
-}
-
-bool WebHitTestResult::ContentBoxContainsPoint() const {
-  LayoutObject* object = private_->Result().GetLayoutObject();
-  DCHECK(object);
-  if (!object->IsBox())
-    return false;
-
-  IntPoint local_point = RoundedIntPoint(private_->Result().LocalPoint());
-  return ToLayoutBox(object)->ComputedCSSContentBoxRect().Contains(local_point);
-}
-
 WebElement WebHitTestResult::UrlElement() const {
   return WebElement(private_->Result().URLElement());
 }
