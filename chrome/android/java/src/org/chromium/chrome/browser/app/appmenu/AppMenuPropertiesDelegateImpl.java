@@ -754,10 +754,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return The type of action bar should be shown.
      */
     private @ActionBarType int getActionBarType() {
-        if (ACTION_BAR_VARIATION.getValue().equals("backward_button")) {
-            return ActionBarType.BACKWARD_BUTTON;
-        } else if (ACTION_BAR_VARIATION.getValue().equals("share_button")) {
-            return ActionBarType.SHARE_BUTTON;
+        if (shouldShowRegroupedMenu()) {
+            if (ACTION_BAR_VARIATION.getValue().equals("backward_button")) {
+                return ActionBarType.BACKWARD_BUTTON;
+            } else if (ACTION_BAR_VARIATION.getValue().equals("share_button")) {
+                return ActionBarType.SHARE_BUTTON;
+            }
         }
         return ActionBarType.STANDARD;
     }
