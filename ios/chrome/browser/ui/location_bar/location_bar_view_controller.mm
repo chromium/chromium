@@ -276,23 +276,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       progress <= kFullscreenProgressBadgeViewThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
-
-  CGAffineTransform transform =
+  self.locationBarSteadyView.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);
-  self.locationBarSteadyView.locationContainerView.transform = transform;
-  self.locationBarSteadyView.trailingButton.transform = transform;
-
-  UIView* badgeView = self.locationBarSteadyView.badgeView;
-  badgeView.transform = transform;
-  // The translation value is added in order to move badgeView for |dx| created
-  // by the difference of the separate animation of the locationbar's views.
-  if (badgeViewShouldCollapse) {
-    CGFloat dx =
-        self.locationBarSteadyView.locationContainerView.frame.origin.x -
-        badgeView.frame.origin.x - badgeView.frame.size.width;
-    badgeView.transform =
-        CGAffineTransformTranslate(badgeView.transform, dx, 0);
-  }
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
