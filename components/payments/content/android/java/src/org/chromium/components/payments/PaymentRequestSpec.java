@@ -41,9 +41,11 @@ public class PaymentRequestSpec {
     private List<PaymentItem> mRawLineItems;
     private PaymentItem mRawTotal;
     private long mNativePointer;
+    private PaymentDetails mPaymentDetails;
 
     /**
-     * Creates a valid instance of PaymentRequestSpec.
+     * Creates a valid instance of PaymentRequestSpec with payment parameters, and saves the
+     * parameters in the instance.
      * @param details The payment details, e.g., the total amount.
      * @param options The payment options, e.g., whether shipping is requested.
      * @param methodData The map of supported payment method identifiers and corresponding payment
@@ -53,21 +55,22 @@ public class PaymentRequestSpec {
     @Nullable
     public static PaymentRequestSpec createAndValidate(PaymentDetails details,
             PaymentOptions options, Map<String, PaymentMethodData> methodData, String appLocale) {
-        PaymentRequestSpec spec = new PaymentRequestSpec(details.id, methodData);
+        PaymentRequestSpec spec = new PaymentRequestSpec(details, methodData);
         if (!spec.parseAndValidateDetails(details)) return null;
-        spec.createNative(details, options, appLocale);
+        spec.createNative(options, appLocale);
         return spec;
     }
 
-    private PaymentRequestSpec(String id, Map<String, PaymentMethodData> methodData) {
-        mId = id;
+    private PaymentRequestSpec(PaymentDetails details, Map<String, PaymentMethodData> methodData) {
+        mPaymentDetails = details;
+        mId = mPaymentDetails.id;
         mMethodData = methodData;
     }
 
-    private void createNative(PaymentDetails details, PaymentOptions options, String appLocale) {
+    private void createNative(PaymentOptions options, String appLocale) {
         assert mNativePointer == 0;
         mNativePointer =
-                PaymentRequestSpecJni.get().create(options.serialize(), details.serialize(),
+                PaymentRequestSpecJni.get().create(options.serialize(), mPaymentDetails.serialize(),
                         MojoStructCollection.serialize(mMethodData.values()), appLocale);
     }
 
@@ -127,6 +130,11 @@ public class PaymentRequestSpec {
         return mRawTotal;
     }
 
+    /** @return The payment details specified in the payment request. */
+    public PaymentDetails getPaymentDetails() {
+        return mPaymentDetails;
+    }
+
     /**
      * Sets the total, display line items, and shipping options based on input and returns the
      * status boolean. That status is true for valid data, false for invalid data. If the input is
@@ -178,6 +186,7 @@ public class PaymentRequestSpec {
      * @param details The updated payment details, e.g., the updated total amount.
      */
     public void updateWith(PaymentDetails details) {
+        mPaymentDetails = details;
         PaymentRequestSpecJni.get().updateWith(mNativePointer, details.serialize());
     }
 

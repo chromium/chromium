@@ -73,6 +73,7 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
+import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
@@ -559,6 +560,9 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     // Implement PaymentRequestLifecycleObserver:
     @Override
     public void onPaymentRequestParamsInitiated(PaymentRequestParams params) {
+        for (PaymentMethodData method : params.getMethodData().values()) {
+            mCardEditor.addAcceptedPaymentMethodIfRecognized(method);
+        }
         // Checks whether the merchant supports autofill cards before show is called.
         mMerchantSupportsAutofillCards =
                 BasicCardUtils.merchantSupportsBasicCard(params.getMethodData());
