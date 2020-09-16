@@ -16,7 +16,6 @@ import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.os.Process;
 import android.os.Vibrator;
-import android.util.SparseArray;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -25,8 +24,6 @@ import org.chromium.device.mojom.NdefError;
 import org.chromium.device.mojom.NdefErrorType;
 import org.chromium.device.mojom.NdefMessage;
 import org.chromium.device.mojom.NdefRecord;
-import org.chromium.device.mojom.NdefRecordTypeCategory;
-import org.chromium.device.mojom.NdefScanOptions;
 import org.chromium.device.mojom.NdefWriteOptions;
 import org.chromium.device.mojom.Nfc;
 import org.chromium.device.mojom.NfcClient;
@@ -97,14 +94,7 @@ public class NfcImpl implements Nfc {
      */
     private NfcClient mClient;
 
-    /**
-     * Map of watchId <-> NdefScanOptions. All NdefScanOptions are matched against tag that is in
-     * proximity, when match algorithm (@see #matchesWatchOptions) returns true, watcher with
-     * corresponding ID would be notified using NfcClient interface.
-     * @see NfcClient#onWatch(int[] id, String serial_number, NdefMessage message)
-     */
-    private final SparseArray<NdefScanOptions> mWatchers = new SparseArray<>();
-
+    private final List<Integer> mWatchIds = new ArrayList<Integer>();
     /**
      * Vibrator. @see android.os.Vibrator
      */
@@ -173,8 +163,8 @@ public class NfcImpl implements Nfc {
 
     /**
      * Sets NfcClient. NfcClient interface is used to notify mojo NFC service client when NFC
-     * device is in proximity and has NdefMessage that matches NdefScanOptions criteria.
-     * @see Nfc#watch(NdefScanOptions options, int id, WatchResponse callback)
+     * device is in proximity and has NdefMessage.
+     * @see Nfc#watch(int id, WatchResponse callback)
      *
      * @param client @see NfcClient
      */
@@ -232,27 +222,25 @@ public class NfcImpl implements Nfc {
     }
 
     /**
-     * Watch method allows to set filtering criteria for NdefMessages that are found when NFC device
-     * is within proximity. When NdefMessage that matches NdefScanOptions is found, it is passed to
-     * NfcClient interface together with corresponding watch ID.
+     * When NdefMessages that are found when NFC device is within proximity, it
+     * is passed to NfcClient interface together with corresponding watch ID.
      * @see NfcClient#onWatch(int[] id, String serial_number, NdefMessage message)
      *
-     * @param options used to filter NdefMessages, @see NdefScanOptions.
      * @param id request ID from Blink which will be the watch ID if succeeded.
      * @param callback that is used to notify caller when watch() is completed.
      */
     @Override
-    public void watch(NdefScanOptions options, int id, WatchResponse callback) {
+    public void watch(int id, WatchResponse callback) {
         if (!checkIfReady(callback)) return;
         // We received a duplicate |id| here that should never happen, in such a case we should
         // report a bad message to Mojo but unfortunately Mojo bindings for Java does not support
         // this feature yet. So, we just passes back a generic error instead.
-        if (mWatchers.indexOfKey(id) >= 0) {
+        if (mWatchIds.contains(id)) {
             callback.call(createError(NdefErrorType.NOT_READABLE,
                     "Cannot start because the received scan request is duplicate."));
             return;
         }
-        mWatchers.put(id, options);
+        mWatchIds.add(id);
         callback.call(null);
         enableReaderModeIfNeeded();
         processPendingWatchOperations();
@@ -268,11 +256,11 @@ public class NfcImpl implements Nfc {
     public void cancelWatch(int id, CancelWatchResponse callback) {
         if (!checkIfReady(callback)) return;
 
-        if (mWatchers.indexOfKey(id) < 0) {
+        if (!mWatchIds.contains(id)) {
             callback.call(
                     createError(NdefErrorType.NOT_FOUND, "No pending scan operation to cancel."));
         } else {
-            mWatchers.remove(id);
+            mWatchIds.remove(mWatchIds.indexOf(id));
             callback.call(null);
             disableReaderModeIfNeeded();
         }
@@ -287,11 +275,11 @@ public class NfcImpl implements Nfc {
     public void cancelAllWatches(CancelAllWatchesResponse callback) {
         if (!checkIfReady(callback)) return;
 
-        if (mWatchers.size() == 0) {
+        if (mWatchIds.size() == 0) {
             callback.call(
                     createError(NdefErrorType.NOT_FOUND, "No pending scan operation to cancel."));
         } else {
-            mWatchers.clear();
+            mWatchIds.clear();
             callback.call(null);
             disableReaderModeIfNeeded();
         }
@@ -432,7 +420,7 @@ public class NfcImpl implements Nfc {
         if (mReaderCallbackHandler != null || mActivity == null || mNfcAdapter == null) return;
 
         // Do not enable reader mode, if there are no active push / watch operations.
-        if (mPendingPushOperation == null && mWatchers.size() == 0) return;
+        if (mPendingPushOperation == null && mWatchIds.size() == 0) return;
 
         mReaderCallbackHandler = new ReaderCallbackHandler(this);
         mNfcAdapter.enableReaderMode(mActivity, mReaderCallbackHandler,
@@ -462,7 +450,7 @@ public class NfcImpl implements Nfc {
      * whenever necessary.
      */
     private void disableReaderModeIfNeeded() {
-        if (mPendingPushOperation == null && mWatchers.size() == 0) {
+        if (mPendingPushOperation == null && mWatchIds.size() == 0) {
             disableReaderMode();
         }
     }
@@ -531,7 +519,7 @@ public class NfcImpl implements Nfc {
      * Reads NdefMessage from a tag and forwards message to matching method.
      */
     private void processPendingWatchOperations() {
-        if (mTagHandler == null || mClient == null || mWatchers.size() == 0) return;
+        if (mTagHandler == null || mClient == null || mWatchIds.size() == 0) return;
 
         if (mTagHandler.isTagOutOfRange()) {
             mTagHandler = null;
@@ -546,11 +534,11 @@ public class NfcImpl implements Nfc {
                 // Let's create one with no records so that watchers can be notified.
                 NdefMessage webNdefMessage = new NdefMessage();
                 webNdefMessage.data = new NdefRecord[0];
-                notifyMatchingWatchers(webNdefMessage);
+                notifyWatchers(webNdefMessage);
                 return;
             }
             NdefMessage webNdefMessage = NdefMessageUtils.toNdefMessage(message);
-            notifyMatchingWatchers(webNdefMessage);
+            notifyWatchers(webNdefMessage);
         } catch (UnsupportedEncodingException e) {
             Log.w(TAG,
                     "Cannot read data from NFC tag. Cannot convert to NdefMessage:"
@@ -572,68 +560,22 @@ public class NfcImpl implements Nfc {
      * Notify all active watchers that an error happened when trying to read the tag coming nearby.
      */
     private void notifyErrorToAllWatchers(NdefError error) {
-        for (int i = 0; i < mWatchers.size(); i++) {
+        for (int i = 0; i < mWatchIds.size(); i++) {
             mClient.onError(error);
         }
     }
 
     /**
-     * Iterates through active watchers and if any of those match NdefScanOptions criteria,
-     * delivers NdefMessage to the client.
+     * Iterates through active watchers and delivers NdefMessage to the client.
      */
-    private void notifyMatchingWatchers(NdefMessage message) {
-        List<Integer> watchIds = new ArrayList<Integer>();
-        for (int i = 0; i < mWatchers.size(); i++) {
-            NdefScanOptions options = mWatchers.valueAt(i);
-            if (matchesWatchOptions(message, options)) {
-                watchIds.add(mWatchers.keyAt(i));
-            }
-        }
-
-        if (watchIds.size() != 0) {
-            int[] ids = new int[watchIds.size()];
-            for (int i = 0; i < watchIds.size(); ++i) {
-                ids[i] = watchIds.get(i).intValue();
+    private void notifyWatchers(NdefMessage message) {
+        if (mWatchIds.size() != 0) {
+            int[] ids = new int[mWatchIds.size()];
+            for (int i = 0; i < mWatchIds.size(); ++i) {
+                ids[i] = mWatchIds.get(i).intValue();
             }
             mClient.onWatch(ids, mTagHandler.serialNumber(), message);
         }
-    }
-
-    /**
-     * Implements matching algorithm.
-     * https://w3c.github.io/web-nfc/#dispatching-nfc-content
-     */
-    private boolean matchesWatchOptions(NdefMessage message, NdefScanOptions options) {
-        // A message with no records is to notify that the tag is already formatted to support NDEF
-        // but does not contain a message yet. We always dispatch it for all options.
-        if (message.data.length == 0) return true;
-
-        for (int i = 0; i < message.data.length; i++) {
-            if (options.id != null && !options.id.equals(message.data[i].id)) {
-                continue;
-            }
-            if (options.recordType != null) {
-                if (message.data[i].category == NdefRecordTypeCategory.EXTERNAL) {
-                    // The spec https://w3c.github.io/web-nfc/#the-record-type-string says "Two
-                    // external types MUST be compared character by character, in case-insensitive
-                    // manner".
-                    if (options.recordType.compareToIgnoreCase(message.data[i].recordType) != 0) {
-                        continue;
-                    }
-                    // All other types should be compared in case-sensitive manner.
-                } else if (!options.recordType.equals(message.data[i].recordType)) {
-                    continue;
-                }
-            }
-            if (options.mediaType != null && !options.mediaType.equals(message.data[i].mediaType)) {
-                continue;
-            }
-
-            // Found one record matches, means the message matches.
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -4514,7 +4514,6 @@ crbug.com/1050754 external/wpt/web-locks/signal.tentative.https.any.sharedworker
 crbug.com/1050754 external/wpt/web-locks/steal.tentative.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/web-nfc/NDEFMessage_constructor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-nfc/NDEFReader_scan.https.html [ Failure ]
-crbug.com/1050754 external/wpt/web-nfc/NDEFReader_scan_filter.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-nfc/NDEFReader_scan_iframe.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-nfc/NDEFReadingEvent_constructor.https.html [ Failure ]
 crbug.com/1050754 external/wpt/web-nfc/NDEFRecord_constructor.https.html [ Failure ]

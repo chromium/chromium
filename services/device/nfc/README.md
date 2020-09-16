@@ -19,8 +19,7 @@ happened or the process is aborted by setting the AbortSignal in the
 NDEFWriteOptions.
 
 The NDEFReader interface has the scan method to try to read data from any NFC tag
-that comes within proximity. Once there is some data found to be matching the
-filtering criteria provided by web developers in NDEFScanOptions, an
+that comes within proximity. Once there is some data found an
 NDEFReadingEvent carrying the data will be dispatched to the NDEFReader.
 
 The most important classes for Android adaptation are

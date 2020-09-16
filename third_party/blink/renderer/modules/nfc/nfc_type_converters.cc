@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_write_options.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_record.h"
@@ -19,8 +18,6 @@ using device::mojom::blink::NDEFMessage;
 using device::mojom::blink::NDEFMessagePtr;
 using device::mojom::blink::NDEFRecord;
 using device::mojom::blink::NDEFRecordPtr;
-using device::mojom::blink::NDEFScanOptions;
-using device::mojom::blink::NDEFScanOptionsPtr;
 using device::mojom::blink::NDEFWriteOptions;
 using device::mojom::blink::NDEFWriteOptionsPtr;
 
@@ -62,29 +59,6 @@ TypeConverter<NDEFWriteOptionsPtr, const blink::NDEFWriteOptions*>::Convert(
   write_options_ptr->overwrite = write_options->overwrite();
 
   return write_options_ptr;
-}
-
-NDEFScanOptionsPtr
-TypeConverter<NDEFScanOptionsPtr, const blink::NDEFScanOptions*>::Convert(
-    const blink::NDEFScanOptions* scan_options) {
-  // https://w3c.github.io/web-nfc/#dom-ndefscanoptions
-  // Default values for NDEFScanOptions dictionary are:
-  // id = undefined, recordType = undefined, mediaType = undefined
-  NDEFScanOptionsPtr scan_options_ptr = NDEFScanOptions::New();
-
-  if (scan_options->hasId()) {
-    scan_options_ptr->id = scan_options->id();
-  }
-
-  if (scan_options->hasRecordType()) {
-    scan_options_ptr->record_type = scan_options->recordType();
-  }
-
-  if (scan_options->hasMediaType()) {
-    scan_options_ptr->media_type = scan_options->mediaType();
-  }
-
-  return scan_options_ptr;
 }
 
 }  // namespace mojo

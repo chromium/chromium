@@ -17,7 +17,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class NDEFScanOptions;
 class NDEFReader;
 class NDEFWriter;
 
@@ -41,7 +40,6 @@ class MODULES_EXPORT NFCProxy final : public GarbageCollected<NFCProxy>,
   void AddWriter(NDEFWriter*);
 
   void StartReading(NDEFReader*,
-                    const NDEFScanOptions*,
                     device::mojom::blink::NFC::WatchCallback);
   void StopReading(NDEFReader*);
   bool IsReading(const NDEFReader*);

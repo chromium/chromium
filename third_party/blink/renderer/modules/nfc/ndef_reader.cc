@@ -162,7 +162,7 @@ void NDEFReader::OnRequestPermission(const NDEFScanOptions* options,
   UseCounter::Count(GetExecutionContext(), WebFeature::kWebNfcAPI);
 
   GetNfcProxy()->StartReading(
-      this, options,
+      this,
       WTF::Bind(&NDEFReader::OnScanRequestCompleted, WrapPersistent(this)));
 }
 

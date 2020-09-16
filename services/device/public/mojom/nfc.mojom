@@ -103,20 +103,6 @@ struct NDEFWriteOptions {
   bool overwrite;
 };
 
-struct NDEFScanOptions {
-  // Defines record id filtering constraint. Null means don't filter, empty
-  // string means must match on empty.
-  string? id;
-
-  // Defines record type filtering constraint. Null means don't filter, empty
-  // string means must match on empty.
-  string? record_type;
-
-  // Defines media type filtering constraint. Null means don't filter, empty
-  // string means must match on empty.
-  string? media_type;
-};
-
 interface NFC {
   // NFCClient interface is used to notify |client| when NDEFMessage matches one
   // or more pending watch operations.
@@ -129,10 +115,9 @@ interface NFC {
   // Cancels pending push request.
   CancelPush() => (NDEFError? error);
 
-  // Starts watching for nearby NFC devices with data that matches
-  // NDEFScanOptions filtering criteria. |id| identifies each watch request on
-  // the current Mojo connection.
-  Watch(NDEFScanOptions options, uint32 id) => (NDEFError? error);
+  // Starts watching for nearby NFC devices. |id| identifies each watch request
+  // on the current Mojo connection.
+  Watch(uint32 id) => (NDEFError? error);
 
   // Cancels watch operation with provided id.
   CancelWatch (uint32 id) => (NDEFError? error);
