@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "net/base/net_errors.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
@@ -36,8 +38,13 @@ using ::testing::ElementsAreArray;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::ReturnNull;
+using ::testing::SaveArg;
 
 constexpr base::span<const char> kFakeData = "fake data";
+
+blink::WebURLError MakeWebURLError(int reason) {
+  return blink::WebURLError(reason, GURL());
+}
 
 class MockWebAssociatedURLLoader : public blink::WebAssociatedURLLoader {
  public:
@@ -96,6 +103,15 @@ class BlinkUrlLoaderTest : public testing::Test {
                               blink::WebAssociatedURLLoaderClient* client) {
     saved_request_.CopyFrom(request);
     EXPECT_EQ(loader_.get(), client);
+  }
+
+  int32_t DidFailWithError(const blink::WebURLError& error) {
+    int32_t result = 0;
+    loader_->Open(UrlRequest(), mock_callback_.Get());
+    EXPECT_CALL(mock_callback_, Run(_)).WillOnce(SaveArg<0>(&result));
+
+    loader_->DidFail(error);
+    return result;
   }
 
   NiceMock<MockBlinkUrlLoaderClient> mock_client_;
@@ -295,8 +311,8 @@ TEST_F(BlinkUrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
   loader_->Open(UrlRequest(), mock_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData.data(), kFakeData.size());
-  loader_->Close();
-  EXPECT_CALL(mock_callback_, Run(PP_ERROR_ABORTED));
+  loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
+  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
 
   char buffer[kFakeData.size()] = {};
   loader_->ReadResponseBody(buffer, mock_callback_.Get());
@@ -320,6 +336,46 @@ TEST_F(BlinkUrlLoaderTest, DidFinishLoadingWithPendingCallback) {
   EXPECT_CALL(mock_callback_, Run(0));  // Result represents read bytes.
 
   loader_->DidFinishLoading();
+}
+
+TEST_F(BlinkUrlLoaderTest, DidFailWhileOpening) {
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+
+  loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidFailWhileStreamingData) {
+  char buffer[1];
+  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->DidReceiveResponse(blink::WebURLResponse());
+  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(PP_ERROR_FAILED));
+
+  loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
+}
+
+TEST_F(BlinkUrlLoaderTest, DidFailWithErrorAccessDenied) {
+  int32_t result = DidFailWithError(MakeWebURLError(net::ERR_ACCESS_DENIED));
+
+  EXPECT_EQ(PP_ERROR_NOACCESS, result);
+}
+
+TEST_F(BlinkUrlLoaderTest, DidFailWithErrorNetworkAccessDenied) {
+  int32_t result =
+      DidFailWithError(MakeWebURLError(net::ERR_NETWORK_ACCESS_DENIED));
+
+  EXPECT_EQ(PP_ERROR_NOACCESS, result);
+}
+
+TEST_F(BlinkUrlLoaderTest, DidFailWithWebSecurityViolationError) {
+  blink::WebURLError error(network::CorsErrorStatus(),
+                           blink::WebURLError::HasCopyInCache::kFalse, GURL());
+  ASSERT_TRUE(error.is_web_security_violation());
+
+  int32_t result = DidFailWithError(error);
+
+  EXPECT_EQ(PP_ERROR_NOACCESS, result);
 }
 
 TEST_F(BlinkUrlLoaderTest, CloseWhileWaitingToOpen) {

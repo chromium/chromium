@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "net/base/net_errors.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/trusted/ppb_url_loader_trusted.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
@@ -185,8 +187,26 @@ void BlinkUrlLoader::DidFinishLoading() {
   RunReadCallback();
 }
 
+// Modeled on `content::PepperURLLoaderHost::DidFail()`.
 void BlinkUrlLoader::DidFail(const blink::WebURLError& error) {
-  NOTIMPLEMENTED();
+  DCHECK(state_ == LoadingState::kOpening ||
+         state_ == LoadingState::kStreamingData)
+      << static_cast<int>(state_);
+
+  int32_t pp_error = PP_ERROR_FAILED;
+  switch (error.reason()) {
+    case net::ERR_ACCESS_DENIED:
+    case net::ERR_NETWORK_ACCESS_DENIED:
+      pp_error = PP_ERROR_NOACCESS;
+      break;
+
+    default:
+      if (error.is_web_security_violation())
+        pp_error = PP_ERROR_NOACCESS;
+      break;
+  }
+
+  AbortLoad(pp_error);
 }
 
 void BlinkUrlLoader::AbortLoad(int32_t result) {
