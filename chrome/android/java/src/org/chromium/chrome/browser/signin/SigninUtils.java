@@ -19,6 +19,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.account_picker.AccountConsistencyPromoAction;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
@@ -85,7 +86,8 @@ public class SigninUtils {
         if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
             // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
             //  in the future. This disabling is only temporary.
-            // TODO(https://crbug.com/1120334): Records the action for suppressed sign-in promo
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
             return;
         }
         ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();

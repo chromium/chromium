@@ -166605,6 +166605,16 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountConsistencyPromoAction"
+    enum="AccountConsistencyPromoAction" expires_after="2021-08-31">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <summary>
+    This histogram records the action taken by user after receiving the header
+    from Gaia in the web sign-in flow. Currently only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountEquality" enum="SigninAccountEquality"
     expires_after="2021-03-06">
   <owner>droger@chromium.org</owner>

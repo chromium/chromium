@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -148,6 +149,15 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
         ThreadUtils.assertOnUiThread();
         mOnSignInErrorCallback.onResult(error);
         destroyWebSigninBridge();
+    }
+
+    /**
+     * Records Signin.AccountConsistencyPromoAction histogram.
+     */
+    public static void recordAccountConsistencyPromoAction(
+            @AccountConsistencyPromoAction int promoAction) {
+        RecordHistogram.recordEnumeratedHistogram("Signin.AndroidAccountConsistencyPromoAction",
+                promoAction, AccountConsistencyPromoAction.MAX);
     }
 
     private void destroyWebSigninBridge() {

@@ -945,6 +945,18 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Empty and duplicate usernames"/>
 </enum>
 
+<enum name="AccountConsistencyPromoAction">
+  <int value="0" label="SuppressedNoAccounts">
+    Promo is not shown as there are no accounts on device.
+  </int>
+  <int value="1" label="DismissedBack">
+    User has dismissed the promo by tapping back button.
+  </int>
+  <int value="2" label="AddAccount">
+    User has tapped |Add account to device| from expanded account list.
+  </int>
+</enum>
+
 <enum name="AccountManagerAccountAdditionSource">
   <int value="0" label="Add account button in Settings"/>
   <int value="1" label="Re-auth account button in Settings"/>

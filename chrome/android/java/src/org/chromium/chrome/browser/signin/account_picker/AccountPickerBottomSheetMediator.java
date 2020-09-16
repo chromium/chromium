@@ -77,6 +77,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      */
     @Override
     public void addAccount() {
+        AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.ADD_ACCOUNT);
         mAccountPickerDelegate.addAccount(accountName -> onAccountSelected(accountName, false));
     }
 
@@ -106,6 +108,9 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
                     AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.EXPANDED_ACCOUNT_LIST);
             return true;
         } else {
+            // The bottom sheet will be dismissed for all other view states
+            AccountPickerDelegate.recordAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.DISMISSED_BACK);
             return false;
         }
     }
