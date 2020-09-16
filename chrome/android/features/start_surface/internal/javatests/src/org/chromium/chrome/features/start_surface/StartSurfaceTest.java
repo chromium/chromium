@@ -103,7 +103,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/** Integration tests of the {@link StartSurface}. */
+/**
+ * Integration tests of the {@link StartSurface} for cases with tabs. See {@link
+ * StartSurfaceNoTabsTest} for test that have no tabs.
+ */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Restriction(
