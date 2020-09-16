@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/background_sync/sync_manager.h"
 
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -25,7 +25,7 @@ SyncManager::SyncManager(ServiceWorkerRegistration* registration,
     : registration_(registration),
       background_sync_service_(registration->GetExecutionContext()) {
   DCHECK(registration);
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+  registration->GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       background_sync_service_.BindNewPipeAndPassReceiver(task_runner));
 }
 
