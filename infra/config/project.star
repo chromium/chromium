@@ -38,13 +38,12 @@ def _generate_project_pyl(ctx):
 
 lucicfg.generator(_generate_project_pyl)
 
-# The branch numbers of branches that we have builders running for (including
-# milestone-specific projects)
-# Branch numbers for milestones can be viewed in the chromium column at
+# The milestone names and branch numbers of branches that we have builders
+# running for (including milestone-specific projects)
+# Branch numbers and milestones can be viewed in the chromium column at
 # https://chromiumdash.appspot.com/branches
 # The 2 highest milestones will be the ones with active branches
-ACTIVE_BRANCH_NUMBERS = [
-    4103,
-    4147,
-    4183,
+ACTIVE_BRANCHES = [
+    ("m85", 4183),
+    ("m86", 4240),
 ]

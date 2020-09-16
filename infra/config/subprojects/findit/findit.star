@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builder", "defaults", "goma", "os")
+load("//lib/swarming.star", swarming_lib = "swarming")
 
 luci.bucket(
     name = "findit",
@@ -18,6 +19,16 @@ luci.bucket(
             users = "luci-scheduler@appspot.gserviceaccount.com",
         ),
     ],
+)
+
+# FindIt builders use a separate pool with a dedicated set of permissions.
+swarming_lib.pool_realm(name = "pools/findit")
+
+# Allow FindIt admins to run tasks directly to debug issues.
+swarming_lib.task_triggerers(
+    builder_realm = "findit",
+    pool_realm = "pools/findit",
+    groups = ["project-findit-owners"],
 )
 
 defaults.auto_builder_dimension.set(False)
