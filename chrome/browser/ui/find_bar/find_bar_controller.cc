@@ -51,35 +51,31 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
   find_bar_->SetFocusAndSelection();
 
   if (find_next) {
-    base::string16 find_text;
-
-#if defined(OS_MAC)
-    // For macOS, we always want to search for the current contents of the
-    // find bar on OS X, rather than the behavior we'd get with empty
-    // find_text (see FindBarState::GetSearchPrepopulateText).
-    find_text = find_bar_->GetFindText();
-#endif
-
-    find_tab_helper->StartFinding(find_text, forward_direction,
+    find_tab_helper->StartFinding(find_bar_->GetFindText(), forward_direction,
                                   false /* case_sensitive */,
-                                  true /* find_next_if_selection_matches */);
+                                  true /* find_match */);
     return;
   }
 
-  if (!has_user_modified_text_) {
-    base::string16 selected_text = GetSelectedText();
-    auto selected_length = selected_text.length();
-    if (selected_length > 0 && selected_length <= 250) {
-      find_bar_->SetFindTextAndSelectedRange(
-          selected_text, gfx::Range(0, selected_text.length()));
-      // Start a new find based on the selection.
-      // |find_next_if_selection_matches| is set to false so that the initial
-      // result will be the selection itself.
-      find_tab_helper->StartFinding(selected_text, true /* forward_direction */,
-                                    false /* case_sensitive */,
-                                    false /* find_next_if_selection_matches */);
-    }
+  if (has_user_modified_text_)
+    return;
+
+  base::string16 selected_text = GetSelectedText();
+  auto selected_length = selected_text.length();
+  if (selected_length > 0 && selected_length <= 250) {
+    find_bar_->SetFindTextAndSelectedRange(
+        selected_text, gfx::Range(0, selected_text.length()));
   }
+  // Since this isn't a find-next operation, we don't want to jump to any
+  // matches. Doing so could cause the page to scroll when a user is just
+  // trying to pull up the find bar — they might not even want to search for
+  // whatever is prefilled (e.g. the selected text or the global pasteboard).
+  // So we set |find_match| to false, which will set up match counts and
+  // highlighting, but not jump to any matches.
+  find_tab_helper->StartFinding(find_bar_->GetFindText(),
+                                true /* forward_direction */,
+                                false /* case_sensitive */,
+                                false /* find_match */);
 }
 
 void FindBarController::EndFindSession(
@@ -246,7 +242,8 @@ void FindBarController::UpdateFindBarForCurrentResult() {
 void FindBarController::MaybeSetPrepopulateText() {
   // Having a per-tab find_string is not compatible with a global find
   // pasteboard, so we always have the same find text in all find bars. This is
-  // done through the find pasteboard mechanism, so don't set the text here.
+  // done through the find pasteboard mechanism (see FindBarPlatformHelperMac),
+  // so don't set the text here.
   if (find_bar_->HasGlobalFindPasteboard())
     return;
 

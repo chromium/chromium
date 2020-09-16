@@ -37,7 +37,6 @@ enum FindOptionFlag {
   // TODO(yosin) Once find UI works on flat tree and it doesn't use
   // |rangeOfString()|, we should get rid of |FindAPICall| enum member.
   kFindAPICall = 1 << 5,  // Used for Window.find or execCommand('find')
-  kDontFindNextIfSelectionMatches = 1 << 6,
 };
 
 typedef unsigned FindOptions;

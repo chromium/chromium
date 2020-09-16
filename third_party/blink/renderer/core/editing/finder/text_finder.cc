@@ -171,9 +171,6 @@ bool TextFinder::FindInternal(int identifier,
       (options.forward ? 0 : kBackwards) |
       (options.match_case ? 0 : kCaseInsensitive) |
       (wrap_within_frame ? kWrapAround : 0) |
-      (options.find_next_if_selection_matches
-           ? 0
-           : kDontFindNextIfSelectionMatches) |
       (options.new_session ? kStartInSelection : 0);
   active_match_ = Editor::FindRangeOfString(
       *OwnerFrame().GetFrame()->GetDocument(), search_text,

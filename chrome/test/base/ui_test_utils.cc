@@ -396,7 +396,7 @@ int FindInPage(WebContents* tab,
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(tab);
   find_tab_helper->StartFinding(search_string, forward, match_case,
-                                true, /* find_next_if_selection_matches */
+                                true, /* find_match */
                                 true /* run_synchronously_for_testing */);
   FindResultWaiter observer(tab);
   observer.Wait();

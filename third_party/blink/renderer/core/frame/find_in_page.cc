@@ -103,7 +103,8 @@ void FindInPage::Find(int request_id,
 
   // Search for an active match only if this frame is focused or if this is an
   // existing session.
-  if (frame_->IsFocused() || !options->new_session) {
+  if (options->find_match &&
+      (frame_->IsFocused() || !options->new_session)) {
     result = FindInternal(request_id, search_text, *options,
                           false /* wrap_within_frame */, &active_now);
   }

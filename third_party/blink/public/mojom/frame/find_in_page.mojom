@@ -108,14 +108,13 @@ struct FindOptions {
   // Whether this operation is the first request or a follow-up.
   bool new_session = true;
 
+  // This controls whether to find a match or to only do match counts and
+  // highlighting.
+  bool find_match = true;
+
   // Force a re-search of the frame: typically used when forcing a re-search
   // after the frame navigates.
   bool force = false;
-
-  // Whether to keep searching if the result is an exact match of the selection.
-  // This should generally be set to true unless you're starting a new find
-  // based on the selection.
-  bool find_next_if_selection_matches = true;
 
   // Signifies whether we should force text scoping to happen immediately
   // or not. Only used for testing purposes.

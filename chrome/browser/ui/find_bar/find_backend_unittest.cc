@@ -64,7 +64,7 @@ TEST_F(FindBackendTest, InternalState) {
   // Start searching in the first WebContents.
   find_tab_helper->StartFinding(search_term1, true /* forward_direction */,
                                 false /* case_sensitive */,
-                                true /* find_next_if_selection_matches */);
+                                true /* find_match */);
 
   // Pre-populate string should always match between the two, but find_text
   // should not.
@@ -76,7 +76,7 @@ TEST_F(FindBackendTest, InternalState) {
   // Now search in the other WebContents.
   find_tab_helper2->StartFinding(search_term2, true /* forward_direction */,
                                  false /* case_sensitive */,
-                                 true /* find_next_if_selection_matches */);
+                                 true /* find_match */);
 
   // Again, pre-populate string should always match between the two, but
   // find_text should not.
@@ -88,7 +88,7 @@ TEST_F(FindBackendTest, InternalState) {
   // Search again in the first WebContents
   find_tab_helper->StartFinding(search_term3, true /* forward_direction */,
                                 false /* case_sensitive */,
-                                true /* find_next_if_selection_matches */);
+                                true /* find_match */);
 
   // The fallback search term for the first WebContents will be the original
   // search.

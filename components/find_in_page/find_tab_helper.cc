@@ -45,7 +45,7 @@ void FindTabHelper::RemoveObserver(FindResultObserver* observer) {
 void FindTabHelper::StartFinding(base::string16 search_string,
                                  bool forward_direction,
                                  bool case_sensitive,
-                                 bool find_next_if_selection_matches,
+                                 bool find_match,
                                  bool run_synchronously_for_testing) {
   // Remove the carriage return character, which generally isn't in web content.
   const base::char16 kInvalidChars[] = {'\r', 0};
@@ -86,7 +86,7 @@ void FindTabHelper::StartFinding(base::string16 search_string,
   options->forward = forward_direction;
   options->match_case = case_sensitive;
   options->new_session = new_session;
-  options->find_next_if_selection_matches = find_next_if_selection_matches;
+  options->find_match = find_match;
   options->run_synchronously_for_testing = run_synchronously_for_testing;
   web_contents_->Find(current_find_request_id_, find_text_, std::move(options));
 }

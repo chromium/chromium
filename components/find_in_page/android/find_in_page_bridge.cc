@@ -37,7 +37,7 @@ void FindInPageBridge::StartFinding(JNIEnv* env,
       ->StartFinding(
           base::android::ConvertJavaStringToUTF16(env, search_string),
           forward_direction, case_sensitive,
-          true /* find_next_if_selection_matches */);
+          true /* find_match */);
 }
 
 void FindInPageBridge::StopFinding(JNIEnv* env,

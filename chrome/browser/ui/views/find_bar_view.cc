@@ -344,7 +344,7 @@ void FindBarView::ButtonPressed(
             sender->GetID() ==
                 VIEW_ID_FIND_IN_PAGE_NEXT_BUTTON, /* forward_direction */
             false /* case_sensitive */,
-            true /* find_next_if_selection_matches */);
+            true /* find_match */);
       }
       break;
     case VIEW_ID_FIND_IN_PAGE_CLOSE_BUTTON:
@@ -383,7 +383,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
       find_tab_helper->StartFinding(
           find_string, !key_event.IsShiftDown() /* forward_direction */,
           false /* case_sensitive */,
-          true /* find_next_if_selection_matches */);
+          true /* find_match */);
     }
     return true;
   }
@@ -427,7 +427,7 @@ void FindBarView::Find(const base::string16& search_text) {
   if (!search_text.empty()) {
     find_tab_helper->StartFinding(search_text, true /* forward_direction */,
                                   false /* case_sensitive */,
-                                  true /* find_next_if_selection_matches */);
+                                  true /* find_match */);
   } else {
     find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);
     UpdateForResult(find_tab_helper->find_result(), base::string16());

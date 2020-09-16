@@ -47,13 +47,12 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   // receive the results through the notification mechanism. See Observe(...)
   // for details.
   //
-  // If |find_next_if_selection_matches| is true and the search results in an
-  // exact match of the selection, keep searching. It should generally be set to
-  // true unless you're starting a new find based on the selection.
+  // |find_match| controls whether to find the first match or to only do match
+  // counts and highlighting.
   void StartFinding(base::string16 search_string,
                     bool forward_direction,
                     bool case_sensitive,
-                    bool find_next_if_selection_matches,
+                    bool find_match,
                     bool run_synchronously_for_testing = false);
 
   // Stops the current Find operation.

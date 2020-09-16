@@ -4160,7 +4160,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
   auto* find_helper =
       find_in_page::FindTabHelper::FromWebContents(embedder_web_contents);
   find_helper->StartFinding(base::ASCIIToUTF16("doesn't matter"), true, true,
-                            true);
+                            false);
   auto pending =
       content::GetRenderFrameHostsWithPendingFindResults(embedder_web_contents);
   // Request for main frame of the tab.
