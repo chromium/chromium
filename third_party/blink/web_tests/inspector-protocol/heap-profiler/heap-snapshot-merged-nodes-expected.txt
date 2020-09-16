@@ -1,6 +1,0 @@
-Test that DOM node and its JS wrapper appear as a single node.
-Took heap snapshot
-Parsed snapshot
-SUCCESS: found leaking
-SUCCESS: retaining path = [Detached V8EventListener, Detached EventListener, Detached InternalNode, Detached InternalNode, Detached HTMLDivElement, Window]
-

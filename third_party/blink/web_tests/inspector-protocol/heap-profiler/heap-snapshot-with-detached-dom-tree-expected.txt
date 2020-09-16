@@ -1,5 +1,0 @@
-Test that all nodes from the detached DOM tree will be marked as detached.
-Took heap snapshot
-Parsed snapshot
-SUCCESS: found 3 detached DIV elements
-

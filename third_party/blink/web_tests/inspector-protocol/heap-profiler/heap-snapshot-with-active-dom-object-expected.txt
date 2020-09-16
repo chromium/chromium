@@ -1,6 +1,0 @@
-Test that all ActiveDOMObjects with pending activities will get into one group in the heap snapshot. Bug 426809.
-Took heap snapshot
-Parsed snapshot
-SUCCESS: found Pending activities
-SUCCESS: found 2 MediaQueryLists in Pending activities
-

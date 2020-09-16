@@ -1,6 +1,0 @@
-Test retaining path for an event listener.
-Took heap snapshot
-Parsed snapshot
-SUCCESS: found myEventListener
-SUCCESS: retaining path = [V8EventListener, EventListener, InternalNode, InternalNode, HTMLBodyElement, HTMLHtmlElement, HTMLDocument, Window]
-

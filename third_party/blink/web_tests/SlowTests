@@ -463,9 +463,6 @@ crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gestur
 
 crbug.com/868956 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 
-crbug.com/878650 [ Release ] inspector-protocol/heap-profiler/heap-snapshot-merged-nodes.js [ Slow ]
-crbug.com/878650 [ Release ] inspector-protocol/heap-profiler/heap-snapshot-with-no-detached-iframe.js [ Slow ]
-
 crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-array-buffer-gc-crash.html [ Slow ]
 crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-blob-gc-crash.html [ Slow ]
 crbug.com/893015 [ Linux ] http/tests/fetch/chromium/response-form-data-gc-crash.html [ Slow ]

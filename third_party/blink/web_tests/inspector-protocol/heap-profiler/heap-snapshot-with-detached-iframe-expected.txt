@@ -1,6 +1,0 @@
-Test that a detached iframe will be marked as detached.
-Took heap snapshot
-Parsed snapshot
-SUCCESS: found Leak
-SUCCESS: detached iframe in retaining path
-

@@ -33,13 +33,6 @@ crbug.com/701563 [ Linux ] external/wpt/svg/interfaces.html [ Timeout Pass ]
 
 # Times out on MSAN
 crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-merged-nodes.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-active-dom-object.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-detached-dom-tree.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-detached-iframe.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-event-listener.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-multiple-retainers.js [ Timeout ]
-crbug.com/462190 [ Linux ] inspector-protocol/heap-profiler/heap-snapshot-with-no-detached-iframe.js [ Timeout ]
 
 crbug.com/751906 [ Linux ] http/tests/devtools/console/console-correct-suggestions.js [ Timeout Pass ]
 crbug.com/811820 [ Linux ] http/tests/devtools/tracing-session-id.js [ Timeout Pass ]

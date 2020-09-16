@@ -5895,13 +5895,6 @@ crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stabili
 
 # Temporarily disabled for landing changes to front_end/common in DevTools
 crbug.com/1006759 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-merged-nodes.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-active-dom-object.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-detached-dom-tree.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-detached-iframe.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-event-listener.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-multiple-retainers.js [ Pass Failure ]
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-snapshot-with-no-detached-iframe.js [ Pass Failure ]
 
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
