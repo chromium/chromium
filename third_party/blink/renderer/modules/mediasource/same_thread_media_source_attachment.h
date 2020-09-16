@@ -20,8 +20,10 @@ class SameThreadMediaSourceAttachment final
   explicit SameThreadMediaSourceAttachment(MediaSource* media_source);
 
   // MediaSourceAttachmentSupplement
-  void NotifyDurationChanged(MediaSourceTracer* tracer,
-                             double duration) override;
+  void NotifyDurationChanged(MediaSourceTracer* tracer, double duration) final;
+  double GetRecentMediaTime(MediaSourceTracer* tracer) final;
+  bool GetElementError(MediaSourceTracer* tracer) final;
+  void OnMediaSourceContextDestroyed() final;
 
   // MediaSourceAttachment
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*) override;
@@ -36,8 +38,26 @@ class SameThreadMediaSourceAttachment final
   TimeRanges* Buffered(MediaSourceTracer* tracer) const override;
   void OnTrackChanged(MediaSourceTracer* tracer, TrackBase*) override;
 
+  void OnElementTimeUpdate(double time) final;
+  void OnElementError() final;
+  void OnElementContextDestroyed() final;
+
  private:
   ~SameThreadMediaSourceAttachment() override;
+
+  // In this same thread implementation, if the media element context is
+  // destroyed, then so should be the Media Source's context. This method
+  // this precondition in debug mode.
+  void VerifyCalledWhileContextsAliveForDebugging() const;
+
+  // These are mostly used to verify correct behavior of the media element and
+  // media source state pumping in debug builds. In a cross-thread attachment
+  // implementation, state like this will be relied upon for servicing the
+  // MediaSource API.
+  double recent_element_time_;           // See OnElementTimeUpdate().
+  bool element_has_error_;               // See OnElementError().
+  bool element_context_destroyed_;       // See OnElementContextDestroyed().
+  bool media_source_context_destroyed_;  // See OnMediaSourceContextDestroyed().
 
   DISALLOW_COPY_AND_ASSIGN(SameThreadMediaSourceAttachment);
 };

@@ -33,15 +33,25 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // subsequent retrieval of MediaElement.duration, all on the main thread).
   virtual void NotifyDurationChanged(MediaSourceTracer* tracer,
                                      double duration) = 0;
+
+  // Retrieves the current (or a recent) media element time. Implementations may
+  // choose to either directly, synchronously consult the attached media element
+  // (via |tracer| in a same thread implementation) or rely on a "recent"
+  // currentTime pumped by the attached element via the MediaSourceAttachment
+  // interface (in a cross-thread implementation).
+  virtual double GetRecentMediaTime(MediaSourceTracer* tracer) = 0;
+
+  // Retrieves whether or not the media element currently has an error.
+  // Implementations may choose to either directly, synchronously consult the
+  // attached media element (via |tracer| in a same thread implementation) or
+  // rely on the element to correctly pump when it has an error to this
+  // attachment (in a cross-thread implementation).
+  virtual bool GetElementError(MediaSourceTracer* tracer) = 0;
+
+  virtual void OnMediaSourceContextDestroyed() = 0;
+
   // MediaSourceAttachment
   void Unregister() final;
-
-  // TODO(https://crbug.com/878133): Make MediaSource consult us for this
-  // information. In same-thread version, we may still directly consult the
-  // element, but cross-thread version will need this info.
-  void OnElementTimeUpdate(double time) final;
-  void OnElementError() final;
-  void OnElementContextDestroyed() final;
 
  protected:
   explicit MediaSourceAttachmentSupplement(MediaSource* media_source);
@@ -50,11 +60,6 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // Cache of the registered MediaSource. Retains strong reference from
   // construction of this object until Unregister() is called.
   Persistent<MediaSource> registered_media_source_;
-
- private:
-  double recent_element_time_;
-  bool element_has_error_;
-  bool element_context_destroyed_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };

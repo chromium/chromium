@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASOURCE_MEDIA_SOURCE_H_
 
 #include <memory>
+#include <tuple>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -108,6 +110,8 @@ class MediaSource final : public EventTargetWithInlineData,
   bool IsOpen() const;
   void SetSourceBufferActive(SourceBuffer*, bool);
   HTMLMediaElement* MediaElement() const;
+  std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
+  AttachmentAndTracer() const;
   void EndOfStreamAlgorithm(const WebMediaSource::EndOfStreamStatus);
 
   void Trace(Visitor*) const override;

@@ -787,10 +787,14 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
 }
 
 // TODO(https://crbug.com/878133): Remove this getter and instead rely on
-// |media_source_attachment_| and |attachment_tracer_| to communicate about
-// the media element.
+// Attachment() to communicate about the media element.
 HTMLMediaElement* MediaSource::MediaElement() const {
   return attached_element_.Get();
+}
+
+std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
+MediaSource::AttachmentAndTracer() const {
+  return std::make_pair(media_source_attachment_, attachment_tracer_);
 }
 
 void MediaSource::EndOfStreamAlgorithm(
@@ -880,6 +884,8 @@ bool MediaSource::HasPendingActivity() const {
 }
 
 void MediaSource::ContextDestroyed() {
+  if (media_source_attachment_)
+    media_source_attachment_->OnMediaSourceContextDestroyed();
   if (!IsClosed())
     SetReadyState(ClosedKeyword());
   web_media_source_.reset();

@@ -126,6 +126,9 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
   DCHECK(web_source_buffer_);
   DCHECK(source_);
   DCHECK(source_->MediaElement());
+  // TODO(https://crbug.com/878133): Enable construction of media tracks that
+  // don't reference the media element if, for instance, they are owned by a
+  // different execution context.
   audio_tracks_ =
       MakeGarbageCollected<AudioTrackList>(*source_->MediaElement());
   video_tracks_ =
@@ -770,8 +773,13 @@ void SourceBuffer::RemoveMediaTracks() {
 
 double SourceBuffer::GetMediaTime() {
   double media_time = std::numeric_limits<float>::quiet_NaN();
-  if (source_ && source_->MediaElement())
-    media_time = source_->MediaElement()->currentTime();
+  if (source_) {
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+    MediaSourceTracer* tracer;
+    std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+    if (attachment)
+      media_time = attachment->GetRecentMediaTime(tracer);
+  }
   return media_time;
 }
 
@@ -1210,8 +1218,12 @@ bool SourceBuffer::PrepareAppend(double media_time,
   // 3. If the HTMLMediaElement.error attribute is not null, then throw an
   //    InvalidStateError exception and abort these steps.
   DCHECK(source_);
-  DCHECK(source_->MediaElement());
-  if (source_->MediaElement()->error()) {
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+  DCHECK(attachment);
+  DCHECK(tracer);
+  if (attachment->GetElementError(tracer)) {
     MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "The HTMLMediaElement.error attribute is not null.");
