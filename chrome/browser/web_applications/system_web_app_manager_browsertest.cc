@@ -63,6 +63,20 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif
 
+namespace {
+
+// Helper to call AppServiceProxyFactory::GetForProfile().
+apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
+  // Crash if there is no AppService support for |profile|. GetForProfile() will
+  // DumpWithoutCrashing, which will not fail a test. No codepath should trigger
+  // that in normal operation.
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  return apps::AppServiceProxyFactory::GetForProfile(profile);
+}
+
+}  // namespace
+
 namespace web_app {
 
 SystemWebAppManagerBrowserTestBase::SystemWebAppManagerBrowserTestBase(
@@ -89,11 +103,13 @@ void SystemWebAppManagerBrowserTestBase::WaitForTestSystemAppInstall() {
   } else {
     GetManager().InstallSystemAppsForTesting();
   }
+
   // Ensure apps are registered with the |AppService| and populated in
-  // |AppListModel|.
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->FlushMojoCallsForTesting();
+  // |AppListModel|. Redirect to the profile that has an AppService that can be
+  // flushed. This logic differs from WebAppProviderFactory::GetContextToUse().
+  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+      browser()->profile())
+      ->FlushMojoCallsForTesting();
 }
 
 apps::AppLaunchParams SystemWebAppManagerBrowserTestBase::LaunchParamsForApp(
@@ -115,10 +131,9 @@ content::WebContents* SystemWebAppManagerBrowserTestBase::LaunchApp(
   content::TestNavigationObserver navigation_observer(GetLaunchURL(params));
   navigation_observer.StartWatchingNewWebContents();
 
-  content::WebContents* web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(params);
+  content::WebContents* web_contents = GetAppServiceProxy(browser()->profile())
+                                           ->BrowserAppLauncher()
+                                           ->LaunchAppWithParams(params);
 
   if (wait_for_load)
     navigation_observer.Wait();
@@ -181,6 +196,16 @@ SystemWebAppManagerBrowserTest::SystemWebAppManagerBrowserTest(
   }
 }
 
+void SystemWebAppManagerBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  SystemWebAppManagerBrowserTestBase::SetUpCommandLine(command_line);
+  if (profile_type() == TestProfileType::kGuest) {
+    ConfigureCommandLineForGuestMode(command_line);
+  } else if (profile_type() == TestProfileType::kIncognito) {
+    command_line->AppendSwitch(::switches::kIncognito);
+  }
+}
+
 // Test that System Apps install correctly with a manifest.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest, Install) {
   WaitForTestSystemAppInstall();
@@ -216,8 +241,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest, Install) {
 
   // OS Integration only relevant for Chrome OS.
 #if defined(OS_CHROMEOS)
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInLauncher());
@@ -241,6 +265,16 @@ std::string SystemWebAppManagerTestParamsToString(
   }
   if (std::get<1>(param_info.param) == InstallationType::kWebAppInfoInstall) {
     output.append("_WebAppInfoInstall");
+  }
+  switch (std::get<2>(param_info.param)) {
+    case TestProfileType::kRegular:
+      break;
+    case TestProfileType::kIncognito:
+      output.append("_Incognito");
+      break;
+    case TestProfileType::kGuest:
+      output.append("_Guest");
+      break;
   }
   return output;
 }
@@ -308,8 +342,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
 
   proxy->Launch(GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
                 ui::EventFlags::EF_NONE,
@@ -330,8 +363,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
       maybe_installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   auto intent = apps::mojom::Intent::New();
   intent->action = apps_util::kIntentActionView;
   intent->mime_type = "text/plain";
@@ -986,8 +1018,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInLauncherTest,
 
   // OS Integration only relevant for Chrome OS.
 #if defined(OS_CHROMEOS)
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInLauncher());
@@ -1022,8 +1053,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
 
   // OS Integration only relevant for Chrome OS.
 #if defined(OS_CHROMEOS)
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInSearch());
@@ -1047,8 +1077,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAdditionalSearchTermsTest,
   WaitForTestSystemAppInstall();
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(std::vector<std::string>({"Security"}),
@@ -1170,8 +1199,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
   WaitForTestSystemAppInstall();
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   const bool app_found = proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(std::vector<std::string>({"Security"}),
@@ -1192,8 +1220,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMigrationTest,
   WaitForTestSystemAppInstall();
   AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   const bool app_found = proxy->AppRegistryCache().ForOneApp(
       app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(std::vector<std::string>({"Security"}),
@@ -1411,8 +1438,7 @@ class SystemWebAppManagerAppSuspensionBrowserTest
       : SystemWebAppManagerBrowserTest(false) {}
 
   apps::mojom::Readiness GetAppReadiness(const AppId& app_id) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
     apps::mojom::Readiness readiness;
     bool app_found = proxy->AppRegistryCache().ForOneApp(
         app_id, [&readiness](const apps::AppUpdate& update) {
@@ -1423,8 +1449,7 @@ class SystemWebAppManagerAppSuspensionBrowserTest
   }
 
   apps::mojom::IconKeyPtr GetAppIconKey(const AppId& app_id) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
     apps::mojom::IconKeyPtr icon_key;
     bool app_found = proxy->AppRegistryCache().ForOneApp(
         app_id, [&icon_key](const apps::AppUpdate& update) {
@@ -1463,8 +1488,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     base::ListValue* list = update.Get();
     list->Clear();
   }
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->FlushMojoCallsForTesting();
+  GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
@@ -1487,8 +1511,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     list->Append(policy::SystemFeature::OS_SETTINGS);
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  apps::AppServiceProxy* proxy = GetAppServiceProxy(browser()->profile());
   proxy->FlushMojoCallsForTesting();
   EXPECT_EQ(apps::mojom::Readiness::kDisabledByPolicy,
             GetAppReadiness(*settings_id));

@@ -52,6 +52,8 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
+
 // Waits for and expects that the correct url is opened.
 void WaitForAppToOpen(const GURL& expected_url) {
   // Start with a number of browsers (may include an incognito browser).
@@ -149,17 +151,15 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   EXPECT_EQ(1, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
 }
 
-// Test that the Help App shortcut doesn't crash an incognito browser.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2Incognito) {
+IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
   WaitForTestSystemAppInstall();
 
-  chrome::ShowHelp(CreateIncognitoBrowser(), chrome::HELP_SOURCE_KEYBOARD);
+  chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/")));
 #else
-  // We just have 2 browsers, the incognito and regular. Navigates chrome.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
             chrome::FindLastActive()
                 ->tab_strip_model()
@@ -170,7 +170,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2Incognito) {
 
 // Test that launching the Help App's release notes opens the app on the Release
 // Notes page.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2LaunchReleaseNotes) {
+IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
+                       HelpAppV2LaunchReleaseNotes) {
   WaitForTestSystemAppInstall();
 
   // There should be 1 browser window initially.
@@ -217,22 +218,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
 #else
   EXPECT_EQ(0,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
-#endif
-}
-
-// Test that launching the Help App's release notes doesn't crash an incognito
-// browser.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesIncognito) {
-  WaitForTestSystemAppInstall();
-
-  chrome::LaunchReleaseNotes(CreateIncognitoBrowser()->profile(),
-                             apps::mojom::LaunchSource::kFromOtherApp);
-
-#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
-#else
-  // We just have 2 browsers, the incognito and regular. No new app opens.
-  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 #endif
 }
 
@@ -348,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 }
 
 // Test that the Help App opens when Gesture help requested.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenGestures) {
+IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
@@ -401,63 +386,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppOpenKeyboardShortcut) {
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
     HelpAppIntegrationTest);
 
-class HelpAppGuestSessionIntegrationTest : public HelpAppIntegrationTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
-    command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
-    command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
-        user_manager::GuestAccountId().GetUserEmail());
-  }
-};
-
-// Test that the Help App shortcut doesn't crash in guest mode.
-IN_PROC_BROWSER_TEST_P(HelpAppGuestSessionIntegrationTest, HelpAppShowHelp) {
-  WaitForTestSystemAppInstall();
-
-  chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
-
-#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/")));
-#else
-  // No new app should open on non-branded builds. Navigates chrome.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
-            chrome::FindLastActive()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetVisibleURL());
-#endif
-}
-
-// Test that the Help App release notes entry point doesn't crash in guest mode.
-IN_PROC_BROWSER_TEST_P(HelpAppGuestSessionIntegrationTest,
-                       HelpAppLaunchReleaseNotes) {
-  WaitForTestSystemAppInstall();
-
-  chrome::LaunchReleaseNotes(profile(),
-                             apps::mojom::LaunchSource::kFromOtherApp);
-
-#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
-#else
-  // Nothing should happen on non-branded builds.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-#endif
-}
-
-// Test that Gesture help works in guest mode.
-IN_PROC_BROWSER_TEST_P(HelpAppGuestSessionIntegrationTest,
-                       HelpAppOpenGestures) {
-  WaitForTestSystemAppInstall();
-
-  SystemTrayClient::Get()->ShowGestureEducationHelp();
-
-  EXPECT_NO_FATAL_FAILURE(
-      WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));
-}
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_MANIFEST_INSTALL_P(
-    HelpAppGuestSessionIntegrationTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    HelpAppAllProfilesIntegrationTest,
+    kManifestInstall);

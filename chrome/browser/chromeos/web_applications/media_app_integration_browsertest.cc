@@ -76,6 +76,10 @@ class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
   }
 };
 
+using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
+using MediaAppIntegrationWithFilesAppAllProfilesTest =
+    MediaAppIntegrationWithFilesAppTest;
+
 // Gets the base::FilePath for a named file in the test folder.
 base::FilePath TestFile(const std::string& ascii_name) {
   base::FilePath path;
@@ -170,7 +174,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
 // file manager and eligible for opening appropriate files / mime types.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
+                       MediaAppEligibleOpenTask) {
   constexpr bool kIsDirectory = false;
   const extensions::EntryInfo image_entry(TestFile(kFilePng800x600),
                                           "image/png", kIsDirectory);
@@ -200,7 +205,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HiddenInLauncherAndSearch) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
+                       HiddenInLauncherAndSearch) {
   WaitForTestSystemAppInstall();
 
   // Check system_web_app_manager has the correct attributes for Media App.
@@ -332,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 // End-to-end test to ensure that the MediaApp successfully registers as a file
 // handler with the ChromeOS file manager on startup and acts as the default
 // handler for a given file.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
                        FileOpenUsesMediaApp) {
   WaitForTestSystemAppInstall();
   Browser* test_browser = chrome::FindBrowserWithActiveWindow();
@@ -359,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
 // Test that the MediaApp can navigate other files in the directory of a file
 // that was opened, even if those files have changed since launch.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
                        FileOpenCanTraverseDirectory) {
   WaitForTestSystemAppInstall();
 
@@ -419,7 +425,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 }
 
 // Integration test for rename using the WritableFileSystem and Streams APIs.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, RenameFile) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
+                       RenameFile) {
   WaitForTestSystemAppInstall();
 
   file_manager::test::FolderInMyFiles folder(profile());
@@ -456,5 +463,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, RenameFile) {
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
     MediaAppIntegrationTest);
 
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_WEB_APP_INFO_INSTALL_P(
-    MediaAppIntegrationWithFilesAppTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    MediaAppIntegrationAllProfilesTest,
+    kWebAppInfoInstall);
+
+// Note: All MediaAppIntegrationWithFilesAppTest cases above currently want
+// coverage for all profile types, so the "less" prarameterized prefix is not
+// instantiated to avoid a gtest warning.
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    MediaAppIntegrationWithFilesAppAllProfilesTest,
+    kWebAppInfoInstall);

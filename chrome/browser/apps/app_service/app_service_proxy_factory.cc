@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 
@@ -60,6 +61,9 @@ AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
                 "whether this is appropriate as you may be leaking information "
                 "out of this profile. Returning the AppServiceProxy attached "
                 "to the parent profile instead.";
+    // Fail tests that would trigger DumpWithoutCrashing.
+    DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kTestType));
     base::debug::DumpWithoutCrashing();
   }
 

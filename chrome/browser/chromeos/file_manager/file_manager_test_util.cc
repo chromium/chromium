@@ -81,7 +81,7 @@ OpenOperationResult FolderInMyFiles::Open(const base::FilePath& file) {
   // That used to be enough to also launch a Browser for the WebApp. However,
   // since https://crrev.com/c/2121860, ExecuteFileTaskForUrl() goes through the
   // mojoAppService, so it's necessary to flush those calls for WebApps to open.
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
+  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile_)
       ->FlushMojoCallsForTesting();
 
   return open_result;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
-#define CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
 
 #include <string>
 
@@ -26,7 +26,7 @@ std::string TestProfileTypeToString(
 
 // Adds the necessary flags to |command_line| to start a browser test in guest
 // mode. Should be invoked in SetUpCommandLine(). Any test can call this: it is
-// not coupled to TestProfileTypeMixin.
+// not coupled to TestProfileTypeMixin. Should only be invoked on ChromeOS.
 void ConfigureCommandLineForGuestMode(base::CommandLine* command_line);
 
 // "Mixin" for configuring a test harness to parameterize on different profile
@@ -58,4 +58,4 @@ class TestProfileTypeMixin
   }
 };
 
-#endif  // CHROME_BROWSER_CHROMEOS_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_PROFILE_TEST_HELPER_H_
