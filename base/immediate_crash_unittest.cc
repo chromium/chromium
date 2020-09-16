@@ -150,6 +150,18 @@ TEST(ImmediateCrashTest, ExpectedOpcodeSequence) {
     // BRK #1
     EXPECT_EQ(0XD4200020, *++it);
 
+#elif defined(OS_MAC)
+
+    // BRK #0
+    EXPECT_EQ(0XD4200000, *++it);
+    // HLT #0
+    EXPECT_EQ(0XD4400000, *++it);
+
+    // Allow, but do not require, a BRK #1 after the HLT; some clangs emit this
+    // for __builtin_unreachable() but some do not.
+    if (*++it != 0XD4200020)
+      --it;
+
 #else
 
     // BRK #0
