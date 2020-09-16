@@ -84,7 +84,8 @@ const char kBrowserMetricsName[] = "BrowserMetrics";
 
 // Check for feature enabling the use of persistent histogram storage and
 // enable the global allocator if so.
-void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
+void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
+                                     bool default_local_memory) {
   // Create a directory for storing completed metrics files. Files in this
   // directory must have embedded system profiles. If the directory can't be
   // created, the file will just be deleted below.
@@ -148,7 +149,7 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
     storage = kLocalMemory;
 
   // Create a global histogram allocator using the desired storage type.
-  if (storage.empty() || storage == kMappedFile) {
+  if (storage == kMappedFile || (storage.empty() && !default_local_memory)) {
     if (!base::PathExists(upload_dir)) {
       // Handle failure to create the directory.
       result = kNoUploadDir;
@@ -177,7 +178,8 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
                            &base::GlobalHistogramAllocator::CreateSpareFile),
                        std::move(spare_file), kAllocSize),
         base::TimeDelta::FromSeconds(kSpareFileCreateDelaySeconds));
-  } else if (storage == kLocalMemory) {
+  } else if (storage == kLocalMemory ||
+             (default_local_memory && storage.empty())) {
     // Use local memory for storage even though it will not persist across
     // an unclean shutdown. This sets the result but the actual creation is
     // done below.
