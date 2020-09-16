@@ -16294,6 +16294,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="34" label="movableTabs"/>
 </enum>
 
+<enum name="DevToolsGridOverlayOpenedFrom">
+  <int value="0" label="Adorner"/>
+  <int value="1" label="Layout pane"/>
+</enum>
+
 <enum name="DevtoolsGridSettingChanged">
   <int value="0" label="showGridBorder.none"/>
   <int value="1" label="showGridBorder.dashed"/>

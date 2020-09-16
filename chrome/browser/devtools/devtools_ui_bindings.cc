@@ -135,6 +135,8 @@ static const char kDevtoolsIssuesPanelIssueExpandedHistogram[] =
     "DevTools.IssuesPanelIssueExpanded";
 static const char kDevtoolsIssuesPanelResourceOpenedHistogram[] =
     "DevTools.IssuesPanelResourceOpened";
+static const char kDevToolsGridOverlayOpenedFromHistogram[] =
+    "DevTools.GridOverlayOpenedFrom";
 
 static const char kRemotePageActionInspect[] = "inspect";
 static const char kRemotePageActionReload[] = "reload";
@@ -1284,43 +1286,26 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
     frontend_host_->BadMessageRecieved();
     return;
   }
-  // Each histogram name must follow a different code path in
-  // order to UMA_HISTOGRAM_EXACT_LINEAR work correctly.
-  if (name == kDevToolsActionTakenHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsPanelShownHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsPanelClosedHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsSidebarPaneShownHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsKeyboardShortcutFiredHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsIssuesPanelOpenedFromHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsKeybindSetSettingChanged)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsDualScreenDeviceEmulatedHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsGridSettingChangedHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsCSSGridSettingsHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsHighlightedPersistentCSSGridCountHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsExperimentEnabledHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsExperimentDisabledHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsExperimentEnabledAtLaunchHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsColorPickerFixedColorHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevToolsComputedStyleGroupingHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsIssuesPanelIssueExpandedHistogram)
-    base::UmaHistogramExactLinear(name, sample, boundary_value);
-  else if (name == kDevtoolsIssuesPanelResourceOpenedHistogram)
+
+  if (name == kDevToolsActionTakenHistogram ||
+      name == kDevToolsPanelShownHistogram ||
+      name == kDevToolsPanelClosedHistogram ||
+      name == kDevToolsSidebarPaneShownHistogram ||
+      name == kDevToolsKeyboardShortcutFiredHistogram ||
+      name == kDevToolsIssuesPanelOpenedFromHistogram ||
+      name == kDevToolsKeybindSetSettingChanged ||
+      name == kDevToolsDualScreenDeviceEmulatedHistogram ||
+      name == kDevtoolsGridSettingChangedHistogram ||
+      name == kDevtoolsCSSGridSettingsHistogram ||
+      name == kDevToolsHighlightedPersistentCSSGridCountHistogram ||
+      name == kDevtoolsExperimentEnabledHistogram ||
+      name == kDevtoolsExperimentDisabledHistogram ||
+      name == kDevtoolsExperimentEnabledAtLaunchHistogram ||
+      name == kDevToolsColorPickerFixedColorHistogram ||
+      name == kDevToolsComputedStyleGroupingHistogram ||
+      name == kDevtoolsIssuesPanelIssueExpandedHistogram ||
+      name == kDevtoolsIssuesPanelResourceOpenedHistogram ||
+      name == kDevToolsGridOverlayOpenedFromHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
     frontend_host_->BadMessageRecieved();

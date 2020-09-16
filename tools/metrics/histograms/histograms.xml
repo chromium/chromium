@@ -40424,6 +40424,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DevTools.GridOverlayOpenedFrom"
+    enum="DevToolsGridOverlayOpenedFrom" expires_after="M88">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <summary>
+    Records which UI element is being used to open Grid overlays.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.GridSettingChanged" enum="DevtoolsGridSettingChanged"
     expires_after="M87">
   <obsolete>
