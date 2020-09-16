@@ -15,9 +15,11 @@ android_aar_prebuilt("controller_test_api_java") {
 
   # Jar includes conflicting copies of Desugar-runtime.jar classes.
   # Includes conflicting copy from j2objc/annotations.
+  # Errorprone annotations conflicts with doubledown!material_design.
   jar_excluded_patterns = [
     "*ThrowableExtension*.class",
     "*j2objc/annotations*",
+    "com/google/errorprone/annotations*",
   ]
 
   deps = [
