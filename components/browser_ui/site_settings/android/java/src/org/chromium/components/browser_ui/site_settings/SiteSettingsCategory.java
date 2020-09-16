@@ -40,9 +40,10 @@ import java.lang.annotation.RetentionPolicy;
 public class SiteSettingsCategory {
     @IntDef({Type.ALL_SITES, Type.ADS, Type.AUGMENTED_REALITY, Type.AUTOMATIC_DOWNLOADS,
             Type.BACKGROUND_SYNC, Type.BLUETOOTH, Type.BLUETOOTH_SCANNING, Type.CAMERA,
-            Type.CLIPBOARD, Type.COOKIES, Type.DEVICE_LOCATION, Type.JAVASCRIPT, Type.MICROPHONE,
-            Type.NFC, Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA, Type.SENSORS,
-            Type.SOUND, Type.USB, Type.VIRTUAL_REALITY, Type.USE_STORAGE})
+            Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
+            Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
+            Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
+            Type.USE_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // Values used to address array index - should be enumerated from 0 and can't have gaps.
@@ -58,22 +59,23 @@ public class SiteSettingsCategory {
         int CLIPBOARD = 7;
         int COOKIES = 8;
         int DEVICE_LOCATION = 9;
-        int JAVASCRIPT = 10;
-        int MICROPHONE = 11;
-        int NFC = 12;
-        int NOTIFICATIONS = 13;
-        int POPUPS = 14;
-        int PROTECTED_MEDIA = 15;
-        int SENSORS = 16;
-        int SOUND = 17;
-        int USB = 18;
-        int BLUETOOTH = 19;
-        int VIRTUAL_REALITY = 20;
-        int USE_STORAGE = 21; // Always last as it should appear in the UI at the bottom.
+        int IDLE_DETECTION = 10;
+        int JAVASCRIPT = 11;
+        int MICROPHONE = 12;
+        int NFC = 13;
+        int NOTIFICATIONS = 14;
+        int POPUPS = 15;
+        int PROTECTED_MEDIA = 16;
+        int SENSORS = 17;
+        int SOUND = 18;
+        int USB = 19;
+        int BLUETOOTH = 20;
+        int VIRTUAL_REALITY = 21;
+        int USE_STORAGE = 22; // Always last as it should appear in the UI at the bottom.
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 22;
+        int NUM_ENTRIES = 23;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -169,6 +171,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.COOKIES;
             case Type.DEVICE_LOCATION:
                 return ContentSettingsType.GEOLOCATION;
+            case Type.IDLE_DETECTION:
+                return ContentSettingsType.IDLE_DETECTION;
             case Type.JAVASCRIPT:
                 return ContentSettingsType.JAVASCRIPT;
             case Type.MICROPHONE:
@@ -238,6 +242,8 @@ public class SiteSettingsCategory {
                 return "cookies";
             case Type.DEVICE_LOCATION:
                 return "device_location";
+            case Type.IDLE_DETECTION:
+                return "idle_detection";
             case Type.JAVASCRIPT:
                 return "javascript";
             case Type.MICROPHONE:

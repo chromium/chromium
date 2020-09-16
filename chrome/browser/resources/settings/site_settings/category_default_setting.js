@@ -188,6 +188,7 @@ Polymer({
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.AR:
       case ContentSettingsTypes.WINDOW_PLACEMENT:
+      case ContentSettingsTypes.IDLE_DETECTION:
         // "Ask" vs "Blocked".
         this.browserProxy.setDefaultValueForContentType(
             this.category,

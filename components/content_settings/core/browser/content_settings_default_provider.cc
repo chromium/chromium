@@ -214,6 +214,10 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool incognito)
                             IntToContentSetting(prefs_->GetInteger(
                                 GetPrefName(ContentSettingsType::USB_GUARD))),
                             CONTENT_SETTING_NUM_SETTINGS);
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultIdleDetectionSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::IDLE_DETECTION))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 #endif
   pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(

@@ -376,6 +376,36 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
                       static_cast<ContentSetting>(value));
 }
 
+static void JNI_WebsitePreferenceBridge_GetIdleDetectionOrigins(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jobject>& list) {
+  GetOrigins(env, jbrowser_context_handle, ContentSettingsType::IDLE_DETECTION,
+             &Java_WebsitePreferenceBridge_insertIdleDetectionInfoIntoList,
+             list, false);
+}
+
+static jint JNI_WebsitePreferenceBridge_GetIdleDetectionSettingForOrigin(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& origin,
+    const JavaParamRef<jstring>& embedder) {
+  return GetSettingForOrigin(env, jbrowser_context_handle,
+                             ContentSettingsType::IDLE_DETECTION, origin,
+                             embedder);
+}
+
+static void JNI_WebsitePreferenceBridge_SetIdleDetectionSettingForOrigin(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbrowser_context_handle,
+    const JavaParamRef<jstring>& origin,
+    const JavaParamRef<jstring>& embedder,
+    jint value) {
+  SetSettingForOrigin(env, jbrowser_context_handle,
+                      ContentSettingsType::IDLE_DETECTION, origin, embedder,
+                      static_cast<ContentSetting>(value));
+}
+
 static void JNI_WebsitePreferenceBridge_GetMidiOrigins(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
@@ -1041,6 +1071,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsContentSettingEnabled(
          type == ContentSettingsType::ADS ||
          type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
          type == ContentSettingsType::USB_GUARD ||
+         type == ContentSettingsType::IDLE_DETECTION ||
          type == ContentSettingsType::BLUETOOTH_SCANNING ||
          type == ContentSettingsType::BLUETOOTH_GUARD);
   return GetBooleanForContentSetting(jbrowser_context_handle, type);
@@ -1060,6 +1091,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
          type == ContentSettingsType::POPUPS ||
          type == ContentSettingsType::ADS ||
          type == ContentSettingsType::USB_GUARD ||
+         type == ContentSettingsType::IDLE_DETECTION ||
          type == ContentSettingsType::BLUETOOTH_SCANNING ||
          type == ContentSettingsType::BLUETOOTH_GUARD);
 

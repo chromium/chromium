@@ -1980,6 +1980,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"siteSettingsFontAccessAsk", IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_ASK},
     {"siteSettingsFontAccessBlock",
      IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_BLOCK},
+    {"siteSettingsIdleDetection", IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION},
+    {"siteSettingsIdleDetectionAsk",
+     IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_ASK},
+    {"siteSettingsIdleDetectionBlock",
+     IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 

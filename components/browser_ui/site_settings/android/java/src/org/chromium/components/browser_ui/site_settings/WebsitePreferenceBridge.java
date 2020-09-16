@@ -50,6 +50,8 @@ public class WebsitePreferenceBridge {
             boolean managedOnly = !isAllowLocationUserModifiable(browserContextHandle);
             WebsitePreferenceBridgeJni.get().getGeolocationOrigins(
                     browserContextHandle, list, managedOnly);
+        } else if (type == ContentSettingsType.IDLE_DETECTION) {
+            WebsitePreferenceBridgeJni.get().getIdleDetectionOrigins(browserContextHandle, list);
         } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
             boolean managedOnly = !isMicUserModifiable(browserContextHandle);
             WebsitePreferenceBridgeJni.get().getMicrophoneOrigins(
@@ -110,6 +112,12 @@ public class WebsitePreferenceBridge {
     private static void insertGeolocationInfoIntoList(
             ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
         insertInfoIntoList(ContentSettingsType.GEOLOCATION, list, origin, embedder, isEmbargoed);
+    }
+
+    @CalledByNative
+    private static void insertIdleDetectionInfoIntoList(
+            ArrayList<PermissionInfo> list, String origin, String embedder, boolean isEmbargoed) {
+        insertInfoIntoList(ContentSettingsType.IDLE_DETECTION, list, origin, embedder, isEmbargoed);
     }
 
     @CalledByNative
@@ -356,6 +364,7 @@ public class WebsitePreferenceBridge {
             case ContentSettingsType.ADS:
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.BLUETOOTH_SCANNING:
+            case ContentSettingsType.IDLE_DETECTION:
             case ContentSettingsType.JAVASCRIPT:
             case ContentSettingsType.POPUPS:
             case ContentSettingsType.USB_GUARD:
@@ -417,6 +426,9 @@ public class WebsitePreferenceBridge {
         switch (contentSettingsType) {
             case ContentSettingsType.ADS:
             case ContentSettingsType.CLIPBOARD_READ_WRITE:
+                // Returns true if websites are allowed to detect when the user is using their
+                // device.
+            case ContentSettingsType.IDLE_DETECTION:
                 // Returns true if JavaScript is enabled. It may return the temporary value set by
                 // {@link #setJavaScriptEnabled}. The default is true.
             case ContentSettingsType.JAVASCRIPT:
@@ -604,6 +616,7 @@ public class WebsitePreferenceBridge {
         void getClipboardOrigins(BrowserContextHandle browserContextHandle, Object list);
         void getGeolocationOrigins(
                 BrowserContextHandle browserContextHandle, Object list, boolean managedOnly);
+        void getIdleDetectionOrigins(BrowserContextHandle browserContextHandle, Object list);
         void getMicrophoneOrigins(
                 BrowserContextHandle browserContextHandle, Object list, boolean managedOnly);
         void getMidiOrigins(BrowserContextHandle browserContextHandle, Object list);
@@ -620,6 +633,8 @@ public class WebsitePreferenceBridge {
                 BrowserContextHandle browserContextHandle, String origin, String embedder);
         int getClipboardSettingForOrigin(BrowserContextHandle browserContextHandle, String origin);
         int getGeolocationSettingForOrigin(
+                BrowserContextHandle browserContextHandle, String origin, String embedder);
+        int getIdleDetectionSettingForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, String embedder);
         int getMicrophoneSettingForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, String embedder);
@@ -644,6 +659,8 @@ public class WebsitePreferenceBridge {
         void setClipboardSettingForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, int value);
         void setGeolocationSettingForOrigin(BrowserContextHandle browserContextHandle,
+                String origin, String embedder, int value);
+        void setIdleDetectionSettingForOrigin(BrowserContextHandle browserContextHandle,
                 String origin, String embedder, int value);
         void setMicrophoneSettingForOrigin(
                 BrowserContextHandle browserContextHandle, String origin, int value);

@@ -101,4 +101,8 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="augmented_reality" />
+    <!-- Idle Detection -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="idle_detection" />
 </PreferenceScreen>

@@ -178,6 +178,8 @@ Polymer({
         return this.i18n('siteSettingsWindowPlacement');
       case ContentSettingsTypes.FONT_ACCESS:
         return this.i18n('fonts');
+      case ContentSettingsTypes.IDLE_DETECTION:
+        return this.i18n('siteSettingsIdleDetection');
       default:
         return '';
     }

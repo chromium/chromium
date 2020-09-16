@@ -760,6 +760,8 @@ public class SiteSettingsTest {
         testCases.put(SiteSettingsCategory.Type.COOKIES, new Pair<>(cookie, cookie));
         testCases.put(SiteSettingsCategory.Type.DEVICE_LOCATION,
                 new Pair<>(binaryToggleWithAllowed, binaryToggleWithAllowed));
+        testCases.put(SiteSettingsCategory.Type.IDLE_DETECTION,
+                new Pair<>(binaryToggleWithAllowed, binaryToggleWithAllowed));
         testCases.put(SiteSettingsCategory.Type.JAVASCRIPT,
                 new Pair<>(binaryToggleWithException, binaryToggleWithException));
         testCases.put(SiteSettingsCategory.Type.MICROPHONE, new Pair<>(binaryToggle, binaryToggle));
@@ -1339,5 +1341,34 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html", "requestEME()", 0, true, true);
+    }
+
+    /**
+     * Helper function to test allowing and blocking IDLE_DETECTION feature.
+     * @param enabled true to test enabling IDLE_DETECTION feature, false to test disabling the
+     *         feature.
+     */
+    private void doTestIdleDetectionPermission(final boolean enabled) {
+        setGlobalToggleForCategory(SiteSettingsCategory.Type.IDLE_DETECTION, enabled);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals("Idle detection should be " + (enabled ? "enabled" : "disabled"),
+                    WebsitePreferenceBridge.isCategoryEnabled(
+                            getBrowserContextHandle(), ContentSettingsType.IDLE_DETECTION),
+                    enabled);
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowIdleDetection() {
+        doTestIdleDetectionPermission(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockIdleDetection() {
+        doTestIdleDetectionPermission(false);
     }
 }

@@ -140,6 +140,14 @@ function getCategoryItemMap() {
       disabledLabel: 'siteSettingsHidDevicesBlock',
     },
     {
+      route: routes.SITE_SETTINGS_IDLE_DETECTION,
+      id: Id.IDLE_DETECTION,
+      label: 'siteSettingsIdleDetection',
+      icon: 'settings:idle-detection',
+      enabledLabel: 'siteSettingsIdleDetectionAsk',
+      disabledLabel: 'siteSettingsIdleDetectionBlock',
+    },
+    {
       route: routes.SITE_SETTINGS_IMAGES,
       id: Id.IMAGES,
       label: 'siteSettingsImages',
@@ -383,6 +391,7 @@ Polymer({
             Id.BLUETOOTH_SCANNING,
             Id.AR,
             Id.VR,
+            Id.IDLE_DETECTION,
             Id.WINDOW_PLACEMENT,
             Id.FONT_ACCESS,
           ]),

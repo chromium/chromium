@@ -45,6 +45,7 @@ function addPrivacyChildRoutes(r) {
   r.SITE_SETTINGS_SITE_DATA = r.COOKIES.createChild('/siteData');
   r.SITE_SETTINGS_DATA_DETAILS =
       r.SITE_SETTINGS_SITE_DATA.createChild('/cookies/detail');
+  r.SITE_SETTINGS_IDLE_DETECTION = r.SITE_SETTINGS.createChild('idleDetection');
   r.SITE_SETTINGS_IMAGES = r.SITE_SETTINGS.createChild('images');
   if (loadTimeData.getBoolean('enableInsecureContentContentSetting')) {
     r.SITE_SETTINGS_MIXEDSCRIPT =

@@ -32,13 +32,6 @@ void IdleDetectionPermissionContext::UpdateTabContext(
     content_settings->OnContentBlocked(ContentSettingsType::IDLE_DETECTION);
 }
 
-ContentSetting IdleDetectionPermissionContext::GetPermissionStatusInternal(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) const {
-  return CONTENT_SETTING_ALLOW;
-}
-
 bool IdleDetectionPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }

@@ -152,6 +152,13 @@ public class ContentSettingsResources {
                             R.string.geolocation_permission_title, ContentSettingValues.ASK,
                             ContentSettingValues.BLOCK,
                             R.string.website_settings_category_location_ask, 0));
+            localMap.put(ContentSettingsType.IDLE_DETECTION,
+                    new ResourceItem(R.drawable.permission_idle_detection,
+                            R.string.website_settings_idle_detection,
+                            R.string.idle_detection_permission_title, ContentSettingValues.ASK,
+                            ContentSettingValues.BLOCK,
+                            R.string.website_settings_category_idle_detection_ask,
+                            R.string.website_settings_category_idle_detection_blocked));
             localMap.put(ContentSettingsType.JAVASCRIPT,
                     new ResourceItem(R.drawable.permission_javascript,
                             R.string.javascript_permission_title,

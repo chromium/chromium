@@ -31009,6 +31009,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The default handler setting at profile open.</summary>
 </histogram>
 
+<histogram name="ContentSettings.DefaultIdleDetectionSetting"
+    enum="ContentSetting" expires_after="2021-06-19">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    The default permission setting for idle detection at profile open.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.DefaultImagesSetting" enum="ContentSetting"
     expires_after="2021-06-19">
   <owner>engedy@chromium.org</owner>

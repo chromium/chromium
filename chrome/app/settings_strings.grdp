@@ -2057,6 +2057,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_BLOCK" desc="The block label for the local font access site settings.">
     Block sites from using fonts installed on your device
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION" desc="Label for the idle detection site settings.">
+    User presence
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_ASK" desc="The ask label for the idle detection site settings.">
+    Ask when a site wants to know when you're present
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
+    Block sites from knowing when you're present
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED" desc="A generic Allowed label to show in Site Settings when Allow is NOT the recommended option.">
     Allowed
   </message>

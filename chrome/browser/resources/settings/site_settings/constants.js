@@ -24,6 +24,7 @@ export const ContentSettingsTypes = {
   FONT_ACCESS: 'font-access',
   GEOLOCATION: 'location',
   HID_DEVICES: 'hid-devices',
+  IDLE_DETECTION: 'idle-detection',
   IMAGES: 'images',
   JAVASCRIPT: 'javascript',
   MIC: 'media-stream-mic',  // AKA Microphone.

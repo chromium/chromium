@@ -114,6 +114,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_MIC);
   permissions_to_display.push_back(ContentSettingsType::NOTIFICATIONS);
+  permissions_to_display.push_back(ContentSettingsType::IDLE_DETECTION);
   permissions_to_display.push_back(ContentSettingsType::IMAGES);
   permissions_to_display.push_back(ContentSettingsType::JAVASCRIPT);
   permissions_to_display.push_back(ContentSettingsType::POPUPS);

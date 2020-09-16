@@ -447,6 +447,8 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addPermissionInfo(new PermissionInfo(
                 ContentSettingsType.GEOLOCATION, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(new PermissionInfo(
+                ContentSettingsType.IDLE_DETECTION, googleOrigin, SITE_WILDCARD, false));
+        websitePreferenceBridge.addPermissionInfo(new PermissionInfo(
                 ContentSettingsType.MIDI_SYSEX, googleOrigin, SITE_WILDCARD, false));
         websitePreferenceBridge.addPermissionInfo(
                 new PermissionInfo(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, googleOrigin,
@@ -521,6 +523,7 @@ public class WebsitePermissionsFetcherTest {
 
             // Check permission info types for |site|.
             Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION));
+            Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.IDLE_DETECTION));
             Assert.assertNotNull(site.getPermissionInfo(ContentSettingsType.MIDI_SYSEX));
             Assert.assertNotNull(
                     site.getPermissionInfo(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER));
@@ -666,12 +669,13 @@ public class WebsitePermissionsFetcherTest {
 
         String googleOrigin = "https://google.com";
         // MIDI is excluded from this list because it does not have a top level category.
-        ArrayList<Integer> permissionInfoTypes = new ArrayList<>(Arrays.asList(
-                ContentSettingsType.AR, ContentSettingsType.MEDIASTREAM_CAMERA,
-                ContentSettingsType.CLIPBOARD_READ_WRITE, ContentSettingsType.GEOLOCATION,
-                ContentSettingsType.MEDIASTREAM_MIC, ContentSettingsType.NFC,
-                ContentSettingsType.NOTIFICATIONS, ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER,
-                ContentSettingsType.SENSORS, ContentSettingsType.VR));
+        ArrayList<Integer> permissionInfoTypes = new ArrayList<>(
+                Arrays.asList(ContentSettingsType.AR, ContentSettingsType.MEDIASTREAM_CAMERA,
+                        ContentSettingsType.CLIPBOARD_READ_WRITE, ContentSettingsType.GEOLOCATION,
+                        ContentSettingsType.IDLE_DETECTION, ContentSettingsType.MEDIASTREAM_MIC,
+                        ContentSettingsType.NFC, ContentSettingsType.NOTIFICATIONS,
+                        ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, ContentSettingsType.SENSORS,
+                        ContentSettingsType.VR));
 
         for (@ContentSettingsType int type : permissionInfoTypes) {
             PermissionInfo fakePermissionInfo =

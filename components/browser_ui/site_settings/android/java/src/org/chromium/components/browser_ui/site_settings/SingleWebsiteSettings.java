@@ -86,6 +86,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 return "bluetooth_scanning_permission_list";
             case ContentSettingsType.COOKIES:
                 return "cookies_permission_list";
+            case ContentSettingsType.IDLE_DETECTION:
+                return "idle_detection_permission_list";
             case ContentSettingsType.JAVASCRIPT:
                 return "javascript_permission_list";
             case ContentSettingsType.POPUPS:

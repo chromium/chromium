@@ -87,6 +87,7 @@ android_resources("java_resources") {
     "res/drawable-xxxhdpi/permission_cookie.png",
     "res/drawable-xxxhdpi/settings_nfc.png",
     "res/drawable-xxxhdpi/vr_headset.png",
+    "res/drawable/permission_idle_detection.xml",
     "res/layout/update_permissions_dialog.xml",
   ]
   create_srcjar = false

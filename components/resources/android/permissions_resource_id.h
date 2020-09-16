@@ -42,3 +42,5 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_WARNING, R.drawable.infobar_warning)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_VR_HEADSET, R.drawable.vr_headset)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PERMISSION_COOKIE,
                     R.drawable.permission_cookie)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDLE_DETECTION,
+                    R.drawable.permission_idle_detection)

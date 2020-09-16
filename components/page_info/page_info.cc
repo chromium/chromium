@@ -122,6 +122,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::BLUETOOTH_SCANNING,
     ContentSettingsType::VR,
     ContentSettingsType::AR,
+    ContentSettingsType::IDLE_DETECTION,
 };
 
 // Checks whether this permission is currently the factory default, as set by

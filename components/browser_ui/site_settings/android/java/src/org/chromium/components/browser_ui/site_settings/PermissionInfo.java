@@ -78,6 +78,9 @@ public class PermissionInfo implements Serializable {
             case ContentSettingsType.GEOLOCATION:
                 return WebsitePreferenceBridgeJni.get().getGeolocationSettingForOrigin(
                         browserContextHandle, mOrigin, getEmbedderSafe());
+            case ContentSettingsType.IDLE_DETECTION:
+                return WebsitePreferenceBridgeJni.get().getIdleDetectionSettingForOrigin(
+                        browserContextHandle, mOrigin, getEmbedderSafe());
             case ContentSettingsType.MEDIASTREAM_MIC:
                 return WebsitePreferenceBridgeJni.get().getMicrophoneSettingForOrigin(
                         browserContextHandle, mOrigin, getEmbedderSafe());
@@ -125,6 +128,10 @@ public class PermissionInfo implements Serializable {
                 break;
             case ContentSettingsType.GEOLOCATION:
                 WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
+                        browserContextHandle, mOrigin, getEmbedderSafe(), value);
+                break;
+            case ContentSettingsType.IDLE_DETECTION:
+                WebsitePreferenceBridgeJni.get().setIdleDetectionSettingForOrigin(
                         browserContextHandle, mOrigin, getEmbedderSafe(), value);
                 break;
             case ContentSettingsType.MEDIASTREAM_MIC:

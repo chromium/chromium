@@ -68,6 +68,8 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
       return IDR_ANDROID_INFOBAR_VR_HEADSET;
     case ContentSettingsType::STORAGE_ACCESS:
       return IDR_ANDROID_INFOBAR_PERMISSION_COOKIE;
+    case ContentSettingsType::IDLE_DETECTION:
+      return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
     default:
       NOTREACHED();
       return IDR_ANDROID_INFOBAR_WARNING;
@@ -102,6 +104,8 @@ PermissionRequest::IconId PermissionRequestImpl::GetIconId() const {
       return vector_icons::kWindowPlacementIcon;
     case ContentSettingsType::FONT_ACCESS:
       return vector_icons::kFontDownloadIcon;
+    case ContentSettingsType::IDLE_DETECTION:
+      return vector_icons::kIdleDetectionIcon;
     default:
       NOTREACHED();
       return vector_icons::kExtensionIcon;
@@ -148,6 +152,9 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
       break;
     case ContentSettingsType::AR:
       message_id = IDS_AR_INFOBAR_TEXT;
+      break;
+    case ContentSettingsType::IDLE_DETECTION:
+      message_id = IDS_IDLE_DETECTION_INFOBAR_TEXT;
       break;
     default:
       NOTREACHED();
@@ -235,6 +242,9 @@ base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
     case ContentSettingsType::FONT_ACCESS:
       message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
       break;
+    case ContentSettingsType::IDLE_DETECTION:
+      message_id = IDS_IDLE_DETECTION_PERMISSION_FRAGMENT;
+      break;
     default:
       NOTREACHED();
       return base::string16();
@@ -269,6 +279,9 @@ base::string16 PermissionRequestImpl::GetChipText() const {
       break;
     case ContentSettingsType::AR:
       message_id = IDS_AR_PERMISSION_CHIP;
+      break;
+    case ContentSettingsType::IDLE_DETECTION:
+      message_id = IDS_IDLE_DETECTION_PERMISSION_CHIP;
       break;
     default:
       NOTREACHED();

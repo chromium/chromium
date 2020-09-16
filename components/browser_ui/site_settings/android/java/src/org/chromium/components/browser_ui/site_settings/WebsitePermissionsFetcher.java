@@ -96,6 +96,8 @@ public class WebsitePermissionsFetcher {
         // Populate features from more specific to less specific.
         // Geolocation lookup permission is per-origin and per-embedder.
         queue.add(new PermissionInfoFetcher(ContentSettingsType.GEOLOCATION));
+        // Idle detection permission is per-origin and per-embedder.
+        queue.add(new PermissionInfoFetcher(ContentSettingsType.IDLE_DETECTION));
         // Midi sysex access permission is per-origin and per-embedder.
         queue.add(new PermissionInfoFetcher(ContentSettingsType.MIDI_SYSEX));
         // Cookies are stored per-host.
@@ -189,6 +191,9 @@ public class WebsitePermissionsFetcher {
         if (category.showSites(SiteSettingsCategory.Type.DEVICE_LOCATION)) {
             // Geolocation lookup permission is per-origin and per-embedder.
             queue.add(new PermissionInfoFetcher(ContentSettingsType.GEOLOCATION));
+        } else if (category.showSites(SiteSettingsCategory.Type.IDLE_DETECTION)) {
+            // Idle detection permission is per-origin and per-embedder.
+            queue.add(new PermissionInfoFetcher(ContentSettingsType.IDLE_DETECTION));
         } else if (category.showSites(SiteSettingsCategory.Type.COOKIES)) {
             // Cookies exceptions are patterns.
             queue.add(new ExceptionInfoFetcher(ContentSettingsType.COOKIES));

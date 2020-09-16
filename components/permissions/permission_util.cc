@@ -114,6 +114,8 @@ PermissionRequestType PermissionUtil::GetRequestType(ContentSettingsType type) {
       return PermissionRequestType::PERMISSION_WINDOW_PLACEMENT;
     case ContentSettingsType::FONT_ACCESS:
       return PermissionRequestType::PERMISSION_FONT_ACCESS;
+    case ContentSettingsType::IDLE_DETECTION:
+      return PermissionRequestType::PERMISSION_IDLE_DETECTION;
     default:
       NOTREACHED();
       return PermissionRequestType::UNKNOWN;
@@ -179,6 +181,8 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     *out = PermissionType::WINDOW_PLACEMENT;
   } else if (type == ContentSettingsType::FONT_ACCESS) {
     *out = PermissionType::FONT_ACCESS;
+  } else if (type == ContentSettingsType::IDLE_DETECTION) {
+    *out = PermissionType::IDLE_DETECTION;
   } else {
     return false;
   }
@@ -213,6 +217,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
     case ContentSettingsType::WINDOW_PLACEMENT:
     case ContentSettingsType::FONT_ACCESS:
+    case ContentSettingsType::IDLE_DETECTION:
       return true;
     default:
       return false;

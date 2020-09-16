@@ -60,6 +60,7 @@ import {Route} from './router.m.js';
  *   SITE_SETTINGS_FONT_ACCESS: !Route,
  *   SITE_SETTINGS_HANDLERS: !Route,
  *   SITE_SETTINGS_HID_DEVICES: !Route,
+ *   SITE_SETTINGS_IDLE_DETECTION: !Route,
  *   SITE_SETTINGS_IMAGES: !Route,
  *   SITE_SETTINGS_MIXEDSCRIPT: !Route,
  *   SITE_SETTINGS_JAVASCRIPT: !Route,
