@@ -14,6 +14,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -183,7 +184,9 @@ RenderWidgetHostView* RenderFrameProxyHost::GetRenderWidgetHostView() {
 }
 
 bool RenderFrameProxyHost::Send(IPC::Message* msg) {
-  return GetProcess()->Send(msg);
+  return static_cast<SiteInstanceImpl*>(site_instance_.get())
+      ->GetAgentSchedulingGroup()
+      .Send(msg);
 }
 
 bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
