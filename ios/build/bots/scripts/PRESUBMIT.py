@@ -10,7 +10,7 @@ for more details about the presubmit API built into depot_tools.
 
 def _RunTestRunnerUnitTests(input_api, output_api):
   """ Runs iOS test runner unit tests """
-  # TODO(crbug.com/1056457): Replace whitelist with regex ".*_test.py" once
+  # TODO(crbug.com/1056457): Replace the list with regex ".*_test.py" once
   # all test files are fixed.
   files = [
       'coverage_util_test.py',
@@ -26,7 +26,7 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   ]
 
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', whitelist=files)
+      input_api, output_api, '.', files_to_check=files)
 
 
 def CheckChange(input_api, output_api):
