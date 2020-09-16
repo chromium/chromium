@@ -71,10 +71,7 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_alternate_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "icon")) {
       // This also allows "shortcut icon" since we just ignore the non-standard
-      // "shortcut" token.
-      // FIXME: This doesn't really follow the spec that requires "shortcut
-      // icon" to be the entire string
-      // http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#rel-icon
+      // "shortcut" token (in accordance with the spec).
       icon_type_ = mojom::blink::FaviconIconType::kFavicon;
     } else if (EqualIgnoringASCIICase(link_type, "prefetch")) {
       is_link_prefetch_ = true;
