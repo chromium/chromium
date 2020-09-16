@@ -83,6 +83,7 @@ multidevice::RemoteDeviceRef CreateLocalDevice(int id) {
       .SetInstanceId("local instance id " + base::NumberToString(id))
       .SetPublicKey("local public key " + base::NumberToString(id))
       .SetBeaconSeeds(CreateFakeBeaconSeeds(id))
+      .SetBluetoothPublicAddress(base::NumberToString(id))
       .Build();
 }
 
@@ -302,6 +303,12 @@ TEST_F(SecureChannelBluetoothHelperImplTest,
   EXPECT_EQ(0, mock_foreground_eid_generator_->num_identify_calls());
   EXPECT_EQ(2, fake_background_eid_generator_->num_identify_calls());
   EXPECT_FALSE(device_with_background_bool);
+}
+
+TEST_F(SecureChannelBluetoothHelperImplTest, BluetoothPublicAddress) {
+  EXPECT_EQ("1", test_local_device_1_.bluetooth_public_address());
+  EXPECT_EQ("1", helper_->GetBluetoothPublicAddress(
+                     test_local_device_1_.GetDeviceId()));
 }
 
 }  // namespace secure_channel

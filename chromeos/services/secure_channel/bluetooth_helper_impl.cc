@@ -130,6 +130,16 @@ BluetoothHelperImpl::PerformIdentifyRemoteDevice(
   return base::nullopt;
 }
 
+std::string BluetoothHelperImpl::GetBluetoothPublicAddress(
+    const std::string& device_id) {
+  base::Optional<multidevice::RemoteDeviceRef> device =
+      remote_device_cache_->GetRemoteDevice(base::nullopt /* instance_id */,
+                                            device_id /* legacy_device_id */);
+  if (device)
+    return device->bluetooth_public_address();
+  return std::string();
+}
+
 base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
 BluetoothHelperImpl::PerformIdentifyRemoteDevice(
     const std::string& service_data,

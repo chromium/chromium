@@ -22,6 +22,9 @@ namespace secure_channel {
 // Provides the ability to generate BLE advertisement service data and, given
 // service data that has been received in a BLE discovery session, identify the
 // device which sent the advertisement.
+//
+// Also provides functionality to retrieve the Bluetooth public address for a
+// device for use in Bluetooth Classic connections.
 class BluetoothHelper {
  public:
   virtual ~BluetoothHelper();
@@ -42,6 +45,10 @@ class BluetoothHelper {
   base::Optional<DeviceWithBackgroundBool> IdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set);
+
+  // Note: An empty string is returned if there is no known public address.
+  virtual std::string GetBluetoothPublicAddress(
+      const std::string& device_id) = 0;
 
  protected:
   BluetoothHelper();

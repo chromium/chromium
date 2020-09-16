@@ -37,6 +37,10 @@ class FakeBluetoothHelper : public BluetoothHelper {
                            multidevice::RemoteDeviceRef identified_device,
                            bool is_background_advertisement);
 
+  // Sets the data to be returned by a GetBluetoothPublicAddress() call.
+  void SetBluetoothPublicAddress(const std::string& device_id,
+                                 const std::string& bluetooth_public_address);
+
  private:
   // BluetoothHelper:
   std::unique_ptr<DataWithTimestamp> GenerateForegroundAdvertisement(
@@ -44,12 +48,16 @@ class FakeBluetoothHelper : public BluetoothHelper {
   base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) override;
+  std::string GetBluetoothPublicAddress(const std::string& device_id) override;
 
   std::unordered_map<DeviceIdPair, DataWithTimestamp, DeviceIdPairHash>
       device_id_pair_to_service_data_map_;
 
   std::unordered_map<std::string, DeviceWithBackgroundBool>
       service_data_to_device_with_background_bool_map_;
+
+  std::unordered_map<std::string, std::string>
+      device_id_to_bluetooth_public_address_map_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothHelper);
 };

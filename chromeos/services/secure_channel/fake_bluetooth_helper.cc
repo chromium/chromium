@@ -34,6 +34,13 @@ void FakeBluetoothHelper::SetIdentifiedDevice(
                                               is_background_advertisement)});
 }
 
+void FakeBluetoothHelper::SetBluetoothPublicAddress(
+    const std::string& device_id,
+    const std::string& bluetooth_public_address) {
+  device_id_to_bluetooth_public_address_map_[device_id] =
+      bluetooth_public_address;
+}
+
 std::unique_ptr<DataWithTimestamp>
 FakeBluetoothHelper::GenerateForegroundAdvertisement(
     const DeviceIdPair& device_id_pair) {
@@ -54,6 +61,11 @@ FakeBluetoothHelper::PerformIdentifyRemoteDevice(
   }
 
   return service_data_to_device_with_background_bool_map_.at(service_data);
+}
+
+std::string FakeBluetoothHelper::GetBluetoothPublicAddress(
+    const std::string& device_id) {
+  return device_id_to_bluetooth_public_address_map_[device_id];
 }
 
 }  // namespace secure_channel

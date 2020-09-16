@@ -57,6 +57,7 @@ class BluetoothHelperImpl : public BluetoothHelper {
   base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) override;
+  std::string GetBluetoothPublicAddress(const std::string& device_id) override;
 
   base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
   PerformIdentifyRemoteDevice(
