@@ -631,6 +631,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (string_pending_insertion_.empty()) {
     if (!text_input_client_->HasCompositionText()) {
       if (has_composition_range_ && on_start_composition_called_) {
+        is_tic_write_in_progress_ = true;
         // Remove replacing text first before starting composition.
         if (new_text_inserted_ && !replace_text_range_.is_empty() &&
             !replace_text_size_) {
@@ -640,6 +641,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         string_pending_insertion_ = string_buffer_document_.substr(
             composition_range_.GetMin(), composition_range_.length());
         StartCompositionOnExistingText();
+        is_tic_write_in_progress_ = false;
       } else {
         composition_start_ = selection_.start();
         CalculateTextandSelectionDiffAndNotifyIfNeeded();
@@ -684,8 +686,10 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
         text_input_client_->HasCompositionText()) ||
        !has_composition_range_) &&
       text_input_client_) {
+    is_tic_write_in_progress_ = true;
     CommitTextAndEndCompositionIfAny(last_composition_start,
                                      new_composition_start);
+    is_tic_write_in_progress_ = false;
   }
 
   const base::string16& composition_string = string_buffer_document_.substr(
@@ -715,6 +719,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
 
     // We need to remove replacing text first before starting new composition if
     // there are any.
+    is_tic_write_in_progress_ = true;
     if (new_text_inserted_ && !replace_text_range_.is_empty() &&
         !text_input_client_->HasCompositionText() &&
         last_composition_start > replace_text_range_.start()) {
@@ -723,6 +728,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
     }
 
     StartCompositionOnNewText(new_composition_start, composition_string);
+    is_tic_write_in_progress_ = false;
   }
 
   ResetCacheAfterEditSession();
@@ -1108,7 +1114,8 @@ void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
   // If this is a re-entrant call, then bail out early so we don't end up
   // in an infinite loop of sending notifications as TSF calls back into us
   // when we send a text/selection change notification.
-  if (!text_input_client_ || is_notification_in_progress_)
+  if (!text_input_client_ || is_notification_in_progress_ ||
+      is_tic_write_in_progress_)
     return;
 
   gfx::Range latest_buffer_range_from_client;
@@ -1122,6 +1129,13 @@ void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
           &latest_selection_from_client) &&
       latest_selection_from_client.IsBoundedBy(
           latest_buffer_range_from_client)) {
+    gfx::Range latest_composition_from_client;
+    if (text_input_client_->HasCompositionText() &&
+        text_input_client_->GetCompositionTextRange(
+            &latest_composition_from_client))
+      composition_from_client_ = latest_composition_from_client;
+    else
+      composition_from_client_ = latest_selection_from_client;
     // if the text and selection from text input client is the same as the text
     // and buffer we got last time, either the state hasn't changed since last
     // time we synced or the change hasn't completed yet. Either case we don't
@@ -1276,6 +1290,8 @@ bool TSFTextStore::ConfirmComposition() {
   previous_composition_selection_range_ = gfx::Range::InvalidRange();
   previous_text_spans_.clear();
   string_pending_insertion_.clear();
+  selection_ = gfx::Range(composition_from_client_.end(),
+                          composition_from_client_.end());
   composition_start_ = selection_.end();
 
   return TerminateComposition();
