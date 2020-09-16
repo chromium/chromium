@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.customtabs;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -36,6 +38,8 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CustomTabIncognitoManager implements NativeInitObserver, Destroyable, UnownedUserData {
+    private static CustomTabIncognitoManager sCustomTabIncognitoManagerUsedForTesting;
+
     private static final String TAG = "CctIncognito";
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<CustomTabIncognitoManager> KEY =
@@ -69,6 +73,13 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
         attach(mWindowAndroid, this);
     }
 
+    @CheckDiscard("Test-only setter.")
+    @VisibleForTesting
+    public static void setCustomTabIncognitoManagerUsedForTesting(
+            CustomTabIncognitoManager customTabIncognitoManager) {
+        sCustomTabIncognitoManagerUsedForTesting = customTabIncognitoManager;
+    }
+
     /**
      * Get the Activity's {@link CustomTabIncognitoManager} from the provided {@link
      * WindowAndroid}.
@@ -76,6 +87,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
      * @return The Activity's {@link CustomTabIncognitoManager}.
      */
     public static @Nullable CustomTabIncognitoManager from(WindowAndroid window) {
+        if (sCustomTabIncognitoManagerUsedForTesting != null) {
+            return sCustomTabIncognitoManagerUsedForTesting;
+        }
+
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
 
