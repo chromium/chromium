@@ -28,7 +28,8 @@ import java.util.Set;
  * By default Browser has a single active Tab.
  */
 public class Browser {
-    private final IBrowser mImpl;
+    // Set to null once destroyed (or for tests).
+    private IBrowser mImpl;
     private final ObserverList<TabListCallback> mTabListCallbacks;
     private final UrlBarController mUrlBarController;
 
@@ -71,6 +72,12 @@ public class Browser {
         }
     }
 
+    private void throwIfDestroyed() {
+        if (mImpl == null) {
+            throw new IllegalStateException("Browser can not be used once destroyed");
+        }
+    }
+
     /**
      * Returns the Browser for the supplied Fragment; null if
      * {@link fragment} was not created by WebLayer.
@@ -97,6 +104,11 @@ public class Browser {
         }
     }
 
+    // Called after the browser was destroyed.
+    void onDestroyed() {
+        mImpl = null;
+    }
+
     /**
      * Sets the active (visible) Tab. Only one Tab is visible at a time.
      *
@@ -109,6 +121,7 @@ public class Browser {
      */
     public void setActiveTab(@NonNull Tab tab) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             if (getActiveTab() != tab && !mImpl.setActiveTab(tab.getITab())) {
                 throw new IllegalStateException("attachTab() must be called before "
@@ -128,6 +141,7 @@ public class Browser {
      */
     public void addTab(@NonNull Tab tab) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (tab.getBrowser() == this) return;
         try {
             mImpl.addTab(tab.getITab());
@@ -145,6 +159,7 @@ public class Browser {
     @Nullable
     public Tab getActiveTab() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             Tab tab = Tab.getTabById(mImpl.getActiveTabId());
             assert tab == null || tab.getBrowser() == this;
@@ -178,6 +193,7 @@ public class Browser {
      */
     public void destroyTab(@NonNull Tab tab) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (tab.getBrowser() != this) {
             throw new IllegalStateException("destroyTab() must be called on a Tab in the Browser");
         }
@@ -216,6 +232,7 @@ public class Browser {
      */
     public void setTopView(@Nullable View view) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             mImpl.setTopView(ObjectWrapper.wrap(view));
         } catch (RemoteException e) {
@@ -244,6 +261,7 @@ public class Browser {
     public void setTopView(@Nullable View view, int minHeight, boolean onlyExpandControlsAtPageTop,
             boolean animate) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 86) {
             throw new UnsupportedOperationException();
         }
@@ -264,6 +282,7 @@ public class Browser {
      */
     public void setBottomView(@Nullable View view) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 84) {
             throw new UnsupportedOperationException();
         }
@@ -282,6 +301,7 @@ public class Browser {
      */
     public @NonNull Tab createTab() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -309,6 +329,7 @@ public class Browser {
      */
     public void setSupportsEmbedding(boolean enable, @NonNull Callback<Boolean> callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             mImpl.setSupportsEmbedding(
                     enable, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
@@ -324,6 +345,7 @@ public class Browser {
     @NonNull
     public Profile getProfile() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             return Profile.of(mImpl.getProfile());
         } catch (RemoteException e) {
@@ -338,6 +360,7 @@ public class Browser {
     @NonNull
     public UrlBarController getUrlBarController() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 82) {
             throw new UnsupportedOperationException();
         }

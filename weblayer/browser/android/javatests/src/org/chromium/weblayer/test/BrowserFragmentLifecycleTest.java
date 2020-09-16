@@ -21,6 +21,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
+import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -243,18 +244,19 @@ public class BrowserFragmentLifecycleTest {
 
         // Destroy the frament, which ensures the persistence file was written to.
         CallbackHelper helper = new CallbackHelper();
+        Profile profile = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getActivity().getBrowser().getProfile(); });
         TestThreadUtils.runOnUiThreadBlocking(() -> destroyFragment(helper));
         helper.waitForCallback(0, 1);
         int callCount = helper.getCallCount();
 
         // Verify the id can be fetched.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getBrowser().getProfile().getBrowserPersistenceIds(
-                    (Set<String> ids) -> {
-                        Assert.assertEquals(1, ids.size());
-                        Assert.assertTrue(ids.contains(persistenceId));
-                        helper.notifyCalled();
-                    });
+            profile.getBrowserPersistenceIds((Set<String> ids) -> {
+                Assert.assertEquals(1, ids.size());
+                Assert.assertTrue(ids.contains(persistenceId));
+                helper.notifyCalled();
+            });
         });
         helper.waitForCallback(callCount, 1);
         callCount = helper.getCallCount();
@@ -263,24 +265,20 @@ public class BrowserFragmentLifecycleTest {
         HashSet<String> ids = new HashSet<String>();
         ids.add("x");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity()
-                    .getBrowser()
-                    .getProfile()
-                    .removeBrowserPersistenceStorage(ids, (Boolean result) -> {
-                        Assert.assertTrue(result);
-                        helper.notifyCalled();
-                    });
+            profile.removeBrowserPersistenceStorage(ids, (Boolean result) -> {
+                Assert.assertTrue(result);
+                helper.notifyCalled();
+            });
         });
         helper.waitForCallback(callCount, 1);
         callCount = helper.getCallCount();
 
         // Verify it was actually removed.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getBrowser().getProfile().getBrowserPersistenceIds(
-                    (Set<String> actualIds) -> {
-                        Assert.assertTrue(actualIds.isEmpty());
-                        helper.notifyCalled();
-                    });
+            profile.getBrowserPersistenceIds((Set<String> actualIds) -> {
+                Assert.assertTrue(actualIds.isEmpty());
+                helper.notifyCalled();
+            });
         });
         helper.waitForCallback(callCount, 1);
     }

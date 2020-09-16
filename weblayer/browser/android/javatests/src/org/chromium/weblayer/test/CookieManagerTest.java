@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.CookieChangeCause;
 import org.chromium.weblayer.CookieChangedCallback;
 import org.chromium.weblayer.CookieManager;
+import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.concurrent.TimeoutException;
@@ -154,13 +155,14 @@ public class CookieManagerTest {
     public void testCookieChangedRemoveCallbackAfterProfileDestroyed() throws Exception {
         // Removing change callback should be a no-op after the profile is destroyed.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile profile = mActivityTestRule.getActivity().getBrowser().getProfile();
             Runnable remove = mCookieManager.addCookieChangedCallback(
                     mBaseUri, null, new CookieChangedCallbackHelper());
             // We need to remove the fragment before calling Profile#destroy().
             FragmentManager fm = mActivityTestRule.getActivity().getSupportFragmentManager();
             fm.beginTransaction().remove(fm.getFragments().get(0)).commitNow();
 
-            mActivityTestRule.getActivity().getBrowser().getProfile().destroy();
+            profile.destroy();
             remove.run();
         });
     }

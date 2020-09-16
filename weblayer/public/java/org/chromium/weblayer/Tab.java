@@ -107,6 +107,12 @@ public class Tab {
         return tabs;
     }
 
+    private void throwIfDestroyed() {
+        if (mImpl == null) {
+            throw new IllegalStateException("Tab can not be used once destroyed");
+        }
+    }
+
     int getId() {
         return mId;
     }
@@ -118,6 +124,7 @@ public class Tab {
     @NonNull
     public Browser getBrowser() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         return mBrowser;
     }
 
@@ -126,6 +133,7 @@ public class Tab {
      */
     public void setDownloadCallback(@Nullable DownloadCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             if (callback != null) {
                 mDownloadCallbackClient = new Profile.DownloadCallbackClientImpl(callback);
@@ -141,6 +149,7 @@ public class Tab {
 
     public void setErrorPageCallback(@Nullable ErrorPageCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             mImpl.setErrorPageCallbackClient(
                     callback == null ? null : new ErrorPageCallbackClientImpl(callback));
@@ -151,6 +160,7 @@ public class Tab {
 
     public void setFullscreenCallback(@Nullable FullscreenCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             if (callback != null) {
                 mFullscreenCallbackClient = new FullscreenCallbackClientImpl(callback);
@@ -183,6 +193,7 @@ public class Tab {
      */
     public @NonNull FaviconFetcher createFaviconFetcher(@NonNull FaviconCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 86) {
             throw new UnsupportedOperationException();
         }
@@ -200,6 +211,7 @@ public class Tab {
      */
     public void setTranslateTargetLanguage(@NonNull String targetLanguage) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 86) {
             throw new UnsupportedOperationException();
         }
@@ -223,6 +235,7 @@ public class Tab {
     public void executeScript(@NonNull String script, boolean useSeparateIsolate,
             @Nullable ValueCallback<JSONObject> callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         try {
             ValueCallback<String> stringCallback = (String result) -> {
                 if (callback == null) {
@@ -261,6 +274,7 @@ public class Tab {
      */
     public void dispatchBeforeUnloadAndClose() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 82) {
             throw new UnsupportedOperationException();
         }
@@ -285,6 +299,7 @@ public class Tab {
      */
     public boolean dismissTransientUi() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 82) {
             throw new UnsupportedOperationException();
         }
@@ -297,6 +312,7 @@ public class Tab {
 
     public void setNewTabCallback(@Nullable NewTabCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         mNewTabCallback = callback;
         try {
             mImpl.setNewTabsEnabled(mNewTabCallback != null);
@@ -308,56 +324,63 @@ public class Tab {
     @Nullable
     public FullscreenCallback getFullscreenCallback() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         return mFullscreenCallbackClient != null ? mFullscreenCallbackClient.getCallback() : null;
     }
 
     @NonNull
     public NavigationController getNavigationController() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         return mNavigationController;
     }
 
     @NonNull
     public FindInPageController getFindInPageController() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         return mFindInPageController;
     }
 
     @NonNull
     public MediaCaptureController getMediaCaptureController() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         return mMediaCaptureController;
     }
 
     public void registerTabCallback(@NonNull TabCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         mCallbacks.addObserver(callback);
     }
 
     public void unregisterTabCallback(@NonNull TabCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         mCallbacks.removeObserver(callback);
     }
 
     /**
-     * Take a screenshot of this tab and return it as a Bitmap.
-     * This API captures only the web content, not any Java Views, including the
-     * view in Browser.setTopView. The browser top view shrinks the height of
-     * the screenshot if it is not completely hidden.
-     * This method will fail if
-     * * the Fragment of this Tab is not started during the operation
-     * * this tab is not the active tab in its Browser
-     * * if scale is not in the range (0, 1]
-     * * Bitmap allocation fails
-     * The API is asynchronous when successful, but can be synchronous on
-     * failure. So embedder must take care when implementing resultCallback to
-     * allow reentrancy.
+     * Take a screenshot of this tab and return it as a Bitmap.
+     * This API captures only the web content, not any Java Views, including the
+     * view in Browser.setTopView. The browser top view shrinks the height of
+     * the screenshot if it is not completely hidden.
+     * This method will fail if
+     * * the Fragment of this Tab is not started during the operation
+     * * this tab is not the active tab in its Browser
+     * * if scale is not in the range (0, 1]
+     * * Bitmap allocation fails
+     * The API is asynchronous when successful, but can be synchronous on
+     * failure. So embedder must take care when implementing resultCallback to
+     * allow reentrancy.
      * @param scale Scale applied to the Bitmap.
-     * @param resultCallback Called when operation is complete.
+     * @param resultCallback Called when operation is complete.
      * @since 84
      */
     public void captureScreenShot(float scale, @NonNull CaptureScreenShotCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 84) {
             throw new UnsupportedOperationException();
         }
@@ -385,6 +408,7 @@ public class Tab {
     @NonNull
     public String getGuid() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 82) {
             throw new UnsupportedOperationException();
         }
@@ -408,6 +432,7 @@ public class Tab {
      */
     public void setData(@NonNull Map<String, String> data) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -429,6 +454,7 @@ public class Tab {
     @NonNull
     public Map<String, String> getData() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -448,6 +474,7 @@ public class Tab {
      */
     public void setGoogleAccountsCallback(@Nullable GoogleAccountsCallback callback) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 86) {
             throw new UnsupportedOperationException();
         }
@@ -602,6 +629,7 @@ public class Tab {
     public void registerWebMessageCallback(@NonNull WebMessageCallback callback,
             @NonNull String jsObjectName, @NonNull List<String> allowedOrigins) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -622,6 +650,7 @@ public class Tab {
      */
     public void unregisterWebMessageCallback(@NonNull String jsObjectName) {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -639,6 +668,7 @@ public class Tab {
      */
     public boolean canTranslate() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }
@@ -656,6 +686,7 @@ public class Tab {
      */
     public void showTranslateUi() {
         ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
         if (WebLayer.getSupportedMajorVersionInternal() < 85) {
             throw new UnsupportedOperationException();
         }

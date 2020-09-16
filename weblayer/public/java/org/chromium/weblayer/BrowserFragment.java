@@ -95,6 +95,7 @@ public final class BrowserFragment extends RemoteFragment {
         ThreadCheck.ensureOnUiThread();
         mBrowser.prepareForDestroy();
         super.onDestroy();
+        mBrowser.onDestroyed();
         mBrowser = null;
     }
 }
