@@ -71,13 +71,14 @@ bool ReverseStringLess::operator()(const base::string16& lhs,
 
 bool MatchingReusedCredential::operator<(
     const MatchingReusedCredential& other) const {
-  return std::tie(signon_realm, username) <
-         std::tie(other.signon_realm, other.username);
+  return std::tie(signon_realm, username, in_store) <
+         std::tie(other.signon_realm, other.username, other.in_store);
 }
 
 bool MatchingReusedCredential::operator==(
     const MatchingReusedCredential& other) const {
-  return signon_realm == other.signon_realm && username == other.username;
+  return signon_realm == other.signon_realm && username == other.username &&
+         in_store == other.in_store;
 }
 
 PasswordReuseDetector::PasswordReuseDetector() = default;
@@ -290,7 +291,7 @@ void PasswordReuseDetector::AddPassword(const autofill::PasswordForm& form) {
 
   const auto result =
       passwords_with_matching_reused_credentials_[form.password_value].insert(
-          {form.signon_realm, form.username_value});
+          {form.signon_realm, form.username_value, form.in_store});
   if (result.second) {
     saved_passwords_++;
   }

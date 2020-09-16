@@ -438,6 +438,36 @@ TEST(PasswordReuseDetectorTest, MatchSavedPasswordButNotGaiaPassword) {
                             &mockConsumer);
 }
 
+TEST(PasswordReuseDetectorTest,
+     MatchSavedPasswordButNotGaiaPasswordInAccountStore) {
+  PasswordReuseDetector reuse_detector;
+
+  auto account_store_form = std::make_unique<PasswordForm>();
+  account_store_form->signon_realm = "https://twitter.com";
+  account_store_form->username_value = ASCIIToUTF16("twitterUsername");
+  account_store_form->password_value = ASCIIToUTF16("saved_password");
+  account_store_form->in_store = PasswordForm::Store::kAccountStore;
+  std::vector<std::unique_ptr<PasswordForm>> account_store_forms;
+  account_store_forms.push_back(std::move(account_store_form));
+  reuse_detector.OnGetPasswordStoreResults(std::move(account_store_forms));
+
+  std::string gaia_password = "gaia_password";
+  reuse_detector.UseGaiaPasswordHash(PrepareGaiaPasswordData({gaia_password}));
+
+  const std::vector<MatchingReusedCredential> credentials = {
+      {"https://twitter.com", ASCIIToUTF16("twitterUsername"),
+       PasswordForm::Store::kAccountStore}};
+
+  MockPasswordReuseDetectorConsumer mockConsumer;
+  EXPECT_CALL(mockConsumer,
+              OnReuseCheckDone(true, strlen("saved_password"),
+                               Matches(NO_GAIA_OR_ENTERPRISE_REUSE),
+                               UnorderedElementsAreArray(credentials),
+                               /*saved_passwords=*/1));
+  reuse_detector.CheckReuse(ASCIIToUTF16("saved_password"), "https://evil.com",
+                            &mockConsumer);
+}
+
 TEST(PasswordReuseDetectorTest, MatchEnterpriseAndMultipleSavedPasswords) {
   const std::vector<TestData> domain_passwords = {
       {"https://a.com", "aUsername", "34567890"},

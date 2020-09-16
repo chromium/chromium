@@ -1213,7 +1213,8 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
     MockPasswordReuseDetectorConsumer mock_consumer;
     if (test_data.reused_password_len != 0) {
       const std::vector<MatchingReusedCredential> credentials = {
-          {"https://www.google.com", base::ASCIIToUTF16("username1")}};
+          {"https://www.google.com", base::ASCIIToUTF16("username1"),
+           PasswordForm::Store::kProfileStore}};
       EXPECT_CALL(mock_consumer,
                   OnReuseCheckDone(true, test_data.reused_password_len,
                                    Matches(base::nullopt),

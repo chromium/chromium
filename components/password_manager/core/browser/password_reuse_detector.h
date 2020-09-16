@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -33,6 +34,9 @@ struct ReverseStringLess {
 struct MatchingReusedCredential {
   std::string signon_realm;
   base::string16 username;
+  // The store in which those credentials are stored.
+  autofill::PasswordForm::Store in_store =
+      autofill::PasswordForm::Store::kNotSet;
 
   bool operator<(const MatchingReusedCredential& other) const;
   bool operator==(const MatchingReusedCredential& other) const;
