@@ -142,6 +142,8 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
   NativeInputMethodEngineTest() : input_method_(this) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kAssistPersonalInfo,
+                              chromeos::features::kAssistPersonalInfoEmail,
+                              chromeos::features::kAssistPersonalInfoName,
                               chromeos::features::kEmojiSuggestAddition},
         /*disabled_features=*/{});
   }
@@ -639,7 +641,7 @@ class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
  public:
   NativeInputMethodEngineAssistiveOff() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
         /*disabled_features=*/{chromeos::features::kAssistPersonalInfo,
                                chromeos::features::kEmojiSuggestAddition});
   }

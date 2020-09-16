@@ -36,6 +36,14 @@ extern const base::Feature kAssistAutoCorrect;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAssistPersonalInfo;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAssistPersonalInfoAddress;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAssistPersonalInfoEmail;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAssistPersonalInfoName;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kAssistPersonalInfoPhoneNumber;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kAvatarToolbarButton;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBetterUpdateScreen;

@@ -8,9 +8,11 @@
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -191,6 +193,11 @@ class PersonalInfoSuggesterTest : public testing::Test {
 };
 
 TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
@@ -205,7 +212,24 @@ TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {
   suggestion_handler_->VerifySuggestion(email_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmail) {
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{chromeos::features::kAssistPersonalInfoEmail});
+
+  profile_->set_profile_name(base::UTF16ToUTF8(email_));
+
+  suggester_->Suggest(base::UTF8ToUTF16("my email is "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+}
+
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmailWhenPrefixDoesNotMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is John"));
@@ -216,6 +240,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestEmail) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, DoNotSuggestWhenVirtualKeyboardEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
@@ -225,6 +254,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestWhenVirtualKeyboardEnabled) {
 
 TEST_F(PersonalInfoSuggesterTest,
        SendsEmailSuggestionToExtensionWhenVirtualKeyboardEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   chrome_keyboard_controller_client_->set_keyboard_visible_for_test(true);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
@@ -234,6 +268,11 @@ TEST_F(PersonalInfoSuggesterTest,
 }
 
 TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FIRST,
@@ -258,7 +297,36 @@ TEST_F(PersonalInfoSuggesterTest, SuggestNames) {
   suggestion_handler_->VerifySuggestion(full_name_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNames) {
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{chromeos::features::kAssistPersonalInfoName});
+
+  autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
+                                             autofill::test::kEmptyOrigin);
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FIRST,
+                              first_name_);
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_LAST, last_name_);
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
+  personal_data_->AddProfile(autofill_profile);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my first name is "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my last name is: "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my name is "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+}
+
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNamesWhenPrefixDoesNotMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FIRST,
@@ -281,6 +349,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestNames) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoAddress},
+      /*disabled_features=*/{});
+
   autofill::CountryNames::SetLocaleString("en-US");
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
@@ -316,7 +389,37 @@ TEST_F(PersonalInfoSuggesterTest, SuggestAddress) {
   suggestion_handler_->VerifySuggestion(address_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddress) {
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{chromeos::features::kAssistPersonalInfoAddress});
+
+  autofill::CountryNames::SetLocaleString("en-US");
+  autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
+                                             autofill::test::kEmptyOrigin);
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_LINE1,
+                              base::UTF8ToUTF16("1 Dream Road"));
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_CITY,
+                              base::UTF8ToUTF16("Hollywood"));
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_ZIP,
+                              base::UTF8ToUTF16("12345"));
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_STATE,
+                              base::UTF8ToUTF16("CA"));
+  autofill_profile.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY,
+                              base::UTF8ToUTF16("US"));
+  personal_data_->AddProfile(autofill_profile);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my address is "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+}
+
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddressWhenPrefixDoesNotMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoAddress},
+      /*disabled_features=*/{});
+
   autofill::CountryNames::SetLocaleString("en-US");
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
@@ -343,6 +446,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestAddress) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(
@@ -369,7 +477,30 @@ TEST_F(PersonalInfoSuggesterTest, SuggestPhoneNumber) {
   suggestion_handler_->VerifySuggestion(phone_number_, 0);
 }
 
-TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumber) {
+TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumberWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          chromeos::features::kAssistPersonalInfoPhoneNumber});
+
+  autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
+                                             autofill::test::kEmptyOrigin);
+  autofill_profile.SetRawInfo(
+      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER, phone_number_);
+  personal_data_->AddProfile(autofill_profile);
+
+  suggester_->Suggest(base::UTF8ToUTF16("my phone number is "));
+  suggestion_handler_->VerifySuggestion(base::EmptyString16(), 0);
+}
+
+TEST_F(PersonalInfoSuggesterTest,
+       DoNotSuggestPhoneNumberWhenPrefixDoesNotMatch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(
@@ -390,6 +521,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotSuggestPhoneNumber) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
   suggester_->Suggest(base::UTF8ToUTF16("my email is "));
@@ -401,6 +537,11 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithDownEnter) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->SetIntKey(kPersonalInfoSuggesterAcceptanceCount, 1);
@@ -415,6 +556,11 @@ TEST_F(PersonalInfoSuggesterTest, AcceptSuggestionWithUpEnter) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoName},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, full_name_);
@@ -427,6 +573,11 @@ TEST_F(PersonalInfoSuggesterTest, DismissSuggestion) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, SuggestWithConfirmedLength) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoPhoneNumber},
+      /*disabled_features=*/{});
+
   autofill::AutofillProfile autofill_profile(base::GenerateGUID(),
                                              autofill::test::kEmptyOrigin);
   autofill_profile.SetRawInfo(
@@ -440,6 +591,11 @@ TEST_F(PersonalInfoSuggesterTest, SuggestWithConfirmedLength) {
 
 TEST_F(PersonalInfoSuggesterTest,
        DoNotAnnounceSpokenFeedbackWhenChromeVoxIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, false);
@@ -455,6 +611,11 @@ TEST_F(PersonalInfoSuggesterTest,
 }
 
 TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
   profile_->GetPrefs()->SetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled, true);
@@ -482,6 +643,11 @@ TEST_F(PersonalInfoSuggesterTest, AnnounceSpokenFeedbackWhenChromeVoxIsOn) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   for (int i = 0; i < kMaxAcceptanceCount; i++) {
     suggester_->Suggest(base::UTF8ToUTF16("my email is "));
     SendKeyboardEvent("Down");
@@ -493,6 +659,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowAnnotationAfterMaxAcceptanceCount) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
@@ -508,6 +679,11 @@ TEST_F(PersonalInfoSuggesterTest, ShowSettingLink) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->SetIntKey(kPersonalInfoSuggesterShowSettingCount, 0);
@@ -521,6 +697,11 @@ TEST_F(PersonalInfoSuggesterTest, DoNotShowSettingLinkAfterAcceptance) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
@@ -537,6 +718,11 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithDownDownEnter) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithUpEnter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
@@ -552,6 +738,11 @@ TEST_F(PersonalInfoSuggesterTest, ClickSettingsWithUpEnter) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, RecordsTimeToAccept) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
@@ -568,6 +759,11 @@ TEST_F(PersonalInfoSuggesterTest, RecordsTimeToAccept) {
 }
 
 TEST_F(PersonalInfoSuggesterTest, RecordsTimeToDismiss) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kAssistPersonalInfoEmail},
+      /*disabled_features=*/{});
+
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
