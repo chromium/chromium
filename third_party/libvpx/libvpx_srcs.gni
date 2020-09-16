@@ -3714,6 +3714,8 @@ libvpx_srcs_mips = [
   "//third_party/libvpx/source/libvpx/vpx_ports/mem.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/mem_ops.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/mem_ops_aligned.h",
+  "//third_party/libvpx/source/libvpx/vpx_ports/mips.h",
+  "//third_party/libvpx/source/libvpx/vpx_ports/mips_cpudetect.c",
   "//third_party/libvpx/source/libvpx/vpx_ports/msvc.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/static_assert.h",
   "//third_party/libvpx/source/libvpx/vpx_ports/system_state.h",
