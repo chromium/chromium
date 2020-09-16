@@ -37,4 +37,5 @@ void ChromeContentBrowserClientTabStripPart::OverrideWebkitPrefs(
   web_prefs->minimum_logical_font_size =
       default_prefs.minimum_logical_font_size;
   web_prefs->touch_drag_drop_enabled = true;
+  web_prefs->touch_dragend_context_menu = true;
 }
