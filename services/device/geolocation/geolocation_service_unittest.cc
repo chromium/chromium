@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #if defined(OS_CHROMEOS)
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -15,6 +16,7 @@
 #include "services/device/device_service_test_base.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/network_location_request.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geolocation_config.mojom.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
@@ -93,6 +95,11 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 // detected in a scan: https://crbug.com/767300.
 #else
 TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
+  // With this flag enabled macOS will try to use the system location provider
+  // instead of NetworkLocationProvider.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kMacCoreLocationImplementation);
+
   base::RunLoop loop;
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
       [&loop](const network::ResourceRequest& request) {
