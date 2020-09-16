@@ -131,14 +131,20 @@ ResourceCheck CanUseExistingResource(
   // create a large number of expired cache entries, and the unnecessary
   // If-Modified-Since requests are causing noticeable levels of traffic.
   //
-  // The logic below is a workaround while a longer-term fix gets developed and
-  // deployed. We'll consider all cache entries with invalid times to have been
-  // created on Tue, Dec 31 2019.
+  // There is currently a Finch-controlled kAppCacheCorruptionRecoveryFeature
+  // that is turned on for some users.  Once this has been rolled out fully,
+  // then this workaround below can be removed.
   //
-  // TODO(cmp): Add timeline info here.
+  // The logic below is a workaround to prevent refetching these corrupted
+  // cache entries while this kAppCacheCorruptionRecoveryFeature is rolled out
+  // to all users.  We'll consider all cache entries with invalid times to have
+  // been created on Tue, Jun 30 2020.  This date has been moved several times
+  // to prevent resources that haven't yet expired from being refetched all at
+  // once.
+  //
   bool found_corruption = false;
   static constexpr base::Time::Exploded kInvalidTimePlaceholderExploded = {
-      2019, 12, 2, 31, 0, 0, 0, 0};
+      2020, 6, 2, 30, 0, 0, 0, 0};
   if (request_time.is_null()) {
     bool conversion_succeeded = base::Time::FromUTCExploded(
         kInvalidTimePlaceholderExploded, &request_time);
