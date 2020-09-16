@@ -4355,6 +4355,12 @@ const char kSyncWifiConfigurationsName[] = "Sync Wi-Fi network configurations";
 const char kSyncWifiConfigurationsDescription[] =
     "Enables the option to sync Wi-Fi network configurations with Chrome Sync.";
 
+const char kSystemLatinPhysicalTypingName[] =
+    "Use system IME for latin-script typing";
+const char kSystemLatinPhysicalTypingDescription[] =
+    "Use the system input engine instead of the Chrome extension for physical "
+    "typing in languages based on latin script.";
+
 const char kPluginVmShowCameraPermissionsName[] =
     "Show Plugin VM camera permissions";
 const char kPluginVmShowCameraPermissionsDescription[] =
