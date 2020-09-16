@@ -231,6 +231,7 @@ blink_core_sources("frame") {
   }
 
   deps = [
+    "//printing/buildflags",
     "//skia",
     "//ui/accessibility:ax_base",
     "//ui/base/cursor:cursor_base",
