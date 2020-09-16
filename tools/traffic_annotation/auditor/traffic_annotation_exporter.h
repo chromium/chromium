@@ -32,6 +32,8 @@ class TrafficAnnotationExporter {
     std::set<int> semantics_fields;
     std::set<int> policy_fields;
     std::string file_path;
+
+    int added_in_milestone = 0;
   };
 
   TrafficAnnotationExporter(const base::FilePath& source_path);
@@ -39,7 +41,8 @@ class TrafficAnnotationExporter {
   TrafficAnnotationExporter(const TrafficAnnotationExporter&) = delete;
   TrafficAnnotationExporter(TrafficAnnotationExporter&&) = delete;
 
-  // Loads annotations from annotations.xml file into |archive_|.
+  // Loads annotations from annotations.xml file into |archive_|, and populates
+  // |current_milestone_|.
   bool LoadAnnotationsXML();
 
   // Updates |archive_| with current set of extracted annotations and reserved
@@ -98,6 +101,7 @@ class TrafficAnnotationExporter {
   std::map<std::string, ArchivedAnnotation> archive_;
   const base::FilePath source_path_;
   std::string current_platform_;
+  int current_milestone_;
   bool modified_;
 };
 

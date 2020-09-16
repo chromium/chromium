@@ -58,6 +58,7 @@ source_set("auditor_sources") {
     "traffic_annotation_id_checker.h",
   ]
   data = [
+    "//chrome/VERSION",
     "safe_list.txt",
     "traffic_annotation_extractor_switches.txt",
   ]
@@ -81,6 +82,7 @@ executable("traffic_annotation_auditor") {
 test("traffic_annotation_auditor_unittests") {
   sources = [ "traffic_annotation_auditor_unittest.cc" ]
   data = [
+    "//chrome/VERSION",
     "../summary/annotations.xml",
     "tests/annotations_diff12.txt",
     "tests/annotations_diff13.txt",

@@ -8,5 +8,5 @@ Refer to README.md for content description and update process.
 -->
 
 <annotations>
- <item id="G" hash_code="4" content_hash_code="40" os_list="linux,windows"/>
+ <item id="G" added_in_milestone="62" hash_code="4" content_hash_code="40" os_list="linux,windows"/>
 </annotations>

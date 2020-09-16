@@ -24,7 +24,8 @@ AuditorResult::AuditorResult(Type type,
          type == AuditorResult::Type::ERROR_REPEATED_ID ||
          type == AuditorResult::Type::ERROR_MERGE_FAILED ||
          type == AuditorResult::Type::ERROR_ANNOTATIONS_XML_UPDATE ||
-         type == AuditorResult::Type::ERROR_INVALID_OS);
+         type == AuditorResult::Type::ERROR_INVALID_OS ||
+         type == AuditorResult::Type::ERROR_INVALID_ADDED_IN);
   DCHECK(!message.empty() || type == AuditorResult::Type::RESULT_OK ||
          type == AuditorResult::Type::RESULT_IGNORE ||
          type == AuditorResult::Type::ERROR_MISSING_TAG_USED ||
@@ -33,6 +34,7 @@ AuditorResult::AuditorResult(Type type,
          type == AuditorResult::Type::ERROR_DIRECT_ASSIGNMENT ||
          type == AuditorResult::Type::ERROR_TEST_ANNOTATION ||
          type == AuditorResult::Type::ERROR_INVALID_OS ||
+         type == AuditorResult::Type::ERROR_INVALID_ADDED_IN ||
          type == AuditorResult::Type::ERROR_MUTABLE_TAG);
   if (!message.empty())
     details_.push_back(message);
@@ -189,6 +191,11 @@ std::string AuditorResult::ToText() const {
           "Annotation '%s' has a deprecation date and at least one active OS "
           "at %s.",
           details_[0].c_str(), file_path_.c_str());
+
+    case AuditorResult::Type::ERROR_INVALID_ADDED_IN:
+      return base::StringPrintf(
+          "Invalid or missing added_in_milestone '%s' in annotation '%s' at %s",
+          details_[0].c_str(), details_[1].c_str(), file_path_.c_str());
 
     case AuditorResult::Type::ERROR_MUTABLE_TAG:
       return base::StringPrintf(

@@ -52,6 +52,7 @@ class AuditorResult {
     ERROR_INVALID_OS,              // Invalid 'os_list' in annotations.xml
     ERROR_DEPRECATED_WITH_OS,      // Marked deprecated, but 'os_list' is not
                                    // empty in annotations.xml.
+    ERROR_INVALID_ADDED_IN,        // "added_in_milestone" attribute is invalid.
 
     // This is the python_script equivalent of ERROR_DIRECT_ASSIGNMENT.
     //
