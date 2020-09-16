@@ -38,11 +38,20 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
   if (!HasLiteVideoHint())
     return base::TimeDelta();
 
+  if (ShouldDisableLiteVideoForCacheControlNoTransform() &&
+      response_head.headers &&
+      response_head.headers->HasHeaderValue("cache-control", "no-transform")) {
+    return base::TimeDelta();
+  }
+
   int64_t recv_bytes = response_head.content_length;
   if (recv_bytes == -1)
     recv_bytes = response_head.encoded_body_length;
-  if (recv_bytes == -1)
+  if (recv_bytes == -1 && !ShouldThrottleLiteVideoMissingContentLength()) {
     return base::TimeDelta();
+  } else if (recv_bytes == -1) {
+    recv_bytes = 0;
+  }
 
   if (kilobytes_buffered_before_throttle_ <
       *kilobytes_to_buffer_before_throttle_) {
@@ -52,9 +61,9 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
 
   // The total RTT for this media response should be based on how much time it
   // took to transfer the packet in the target bandwidth, and the per RTT
-  // latency. For example, assuming 100KBPS target bandwidth and target RTT of 1
-  // second, an 400KB response should have total delay of 5 seconds
-  // (400/100 + 1).
+  // latency. For example, assuming 100KBPS target bandwidth and target RTT of
+  // 1 second, an 400KB response should have total delay of 5 seconds (400/100
+  // + 1).
   auto delay_for_throttled_response =
       base::TimeDelta::FromSecondsD(
           recv_bytes / (*target_downlink_bandwidth_kbps_ * 1024.0)) +

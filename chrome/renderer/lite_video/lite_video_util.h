@@ -10,6 +10,13 @@ namespace lite_video {
 // Returns whether LiteVideo is enabled.
 bool IsLiteVideoEnabled();
 
+// Returns whether LiteVideo should be disabled for cache-control: no-transform
+// responses.
+bool ShouldDisableLiteVideoForCacheControlNoTransform();
+
+// Returns whether LiteVideo should throttle responses without content-length.
+bool ShouldThrottleLiteVideoMissingContentLength();
+
 }  // namespace lite_video
 
 #endif  // CHROME_RENDERER_LITE_VIDEO_LITE_VIDEO_UTIL_H_

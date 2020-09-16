@@ -67,6 +67,21 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
     scoped_feature_list_.InitAndDisableFeature(features::kLiteVideo);
   }
 
+  void SetDisableForNoTransform() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kLiteVideo,
+          {{"disable_for_cache_control_no_transform", "true"}}}},
+        {});
+  }
+
+  void SetDisableForMissingContentLength() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kLiteVideo, {{"throttle_missing_content_length", "true"}}}},
+        {});
+  }
+
   std::unique_ptr<LiteVideoURLLoaderThrottle> CreateLiteVideoURLLoaderThrottle(
       blink::mojom::RequestContextType request_context_type) {
     blink::WebURLRequest request;
@@ -79,7 +94,8 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
   std::unique_ptr<MediaLoaderThrottleInfo> CreateThrottleAndSendResponse(
       net::HttpStatusCode response_code,
       const std::string& mime_type,
-      int content_length) {
+      int content_length,
+      bool set_cache_control_no_transform = false) {
     auto throttle_info = std::make_unique<MediaLoaderThrottleInfo>(
         CreateLiteVideoURLLoaderThrottle(
             blink::mojom::RequestContextType::FETCH));
@@ -88,8 +104,12 @@ class LiteVideoHintAgentTest : public ChromeRenderViewTest {
     response_head->mime_type = mime_type;
     response_head->mime_type = mime_type;
     response_head->content_length = content_length;
+    response_head->encoded_body_length = content_length;
     response_head->network_accessed = true;
     response_head->was_fetched_via_cache = false;
+
+    if (set_cache_control_no_transform)
+      response_head->headers->SetHeader("Cache-Control", "no-transform");
 
     throttle_info->SendResponse(response_head.get());
     return throttle_info;
@@ -158,6 +178,60 @@ TEST_F(LiteVideoHintAgentTest, OnlyMediaMimeTypeThrottled) {
       CreateThrottleAndSendResponse(net::HTTP_OK, "image/jpeg", 11000);
   EXPECT_FALSE(throttle_info->is_throttled());
   histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 0);
+}
+
+TEST_F(LiteVideoHintAgentTest, CacheControlNoTransformNotThrottled) {
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+
+  // Initial k media bytes will not be throttled.
+  auto throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+  EXPECT_FALSE(throttle_info->is_throttled());
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 0);
+  EXPECT_TRUE(GetActiveThrottledResponses().empty());
+
+  // Without the finch param, no-transform will get throttled.
+  throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000,
+                                    true /* set_cache_control_no_transform */);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 1);
+  EXPECT_TRUE(throttle_info->is_throttled());
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(throttle_info->is_throttled());
+
+  // With the finch param, no-transform should not get throttled.
+  SetDisableForNoTransform();
+  throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000,
+                                    true /* set_cache_control_no_transform */);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 1);
+  EXPECT_FALSE(throttle_info->is_throttled());
+}
+
+TEST_F(LiteVideoHintAgentTest, MissingContentLengthResponseThrottled) {
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+
+  // Initial k media bytes will not be throttled.
+  auto throttle_info =
+      CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", 11000);
+  EXPECT_FALSE(throttle_info->is_throttled());
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 0);
+  EXPECT_TRUE(GetActiveThrottledResponses().empty());
+
+  // Without the finch param, no-transform should not get throttled.
+  throttle_info = CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", -1);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 0);
+  EXPECT_FALSE(throttle_info->is_throttled());
+
+  // With the finch param, missing CL will get throttled.
+  SetDisableForMissingContentLength();
+  throttle_info = CreateThrottleAndSendResponse(net::HTTP_OK, "video/mp4", -1);
+  histogram_tester().ExpectTotalCount("LiteVideo.URLLoader.ThrottleLatency", 1);
+  EXPECT_TRUE(throttle_info->is_throttled());
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(throttle_info->is_throttled());
 }
 
 TEST_F(LiteVideoHintAgentTest, FailedMediaResponseNotThrottled) {
