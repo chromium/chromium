@@ -16,7 +16,6 @@
 #include "content/common/content_export.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/media_permission.h"
-#include "media/mojo/mojom/cdm_infobar_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
@@ -43,7 +42,6 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   void RequestPermission(Type type,
                          PermissionStatusCB permission_status_cb) override;
   bool IsEncryptedMediaEnabled() override;
-  void NotifyUnsupportedPlatform() override;
 
  private:
   // Map of request IDs and pending PermissionStatusCBs.
@@ -56,9 +54,6 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   // Ensure there is a connection to the permission service and return it.
   blink::mojom::PermissionService* GetPermissionService();
 
-  // Ensure there is a connection to the CdmInfobarService and return it.
-  media::mojom::CdmInfobarService* GetCdmInfobarService();
-
   // Callback for |permission_service_| calls.
   void OnPermissionStatus(uint32_t request_id,
                           blink::mojom::PermissionStatus status);
@@ -70,8 +65,6 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   uint32_t next_request_id_;
   RequestMap requests_;
   mojo::Remote<blink::mojom::PermissionService> permission_service_;
-
-  mojo::Remote<media::mojom::CdmInfobarService> cdm_infobar_service_;
 
   // The |RenderFrameImpl| that owns this MediaPermissionDispatcher.  It's okay
   // to hold a raw pointer here because the lifetime of this object is bounded
