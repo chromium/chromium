@@ -409,6 +409,8 @@ class VADisplayState {
 
   // Implementation of Initialize() called only once.
   bool InitializeOnce() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  bool InitializeVaDisplay_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
+  bool InitializeVaDriver_Locked() EXCLUSIVE_LOCKS_REQUIRED(va_lock_);
 
   int refcount_ GUARDED_BY(va_lock_);
 
@@ -472,11 +474,7 @@ bool VADisplayState::Initialize() {
   return success;
 }
 
-bool VADisplayState::InitializeOnce() {
-  static_assert(
-      VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 1),
-      "Requires VA-API >= 1.1.0");
-
+bool VADisplayState::InitializeVaDisplay_Locked() {
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationEGLGLES2:
       va_display_ = vaGetDisplayDRM(drm_fd_.get());
@@ -519,25 +517,10 @@ bool VADisplayState::InitializeOnce() {
     return false;
   }
 
-  // Set VA logging level and driver name, unless already set.
-  constexpr char libva_log_level_env[] = "LIBVA_MESSAGING_LEVEL";
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!env->HasVar(libva_log_level_env))
-    env->SetVar(libva_log_level_env, "1");
+  return true;
+}
 
-#if defined(USE_X11)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    DCHECK(!features::IsUsingOzonePlatform());
-    constexpr char libva_driver_impl_env[] = "LIBVA_DRIVER_NAME";
-    // TODO(crbug/1116703) The libva intel-media driver has a known segfault in
-    // vaPutSurface, so until this is fixed, fall back to the i965 driver. There
-    // is discussion of the issue here:
-    // https://github.com/intel/media-driver/issues/818
-    if (!env->HasVar(libva_driver_impl_env))
-      env->SetVar(libva_driver_impl_env, "i965");
-  }
-#endif  // USE_X11
-
+bool VADisplayState::InitializeVaDriver_Locked() {
   // The VAAPI version.
   int major_version, minor_version;
   VAStatus va_res = vaInitialize(va_display_, &major_version, &minor_version);
@@ -545,15 +528,14 @@ bool VADisplayState::InitializeOnce() {
     LOG(ERROR) << "vaInitialize failed: " << vaErrorStr(va_res);
     return false;
   }
-
-  va_initialized_ = true;
-
   const std::string va_vendor_string = vaQueryVendorString(va_display_);
   DLOG_IF(WARNING, va_vendor_string.empty())
       << "Vendor string empty or error reading.";
   DVLOG(1) << "VAAPI version: " << major_version << "." << minor_version << " "
            << va_vendor_string;
   implementation_type_ = VendorStringToImplementationType(va_vendor_string);
+
+  va_initialized_ = true;
 
   // The VAAPI version is determined from what is loaded on the system by
   // calling vaInitialize(). Since the libva is now ABI-compatible, relax the
@@ -568,6 +550,45 @@ bool VADisplayState::InitializeOnce() {
                << VA_MAJOR_VERSION << "." << VA_MINOR_VERSION;
     return false;
   }
+  return true;
+}
+
+bool VADisplayState::InitializeOnce() {
+  static_assert(
+      VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 1),
+      "Requires VA-API >= 1.1.0");
+
+  // Set VA logging level, unless already set.
+  constexpr char libva_log_level_env[] = "LIBVA_MESSAGING_LEVEL";
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  if (!env->HasVar(libva_log_level_env))
+    env->SetVar(libva_log_level_env, "1");
+
+  if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
+    return false;
+
+#if defined(USE_X11)
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      implementation_type_ == VAImplementation::kIntelIHD) {
+    DCHECK(!features::IsUsingOzonePlatform());
+    constexpr char libva_driver_impl_env[] = "LIBVA_DRIVER_NAME";
+    // TODO(crbug/1116703) The libva intel-media driver has a known segfault in
+    // vaPutSurface, so until this is fixed, fall back to the i965 driver. There
+    // is discussion of the issue here:
+    // https://github.com/intel/media-driver/issues/818
+    if (!env->HasVar(libva_driver_impl_env))
+      env->SetVar(libva_driver_impl_env, "i965");
+
+    // Re-initialize with the new driver.
+    va_display_ = nullptr;
+    va_initialized_ = false;
+    implementation_type_ = VAImplementation::kInvalid;
+
+    if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
+      return false;
+  }
+#endif  // USE_X11
+
   return true;
 }
 
