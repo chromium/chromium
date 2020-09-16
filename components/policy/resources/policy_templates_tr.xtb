@@ -2955,6 +2955,7 @@ politikayı geçersiz kılamaz.
 <translation id="5293044154216294358">Politikanın True (Doğru) değerine ayarlanması, kullanıcıların dinozor oyunu oynamalarına izin verir. Politikanın False (Yanlış) değerine ayarlanması, kullanıcıların cihaz internete bağlı değilken paskalya yumurtası oyununu oynayamayacakları anlamına gelir.
 
       Poltikanının ayarlanmadan bırakılması, kullanıcıların oyunu kayıtlı <ph name="PRODUCT_OS_NAME" /> ürününde oynayamayacakları, ancak diğer durumlarda oynayabilecekleri anlamına gelir.</translation>
+<translation id="529457411593078576">CCT için ilk çalıştırma sırasında Hizmet Şartları'nı etkinleştirme</translation>
 <translation id="5306186200045823863">Symantec Corporation'ın Eski PKI Altyapısına güveni etkinleştir</translation>
 <translation id="5307432759655324440">Gizli modun kullanılabilirliği</translation>
 <translation id="5311275381462687162">Varsayılan eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> çerez davranışı ayarı</translation>
@@ -4569,6 +4570,17 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="747014869399137701">Politikayı 1 değerine ayarlamak web sitelerinin masaüstü bildirimlerine izin verir. Politikayı 2 değerine ayarlamak masaüstü bildirimlerini engeller.
 
       Politikayı ayarlamadan bırakırsanız <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="7471828226549672843">Varsayılan olarak CCT ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikanın Devre Dışı değerine ayarlanması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine neden olur. Bu politikanın Etkin değerine ayarlanması veya ayarlanmadan bırakılması, Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesine neden olur. Dikkat edilmesi gereken diğer noktalar:
+
+      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
+
+      - Bu politika Devre Dışı ise BrowserSignin politikasının hiçbir etkisi olmaz.
+
+      - Bu politika Devre Dışı ise metrikler sunucuya gönderilmez.
+
+      - Bu politika Devre Dışı ise tarayıcının işlevi sınırlı olur.
+
+      - Bu politika Devre Dışı ise yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="747275827471712187">Bu sitelerde çerezler için eski <ph name="ATTRIBUTE_SAMESITE_NAME" /> davranışına geri dön</translation>
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7477239290070847560">Zeroconf tabanlı (mDNS + DNS-SD) protokol hedefleri</translation>
@@ -4707,17 +4719,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
           Not: <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" /> belirtilmişse bu politikayı geçersiz kılar.</translation>
 <translation id="7632724434767231364">GSSAPI kitaplığı adı</translation>
-<translation id="7642890175637942277">Varsayılan olarak CCT/PWA ilk çalıştırıldığında Hizmet Şartları gösterilir. Bu politikayı Devre dışı değerine ayarlamak Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde veya sonraki çalıştırmalarda görünmemesine sebep olur. Bu politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak Hizmet Şartları iletişim kutusunun ilk çalıştırma deneyiminde görünmesini sağlar. Dikkat edilmesi gereken diğer noktalar:
-
-      - Bu politika Birleşik Uç Nokta Yönetimi tedarikçilerinin yapılandırabildiği, yalnızca tümüyle yönetilen Android cihazlarda çalışır.
-
-      - Bu politika Devre dışıysa BrowserSignin politikasının hiçbir etkisi olmaz.
-
-      - Bu politika Devre dışıysa metrikler sunucuya gönderilmez.
-
-      - Bu politika Devre dışıysa tarayıcının işlevi sınırlı olur.
-
-      - Bu politika Devre dışıysa yöneticiler bunu cihazın son kullanıcılarına belirtmelidir.</translation>
 <translation id="7643883929273267746"><ph name="PRODUCT_NAME" /> içinde görülebilen hesapları kısıtlama</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
 <translation id="7651739109954974365">Veri dolaşımının etkin olup olmayacağını belirler. True olarak ayarlanırsa, veri dolaşımına izin verilir. Hiç ayarlanmazsa veya false değerine ayarlanırsa, veri dolaşımına izin verilmez.</translation>
@@ -5757,7 +5758,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       Bu politika ayarlanmazsa <ph name="PRINTERS_ALLOW_ALL" /> uygulanır.
       </translation>
-<translation id="9109086856618439290">CCT/PWA için ilk çalıştırma sırasında Hizmet Şartları'nı etkinleştirme</translation>
 <translation id="9112727953998243860">Kurumsal yazıcı yapılandırma dosyası</translation>
 <translation id="9116740039944096995">URL kalıpları listesi Eşleşen kaynaklar tarafından sunulan güvenli olmayan web sitelerinden başlatılan özel ağ isteklerine izin verilir.
 

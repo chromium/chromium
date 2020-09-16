@@ -388,7 +388,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2523886232349826891">Faqat shu qurilmada saqlanadi</translation>
 <translation id="2524461107774643265">Qo‘shimcha axborot qo‘shish</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{va yana 1 ta}other{va yana # ta}}</translation>
-<translation id="2536110899380797252">Manzil qo‘shish…</translation>
+<translation id="2536110899380797252">Manzil kiritish</translation>
 <translation id="2539524384386349900">Aniqlansin</translation>
 <translation id="2544644783021658368">Bitta hujjat</translation>
 <translation id="254947805923345898">Parametr qiymati yaroqsiz.</translation>
@@ -1653,7 +1653,7 @@ Batafsil axborot:
 <translation id="776110834126722255">Eskirgan</translation>
 <translation id="7761701407923456692">Server sertifikati URL manziliga mos kelmayapti.</translation>
 <translation id="7763386264682878361">To‘lov manifesti tahlilchisi</translation>
-<translation id="7764225426217299476">Manzil qo‘shish</translation>
+<translation id="7764225426217299476">Manzil kiritish</translation>
 <translation id="7766518757692125295">Yubka</translation>
 <translation id="7770259615151589601">Designated-Long</translation>
 <translation id="7773005668374414287">Bir xil tartibda old tomonida</translation>

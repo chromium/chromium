@@ -216,7 +216,7 @@
 <translation id="1752021286346845558">Caixa de correo 8</translation>
 <translation id="1753706481035618306">Número de páxina</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
-<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar Diagnósticos da rede de Windows<ph name="END_LINK" />.</translation>
+<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">O servidor que vas visitar, <ph name="ORIGIN" />, definiu un título
     que require que se aplique unha política de orixe a todas as solicitudes que reciba. Non
     obstante, o título ten un formato incorrecto, o que impide que o navegador complete
@@ -904,7 +904,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4702504834785592287">Lado</translation>
 <translation id="4708268264240856090">Interrompeuse a túa conexión</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
-<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar Diagnósticos da rede de Windows<ph name="END_LINK" /></translation>
+<translation id="4722547256916164131"><ph name="BEGIN_LINK" />Executar diagnóstico de rede de Windows<ph name="END_LINK" /></translation>
 <translation id="4726672564094551039">Volver cargar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4731638775147756694">O teu administrador bloqueou esta aplicación</translation>
