@@ -478,6 +478,11 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     NGMarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, column_block_size_);
 
+  // We're adding a row. Incorporate the trailing margin from any preceding
+  // column spanner into the layout position.
+  intrinsic_block_size_ += margin_strut->Sum();
+  *margin_strut = NGMarginStrut();
+
   // If block-size is non-auto, subtract the space for content we've consumed in
   // previous fragments. This is necessary when we're nested inside another
   // fragmentation context.
@@ -504,15 +509,11 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         CalculateBalancedColumnBlockSize(column_size, next_column_token);
   }
 
-  // Column rows have no representation in the DOM and have no margins, but
-  // there may be a trailing margin from a preceding spanner.
-  LayoutUnit column_block_offset = intrinsic_block_size_ + margin_strut->Sum();
-
   bool needs_more_fragments_in_outer = false;
   bool zero_outer_space_left = false;
   if (is_constrained_by_outer_fragmentation_context_) {
     LayoutUnit available_outer_space =
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()) - column_block_offset;
+        FragmentainerSpaceAtBfcStart(ConstraintSpace()) - intrinsic_block_size_;
 
     if (available_outer_space <= LayoutUnit()) {
       if (available_outer_space < LayoutUnit()) {
@@ -598,7 +599,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
 
       // Add the new column fragment to the list, but don't commit anything to
       // the fragment builder until we know whether these are the final columns.
-      LogicalOffset logical_offset(column_inline_offset, column_block_offset);
+      LogicalOffset logical_offset(column_inline_offset, intrinsic_block_size_);
       new_columns.emplace_back(result, logical_offset);
 
       LayoutUnit space_shortage = result->MinimalSpaceShortage();
@@ -706,7 +707,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     column_size.block_size = new_column_block_size;
   } while (true);
 
-  intrinsic_block_size_ = column_block_offset + column_size.block_size;
+  intrinsic_block_size_ += column_size.block_size;
 
   // If we just have one empty fragmentainer, we need to keep the trailing
   // margin from any previous column spanner, and also make sure that we don't
@@ -719,10 +720,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   if (!is_empty) {
     has_processed_first_child_ = true;
     container_builder_.SetPreviousBreakAfter(EBreakBetween::kAuto);
-
-    // We added a row. Reset the trailing margin from any previous column
-    // spanner.
-    *margin_strut = NGMarginStrut();
   }
 
   // Commit all column fragments to the fragment builder.
