@@ -651,7 +651,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                          device_tmp_results_file.name)
 
           if test_perf_output_filename:
-            flags.append('--isolated-script-test-perf-output=%s' %
+            flags.append('--isolated_script_test_perf_output=%s' %
                          isolated_script_test_perf_output.name)
 
           logging.info('flags:')
