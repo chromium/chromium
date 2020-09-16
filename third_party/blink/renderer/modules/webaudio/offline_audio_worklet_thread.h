@@ -16,7 +16,7 @@ struct ThreadCreationParams;
 
 // OfflineAudioWorkletThread is a per-AudioWorkletGlobalScope object that has a
 // reference count to the backing thread that performs AudioWorklet tasks.
-// Its backing thread uses BACKGROUND priority no matter what the environment
+// Its backing thread uses NORMAL priority no matter what the environment
 // or the feature flag setting is.
 class MODULES_EXPORT OfflineAudioWorkletThread final : public WorkerThread {
  public:
