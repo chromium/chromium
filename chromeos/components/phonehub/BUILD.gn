@@ -68,6 +68,7 @@ static_library("phonehub") {
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
+    "//chromeos/components/phonehub/proto",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/multidevice_setup/public/cpp",
     "//chromeos/services/secure_channel/public/cpp/client",
