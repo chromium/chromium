@@ -177,6 +177,57 @@ void ReportCurrentStage(
   }
 }
 
+// Reports detailed failure reason for the extensions which failed to install
+// after 5 minutes.
+void ReportDetailedFailureReasons(
+    const InstallStageTracker::InstallationData& installation) {
+  FailureReason failure_reason =
+      installation.failure_reason.value_or(FailureReason::UNKNOWN);
+
+  // In case of CRX_FETCH_FAILURE, report the network error code, HTTP
+  // error code and number of fetch tries made.
+  if (failure_reason == FailureReason::CRX_FETCH_FAILED)
+    ReportErrorCodes(installation, kCrxFetchFailedNetworkErrorCode,
+                     kCrxFetchFailedHttpErrorCode, kCrxFetchFailedFetchTries);
+
+  // In case of MANIFEST_FETCH_FAILURE, report the network error code,
+  // HTTP error code and number of fetch tries made.
+  if (failure_reason == FailureReason::MANIFEST_FETCH_FAILED)
+    ReportErrorCodes(installation, kManifestFetchFailedNetworkErrorCode,
+                     kManifestFetchFailedHttpErrorCode,
+                     kManifestFetchFailedFetchTries);
+
+  if (installation.install_error_detail) {
+    CrxInstallErrorDetail detail = installation.install_error_detail.value();
+    base::UmaHistogramEnumeration(
+        "Extensions.ForceInstalledFailureCrxInstallError", detail);
+  }
+  if (installation.unpacker_failure_reason) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ForceInstalledFailureSandboxUnpackFailureReason",
+        installation.unpacker_failure_reason.value(),
+        SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS);
+  }
+  if (failure_reason == FailureReason::CRX_FETCH_URL_EMPTY) {
+    DCHECK(installation.no_updates_info);
+    base::UmaHistogramEnumeration(
+        "Extensions."
+        "ForceInstalledFailureNoUpdatesInfo",
+        installation.no_updates_info.value());
+  }
+  if (installation.manifest_invalid_error) {
+    DCHECK_EQ(failure_reason, FailureReason::MANIFEST_INVALID);
+    base::UmaHistogramEnumeration(
+        "Extensions.ForceInstalledFailureManifestInvalidErrorDetail2",
+        installation.manifest_invalid_error.value());
+    if (installation.app_status_error) {
+      base::UmaHistogramEnumeration(
+          "Extensions.ForceInstalledFailureManifestInvalidAppStatusError",
+          installation.app_status_error.value());
+    }
+  }
+}
+
 }  // namespace
 
 ForceInstalledMetrics::ForceInstalledMetrics(
@@ -300,19 +351,6 @@ void ForceInstalledMetrics::ReportMetrics() {
           "Extensions.OffStore_ForceInstalledFailureReason3", failure_reason);
     }
 
-    // In case of CRX_FETCH_FAILURE, report the network error code, HTTP
-    // error code and number of fetch tries made.
-    if (failure_reason == FailureReason::CRX_FETCH_FAILED)
-      ReportErrorCodes(installation, kCrxFetchFailedNetworkErrorCode,
-                       kCrxFetchFailedHttpErrorCode, kCrxFetchFailedFetchTries);
-
-    // In case of MANIFEST_FETCH_FAILURE, report the network error code,
-    // HTTP error code and number of fetch tries made.
-    if (failure_reason == FailureReason::MANIFEST_FETCH_FAILED)
-      ReportErrorCodes(installation, kManifestFetchFailedNetworkErrorCode,
-                       kManifestFetchFailedHttpErrorCode,
-                       kManifestFetchFailedFetchTries);
-
 #if defined(OS_CHROMEOS)
     // Report type of user in case Force Installed Extensions fail to
     // install only if there is a user corresponding to given profile. There can
@@ -329,35 +367,7 @@ void ForceInstalledMetrics::ReportMetrics() {
     VLOG(2) << "Forced extension " << extension_id
             << " failed to install with data="
             << InstallStageTracker::GetFormattedInstallationData(installation);
-    if (installation.install_error_detail) {
-      CrxInstallErrorDetail detail = installation.install_error_detail.value();
-      base::UmaHistogramEnumeration(
-          "Extensions.ForceInstalledFailureCrxInstallError", detail);
-    }
-    if (installation.unpacker_failure_reason) {
-      base::UmaHistogramEnumeration(
-          "Extensions.ForceInstalledFailureSandboxUnpackFailureReason",
-          installation.unpacker_failure_reason.value(),
-          SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS);
-    }
-    if (failure_reason == FailureReason::CRX_FETCH_URL_EMPTY) {
-      DCHECK(installation.no_updates_info);
-      base::UmaHistogramEnumeration(
-          "Extensions."
-          "ForceInstalledFailureNoUpdatesInfo",
-          installation.no_updates_info.value());
-    }
-    if (installation.manifest_invalid_error) {
-      DCHECK_EQ(failure_reason, FailureReason::MANIFEST_INVALID);
-      base::UmaHistogramEnumeration(
-          "Extensions.ForceInstalledFailureManifestInvalidErrorDetail2",
-          installation.manifest_invalid_error.value());
-      if (installation.app_status_error) {
-        base::UmaHistogramEnumeration(
-            "Extensions.ForceInstalledFailureManifestInvalidAppStatusError",
-            installation.app_status_error.value());
-      }
-    }
+    ReportDetailedFailureReasons(installation);
   }
   bool non_misconfigured_failure_occurred =
       misconfigured_extensions != missing_forced_extensions.size();
