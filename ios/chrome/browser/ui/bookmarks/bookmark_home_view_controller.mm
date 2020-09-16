@@ -2255,9 +2255,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
         [self editNode:node];
       }];
-      if (!canEditNode) {
-        editAction.attributes = UIMenuElementAttributesDisabled;
-      }
       [menuElements addObject:editAction];
 
       [menuElements
@@ -2267,13 +2264,20 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                  indexPath:indexPath];
           }]];
 
-      [menuElements addObject:[actionFactory actionToDeleteWithBlock:^{
-                      std::set<const BookmarkNode*> nodes;
-                      nodes.insert(node);
-                      [self handleSelectNodesForDeletion:nodes];
-                      base::RecordAction(base::UserMetricsAction(
-                          "MobileBookmarkManagerEntryDeleted"));
-                    }]];
+      UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
+        std::set<const BookmarkNode*> nodes;
+        nodes.insert(node);
+        [self handleSelectNodesForDeletion:nodes];
+        base::RecordAction(
+            base::UserMetricsAction("MobileBookmarkManagerEntryDeleted"));
+      }];
+      [menuElements addObject:deleteAction];
+
+      // Disable Edit and Delete if the node cannot be edited.
+      if (!canEditNode) {
+        editAction.attributes = UIMenuElementAttributesDisabled;
+        deleteAction.attributes = UIMenuElementAttributesDisabled;
+      }
 
       return [UIMenu menuWithTitle:@"" children:menuElements];
     };
