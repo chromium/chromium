@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL WorkerGlobalScope error event: error Cannot read property 'constructor' of null
-PASS WorkerGlobalScope error event: message
-PASS WorkerGlobalScope error event: filename
-PASS WorkerGlobalScope error event: lineno
-Harness: the test ran to completion.
-

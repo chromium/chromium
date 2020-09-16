@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL WorkerGlobalScope error event: error Cannot read property 'constructor' of null
-FAIL WorkerGlobalScope error event: message assert_not_equals: e.message should not be muted to 'Script error.' got disallowed value "Script error."
-FAIL WorkerGlobalScope error event: filename assert_equals: expected "http://web-platform.test:8001/workers/interfaces/WorkerUtils/importScripts/report-error-helper.js" but got ""
-FAIL WorkerGlobalScope error event: lineno assert_equals: expected 8 but got 0
-Harness: the test ran to completion.
-

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -62,48 +64,12 @@
 
 namespace blink {
 
-class WorkerOrWorkletScriptController::ExecutionState final {
-  STACK_ALLOCATED();
-
- public:
-  explicit ExecutionState(WorkerOrWorkletScriptController* controller)
-      : had_exception(false),
-        error_event_from_imported_script_(nullptr),
-        controller_(controller),
-        outer_state_(controller->execution_state_) {
-    controller_->execution_state_ = this;
-  }
-
-  ~ExecutionState() { controller_->execution_state_ = outer_state_; }
-
-  bool had_exception;
-  String error_message;
-  std::unique_ptr<SourceLocation> location_;
-  ScriptValue exception;
-  ErrorEvent* error_event_from_imported_script_;
-
-  // A ExecutionState context is stack allocated by
-  // WorkerOrWorkletScriptController::evaluate(), with the contoller using it
-  // during script evaluation. To handle nested evaluate() uses,
-  // ExecutionStates are chained together;
-  // |outer_state_| keeps a pointer to the context object one level out
-  // (or 0, if outermost.) Upon return from evaluate(), the
-  // WorkerOrWorkletScriptController's ExecutionState is popped and the
-  // previous one restored (see above dtor.)
-  //
-  // With Oilpan, |outer_state_| isn't traced. It'll be "up the stack"
-  // and its fields will be traced when scanning the stack.
-  WorkerOrWorkletScriptController* controller_;
-  ExecutionState* outer_state_;
-};
-
 WorkerOrWorkletScriptController::WorkerOrWorkletScriptController(
     WorkerOrWorkletGlobalScope* global_scope,
     v8::Isolate* isolate)
     : global_scope_(global_scope),
       isolate_(isolate),
-      rejected_promises_(RejectedPromises::Create()),
-      execution_state_(nullptr) {
+      rejected_promises_(RejectedPromises::Create()) {
   DCHECK(isolate);
   world_ =
       DOMWrapperWorld::Create(isolate, DOMWrapperWorld::WorldType::kWorker);
@@ -345,109 +311,120 @@ void WorkerOrWorkletScriptController::DisableEvalInternal(
       V8String(isolate_, error_message));
 }
 
-v8::Local<v8::Value> WorkerOrWorkletScriptController::EvaluateInternal(
+// https://html.spec.whatwg.org/C/#run-a-classic-script
+ClassicEvaluationResult WorkerOrWorkletScriptController::EvaluateAndReturnValue(
     const ScriptSourceCode& source_code,
     SanitizeScriptErrors sanitize_script_errors,
-    V8CacheOptions v8_cache_options) {
-  DCHECK(IsContextInitialized());
-  DCHECK(is_ready_to_evaluate_);
-
-  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-               inspector_evaluate_script_event::Data(
-                   nullptr, source_code.Url(), source_code.StartPosition()));
-
-  v8::TryCatch block(isolate_);
-
-  // TODO(crbug/1114994): Plumb this from ClassicScript.
-  const KURL base_url = source_code.Url();
-
-  // Use default ReferrerScriptInfo here, as
-  // - A work{er,let} script doesn't have a nonce, and
-  // - a work{er,let} script is always "not parser inserted".
-  // TODO(crbug/1114988): After crbug/1114988 is fixed, this can be the
-  // default ScriptFetchOptions(). Currently the default ScriptFetchOptions()
-  // is not used because it has CredentialsMode::kOmit.
-  // TODO(crbug/1114989): Plumb this from ClassicScript.
-  ScriptFetchOptions script_fetch_options(
-      String(), IntegrityMetadataSet(), String(),
-      ParserDisposition::kNotParserInserted,
-      network::mojom::CredentialsMode::kSameOrigin,
-      network::mojom::ReferrerPolicy::kDefault,
-      mojom::blink::FetchImportanceMode::kImportanceAuto);
-
-  v8::MaybeLocal<v8::Value> maybe_result = V8ScriptRunner::CompileAndRunScript(
-      isolate_, script_state_, global_scope_, source_code, base_url,
-      sanitize_script_errors, script_fetch_options, v8_cache_options);
-
-  if (!block.CanContinue()) {
-    ForbidExecution();
-    return v8::Local<v8::Value>();
-  }
-
-  if (block.HasCaught()) {
-    v8::Local<v8::Message> message = block.Message();
-    execution_state_->had_exception = true;
-    execution_state_->error_message = ToCoreString(message->Get());
-    execution_state_->location_ = SourceLocation::FromMessage(
-        isolate_, message, ExecutionContext::From(script_state_));
-    execution_state_->exception =
-        ScriptValue(script_state_->GetIsolate(), block.Exception());
-    block.Reset();
-  } else {
-    execution_state_->had_exception = false;
-  }
-
-  v8::Local<v8::Value> result;
-  if (!maybe_result.ToLocal(&result))
-    return v8::Local<v8::Value>();
-
-  return result;
-}
-
-v8::Local<v8::Value> WorkerOrWorkletScriptController::EvaluateAndReturnValue(
-    const ScriptSourceCode& source_code,
-    SanitizeScriptErrors sanitize_script_errors,
-    ErrorEvent** error_event,
-    V8CacheOptions v8_cache_options) {
+    V8CacheOptions v8_cache_options,
+    RethrowErrorsOption rethrow_errors) {
   if (IsExecutionForbidden())
-    return v8::Local<v8::Value>();
+    return ClassicEvaluationResult();
 
-  ExecutionState state(this);
-  v8::Local<v8::Value> result =
-      EvaluateInternal(source_code, sanitize_script_errors, v8_cache_options);
-  if (IsExecutionForbidden())
-    return v8::Local<v8::Value>();
+  // Scope for |TRACE_EVENT1| and |v8::TryCatch| below.
+  {
+    DCHECK(IsContextInitialized());
+    DCHECK(is_ready_to_evaluate_);
 
-  if (state.had_exception) {
-    if (error_event) {
-      if (state.error_event_from_imported_script_) {
-        // Propagate inner error event outwards.
-        *error_event = state.error_event_from_imported_script_;
-        state.error_event_from_imported_script_ = nullptr;
-        return v8::Local<v8::Value>();
-      }
-      if (sanitize_script_errors == SanitizeScriptErrors::kSanitize) {
-        *error_event = ErrorEvent::CreateSanitizedError(script_state_);
-      } else {
-        *error_event =
-            ErrorEvent::Create(state.error_message, state.location_->Clone(),
-                               state.exception, world_.get());
-      }
-    } else {
-      ErrorEvent* event = nullptr;
-      if (state.error_event_from_imported_script_) {
-        event = state.error_event_from_imported_script_;
-        state.error_event_from_imported_script_ = nullptr;
-      } else {
-        event =
-            ErrorEvent::Create(state.error_message, state.location_->Clone(),
-                               state.exception, world_.get());
-      }
-      global_scope_->DispatchErrorEvent(event, sanitize_script_errors);
+    TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
+                 inspector_evaluate_script_event::Data(
+                     nullptr, source_code.Url(), source_code.StartPosition()));
+
+    v8::TryCatch block(isolate_);
+
+    // Step 8.3. Otherwise, rethrow errors is false. Perform the following
+    // steps: [spec text]
+    // Step 8.3.1. Report the exception given by evaluationStatus.[[Value]]
+    // for script. [spec text]
+    //
+    // This will be done inside V8 (inside V8ScriptRunner::CompileAndRunScript()
+    // below) by setting TryCatch::SetVerbose(true) here.
+    if (!rethrow_errors.ShouldRethrow()) {
+      block.SetVerbose(true);
     }
-    return v8::Local<v8::Value>();
+
+    // TODO(crbug/1114994): Plumb this from ClassicScript.
+    const KURL base_url = source_code.Url();
+
+    // Use default ReferrerScriptInfo here, as
+    // - A work{er,let} script doesn't have a nonce, and
+    // - a work{er,let} script is always "not parser inserted".
+    // TODO(crbug/1114988): After crbug/1114988 is fixed, this can be the
+    // default ScriptFetchOptions(). Currently the default ScriptFetchOptions()
+    // is not used because it has CredentialsMode::kOmit.
+    // TODO(crbug/1114989): Plumb this from ClassicScript.
+    ScriptFetchOptions script_fetch_options(
+        String(), IntegrityMetadataSet(), String(),
+        ParserDisposition::kNotParserInserted,
+        network::mojom::CredentialsMode::kSameOrigin,
+        network::mojom::ReferrerPolicy::kDefault,
+        mojom::blink::FetchImportanceMode::kImportanceAuto);
+
+    v8::MaybeLocal<v8::Value> maybe_result =
+        V8ScriptRunner::CompileAndRunScript(
+            isolate_, script_state_, global_scope_, source_code, base_url,
+            sanitize_script_errors, script_fetch_options, v8_cache_options);
+
+    // TODO(crbug/1114601): Investigate whether to check CanContinue() in other
+    // script evaluation code paths.
+    if (!block.CanContinue()) {
+      ForbidExecution();
+    }
+
+    if (IsExecutionForbidden()) {
+      return ClassicEvaluationResult();
+    }
+
+    if (!block.HasCaught()) {
+      // Step 10. If evaluationStatus is a normal completion, then return
+      // evaluationStatus. [spec text]
+      v8::Local<v8::Value> result;
+      if (!maybe_result.ToLocal(&result))
+        return ClassicEvaluationResult();
+
+      return ClassicEvaluationResult(result);
+    }
+
+    DCHECK(maybe_result.IsEmpty());
+
+    if (rethrow_errors.ShouldRethrow() &&
+        sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize) {
+      // Step 8.1. If rethrow errors is true and script's muted errors is
+      // false, then: [spec text]
+      //
+      // Step 8.1.2. Rethrow evaluationStatus.[[Value]]. [spec text]
+      //
+      // We rethrow exceptions reported from importScripts() here. The
+      // original filename/lineno/colno information (which points inside of
+      // imported scripts) is kept through ReThrow(), and will be eventually
+      // reported to WorkerGlobalScope.onerror via `TryCatch::SetVerbose(true)`
+      // called at top-level worker script evaluation.
+      block.ReThrow();
+      return ClassicEvaluationResult();
+    }
   }
-  return result;
+  // |v8::TryCatch| is (and should be) exited, before ThrowException() below.
+
+  if (rethrow_errors.ShouldRethrow()) {
+    // kDoNotSanitize case is processed and early-exited above.
+    DCHECK_EQ(sanitize_script_errors, SanitizeScriptErrors::kSanitize);
+
+    // Step 8.2. If rethrow errors is true and script's muted errors is
+    // true, then: [spec text]
+    //
+    // Step 8.2.2. Throw a "NetworkError" DOMException. [spec text]
+    //
+    // We don't supply any message here to avoid leaking details of muted
+    // errors.
+    V8ThrowException::ThrowException(
+        isolate_, V8ThrowDOMException::CreateOrEmpty(
+                      isolate_, DOMExceptionCode::kNetworkError,
+                      rethrow_errors.Message()));
+    return ClassicEvaluationResult();
+  }
+
+  // #report-the-error for rethrow errors == true is already handled via
+  // |TryCatch::SetVerbose(true)| above.
+  return ClassicEvaluationResult();
 }
 
 void WorkerOrWorkletScriptController::ForbidExecution() {
@@ -479,15 +456,6 @@ void WorkerOrWorkletScriptController::DisableEval(const String& error_message) {
   // after returning here. Keep the error message until that time.
   DCHECK(disable_eval_pending_.IsEmpty());
   disable_eval_pending_ = error_message;
-}
-
-void WorkerOrWorkletScriptController::RethrowExceptionFromImportedScript(
-    ErrorEvent* error_event,
-    ExceptionState& exception_state) {
-  if (execution_state_)
-    execution_state_->error_event_from_imported_script_ = error_event;
-  exception_state.RethrowV8Exception(
-      error_event->error(script_state_).V8ValueFor(script_state_));
 }
 
 void WorkerOrWorkletScriptController::Trace(Visitor* visitor) const {

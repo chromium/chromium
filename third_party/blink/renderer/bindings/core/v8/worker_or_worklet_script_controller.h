@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WORKER_OR_WORKLET_SCRIPT_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/bindings/core/v8/classic_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/rejected_promises.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -44,8 +45,6 @@
 
 namespace blink {
 
-class ErrorEvent;
-class ExceptionState;
 class ScriptSourceCode;
 class WorkerOrWorkletGlobalScope;
 
@@ -58,13 +57,50 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
 
   bool IsExecutionForbidden() const;
 
-  // Returns a non-Empty value if the evaluation completed with no uncaught
-  // exception. Callers should enter ScriptState::Scope before calling this.
-  v8::Local<v8::Value> EvaluateAndReturnValue(
+  // Rethrow errors flag in
+  // https://html.spec.whatwg.org/C/#run-a-classic-script
+  class RethrowErrorsOption final {
+    STACK_ALLOCATED();
+
+   public:
+    RethrowErrorsOption(RethrowErrorsOption&&) = default;
+    RethrowErrorsOption& operator=(RethrowErrorsOption&&) = default;
+
+    RethrowErrorsOption(const RethrowErrorsOption&) = delete;
+    RethrowErrorsOption& operator=(const RethrowErrorsOption&) = delete;
+
+    // Rethrow errors flag is false.
+    static RethrowErrorsOption DoNotRethrow() {
+      return RethrowErrorsOption(base::nullopt);
+    }
+
+    // Rethrow errors flag is true. When rethrowing, a NetworkError with
+    // `message` is thrown. This is used only for importScripts(), and
+    // `message` is used to throw NetworkErrors with the same message text,
+    // no matter whether the NetworkError is thrown inside or outside
+    // EvaluateAndReturnValue().
+    static RethrowErrorsOption Rethrow(const String& message) {
+      return RethrowErrorsOption(message);
+    }
+
+    bool ShouldRethrow() const { return static_cast<bool>(message_); }
+    String Message() const { return *message_; }
+
+   private:
+    explicit RethrowErrorsOption(base::Optional<String> message)
+        : message_(std::move(message)) {}
+
+    // `nullopt` <=> rethrow errors is false.
+    base::Optional<String> message_;
+  };
+
+  // https://html.spec.whatwg.org/C/#run-a-classic-script
+  // Callers should enter ScriptState::Scope before calling this.
+  ClassicEvaluationResult EvaluateAndReturnValue(
       const ScriptSourceCode&,
       SanitizeScriptErrors sanitize_script_errors,
-      ErrorEvent** = nullptr,
-      V8CacheOptions = kV8CacheOptionsDefault);
+      V8CacheOptions = kV8CacheOptionsDefault,
+      RethrowErrorsOption = RethrowErrorsOption::DoNotRethrow());
 
   // Prevents future JavaScript execution.
   void ForbidExecution();
@@ -81,8 +117,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   // before Evaluate().
   void PrepareForEvaluation();
 
-  // Used by WorkerGlobalScope:
-  void RethrowExceptionFromImportedScript(ErrorEvent*, ExceptionState&);
   // Disables `eval()` on JavaScript. This must be called before Evaluate().
   void DisableEval(const String&);
 
@@ -106,14 +140,8 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   }
 
  private:
-  class ExecutionState;
-
   void DisableEvalInternal(const String& error_message);
 
-  // Evaluate a script file in the current execution environment.
-  v8::Local<v8::Value> EvaluateInternal(const ScriptSourceCode&,
-                                        SanitizeScriptErrors,
-                                        V8CacheOptions);
   void DisposeContextIfNeeded();
 
   Member<WorkerOrWorkletGlobalScope> global_scope_;
@@ -133,14 +161,6 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   bool execution_forbidden_ = false;
 
   scoped_refptr<RejectedPromises> rejected_promises_;
-
-  // |execution_state_| refers to a stack object that evaluate() allocates;
-  // evaluate() ensuring that the pointer reference to it is removed upon
-  // returning. Hence kept as a bare pointer here, and not a Persistent with
-  // Oilpan enabled; stack scanning will visit the object and
-  // trace its on-heap fields.
-  GC_PLUGIN_IGNORE("394615")
-  ExecutionState* execution_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerOrWorkletScriptController);
 };

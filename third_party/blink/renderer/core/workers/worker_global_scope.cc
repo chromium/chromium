@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
@@ -216,23 +217,42 @@ String WorkerGlobalScope::origin() const {
   return GetSecurityOrigin()->ToString();
 }
 
-void WorkerGlobalScope::importScripts(const Vector<String>& urls,
-                                      ExceptionState& exception_state) {
-  ImportScriptsInternal(urls, exception_state);
+void WorkerGlobalScope::importScripts(const Vector<String>& urls) {
+  ImportScriptsInternal(urls);
 }
+
+namespace {
+
+String NetworkErrorMessageAtImportScript(const char* const property_name,
+                                         const char* const interface_name,
+                                         const KURL& url) {
+  return ExceptionMessages::FailedToExecute(
+      property_name, interface_name,
+      "The script at '" + url.ElidedString() + "' failed to load.");
+}
+
+}  // namespace
 
 // Implementation of the "import scripts into worker global scope" algorithm:
 // https://html.spec.whatwg.org/C/#import-scripts-into-worker-global-scope
-void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
-                                              ExceptionState& exception_state) {
+void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
   DCHECK(GetContentSecurityPolicy());
   DCHECK(GetExecutionContext());
+  v8::Isolate* isolate = GetThread()->GetIsolate();
+
+  // Previously, exceptions here were thrown via ExceptionState but now are
+  // thrown via V8ThrowException. To keep the existing error messages,
+  // ExceptionMessages::FailedToExecute() is called directly (crbug/1114610).
+  const char* const property_name = "importScripts";
+  const char* const interface_name = "WorkerGlobalScope";
 
   // Step 1: "If worker global scope's type is "module", throw a TypeError
   // exception."
   if (script_type_ == mojom::ScriptType::kModule) {
-    exception_state.ThrowTypeError(
-        "Module scripts don't support importScripts().");
+    V8ThrowException::ThrowTypeError(
+        isolate, ExceptionMessages::FailedToExecute(
+                     property_name, interface_name,
+                     "Module scripts don't support importScripts()."));
     return;
   }
 
@@ -249,17 +269,22 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
   for (const String& url_string : urls) {
     const KURL& url = CompleteURL(url_string);
     if (!url.IsValid()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kSyntaxError,
-          "The URL '" + url_string + "' is invalid.");
+      V8ThrowException::ThrowException(
+          isolate, V8ThrowDOMException::CreateOrEmpty(
+                       isolate, DOMExceptionCode::kSyntaxError,
+                       ExceptionMessages::FailedToExecute(
+                           property_name, interface_name,
+                           "The URL '" + url_string + "' is invalid.")));
       return;
     }
     if (!GetContentSecurityPolicy()->AllowScriptFromSource(
             url, AtomicString(), IntegrityMetadataSet(), kNotParserInserted,
             url, RedirectStatus::kNoRedirect)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNetworkError,
-          "The script at '" + url.ElidedString() + "' failed to load.");
+      V8ThrowException::ThrowException(
+          isolate, V8ThrowDOMException::CreateOrEmpty(
+                       isolate, DOMExceptionCode::kNetworkError,
+                       NetworkErrorMessageAtImportScript(property_name,
+                                                         interface_name, url)));
       return;
     }
     completed_urls.push_back(url);
@@ -270,6 +295,8 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
     KURL response_url;
     String source_code;
     std::unique_ptr<Vector<uint8_t>> cached_meta_data;
+    const String error_message = NetworkErrorMessageAtImportScript(
+        property_name, interface_name, complete_url);
 
     // Step 5.1: "Fetch a classic worker-imported script given url and settings
     // object, passing along any custom perform the fetch steps provided. If
@@ -280,10 +307,10 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
       // TODO(vogelheim): In case of certain types of failure - e.g. 'nosniff'
       // block - this ought to be a DOMExceptionCode::kSecurityError, but that
       // information presently gets lost on the way.
-      exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
-                                        "The script at '" +
-                                            complete_url.ElidedString() +
-                                            "' failed to load.");
+      V8ThrowException::ThrowException(
+          isolate,
+          V8ThrowDOMException::CreateOrEmpty(
+              isolate, DOMExceptionCode::kNetworkError, error_message));
       return;
     }
 
@@ -297,24 +324,26 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
 
     // Step 5.2: "Run the classic script script, with the rethrow errors
     // argument set to true."
-    ErrorEvent* error_event = nullptr;
     SingleCachedMetadataHandler* handler(
         CreateWorkerScriptCachedMetadataHandler(complete_url,
                                                 std::move(cached_meta_data)));
     ReportingProxy().WillEvaluateImportedClassicScript(
         source_code.length(), handler ? handler->GetCodeCacheSize() : 0);
     ScriptState::Scope scope(ScriptController()->GetScriptState());
-    ScriptController()->EvaluateAndReturnValue(
+    ClassicEvaluationResult result = ScriptController()->EvaluateAndReturnValue(
         ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
                          handler,
                          ScriptSourceCode::UsePostRedirectURL() ? response_url
                                                                 : complete_url),
-        sanitize_script_errors, &error_event, GetV8CacheOptions());
-    if (error_event) {
-      ScriptController()->RethrowExceptionFromImportedScript(error_event,
-                                                             exception_state);
+        sanitize_script_errors, GetV8CacheOptions(),
+        WorkerOrWorkletScriptController::RethrowErrorsOption::Rethrow(
+            error_message));
+
+    // Step 5.2: "If an exception was thrown or if the script was prematurely
+    // aborted, then abort all these steps, letting the exception or aborting
+    // continue to be processed by the calling script."
+    if (result.IsEmpty())
       return;
-    }
   }
 }
 

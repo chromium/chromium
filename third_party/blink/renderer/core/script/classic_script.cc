@@ -57,10 +57,10 @@ bool ClassicScript::RunScriptOnWorkerOrWorklet(
   DCHECK(global_scope.IsContextThread());
 
   ScriptState::Scope scope(global_scope.ScriptController()->GetScriptState());
-  v8::Local<v8::Value> result =
+  ClassicEvaluationResult result =
       global_scope.ScriptController()->EvaluateAndReturnValue(
           GetScriptSourceCode(), sanitize_script_errors_,
-          nullptr /* error_event */, global_scope.GetV8CacheOptions());
+          global_scope.GetV8CacheOptions());
   return !result.IsEmpty();
 }
 

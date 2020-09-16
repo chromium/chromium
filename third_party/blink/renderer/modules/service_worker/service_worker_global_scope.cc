@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_index_event_init.h"
@@ -825,22 +826,24 @@ int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
   return features::kInstallingServiceWorkerOutstandingThrottledLimit.Get();
 }
 
-void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls,
-                                             ExceptionState& exception_state) {
+void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls) {
   for (const String& string_url : urls) {
     KURL completed_url = CompleteURL(string_url);
     if (installed_scripts_manager_ &&
         !installed_scripts_manager_->IsScriptInstalled(completed_url)) {
       DCHECK(installed_scripts_manager_->IsScriptInstalled(Url()));
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNetworkError,
-          "Failed to import '" + completed_url.ElidedString() +
-              "'. importScripts() of new scripts after service worker "
-              "installation is not allowed.");
+      v8::Isolate* isolate = GetThread()->GetIsolate();
+      V8ThrowException::ThrowException(
+          isolate,
+          V8ThrowDOMException::CreateOrEmpty(
+              isolate, DOMExceptionCode::kNetworkError,
+              "Failed to import '" + completed_url.ElidedString() +
+                  "'. importScripts() of new scripts after service worker "
+                  "installation is not allowed."));
       return;
     }
   }
-  WorkerGlobalScope::importScripts(urls, exception_state);
+  WorkerGlobalScope::importScripts(urls);
 }
 
 SingleCachedMetadataHandler*

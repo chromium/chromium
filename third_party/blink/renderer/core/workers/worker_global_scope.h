@@ -52,7 +52,6 @@ namespace blink {
 
 struct BlinkTransferableMessage;
 class ConsoleMessage;
-class ExceptionState;
 class FetchClientSettingsObjectSnapshot;
 class FontFaceSet;
 class InstalledScriptsManager;
@@ -105,8 +104,9 @@ class CORE_EXPORT WorkerGlobalScope
   DEFINE_ATTRIBUTE_EVENT_LISTENER(timezonechange, kTimezonechange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unhandledrejection, kUnhandledrejection)
 
-  // WorkerUtils
-  virtual void importScripts(const Vector<String>& urls, ExceptionState&);
+  // This doesn't take an ExceptionState argument, but actually can throw
+  // exceptions directly to V8 (crbug/1114610).
+  virtual void importScripts(const Vector<String>& urls);
 
   // ExecutionContext
   const KURL& Url() const final;
@@ -255,7 +255,7 @@ class CORE_EXPORT WorkerGlobalScope
   void RunWorkerScript();
 
   // Used for importScripts().
-  void ImportScriptsInternal(const Vector<String>& urls, ExceptionState&);
+  void ImportScriptsInternal(const Vector<String>& urls);
   // ExecutionContext
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   EventTarget* ErrorEventTarget() final { return this; }

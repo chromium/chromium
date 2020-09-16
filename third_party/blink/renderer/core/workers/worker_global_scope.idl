@@ -41,7 +41,9 @@
     // attribute EventHandler ononline;
 
     // https://html.spec.whatwg.org/C/#apis-available-to-workers
-    [RaisesException] void importScripts(ScriptURLString... urls);
+    // Although RaisesException is not specified, importScripts() can actually
+    // throw exceptions directly to V8.
+    void importScripts(ScriptURLString... urls);
     readonly attribute WorkerNavigator navigator;
 
 
