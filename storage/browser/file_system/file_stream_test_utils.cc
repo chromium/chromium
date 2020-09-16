@@ -40,6 +40,14 @@ void ReadFromReader(FileStreamReader* reader,
   }
 }
 
+int64_t GetLengthFromReader(FileStreamReader* reader) {
+  EXPECT_NE(nullptr, reader);
+  net::TestInt64CompletionCallback callback;
+
+  int rv = reader->GetLength(callback.callback());
+  return callback.GetResult(rv);
+}
+
 int WriteStringToWriter(FileStreamWriter* writer, const std::string& data) {
   scoped_refptr<net::StringIOBuffer> buffer =
       base::MakeRefCounted<net::StringIOBuffer>(data);

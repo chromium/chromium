@@ -48,10 +48,9 @@ class FileStreamWriter {
 
   // Creates a writer for the existing memory file in the path |file_path|
   // starting from |initial_offset|.
-  // TODO(mek): Remove or use |open_or_create| field here, as it is not
-  // currently used. https://crbug.com/1041048
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static std::unique_ptr<FileStreamWriter> CreateForMemoryFile(
+      scoped_refptr<base::TaskRunner> task_runner,
       base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
       const base::FilePath& file_path,
       int64_t initial_offset);
