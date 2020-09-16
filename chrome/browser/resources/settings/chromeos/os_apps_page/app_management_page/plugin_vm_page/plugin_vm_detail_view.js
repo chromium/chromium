@@ -74,13 +74,15 @@ Polymer({
   /** @private */
   onSharedPathsClick_() {
     settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS);
+        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
+        new URLSearchParams({'id': this.app_.id}));
   },
 
   /** @private */
   onSharedUsbDevicesClick_() {
     settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES);
+        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
+        new URLSearchParams({'id': this.app_.id}));
   },
 
   /**
