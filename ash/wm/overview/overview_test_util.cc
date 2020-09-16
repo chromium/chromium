@@ -22,7 +22,7 @@ namespace {
 
 void WaitForOverviewAnimationState(OverviewAnimationState state) {
   // Early out if animations are disabled.
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     return;
   }

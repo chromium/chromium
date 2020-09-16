@@ -25,12 +25,6 @@ namespace ui {
 
 namespace {
 
-// The factor by which duration is scaled up or down when using
-// ScopedAnimationDurationScaleMode.
-const int kSlowDurationScaleMultiplier = 4;
-const int kFastDurationScaleDivisor = 4;
-const int kNonZeroDurationScaleDivisor = 20;
-
 // Pause -----------------------------------------------------------------------
 class Pause : public LayerAnimationElement {
  public:
@@ -802,21 +796,10 @@ std::string LayerAnimationElement::AnimatablePropertiesToString(
 // static
 base::TimeDelta LayerAnimationElement::GetEffectiveDuration(
     const base::TimeDelta& duration) {
-  switch (ScopedAnimationDurationScaleMode::duration_scale_mode()) {
-    case ScopedAnimationDurationScaleMode::NORMAL_DURATION:
-      return duration;
-    case ScopedAnimationDurationScaleMode::FAST_DURATION:
-      return duration / kFastDurationScaleDivisor;
-    case ScopedAnimationDurationScaleMode::SLOW_DURATION:
-      return duration * kSlowDurationScaleMultiplier;
-    case ScopedAnimationDurationScaleMode::NON_ZERO_DURATION:
-      return duration / kNonZeroDurationScaleDivisor;
-    case ScopedAnimationDurationScaleMode::ZERO_DURATION:
-      return base::TimeDelta();
-    default:
-      NOTREACHED();
-      return base::TimeDelta();
-  }
+  if (ScopedAnimationDurationScaleMode::duration_multiplier() == 0)
+    return base::TimeDelta();
+
+  return duration * ScopedAnimationDurationScaleMode::duration_multiplier();
 }
 
 // static

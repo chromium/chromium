@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
@@ -112,7 +113,16 @@ void TestSliderListener::SliderDragEnded(views::Slider* sender) {
 namespace views {
 
 // Base test fixture for Slider tests.
-class SliderTest : public views::ViewsTestBase {
+enum class TestSliderType {
+  kContinuousTest,       // ContinuousSlider
+  kDiscreteEnd2EndTest,  // DiscreteSlider with 0 and 1 in the list of values.
+  kDiscreteInnerTest,    // DiscreteSlider excluding 0 and 1.
+};
+
+// Parameter specifies whether to test ContinuousSlider (true) or
+// DiscreteSlider(false).
+class SliderTest : public views::ViewsTestBase,
+                   public testing::WithParamInterface<TestSliderType> {
  public:
   SliderTest() = default;
   ~SliderTest() override = default;
@@ -134,9 +144,20 @@ class SliderTest : public views::ViewsTestBase {
 
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
+  const base::flat_set<float>& values() const { return values_; }
+
+  // Returns minimum and maximum possible slider values with respect to test
+  // param.
+  float GetMinValue() const;
+  float GetMaxValue() const;
+
  private:
   // The Slider to be tested.
   Slider* slider_ = nullptr;
+
+  // Populated values for discrete slider.
+  base::flat_set<float> values_;
+
   // A simple SliderListener test double.
   TestSliderListener slider_listener_;
   // Stores the default locale at test setup so it can be restored
@@ -154,10 +175,30 @@ class SliderTest : public views::ViewsTestBase {
   DISALLOW_COPY_AND_ASSIGN(SliderTest);
 };
 
+void SliderTest::ClickAt(int x, int y) {
+  gfx::Point point(x, y);
+  event_generator_->MoveMouseTo(point);
+  event_generator_->ClickLeftButton();
+}
+
 void SliderTest::SetUp() {
   views::ViewsTestBase::SetUp();
 
   auto slider = std::make_unique<Slider>();
+  switch (GetParam()) {
+    case TestSliderType::kContinuousTest:
+      break;
+    case TestSliderType::kDiscreteEnd2EndTest:
+      values_ = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
+      slider->SetAllowedValues(&values_);
+      break;
+    case TestSliderType::kDiscreteInnerTest:
+      values_ = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9};
+      slider->SetAllowedValues(&values_);
+      break;
+    default:
+      NOTREACHED();
+  }
   gfx::Size size = slider->GetPreferredSize();
   slider->SetSize(size);
   max_x_ = size.width() - 1;
@@ -184,78 +225,126 @@ void SliderTest::TearDown() {
   views::ViewsTestBase::TearDown();
 }
 
-void SliderTest::ClickAt(int x, int y) {
-  gfx::Point point(x, y);
-  event_generator_->MoveMouseTo(point);
-  event_generator_->ClickLeftButton();
+float SliderTest::GetMinValue() const {
+  if (GetParam() == TestSliderType::kContinuousTest)
+    return 0.0f;
+
+  return *values().cbegin();
 }
 
-TEST_F(SliderTest, UpdateFromClickHorizontal) {
+float SliderTest::GetMaxValue() const {
+  if (GetParam() == TestSliderType::kContinuousTest)
+    return 1.0f;
+
+  return *values().crbegin();
+}
+
+TEST_P(SliderTest, UpdateFromClickHorizontal) {
   ClickAt(0, 0);
-  EXPECT_EQ(0.0f, slider()->GetValue());
+  EXPECT_EQ(GetMinValue(), slider()->GetValue());
 
   ClickAt(max_x(), 0);
-  EXPECT_EQ(1.0f, slider()->GetValue());
+  EXPECT_EQ(GetMaxValue(), slider()->GetValue());
 }
 
-TEST_F(SliderTest, UpdateFromClickRTLHorizontal) {
+TEST_P(SliderTest, UpdateFromClickRTLHorizontal) {
   base::i18n::SetICUDefaultLocale("he");
 
   ClickAt(0, 0);
-  EXPECT_EQ(1.0f, slider()->GetValue());
+  EXPECT_EQ(GetMaxValue(), slider()->GetValue());
 
   ClickAt(max_x(), 0);
-  EXPECT_EQ(0.0f, slider()->GetValue());
+  EXPECT_EQ(GetMinValue(), slider()->GetValue());
+}
+
+TEST_P(SliderTest, NukeAllowedValues) {
+  //  No more Allowed Values.
+  slider()->SetAllowedValues(nullptr);
+  // Verify that slider is now able to take full scale despite the original
+  // configuration.
+  ClickAt(0, 0);
+  EXPECT_EQ(0, slider()->GetValue());
+
+  ClickAt(max_x(), 0);
+  EXPECT_EQ(1, slider()->GetValue());
+
+  const int position = max_x() / 18.0f;
+  ClickAt(position, 0);
+
+  // These values were copied from the slider source.
+  constexpr float kThumbRadius = 4.f;
+  constexpr float kThumbWidth = 2 * kThumbRadius;
+  // This formula is copied here from Slider::MoveButtonTo() to verify that
+  // slider does use full scale and previous Allowed Values no longer affect
+  // calculations.
+  EXPECT_FLOAT_EQ(
+      static_cast<float>(
+          position - test::SliderTestApi(slider()).initial_button_offset()) /
+          (slider()->width() - kThumbWidth),
+      slider()->GetValue());
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
 #if !defined(OS_APPLE) || defined(USE_AURA)
 
 // Test the slider location after a tap gesture.
-TEST_F(SliderTest, SliderValueForTapGesture) {
+TEST_P(SliderTest, SliderValueForTapGesture) {
   // Tap below the minimum.
   slider()->SetValue(0.5);
   event_generator()->GestureTapAt(gfx::Point(0, 0));
-  EXPECT_FLOAT_EQ(0, slider()->GetValue());
+  EXPECT_FLOAT_EQ(GetMinValue(), slider()->GetValue());
 
   // Tap above the maximum.
   slider()->SetValue(0.5);
   event_generator()->GestureTapAt(gfx::Point(max_x(), max_y()));
-  EXPECT_FLOAT_EQ(1, slider()->GetValue());
+  EXPECT_FLOAT_EQ(GetMaxValue(), slider()->GetValue());
 
-  // Tap somwhere in the middle.
+  // Tap somewhere in the middle.
+  // 0.76 is closer to 0.8 which is important for discrete slider.
   slider()->SetValue(0.5);
-  event_generator()->GestureTapAt(gfx::Point(0.75 * max_x(), 0.75 * max_y()));
-  EXPECT_NEAR(0.75, slider()->GetValue(), 0.03);
+  event_generator()->GestureTapAt(gfx::Point(0.76 * max_x(), 0.76 * max_y()));
+  if (GetParam() == TestSliderType::kContinuousTest) {
+    EXPECT_NEAR(0.76, slider()->GetValue(), 0.03);
+  } else {
+    // Discrete slider has 0.1 steps.
+    EXPECT_NEAR(0.8, slider()->GetValue(), 0.01);
+  }
 }
 
 // Test the slider location after a scroll gesture.
-TEST_F(SliderTest, SliderValueForScrollGesture) {
+TEST_P(SliderTest, SliderValueForScrollGesture) {
   // Scroll below the minimum.
   slider()->SetValue(0.5);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.5 * max_x(), 0.5 * max_y()), gfx::Point(0, 0),
       base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
-  EXPECT_EQ(0, slider()->GetValue());
+  EXPECT_EQ(GetMinValue(), slider()->GetValue());
 
   // Scroll above the maximum.
   slider()->SetValue(0.5);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.5 * max_x(), 0.5 * max_y()), gfx::Point(max_x(), max_y()),
       base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
-  EXPECT_EQ(1, slider()->GetValue());
+  EXPECT_EQ(GetMaxValue(), slider()->GetValue());
 
   // Scroll somewhere in the middle.
+  // 0.78 is closer to 0.8 which is important for discrete slider.
   slider()->SetValue(0.25);
   event_generator()->GestureScrollSequence(
       gfx::Point(0.25 * max_x(), 0.25 * max_y()),
-      gfx::Point(0.75 * max_x(), 0.75 * max_y()),
+      gfx::Point(0.78 * max_x(), 0.78 * max_y()),
       base::TimeDelta::FromMilliseconds(10), 5 /* steps */);
-  EXPECT_NEAR(0.75, slider()->GetValue(), 0.03);
+  if (GetParam() == TestSliderType::kContinuousTest) {
+    // Continuous slider.
+    EXPECT_NEAR(0.78, slider()->GetValue(), 0.03);
+  } else {
+    // Discrete slider has 0.1 steps.
+    EXPECT_NEAR(0.8, slider()->GetValue(), 0.01);
+  }
 }
 
 // Test the slider location by adjusting it using keyboard.
-TEST_F(SliderTest, SliderValueForKeyboard) {
+TEST_P(SliderTest, SliderValueForKeyboard) {
   float value = 0.5;
   slider()->SetValue(value);
   slider()->RequestFocus();
@@ -295,7 +384,7 @@ TEST_F(SliderTest, SliderValueForKeyboard) {
 }
 
 // Verifies the correct SliderListener events are raised for a tap gesture.
-TEST_F(SliderTest, SliderListenerEventsForTapGesture) {
+TEST_P(SliderTest, SliderListenerEventsForTapGesture) {
   test::SliderTestApi slider_test_api(slider());
   slider_test_api.SetListener(&slider_listener());
 
@@ -307,7 +396,7 @@ TEST_F(SliderTest, SliderListenerEventsForTapGesture) {
 }
 
 // Verifies the correct SliderListener events are raised for a scroll gesture.
-TEST_F(SliderTest, SliderListenerEventsForScrollGesture) {
+TEST_P(SliderTest, SliderListenerEventsForScrollGesture) {
   test::SliderTestApi slider_test_api(slider());
   slider_test_api.SetListener(&slider_listener());
 
@@ -325,7 +414,7 @@ TEST_F(SliderTest, SliderListenerEventsForScrollGesture) {
 
 // Verifies the correct SliderListener events are raised for a multi
 // finger scroll gesture.
-TEST_F(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
+TEST_P(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
   test::SliderTestApi slider_test_api(slider());
   slider_test_api.SetListener(&slider_listener());
 
@@ -344,7 +433,7 @@ TEST_F(SliderTest, SliderListenerEventsForMultiFingerScrollGesture) {
 
 // Verifies the correct SliderListener events are raised for an accessible
 // slider.
-TEST_F(SliderTest, SliderRaisesA11yEvents) {
+TEST_P(SliderTest, SliderRaisesA11yEvents) {
   test::AXEventCounter ax_counter(views::AXEventManager::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
@@ -371,4 +460,9 @@ TEST_F(SliderTest, SliderRaisesA11yEvents) {
 
 #endif  // !defined(OS_APPLE) || defined(USE_AURA)
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SliderTest,
+                         ::testing::Values(TestSliderType::kContinuousTest,
+                                           TestSliderType::kDiscreteEnd2EndTest,
+                                           TestSliderType::kDiscreteInnerTest));
 }  // namespace views

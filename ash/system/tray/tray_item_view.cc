@@ -54,7 +54,7 @@ void TrayItemView::CreateImageView() {
 
 void TrayItemView::SetVisible(bool set_visible) {
   if (!GetWidget() ||
-      ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
           ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     views::View::SetVisible(set_visible);
     return;

@@ -131,7 +131,7 @@ class TrayNetworkStateModel::Impl
 
 TrayNetworkStateModel::TrayNetworkStateModel()
     : update_frequency_(kUpdateFrequencyMs) {
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() !=
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION) {
     update_frequency_ = 0;  // Send updates immediately for tests.
   }

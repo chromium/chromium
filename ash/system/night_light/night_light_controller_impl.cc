@@ -351,7 +351,7 @@ class ColorTemperatureAnimation : public gfx::LinearAnimation,
     target_temperature_ =
         base::ClampToRange(new_target_temperature, 0.0f, 1.0f);
 
-    if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+    if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
       // Animations are disabled. Apply the target temperature directly to the
       // compositors.

@@ -66,7 +66,7 @@ void ColorTemperatureAnimation::AnimateToNewValue(float new_target_temperature,
   target_temperature_ =
       base::ClampToRange(new_target_temperature, 1000.0f, 20000.0f);
 
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Animations are disabled. Apply the target temperature directly to the
     // compositor.

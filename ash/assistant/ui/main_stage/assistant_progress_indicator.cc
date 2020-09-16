@@ -37,7 +37,7 @@ constexpr float kScaleFactor = kDotLargeSizeDip / kDotSmallSizeDip;
 // Helpers ---------------------------------------------------------------------
 
 bool AreAnimationsEnabled() {
-  return ui::ScopedAnimationDurationScaleMode::duration_scale_mode() !=
+  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION;
 }
 

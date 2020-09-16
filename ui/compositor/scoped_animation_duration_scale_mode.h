@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_SCOPED_ANIMATION_DURATION_SCALE_MODE_H_
 #define UI_COMPOSITOR_SCOPED_ANIMATION_DURATION_SCALE_MODE_H_
 
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace ui {
@@ -13,37 +12,33 @@ namespace ui {
 // Speed up or slow down animations for testing or debugging.
 class COMPOSITOR_EXPORT ScopedAnimationDurationScaleMode {
  public:
-  enum DurationScaleMode {
-    NORMAL_DURATION,
-    FAST_DURATION,
-    SLOW_DURATION,
-    // A very short but guaranteed non-zero duration for individual tests that
-    // need to assert things about animations after creating them.
-    NON_ZERO_DURATION,
-    // Animations complete immediately after being created. Used by most tests.
-    ZERO_DURATION
-  };
+  // Anumation duration multipliers.
+  static constexpr float NORMAL_DURATION = 1.0;
+  static constexpr float FAST_DURATION = 1.0 / 4;    // 4 times faster
+  static constexpr float SLOW_DURATION = 1.0 * 4.0;  // 4 times slower
+  // A very short but guaranteed non-zero duration for individual tests that
+  // need to assert things about animations after creating them.
+  static constexpr float NON_ZERO_DURATION = 1.0 / 20;  // 20 times faster
+  // Animations complete immediately after being created. Used by most tests.
+  static constexpr float ZERO_DURATION = 0;
 
-  explicit ScopedAnimationDurationScaleMode(
-      DurationScaleMode scoped_duration_scale_mode)
-      : old_duration_scale_mode_(duration_scale_mode_) {
-    duration_scale_mode_ = scoped_duration_scale_mode;
-  }
+  explicit ScopedAnimationDurationScaleMode(float scoped_multiplier);
+  ScopedAnimationDurationScaleMode(const ScopedAnimationDurationScaleMode&) =
+      delete;
+  ScopedAnimationDurationScaleMode& operator=(
+      const ScopedAnimationDurationScaleMode&) = delete;
 
-  ~ScopedAnimationDurationScaleMode() {
-    duration_scale_mode_ = old_duration_scale_mode_;
-  }
+  ~ScopedAnimationDurationScaleMode();
 
-  static DurationScaleMode duration_scale_mode() {
-    return duration_scale_mode_;
-  }
+  static float duration_multiplier() { return duration_multiplier_; }
 
  private:
-  DurationScaleMode old_duration_scale_mode_;
+  // This is stored previous multiplier version to restore after scoped scale
+  // destruction.
+  const float old_duration_multiplier_;
 
-  static DurationScaleMode duration_scale_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAnimationDurationScaleMode);
+  // This is active global multiplier.
+  static float duration_multiplier_;
 };
 
 }  // namespace ui

@@ -674,7 +674,7 @@ bool WindowAnimationsDisabled(aura::Window* window) {
 
   // Tests of animations themselves should still run even if the machine is
   // being accessed via Remote Desktop.
-  if (ui::ScopedAnimationDurationScaleMode::duration_scale_mode() ==
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION)
     return false;
 

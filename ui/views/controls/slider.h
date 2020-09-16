@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -43,11 +43,15 @@ class VIEWS_EXPORT SliderListener {
   virtual ~SliderListener() = default;
 };
 
+// Slider operates in interval [0,1] by default, but can also switch between a
+// predefined set of values, see SetAllowedValues method below.
 class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(Slider);
 
   explicit Slider(SliderListener* listener = nullptr);
+  Slider(const Slider&) = delete;
+  Slider& operator=(const Slider&) = delete;
   ~Slider() override;
 
   float GetValue() const;
@@ -68,6 +72,15 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
 
   RenderingStyle style() const { return style_; }
 
+  // Sets discrete set of allowed slider values. Each value must be in [0,1].
+  // Sets active value to the lower bound of the current value in allowed set.
+  // nullptr will drop currently active set and allow full [0,1] interval.
+  void SetAllowedValues(const base::flat_set<float>* allowed_values);
+
+  const base::flat_set<float>& allowed_values() const {
+    return allowed_values_;
+  }
+
  protected:
   // Returns the current position of the thumb on the slider.
   float GetAnimatingValue() const;
@@ -79,6 +92,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
 
  private:
   friend class test::SliderTestApi;
@@ -106,7 +122,6 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -127,6 +142,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
 
   std::unique_ptr<gfx::SlideAnimation> move_animation_;
 
+  // When |allowed_values_| is not empty, slider will allow moving only between
+  // these values. I.e. it will become discrete slider.
+  base::flat_set<float> allowed_values_;  // Allowed values.
   float value_ = 0.f;
   float keyboard_increment_ = 0.1f;
   float initial_animating_value_ = 0.f;
@@ -145,8 +163,6 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   gfx::SlideAnimation highlight_animation_;
 
   bool pending_accessibility_value_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(Slider);
 };
 
 }  // namespace views

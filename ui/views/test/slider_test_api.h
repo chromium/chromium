@@ -25,6 +25,8 @@ class SliderTestApi {
   // Set the SliderListener on the Slider.
   void SetListener(SliderListener* listener);
 
+  int initial_button_offset() const;
+
  private:
   Slider* slider_;
 

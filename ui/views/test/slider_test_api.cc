@@ -16,6 +16,9 @@ SliderTestApi::~SliderTestApi() = default;
 void SliderTestApi::SetListener(SliderListener* listener) {
   slider_->set_listener(listener);
 }
+int SliderTestApi::initial_button_offset() const {
+  return slider_->initial_button_offset_;
+}
 
 }  // namespace test
 }  // namespace views

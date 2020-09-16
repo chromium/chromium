@@ -5,7 +5,9 @@
 #include "ui/views/controls/slider.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
@@ -44,6 +46,26 @@ constexpr int kSliderPadding = 2;
 constexpr float kThumbRadius = 4.f;
 constexpr float kThumbWidth = 2 * kThumbRadius;
 constexpr float kThumbHighlightRadius = 12.f;
+
+float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
+                             float suggested_value) {
+  if (allowed_values.empty())
+    return suggested_value;
+
+  const base::flat_set<float>::const_iterator greater =
+      allowed_values.upper_bound(suggested_value);
+  if (greater == allowed_values.end())
+    return *allowed_values.rbegin();
+
+  if (greater == allowed_values.begin())
+    return *allowed_values.cbegin();
+
+  // Select a value nearest to the |suggested_value|.
+  if ((*greater - suggested_value) > (suggested_value - *std::prev(greater)))
+    return *std::prev(greater);
+
+  return *greater;
+}
 
 }  // namespace
 
@@ -88,6 +110,30 @@ void Slider::SetRenderingStyle(RenderingStyle style) {
   SchedulePaint();
 }
 
+void Slider::SetAllowedValues(const base::flat_set<float>* allowed_values) {
+  if (!allowed_values) {
+    allowed_values_.clear();
+    return;
+  }
+#if DCHECK_IS_ON()
+  // Disallow empty sliders.
+  DCHECK(allowed_values->size());
+  for (const float v : *allowed_values) {
+    // sanity check.
+    DCHECK_GE(v, 0.0f);
+    DCHECK_LE(v, 1.0f);
+  }
+#endif
+  allowed_values_ = *allowed_values;
+
+  const auto position = allowed_values_.lower_bound(value_);
+  const float new_value = (position == allowed_values_.end())
+                              ? *allowed_values_.cbegin()
+                              : *position;
+  if (new_value != value_)
+    SetValue(new_value);
+}
+
 float Slider::GetAnimatingValue() const {
   return move_animation_ && move_animation_->is_animating()
              ? move_animation_->CurrentValueBetween(initial_animating_value_,
@@ -127,6 +173,7 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
     value = 0.0;
   else if (value > 1.0)
     value = 1.0;
+  value = GetNearestAllowedValue(allowed_values_, value);
   if (value_ == value)
     return;
   float old_value = value_;
@@ -239,8 +286,29 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
     default:
       return false;
   }
-  SetValueInternal(value_ + direction * keyboard_increment_,
-                   SliderChangeReason::kByUser);
+  if (allowed_values_.empty()) {
+    SetValueInternal(value_ + direction * keyboard_increment_,
+                     SliderChangeReason::kByUser);
+  } else {
+    // discrete slider.
+    if (direction > 0) {
+      const base::flat_set<float>::const_iterator greater =
+          allowed_values_.upper_bound(value_);
+      SetValueInternal(greater == allowed_values_.cend()
+                           ? *allowed_values_.crend()
+                           : *greater,
+                       SliderChangeReason::kByUser);
+    } else {
+      const base::flat_set<float>::const_iterator lesser =
+          allowed_values_.lower_bound(value_);
+      // Current value must be in the list of allowed values.
+      DCHECK(lesser != allowed_values_.cend());
+      SetValueInternal(lesser == allowed_values_.cbegin()
+                           ? *allowed_values_.cbegin()
+                           : *std::prev(lesser),
+                       SliderChangeReason::kByUser);
+    }
+  }
   return true;
 }
 

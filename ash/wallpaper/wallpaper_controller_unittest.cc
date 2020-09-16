@@ -120,7 +120,7 @@ int ChildCountForContainer(int container_id) {
 // Steps a layer animation until it is completed. Animations must be enabled.
 void RunAnimationForLayer(ui::Layer* layer) {
   // Animations must be enabled for stepping to work.
-  ASSERT_NE(ui::ScopedAnimationDurationScaleMode::duration_scale_mode(),
+  ASSERT_NE(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ui::LayerAnimatorTestController controller(layer->GetAnimator());
