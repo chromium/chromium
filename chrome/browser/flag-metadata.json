@@ -2247,8 +2247,8 @@
   },
   {
     "name": "enable-translate-sub-frames",
-    "owners": [ "dougarnett", "chrome-language@google.com" ],
-    "expiry_milestone": 86
+    "owners": [ "sclittle", "chrome-language@google.com" ],
+    "expiry_milestone": 90
   },
   {
     "name": "enable-ui-devtools",
