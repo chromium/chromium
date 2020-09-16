@@ -899,39 +899,55 @@ TEST_F(InteractiveWindowCycleControllerTest,
 }
 
 // When a user hovers their mouse over an item, it should cycle to it.
+// The items in the list should not move, only the focus ring.
 // If a user clicks on an item, it should complete cycling and activate
 // the hovered item.
 TEST_F(InteractiveWindowCycleControllerTest, MouseHoverAndSelect) {
   std::unique_ptr<Window> w0 = CreateTestWindow();
   std::unique_ptr<Window> w1 = CreateTestWindow();
   std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w3 = CreateTestWindow();
+  std::unique_ptr<Window> w4 = CreateTestWindow();
+  std::unique_ptr<Window> w5 = CreateTestWindow();
+  std::unique_ptr<Window> w6 = CreateTestWindow();
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Cycle to the third item, mouse over second item, and release alt-tab.
-  // Starting order of windows in cycle list is [2,1,0].
+  // Starting order of windows in cycle list is [6,5,4,3,2,1,0].
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
-  generator->MoveMouseTo(
-      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
+  gfx::Point target_item_center =
+      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(target_item_center);
+  EXPECT_EQ(target_item_center,
+            GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
   controller->CompleteCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(w5.get()));
 
   // Start cycle, mouse over third item, and release alt-tab.
-  // Starting order of windows in cycle list is [1,2,0].
+  // Starting order of windows in cycle list is [5,6,4,3,2,1,0].
   controller->StartCycling();
-  generator->MoveMouseTo(
-      GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint());
+  target_item_center =
+      GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(target_item_center);
+  EXPECT_EQ(target_item_center,
+            GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint());
   controller->CompleteCycling();
-  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(w4.get()));
 
-  // Start cycle, mouse over second item, and click.
-  // Starting order of windows in cycle list is [0,1,2].
+  // Start cycle, cycle to the fifth item, mouse over seventh item, and click.
+  // Starting order of windows in cycle list is [4,5,6,3,2,1,0].
   controller->StartCycling();
-  generator->MoveMouseTo(
-      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
+  for (int i = 0; i < 5; i++)
+    controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  target_item_center =
+      GetWindowCycleItemViews()[6]->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(target_item_center);
+  EXPECT_EQ(target_item_center,
+            GetWindowCycleItemViews()[6]->GetBoundsInScreen().CenterPoint());
   generator->PressLeftButton();
-  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
 }
 
 // Tests that the left and right keys cycle after the cycle list has been

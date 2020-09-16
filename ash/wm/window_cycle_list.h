@@ -42,10 +42,12 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
 
-  // Cycles to the next or previous window based on |direction|.
+  // Cycles to the next or previous window based on |direction| and re-layouts
+  // the window cycle list, scrolling the list.
   void Step(WindowCycleController::Direction direction);
 
-  // Skip window cycle list directly to |window|.
+  // Skip window cycle list directly to |window| and don't re-layout the window
+  // cycle list, only moving the focus ring.
   void StepToWindow(aura::Window* window);
 
   // Checks whether |event| occurs within the cycle view. Returns false if
@@ -85,8 +87,12 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // PIP.
   void SelectWindow(aura::Window* window);
 
-  // Cycles windows by |offset|.
-  void Step(int offset);
+  // Cycles windows by |offset|. If |should_layout|, layouts the window cycle
+  // list and moves the focus border to the newly selected window. If not
+  // |should_layout|, just moves the focus border to the newly selected window.
+  // Should be called with |should_layout| if we want the Step() call to animate
+  // the window cycle list, scrolling it.
+  void Step(int offset, bool should_layout);
 
   // Returns the views for the window cycle list.
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;

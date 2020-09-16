@@ -313,7 +313,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     layer()->SetOpacity(1.f);
   }
 
-  void SetTargetWindow(aura::Window* target) {
+  void SetTargetWindow(aura::Window* target, bool should_layout) {
     // Hide the focus border of the previous target window and show the focus
     // border of the new one.
     if (target_window_) {
@@ -326,7 +326,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (target_it != window_view_map_.end())
       target_it->second->UpdateBorderState(/*show=*/true);
 
-    if (GetWidget()) {
+    if (GetWidget() && should_layout) {
       Layout();
       if (target_window_)
         window_view_map_[target_window_]->RequestFocus();
@@ -348,7 +348,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     // sure our own Layout() works correctly when it's calculating highlight
     // bounds.
     parent->Layout();
-    SetTargetWindow(new_target);
+    SetTargetWindow(new_target, /*should_layout=*/true);
   }
 
   void DestroyContents() {
@@ -514,45 +514,9 @@ WindowCycleList::~WindowCycleList() {
   Shell::Get()->frame_throttling_controller()->EndThrottling();
 }
 
-void WindowCycleList::Step(int offset) {
-  if (windows_.empty())
-    return;
-
-  // When there is only one window, we should give feedback to the user. If
-  // the window is minimized, we should also show it.
-  if (windows_.size() == 1) {
-    ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
-    SelectWindow(windows_[0]);
-    return;
-  }
-
-  DCHECK(static_cast<size_t>(current_index_) < windows_.size());
-
-  if (!cycle_view_ && current_index_ == 0) {
-    // Special case the situation where we're cycling forward but the MRU
-    // window is not active. This occurs when all windows are minimized. The
-    // starting window should be the first one rather than the second.
-    if (offset == 1 && !wm::IsActiveWindow(windows_[0]))
-      current_index_ = -1;
-  }
-
-  current_index_ += offset;
-
-  // Wrap to window list size.
-  current_index_ = (current_index_ + windows_.size()) % windows_.size();
-  DCHECK(windows_[current_index_]);
-
-  if (ShouldShowUi()) {
-    if (current_index_ > 1)
-      InitWindowCycleView();
-
-    if (cycle_view_)
-      cycle_view_->SetTargetWindow(windows_[current_index_]);
-  }
-}
-
 void WindowCycleList::Step(WindowCycleController::Direction direction) {
-  Step(direction == WindowCycleController::FORWARD ? 1 : -1);
+  Step(direction == WindowCycleController::FORWARD ? 1 : -1,
+       /*should_layout=*/true);
 }
 
 void WindowCycleList::StepToWindow(aura::Window* window) {
@@ -560,7 +524,10 @@ void WindowCycleList::StepToWindow(aura::Window* window) {
   DCHECK(target_window != windows_.end());
   int target_index = std::distance(windows_.begin(), target_window);
 
-  Step(target_index - current_index_);
+  // If the user hovers over an item and the window cycle list scrolls,
+  // sometimes it can cause the mouse to not hover over the selected item. To
+  // avoid this, prevent scrolling and only move focus border.
+  Step(target_index - current_index_, /*should_layout=*/false);
 }
 
 bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
@@ -627,7 +594,8 @@ void WindowCycleList::InitWindowCycleView() {
     return;
 
   cycle_view_ = new WindowCycleView(windows_);
-  cycle_view_->SetTargetWindow(windows_[current_index_]);
+  cycle_view_->SetTargetWindow(windows_[current_index_],
+                               /*should_layout=*/true);
 
   // We need to activate the widget if ChromeVox is enabled as ChromeVox
   // relies on activation.
@@ -696,6 +664,44 @@ void WindowCycleList::SelectWindow(aura::Window* window) {
   }
 
   window_selected_ = true;
+}
+
+void WindowCycleList::Step(int offset, bool should_layout) {
+  if (windows_.empty())
+    return;
+
+  // When there is only one window, we should give feedback to the user. If
+  // the window is minimized, we should also show it.
+  if (windows_.size() == 1) {
+    ::wm::AnimateWindow(windows_[0], ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    SelectWindow(windows_[0]);
+    return;
+  }
+
+  DCHECK(static_cast<size_t>(current_index_) < windows_.size());
+
+  if (!cycle_view_ && current_index_ == 0) {
+    // Special case the situation where we're cycling forward but the MRU
+    // window is not active. This occurs when all windows are minimized. The
+    // starting window should be the first one rather than the second.
+    if (offset == 1 && !wm::IsActiveWindow(windows_[0]))
+      current_index_ = -1;
+  }
+
+  current_index_ += offset;
+
+  // Wrap to window list size.
+  current_index_ = (current_index_ + windows_.size()) % windows_.size();
+  DCHECK(windows_[current_index_]);
+
+  if (ShouldShowUi()) {
+    if (current_index_ > 1)
+      InitWindowCycleView();
+
+    if (cycle_view_)
+      cycle_view_->SetTargetWindow(windows_[current_index_],
+                                   /*should_layout=*/should_layout);
+  }
 }
 
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
