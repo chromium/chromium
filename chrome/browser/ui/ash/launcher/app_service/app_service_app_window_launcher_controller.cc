@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
@@ -595,6 +596,9 @@ void AppServiceAppWindowLauncherController::OnItemDelegateDiscarded(
 
 ash::ShelfID AppServiceAppWindowLauncherController::GetShelfId(
     aura::Window* window) const {
+  if (crosapi::browser_util::IsLacrosWindow(window))
+    return ash::ShelfID(extension_misc::kLacrosAppId);
+
   if (crostini_tracker_) {
     std::string shelf_app_id;
     shelf_app_id = crostini_tracker_->GetShelfAppId(window);

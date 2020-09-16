@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/web_application_info.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -34,6 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/app_window/app_window.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -112,14 +114,30 @@ std::string CreateIntentUriWithShelfGroupAndLogicalWindow(
       logical_window_id.c_str(), shelf_group_id.c_str());
 }
 
+// Creates an exo app window and sets its shell application id. The returned
+// Widget is owned by its NativeWidget (the underlying aura::Window).
+views::Widget* CreateExoWindow(const std::string& window_app_id) {
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(5, 5, 20, 20);
+  params.context = ash::Shell::GetPrimaryRootWindow();
+  views::Widget* widget = new views::Widget();
+  widget->Init(std::move(params));
+  // Set app id before showing the window to be recognized in
+  // AppServiceAppWindowLauncherController.
+  exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
+  widget->Show();
+  widget->Activate();
+  return widget;
+}
+
 }  // namespace
 
 class AppServiceAppWindowBrowserTest
     : public extensions::PlatformAppBrowserTest {
  protected:
-  AppServiceAppWindowBrowserTest() : controller_(nullptr) {}
+  AppServiceAppWindowBrowserTest() = default;
 
-  ~AppServiceAppWindowBrowserTest() override {}
+  ~AppServiceAppWindowBrowserTest() override = default;
 
   void SetUp() override {
     extensions::PlatformAppBrowserTest::SetUp();
@@ -286,6 +304,51 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
                                 TabStripModel::CLOSE_NONE);
 
   windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id1);
+  EXPECT_EQ(0u, windows.size());
+}
+
+class AppServiceAppWindowLacrosBrowserTest
+    : public AppServiceAppWindowBrowserTest {
+ public:
+  AppServiceAppWindowLacrosBrowserTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  }
+  ~AppServiceAppWindowLacrosBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
+  // Create a fake Lacros window. The native window owns the widget.
+  views::Widget* widget = CreateExoWindow("org.chromium.lacros.12345");
+
+  using extension_misc::kLacrosAppId;
+  auto windows =
+      app_service_proxy_->InstanceRegistry().GetWindows(kLacrosAppId);
+  EXPECT_EQ(1u, windows.size());
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(kLacrosAppId, *windows.begin()));
+
+  // Find the Lacros shelf item.
+  int lacros_index = shelf_model()->ItemIndexByAppID(kLacrosAppId);
+  ASSERT_NE(-1, lacros_index);
+  const ash::ShelfItem& item = shelf_model()->items()[lacros_index];
+
+  // Since it is already active, clicking it should minimize.
+  SelectItem(item.id);
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
+            GetAppInstanceState(kLacrosAppId, *windows.begin()));
+
+  // Click the item again to activate the window.
+  SelectItem(item.id);
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(kLacrosAppId, *windows.begin()));
+
+  widget->CloseNow();
+  windows = app_service_proxy_->InstanceRegistry().GetWindows(kLacrosAppId);
   EXPECT_EQ(0u, windows.size());
 }
 
@@ -490,21 +553,6 @@ class AppServiceAppWindowArcAppBrowserTest
     arc_session_manager()->Shutdown();
   }
 
-  // Creates app window and set optional ARC application id.
-  views::Widget* CreateArcWindow(const std::string& window_app_id) {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-    params.bounds = gfx::Rect(5, 5, 20, 20);
-    params.context = ash::Shell::GetPrimaryRootWindow();
-    views::Widget* widget = new views::Widget();
-    widget->Init(std::move(params));
-    // Set ARC id before showing the window to be recognized in
-    // ArcAppWindowLauncherController.
-    exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
-    widget->Show();
-    widget->Activate();
-    return widget;
-  }
-
   ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
 
   // Returns as AppHost interface in order to access to private implementation
@@ -531,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   SendPackageAdded(kTestAppPackage, false);
 
   // Create the window for app1.
-  views::Widget* arc_window1 = CreateArcWindow("org.chromium.arc.1");
+  views::Widget* arc_window1 = CreateExoWindow("org.chromium.arc.1");
   const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
 
   // Simulate task creation so the app is marked as running/open.
@@ -561,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   info = app_prefs()->GetApp(app_id2);
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
                             info->intent_uri);
-  views::Widget* arc_window2 = CreateArcWindow("org.chromium.arc.2");
+  views::Widget* arc_window2 = CreateExoWindow("org.chromium.arc.2");
   EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id2)));
 
   // Check the window state in instance for app2
@@ -620,8 +668,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   SendPackageAdded(kTestAppPackage, false);
 
   // Create the windows for the app.
-  views::Widget* arc_window1 = CreateArcWindow("org.chromium.arc.1");
-  views::Widget* arc_window2 = CreateArcWindow("org.chromium.arc.2");
+  views::Widget* arc_window1 = CreateExoWindow("org.chromium.arc.1");
+  views::Widget* arc_window2 = CreateExoWindow("org.chromium.arc.2");
 
   // Simulate task creation so the app is marked as running/open.
   const std::string app_id = GetTestApp1Id(kTestAppPackage);

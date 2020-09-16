@@ -14,6 +14,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -93,6 +94,16 @@ bool IsLacrosAllowed(Channel channel) {
     case Channel::STABLE:
       return false;
   }
+}
+
+bool IsLacrosWindow(const aura::Window* window) {
+  const std::string* app_id = exo::GetShellApplicationId(window);
+  if (!app_id)
+    return false;
+  // TODO(jamescook): Move this constant to //chromeos/crosapi/cpp and share it
+  // with //ui/ozone/wayland.
+  const char kLacrosAppIdPrefix[] = "org.chromium.lacros";
+  return base::StartsWith(*app_id, kLacrosAppIdPrefix);
 }
 
 mojo::Remote<crosapi::mojom::LacrosChromeService>

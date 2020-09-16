@@ -33,6 +33,7 @@
 #include "chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
@@ -212,6 +213,8 @@ void BrowserManager::NewWindow() {
 void BrowserManager::Start() {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
+  // Ensure we're not trying to open a window before the shelf is initialized.
+  DCHECK(ChromeLauncherController::instance());
 
   state_ = State::CREATING_LOG_FILE;
 
@@ -351,10 +354,15 @@ void BrowserManager::OnLacrosChromeTerminated() {
   SetLaunchOnLoginPref(false);
 }
 
-void BrowserManager::OnUserSessionStarted(bool is_primary_user) {
+void BrowserManager::OnSessionStateChanged() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
-  // Ensure this isn't called multiple times.
+  // Wait for session to become active.
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (session_manager->session_state() != session_manager::SessionState::ACTIVE)
+    return;
+
+  // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
   // Must be checked after user session start because it depends on user type.

@@ -121,8 +121,7 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   void OnLacrosChromeTerminated();
 
   // session_manager::SessionManagerObserver:
-  // Starts to load the lacros-chrome executable.
-  void OnUserSessionStarted(bool is_primary_user) override;
+  void OnSessionStateChanged() override;
 
   // Called on load completion.
   void OnLoadComplete(const base::FilePath& path);

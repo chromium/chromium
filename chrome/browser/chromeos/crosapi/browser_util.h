@@ -12,6 +12,10 @@
 
 class PrefRegistrySimple;
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -43,6 +47,10 @@ bool IsLacrosAllowed();
 
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosAllowed(version_info::Channel channel);
+
+// Returns true if |window| is an exo ShellSurface window representing a Lacros
+// browser.
+bool IsLacrosWindow(const aura::Window* window);
 
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
