@@ -108,7 +108,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
         (options_->new_session ? kStartInSelection : 0);
     auto start_time = base::TimeTicks::Now();
 
-    while (search_start != search_end) {
+    while (search_start < search_end) {
       // Find in the whole block.
       FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
       FindBuffer::Results match_results =
