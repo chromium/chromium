@@ -68,6 +68,22 @@ export class ViewerPdfSidenavElement extends PolymerElement {
   thumbnailButtonClass_() {
     return this.thumbnailView_ ? 'selected' : '';
   }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getAriaSelectedThumbnails_() {
+    return this.thumbnailView_ ? 'true' : 'false';
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getAriaSelectedOutline_() {
+    return this.thumbnailView_ ? 'false' : 'true';
+  }
 }
 
 customElements.define(ViewerPdfSidenavElement.is, ViewerPdfSidenavElement);

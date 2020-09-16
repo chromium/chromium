@@ -30,8 +30,8 @@ const tests = [
     ];
 
     const content = sidenav.shadowRoot.querySelector('#content');
-    const buttons = /** @type {!NodeList<!CrIconButtonElement>} */ (
-        sidenav.shadowRoot.querySelectorAll('cr-icon-button'));
+    const [thumbnailButton, outlineButton] =
+        sidenav.shadowRoot.querySelectorAll('cr-icon-button');
 
     const thumbnailBar =
         /** @type {!ViewerThumbnailBarElement} */ (
@@ -42,27 +42,34 @@ const tests = [
 
     // Sidebar starts on thumbnail view.
     chrome.test.assertTrue(
-        buttons[0].parentNode.classList.contains('selected'));
+        thumbnailButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(
-        buttons[1].parentNode.classList.contains('selected'));
+        outlineButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(thumbnailBar.hidden);
     chrome.test.assertTrue(outline.hidden);
 
     // Click on outline view.
-    buttons[1].click();
+    outlineButton.click();
     chrome.test.assertFalse(
-        buttons[0].parentNode.classList.contains('selected'));
+        thumbnailButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq(
+        'false', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertTrue(
-        buttons[1].parentNode.classList.contains('selected'));
+        outlineButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq('true', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertTrue(thumbnailBar.hidden);
     chrome.test.assertFalse(outline.hidden);
 
     // Return to thumbnail view.
-    buttons[0].click();
+    thumbnailButton.click();
     chrome.test.assertTrue(
-        buttons[0].parentNode.classList.contains('selected'));
+        thumbnailButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq('true', thumbnailButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(
-        buttons[1].parentNode.classList.contains('selected'));
+        outlineButton.parentNode.classList.contains('selected'));
+    chrome.test.assertEq('false', outlineButton.getAttribute('aria-selected'));
     chrome.test.assertFalse(thumbnailBar.hidden);
     chrome.test.assertTrue(outline.hidden);
 
