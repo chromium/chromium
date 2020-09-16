@@ -5167,25 +5167,6 @@
             ]
         }
     ],
-    "ParkableStringsToDisk": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "ParkableStringsToDisk",
-                    "enable_features": [
-                        "ParkableStringsToDisk"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionConnectionsByNetworkIsolationKey": [
         {
             "platforms": [
