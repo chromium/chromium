@@ -436,8 +436,8 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
      */
     public boolean isVisible() {
         return mBrowser.getActiveTab() == this
-                && (mBrowser.isStarted() || mBrowser.isFragmentStoppedForConfigurationChange())
-                && mBrowser.isViewAttachedToWindow();
+                && ((mBrowser.isStarted() && mBrowser.isViewAttachedToWindow())
+                        || mBrowser.isFragmentStoppedForConfigurationChange());
     }
 
     private void updateWebContentsVisibility() {
