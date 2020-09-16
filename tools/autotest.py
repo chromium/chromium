@@ -124,7 +124,11 @@ def BuildTestTargetsWithNinja(out_dir, targets, dry_run):
   print('Building: ' + ' '.join(cmd))
   if (dry_run):
     return
-  StreamCommandOrExit(cmd)
+  try:
+    subprocess.check_call(cmd)
+  except subprocess.CalledProcessError as e:
+    return False
+  return True
 
 
 def RecursiveMatchFilename(folder, filename):
@@ -138,7 +142,8 @@ def RecursiveMatchFilename(folder, filename):
         continue
       if (entry.is_file() and filename in entry.path and
           not os.path.basename(entry.path).startswith('.')):
-        matches.append(entry.path)
+        if IsTestFile(entry.path):
+          matches.append(entry.path)
       if entry.is_dir():
         # On Windows, junctions are like a symlink that python interprets as a
         # directory, leading to exceptions being thrown. We can just catch and
@@ -165,6 +170,14 @@ def FindTestFilesInDirectory(directory):
 def FindMatchingTestFiles(target):
   # Return early if there's an exact file match.
   if os.path.isfile(target):
+    # If the target is a C++ implementation file, try to guess the test file.
+    if target.endswith('.cc') or target.endswith('.h'):
+      if IsTestFile(target):
+        return [target]
+      alternate = f"{target.rsplit('.', 1)[0]}_unittest.cc"
+      if os.path.isfile(alternate) and IsTestFile(alternate):
+        return [alternate]
+      ExitWithMessage(f"{target} doesn't look like a test file")
     return [target]
   # If this is a directory, return all the test files it contains.
   if os.path.isdir(target):
@@ -220,8 +233,9 @@ def HaveUserPickTarget(paths, targets):
 # A persistent cache to avoid running gn on repeated runs of autotest.
 class TargetCache:
   def __init__(self, out_dir):
+    self.out_dir = out_dir
     self.path = os.path.join(out_dir, 'autotest_cache')
-    self.gold_mtime = os.path.getmtime(os.path.join(out_dir, 'build.ninja'))
+    self.gold_mtime = self.GetBuildNinjaMtime()
     self.cache = {}
     try:
       mtime, cache = json.load(open(self.path, 'r'))
@@ -242,12 +256,20 @@ class TargetCache:
     key = ' '.join(test_paths)
     self.cache[key] = test_targets
 
+  def GetBuildNinjaMtime(self):
+    return os.path.getmtime(os.path.join(self.out_dir, 'build.ninja'))
+
+  def IsStillValid(self):
+    return self.GetBuildNinjaMtime() == self.gold_mtime
+
 
 def FindTestTargets(target_cache, out_dir, paths, run_all):
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
   test_targets = target_cache.Find(paths)
+  used_cache = True
   if not test_targets:
+    used_cache = False
 
     # Use gn refs to recursively find all targets that depend on |path|, filter
     # internal gn targets, and match against well-known test suffixes, falling
@@ -281,7 +303,7 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
 
   test_targets = list(set([t.split(':')[-1] for t in test_targets]))
 
-  return test_targets
+  return (test_targets, used_cache)
 
 
 def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
@@ -347,8 +369,9 @@ def main():
       '-n',
       action='store_true',
       help='Print ninja and test run commands without executing them.')
-  parser.add_argument(
-      'file', metavar='FILE_NAME', help='test suite file (eg. FooTest.java)')
+  parser.add_argument('file',
+                      metavar='FILE_NAME',
+                      help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
 
@@ -357,7 +380,8 @@ def main():
   target_cache = TargetCache(args.out_dir)
   filenames = FindMatchingTestFiles(args.file)
 
-  targets = FindTestTargets(target_cache, args.out_dir, filenames, args.run_all)
+  targets, used_cache = FindTestTargets(target_cache, args.out_dir, filenames,
+                                        args.run_all)
 
   gtest_filter = args.gtest_filter
   if not gtest_filter:
@@ -367,7 +391,25 @@ def main():
     ExitWithMessage('Failed to derive a gtest filter')
 
   assert targets
-  BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run)
+  build_ok = BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run)
+
+  # If we used the target cache, it's possible we chose the wrong target because
+  # a gn file was changed. The build step above will check for gn modifications
+  # and update build.ninja. Use this opportunity the verify the cache is still
+  # valid.
+  if used_cache and not target_cache.IsStillValid():
+    target_cache = TargetCache(args.out_dir)
+    new_targets, _ = FindTestTargets(target_cache, args.out_dir, filenames,
+                                     args.run_all)
+    if targets != new_targets:
+      # Note that this can happen, for example, if you rename a test target.
+      print('gn config was changed, trying to build again', file=sys.stderr)
+      targets = new_targets
+      if not BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run):
+        sys.exit(1)
+  else:  # cache still valid, quit if the build failed
+    if not build_ok: sys.exit(1)
+
   RunTestTargets(args.out_dir, targets, gtest_filter, _extras, args.dry_run)
 
 
