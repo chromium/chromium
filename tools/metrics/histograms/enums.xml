@@ -40599,6 +40599,7 @@ from previous Chrome versions.
   <int value="-2017953534" label="enable-hosted-app-shim-creation"/>
   <int value="-2017778637" label="PrintSaveToDrive:disabled"/>
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
+  <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
@@ -41828,6 +41829,7 @@ from previous Chrome versions.
   <int value="-820041355" label="enable-transition-compositing"/>
   <int value="-816984237" label="OfflinePagesAsyncDownload:enabled"/>
   <int value="-816895294" label="DiscoverApp:disabled"/>
+  <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
   <int value="-813753274" label="VrBrowsing:disabled"/>

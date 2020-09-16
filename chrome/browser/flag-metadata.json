@@ -4344,6 +4344,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "tab-groups-auto-create",
+    "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
+    "expiry_milestone": 89
+  },
+  {
     "name": "tab-groups-collapse",
     "owners": [ "chrome-desktop-ui-seattle@google.com", "xialinyan" ],
     "expiry_milestone": 89

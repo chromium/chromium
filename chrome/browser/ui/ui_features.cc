@@ -63,6 +63,11 @@ const base::Feature kSignInProfileCreationFlow{
 // Enables grouping tabs together in the tab strip. https://crbug.com/905491
 const base::Feature kTabGroups{"TabGroups", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Automatically create groups for users based on domain.
+// https://crbug.com/1128703
+const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tab groups to be collapsed and expanded. https://crbug.com/1018230
 const base::Feature kTabGroupsCollapse{"TabGroupsCollapse",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

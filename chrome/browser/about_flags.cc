@@ -4119,6 +4119,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroups)},
 
+    {"tab-groups-auto-create", flag_descriptions::kTabGroupsAutoCreateName,
+     flag_descriptions::kTabGroupsAutoCreateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupsAutoCreate)},
+
     {"tab-groups-collapse", flag_descriptions::kTabGroupsCollapseName,
      flag_descriptions::kTabGroupsCollapseDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsCollapse)},
