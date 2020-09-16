@@ -33,6 +33,7 @@
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler_delegate_impl.h"
+#include "chrome/browser/chromeos/policy/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -129,20 +130,6 @@ class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
   // Set new value for policy.
   void SetAndRefreshMinimumChromeVersionPolicy(const base::Value& value);
 
-  // Create a new requirement as a dictionary to be used in the policy value.
-  base::Value CreateRequirement(const std::string& version,
-                                int warning,
-                                int eol_warning) const;
-
-  base::Value CreatePolicyValue(base::Value requirements,
-                                bool unmanaged_user_restricted) const;
-
-  base::Value CreateSingleRequirementPolicyValue(
-      const std::string& version,
-      int warning,
-      int eol_warning,
-      bool unmanaged_user_restricted) const;
-
   void SetUpdateEngineStatus(update_engine::Operation operation);
 
  protected:
@@ -180,43 +167,6 @@ void MinimumVersionPolicyTestBase::SetAndRefreshMinimumChromeVersionPolicy(
     const base::Value& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshDevicePolicy();
-}
-
-// Create a dictionary value to represent minimum version requirement.
-// |version| - a string containing the minimum required version.
-// |warning| - number of days representing the warning period.
-// |eol_warning| - number of days representing the end of life warning period.
-base::Value MinimumVersionPolicyTestBase::CreateRequirement(
-    const std::string& version,
-    const int warning,
-    const int eol_warning) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey(MinimumVersionPolicyHandler::kChromeOsVersion, version);
-  dict.SetIntKey(MinimumVersionPolicyHandler::kWarningPeriod, warning);
-  dict.SetIntKey(MinimumVersionPolicyHandler::kEolWarningPeriod, eol_warning);
-  return dict;
-}
-
-base::Value MinimumVersionPolicyTestBase::CreatePolicyValue(
-    base::Value requirements,
-    bool unmanaged_user_restricted) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(MinimumVersionPolicyHandler::kRequirements,
-              std::move(requirements));
-  dict.SetBoolKey(MinimumVersionPolicyHandler::kUnmanagedUserRestricted,
-                  unmanaged_user_restricted);
-  return dict;
-}
-
-base::Value MinimumVersionPolicyTestBase::CreateSingleRequirementPolicyValue(
-    const std::string& version,
-    int warning,
-    int eol_warning,
-    bool unmanaged_user_restricted) const {
-  base::Value requirement_list(base::Value::Type::LIST);
-  requirement_list.Append(CreateRequirement(version, warning, eol_warning));
-  return CreatePolicyValue(std::move(requirement_list),
-                           unmanaged_user_restricted);
 }
 
 void MinimumVersionPolicyTestBase::SetUpdateEngineStatus(
@@ -310,9 +260,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateOnLoginScreen) {
 
   // Set new value for policy and check update required screen is shown on the
   // login screen.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
   chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
@@ -334,9 +285,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, PRE_CriticalUpdateInSession) {
       content::NotificationService::AllSources());
 
   // Set new value for policy and check that user is logged out of the session.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
   termination_waiter.Wait();
   EXPECT_TRUE(chrome::IsAttemptingShutdown());
 }
@@ -366,9 +318,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
 
   // Create and set policy value with short warning time.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   // Policy handler sets the local state and starts the deadline timer.
   timer_start_time = prefs->GetTime(prefs::kUpdateRequiredTimerStartTime);
   EXPECT_FALSE(timer_start_time.is_null());
@@ -380,9 +333,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
   // Create and set policy value with long warning time.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kLongWarningInDays, kLongWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kLongWarningInDays, kLongWarningInDays,
+          false /* unmanaged_user_restricted */));
   // Warning time is increased but timer start time does not change.
   EXPECT_EQ(prefs->GetTime(prefs::kUpdateRequiredTimerStartTime),
             timer_start_time);
@@ -392,9 +346,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
   // Create and set policy value with no warning time.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
   // Warning time is not reduced as policy does not allow to reduce deadline.
   EXPECT_EQ(prefs->GetTime(prefs::kUpdateRequiredTimerStartTime),
             timer_start_time);
@@ -416,9 +371,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NonCriticalUpdateGoodNetwork) {
 
   // New policy after update is downloaded does not restart the timer but just
   // updates the local state with longer warning period.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kVeryLongWarningInDays, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kVeryLongWarningInDays, kNoWarning,
+          false /* unmanaged_user_restricted */));
   EXPECT_EQ(prefs->GetTime(prefs::kUpdateRequiredTimerStartTime),
             timer_start_time);
   EXPECT_EQ(prefs->GetTimeDelta(prefs::kUpdateRequiredWarningPeriod),
@@ -433,9 +389,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, DeviceUpdateStatusChange) {
   LoginUnmanagedUser();
 
   // Set policy value with warning time and check timer is started.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->GetState());
@@ -474,9 +431,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   // Login the user into the session.
   LoginUnmanagedUser();
   // Set new value for pref and check that user session is not terminated.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
   EXPECT_FALSE(chrome::IsAttemptingShutdown());
 }
 
@@ -485,8 +443,9 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   LoginUnmanagedUser();
   // Create and set policy value.
   SetDevicePolicyAndWaitForSettingChange(
-      CreateSingleRequirementPolicyValue(kNewVersion, kNoWarning, kNoWarning,
-                                         true /* unmanaged_user_restricted */));
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          true /* unmanaged_user_restricted */));
   EXPECT_TRUE(chrome::IsAttemptingShutdown());
 }
 
@@ -499,9 +458,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NoNetworkNotificationClick) {
   EXPECT_FALSE(tray_test_api_->IsTrayBubbleOpen());
 
   // Set new policy value and check that update required notification is shown.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
@@ -524,9 +484,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
@@ -545,9 +506,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, LastDayNotificationOnLogin) {
   DisconectAllNetworks();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
 
   // Login the user into the session and check that notification is shown.
   LoginManagedUser();
@@ -570,9 +532,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   DisconectAllNetworks();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kLastDayWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
 
   // Login the user into the session and check that notification is not shown
   // for unmanaged user.
@@ -591,9 +554,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
 
   // Set policy and check that notification is shown to unmanaged user as it has
   // been set in the policy.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      true /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          true /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
   EXPECT_TRUE(
@@ -604,9 +568,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, NotificationsOnLogin) {
   DisconectAllNetworks();
   EXPECT_FALSE(
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
 
   // Login the user into the session and check that notification is not shown as
   // it is not the last day to update device.
@@ -625,9 +590,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_TRUE(
@@ -669,9 +635,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
       display_service_tester_->GetNotification(kUpdateRequiredNotificationId));
 
   // Set new policy value and check that update required notification is shown.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   EXPECT_TRUE(
       GetMinimumVersionPolicyHandler()->IsDeadlineTimerRunningForTesting());
   EXPECT_TRUE(
@@ -692,9 +659,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, EolNotificationClick) {
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, RelaunchNotificationOverride) {
   LoginManagedUser();
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kShortWarningInDays, kShortWarningInDays,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kShortWarningInDays, kShortWarningInDays,
+          false /* unmanaged_user_restricted */));
   base::Time deadline =
       GetMinimumVersionPolicyHandler()->update_required_deadline_for_testing();
 
@@ -728,9 +696,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
   chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
       .Wait();
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 0);
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
 
   // Check update required screen is shown on the login screen.
   chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
@@ -754,9 +723,10 @@ class MinimumVersionPolicyPresentTest : public MinimumVersionPolicyTestBase {
   void SetUpInProcessBrowserTestFixture() override {
     MinimumVersionPolicyTestBase::SetUpInProcessBrowserTestFixture();
     // Create and set policy value.
-    SetAndRefreshMinimumChromeVersionPolicy(CreateSingleRequirementPolicyValue(
-        kNewVersion, kNoWarning, kNoWarning,
-        false /* unmanaged_user_restricted */));
+    SetAndRefreshMinimumChromeVersionPolicy(
+        CreateMinimumVersionSingleRequirementPolicyValue(
+            kNewVersion, kNoWarning, kNoWarning,
+            false /* unmanaged_user_restricted */));
   }
 };
 
@@ -878,9 +848,10 @@ class MinimumVersionTimerExpiredOnLogin
   // MinimumVersionPolicyTestBase:
   void SetUpInProcessBrowserTestFixture() override {
     MinimumVersionPolicyTestBase::SetUpInProcessBrowserTestFixture();
-    SetAndRefreshMinimumChromeVersionPolicy(CreateSingleRequirementPolicyValue(
-        kNewVersion, kShortWarningInDays, kShortWarningInDays,
-        false /* unmanaged_user_restricted */));
+    SetAndRefreshMinimumChromeVersionPolicy(
+        CreateMinimumVersionSingleRequirementPolicyValue(
+            kNewVersion, kShortWarningInDays, kShortWarningInDays,
+            false /* unmanaged_user_restricted */));
   }
 
  private:
@@ -928,9 +899,10 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
 
   // Child user is not enterprise managed and should not be signed out as
   // unmanaged users are not restricted by policy.
-  SetDevicePolicyAndWaitForSettingChange(CreateSingleRequirementPolicyValue(
-      kNewVersion, kNoWarning, kNoWarning,
-      false /* unmanaged_user_restricted */));
+  SetDevicePolicyAndWaitForSettingChange(
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          false /* unmanaged_user_restricted */));
   EXPECT_FALSE(chrome::IsAttemptingShutdown());
 
   // Reset the policy so that it can be applied again.
@@ -939,8 +911,9 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
 
   // Child user should be signout out as policy now restricts unmanaged users.
   SetDevicePolicyAndWaitForSettingChange(
-      CreateSingleRequirementPolicyValue(kNewVersion, kNoWarning, kNoWarning,
-                                         true /* unmanaged_user_restricted */));
+      CreateMinimumVersionSingleRequirementPolicyValue(
+          kNewVersion, kNoWarning, kNoWarning,
+          true /* unmanaged_user_restricted */));
   EXPECT_TRUE(chrome::IsAttemptingShutdown());
 }
 

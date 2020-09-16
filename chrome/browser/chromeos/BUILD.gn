@@ -2982,6 +2982,8 @@ static_library("test_support") {
     "platform_keys/mock_platform_keys_service.h",
     "plugin_vm/fake_plugin_vm_features.cc",
     "plugin_vm/fake_plugin_vm_features.h",
+    "policy/minimum_version_policy_test_helpers.cc",
+    "policy/minimum_version_policy_test_helpers.h",
     "printing/printing_stubs.cc",
     "printing/printing_stubs.h",
     "scoped_set_running_on_chromeos_for_testing.cc",
