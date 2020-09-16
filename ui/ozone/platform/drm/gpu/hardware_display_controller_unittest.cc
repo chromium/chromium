@@ -400,11 +400,10 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   EXPECT_EQ(kPrimaryCrtc, primary_crtc_plane->owning_crtc());
   EXPECT_EQ(kSecondaryCrtc, secondary_crtc_plane->owning_crtc());
 
-  // Removing the crtc should not free the plane or change ownership.
+  // Removing the crtc should free the plane.
   std::unique_ptr<ui::CrtcController> crtc =
       controller_->RemoveCrtc(drm_, kPrimaryCrtc);
-  EXPECT_TRUE(primary_crtc_plane->in_use());
-  EXPECT_EQ(kPrimaryCrtc, primary_crtc_plane->owning_crtc());
+  EXPECT_FALSE(primary_crtc_plane->in_use());
   EXPECT_TRUE(secondary_crtc_plane->in_use());
   EXPECT_EQ(kSecondaryCrtc, secondary_crtc_plane->owning_crtc());
 
@@ -414,8 +413,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterRemoveCrtc) {
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
   EXPECT_EQ(2, page_flips_);
-  EXPECT_TRUE(primary_crtc_plane->in_use());
-  EXPECT_EQ(kPrimaryCrtc, primary_crtc_plane->owning_crtc());
+  EXPECT_FALSE(primary_crtc_plane->in_use());
   EXPECT_TRUE(secondary_crtc_plane->in_use());
   EXPECT_EQ(kSecondaryCrtc, secondary_crtc_plane->owning_crtc());
 }
@@ -474,8 +472,7 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);
   EXPECT_EQ(2, page_flips_);
-  EXPECT_TRUE(primary_crtc_plane->in_use());
-  EXPECT_EQ(kPrimaryCrtc, primary_crtc_plane->owning_crtc());
+  EXPECT_FALSE(primary_crtc_plane->in_use());
 
   // We reset state of plane here to test that the plane was actually added to
   // hdc_controller. In which case, the right state should be set to plane
@@ -588,6 +585,6 @@ TEST_F(HardwareDisplayControllerTest, Disable) {
     if (plane->in_use())
       planes_in_use++;
   }
-  // Only the primary plane is in use.
-  ASSERT_EQ(1, planes_in_use);
+  // No plane should be in use.
+  ASSERT_EQ(0, planes_in_use);
 }

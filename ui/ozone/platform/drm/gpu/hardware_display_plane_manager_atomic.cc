@@ -196,8 +196,6 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
 bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(
     HardwareDisplayPlaneList* plane_list) {
   for (HardwareDisplayPlane* plane : plane_list->old_plane_list) {
-    if (plane->type() != HardwareDisplayPlane::kOverlay)
-      continue;
     plane->set_in_use(false);
     plane->set_owning_crtc(0);
 
