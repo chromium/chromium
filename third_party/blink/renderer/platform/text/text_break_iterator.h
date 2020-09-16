@@ -111,6 +111,11 @@ enum class BreakSpaceType {
   // LayoutNG line breaker uses this type.
   kBeforeSpaceRun,
 
+  // Break after a run of white space characters.
+  // This mode enables the LazyLineBreakIterator to completely rely on
+  // ICU for determining the breaking opportunities.
+  kAfterSpaceRun,
+
   // white-spaces:break-spaces allows breaking after any preserved white-space,
   // even when these are leading spaces so that we can avoid breaking
   // the word in case of overflow.

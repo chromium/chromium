@@ -208,6 +208,9 @@ crbug.com/591099 external/wpt/css/css-text/text-transform/text-transform-shaping
 crbug.com/591099 external/wpt/css/css-text/white-space/control-chars-00C.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/line-edge-white-space-collapse-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/white-space/line-edge-white-space-collapse-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-012.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-013.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-text/white-space/white-space-pre-wrap-trailing-spaces-014.html [ Failure ]
 
 ### external/wpt/css/css-text/word-break/
 crbug.com/591099 external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]
@@ -342,6 +345,9 @@ crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005a.html [ 
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-006.html [ Failure ]
 crbug.com/1012294 external/wpt/css/css-lists/list-style-type-string-007.html [ Pass ]
 
+### external/wpt/css/css-content/
+crbug.com/591099 external/wpt/css/css-content/quotes-033.html [ Failure ]
+
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/
 crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-align-self-horiz-002.xhtml [ Failure ]
 crbug.com/886592 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/align3/flex-abspos-staticpos-margin-002.html [ Failure ]
@@ -378,6 +384,7 @@ crbug.com/875235 external/wpt/html/rendering/non-replaced-elements/the-fieldset-
 
 ### virtual/text-antialias/
 crbug.com/591099 virtual/text-antialias/justify-ideograph-simple.html [ Failure ]
+crbug.com/591099 virtual/text-antialias/apply-start-width-after-skipped-text.html [ Failure ]
 
 ### http/tests/
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-node-vertical-rl.js [ Failure ]
