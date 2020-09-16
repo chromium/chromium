@@ -577,7 +577,30 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     if (size > kMaxDirectMapped) {
       if (return_null)
         return nullptr;
+      // The lock is here to protect PA from:
+      // 1. Concurrent calls
+      // 2. Reentrant calls
+      //
+      // This is fine here however, as:
+      // 1. Concurrency: |PartitionRoot::OutOfMemory()| never returns, so the
+      //    lock will not be re-acquired, which would lead to acting on
+      //    inconsistent data that could have been modified in-between releasing
+      //    and acquiring it.
+      // 2. Reentrancy: This is why we release the lock. On some platforms,
+      //    terminating the process may free() memory, or even possibly try to
+      //    allocate some. Calling free() is fine, but will deadlock since
+      //    |PartitionRoot::lock_| is not recursive.
+      //
+      // Supporting reentrant calls properly is hard, and not a requirement for
+      // PA. However up to that point, we've only *read* data, not *written* to
+      // any state. Reentrant calls are then fine, especially as we don't
+      // continue on this path. The only downside is possibly endless recursion
+      // if the OOM handler allocates and fails to use UncheckedMalloc() or
+      // equivalent, but that's violating the contract of
+      // base::OnNoMemoryInternal().
+      ScopedUnlockGuard<thread_safe> unlock{root->lock_};
       PartitionExcessiveAllocationSize(size);
+      IMMEDIATE_CRASH();  // Not required, kept as documentation.
     }
     new_page = PartitionDirectMap(root, flags, size);
     if (new_page)
@@ -636,7 +659,10 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
               PartitionPage<thread_safe>::get_sentinel_page());
     if (return_null)
       return nullptr;
+    // See comment above.
+    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
     root->OutOfMemory(size);
+    IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
   PA_DCHECK(new_page_bucket != get_sentinel_bucket());

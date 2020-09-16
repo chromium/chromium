@@ -39,6 +39,20 @@ class SCOPED_LOCKABLE ScopedGuard {
   MaybeSpinLock<thread_safe>& lock_;
 };
 
+template <bool thread_safe>
+class SCOPED_LOCKABLE ScopedUnlockGuard {
+ public:
+  explicit ScopedUnlockGuard(MaybeSpinLock<thread_safe>& lock)
+      UNLOCK_FUNCTION(lock)
+      : lock_(lock) {
+    lock_.Unlock();
+  }
+  ~ScopedUnlockGuard() EXCLUSIVE_LOCK_FUNCTION() { lock_.Lock(); }
+
+ private:
+  MaybeSpinLock<thread_safe>& lock_;
+};
+
 #if !DCHECK_IS_ON()
 // Spinlock. Do not use, to be removed. crbug.com/1061437.
 class BASE_EXPORT SpinLock {
