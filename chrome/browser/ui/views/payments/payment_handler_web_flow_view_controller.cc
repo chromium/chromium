@@ -10,14 +10,21 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/payments/ssl_validity_checker.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
+#include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/url_util.h"
+#include "components/security_state/core/security_state.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,6 +36,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -63,6 +71,8 @@ class ReadOnlyOriginView : public views::View {
   ReadOnlyOriginView(const base::string16& page_title,
                      const GURL& origin,
                      const SkBitmap* icon_bitmap,
+                     Profile* profile,
+                     security_state::SecurityLevel security_level,
                      SkColor background_color,
                      views::ButtonListener* site_settings_listener) {
     auto title_origin_container = std::make_unique<views::View>();
@@ -90,8 +100,28 @@ class ReadOnlyOriginView : public views::View {
       title_label->SetEnabledColor(foreground);
     }
 
-    title_origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    auto* origin_label = title_origin_layout->AddView(
+    auto origin_container = std::make_unique<views::View>();
+    views::GridLayout* origin_layout = origin_container->SetLayoutManager(
+        std::make_unique<views::GridLayout>());
+
+    columns = origin_layout->AddColumnSet(0);
+    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
+                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
+                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
+    if (PaymentsExperimentalFeatures::IsEnabled(
+            features::kPaymentHandlerSecurityIcon)) {
+      auto security_icon = std::make_unique<views::ImageView>();
+      const ui::ThemeProvider& theme_provider =
+          ThemeService::GetThemeProviderForProfile(profile);
+      security_icon->SetImage(gfx::CreateVectorIcon(
+          location_bar_model::GetSecurityVectorIcon(security_level), 16,
+          GetOmniboxSecurityChipColor(&theme_provider, security_level)));
+      security_icon->SetID(static_cast<int>(DialogViewID::SECURITY_ICON_VIEW));
+      origin_layout->AddView(std::move(security_icon));
+    }
+    auto* origin_label = origin_layout->AddView(
         std::make_unique<views::Label>(base::UTF8ToUTF16(origin.host())));
     origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
     if (!title_is_valid) {
@@ -108,6 +138,8 @@ class ReadOnlyOriginView : public views::View {
     origin_label->SetAutoColorReadabilityEnabled(false);
     origin_label->SetEnabledColor(foreground);
     origin_label->SetBackgroundColor(background_color);
+    title_origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
+    title_origin_layout->AddView(std::move(origin_container));
 
     views::GridLayout* top_level_layout =
         SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -238,7 +270,10 @@ PaymentHandlerWebFlowViewController::CreateHeaderContentView(
       GetHeaderBackground(header_view);
   return std::make_unique<ReadOnlyOriginView>(
       GetPaymentHandlerDialogTitle(web_contents()), origin,
-      state()->selected_app()->icon_bitmap(), background->get_color(), this);
+      state()->selected_app()->icon_bitmap(), profile_,
+      web_contents() ? SslValidityChecker::GetSecurityLevel(web_contents())
+                     : security_state::NONE,
+      background->get_color(), this);
 }
 
 std::unique_ptr<views::Background>
@@ -267,8 +302,11 @@ bool PaymentHandlerWebFlowViewController::
 void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
     content::WebContents* source) {
   DCHECK_EQ(source, web_contents());
-  if (!SslValidityChecker::IsValidPageInPaymentHandlerWindow(source))
+  if (!SslValidityChecker::IsValidPageInPaymentHandlerWindow(source)) {
     AbortPayment();
+  } else {
+    UpdateHeaderView();
+  }
 }
 
 void PaymentHandlerWebFlowViewController::DidStartNavigation(

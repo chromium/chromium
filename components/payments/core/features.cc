@@ -73,6 +73,9 @@ const base::Feature kAllowJITInstallationWhenAppIconIsMissing{
     "AllowJITInstallationWhenAppIconIsMissing",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPaymentHandlerSecurityIcon{
+    "PaymentHandlerSecurityIcon", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 

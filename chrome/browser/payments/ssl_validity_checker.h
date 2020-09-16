@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "components/security_state/core/security_state.h"
 
 namespace content {
 class WebContents;
@@ -31,6 +32,11 @@ class SslValidityChecker {
   // Whether the given page should be allowed to be displayed in a payment
   // handler window.
   static bool IsValidPageInPaymentHandlerWindow(
+      content::WebContents* web_contents);
+
+  // Returns the security level of `web_contents`. The `web_contents` parameter
+  // should not be null.
+  static security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents);
 
  private:

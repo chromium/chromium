@@ -15,21 +15,6 @@
 #include "url/gurl.h"
 
 namespace payments {
-namespace {
-
-// Returns the security level of |web_contents|. The |web_contents| parameter
-// should not be null.
-security_state::SecurityLevel GetSecurityLevel(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return helper->GetSecurityLevel();
-}
-
-}  // namespace
 
 // static std::string
 std::string SslValidityChecker::GetInvalidSslCertificateErrorMessage(
@@ -95,6 +80,17 @@ bool SslValidityChecker::IsValidPageInPaymentHandlerWindow(
   }
 
   return true;
+}
+
+// static
+security_state::SecurityLevel SslValidityChecker::GetSecurityLevel(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(web_contents);
+  DCHECK(helper);
+  return helper->GetSecurityLevel();
 }
 
 }  // namespace payments

@@ -2227,6 +2227,10 @@ if (!is_android) {
       }
     }
 
+    if ((!is_android || enable_vr) && !is_ios) {
+      sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
+    }
+
     if ((is_linux || is_chromeos) && !is_component_build) {
       # Set rpath to find the CDM adapter even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]

@@ -280,6 +280,8 @@ static_library("location_bar") {
     "location_bar_model_delegate.h",
     "location_bar_model_impl.cc",
     "location_bar_model_impl.h",
+    "location_bar_model_util.cc",
+    "location_bar_model_util.h",
   ]
 
   public_deps = [
@@ -515,6 +517,10 @@ source_set("unit_tests") {
     "zero_suggest_verbatim_match_provider_unittest.cc",
   ]
 
+  if ((!is_android || enable_vr) && !is_ios) {
+    sources += [ "location_bar_model_util_unittest.cc" ]
+  }
+
   deps = [
     ":browser",
     ":test_support",
@@ -547,6 +553,14 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  if ((!is_android || enable_vr) && !is_ios) {
+    deps += [
+      ":buildflags",
+      "//components/omnibox/browser:vector_icons",
+      "//components/vector_icons:vector_icons",
+    ]
+  }
 }
 
 fuzzer_test("autocomplete_input_fuzzer") {
