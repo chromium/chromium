@@ -507,6 +507,9 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void CreateOneShotSyncService(
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver) = 0;
+  virtual void CreatePeriodicSyncService(
+      mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
+          receiver) = 0;
   virtual void BindQuotaManagerHost(
       int render_frame_id,
       const url::Origin& origin,

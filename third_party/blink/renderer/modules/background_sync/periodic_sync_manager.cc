@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/background_sync/periodic_sync_manager.h"
 
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -94,8 +94,10 @@ ScriptPromise PeriodicSyncManager::unregister(ScriptState* script_state,
 mojom::blink::PeriodicBackgroundSyncService*
 PeriodicSyncManager::GetBackgroundSyncServiceRemote() {
   if (!background_sync_service_.is_bound()) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        background_sync_service_.BindNewPipeAndPassReceiver(task_runner_));
+    registration_->GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .GetInterface(
+            background_sync_service_.BindNewPipeAndPassReceiver(task_runner_));
   }
   return background_sync_service_.get();
 }

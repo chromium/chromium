@@ -591,6 +591,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver) override;
 
+  // Binds |receiver| to a PeriodicBackgroundSyncService instance owned by the
+  // StoragePartition associated with the render process host, and is used by
+  // frames and service workers via BrowserInterfaceBroker.
+  void CreatePeriodicSyncService(
+      mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
+          receiver) override;
+
   // Binds |receiver| to a QuotaManagerHost instance indirectly owned by the
   // StoragePartition associated with the render process host. Used by frames
   // and workers via BrowserInterfaceBroker.
@@ -787,9 +794,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
   void BindAecDumpManager(
       mojo::PendingReceiver<blink::mojom::AecDumpManager> receiver);
-  void CreatePeriodicSyncService(
-      mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
-          receiver);
   void BindPushMessagingManager(
       mojo::PendingReceiver<blink::mojom::PushMessaging> receiver);
   void BindP2PSocketManager(

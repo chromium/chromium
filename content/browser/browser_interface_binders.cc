@@ -684,6 +684,10 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderProcessHost::CreateOneShotSyncService,
                           base::Unretained(host->GetProcess())));
 
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+      base::BindRepeating(&RenderProcessHost::CreatePeriodicSyncService,
+                          base::Unretained(host->GetProcess())));
+
   map->Add<media::mojom::VideoDecodePerfHistory>(
       base::BindRepeating(&RenderProcessHost::BindVideoDecodePerfHistory,
                           base::Unretained(host->GetProcess())));
@@ -1031,6 +1035,9 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
   map->Add<blink::mojom::OneShotBackgroundSyncService>(
       BindServiceWorkerReceiver(
           &RenderProcessHostImpl::CreateOneShotSyncService, host));
+  map->Add<blink::mojom::PeriodicBackgroundSyncService>(
+      BindServiceWorkerReceiver(
+          &RenderProcessHostImpl::CreatePeriodicSyncService, host));
 }
 
 void PopulateBinderMapWithContext(

@@ -2313,10 +2313,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   AddUIThreadInterface(
       registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::CreatePeriodicSyncService,
-                          weak_factory_.GetWeakPtr()));
-  AddUIThreadInterface(
-      registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
                           weak_factory_.GetWeakPtr()));
   AddUIThreadInterface(
@@ -2669,6 +2665,7 @@ void RenderProcessHostImpl::CreateOneShotSyncService(
 void RenderProcessHostImpl::CreatePeriodicSyncService(
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_impl_->GetBackgroundSyncContext()
       ->CreatePeriodicSyncService(std::move(receiver));
 }
