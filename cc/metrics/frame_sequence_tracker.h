@@ -214,6 +214,9 @@ class CC_EXPORT FrameSequenceTracker {
   // scheduled to report histogram.
   base::TimeTicks first_frame_timestamp_;
 
+  // Tracks the presentation timestamp of the previous frame.
+  base::TimeTicks last_frame_presentation_timestamp_;
+
   // Keeps track of whether the impl-frame being processed did not have any
   // damage from the compositor (i.e. 'impl damage').
   bool frame_had_no_compositor_damage_ = false;
@@ -244,6 +247,7 @@ class CC_EXPORT FrameSequenceTracker {
   // presented because if that main frame ends up with no-damage, then we should
   // count the impl frames that were produced in the meantime.
   uint32_t impl_frames_produced_while_expecting_main_ = 0;
+  uint32_t impl_frames_ontime_while_expecting_main_ = 0;
   // Each entry is a frame token, inserted at ReportSubmitFrame.
   base::circular_deque<uint32_t> expecting_main_when_submit_impl_;
 

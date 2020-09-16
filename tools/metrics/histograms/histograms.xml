@@ -68749,6 +68749,82 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"
+    units="%" expires_after="2020-12-31">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames (e.g. during scroll, animation, etc.). This is reported
+    in various sub-metrics with suffixes describing the type of the sequence
+    (e.g. TouchScroll etc.).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations"
+    units="%" expires_after="2020-12-31">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames for all animations. This metric is reported for all
+    animations (e.g. comositor-driven animations, main-thread driven animations,
+    and raf-driven animations).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions"
+    units="%" expires_after="2020-12-31">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames where a user-input (e.g. scroll, pinch) is active. This
+    metric is reported for all sources of user-input (i.e. both touchscreen and
+    touchpad/mouse-wheel).
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences"
+    units="%" expires_after="2020-12-31">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of frames that missed the deadline for a particular
+    sequence of frames. This metric is reported for all animations and all
+    interactions.
+
+    PercentMissedDeadlineFrames is measured by tracking the number of frames
+    which were displayed on screen but missed the vsync interval.
+
+    Note that this metric is reported only when there are sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until there are enough frames to produce the metric.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.Smoothness.Throughput" units="%"
     expires_after="2020-12-31">
   <obsolete>
@@ -218241,6 +218317,12 @@ regressions. -->
       deprecated.
     </obsolete>
   </affected-histogram>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread"/>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread"/>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.ScrollingThread"/>
   <affected-histogram name="SingleThreadedCompositorLatency"/>
   <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame"/>
   <affected-histogram
@@ -218271,6 +218353,12 @@ regressions. -->
       deprecated.
     </obsolete>
   </affected-histogram>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread"/>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread"/>
+  <affected-histogram
+      name="Graphics.Smoothness.PercentMissedDeadlineFrames.ScrollingThread"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessThreadTypes" separator=".">
@@ -218287,6 +218375,7 @@ regressions. -->
     </obsolete>
   </suffix>
   <affected-histogram name="Graphics.Smoothness.PercentDroppedFrames"/>
+  <affected-histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessThreadTypes.Jank" separator=".">

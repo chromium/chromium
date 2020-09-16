@@ -49,16 +49,27 @@ class CC_EXPORT FrameSequenceMetrics {
         const ThroughputData& main,
         ThreadType effective_thred);
 
-    // Returns the throughput in percent, a return value of base::nullopt
-    // indicates that no throughput metric is reported.
-    static base::Optional<int> ReportHistogram(FrameSequenceMetrics* metrics,
-                                               ThreadType thread_type,
-                                               int metric_index,
-                                               const ThroughputData& data);
+    static bool CanReportHistogram(FrameSequenceMetrics* metrics,
+                                   ThreadType thread_type,
+                                   const ThroughputData& data);
+
+    // Returns the dropped throughput in percent
+    static int ReportDroppedFramePercentHistogram(FrameSequenceMetrics* metrics,
+                                                  ThreadType thread_type,
+                                                  int metric_index,
+                                                  const ThroughputData& data);
+
+    // Returns the missed deadline throughput in percent
+    static int ReportMissedDeadlineFramePercentHistogram(
+        FrameSequenceMetrics* metrics,
+        ThreadType thread_type,
+        int metric_index,
+        const ThroughputData& data);
 
     void Merge(const ThroughputData& data) {
       frames_expected += data.frames_expected;
       frames_produced += data.frames_produced;
+      frames_ontime += data.frames_ontime;
 #if DCHECK_IS_ON()
       frames_processed += data.frames_processed;
       frames_received += data.frames_received;
@@ -72,6 +83,13 @@ class CC_EXPORT FrameSequenceMetrics {
                        static_cast<double>(frames_expected));
     }
 
+    int MissedDeadlineFramePercent() const {
+      if (frames_produced == 0)
+        return 0;
+      return std::ceil(100 * (frames_produced - frames_ontime) /
+                       static_cast<double>(frames_produced));
+    }
+
     // Tracks the number of frames that were expected to be shown during this
     // frame-sequence.
     uint32_t frames_expected = 0;
@@ -79,6 +97,10 @@ class CC_EXPORT FrameSequenceMetrics {
     // Tracks the number of frames that were actually presented to the user
     // during this frame-sequence.
     uint32_t frames_produced = 0;
+
+    // Tracks the number of frames that were actually presented to the user
+    // that didn't miss the vsync deadline during this frame-sequence.
+    uint32_t frames_ontime = 0;
 
 #if DCHECK_IS_ON()
     // Tracks the number of frames that is either submitted or reported as no
