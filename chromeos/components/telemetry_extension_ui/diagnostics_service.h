@@ -26,6 +26,12 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   ~DiagnosticsService() override;
 
  private:
+  // Ensures that |service_| created and connected to the
+  // CrosHealthdDiagnosticsService.
+  cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();
+
+  void OnDisconnect();
+
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
   void GetRoutineUpdate(int32_t id,
                         health::mojom::DiagnosticRoutineCommandEnum command,
@@ -57,12 +63,6 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
   void RunNvmeSelfTestRoutine(
       health::mojom::NvmeSelfTestTypeEnum nvme_self_test_type,
       RunNvmeSelfTestRoutineCallback callback) override;
-
-  // Ensures that |service_| created and connected to the
-  // CrosHealthdProbeService.
-  cros_healthd::mojom::CrosHealthdDiagnosticsService* GetService();
-
-  void OnDisconnect();
 
   // Pointer to real implementation.
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService> service_;

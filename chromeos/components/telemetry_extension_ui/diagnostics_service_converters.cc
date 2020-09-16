@@ -16,10 +16,22 @@ namespace converters {
 
 namespace unchecked {
 
+namespace {
+
+std::string GetStringFromMojoHandle(mojo::ScopedHandle handle) {
+  base::ReadOnlySharedMemoryMapping shared_memory;
+  return MojoUtils::GetStringPieceFromMojoHandle(std::move(handle),
+                                                 &shared_memory)
+      .as_string();
+}
+
+}  // namespace
+
 health::mojom::RoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::RoutineUpdatePtr input) {
   return health::mojom::RoutineUpdate::New(
-      input->progress_percent, Convert(std::move(input->output)),
+      input->progress_percent,
+      GetStringFromMojoHandle(std::move(input->output)),
       ConvertPtr(std::move(input->routine_update_union)));
 }
 
@@ -55,53 +67,6 @@ health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-health::mojom::DiagnosticRoutineStatusEnum Convert(
-    cros_healthd::mojom::DiagnosticRoutineStatusEnum input) {
-  switch (input) {
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady:
-      return health::mojom::DiagnosticRoutineStatusEnum::kReady;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning:
-      return health::mojom::DiagnosticRoutineStatusEnum::kRunning;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kWaiting:
-      return health::mojom::DiagnosticRoutineStatusEnum::kWaiting;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kPassed:
-      return health::mojom::DiagnosticRoutineStatusEnum::kPassed;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailed:
-      return health::mojom::DiagnosticRoutineStatusEnum::kFailed;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kError:
-      return health::mojom::DiagnosticRoutineStatusEnum::kError;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelled:
-      return health::mojom::DiagnosticRoutineStatusEnum::kCancelled;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailedToStart:
-      return health::mojom::DiagnosticRoutineStatusEnum::kFailedToStart;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRemoved:
-      return health::mojom::DiagnosticRoutineStatusEnum::kRemoved;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling:
-      return health::mojom::DiagnosticRoutineStatusEnum::kCancelling;
-    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
-      return health::mojom::DiagnosticRoutineStatusEnum::kUnsupported;
-  }
-  NOTREACHED();
-  return static_cast<health::mojom::DiagnosticRoutineStatusEnum>(
-      static_cast<int>(health::mojom::DiagnosticRoutineStatusEnum::kMaxValue) +
-      1);
-}
-
-health::mojom::DiagnosticRoutineUserMessageEnum Convert(
-    cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input) {
-  switch (input) {
-    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower:
-      return health::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
-    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower:
-      return health::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower;
-  }
-  NOTREACHED();
-  return static_cast<health::mojom::DiagnosticRoutineUserMessageEnum>(
-      static_cast<int>(
-          health::mojom::DiagnosticRoutineUserMessageEnum::kMaxValue) +
-      1);
-}
-
 base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
     cros_healthd::mojom::DiagnosticRoutineEnum input) {
   switch (input) {
@@ -134,11 +99,64 @@ base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
   }
 }
 
-std::string Convert(mojo::ScopedHandle handle) {
-  base::ReadOnlySharedMemoryMapping shared_memory;
-  return MojoUtils::GetStringPieceFromMojoHandle(std::move(handle),
-                                                 &shared_memory)
-      .as_string();
+std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
+    const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
+  std::vector<health::mojom::DiagnosticRoutineEnum> output;
+  for (const auto element : input) {
+    base::Optional<health::mojom::DiagnosticRoutineEnum> converted =
+        Convert(element);
+    if (converted.has_value()) {
+      output.push_back(converted.value());
+    }
+  }
+  return output;
+}
+
+health::mojom::DiagnosticRoutineUserMessageEnum Convert(
+    cros_healthd::mojom::DiagnosticRoutineUserMessageEnum input) {
+  switch (input) {
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower:
+      return health::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
+    case cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower:
+      return health::mojom::DiagnosticRoutineUserMessageEnum::kPlugInACPower;
+  }
+  NOTREACHED();
+  return static_cast<health::mojom::DiagnosticRoutineUserMessageEnum>(
+      static_cast<int>(
+          health::mojom::DiagnosticRoutineUserMessageEnum::kMaxValue) +
+      1);
+}
+
+health::mojom::DiagnosticRoutineStatusEnum Convert(
+    cros_healthd::mojom::DiagnosticRoutineStatusEnum input) {
+  switch (input) {
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady:
+      return health::mojom::DiagnosticRoutineStatusEnum::kReady;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning:
+      return health::mojom::DiagnosticRoutineStatusEnum::kRunning;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kWaiting:
+      return health::mojom::DiagnosticRoutineStatusEnum::kWaiting;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kPassed:
+      return health::mojom::DiagnosticRoutineStatusEnum::kPassed;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailed:
+      return health::mojom::DiagnosticRoutineStatusEnum::kFailed;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kError:
+      return health::mojom::DiagnosticRoutineStatusEnum::kError;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelled:
+      return health::mojom::DiagnosticRoutineStatusEnum::kCancelled;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kFailedToStart:
+      return health::mojom::DiagnosticRoutineStatusEnum::kFailedToStart;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRemoved:
+      return health::mojom::DiagnosticRoutineStatusEnum::kRemoved;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kCancelling:
+      return health::mojom::DiagnosticRoutineStatusEnum::kCancelling;
+    case cros_healthd::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
+      return health::mojom::DiagnosticRoutineStatusEnum::kUnsupported;
+  }
+  NOTREACHED();
+  return static_cast<health::mojom::DiagnosticRoutineStatusEnum>(
+      static_cast<int>(health::mojom::DiagnosticRoutineStatusEnum::kMaxValue) +
+      1);
 }
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
@@ -158,19 +176,6 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
       static_cast<int>(
           cros_healthd::mojom::DiagnosticRoutineCommandEnum::kMaxValue) +
       1);
-}
-
-std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
-    const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input) {
-  std::vector<health::mojom::DiagnosticRoutineEnum> output;
-  for (const auto element : input) {
-    base::Optional<health::mojom::DiagnosticRoutineEnum> converted =
-        Convert(element);
-    if (converted.has_value()) {
-      output.push_back(converted.value());
-    }
-  }
-  return output;
 }
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(

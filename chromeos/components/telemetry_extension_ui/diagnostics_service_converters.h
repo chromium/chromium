@@ -42,6 +42,9 @@ health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
+base::Optional<health::mojom::DiagnosticRoutineEnum> Convert(
+    cros_healthd::mojom::DiagnosticRoutineEnum input);
+
 std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
     const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>& input);
 
@@ -53,8 +56,6 @@ health::mojom::DiagnosticRoutineStatusEnum Convert(
 
 cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
     health::mojom::DiagnosticRoutineCommandEnum input);
-
-std::string Convert(mojo::ScopedHandle handle);
 
 cros_healthd::mojom::AcPowerStatusEnum Convert(
     health::mojom::AcPowerStatusEnum input);
