@@ -95,6 +95,9 @@ template("chrome_feature_module") {
                              "version_name",
                            ])
     android_manifest = _module_desc.android_manifest
+    if (defined(_module_desc.android_manifest_dep)) {
+      android_manifest_dep = _module_desc.android_manifest_dep
+    }
     deps = [ ":${target_name}__module_desc_java" ]
     if (defined(_module_desc.pak_deps)) {
       deps += [ ":${target_name}__pak_assets" ]

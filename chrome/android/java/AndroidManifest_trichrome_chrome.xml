@@ -17,7 +17,7 @@ android:extractNativeLibs="false"
   <!-- No keyset definitions should exist for any trichrome apks -->
 {% endblock %}
 
-{% block extra_application_definitions %}
+{% block base_application_definitions %}
 {{ super() }}
 <uses-static-library
     android:name="{{ trichrome_library }}"

@@ -44,6 +44,10 @@ if (android_channel != "default") {
   # name will cause the comparison to output many unnecessary differences.
   # See https://source.chromium.org/chromium/chromium/src/+/master:chrome/android/java/README.md
   _default_package += "." + android_channel
+} else if (enable_chrome_module) {
+  # TODO(crbug.com/1126301): There are issues with the APK package name matching
+  # the resource package when //chrome resources are in a DFM.
+  _default_package += ".module"
 }
 
 declare_args() {
@@ -149,6 +153,25 @@ generate_ui_locale_resources("ui_locale_string_resources") {
   ui_locales = locales
 }
 
+# Resources which are needed in the base module manifest's application tag
+# should be added here. These are split out from chrome_app_java_resources
+# because //chrome resources may be included in a DFM instead of the base module
+# if the enable_chrome_module gn arg is true.
+android_resources("chrome_base_module_resources") {
+  sources = [
+    "java/res_base/values/ic_launcher_alias.xml",
+    "java/res_base/values/ic_launcher_round_alias.xml",
+    "java/res_base/values/values.xml",
+    "java/res_base/xml/network_security_config.xml",
+    "java/res_chromium_base/mipmap-hdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-mdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xhdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xxhdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xxxhdpi/app_icon.png",
+    "java/res_chromium_base/values/channel_constants.xml",
+  ]
+}
+
 android_resources("chrome_app_java_resources") {
   sources = chrome_java_resources
   sources += [
@@ -162,15 +185,10 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_chromium/drawable-xxhdpi/product_logo_name.png",
     "//chrome/android/java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
     "//chrome/android/java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
-    "//chrome/android/java/res_chromium/mipmap-hdpi/app_icon.png",
-    "//chrome/android/java/res_chromium/mipmap-mdpi/app_icon.png",
-    "//chrome/android/java/res_chromium/mipmap-xhdpi/app_icon.png",
-    "//chrome/android/java/res_chromium/mipmap-xxhdpi/app_icon.png",
-    "//chrome/android/java/res_chromium/mipmap-xxxhdpi/app_icon.png",
-    "//chrome/android/java/res_chromium/values/channel_constants.xml",
   ]
 
   deps = [
+    ":chrome_base_module_resources",
     ":ui_locale_string_resources",
     "//chrome/android/webapk/libs/common:splash_resources",
     "//chrome/app:java_strings_grd",
@@ -1389,16 +1407,26 @@ android_resources("chrome_public_apk_resources") {
     "java/res_chromium/drawable-xxhdpi/product_logo_name.png",
     "java/res_chromium/drawable-xxxhdpi/fre_product_logo.png",
     "java/res_chromium/drawable-xxxhdpi/product_logo_name.png",
-    "java/res_chromium/mipmap-hdpi/app_icon.png",
-    "java/res_chromium/mipmap-mdpi/app_icon.png",
-    "java/res_chromium/mipmap-xhdpi/app_icon.png",
-    "java/res_chromium/mipmap-xxhdpi/app_icon.png",
-    "java/res_chromium/mipmap-xxxhdpi/app_icon.png",
-    "java/res_chromium/values/channel_constants.xml",
   ]
 
   # Dep needed to ensure override works properly.
   deps = [ ":chrome_app_java_resources" ]
+}
+
+# Overrides icon / name defined in chrome_base_module_resources.
+android_resources("chrome_public_apk_base_module_resources") {
+  resource_overlay = true
+  sources = [
+    "java/res_chromium_base/mipmap-hdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-mdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xhdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xxhdpi/app_icon.png",
+    "java/res_chromium_base/mipmap-xxxhdpi/app_icon.png",
+    "java/res_chromium_base/values/channel_constants.xml",
+  ]
+
+  # Dep needed to ensure override works properly.
+  deps = [ ":chrome_base_module_resources" ]
 }
 
 version_resource_dir = "$target_gen_dir/templates/chrome_version_xml/res"
@@ -1852,6 +1880,7 @@ java_group("chrome_public_base_module_java_for_test") {
 
 # Dependencies that are common to any chrome_public derivative targets.
 _chrome_public_shared_deps = [
+  ":chrome_public_apk_base_module_resources",
   ":chrome_public_apk_resources",
   ":chrome_public_base_module_java",
   ":chrome_public_non_pak_assets",
@@ -2018,17 +2047,24 @@ android_library("monochrome_java") {
 template("monochrome_public_apk_or_module_tmpl") {
   _android_manifest =
       "$target_gen_dir/manifest/${target_name}/AndroidManifest.xml"
+  _split_android_manifest =
+      "$target_gen_dir/manifest/${target_name}/AndroidManifest_split.xml"
   _is_trichrome =
       defined(invoker.use_trichrome_library) && invoker.use_trichrome_library
+  _enable_chrome_module =
+      enable_chrome_module && invoker.target_type == "android_app_bundle_module"
 
   # Generate the manifest here in the template, to avoid a growing collection
   # of manually-instantiated manifests.
-  jinja_template("${target_name}__android_manifest") {
-    includes = [ "java/AndroidManifest.xml" ]
+  split_manifest_template("${target_name}__android_manifest") {
+    definitions_in_split = _enable_chrome_module
+    includes = [ "//chrome/android/java/AndroidManifest.xml" ]
+    split_input = "//chrome/android/java/AndroidManifest_split.xml"
+    split_output = _split_android_manifest
     variables = chrome_public_jinja_variables +
                 [ "include_arcore_manifest_flag=$enable_arcore" ]
     if (_is_trichrome) {
-      input = "java/AndroidManifest_trichrome_chrome.xml"
+      input = "//chrome/android/java/AndroidManifest_trichrome_chrome.xml"
       variables += trichrome_jinja_variables
 
       if (android_64bit_target_cpu) {
@@ -2053,7 +2089,7 @@ template("monochrome_public_apk_or_module_tmpl") {
       if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
         _arch = "_64"
       }
-      input = "java/AndroidManifest_monochrome.xml"
+      input = "//chrome/android/java/AndroidManifest_monochrome.xml"
       includes += [ "//android_webview/nonembedded/java/AndroidManifest.xml" ]
       variables += monochrome_android_manifest_jinja_variables + [
                      "target_sdk_version=$android_sdk_version",
@@ -2104,14 +2140,21 @@ template("monochrome_public_apk_or_module_tmpl") {
       shared_resources_allowlist_locales = locales
     }
 
-    deps = [ "//chrome/android:app_hooks_java" ]
+    deps = []
+    if (_enable_chrome_module) {
+      deps += [ "//chrome/android:chrome_base_module_resources" ]
+    } else {
+      deps += [ "//chrome/android:app_hooks_java" ]
+    }
     if (!_is_trichrome) {
       deps += [
-        ":monochrome_java",
         "//android_webview:platform_service_bridge_upstream_implementation_java",
         "//android_webview/nonembedded:icon_resources",
         "//android_webview/nonembedded:monochrome_devui_launcher_icon_resources",
       ]
+      if (!_enable_chrome_module) {
+        deps += [ ":monochrome_java" ]
+      }
       if (webview_includes_weblayer) {
         deps += [ "//weblayer/browser/java:gms_bridge_upstream_impl_java" ]
       }
@@ -2742,6 +2785,18 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
     min_sdk_version = _min_sdk_version
     module_descs = _module_descs
     version_code = _version_code
+    if (enable_chrome_module) {
+      chrome_deps = [ "//chrome/android:app_hooks_java" ]
+      if (enable_arcore) {
+        chrome_deps += [
+          "//chrome/browser/android/vr:ar_java",
+          "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+        ]
+      }
+      if (!_is_trichrome) {
+        chrome_deps += [ "//chrome/android:monochrome_java" ]
+      }
+    }
 
     if (!is_java_debug) {
       proguard_android_sdk_dep = webview_framework_dep

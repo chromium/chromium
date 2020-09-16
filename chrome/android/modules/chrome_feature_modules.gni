@@ -30,6 +30,7 @@ if (enable_arcore) {
 #   name: Name of feature module.
 #   java_deps: Java libraries and resources going into module.
 #   android_manifest: AndroidManifest.xml of module.
+#   android_manifest_dep: (Optional) Target that generates AndroidManifest.xml.
 #   native_deps: (Optional) Native code going into module.
 #   native_entrypoints: (Optional) File with list of exposed symbols from native
 #     feature module library.
