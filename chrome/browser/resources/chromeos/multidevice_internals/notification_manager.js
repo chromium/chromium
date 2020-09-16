@@ -81,10 +81,10 @@ Polymer({
 
   /** @private */
   onAddNotificationClick_() {
-    this.notificationList_.unshift(
-        newNotification(this.idLatest_, this.inlineReplyIdLatest_));
     this.idLatest_++;
     this.inlineReplyIdLatest_++;
+    this.notificationList_.unshift(
+        newNotification(this.idLatest_, this.inlineReplyIdLatest_));
     this.$.notificationList.render();
   },
 

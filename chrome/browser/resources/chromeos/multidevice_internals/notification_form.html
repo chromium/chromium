@@ -6,12 +6,16 @@
     width: 100%;
   }
 
-  :host([is-sent_]) #notificationContainer {
+  :host([is-sent_]:not([user-dismissed_])) #notificationContainer {
     background-color: LightGreen;
   }
 
   :host(:not([is-sent_])) #notificationContainer {
     box-shadow: var(--cr-elevation-3);
+  }
+
+  :host([user-dismissed_]) #notificationContainer {
+    background-color: red;
   }
 
   #notificationContainer {
@@ -32,9 +36,16 @@
   cr-input {
     padding: 5px;
   }
+
+  .status-string {
+    font-size: 15px
+  }
 </style>
 <div id="notificationContainer">
   <div class="column">
+    <span hidden="[[!userDismissed_]]" class="emphasize status-string">
+      This notification was dismissed.
+    </span>
     <cr-button hidden="[[notification.sent]]" id="sendBtn"
         disabled="[[!isNotificationDataValid_]]"
         on-click="onSetNotification_" class="internals-button">
@@ -54,7 +65,7 @@
     <cr-input value="{{notification.id}}" label="notification ID"
         type="number" invalid="[[!isValidId_]]"
         on-change="onNotificationIdChanged_"
-        auto-validate error-message="ID already used" required
+        auto-validate error-message="Required and must be unique" required
         disabled="[[notification.sent]]">
     </cr-input>
     <cr-input label="Visible App Name"
@@ -85,8 +96,8 @@
         </template>
       </select>
     </div>
-    <cr-input value="{{notification.inlineReplyId}}" label="Inline reply id"
-        type="number" error-message="Inline reply ID already used"
+    <cr-input value="{{notification.inlineReplyId}}" label="Inline reply ID"
+        type="number" error-message="Required and must be unique"
         on-change="onInlineReplyIdChanged_" auto-validate required
         disabled="[[notification.sent]]" invalid="[[!isValidInlineReplyId_]]">
     </cr-input>

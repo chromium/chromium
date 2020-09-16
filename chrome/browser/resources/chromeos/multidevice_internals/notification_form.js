@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './shared_style.js';
 
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
 import {ImageType, imageTypeToStringMap, Importance, importanceToString, Notification} from './types.js';
@@ -15,6 +16,10 @@ Polymer({
   is: 'notification-form',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /** @type{!Notification} */
@@ -36,13 +41,14 @@ Polymer({
     /** @private */
     isValidId_: {
       type: Boolean,
-      computed: 'computeIsValidId_(forbiddenIds)',
+      computed: 'computeIsValidId_(forbiddenIds, notification.id)',
     },
 
     /** @private */
     isValidInlineReplyId_: {
       type: Boolean,
-      computed: 'computeIsValidInlineReplyId_(forbiddenInlineReplyIds)',
+      computed: 'computeIsValidInlineReplyId_(forbiddenInlineReplyIds, ' +
+          'notification.inlineReplyId)',
     },
 
     /** @type{!Array<number>} */
@@ -94,6 +100,13 @@ Polymer({
       type: String,
       value: 'Update this notification',
     },
+
+    /** @private */
+    userDismissed_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
   },
 
   /** @private{?MultidevicePhoneHubBrowserProxy}*/
@@ -102,6 +115,22 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+  },
+
+  /** @override */
+  attached() {
+    this.addWebUIListener(
+        'removed-notification-ids', this.onNotificationIdsRemoved_.bind(this));
+  },
+
+  /**
+   * @param{Array<number>} ids Removed notifications' ids.
+   * @private
+   */
+  onNotificationIdsRemoved_(ids) {
+    if (this.notification.sent && ids.includes(this.notification.id)) {
+      this.userDismissed_ = true;
+    }
   },
 
   /**
@@ -128,6 +157,11 @@ Polymer({
    * @private
    */
   computeIsNotificationDataValid_() {
+    // If the user dismissed the notification, it is no longer valid.
+    if (this.userDismissed_) {
+      return false;
+    }
+
     // If either the notification ID or inline reply id is invalid,
     // the notification is invalid.
     if (!this.isValidId_ || !this.isValidInlineReplyId_) {
@@ -169,7 +203,9 @@ Polymer({
 
   /** @private */
   onRemoveButtonClick_() {
-    this.browserProxy_.removeNotification(this.notification.id);
+    if (!this.userDismissed_) {
+      this.browserProxy_.removeNotification(this.notification.id);
+    }
     this.fire('remove-notification');
   },
 

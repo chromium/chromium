@@ -35,6 +35,7 @@ js_library("notification_form") {
   deps = [
     ":multidevice_phonehub_browser_proxy",
     ":types",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 

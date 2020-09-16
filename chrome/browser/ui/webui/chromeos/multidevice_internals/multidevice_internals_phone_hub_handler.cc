@@ -152,6 +152,28 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void MultidevicePhoneHubHandler::OnJavascriptDisallowed() {
+  RemoveObservers();
+}
+
+void MultidevicePhoneHubHandler::RemoveObservers() {
+  auto* fake_notification_manager =
+      fake_phone_hub_manager_->fake_notification_manager();
+  if (notification_manager_observer_.IsObserving(fake_notification_manager)) {
+    notification_manager_observer_.Remove(fake_notification_manager);
+  }
+}
+
+void MultidevicePhoneHubHandler::OnNotificationsRemoved(
+    const base::flat_set<int64_t>& notification_ids) {
+  base::ListValue removed_notification_id_js_list;
+  for (const int64_t& id : notification_ids) {
+    removed_notification_id_js_list.Append(static_cast<double>(id));
+  }
+  FireWebUIListener("removed-notification-ids",
+                    removed_notification_id_js_list);
+}
+
 void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
   // If no FakePhoneHubManager is active, return early. This ensures that we
   // don't unnecessarily re-initialize the Phone Hub UI.
@@ -159,6 +181,7 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
     return;
 
   PA_LOG(VERBOSE) << "Setting real Phone Hub Manager";
+  RemoveObservers();
   fake_phone_hub_manager_.reset();
   Profile* profile = Profile::FromWebUI(web_ui());
   chromeos::phonehub::PhoneHubManager* phone_hub_manager =
@@ -171,6 +194,8 @@ void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
   PA_LOG(VERBOSE) << "Setting fake Phone Hub Manager";
   fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
   ash::SystemTray::Get()->SetPhoneHubManager(fake_phone_hub_manager_.get());
+  notification_manager_observer_.Add(
+      fake_phone_hub_manager_->fake_notification_manager());
 }
 
 void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
