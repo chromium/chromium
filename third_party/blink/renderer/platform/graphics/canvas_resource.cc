@@ -762,7 +762,7 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
   // Ensure Dawn wire is initialized.
   webgpu->RequestAdapterAsync(gpu::webgpu::PowerPreference::kHighPerformance,
                               base::DoNothing());
-  WGPUDeviceProperties properties;
+  WGPUDeviceProperties properties{};
   webgpu->RequestDeviceAsync(0, properties, base::DoNothing());
 
   owning_thread_data().shared_image_mailbox = shared_image_mailbox;
