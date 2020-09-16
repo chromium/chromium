@@ -155,10 +155,6 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
       const OpenTypeMathStretchData::AssemblyParameters&);
   ~ShapeResult();
 
-  // Returns a mutable unique instance. If |this| has more than 1 ref count,
-  // a clone is created.
-  scoped_refptr<ShapeResult> MutableUnique() const;
-
   // The logical width of this result.
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }

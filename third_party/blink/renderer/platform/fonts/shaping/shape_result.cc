@@ -414,12 +414,6 @@ size_t ShapeResult::ByteSize() const {
   return self_byte_size;
 }
 
-scoped_refptr<ShapeResult> ShapeResult::MutableUnique() const {
-  if (HasOneRef())
-    return const_cast<ShapeResult*>(this);
-  return ShapeResult::Create(*this);
-}
-
 unsigned ShapeResult::NextSafeToBreakOffset(unsigned index) const {
   for (auto* it = runs_.begin(); it != runs_.end(); ++it) {
     const auto& run = *it;

@@ -203,22 +203,6 @@ INSTANTIATE_TEST_SUITE_P(HarfBuzzShaperTest,
                          testing::Values(TextDirection::kLtr,
                                          TextDirection::kRtl));
 
-TEST_F(HarfBuzzShaperTest, MutableUnique) {
-  scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&font, 0, 0, TextDirection::kLtr);
-  EXPECT_TRUE(result->HasOneRef());
-
-  // At this point, |result| has only one ref count.
-  scoped_refptr<ShapeResult> result2 = result->MutableUnique();
-  EXPECT_EQ(result.get(), result2.get());
-  EXPECT_FALSE(result2->HasOneRef());
-
-  // Since |result| has 2 ref counts, it should return a clone.
-  scoped_refptr<ShapeResult> result3 = result->MutableUnique();
-  EXPECT_NE(result.get(), result3.get());
-  EXPECT_TRUE(result3->HasOneRef());
-}
-
 TEST_F(HarfBuzzShaperTest, ResolveCandidateRunsLatin) {
   String latin_common = To16Bit("ABC DEF.", 8);
   HarfBuzzShaper shaper(latin_common);
