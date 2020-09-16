@@ -41,13 +41,13 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   String ExtraQuirksStyleSheet() override;
 
   Color PlatformActiveSelectionBackgroundColor(
-      WebColorScheme color_scheme) const override;
+      ColorScheme color_scheme) const override;
   Color PlatformInactiveSelectionBackgroundColor(
-      WebColorScheme color_scheme) const override;
+      ColorScheme color_scheme) const override;
   Color PlatformActiveSelectionForegroundColor(
-      WebColorScheme color_scheme) const override;
+      ColorScheme color_scheme) const override;
   Color PlatformInactiveSelectionForegroundColor(
-      WebColorScheme color_scheme) const override;
+      ColorScheme color_scheme) const override;
 
   IntSize SliderTickSize() const override;
   int SliderTickOffsetFromTrackCenter() const override;

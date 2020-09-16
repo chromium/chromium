@@ -56,12 +56,12 @@ static inline Color FallbackColorForCurrentColor(
   return Color::kTransparent;
 }
 
-static inline WebColorScheme ColorSchemeForSVGElement(
+static inline ColorScheme ColorSchemeForSVGElement(
     const SVGElement* target_element) {
   DCHECK(target_element);
   if (const ComputedStyle* target_style = target_element->GetComputedStyle())
     return target_style->UsedColorScheme();
-  return WebColorScheme::kLight;
+  return ColorScheme::kLight;
 }
 
 void SVGColorProperty::Add(const SVGPropertyBase* other,
@@ -69,7 +69,7 @@ void SVGColorProperty::Add(const SVGPropertyBase* other,
   DCHECK(context_element);
 
   Color fallback_color = FallbackColorForCurrentColor(context_element);
-  WebColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
+  ColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
   Color from_color = To<SVGColorProperty>(other)->style_color_.Resolve(
       fallback_color, color_scheme);
   Color to_color = style_color_.Resolve(fallback_color, color_scheme);
@@ -92,7 +92,7 @@ void SVGColorProperty::CalculateAnimatedValue(
   // Apply currentColor rules.
   DCHECK(context_element);
   Color fallback_color = FallbackColorForCurrentColor(context_element);
-  WebColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
+  ColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
   Color from_color = from_style_color.Resolve(fallback_color, color_scheme);
   Color to_color = to_style_color.Resolve(fallback_color, color_scheme);
   Color to_at_end_of_duration_color =
@@ -129,7 +129,7 @@ float SVGColorProperty::CalculateDistance(
     const SVGElement* context_element) const {
   DCHECK(context_element);
   Color fallback_color = FallbackColorForCurrentColor(context_element);
-  WebColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
+  ColorScheme color_scheme = ColorSchemeForSVGElement(context_element);
 
   Color from_color = style_color_.Resolve(fallback_color, color_scheme);
   Color to_color = To<SVGColorProperty>(to_value)->style_color_.Resolve(

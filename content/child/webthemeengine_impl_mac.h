@@ -21,7 +21,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
              blink::WebThemeEngine::State state,
              const blink::WebRect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::WebColorScheme color_scheme) override;
+             blink::ColorScheme color_scheme) override;
 
   static bool IsScrollbarPart(WebThemeEngine::Part part);
   static void PaintMacScrollBarParts(
@@ -30,7 +30,7 @@ class WebThemeEngineMac : public WebThemeEngineDefault {
       WebThemeEngine::State state,
       const blink::WebRect& rect,
       const WebThemeEngine::ExtraParams* extra_params,
-      blink::WebColorScheme color_scheme);
+      blink::ColorScheme color_scheme);
 
  private:
   blink::ForcedColors forced_colors_ = blink::ForcedColors::kNone;

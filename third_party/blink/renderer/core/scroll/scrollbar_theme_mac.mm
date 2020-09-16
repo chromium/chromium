@@ -238,7 +238,7 @@ WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
   }
 
   params.scrollbar_extra.scrollbar_theme =
-      (scrollbar.UsedColorScheme() == WebColorScheme::kDark) ? kDark : kLight;
+      (scrollbar.UsedColorScheme() == ColorScheme::kDark) ? kDark : kLight;
   params.scrollbar_extra.is_overlay = overlay;
 
   if (overlay) {
@@ -300,7 +300,7 @@ void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
                                           const Scrollbar* vertical_scrollbar,
                                           const DisplayItemClient& item,
                                           const IntRect& rect,
-                                          WebColorScheme color_scheme) {
+                                          ColorScheme color_scheme) {
   if (!vertical_scrollbar) {
     ScrollbarTheme::PaintScrollCorner(context, vertical_scrollbar, item, rect,
                                       color_scheme);

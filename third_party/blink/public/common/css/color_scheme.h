@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_COLOR_SCHEME_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_COLOR_SCHEME_H_
-
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CSS_COLOR_SCHEME_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_CSS_COLOR_SCHEME_H_
 
 namespace blink {
 
@@ -13,11 +11,11 @@ namespace blink {
 // the UA style sheet (setting the text color to white instead of black on the
 // root element for kDark), the frame backdrop color (black instead of white for
 // kDark), theming form controls and scrollbars, etc.
-enum WebColorScheme {
+enum ColorScheme {
   kLight = 1,
   kDark = 2,
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_COLOR_SCHEME_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_CSS_COLOR_SCHEME_H_

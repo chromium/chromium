@@ -523,8 +523,7 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
       cancel_button_size, cancel_button_size);
   IntRect painting_rect = ConvertToPaintingRect(
       input_layout_box, cancel_button_object, cancel_button_rect, r);
-  WebColorScheme color_scheme =
-      cancel_button_object.StyleRef().UsedColorScheme();
+  ColorScheme color_scheme = cancel_button_object.StyleRef().UsedColorScheme();
   DEFINE_STATIC_REF(Image, cancel_image,
                     (Image::LoadPlatformResource(IDR_SEARCH_CANCEL)));
   DEFINE_STATIC_REF(Image, cancel_pressed_image,

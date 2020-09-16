@@ -34,7 +34,7 @@
 namespace blink {
 
 namespace {
-Color GetSystemColor(MacSystemColorID color_id, WebColorScheme color_scheme) {
+Color GetSystemColor(MacSystemColorID color_id, ColorScheme color_scheme) {
   // In tests, a WebSandboxSupport may not be set up. Just return a dummy
   // color, in this case, black.
   auto* sandbox_support = Platform::Current()->GetSandboxSupport();
@@ -51,19 +51,19 @@ String LayoutThemeMac::DisplayNameForFile(const File& file) const {
 }
 
 Color LayoutThemeMac::PlatformActiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return GetSystemColor(MacSystemColorID::kSelectedTextBackground,
                         color_scheme);
 }
 
 Color LayoutThemeMac::PlatformInactiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return GetSystemColor(MacSystemColorID::kSecondarySelectedControl,
                         color_scheme);
 }
 
 Color LayoutThemeMac::PlatformActiveSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    ColorScheme color_scheme) const {
   return Color::kBlack;
 }
 
@@ -75,8 +75,7 @@ Color LayoutThemeMac::PlatformGrammarMarkerUnderlineColor() const {
   return Color(107, 107, 107);
 }
 
-bool LayoutThemeMac::IsAccentColorCustomized(
-    WebColorScheme color_scheme) const {
+bool LayoutThemeMac::IsAccentColorCustomized(ColorScheme color_scheme) const {
   if (@available(macOS 10.14, *)) {
     static const Color kControlBlueAccentColor =
         GetSystemColor(MacSystemColorID::kControlAccentBlueColor, color_scheme);
@@ -108,7 +107,7 @@ Color LayoutThemeMac::FocusRingColor() const {
   }
 
   // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-  WebColorScheme color_scheme = ComputedStyle::InitialStyle().UsedColorScheme();
+  ColorScheme color_scheme = ComputedStyle::InitialStyle().UsedColorScheme();
 
   SkColor keyboard_focus_indicator = SkColor(
       GetSystemColor(MacSystemColorID::kKeyboardFocusIndicator, color_scheme));

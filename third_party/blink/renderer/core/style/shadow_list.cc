@@ -52,7 +52,7 @@ void ShadowList::AdjustRectForShadow(FloatRect& rect) const {
 sk_sp<SkDrawLooper> ShadowList::CreateDrawLooper(
     DrawLooperBuilder::ShadowAlphaMode alpha_mode,
     const Color& current_color,
-    WebColorScheme color_scheme,
+    ColorScheme color_scheme,
     bool is_horizontal) const {
   DrawLooperBuilder draw_looper_builder;
   for (wtf_size_t i = Shadows().size(); i--;) {

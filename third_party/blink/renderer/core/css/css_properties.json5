@@ -1797,7 +1797,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       inherited: true,
       runtime_flag: "CSSColorScheme",
-      include_paths: ["third_party/blink/public/platform/web_color_scheme.h"],
+      include_paths: ["third_party/blink/public/common/css/color_scheme.h"],
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",

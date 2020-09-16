@@ -22,7 +22,7 @@ CONTENT_EXPORT ui::NativeTheme::State NativeThemeState(
     blink::WebThemeEngine::State state);
 
 CONTENT_EXPORT ui::NativeTheme::ColorScheme NativeColorScheme(
-    blink::WebColorScheme color_scheme);
+    blink::ColorScheme color_scheme);
 
 CONTENT_EXPORT ui::NativeTheme::SystemThemeColor NativeSystemThemeColor(
     blink::WebThemeEngine::SystemThemeColor theme_color);

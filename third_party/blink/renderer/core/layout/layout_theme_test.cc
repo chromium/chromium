@@ -98,7 +98,7 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
   ASSERT_TRUE(dark_element);
 
   const ComputedStyle* style = dark_element->GetComputedStyle();
-  EXPECT_EQ(WebColorScheme::kLight, style->UsedColorScheme());
+  EXPECT_EQ(ColorScheme::kLight, style->UsedColorScheme());
   EXPECT_EQ(Color(0xdd, 0xdd, 0xdd),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 
@@ -108,7 +108,7 @@ TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
   UpdateAllLifecyclePhasesForTest();
 
   style = dark_element->GetComputedStyle();
-  EXPECT_EQ(WebColorScheme::kDark, style->UsedColorScheme());
+  EXPECT_EQ(ColorScheme::kDark, style->UsedColorScheme());
   EXPECT_EQ(Color(0x44, 0x44, 0x44),
             style->VisitedDependentColor(GetCSSPropertyColor()));
 }
@@ -118,7 +118,7 @@ TEST_F(LayoutThemeTest, SetSelectionColors) {
                                              Color::kBlack, Color::kBlack);
   EXPECT_EQ(Color::kBlack,
             LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
-                WebColorScheme::kLight));
+                ColorScheme::kLight));
   {
     // Enabling MobileLayoutTheme switches which instance is returned from
     // LayoutTheme::GetTheme(). Devtools expect SetSelectionColors() to affect
@@ -126,17 +126,17 @@ TEST_F(LayoutThemeTest, SetSelectionColors) {
     ScopedMobileLayoutThemeForTest scope(true);
     EXPECT_EQ(Color::kBlack,
               LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
-                  WebColorScheme::kLight));
+                  ColorScheme::kLight));
 
     LayoutTheme::GetTheme().SetSelectionColors(Color::kWhite, Color::kWhite,
                                                Color::kWhite, Color::kWhite);
     EXPECT_EQ(Color::kWhite,
               LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
-                  WebColorScheme::kLight));
+                  ColorScheme::kLight));
   }
   EXPECT_EQ(Color::kWhite,
             LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
-                WebColorScheme::kLight));
+                ColorScheme::kLight));
 }
 #endif  // !defined(OS_MAC)
 

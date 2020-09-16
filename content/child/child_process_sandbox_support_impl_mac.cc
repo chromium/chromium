@@ -60,9 +60,8 @@ bool WebSandboxSupportMac::LoadFont(
       out_descriptor);
 }
 
-SkColor WebSandboxSupportMac::GetSystemColor(
-    blink::MacSystemColorID color_id,
-    blink::WebColorScheme color_scheme) {
+SkColor WebSandboxSupportMac::GetSystemColor(blink::MacSystemColorID color_id,
+                                             blink::ColorScheme color_scheme) {
   if (!color_map_.IsValid()) {
     DLOG(ERROR) << "GetSystemColor does not have a valid color_map_";
     return SK_ColorMAGENTA;
@@ -71,11 +70,10 @@ SkColor WebSandboxSupportMac::GetSystemColor(
                 "Light and dark color scheme system colors loaded.");
   base::span<const SkColor> color_map = color_map_.GetMemoryAsSpan<SkColor>(
       blink::kMacSystemColorIDCount * blink::kMacSystemColorSchemeCount);
-  base::span<const SkColor> color_map_for_scheme =
-      color_map.subspan(color_scheme == blink::WebColorScheme::kDark
-                            ? blink::kMacSystemColorIDCount
-                            : 0,
-                        blink::kMacSystemColorIDCount);
+  base::span<const SkColor> color_map_for_scheme = color_map.subspan(
+      color_scheme == blink::ColorScheme::kDark ? blink::kMacSystemColorIDCount
+                                                : 0,
+      blink::kMacSystemColorIDCount);
   return color_map_for_scheme[static_cast<size_t>(color_id)];
 }
 

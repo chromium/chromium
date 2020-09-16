@@ -323,7 +323,7 @@ void WebPagePopupImpl::Initialize(WebViewImpl* web_view,
   // default event handlers.
   if (const auto* style = popup_client_->OwnerElement().GetComputedStyle()) {
     page_->GetSettings().SetPreferredColorScheme(
-        style->UsedColorScheme() == WebColorScheme::kDark
+        style->UsedColorScheme() == ColorScheme::kDark
             ? PreferredColorScheme::kDark
             : PreferredColorScheme::kLight);
   }

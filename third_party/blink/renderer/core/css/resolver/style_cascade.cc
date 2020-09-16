@@ -605,10 +605,10 @@ void StyleCascade::ForceColors() {
   // Preserve the author/user defined background alpha channel.
   style->SetBackgroundColor(
       StyleColor(style->BackgroundColor().ResolveWithAlpha(
-          style->GetCurrentColor(), WebColorScheme::kLight, bg_color_alpha)));
+          style->GetCurrentColor(), ColorScheme::kLight, bg_color_alpha)));
   style->SetInternalVisitedBackgroundColor(
       StyleColor(style->InternalVisitedBackgroundColor().ResolveWithAlpha(
-          style->GetCurrentColor(), WebColorScheme::kLight,
+          style->GetCurrentColor(), ColorScheme::kLight,
           visited_bg_color_alpha)));
 }
 

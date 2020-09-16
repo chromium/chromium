@@ -23,7 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 
-#include "third_party/blink/public/platform/web_color_scheme.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -91,24 +91,20 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual bool SupportsCalendarPicker(const AtomicString&) const;
 
   // Text selection colors.
-  Color ActiveSelectionBackgroundColor(WebColorScheme color_scheme) const;
-  Color InactiveSelectionBackgroundColor(WebColorScheme color_scheme) const;
-  Color ActiveSelectionForegroundColor(WebColorScheme color_scheme) const;
-  Color InactiveSelectionForegroundColor(WebColorScheme color_scheme) const;
+  Color ActiveSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color InactiveSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color ActiveSelectionForegroundColor(ColorScheme color_scheme) const;
+  Color InactiveSelectionForegroundColor(ColorScheme color_scheme) const;
   virtual void SetSelectionColors(Color active_background_color,
                                   Color active_foreground_color,
                                   Color inactive_background_color,
                                   Color inactive_foreground_color) {}
 
   // List box selection colors
-  Color ActiveListBoxSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
-  Color ActiveListBoxSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
-  Color InactiveListBoxSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
-  Color InactiveListBoxSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
+  Color ActiveListBoxSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color ActiveListBoxSelectionForegroundColor(ColorScheme color_scheme) const;
+  Color InactiveListBoxSelectionBackgroundColor(ColorScheme color_scheme) const;
+  Color InactiveListBoxSelectionForegroundColor(ColorScheme color_scheme) const;
 
   virtual Color PlatformSpellingMarkerUnderlineColor() const;
   virtual Color PlatformGrammarMarkerUnderlineColor() const;
@@ -118,10 +114,10 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Highlight and text colors for TextMatches.
   Color PlatformTextSearchHighlightColor(bool active_match,
                                          bool in_forced_colors_mode,
-                                         WebColorScheme color_scheme) const;
+                                         ColorScheme color_scheme) const;
   Color PlatformTextSearchColor(bool active_match,
                                 bool in_forced_colors_mode,
-                                WebColorScheme color_scheme) const;
+                                ColorScheme color_scheme) const;
 
   virtual Color FocusRingColor() const;
   virtual Color PlatformFocusRingColor() const { return Color(0, 0, 0); }
@@ -142,7 +138,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // System fonts and colors for CSS.
   void SystemFont(CSSValueID system_font_id, FontDescription&);
-  virtual Color SystemColor(CSSValueID, WebColorScheme color_scheme) const;
+  virtual Color SystemColor(CSSValueID, ColorScheme color_scheme) const;
 
   virtual void AdjustSliderThumbSize(ComputedStyle&) const;
 
@@ -182,22 +178,22 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
  protected:
   // The platform selection color.
   virtual Color PlatformActiveSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformActiveSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
 
   virtual Color PlatformActiveListBoxSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveListBoxSelectionBackgroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformActiveListBoxSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
   virtual Color PlatformInactiveListBoxSelectionForegroundColor(
-      WebColorScheme color_scheme) const;
+      ColorScheme color_scheme) const;
 
   // Methods for each appearance value.
   virtual void AdjustCheckboxStyle(ComputedStyle&) const;

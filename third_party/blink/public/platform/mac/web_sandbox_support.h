@@ -32,8 +32,8 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SANDBOX_SUPPORT_H_
 
 #include "base/mac/scoped_cftyperef.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
-#include "third_party/blink/public/platform/web_color_scheme.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 typedef struct CGFont* CGFontRef;
@@ -57,7 +57,7 @@ class WebSandboxSupport {
       uint32_t* font_id) = 0;
 
   // Returns the system's preferred value for a named color.
-  virtual SkColor GetSystemColor(MacSystemColorID, WebColorScheme) = 0;
+  virtual SkColor GetSystemColor(MacSystemColorID, ColorScheme) = 0;
 };
 
 }  // namespace blink

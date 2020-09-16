@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/web_size.h"
 #include "ui/native_theme/native_theme.h"
 
-using blink::WebColorScheme;
+using blink::ColorScheme;
 using blink::WebRect;
 using blink::WebThemeEngine;
 
@@ -159,7 +159,7 @@ void WebThemeEngineAndroid::Paint(
     WebThemeEngine::State state,
     const blink::WebRect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::WebColorScheme color_scheme) {
+    blink::ColorScheme color_scheme) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);

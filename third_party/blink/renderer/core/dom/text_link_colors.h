@@ -30,7 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 
-#include "third_party/blink/public/platform/web_color_scheme.h"
+#include "third_party/blink/public/common/css/color_scheme.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -60,7 +60,7 @@ class TextLinkColors {
   void ResetActiveLinkColor();
   Color ColorFromCSSValue(const CSSValue&,
                           Color current_color,
-                          WebColorScheme color_scheme,
+                          ColorScheme color_scheme,
                           bool for_visited_link = false) const;
 
  private:

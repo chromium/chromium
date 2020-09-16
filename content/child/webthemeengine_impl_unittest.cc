@@ -97,8 +97,8 @@ TEST(WebThemeEngineTest, NativeSystemThemeState) {
 }
 
 TEST(WebThemeEngineTest, NativeColorScheme) {
-  std::vector<blink::WebColorScheme> blink_inputs = {
-      blink::WebColorScheme::kLight, blink::WebColorScheme::kDark};
+  std::vector<blink::ColorScheme> blink_inputs = {blink::ColorScheme::kLight,
+                                                  blink::ColorScheme::kDark};
 
   std::vector<ui::NativeTheme::ColorScheme> native_theme_outputs = {
       ui::NativeTheme::ColorScheme::kLight,

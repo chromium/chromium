@@ -2207,7 +2207,7 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
     if (auto* root_element = GetDocument().documentElement())
       style = root_element->GetComputedStyle();
     if (style) {
-      if (style->UsedColorSchemeForInitialColors() == WebColorScheme::kDark)
+      if (style->UsedColorSchemeForInitialColors() == ColorScheme::kDark)
         use_dark_background_ = true;
     } else if (SupportsDarkColorScheme()) {
       use_dark_background_ = true;
@@ -2221,7 +2221,7 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
 
 void StyleEngine::UpdateForcedBackgroundColor() {
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, WebColorScheme::kLight);
+      CSSValueID::kCanvas, ColorScheme::kLight);
 }
 
 Color StyleEngine::ColorAdjustBackgroundColor() const {

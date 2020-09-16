@@ -50,7 +50,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
                          const Scrollbar* vertical_scrollbar,
                          const DisplayItemClient&,
                          const IntRect& corner_rect,
-                         WebColorScheme color_scheme) override;
+                         ColorScheme color_scheme) override;
 
   bool ShouldCenterOnThumb(const Scrollbar& scrollbar,
                            const WebMouseEvent& event) override {

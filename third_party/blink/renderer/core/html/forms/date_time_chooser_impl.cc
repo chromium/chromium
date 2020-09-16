@@ -218,8 +218,8 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
     AddProperty("otherDateLabel", other_date_label_string, data);
 
     const ComputedStyle* style = OwnerElement().GetComputedStyle();
-    WebColorScheme color_scheme =
-        style ? style->UsedColorScheme() : WebColorScheme::kLight;
+    ColorScheme color_scheme =
+        style ? style->UsedColorScheme() : ColorScheme::kLight;
 
     AddProperty("suggestionHighlightColor",
                 LayoutTheme::GetTheme()

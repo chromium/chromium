@@ -22,7 +22,7 @@ LayoutTheme& LayoutTheme::NativeTheme() {
 }
 
 Color LayoutThemeWin::SystemColor(CSSValueID css_value_id,
-                                  WebColorScheme color_scheme) const {
+                                  ColorScheme color_scheme) const {
   blink::WebThemeEngine::SystemThemeColor theme_color;
   switch (css_value_id) {
     case CSSValueID::kActivetext:
