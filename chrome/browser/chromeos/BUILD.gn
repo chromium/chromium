@@ -3600,6 +3600,7 @@ source_set("unit_tests") {
     "ui/mock_adb_sideloading_policy_change_notification.cc",
     "ui/mock_adb_sideloading_policy_change_notification.h",
     "ui/request_system_proxy_credentials_view_unittest.cc",
+    "ui/update_required_notification_unittest.cc",
     "usb/cros_usb_detector_unittest.cc",
     "wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.cc",
     "wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.h",
