@@ -8,6 +8,7 @@ import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//ui/webui/webui_features.gni")
 import("./namespace_rewrites.gni")
 
 if (include_js_tests) {
@@ -26,6 +27,10 @@ if (include_js_tests) {
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_v3_interactive_ui_tests.js",
     ]
+
+    if (enable_tab_search) {
+      sources += [ "tab_search/test/tab_search_interactive_ui_tests.js" ]
+    }
 
     gen_include_files = [
       "polymer_browser_test_base.js",
