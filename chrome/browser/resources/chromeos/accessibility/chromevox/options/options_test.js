@@ -73,52 +73,63 @@ TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
   });
 });
 
-TEST_F('ChromeVoxOptionsTest', 'punctuationEchoSelect', function() {
-  this.runOnOptionsPage((mockFeedback, evt) => {
-    const PUNCTUATION_ECHO_NONE = '0';
-    const PUNCTUATION_ECHO_SOME = '1';
-    const PUNCTUATION_ECHO_ALL = '2';
-    const punctuationEchoSelect = evt.target.find({
-      role: chrome.automation.RoleType.POP_UP_BUTTON,
-      attributes: {name: 'Punctuation echo:'}
+// TODO(crbug.com/1128926): Test times out flakily in MSAN builds.
+TEST_F_WITH_PREAMBLE(
+    `
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PunctuationEchoSelect DISABLED_PunctuationEchoSelect
+#else
+#define MAYBE_PunctuationEchoSelect PunctuationEchoSelect
+#endif
+`,
+    'ChromeVoxOptionsTest', 'MAYBE_PunctuationEchoSelect', function() {
+      this.runOnOptionsPage((mockFeedback, evt) => {
+        const PUNCTUATION_ECHO_NONE = '0';
+        const PUNCTUATION_ECHO_SOME = '1';
+        const PUNCTUATION_ECHO_ALL = '2';
+        const punctuationEchoSelect = evt.target.find({
+          role: chrome.automation.RoleType.POP_UP_BUTTON,
+          attributes: {name: 'Punctuation echo:'}
+        });
+        assertNotNullNorUndefined(punctuationEchoSelect);
+        mockFeedback
+            .call(punctuationEchoSelect.focus.bind(punctuationEchoSelect))
+            .expectSpeech('Punctuation echo:', 'None', 'Collapsed')
+            .call(punctuationEchoSelect.doDefault.bind(punctuationEchoSelect))
+            .expectSpeech('Expanded')
+
+            // Before selecting the menu option.
+            .call(() => {
+              assertEquals(
+                  PUNCTUATION_ECHO_NONE,
+                  localStorage[AbstractTts.PUNCTUATION_ECHO]);
+            })
+
+            .call(press(KeyCode.DOWN))
+            .expectSpeech('Some', 'List item', ' 2 of 3 ')
+            .call(press(KeyCode.RETURN))
+
+            // TODO(josiahk): The underlying select behavior here is unexpected
+            // because we never get a new focus event for the select (moving us
+            // away from the menu item). We simply repeat the menu item.
+            .expectSpeech('Some', ' 2 of 3 ')
+            .call(() => {
+              assertEquals(
+                  PUNCTUATION_ECHO_SOME,
+                  localStorage[AbstractTts.PUNCTUATION_ECHO]);
+            })
+
+            .call(press(KeyCode.DOWN))
+            .expectSpeech('All', ' 3 of 3 ')
+            .call(() => {
+              assertEquals(
+                  PUNCTUATION_ECHO_ALL,
+                  localStorage[AbstractTts.PUNCTUATION_ECHO]);
+            })
+
+            .replay();
+      });
     });
-    assertNotNullNorUndefined(punctuationEchoSelect);
-    mockFeedback.call(punctuationEchoSelect.focus.bind(punctuationEchoSelect))
-        .expectSpeech('Punctuation echo:', 'None', 'Collapsed')
-        .call(punctuationEchoSelect.doDefault.bind(punctuationEchoSelect))
-        .expectSpeech('Expanded')
-
-        // Before selecting the menu option.
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_NONE,
-              localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .call(press(KeyCode.DOWN))
-        .expectSpeech('Some', 'List item', ' 2 of 3 ')
-        .call(press(KeyCode.RETURN))
-
-        // TODO(josiahk): The underlying select behavior here is unexpected
-        // because we never get a new focus event for the select (moving us
-        // away from the menu item). We simply repeat the menu item.
-        .expectSpeech('Some', ' 2 of 3 ')
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_SOME,
-              localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .call(press(KeyCode.DOWN))
-        .expectSpeech('All', ' 3 of 3 ')
-        .call(() => {
-          assertEquals(
-              PUNCTUATION_ECHO_ALL, localStorage[AbstractTts.PUNCTUATION_ECHO]);
-        })
-
-        .replay();
-  });
-});
 
 TEST_F('ChromeVoxOptionsTest', 'SmartStickyMode', function() {
   this.runOnOptionsPage((mockFeedback, evt) => {
