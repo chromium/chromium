@@ -167,7 +167,10 @@
 <div id="toolbar">
   <div id="start">
     <cr-icon-button id="sidenavToggle" iron-icon="cr20:menu"
-        disabled="[[annotationMode]]" on-click="onSidenavToggleClick_">
+<if expr="chromeos">
+        disabled="[[annotationMode]]"
+</if>
+        on-click="onSidenavToggleClick_">
     </cr-icon-button>
     <span id="title">[[docTitle]]</span>
   </div>
@@ -193,8 +196,11 @@
         on-click="onFitToButtonClick_">
     </cr-icon-button>
     <cr-icon-button iron-icon="pdf:rotate-left"
-        disabled="[[annotationMode]]" aria-label$="$i18n{tooltipRotateCCW}"
-        title="$i18n{tooltipRotateCCW}" on-click="onRotateClick_">
+<if expr="chromeos">
+        disabled="[[annotationMode]]"
+</if>
+        aria-label$="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
+        on-click="onRotateClick_">
     </cr-icon-button>
   </div>
   <div id="end">
@@ -224,8 +230,10 @@
 
 <cr-action-menu>
   <button id="two-page-view-button"
-      class="dropdown-item" on-click="toggleTwoPageViewClick_"
-      role="checkbox"
+      class="dropdown-item" on-click="toggleTwoPageViewClick_" role="checkbox"
+<if expr="chromeos">
+      disabled="[[annotationMode]]"
+</if>
       aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled_)]]">
     <span class="check-container">
       <iron-icon icon="pdf:check" hidden="[[!twoUpViewEnabled_]]"></iron-icon>

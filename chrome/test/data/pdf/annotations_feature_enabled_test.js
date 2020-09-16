@@ -386,9 +386,12 @@ chrome.test.runTests([
   },
   function testHidingAnnotationsExitsAnnotationsMode() {
     testAsync(async () => {
+      document.body.innerHTML = '';
       const toolbar = document.createElement('viewer-pdf-toolbar-new');
       document.body.appendChild(toolbar);
       toolbar.toggleAnnotation();
+      // This is normally done by the parent in response to the event fired by
+      // toggleAnnotation().
       toolbar.annotationMode = true;
 
       await toolbar.addEventListener('display-annotations-changed', async e => {
@@ -400,6 +403,7 @@ chrome.test.runTests([
     });
   },
   function testEnteringAnnotationsModeShowsAnnotations() {
+    document.body.innerHTML = '';
     const toolbar = document.createElement('viewer-pdf-toolbar-new');
     document.body.appendChild(toolbar);
     chrome.test.assertFalse(toolbar.annotationMode);
@@ -412,5 +416,19 @@ chrome.test.runTests([
       chrome.test.succeed();
     });
     toolbar.toggleAnnotation();
+  },
+  function testEnteringAnnotationsModeDisablesTwoUp() {
+    document.body.innerHTML = '';
+    const toolbar = document.createElement('viewer-pdf-toolbar-new');
+    document.body.appendChild(toolbar);
+    chrome.test.assertFalse(toolbar.annotationMode);
+
+    toolbar.toggleAnnotation();
+    // This is normally done by the parent in response to the event fired by
+    // toggleAnnotation().
+    toolbar.annotationMode = true;
+    chrome.test.assertTrue(
+        toolbar.shadowRoot.querySelector('#two-page-view-button').disabled);
+    chrome.test.succeed();
   }
 ]);

@@ -105,7 +105,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       annotationAvailable_: {
         type: Boolean,
         computed: 'computeAnnotationAvailable_(' +
-            'hadPassword_, rotated_, canSerializeDocument_)',
+            'hadPassword_, rotated_, canSerializeDocument_, twoUpViewEnabled_)',
       },
 
       annotationMode_: {
@@ -139,6 +139,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       canSerializeDocument_: Boolean,
 
       title_: String,
+
+      twoUpViewEnabled_: Boolean,
 
       isFormFieldFocused_: Boolean,
 
@@ -193,6 +195,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
     /** @private {string} */
     this.title_ = '';
+
+    /** @private {boolean} */
+    this.twoUpViewEnabled_ = false;
 
     /** @private {boolean} */
     this.isFormFieldFocused_ = false;
@@ -620,13 +625,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onTwoUpViewChanged_(e) {
-    const twoUpViewEnabled = e.detail;
-    this.currentController.setTwoUpView(twoUpViewEnabled);
+    this.twoUpViewEnabled_ = e.detail;
+    this.currentController.setTwoUpView(this.twoUpViewEnabled_);
     if (!this.pdfViewerUpdateEnabled_) {
       this.toolbarManager_.forceHideTopToolbar();
     }
-    this.getToolbar_().annotationAvailable = !twoUpViewEnabled;
-    PDFMetrics.recordTwoUpViewEnabled(twoUpViewEnabled);
+    PDFMetrics.recordTwoUpViewEnabled(this.twoUpViewEnabled_);
   }
 
   /**
@@ -1042,7 +1046,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   computeAnnotationAvailable_() {
-    return this.canSerializeDocument_ && !this.rotated_ && !this.hadPassword_;
+    return this.canSerializeDocument_ && !this.rotated_ && !this.hadPassword_ &&
+        !this.twoUpViewEnabled_;
   }
 
   /** @override */

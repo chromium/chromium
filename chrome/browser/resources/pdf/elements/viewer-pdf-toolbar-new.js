@@ -37,12 +37,12 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
     return {
       // <if expr="chromeos">
       annotationAvailable: Boolean,
-      // </if>
       annotationMode: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
+      // </if>
       docTitle: String,
       docLength: Number,
       hasEdits: Boolean,
