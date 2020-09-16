@@ -159,9 +159,9 @@ class MockPrerenderProcessor : public mojom::blink::PrerenderProcessor {
   size_t add_count_ = 0;
 };
 
-class PrerenderingTest : public testing::Test {
+class PrerenderTest : public testing::Test {
  public:
-  ~PrerenderingTest() override {
+  ~PrerenderTest() override {
     if (web_view_helper_.GetWebView())
       UnregisterMockPrerenderProcessor();
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
@@ -254,7 +254,7 @@ class PrerenderingTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(PrerenderingTest, SinglePrerender) {
+TEST_F(PrerenderTest, SinglePrerender) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -284,7 +284,7 @@ TEST_F(PrerenderingTest, SinglePrerender) {
   EXPECT_EQ("webkitprerenderstop", ConsoleAt(3));
 }
 
-TEST_F(PrerenderingTest, CancelPrerender) {
+TEST_F(PrerenderTest, CancelPrerender) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -302,7 +302,7 @@ TEST_F(PrerenderingTest, CancelPrerender) {
   EXPECT_EQ(0u, prerender->AbandonCount());
 }
 
-TEST_F(PrerenderingTest, AbandonPrerender) {
+TEST_F(PrerenderTest, AbandonPrerender) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -328,7 +328,7 @@ TEST_F(PrerenderingTest, AbandonPrerender) {
   EXPECT_EQ(0u, prerender->AbandonCount());
 }
 
-TEST_F(PrerenderingTest, TwoPrerenders) {
+TEST_F(PrerenderTest, TwoPrerenders) {
   Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
 
   std::unique_ptr<MockPrerender> first_prerender =
@@ -356,7 +356,7 @@ TEST_F(PrerenderingTest, TwoPrerenders) {
   EXPECT_EQ("second_webkitprerenderstart", ConsoleAt(1));
 }
 
-TEST_F(PrerenderingTest, TwoPrerendersRemovingFirstThenNavigating) {
+TEST_F(PrerenderTest, TwoPrerendersRemovingFirstThenNavigating) {
   Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
 
   std::unique_ptr<MockPrerender> first_prerender =
@@ -387,7 +387,7 @@ TEST_F(PrerenderingTest, TwoPrerendersRemovingFirstThenNavigating) {
   EXPECT_EQ(0u, second_prerender->AbandonCount());
 }
 
-TEST_F(PrerenderingTest, TwoPrerendersAddingThird) {
+TEST_F(PrerenderTest, TwoPrerendersAddingThird) {
   Initialize("http://www.foo.com/", "prerender/multiple_prerenders.html");
 
   std::unique_ptr<MockPrerender> first_prerender =
@@ -415,7 +415,7 @@ TEST_F(PrerenderingTest, TwoPrerendersAddingThird) {
   EXPECT_EQ(0u, third_prerender->AbandonCount());
 }
 
-TEST_F(PrerenderingTest, ShortLivedClient) {
+TEST_F(PrerenderTest, ShortLivedClient) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -433,7 +433,7 @@ TEST_F(PrerenderingTest, ShortLivedClient) {
   prerender->NotifyDidStartPrerender();
 }
 
-TEST_F(PrerenderingTest, FastRemoveElement) {
+TEST_F(PrerenderTest, FastRemoveElement) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -454,7 +454,7 @@ TEST_F(PrerenderingTest, FastRemoveElement) {
   EXPECT_EQ(0u, ConsoleLength());
 }
 
-TEST_F(PrerenderingTest, MutateTarget) {
+TEST_F(PrerenderTest, MutateTarget) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
@@ -481,7 +481,7 @@ TEST_F(PrerenderingTest, MutateTarget) {
   EXPECT_EQ(0u, mutated_prerender->AbandonCount());
 }
 
-TEST_F(PrerenderingTest, MutateRel) {
+TEST_F(PrerenderTest, MutateRel) {
   Initialize("http://www.foo.com/", "prerender/single_prerender.html");
 
   std::unique_ptr<MockPrerender> prerender =
