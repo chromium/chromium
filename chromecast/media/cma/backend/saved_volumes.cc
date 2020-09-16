@@ -62,25 +62,30 @@ base::flat_map<AudioContentType, double> LoadSavedVolumes(
 
   LOG(INFO) << "No saved volumes found";
   // If saved_volumes does not exist, use per-device default if it exists.
-  JSONFileValueDeserializer cast_audio_deserializer(
-      media::CastAudioJson::GetFilePath());
-  auto cast_audio_config = deserializer.Deserialize(nullptr, nullptr);
+  auto path = media::CastAudioJson::GetFilePath();
+  JSONFileValueDeserializer cast_audio_deserializer(path);
+  auto cast_audio_config =
+      cast_audio_deserializer.Deserialize(nullptr, nullptr);
   if (!cast_audio_config || !cast_audio_config->is_dict()) {
+    LOG(INFO) << "Invalid JSON from " << path;
     return volumes;
   }
 
   const base::Value* default_volume_dict =
       cast_audio_config->FindDictKey(kKeyDefaultVolume);
   if (!default_volume_dict) {
+    LOG(INFO) << "No default volumes specified in " << path;
     return volumes;
   }
 
   for (auto type : types) {
-    auto v = default_volume_dict->FindDoublePath(ContentTypeToDbFSKey(type));
+    std::string key = ContentTypeToDbFSKey(type);
+    auto v = default_volume_dict->FindDoublePath(key);
     if (v) {
-      LOG(INFO) << "Using default volume for " << ContentTypeToDbFSKey(type)
-                << " of " << v.value();
+      LOG(INFO) << "Using default volume for " << key << " of " << v.value();
       volumes[type] = v.value();
+    } else {
+      LOG(INFO) << "No default volume for " << key;
     }
   }
   return volumes;
