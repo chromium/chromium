@@ -17,16 +17,16 @@ TEST_DATA_GROUP_SIZE = 64  # Aligns with sysfs on 64-bit devices.
 
 
 def bits_to_groups(bits):
-  return (bits + TEST_DATA_GROUP_SIZE - 1) / TEST_DATA_GROUP_SIZE
+  return (bits + TEST_DATA_GROUP_SIZE - 1) // TEST_DATA_GROUP_SIZE
 
 
 # As in /sys/class/input/input*/capabilities/*
 def serialize_bitfield(bitfield, max_bit):
   result = ""
   group_count = bits_to_groups(max_bit)
-  for group in xrange(group_count - 1, -1, -1):
+  for group in range(group_count - 1, -1, -1):
     group_val = 0
-    for group_bit in xrange(TEST_DATA_GROUP_SIZE):
+    for group_bit in range(TEST_DATA_GROUP_SIZE):
       code = group * TEST_DATA_GROUP_SIZE + group_bit
       if code in bitfield:
         group_val |= (1 << group_bit)
