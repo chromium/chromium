@@ -656,6 +656,13 @@ Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
       // set copy’s shadow root’s "is declarative shadow root" property to true.
       cloned_shadow_root.SetIsDeclarativeShadowRoot(
           shadow_root->IsDeclarativeShadowRoot());
+
+      // 7.NEW If node’s shadow root’s "is available to element internals" is
+      // true, then set copy’s shadow root’s "is available to element internals"
+      // property to true.
+      cloned_shadow_root.SetAvailableToElementInternals(
+          shadow_root->IsAvailableToElementInternals());
+
       // 7.3 If the clone children flag is set, clone all the children of node’s
       // shadow root and append them to copy’s shadow root, with document as
       // specified, the clone children flag being set, and the clone shadows
@@ -3591,6 +3598,15 @@ ShadowRoot& Element::AttachShadowRootInternal(
                                 FocusDelegation::kDelegateFocus);
   // 8. Set shadow’s "is declarative shadow root" property to false.
   shadow_root.SetIsDeclarativeShadowRoot(false);
+
+  // NEW. If shadow host is a custom element, and if custom element state is
+  // not "precustomized" or "custom", set shadow root's
+  // IsAvailableToElementInternals flag to false. Otherwise, set it to true.
+  shadow_root.SetAvailableToElementInternals(
+      !(IsCustomElement() &&
+        GetCustomElementState() != CustomElementState::kCustom &&
+        GetCustomElementState() != CustomElementState::kPreCustomized));
+
   shadow_root.SetSlotAssignmentMode(slot_assignment_mode);
   return shadow_root;
 }

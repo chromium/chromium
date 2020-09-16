@@ -163,6 +163,15 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   }
   bool IsDeclarativeShadowRoot() const { return is_declarative_shadow_root_; }
 
+  void SetAvailableToElementInternals(bool flag) {
+    DCHECK(!flag || GetType() == ShadowRootType::kOpen ||
+           GetType() == ShadowRootType::kClosed);
+    available_to_element_internals_ = flag;
+  }
+  bool IsAvailableToElementInternals() const {
+    return available_to_element_internals_ || is_declarative_shadow_root_;
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -195,8 +204,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned delegates_focus_ : 1;
   unsigned slot_assignment_mode_ : 1;
   unsigned is_declarative_shadow_root_ : 1;
+  unsigned available_to_element_internals_ : 1;
   unsigned needs_distribution_recalc_ : 1;
-  unsigned unused_ : 9;
+  unsigned unused_ : 8;
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

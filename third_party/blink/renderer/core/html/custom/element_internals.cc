@@ -239,7 +239,10 @@ bool ElementInternals::HasState(const AtomicString& state) const {
 }
 
 ShadowRoot* ElementInternals::shadowRoot() const {
-  return Target().AuthorShadowRoot();
+  if (ShadowRoot* shadow_root = Target().AuthorShadowRoot()) {
+    return shadow_root->IsAvailableToElementInternals() ? shadow_root : nullptr;
+  }
+  return nullptr;
 }
 
 const AtomicString& ElementInternals::FastGetAttribute(
