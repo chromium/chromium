@@ -137,7 +137,7 @@ void FidoAuthenticator::WriteLargeBlob(
 }
 
 void FidoAuthenticator::ReadLargeBlob(
-    const std::vector<const LargeBlobKey>& large_blob_keys,
+    const std::vector<LargeBlobKey>& large_blob_keys,
     const base::Optional<pin::TokenResponse> pin_uv_auth_token,
     LargeBlobReadCallback callback) {
   NOTREACHED();

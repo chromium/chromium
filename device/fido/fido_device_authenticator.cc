@@ -747,7 +747,7 @@ void FidoDeviceAuthenticator::WriteLargeBlob(
 }
 
 void FidoDeviceAuthenticator::ReadLargeBlob(
-    const std::vector<const LargeBlobKey>& large_blob_keys,
+    const std::vector<LargeBlobKey>& large_blob_keys,
     const base::Optional<pin::TokenResponse> pin_uv_auth_token,
     LargeBlobReadCallback callback) {
   FetchLargeBlobArray(
@@ -889,7 +889,7 @@ void FidoDeviceAuthenticator::OnWriteLargeBlobFragment(
 }
 
 void FidoDeviceAuthenticator::OnHaveLargeBlobArrayForRead(
-    const std::vector<const LargeBlobKey>& large_blob_keys,
+    const std::vector<LargeBlobKey>& large_blob_keys,
     LargeBlobReadCallback callback,
     CtapDeviceResponseCode status,
     base::Optional<LargeBlobArrayReader> large_blob_array_reader) {

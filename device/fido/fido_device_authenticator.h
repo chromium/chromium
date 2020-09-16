@@ -101,7 +101,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       const LargeBlobKey& large_blob_key,
       base::Optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback) override;
-  void ReadLargeBlob(const std::vector<const LargeBlobKey>& large_blob_keys,
+  void ReadLargeBlob(const std::vector<LargeBlobKey>& large_blob_keys,
                      base::Optional<pin::TokenResponse> pin_uv_auth_token,
                      LargeBlobReadCallback callback) override;
 
@@ -213,7 +213,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapDeviceResponseCode status,
       base::Optional<LargeBlobArrayReader> large_blob_array_reader);
   void OnHaveLargeBlobArrayForRead(
-      const std::vector<const LargeBlobKey>& large_blob_keys,
+      const std::vector<LargeBlobKey>& large_blob_keys,
       LargeBlobReadCallback callback,
       CtapDeviceResponseCode status,
       base::Optional<LargeBlobArrayReader> large_blob_array_reader);

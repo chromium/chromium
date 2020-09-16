@@ -220,7 +220,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // Attempts to read large blobs from the credential encrypted with
   // |large_blob_keys|. Returns a map of keys to their blobs.
   virtual void ReadLargeBlob(
-      const std::vector<const LargeBlobKey>& large_blob_keys,
+      const std::vector<LargeBlobKey>& large_blob_keys,
       base::Optional<pin::TokenResponse> pin_uv_auth_token,
       LargeBlobReadCallback callback);
 
