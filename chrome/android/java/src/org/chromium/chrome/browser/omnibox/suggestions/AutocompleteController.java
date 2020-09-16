@@ -13,9 +13,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult.GroupDetails;
@@ -25,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.query_tiles.QueryTile;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -168,10 +172,23 @@ public class AutocompleteController {
         assert mListener != null : "Ensure a listener is set prior to calling.";
         if (profile == null || TextUtils.isEmpty(url)) return;
 
-        if (!NewTabPage.isNTPUrl(url)) {
-            // Proactively start up a renderer, to reduce the time to display search results,
-            // especially if a Service Worker is used.
-            WarmupManager.getInstance().createSpareRenderProcessHost(profile);
+        // Proactively start up a renderer, to reduce the time to display search results,
+        // especially if a Service Worker is used. This is done in a PostTask with a
+        // experiment-configured delay so that the CPU usage associated with starting a new renderer
+        // process does not impact the Omnibox initialization. Note that there's a small chance the
+        // renderer will be started after the next navigation if the delay is too long, but the
+        // spare renderer will probably get used anyways by a later navigation.
+        if (!NewTabPage.isNTPUrl(url)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
+            PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
+                    ()
+                            -> {
+                        ThreadUtils.assertOnUiThread();
+                        WarmupManager.getInstance().createSpareRenderProcessHost(profile);
+                    },
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.OMNIBOX_SPARE_RENDERER,
+                            "omnibox_spare_renderer_delay_ms", 0));
         }
         mNativeAutocompleteControllerAndroid =
                 AutocompleteControllerJni.get().init(AutocompleteController.this, profile);

@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -333,12 +332,9 @@ public class WarmupManager {
     public void createSpareRenderProcessHost(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (!LibraryLoader.getInstance().isInitialized()) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
-            // Spare WebContents should not be used with spare RenderProcessHosts, but if one
-            // has been created, destroy it in order not to consume too many processes.
-            destroySpareWebContents();
-            WarmupManagerJni.get().warmupSpareRenderer(profile);
-        }
+
+        destroySpareWebContents();
+        WarmupManagerJni.get().warmupSpareRenderer(profile);
     }
 
     /**
