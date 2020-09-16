@@ -26,7 +26,7 @@ android:extractNativeLibs="false"
   <!-- No keyset definitions should exist for any monochrome apks -->
 {% endblock %}
 
-{% block base_application_definitions %}
+{% block extra_application_definitions %}
 {{ super() }}
 {{ webview.common(manifest_package, webview_library) }}
 {% endblock %}

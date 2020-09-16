@@ -1608,7 +1608,6 @@ def main(argv):
     deps_info['lint_java_sources'] = sorted(lint_java_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
     deps_info['lint_resource_zips'] = sorted(lint_resource_zips)
-    deps_info['lint_extra_android_manifests'] = []
 
     if options.type == 'android_apk':
       assert options.android_manifest, 'Android APKs must define a manifest'
@@ -1624,7 +1623,6 @@ def main(argv):
     lint_java_sources = set()
     lint_resource_sources = set()
     lint_resource_zips = set()
-    lint_extra_android_manifests = set()
     for c in module_configs:
       if c['is_base_module']:
         assert 'base_module_config' not in deps_info, (
@@ -1632,8 +1630,6 @@ def main(argv):
         deps_info['base_module_config'] = c['path']
         # Use the base module's android manifest for linting.
         deps_info['lint_android_manifest'] = c['android_manifest']
-      else:
-        lint_extra_android_manifests.add(c['android_manifest'])
       jni_all_source.update(c['jni']['all_source'])
       lint_srcjars.update(c['lint_srcjars'])
       lint_java_sources.update(c['lint_java_sources'])
@@ -1644,8 +1640,6 @@ def main(argv):
     deps_info['lint_java_sources'] = sorted(lint_java_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
     deps_info['lint_resource_zips'] = sorted(lint_resource_zips)
-    deps_info['lint_extra_android_manifests'] = sorted(
-        lint_extra_android_manifests)
 
   # Map configs to classpath entries that should be included in their final dex.
   classpath_entries_by_owning_config = collections.defaultdict(list)

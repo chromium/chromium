@@ -1100,7 +1100,6 @@ if (enable_java_templates) {
 
         args += [
           "--manifest-path=@FileArg($_rebased_build_config:deps_info:lint_android_manifest)",
-          "--extra-manifest-paths=@FileArg($_rebased_build_config:deps_info:lint_extra_android_manifests)",
 
           # Lint requires all source and all resource files to be passed in the
           # same invocation for checks like UnusedResources.

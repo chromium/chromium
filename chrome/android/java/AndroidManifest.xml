@@ -166,8 +166,7 @@ by a child template that "extends" this file.
         android:networkSecurityConfig="@xml/network_security_config"
         {% block extra_application_attributes %}{% endblock %}>
 
-      {% macro application_definitions() %}
-        <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
+       <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
 
         <!-- Samsung MultiWindow Support -->
         <meta-data android:name="com.samsung.android.sdk.multiwindow.enable"
@@ -1205,6 +1204,7 @@ by a child template that "extends" this file.
         {% endif %}
 
         {% block extra_application_definitions %}
+
         <!-- Media route controllers to use for remote playback (cast).
              This is here, rather than in code, since it varies between upstream and downstream,
              yet we need this list of classes in the notification service, which belongs upstream
@@ -1221,15 +1221,8 @@ by a child template that "extends" this file.
             android:resource="@array/preloaded_google_sans_fonts" />
 
         {% endblock %}
-      {% endmacro %}
-      {% if skip_definitions is not defined or skip_definitions != 'true' %}
-      {{ application_definitions() }}
-      {% endif %}
-
-      {% block base_application_definitions %}
-      {% endblock %}
-      {% block extra_application_definitions_for_test %}
-      {% endblock %}
+        {% block extra_application_definitions_for_test %}
+        {% endblock %}
     </application>
     {% block extra_root_definitions %}
     {% endblock %}

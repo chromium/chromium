@@ -8,7 +8,6 @@ import("//build/config/android/linker_version_script.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
-import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 # TODO(cjgrant): Remove these variables once downstream stops using them.
@@ -38,16 +37,11 @@ template("chrome_common_shared_library") {
       defined(invoker.collect_inputs_only) && invoker.collect_inputs_only
 
   # When _collect_inputs_only && !(!_is_webview && enable_vr).
-  not_needed([ "_export_java_symbols" ])
-
-  # TODO(crbug.com/1126301): Fix symbol table warnings from deps using
-  # -fsymbol-partition when they are merged into the main lib.
-  # Whether to merge all module deps into the main library.
-  _merge_modules = _is_monochrome && enable_chrome_module
+  not_needed(["_export_java_symbols"])
 
   # Create a partitioned libraries if the build config supports it, and the
   # invoker has supplied module descriptors.
-  _generate_partitions = !_merge_modules && defined(invoker.module_descs) &&
+  _generate_partitions = defined(invoker.module_descs) &&
                          use_native_partitions && !_collect_inputs_only
   _module_descs = []
   if (defined(invoker.module_descs)) {
@@ -127,7 +121,7 @@ template("chrome_common_shared_library") {
           deps += _module_desc.native_deps
         }
       }
-    } else if (_collect_inputs_only || _merge_modules) {
+    } else if (_collect_inputs_only) {
       foreach(_module_desc, _module_descs) {
         if (defined(_module_desc.native_deps)) {
           deps += _module_desc.native_deps
