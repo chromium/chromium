@@ -1115,7 +1115,7 @@ try_.chromium_mac_builder(
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_10_13,
     tryjob = try_.job(),
 )
 
@@ -1167,7 +1167,7 @@ try_.chromium_mac_builder(
     name = "mac_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_10_13,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(cancel_stale = False),
 )
