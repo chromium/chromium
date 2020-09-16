@@ -35,6 +35,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -49,6 +50,7 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -59,6 +61,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
@@ -67,8 +70,11 @@ import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.devui.CrashesListFragment;
 import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.R;
+import org.chromium.android_webview.devui.WebViewPackageError;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.devui.util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
@@ -79,6 +85,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -100,8 +108,11 @@ public class CrashesListFragmentTest {
     public void tearDown() {
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashDir(), null);
         FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashLogDir(), null);
-        // Tests are responsible for verifying every Intent they trigger.
-        assertNoUnverifiedIntents();
+        // Activity is launched, i.e the test is not skipped.
+        if (mRule.getActivity() != null) {
+            // Tests are responsible for verifying every Intent they trigger.
+            assertNoUnverifiedIntents();
+        }
     }
 
     private void launchCrashesFragment() {
@@ -291,6 +302,26 @@ public class CrashesListFragmentTest {
                 .check(matches(withText(uploadInfo)));
 
         return bodyDataInteraction;
+    }
+
+    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
+        private boolean mCanUseGms;
+        private boolean mUserConsent;
+
+        TestPlatformServiceBridge(boolean canUseGms, boolean userConsent) {
+            mCanUseGms = canUseGms;
+            mUserConsent = userConsent;
+        }
+
+        @Override
+        public boolean canUseGms() {
+            return mCanUseGms;
+        }
+
+        @Override
+        public void queryMetricsSetting(Callback<Boolean> callback) {
+            callback.onResult(mUserConsent);
+        }
     }
 
     @Test
@@ -858,5 +889,121 @@ public class CrashesListFragmentTest {
         onData(anything()).atPosition(2).perform(longClick());
         // This a pending upload, nothing should be copied
         assertThat(getClipBoardTextOnUiThread(context), is(""));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testConsentErrorMessage_notShown_differentWebViewPackageIsShown() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+        // Inject a dummy PackageInfo as the current WebView package to make sure it will always be
+        // different from the test's app package.
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                HomeFragmentTest.FAKE_WEBVIEW_PACKAGE);
+        PlatformServiceBridge.injectInstance(
+                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+        launchCrashesFragment();
+
+        String expectedErrorMessage = String.format(Locale.US,
+                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
+                WebViewPackageHelper.loadLabel(context));
+        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testConsentErrorMessage_notShown_userConsented() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+        // Inject test app package as the current WebView package.
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+        PlatformServiceBridge.injectInstance(
+                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/true));
+        launchCrashesFragment();
+
+        onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testConsentErrorMessage_shown_canUseGms() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        Intent settingsIntent =
+                new Intent(CrashesListFragment.USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION);
+        List<ResolveInfo> intentResolveInfo =
+                context.getPackageManager().queryIntentActivities(settingsIntent, 0);
+        Assume.assumeTrue(
+                "This test assumes \"usage& diagonstics\" settings can be found on the device",
+                intentResolveInfo.size() > 0);
+
+        // Inject test app package as the current WebView package.
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+        PlatformServiceBridge.injectInstance(
+                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+        launchCrashesFragment();
+
+        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.error_text))
+                .check(matches(
+                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+        onView(withId(R.id.action_button))
+                .check(matches(withText("Open Settings")))
+                .perform(click());
+        intended(IntentMatchers.hasAction(
+                CrashesListFragment.USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testConsentErrorMessage_shown_onlyInCrashFragment() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+        // Inject test app package as the current WebView package.
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+        PlatformServiceBridge.injectInstance(
+                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+        launchCrashesFragment();
+
+        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.error_text))
+                .check(matches(
+                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+
+        // CrashesListFragment -> FlagsFragment (Not shown)
+        onView(withId(R.id.navigation_flags_ui)).perform(click());
+        onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
+        // FlagsFragment -> HomeFragment (Not shown)
+        onView(withId(R.id.navigation_home)).perform(click());
+        onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
+        // HomeFragment -> CrashesListFragment (shown again)
+        onView(withId(R.id.navigation_crash_ui)).perform(click());
+        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.error_text))
+                .check(matches(
+                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testConsentErrorMessage_shown_cannotUseGms() throws Throwable {
+        Context context = InstrumentationRegistry.getTargetContext();
+        // Inject test app package as the current WebView package.
+        WebViewPackageHelper.setCurrentWebViewPackageForTesting(
+                WebViewPackageHelper.getContextPackageInfo(context));
+        PlatformServiceBridge.injectInstance(
+                new TestPlatformServiceBridge(/*canUseGms=*/false, /*userConsent=*/false));
+        launchCrashesFragment();
+
+        onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.error_text))
+                .check(matches(withText(CrashesListFragment.NO_GMS_ERROR_MESSAGE)));
+        onView(withId(R.id.action_button)).check(matches(not(isDisplayed())));
     }
 }

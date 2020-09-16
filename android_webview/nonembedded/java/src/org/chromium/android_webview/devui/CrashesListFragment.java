@@ -68,6 +68,14 @@ public class CrashesListFragment extends DevUiBaseFragment {
     public static final String NO_WIFI_DIALOG_MESSAGE =
             "You are connected to a metered network or cellular data."
             + " Do you want to proceed?";
+    public static final String CRASH_COLLECTION_DISABLED_ERROR_MESSAGE =
+            "Crash collection is disabled. Please turn on 'Usage & diagnostics' "
+            + "from the three-dotted menu in Google settings.";
+    public static final String NO_GMS_ERROR_MESSAGE =
+            "Crash collection is not supported at the moment.";
+
+    public static final String USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION =
+            "com.android.settings.action.EXTRA_SETTINGS";
 
     // Max number of crashes to show in the crashes list.
     public static final int MAX_CRASHES_NUMBER = 20;
@@ -484,11 +492,10 @@ public class CrashesListFragment extends DevUiBaseFragment {
 
     private void buildCrashConsentError(PersistentErrorView errorView) {
         if (PlatformServiceBridge.getInstance().canUseGms()) {
-            errorView.setText("Crash collection is disabled. Please turn on 'Usage & diagnostics' "
-                    + "from the three-dotted menu in Google settings.");
+            errorView.setText(CRASH_COLLECTION_DISABLED_ERROR_MESSAGE);
             // Open Google Settings activity, "Usage & diagnostics" activity is not exported and
             // cannot be opened directly.
-            Intent settingsIntent = new Intent("com.android.settings.action.EXTRA_SETTINGS");
+            Intent settingsIntent = new Intent(USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION);
             List<ResolveInfo> intentResolveInfo =
                     mContext.getPackageManager().queryIntentActivities(settingsIntent, 0);
             // Show a button to open GMS settings activity only if it exists.
@@ -502,7 +509,7 @@ public class CrashesListFragment extends DevUiBaseFragment {
             }
         } else {
             logCrashCollectionState(CollectionState.DISABLED_CANNOT_USE_GMS);
-            errorView.setText("Crash collection is not supported at the moment.");
+            errorView.setText(NO_GMS_ERROR_MESSAGE);
         }
     }
 
