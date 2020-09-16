@@ -270,8 +270,17 @@ public class ComponentPaymentRequestImpl {
             return null;
         }
 
+        // details has default value, so could never be null, according to payment_request.idl.
         if (details == null) {
             abortBeforeInstantiation(client, journeyLogger, ErrorStrings.INVALID_PAYMENT_DETAILS,
+                    AbortReason.INVALID_DATA_FROM_RENDERER);
+            return null;
+        }
+
+        // options has default value, so could never be null, according to
+        // payment_request.idl.
+        if (options == null) {
+            abortBeforeInstantiation(client, journeyLogger, ErrorStrings.INVALID_PAYMENT_OPTIONS,
                     AbortReason.INVALID_DATA_FROM_RENDERER);
             return null;
         }
@@ -280,8 +289,8 @@ public class ComponentPaymentRequestImpl {
                 new ComponentPaymentRequestImpl(client, renderFrameHost, webContents, journeyLogger,
                         options, skipUiForBasicCard, isOffTheRecord, onClosedListener, delegate);
         instance.onCreated();
-        boolean valid = instance.initAndValidate(renderFrameHost, browserPaymentRequestFactory,
-                methodData, details, options, googlePayBridgeEligible, isOffTheRecord);
+        boolean valid = instance.initAndValidate(
+                browserPaymentRequestFactory, methodData, details, googlePayBridgeEligible);
         if (!valid) {
             instance.close();
             return null;
@@ -305,12 +314,14 @@ public class ComponentPaymentRequestImpl {
 
     private ComponentPaymentRequestImpl(PaymentRequestClient client,
             RenderFrameHost renderFrameHost, WebContents webContents, JourneyLogger journeyLogger,
-            @Nullable PaymentOptions options, boolean skipUiForBasicCard, boolean isOffTheRecord,
+            PaymentOptions options, boolean skipUiForBasicCard, boolean isOffTheRecord,
             Runnable onClosedListener, Delegate delegate) {
         assert client != null;
         assert renderFrameHost != null;
         assert webContents != null;
         assert journeyLogger != null;
+        assert options != null;
+        assert onClosedListener != null;
         assert delegate != null;
 
         mRenderFrameHost = renderFrameHost;
@@ -324,10 +335,10 @@ public class ComponentPaymentRequestImpl {
                 UrlFormatter.formatUrlForSecurityDisplay(mWebContents.getLastCommittedUrl());
 
         mPaymentOptions = options;
-        mRequestShipping = options != null && options.requestShipping;
-        mRequestPayerName = options != null && options.requestPayerName;
-        mRequestPayerPhone = options != null && options.requestPayerPhone;
-        mRequestPayerEmail = options != null && options.requestPayerEmail;
+        mRequestShipping = mPaymentOptions.requestShipping;
+        mRequestPayerName = mPaymentOptions.requestPayerName;
+        mRequestPayerPhone = mPaymentOptions.requestPayerPhone;
+        mRequestPayerEmail = mPaymentOptions.requestPayerEmail;
 
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = CertificateChainHelper.getCertificateChain(mWebContents);
@@ -356,10 +367,9 @@ public class ComponentPaymentRequestImpl {
         return sNativeObserverForTest;
     }
 
-    private boolean initAndValidate(RenderFrameHost renderFrameHost,
-            BrowserPaymentRequest.Factory factory, @Nullable PaymentMethodData[] methodData,
-            @Nullable PaymentDetails details, @Nullable PaymentOptions options,
-            boolean googlePayBridgeEligible, boolean isOffTheRecord) {
+    private boolean initAndValidate(BrowserPaymentRequest.Factory factory,
+            PaymentMethodData[] methodData, PaymentDetails details,
+            boolean googlePayBridgeEligible) {
         mBrowserPaymentRequest = factory.createBrowserPaymentRequest(this);
         mJourneyLogger.recordCheckoutStep(
                 org.chromium.components.payments.CheckoutFunnelStep.INITIATED);
@@ -393,8 +403,7 @@ public class ComponentPaymentRequestImpl {
             return false;
         }
 
-        return mBrowserPaymentRequest.initAndValidate(
-                methodData, details, options, googlePayBridgeEligible);
+        return mBrowserPaymentRequest.initAndValidate(methodData, details, googlePayBridgeEligible);
     }
 
     /**

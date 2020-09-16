@@ -1196,7 +1196,11 @@ PaymentRequest::PaymentRequest(
           this,
           &PaymentRequest::OnUpdatePaymentDetailsTimeout),
       is_waiting_for_show_promise_to_resolve_(false) {
+  // options_, details has default value, so could never be null, according to
+  // payment_request.idl.
+  DCHECK(options_);
   DCHECK(details);
+
   DCHECK(GetExecutionContext()->IsSecureContext());
   if (!AllowedToUsePaymentRequest(execution_context)) {
     exception_state.ThrowSecurityError(

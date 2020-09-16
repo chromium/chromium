@@ -229,11 +229,12 @@ public class PaymentRequestImpl
         mJourneyLogger = componentPaymentRequestImpl.getJourneyLogger();
 
         mPaymentOptions = componentPaymentRequestImpl.getPaymentOptions();
-        mRequestShipping = PaymentOptionsUtils.requestShipping(mPaymentOptions);
-        mRequestPayerName = PaymentOptionsUtils.requestPayerName(mPaymentOptions);
-        mRequestPayerPhone = PaymentOptionsUtils.requestPayerPhone(mPaymentOptions);
-        mRequestPayerEmail = PaymentOptionsUtils.requestPayerEmail(mPaymentOptions);
-        mShippingType = PaymentOptionsUtils.getShippingType(mPaymentOptions);
+        assert mPaymentOptions != null;
+        mRequestShipping = mPaymentOptions.requestShipping;
+        mRequestPayerName = mPaymentOptions.requestPayerName;
+        mRequestPayerPhone = mPaymentOptions.requestPayerPhone;
+        mRequestPayerEmail = mPaymentOptions.requestPayerEmail;
+        mShippingType = mPaymentOptions.shippingType;
 
         mComponentPaymentRequestImpl = componentPaymentRequestImpl;
         mPaymentUIsManager = new PaymentUIsManager(/*delegate=*/this,
@@ -245,8 +246,10 @@ public class PaymentRequestImpl
     // Implement BrowserPaymentRequest:
     @Override
     public boolean initAndValidate(PaymentMethodData[] rawMethodData, PaymentDetails details,
-            @Nullable PaymentOptions options, boolean googlePayBridgeEligible) {
+            boolean googlePayBridgeEligible) {
         assert mComponentPaymentRequestImpl != null;
+        assert rawMethodData != null;
+        assert details != null;
 
         boolean googlePayBridgeActivated = googlePayBridgeEligible
                 && SkipToGPayHelper.canActivateExperiment(mWebContents, rawMethodData);
@@ -262,7 +265,7 @@ public class PaymentRequestImpl
 
         if (googlePayBridgeActivated) {
             PaymentMethodData data = methodData.get(MethodStrings.GOOGLE_PAY);
-            mSkipToGPayHelper = new SkipToGPayHelper(options, data.gpayBridgeData);
+            mSkipToGPayHelper = new SkipToGPayHelper(mPaymentOptions, data.gpayBridgeData);
         }
 
         mQueryForQuota = new HashMap<>(methodData);

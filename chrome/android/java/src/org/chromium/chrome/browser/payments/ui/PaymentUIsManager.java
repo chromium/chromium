@@ -575,7 +575,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                             false /* includeNameInLabel */));
         }
 
-        if (PaymentOptionsUtils.requestShipping(mParams.getPaymentOptions())) {
+        if (mParams.getPaymentOptions().requestShipping) {
             boolean haveCompleteShippingAddress = false;
             for (int i = 0; i < mAutofillProfiles.size(); i++) {
                 if (AutofillAddress.checkAddressCompletionStatus(
@@ -591,9 +591,8 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         PaymentOptions options = mParams.getPaymentOptions();
         if (PaymentOptionsUtils.requestAnyContactInformation(mParams.getPaymentOptions())) {
             // Do not persist changes on disk in OffTheRecord mode.
-            mContactEditor = new ContactEditor(PaymentOptionsUtils.requestPayerName(options),
-                    PaymentOptionsUtils.requestPayerPhone(options),
-                    PaymentOptionsUtils.requestPayerEmail(options),
+            mContactEditor = new ContactEditor(options.requestPayerName, options.requestPayerPhone,
+                    options.requestPayerEmail,
                     /*saveToDisk=*/!mIsOffTheRecord);
             boolean haveCompleteContactInfo = false;
             for (int i = 0; i < getAutofillProfiles().size(); i++) {
@@ -885,7 +884,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
 
     /** Implements {@link PaymentRequestUI.Client.shouldShowShippingSection}. */
     public boolean shouldShowShippingSection() {
-        if (!PaymentOptionsUtils.requestShipping(mParams.getPaymentOptions())) return false;
+        if (!mParams.getPaymentOptions().requestShipping) return false;
 
         if (mPaymentMethodsSection == null) return true;
 
@@ -898,16 +897,15 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         PaymentApp selectedApp = (mPaymentMethodsSection == null)
                 ? null
                 : (PaymentApp) mPaymentMethodsSection.getSelectedItem();
-        org.chromium.payments.mojom.PaymentOptions options = mParams.getPaymentOptions();
-        if (PaymentOptionsUtils.requestPayerName(options)
-                && (selectedApp == null || !selectedApp.handlesPayerName())) {
+        PaymentOptions options = mParams.getPaymentOptions();
+        if (options.requestPayerName && (selectedApp == null || !selectedApp.handlesPayerName())) {
             return true;
         }
-        if (PaymentOptionsUtils.requestPayerPhone(options)
+        if (options.requestPayerPhone
                 && (selectedApp == null || !selectedApp.handlesPayerPhone())) {
             return true;
         }
-        if (PaymentOptionsUtils.requestPayerEmail(options)
+        if (options.requestPayerEmail
                 && (selectedApp == null || !selectedApp.handlesPayerEmail())) {
             return true;
         }
@@ -1139,8 +1137,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 mMerchantSupportsAutofillCards, !PaymentPreferencesUtil.isPaymentCompleteOnce(),
                 mMerchantName, mTopLevelOriginFormattedForDisplay,
                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents),
-                new ShippingStrings(
-                        PaymentOptionsUtils.getShippingType(mParams.getPaymentOptions())),
+                new ShippingStrings(mParams.getPaymentOptions().shippingType),
                 mPaymentUisShowStateReconciler, Profile.fromWebContents(mWebContents));
         activity.getLifecycleDispatcher().register(
                 mPaymentRequestUI); // registered as a PauseResumeWithNativeObserver
@@ -1160,7 +1157,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
                 });
 
         // Add the callback to change the label of shipping addresses depending on the focus.
-        if (PaymentOptionsUtils.requestShipping(mParams.getPaymentOptions())) {
+        if (mParams.getPaymentOptions().requestShipping) {
             setShippingAddressSectionFocusChangedObserverForPaymentRequestUI();
         }
 
@@ -1402,13 +1399,10 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         int sectionSize = mPaymentMethodsSection.getSize();
         for (int i = 0; i < sectionSize; i++) {
             PaymentApp app = (PaymentApp) mPaymentMethodsSection.getItem(i);
-            if ((!PaymentOptionsUtils.requestShipping(mParams.getPaymentOptions())
-                        || app.handlesShippingAddress())
-                    && (!PaymentOptionsUtils.requestPayerName(mParams.getPaymentOptions())
-                            || app.handlesPayerName())
-                    && (!PaymentOptionsUtils.requestPayerPhone(mParams.getPaymentOptions())
-                            || app.handlesPayerPhone())
-                    && (!PaymentOptionsUtils.requestPayerEmail(mParams.getPaymentOptions())
+            if ((!mParams.getPaymentOptions().requestShipping || app.handlesShippingAddress())
+                    && (!mParams.getPaymentOptions().requestPayerName || app.handlesPayerName())
+                    && (!mParams.getPaymentOptions().requestPayerPhone || app.handlesPayerPhone())
+                    && (!mParams.getPaymentOptions().requestPayerEmail
                             || app.handlesPayerEmail())) {
                 // There is more than one available app that can provide all merchant requested
                 // information information.
