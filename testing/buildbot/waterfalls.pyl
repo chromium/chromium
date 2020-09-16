@@ -2394,6 +2394,14 @@
           'gtest_tests': 'fieldtrial_browser_tests',
         },
       },
+      'linux-inverse-fieldtrials-fyi-rel': {
+        'mixins': [
+          'linux-xenial',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+        },
+      },
       'linux-lacros-tester-fyi-rel': {
         'additional_compile_targets': [
           'chrome',
