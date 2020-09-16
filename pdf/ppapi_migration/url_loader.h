@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -152,10 +153,40 @@ class BlinkUrlLoader final : public UrlLoader,
   void DidFail(const blink::WebURLError& error) override;
 
  private:
+  enum class LoadingState {
+    // Before calling `Open()`.
+    kWaitingToOpen,
+
+    // After calling `Open()`, but before `DidReceiveResponse()` or `DidFail()`.
+    kOpening,
+
+    // After `DidReceiveResponse()`, but before `DidFinishLoading()` or
+    // `DidFail()`. Zero or more calls allowed to `DidReceiveData()`.
+    kStreamingData,
+
+    // After `DidFinishLoading()` or `DidFail()`, or forced by `Close()`.
+    // Details about how the load completed are in `complete_result_`.
+    kLoadComplete,
+  };
+
+  // Aborts the load with `result`. Runs callback if pending.
+  void AbortLoad(int32_t result);
+
+  // Runs callback for `ReadResponseBody()` if pending.
+  void RunReadCallback();
+
+  void SetLoadComplete(int32_t result);
+
   base::WeakPtr<Client> client_;
   bool grant_universal_access_ = false;
 
+  LoadingState state_ = LoadingState::kWaitingToOpen;
+  int32_t complete_result_ = 0;
+
   std::unique_ptr<blink::WebAssociatedURLLoader> blink_loader_;
+
+  ResultCallback open_callback_;
+  ResultCallback read_callback_;
 };
 
 // A Pepper URL loader.
