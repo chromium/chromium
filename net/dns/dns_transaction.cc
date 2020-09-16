@@ -961,7 +961,8 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
         &probe_stats->probe_attempts, context_->url_request_context(),
         context_->isolation_info(), RequestPriority::DEFAULT_PRIORITY);
 
-    probe_stats->probe_attempts.back()->Start(base::BindOnce(
+    DnsAttempt* probe_attempt = probe_stats->probe_attempts.back().get();
+    probe_attempt->Start(base::BindOnce(
         &DnsOverHttpsProbeRunner::ProbeComplete, weak_ptr_factory_.GetWeakPtr(),
         attempt_number, doh_server_index, std::move(probe_stats),
         network_change, sequence_start_time,
