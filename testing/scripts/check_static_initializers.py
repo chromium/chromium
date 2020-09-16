@@ -110,6 +110,7 @@ def main_mac(src_dir):
           print('Expected <= %d static initializers in %s, but found %d' %
               (FALLBACK_EXPECTED_MAC_SI_COUNT, chromium_framework_executable,
                si_count))
+          ret = 1
           show_mod_init_func = os.path.join(mac_tools_path,
                                             'show_mod_init_func.py')
           args = [show_mod_init_func]
