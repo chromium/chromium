@@ -1219,9 +1219,11 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
   media_source_attachment_ =
       MediaSourceAttachment::LookupMediaSource(url.GetString());
   if (media_source_attachment_) {
+    bool start_result = false;
     media_source_tracer_ =
-        media_source_attachment_->StartAttachingToMediaElement(this);
-    if (media_source_tracer_) {
+        media_source_attachment_->StartAttachingToMediaElement(this,
+                                                               &start_result);
+    if (start_result) {
       // If the associated feature is enabled, auto-revoke the MediaSource
       // object URL that was used for attachment on successful (start of)
       // attachment. This can help reduce memory bloat later if the app does not
@@ -1236,6 +1238,7 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
       // Forget our reference to the MediaSourceAttachment, so we leave it alone
       // while processing remainder of load failure.
       media_source_attachment_.reset();
+      media_source_tracer_ = nullptr;
       attempt_load = false;
     }
   }

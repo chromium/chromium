@@ -67,28 +67,35 @@ class CORE_EXPORT MediaSourceAttachment
   // attempting to attach to the MediaSource object using this attachment
   // instance. The WebMediaSource is not available to the element initially, so
   // between the two calls, the attachment could be considered partially setup.
-  // If already attached, StartAttachingToMediaElement() returns nullptr.
+  // If attachment start fails (for example, if the underlying MediaSource is
+  // already attached, or if this attachment has already been unregistered from
+  // the MediaSourceRegistry), StartAttachingToMediaElement() sets |*success|
+  // false and returns nullptr. |success| must not be nullptr.
   // Otherwise, the underlying MediaSource must be in 'closed' state, and
-  // indicates success by returning a tracer object useful in at least
-  // same-thread attachments for enabling automatic idle unreferenced
-  // same-thread attachment object garbage collection.
+  // indicates success by setting |*success| true and optionally returning a
+  // tracer object useful in at least same-thread attachments for enabling
+  // automatic idle unreferenced same-thread attachment object garbage
+  // collection. Note that that tracer could be nullptr even if attachment start
+  // was successful, for instance in a cross-thread attachment where there is no
+  // tracer.
   // CompleteAttachingToMediaElement() provides the attached MediaSource with
   // the underlying WebMediaSource, enabling parsing of media provided by the
   // application for playback, for example.
   // Once attached, the MediaSource and the HTMLMediaElement use each other via
   // this attachment to accomplish the extended API.
-  // The MediaSourceTracer argument to calls in this interface enables the
-  // attachment to dynamically retrieve the Oilpan-managed objects without
-  // itself being managed by oilpan. Alternatives like requiring the (non-GC'ed)
-  // attachment to remember the tracer as a Persistent would break the ability
-  // for automatic collection of idle unreferenced same-thread HTMLME+MSE object
-  // collections. The tracer argument must be the same as that returned by the
-  // most recent call to the attachment's StartAttachingToMediaElement. We
-  // cannot have the tracer as a Member, and using Persistent to hold it instead
-  // would break the ability for automatic collection of idle unreferenced
-  // same-thread attached HTMLMediaElement + MediaSource object groups.
-  virtual MediaSourceTracer* StartAttachingToMediaElement(
-      HTMLMediaElement*) = 0;
+  // The MediaSourceTracer argument to calls in this interface enables at least
+  // the same-thread attachment to dynamically retrieve the Oilpan-managed
+  // objects without itself being managed by oilpan. Alternatives like requiring
+  // the (non-GC'ed) attachment to remember the tracer as a Persistent would
+  // break the ability for automatic collection of idle unreferenced same-thread
+  // HTMLME+MSE object collections. The tracer argument must be the same as that
+  // returned by the most recent call to the attachment's
+  // StartAttachingToMediaElement. We cannot have the tracer as a Member, and
+  // using Persistent to hold it instead would break the ability for automatic
+  // collection of idle unreferenced same-thread attached HTMLMediaElement +
+  // MediaSource object groups.
+  virtual MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
+                                                          bool* success) = 0;
   virtual void CompleteAttachingToMediaElement(
       MediaSourceTracer* tracer,
       std::unique_ptr<WebMediaSource>) = 0;

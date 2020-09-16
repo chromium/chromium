@@ -29,7 +29,8 @@ class SameThreadMediaSourceAttachment final
   void OnMediaSourceContextDestroyed() final;
 
   // MediaSourceAttachment
-  MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*) override;
+  MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
+                                                  bool* success) override;
   void CompleteAttachingToMediaElement(
       MediaSourceTracer* tracer,
       std::unique_ptr<WebMediaSource>) override;

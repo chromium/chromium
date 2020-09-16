@@ -96,14 +96,24 @@ bool SameThreadMediaSourceAttachment::GetElementError(
 
 MediaSourceTracer*
 SameThreadMediaSourceAttachment::StartAttachingToMediaElement(
-    HTMLMediaElement* element) {
+    HTMLMediaElement* element,
+    bool* success) {
   VerifyCalledWhileContextsAliveForDebugging();
+  DCHECK(success);
 
-  if (!registered_media_source_)
+  if (!registered_media_source_) {
+    *success = false;
     return nullptr;
+  }
 
-  return registered_media_source_->StartAttachingToMediaElement(
-      WrapRefCounted(this), element);
+  MediaSourceTracer* tracer =
+      registered_media_source_->StartAttachingToMediaElement(
+          WrapRefCounted(this), element);
+
+  // For this same-thread attachment start, a non-nullptr tracer indicates
+  // success here.
+  *success = !!tracer;
+  return tracer;
 }
 
 void SameThreadMediaSourceAttachment::CompleteAttachingToMediaElement(

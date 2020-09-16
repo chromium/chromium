@@ -640,7 +640,8 @@ class CORE_EXPORT HTMLMediaElement
   // of the attachment (same-thread vs cross-thread, for instance) must be the
   // same semantic as the actual derived type of the tracer. Further, if there
   // is no attachment, then there must be no tracer that's tracking an active
-  // attachment.
+  // attachment. Note that some kinds of attachments do not require a tracer;
+  // see MediaSourceAttachment::StartAttachingToMediaElement() for details.
   scoped_refptr<MediaSourceAttachment> media_source_attachment_;
   Member<MediaSourceTracer> media_source_tracer_;
 
