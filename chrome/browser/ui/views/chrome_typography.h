@@ -31,8 +31,8 @@ enum ChromeTextContext {
   // Text of the page title in the tab hover card.
   CONTEXT_TAB_HOVER_CARD_TITLE,
 
-  // Text of the number of tabs in the webui tab counter.
-  CONTEXT_WEB_UI_TAB_COUNTER,
+  // Text of the number of tabs in the tab counter used in tablet mode.
+  CONTEXT_TAB_COUNTER,
 
   // Text in the location bar entry, and primary text in the omnibox dropdown.
   CONTEXT_OMNIBOX_PRIMARY,

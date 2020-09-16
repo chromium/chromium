@@ -66,7 +66,7 @@ void ApplyCommonFontStyles(int context,
       *size_delta = GetFontSizeDeltaBoundedByAvailableHeight(height, height);
       break;
     }
-    case CONTEXT_WEB_UI_TAB_COUNTER: {
+    case CONTEXT_TAB_COUNTER: {
       *size_delta = GetFontSizeDeltaIgnoringUserOrLocaleSettings(14);
       *weight = gfx::Font::Weight::BOLD;
       break;

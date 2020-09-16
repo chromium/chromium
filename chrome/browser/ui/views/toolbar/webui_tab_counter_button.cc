@@ -42,6 +42,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -57,15 +58,10 @@ constexpr base::TimeDelta kFirstPartDuration =
 // tab counter border, the font shrinks when the count is 10 or higher.
 class NumberLabel : public views::Label {
  public:
-  NumberLabel() : Label(base::string16(), CONTEXT_WEB_UI_TAB_COUNTER) {
-    // Use the default font for single-digit tab counts.
+  NumberLabel() : Label(base::string16(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
-
-    // Use a size adjustment of -2 because -1 makes the font impossible to
-    // center in the view.
-    constexpr int kDoubleDigitSizeAdjustment = -2;
-    double_digit_font_ =
-        single_digit_font_.DeriveWithSizeDelta(kDoubleDigitSizeAdjustment);
+    double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
+                                               views::style::STYLE_SECONDARY);
   }
 
   ~NumberLabel() override {}

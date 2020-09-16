@@ -76,6 +76,18 @@ const gfx::FontList& ChromeTypographyProvider::GetFont(int context,
     font_weight = gfx::Font::Weight::SEMIBOLD;
   }
 
+  if (context == CONTEXT_TAB_COUNTER &&
+      style == views::style::STYLE_SECONDARY) {
+    // Secondary font is for double-digit counts. Because we have control over
+    // system fonts on ChromeOS, we can just choose a condensed font. For other
+    // platforms we adjust size.
+#if defined(OS_CHROMEOS)
+    typeface = "Roboto Condensed";
+#else
+    size_delta -= 2;
+#endif
+  }
+
   if (style == STYLE_EMPHASIZED || style == STYLE_EMPHASIZED_SECONDARY) {
     // Limit emphasizing text to contexts where it's obviously correct. If you
     // hit this DCHECK, ensure it's sane and UX-approved to extend it to your
