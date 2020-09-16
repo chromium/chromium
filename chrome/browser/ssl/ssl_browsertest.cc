@@ -74,6 +74,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/certificate_transparency/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
@@ -1035,8 +1036,19 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestMixedContentWithSamePageNavigation) {
                                    "f.action = 'http://foo.test';"
                                    "document.body.appendChild(f)"));
   observer.WaitForDidChangeVisibleSecurityState();
+
+  // If mixed form warnings are enabled, we display the lock icon on otherwise
+  // secure sites with an insecure form.
+  security_state::SecurityLevel expected_level =
+      base::FeatureList::IsEnabled(
+          security_interstitials::kInsecureFormSubmissionInterstitial) &&
+              base::FeatureList::IsEnabled(
+                  autofill::features::kAutofillPreventMixedFormsFilling)
+          ? security_state::SECURE
+          : security_state::NONE;
+
   ssl_test_util::CheckSecurityState(
-      tab, CertError::NONE, security_state::NONE,
+      tab, CertError::NONE, expected_level,
       AuthState::DISPLAYED_FORM_WITH_INSECURE_ACTION);
 
   // Go back (which should also be a same-document navigation) and test that the
@@ -1044,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestMixedContentWithSamePageNavigation) {
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   EXPECT_TRUE(content::WaitForLoadStop(tab));
   ssl_test_util::CheckSecurityState(
-      tab, CertError::NONE, security_state::NONE,
+      tab, CertError::NONE, expected_level,
       AuthState::DISPLAYED_FORM_WITH_INSECURE_ACTION);
 }
 
@@ -2394,9 +2406,19 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestDisplaysInsecureForm) {
   ui_test_utils::NavigateToURL(browser(),
                                https_server_.GetURL(replacement_path));
 
+  // If mixed form warnings are enabled, we display the lock icon on otherwise
+  // secure sites with an insecure form.
+  security_state::SecurityLevel expected_level =
+      base::FeatureList::IsEnabled(
+          security_interstitials::kInsecureFormSubmissionInterstitial) &&
+              base::FeatureList::IsEnabled(
+                  autofill::features::kAutofillPreventMixedFormsFilling)
+          ? security_state::SECURE
+          : security_state::NONE;
+
   ssl_test_util::CheckSecurityState(
       browser()->tab_strip_model()->GetActiveWebContents(), CertError::NONE,
-      security_state::NONE, AuthState::DISPLAYED_FORM_WITH_INSECURE_ACTION);
+      expected_level, AuthState::DISPLAYED_FORM_WITH_INSECURE_ACTION);
 }
 
 // Verifies that an SSL interstitial generates SafeBrowsing extension api

@@ -93,7 +93,7 @@ namespace autofill {
 namespace {
 
 static const char kTestShippingFormString[] =
-    "<form action=\"http://www.example.com/\" method=\"POST\">"
+    "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
     "<label for=\"lastname\">Last name:</label>"
@@ -123,7 +123,7 @@ static const char kTestShippingFormString[] =
     "</form>";
 
 static const char kTestBillingFormString[] =
-    "<form action=\"http://www.example.com/\" method=\"POST\">"
+    "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname_billing\">First name:</label>"
     " <input type=\"text\" id=\"firstname_billing\"><br>"
     "<label for=\"lastname_billing\">Last name:</label>"
@@ -173,7 +173,7 @@ static const char kTestEventFormString[] =
     "var selectchange = false;"
     "var selectblur = false;"
     "</script>"
-    "<form action=\"http://www.example.com/\" method=\"POST\">"
+    "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
     "<label for=\"lastname\">Last name:</label>"
@@ -213,7 +213,7 @@ static const char kTestEventFormString[] =
     "</form>";
 
 static const char kTestShippingFormWithCompanyString[] =
-    "<form action=\"http://www.example.com/\" method=\"POST\">"
+    "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
     "<label for=\"lastname\">Last name:</label>"
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // is no enough space to show at least one row of the autofill popup and hence
   // the autofill shouldn't be shown.
   static const char kTestFormWithLargeInputField[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "<label for=\"firstname\">First name:</label>"
       " <input type=\"text\" id=\"firstname\" style=\"position:fixed; "
       "top:-100px;height:5120px\"><br>"
@@ -1325,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
       "  <option value=\"Adam\"></option>"
@@ -1362,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
   static const char kTestForm[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
       "  <option value=\"Adam\"></option>"
@@ -1648,7 +1648,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // JavaScript, with only one actually visible at any given time.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
   static const char kForm[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "<label for=\"firstname\">First name:</label>"
       " <input type=\"text\" id=\"firstname\""
       "        onfocus=\"domAutomationController.send(true)\"><br>"
@@ -1697,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        AutofillFormWithNonAutofillableField) {
   static const char kForm[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "<label for=\"firstname\">First name:</label>"
       " <input type=\"text\" id=\"firstname\""
       "        onfocus=\"domAutomationController.send(true)\"><br>"
@@ -1743,7 +1743,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   static const char kDynamicForm[] =
-      "<form id=\"form\" action=\"http://www.example.com/\""
+      "<form id=\"form\" action=\"https://www.example.com/\""
       "      method=\"POST\"></form>"
       "<script>"
       "function AddElement(name, label) {"
@@ -1963,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
   CreateTestProfile();
 
   static const char kForm[] =
-      "<form action=\"http://www.example.com/\" method=\"POST\">"
+      "<form action=\"https://www.example.com/\" method=\"POST\">"
       "<label for=\"fn\">なまえ</label>"
       " <input type=\"text\" id=\"fn\""
       "        onfocus=\"domAutomationController.send(true)\""
