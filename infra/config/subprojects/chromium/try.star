@@ -321,10 +321,11 @@ try_.chromium_android_builder(
     cores = 16,
     goma_jobs = goma.jobs.J300,
     ssd = True,
-    # TODO(crbug.com/1111436): Enable on CQ once the maintenance for
-    # Pixel 2 devices are finished.
-    #main_list_view = settings.main_list_view_name,
-    #tryjob = try_.job(),
+    # TODO(crbug.com/1111436): Enable on CQ fully once the tests run fine.
+    main_list_view = settings.main_list_view_name,
+    tryjob = try_.job(
+        experiment_percentage = 20,
+    ),
 )
 
 try_.chromium_android_builder(
