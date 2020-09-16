@@ -1172,7 +1172,7 @@ scoped_refptr<ComputedStyle> StyleResolver::PseudoStyleForElement(
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
-    int page_index,
+    uint32_t page_index,
     const AtomicString& page_name) {
   scoped_refptr<const ComputedStyle> initial_style =
       InitialStyleForElement(GetDocument());

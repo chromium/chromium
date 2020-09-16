@@ -597,7 +597,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void IncLayoutBlockCounter() { ++layout_blocks_counter_; }
   void IncLayoutBlockCounterNG() { ++layout_blocks_counter_ng_; }
 
-  scoped_refptr<const ComputedStyle> StyleForPage(int page_index);
+  scoped_refptr<const ComputedStyle> StyleForPage(uint32_t page_index);
 
   // Ensures that location-based data will be valid for a given node.
   //
@@ -611,13 +611,13 @@ class CORE_EXPORT Document : public ContainerNode,
                                            DocumentUpdateReason reason);
 
   // Returns true if page box (margin boxes and page borders) is visible.
-  bool IsPageBoxVisible(int page_index);
+  bool IsPageBoxVisible(uint32_t page_index);
 
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. The size and
   // margins must be initialized to the default values that are used if auto is
   // specified.
-  void GetPageDescription(int page_index, WebPrintPageDescription*);
+  void GetPageDescription(uint32_t page_index, WebPrintPageDescription*);
 
   ResourceFetcher* Fetcher() const { return fetcher_.Get(); }
 

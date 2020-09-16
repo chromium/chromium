@@ -245,7 +245,7 @@ void PrintContext::OutputLinkedDestinations(GraphicsContext& context,
 // static
 String PrintContext::PageProperty(LocalFrame* frame,
                                   const char* property_name,
-                                  int page_number) {
+                                  uint32_t page_number) {
   Document* document = frame->GetDocument();
   ScopedPrintContext print_context(frame);
   // Any non-zero size is OK here. We don't care about actual layout. We just
@@ -274,12 +274,12 @@ String PrintContext::PageProperty(LocalFrame* frame,
   return String("pageProperty() unimplemented for: ") + property_name;
 }
 
-bool PrintContext::IsPageBoxVisible(LocalFrame* frame, int page_number) {
+bool PrintContext::IsPageBoxVisible(LocalFrame* frame, uint32_t page_number) {
   return frame->GetDocument()->IsPageBoxVisible(page_number);
 }
 
 String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
-                                                int page_number,
+                                                uint32_t page_number,
                                                 int width,
                                                 int height,
                                                 int margin_top,

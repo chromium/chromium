@@ -18,14 +18,15 @@
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "printing/print_job_constants.h"
 
 namespace android_webview {
 
 namespace {
 
-int SaveDataToFd(int fd,
-                 int page_count,
-                 scoped_refptr<base::RefCountedSharedMemoryMapping> data) {
+uint32_t SaveDataToFd(int fd,
+                      uint32_t page_count,
+                      scoped_refptr<base::RefCountedSharedMemoryMapping> data) {
   bool result = fd > base::kInvalidFd &&
                 base::IsValueInRangeForNumericType<int>(data->size());
   if (result) {
@@ -128,6 +129,12 @@ void AwPrintManager::OnDidPrintDocument(
     return;
   }
 
+  if (number_pages_ > printing::kMaxPageCount) {
+    web_contents()->Stop();
+    PdfWritingDone(0);
+    return;
+  }
+
   DCHECK(pdf_writing_done_callback_);
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateTaskRunner(
@@ -143,9 +150,10 @@ void AwPrintManager::OnDidPrintDocument(
 void AwPrintManager::OnDidPrintDocumentWritingDone(
     const PdfWritingDoneCallback& callback,
     std::unique_ptr<DelayedFrameDispatchHelper> helper,
-    int page_count) {
+    uint32_t page_count) {
+  DCHECK_LE(page_count, printing::kMaxPageCount);
   if (callback)
-    callback.Run(page_count);
+    callback.Run(base::checked_cast<int>(page_count));
   helper->SendCompleted();
 }
 

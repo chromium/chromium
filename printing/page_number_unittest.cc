@@ -11,18 +11,18 @@ TEST(PageNumberTest, Count) {
   printing::PageNumber page;
   EXPECT_EQ(printing::PageNumber::npos(), page);
   page.Init(settings, 3);
-  EXPECT_EQ(0, page.ToInt());
+  EXPECT_EQ(0u, page.ToUint());
   EXPECT_NE(printing::PageNumber::npos(), page);
   ++page;
-  EXPECT_EQ(1, page.ToInt());
+  EXPECT_EQ(1u, page.ToUint());
   EXPECT_NE(printing::PageNumber::npos(), page);
 
   printing::PageNumber page_copy(page);
-  EXPECT_EQ(1, page_copy.ToInt());
-  EXPECT_EQ(1, page.ToInt());
+  EXPECT_EQ(1u, page_copy.ToUint());
+  EXPECT_EQ(1u, page.ToUint());
   ++page;
-  EXPECT_EQ(1, page_copy.ToInt());
-  EXPECT_EQ(2, page.ToInt());
+  EXPECT_EQ(1u, page_copy.ToUint());
+  EXPECT_EQ(2u, page.ToUint());
   ++page;
   EXPECT_EQ(printing::PageNumber::npos(), page);
   ++page;

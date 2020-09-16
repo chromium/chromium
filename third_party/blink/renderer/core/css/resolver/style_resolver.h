@@ -87,7 +87,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const ComputedStyle* layout_parent_style);
 
   scoped_refptr<const ComputedStyle> StyleForPage(
-      int page_index,
+      uint32_t page_index,
       const AtomicString& page_name);
   scoped_refptr<const ComputedStyle> StyleForText(Text*);
   scoped_refptr<ComputedStyle> StyleForViewport();

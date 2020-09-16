@@ -152,7 +152,7 @@ class ScopedPreviewTestDelegate : printing::PrintPreviewUI::TestDelegate {
   }
 
   // PrintPreviewUI::TestDelegate implementation.
-  void DidGetPreviewPageCount(int page_count) override {
+  void DidGetPreviewPageCount(uint32_t page_count) override {
     total_page_count_ = page_count;
   }
 
@@ -178,8 +178,8 @@ class ScopedPreviewTestDelegate : printing::PrintPreviewUI::TestDelegate {
   gfx::Size dialog_size() { return dialog_size_; }
 
  private:
-  int total_page_count_ = 1;
-  int rendered_page_count_ = 0;
+  uint32_t total_page_count_ = 1;
+  uint32_t rendered_page_count_ = 0;
   base::RunLoop* run_loop_ = nullptr;
   gfx::Size dialog_size_;
 };

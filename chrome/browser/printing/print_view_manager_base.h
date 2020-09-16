@@ -76,7 +76,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   }
 
   // mojom::PrintManagerHost:
-  void DidGetPrintedPagesCount(int32_t cookie, int32_t number_pages) override;
+  void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override;
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
   void SetAccessibilityTree(
       int32_t cookie,
@@ -147,12 +147,12 @@ class PrintViewManagerBase : public content::NotificationObserver,
 // Helpers for PrintForPrintPreview();
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void OnPrintSettingsDone(scoped_refptr<base::RefCountedMemory> print_data,
-                           int page_count,
+                           uint32_t page_count,
                            PrinterHandler::PrintCallback callback,
                            std::unique_ptr<PrinterQuery> printer_query);
 
   void StartLocalPrintJob(scoped_refptr<base::RefCountedMemory> print_data,
-                          int page_count,
+                          uint32_t page_count,
                           int cookie,
                           PrinterHandler::PrintCallback callback);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)

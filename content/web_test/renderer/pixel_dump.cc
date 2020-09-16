@@ -46,7 +46,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
 
   blink::WebSize page_size_in_pixels = frame_widget->Size();
 
-  int page_count = web_frame->PrintBegin(page_size_in_pixels);
+  uint32_t page_count = web_frame->PrintBegin(page_size_in_pixels);
   blink::WebSize spool_size =
       web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, page_count);
 

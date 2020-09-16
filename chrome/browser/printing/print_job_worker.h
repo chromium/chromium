@@ -51,7 +51,7 @@ class PrintJobWorker {
   // |is_scripted| should be true for calls coming straight from window.print().
   // |is_modifiable| implies HTML and not other formats like PDF.
   void GetSettings(bool ask_user_for_settings,
-                   int document_page_count,
+                   uint32_t document_page_count,
                    bool has_selection,
                    mojom::MarginType margin_type,
                    bool is_scripted,
@@ -142,7 +142,7 @@ class PrintJobWorker {
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,
   // but sticks with this for consistency.
-  void GetSettingsWithUI(int document_page_count,
+  void GetSettingsWithUI(uint32_t document_page_count,
                          bool has_selection,
                          bool is_scripted,
                          SettingsCallback callback);

@@ -8743,8 +8743,8 @@ TEST_F(WebFrameTest, PrintingBasic)
   print_params.print_content_area.width = 500;
   print_params.print_content_area.height = 500;
 
-  int page_count = frame->PrintBegin(print_params);
-  EXPECT_EQ(1, page_count);
+  uint32_t page_count = frame->PrintBegin(print_params);
+  EXPECT_EQ(1u, page_count);
   frame->PrintEnd();
 }
 
@@ -13038,7 +13038,7 @@ static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebSize page_size(500, 500);
   print_params.print_content_area.width = page_size.width;
   print_params.print_content_area.height = page_size.height;
-  EXPECT_EQ(1, frame->PrintBegin(print_params, WebNode()));
+  EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(IntRect()), page_size,
                               page_size);
@@ -13117,7 +13117,7 @@ TEST_F(WebFrameTest, FirstLetterHasDOMNodeIdWhenPrinting) {
   print_params.print_content_area.width = page_size.width;
   print_params.print_content_area.height = page_size.height;
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
-  EXPECT_EQ(1, frame->PrintBegin(print_params, WebNode()));
+  EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(IntRect()), page_size,
                               page_size);
@@ -13365,7 +13365,7 @@ TEST_F(WebFrameSimTest, PageOrientation) {
   WebPrintParams print_params;
   print_params.print_content_area.width = page_size.width;
   print_params.print_content_area.height = page_size.height;
-  EXPECT_EQ(4, frame->PrintBegin(print_params, WebNode()));
+  EXPECT_EQ(4u, frame->PrintBegin(print_params, WebNode()));
 
   WebPrintPageDescription description;
 

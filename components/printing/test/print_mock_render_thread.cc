@@ -109,8 +109,8 @@ void PrintMockRenderThread::OnDidStartPreview(
 void PrintMockRenderThread::OnDidPreviewPage(
     const printing::mojom::DidPreviewPageParams& params,
     const printing::mojom::PreviewIds& ids) {
-  int page_number = params.page_number;
-  DCHECK_GE(page_number, printing::FIRST_PAGE_INDEX);
+  uint32_t page_number = params.page_number;
+  DCHECK_NE(page_number, printing::kInvalidPageIndex);
   print_preview_pages_remaining_--;
   print_preview_pages_.emplace_back(
       params.page_number, params.content->metafile_data_region.GetSize());
@@ -202,7 +202,7 @@ void PrintMockRenderThread::OnUpdatePrintSettings(
       job_settings.FindIntKey(printing::kSettingScaleFactor);
   int scale_factor = setting_scale_factor.value_or(100);
 
-  std::vector<int> pages(printing::PageRange::GetPages(new_ranges));
+  std::vector<uint32_t> pages(printing::PageRange::GetPages(new_ranges));
   printer_->UpdateSettings(document_cookie, &params, pages,
                            margins_type.value(), page_size, scale_factor);
   base::Optional<bool> selection_only =
@@ -224,15 +224,16 @@ void PrintMockRenderThread::set_print_dialog_user_response(bool response) {
   print_dialog_user_response_ = response;
 }
 
-void PrintMockRenderThread::set_print_preview_cancel_page_number(int page) {
+void PrintMockRenderThread::set_print_preview_cancel_page_number(
+    uint32_t page) {
   print_preview_cancel_page_number_ = page;
 }
 
-int PrintMockRenderThread::print_preview_pages_remaining() const {
+uint32_t PrintMockRenderThread::print_preview_pages_remaining() const {
   return print_preview_pages_remaining_;
 }
 
-const std::vector<std::pair<int, uint32_t>>&
+const std::vector<std::pair<uint32_t, uint32_t>>&
 PrintMockRenderThread::print_preview_pages() const {
   return print_preview_pages_;
 }

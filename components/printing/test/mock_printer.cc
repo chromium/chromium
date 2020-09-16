@@ -75,8 +75,8 @@ MockPrinter::MockPrinter()
       document_cookie_(-1),
       current_document_cookie_(0),
       printer_status_(PRINTER_READY),
-      number_pages_(0),
-      page_number_(0),
+      number_pages_(0u),
+      page_number_(0u),
       is_first_request_(true),
       print_to_pdf_(false),
       preview_request_id_(0),
@@ -146,7 +146,7 @@ void MockPrinter::UseInvalidContentSize() {
 }
 
 void MockPrinter::ScriptedPrint(int cookie,
-                                int expected_pages_count,
+                                uint32_t expected_pages_count,
                                 bool has_selection,
                                 printing::mojom::PrintPagesParams* settings) {
   // Verify the input parameters.
@@ -174,7 +174,7 @@ void MockPrinter::ScriptedPrint(int cookie,
 
 void MockPrinter::UpdateSettings(int cookie,
                                  printing::mojom::PrintPagesParams* params,
-                                 const std::vector<int>& pages,
+                                 const std::vector<uint32_t>& pages,
                                  int margins_type,
                                  const gfx::Size& page_size,
                                  int scale_factor) {
@@ -190,17 +190,17 @@ void MockPrinter::UpdateSettings(int cookie,
   printer_status_ = PRINTER_PRINTING;
 }
 
-void MockPrinter::SetPrintedPagesCount(int cookie, int number_pages) {
+void MockPrinter::SetPrintedPagesCount(int cookie, uint32_t number_pages) {
   // Verify the input parameter and update the printer status so that the
   // RenderViewTest class can verify the this function finishes without errors.
   EXPECT_EQ(document_cookie_, cookie);
   EXPECT_EQ(PRINTER_PRINTING, printer_status_);
-  EXPECT_EQ(0, number_pages_);
-  EXPECT_EQ(0, page_number_);
+  EXPECT_EQ(0u, number_pages_);
+  EXPECT_EQ(0u, page_number_);
 
   // Initialize the job status.
   number_pages_ = number_pages;
-  page_number_ = 0;
+  page_number_ = 0u;
   pages_.clear();
 }
 

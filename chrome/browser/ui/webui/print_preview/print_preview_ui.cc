@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -611,19 +612,19 @@ void PrintPreviewUI::SetInitiatorTitle(
   initiator_title_ = job_title;
 }
 
-bool PrintPreviewUI::LastPageComposited(int page_number) const {
+bool PrintPreviewUI::LastPageComposited(uint32_t page_number) const {
   if (pages_to_render_.empty())
     return false;
 
   return page_number == pages_to_render_.back();
 }
 
-int PrintPreviewUI::GetPageToNupConvertIndex(int page_number) const {
+uint32_t PrintPreviewUI::GetPageToNupConvertIndex(uint32_t page_number) const {
   for (size_t index = 0; index < pages_to_render_.size(); ++index) {
     if (page_number == pages_to_render_[index])
       return index;
   }
-  return -1;
+  return kInvalidPageIndex;
 }
 
 std::vector<base::ReadOnlySharedMemoryRegion>
@@ -701,7 +702,8 @@ void PrintPreviewUI::OnPrintPreviewRequest(int request_id) {
 void PrintPreviewUI::OnDidStartPreview(
     const mojom::DidStartPreviewParams& params,
     int request_id) {
-  DCHECK_GT(params.page_count, 0);
+  DCHECK_GT(params.page_count, 0u);
+  DCHECK_LE(params.page_count, kMaxPageCount);
   DCHECK(!params.pages_to_render.empty());
 
   pages_to_render_ = params.pages_to_render;
@@ -712,8 +714,8 @@ void PrintPreviewUI::OnDidStartPreview(
 
   if (g_test_delegate)
     g_test_delegate->DidGetPreviewPageCount(params.page_count);
-  handler_->SendPageCountReady(params.page_count, params.fit_to_page_scaling,
-                               request_id);
+  handler_->SendPageCountReady(base::checked_cast<int>(params.page_count),
+                               params.fit_to_page_scaling, request_id);
 }
 
 void PrintPreviewUI::OnDidGetDefaultPageLayout(
@@ -745,7 +747,7 @@ void PrintPreviewUI::OnDidGetDefaultPageLayout(
   handler_->SendPageLayoutReady(layout, has_custom_page_size_style, request_id);
 }
 
-bool PrintPreviewUI::OnPendingPreviewPage(int page_number) {
+bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
   if (pages_to_render_index_ >= pages_to_render_.size())
     return false;
 
@@ -755,16 +757,18 @@ bool PrintPreviewUI::OnPendingPreviewPage(int page_number) {
 }
 
 void PrintPreviewUI::OnDidPreviewPage(
-    int page_number,
+    uint32_t page_number,
     scoped_refptr<base::RefCountedMemory> data,
     int preview_request_id) {
-  DCHECK_GE(page_number, 0);
+  DCHECK_NE(page_number, kInvalidPageIndex);
 
-  SetPrintPreviewDataForIndex(page_number, std::move(data));
+  SetPrintPreviewDataForIndex(base::checked_cast<int>(page_number),
+                              std::move(data));
 
   if (g_test_delegate)
     g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
-  handler_->SendPagePreviewReady(page_number, *id_, preview_request_id);
+  handler_->SendPagePreviewReady(base::checked_cast<int>(page_number), *id_,
+                                 preview_request_id);
 }
 
 void PrintPreviewUI::OnPreviewDataIsAvailable(

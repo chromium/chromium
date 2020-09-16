@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -153,7 +154,7 @@ void PrintJobWorker::SetPrintJob(PrintJob* print_job) {
 }
 
 void PrintJobWorker::GetSettings(bool ask_user_for_settings,
-                                 int document_page_count,
+                                 uint32_t document_page_count,
                                  bool has_selection,
                                  mojom::MarginType margin_type,
                                  bool is_scripted,
@@ -263,11 +264,12 @@ void PrintJobWorker::GetSettingsDone(SettingsCallback callback,
   std::move(callback).Run(printing_context_->TakeAndResetSettings(), result);
 }
 
-void PrintJobWorker::GetSettingsWithUI(int document_page_count,
+void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
                                        bool has_selection,
                                        bool is_scripted,
                                        SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_LE(document_page_count, kMaxPageCount);
 
   content::WebContents* web_contents = GetWebContents();
 
@@ -297,7 +299,7 @@ void PrintJobWorker::GetSettingsWithUI(int document_page_count,
     web_contents->ExitFullscreen(true);
 
   printing_context_->AskUserForSettings(
-      document_page_count, has_selection, is_scripted,
+      base::checked_cast<int>(document_page_count), has_selection, is_scripted,
       base::BindOnce(&PrintJobWorker::GetSettingsDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -417,7 +419,7 @@ bool PrintJobWorker::OnNewPageHelperGdi() {
   }
 
   while (true) {
-    scoped_refptr<PrintedPage> page = document_->GetPage(page_number_.ToInt());
+    scoped_refptr<PrintedPage> page = document_->GetPage(page_number_.ToUint());
     if (!page) {
       PostWaitForPage();
       return false;

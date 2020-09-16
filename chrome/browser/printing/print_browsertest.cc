@@ -84,7 +84,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
 
  private:
   // PrintPreviewUI::TestDelegate:
-  void DidGetPreviewPageCount(int page_count) override {
+  void DidGetPreviewPageCount(uint32_t page_count) override {
     total_page_count_ = page_count;
   }
 
@@ -109,8 +109,8 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   }
 
   base::Optional<content::DOMMessageQueue> queue_;
-  int total_page_count_ = 1;
-  int rendered_page_count_ = 0;
+  uint32_t total_page_count_ = 1;
+  uint32_t rendered_page_count_ = 0;
   content::WebContents* preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 

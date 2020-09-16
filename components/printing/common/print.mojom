@@ -58,9 +58,9 @@ struct DidPrintContentParams {
 struct DidStartPreviewParams {
   // Total page count for the rendered preview. (Not the number of pages the
   // user selected to print.)
-  int32 page_count;
+  uint32 page_count;
   // The list of 0-based page numbers that will be rendered.
-  array<int32> pages_to_render;
+  array<uint32> pages_to_render;
   // number of pages per sheet and should be greater or equal to 1.
   int32 pages_per_sheet;
   // Physical size of the page, including non-printable margins.
@@ -157,7 +157,7 @@ struct PrintPagesParams {
   // value for all the document.
   PrintParams params;
   // If empty, this means a request to render all the printed pages.
-  array<int32> pages;
+  array<uint32> pages;
 };
 
 // Parameters to describe a rendered page.
@@ -179,7 +179,7 @@ struct DidPrintDocumentParams {
 // Parameters to get a print setting from a user before printing.
 struct ScriptedPrintParams {
   int32 cookie;
-  int32 expected_pages_count;
+  uint32 expected_pages_count;
   bool has_selection;
   bool is_scripted;
   bool is_modifiable;
@@ -278,7 +278,7 @@ interface PrintRenderFrame {
 interface PrintManagerHost {
   // Tells the browser that the renderer is done calculating the number of
   // rendered pages according to the specified settings.
-  DidGetPrintedPagesCount(int32 cookie, int32 number_pages);
+  DidGetPrintedPagesCount(int32 cookie, uint32 number_pages);
 
   // Sends the document cookie of the current printer query to the browser.
   DidGetDocumentCookie(int32 cookie);

@@ -81,7 +81,7 @@ class PrintPreviewMessageHandler
 
   void NotifyUIPreviewPageReady(
       PrintPreviewUI* print_preview_ui,
-      int page_number,
+      uint32_t page_number,
       const mojom::PreviewIds& ids,
       scoped_refptr<base::RefCountedMemory> data_bytes);
   void NotifyUIPreviewDocumentReady(
@@ -90,7 +90,7 @@ class PrintPreviewMessageHandler
       scoped_refptr<base::RefCountedMemory> data_bytes);
 
   // Callbacks for print compositor client.
-  void OnCompositePdfPageDone(int page_number,
+  void OnCompositePdfPageDone(uint32_t page_number,
                               int document_cookie,
                               const mojom::PreviewIds& ids,
                               mojom::PrintCompositor::Status status,
@@ -102,7 +102,7 @@ class PrintPreviewMessageHandler
   void OnPrepareForDocumentToPdfDone(const mojom::PreviewIds& ids,
                                      mojom::PrintCompositor::Status status);
 
-  void OnNupPdfConvertDone(int page_number,
+  void OnNupPdfConvertDone(uint32_t page_number,
                            const mojom::PreviewIds& ids,
                            mojom::PdfNupConverter::Status status,
                            base::ReadOnlySharedMemoryRegion region);

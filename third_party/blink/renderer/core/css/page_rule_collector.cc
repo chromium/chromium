@@ -44,7 +44,7 @@ static inline bool ComparePageRules(const StyleRulePage* r1,
 }
 
 bool PageRuleCollector::IsLeftPage(const ComputedStyle* root_element_style,
-                                   int page_index) const {
+                                   uint32_t page_index) const {
   bool is_first_page_left = false;
   DCHECK(root_element_style);
   if (!root_element_style->IsLeftToRightDirection())
@@ -53,14 +53,14 @@ bool PageRuleCollector::IsLeftPage(const ComputedStyle* root_element_style,
   return (page_index + (is_first_page_left ? 1 : 0)) % 2;
 }
 
-bool PageRuleCollector::IsFirstPage(int page_index) const {
+bool PageRuleCollector::IsFirstPage(uint32_t page_index) const {
   // FIXME: In case of forced left/right page, page at index 1 (not 0) can be
   // the first page.
   return (!page_index);
 }
 
 PageRuleCollector::PageRuleCollector(const ComputedStyle* root_element_style,
-                                     int page_index,
+                                     uint32_t page_index,
                                      const AtomicString& page_name,
                                      MatchResult& match_result)
     : is_left_page_(IsLeftPage(root_element_style, page_index)),

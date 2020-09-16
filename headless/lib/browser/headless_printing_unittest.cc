@@ -15,8 +15,8 @@ namespace headless {
 
 TEST(PageRangeTextToPagesTest, General) {
   using PM = HeadlessPrintManager;
-  std::vector<int> pages;
-  std::vector<int> expected_pages;
+  std::vector<uint32_t> pages;
+  std::vector<uint32_t> expected_pages;
 
   // "-" is full range of pages.
   PM::PageRangeStatus status = PM::PageRangeTextToPages("-", false, 10, &pages);

@@ -45,7 +45,7 @@ class PrintManager : public content::WebContentsObserver,
 #endif
 
   // printing::mojom::PrintManagerHost:
-  void DidGetPrintedPagesCount(int32_t cookie, int32_t number_pages) override;
+  void DidGetPrintedPagesCount(int32_t cookie, uint32_t number_pages) override;
   void DidGetDocumentCookie(int32_t cookie) override;
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
   void SetAccessibilityTree(
@@ -114,7 +114,7 @@ class PrintManager : public content::WebContentsObserver,
                                const mojom::ScriptedPrintParams& params,
                                IPC::Message* reply_msg) = 0;
 
-  int number_pages_ = 0;  // Number of pages to print in the print job.
+  uint32_t number_pages_ = 0;  // Number of pages to print in the print job.
   int cookie_ = 0;        // The current document cookie.
   // Holds WebContents associated mojo receivers.
   content::WebContentsFrameReceiverSet<printing::mojom::PrintManagerHost>

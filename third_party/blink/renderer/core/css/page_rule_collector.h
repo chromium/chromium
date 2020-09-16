@@ -35,7 +35,7 @@ class PageRuleCollector {
 
  public:
   PageRuleCollector(const ComputedStyle* root_element_style,
-                    int page_index,
+                    uint32_t page_index,
                     const AtomicString& page_name,
                     MatchResult&);
 
@@ -44,12 +44,12 @@ class PageRuleCollector {
 
  private:
   bool IsLeftPage(const ComputedStyle* root_element_style,
-                  int page_index) const;
+                  uint32_t page_index) const;
   bool IsRightPage(const ComputedStyle* root_element_style,
-                   int page_index) const {
+                   uint32_t page_index) const {
     return !IsLeftPage(root_element_style, page_index);
   }
-  bool IsFirstPage(int page_index) const;
+  bool IsFirstPage(uint32_t page_index) const;
 
   void MatchPageRulesForList(HeapVector<Member<StyleRulePage>>& matched_rules,
                              const HeapVector<Member<StyleRulePage>>& rules);

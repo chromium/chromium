@@ -469,8 +469,8 @@ static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
   const int kContentHeight = 735;    // 10.21 inch
   blink::WebPrintParams params(blink::WebSize(kContentWidth, kContentHeight));
   params.printer_dpi = 300;
-  int page_count = frame->PrintBegin(params);
-  for (int i = 0; i < page_count; ++i) {
+  uint32_t page_count = frame->PrintBegin(params);
+  for (uint32_t i = 0; i < page_count; ++i) {
     SkCanvas* sk_canvas = doc->beginPage(kPageWidth, kPageHeight);
     cc::SkiaPaintCanvas canvas(sk_canvas);
     cc::PaintCanvasAutoRestore auto_restore(&canvas, true);

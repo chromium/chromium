@@ -57,7 +57,7 @@ class AwPrintManager : public printing::PrintManager,
   static void OnDidPrintDocumentWritingDone(
       const PdfWritingDoneCallback& callback,
       std::unique_ptr<DelayedFrameDispatchHelper> helper,
-      int page_count);
+      uint32_t page_count);
 
   const std::unique_ptr<printing::PrintSettings> settings_;
 

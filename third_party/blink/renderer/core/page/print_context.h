@@ -91,10 +91,10 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
                                   const FloatSize& page_size_in_pixels);
   static String PageProperty(LocalFrame*,
                              const char* property_name,
-                             int page_number);
-  static bool IsPageBoxVisible(LocalFrame*, int page_number);
+                             uint32_t page_number);
+  static bool IsPageBoxVisible(LocalFrame*, uint32_t page_number);
   static String PageSizeAndMarginsInPixels(LocalFrame*,
-                                           int page_number,
+                                           uint32_t page_number,
                                            int width,
                                            int height,
                                            int margin_top,

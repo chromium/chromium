@@ -21,8 +21,8 @@
 namespace printing {
 
 void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
-                                               int page_number,
-                                               int page_count,
+                                               uint32_t page_number,
+                                               uint32_t page_count,
                                                double scale_factor,
                                                blink::WebLocalFrame* frame,
                                                MetafileSkia* metafile,

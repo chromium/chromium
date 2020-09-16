@@ -299,13 +299,14 @@ class WebLocalFrame : public WebFrame {
   // CSS3 Paged Media ----------------------------------------------------
 
   // Returns the type of @page size styling for the given page.
-  virtual PageSizeType GetPageSizeType(int page_index) = 0;
+  virtual PageSizeType GetPageSizeType(uint32_t page_index) = 0;
 
   // Gets the description for the specified page. This includes preferred page
   // size and margins in pixels, assuming 96 pixels per inch. The size and
   // margins must be initialized to the default values that are used if auto is
   // specified.
-  virtual void GetPageDescription(int page_index, WebPrintPageDescription*) = 0;
+  virtual void GetPageDescription(uint32_t page_index,
+                                  WebPrintPageDescription*) = 0;
 
   // Scripting --------------------------------------------------------------
 
@@ -671,18 +672,18 @@ class WebLocalFrame : public WebFrame {
   // node is printed (for now only plugins are supported), instead of the entire
   // frame.
   // Returns the number of pages that can be printed at the given page size.
-  virtual int PrintBegin(const WebPrintParams&,
-                         const WebNode& constrain_to_node = WebNode()) = 0;
+  virtual uint32_t PrintBegin(const WebPrintParams&,
+                              const WebNode& constrain_to_node = WebNode()) = 0;
 
   // Returns the page shrinking factor calculated by webkit (usually
   // between 1/1.33 and 1/2). Returns 0 if the page number is invalid or
   // not in printing mode.
-  virtual float GetPrintPageShrink(int page) = 0;
+  virtual float GetPrintPageShrink(uint32_t page) = 0;
 
   // Prints one page, and returns the calculated page shrinking factor
   // (usually between 1/1.33 and 1/2).  Returns 0 if the page number is
   // invalid or not in printing mode.
-  virtual float PrintPage(int page_to_print, cc::PaintCanvas*) = 0;
+  virtual float PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
 
   // Reformats the WebFrame for screen display.
   virtual void PrintEnd() = 0;
@@ -757,7 +758,7 @@ class WebLocalFrame : public WebFrame {
   // page-orientation.
   virtual WebSize SpoolSizeInPixelsForTesting(
       const WebSize& page_size_in_pixels,
-      int page_count) = 0;
+      uint32_t page_count) = 0;
 
   // Prints the frame into the canvas, with page boundaries drawn as one pixel
   // wide blue lines. This method exists to support web tests.

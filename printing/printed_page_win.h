@@ -23,7 +23,7 @@ namespace printing {
 class PRINTING_EXPORT PrintedPage
     : public base::RefCountedThreadSafe<PrintedPage> {
  public:
-  PrintedPage(int page_number,
+  PrintedPage(uint32_t page_number,
               std::unique_ptr<MetafilePlayer> metafile,
               const gfx::Size& page_size,
               const gfx::Rect& page_content_rect);
@@ -31,7 +31,7 @@ class PRINTING_EXPORT PrintedPage
   PrintedPage& operator=(const PrintedPage&) = delete;
 
   // Getters
-  int page_number() const { return page_number_; }
+  uint32_t page_number() const { return page_number_; }
   const MetafilePlayer* metafile() const;
   const gfx::Size& page_size() const { return page_size_; }
   const gfx::Rect& page_content_rect() const { return page_content_rect_; }
@@ -46,7 +46,7 @@ class PRINTING_EXPORT PrintedPage
   ~PrintedPage();
 
   // Page number inside the printed document.
-  const int page_number_;
+  const uint32_t page_number_;
 
   // Actual paint data.
   const std::unique_ptr<MetafilePlayer> metafile_;

@@ -126,7 +126,7 @@ void PrintedDocument::SetConvertingPdf() {
   mutable_.converting_pdf_ = true;
 }
 
-void PrintedDocument::SetPage(int page_number,
+void PrintedDocument::SetPage(uint32_t page_number,
                               std::unique_ptr<MetafilePlayer> metafile,
                               float shrink,
                               const gfx::Size& page_size,
@@ -148,7 +148,7 @@ void PrintedDocument::SetPage(int page_number,
   }
 }
 
-scoped_refptr<PrintedPage> PrintedDocument::GetPage(int page_number) {
+scoped_refptr<PrintedPage> PrintedDocument::GetPage(uint32_t page_number) {
   scoped_refptr<PrintedPage> page;
   {
     base::AutoLock lock(lock_);
@@ -198,7 +198,7 @@ bool PrintedDocument::IsComplete() const {
     return false;
 
   for (; page != PageNumber::npos(); ++page) {
-    PrintedPages::const_iterator it = mutable_.pages_.find(page.ToInt());
+    PrintedPages::const_iterator it = mutable_.pages_.find(page.ToUint());
     if (it == mutable_.pages_.end() || !it->second.get() ||
         !it->second->metafile()) {
       return false;
@@ -210,25 +210,25 @@ bool PrintedDocument::IsComplete() const {
 #endif
 }
 
-void PrintedDocument::set_page_count(int max_page) {
+void PrintedDocument::set_page_count(uint32_t max_page) {
   base::AutoLock lock(lock_);
-  DCHECK_EQ(0, mutable_.page_count_);
+  DCHECK_EQ(0u, mutable_.page_count_);
   mutable_.page_count_ = max_page;
   if (immutable_.settings_->ranges().empty()) {
     mutable_.expected_page_count_ = max_page;
   } else {
     // If there is a range, don't bother since expected_page_count_ is already
     // initialized.
-    DCHECK_NE(mutable_.expected_page_count_, 0);
+    DCHECK_NE(mutable_.expected_page_count_, 0u);
   }
 }
 
-int PrintedDocument::page_count() const {
+uint32_t PrintedDocument::page_count() const {
   base::AutoLock lock(lock_);
   return mutable_.page_count_;
 }
 
-int PrintedDocument::expected_page_count() const {
+uint32_t PrintedDocument::expected_page_count() const {
   base::AutoLock lock(lock_);
   return mutable_.expected_page_count_;
 }

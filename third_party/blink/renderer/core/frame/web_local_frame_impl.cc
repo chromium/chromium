@@ -292,7 +292,7 @@ class ChromePrintContext : public PrintContext {
     PrintContext::BeginPrintMode(printed_page_width_, height);
   }
 
-  virtual float GetPageShrink(int page_number) const {
+  virtual float GetPageShrink(uint32_t page_number) const {
     IntRect page_rect = page_rects_[page_number];
     return printed_page_width_ / page_rect.Width();
   }
@@ -488,7 +488,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   void EndPrintMode() override { plugin_->PrintEnd(); }
 
-  float GetPageShrink(int page_number) const override {
+  float GetPageShrink(uint32_t page_number) const override {
     // We don't shrink the page (maybe we should ask the widget ??)
     return 1.0;
   }
@@ -1626,8 +1626,8 @@ WebPlugin* WebLocalFrameImpl::GetPluginToPrint(
   return plugin_container ? plugin_container->Plugin() : nullptr;
 }
 
-int WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
-                                  const WebNode& constrain_to_node) {
+uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
+                                       const WebNode& constrain_to_node) {
   WebPluginContainerImpl* plugin_container =
       GetPluginToPrintHelper(constrain_to_node);
   if (plugin_container && plugin_container->SupportsPaginatedPrint()) {
@@ -1643,18 +1643,16 @@ int WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
   print_context_->BeginPrintMode(size.Width(), size.Height());
   print_context_->ComputePageRects(size);
 
-  return static_cast<int>(print_context_->PageCount());
+  return print_context_->PageCount();
 }
 
-float WebLocalFrameImpl::GetPrintPageShrink(int page) {
+float WebLocalFrameImpl::GetPrintPageShrink(uint32_t page) {
   DCHECK(print_context_);
-  DCHECK_GE(page, 0);
   return print_context_->GetPageShrink(page);
 }
 
-float WebLocalFrameImpl::PrintPage(int page, cc::PaintCanvas* canvas) {
+float WebLocalFrameImpl::PrintPage(uint32_t page, cc::PaintCanvas* canvas) {
   DCHECK(print_context_);
-  DCHECK_GE(page, 0);
   DCHECK(GetFrame());
   DCHECK(GetFrame()->GetDocument());
 
@@ -1697,22 +1695,22 @@ bool WebLocalFrameImpl::CapturePaintPreview(const WebRect& bounds,
   return success;
 }
 
-PageSizeType WebLocalFrameImpl::GetPageSizeType(int page_index) {
+PageSizeType WebLocalFrameImpl::GetPageSizeType(uint32_t page_index) {
   return GetFrame()->GetDocument()->StyleForPage(page_index)->GetPageSizeType();
 }
 
 void WebLocalFrameImpl::GetPageDescription(
-    int page_index,
+    uint32_t page_index,
     WebPrintPageDescription* description) {
   GetFrame()->GetDocument()->GetPageDescription(page_index, description);
 }
 
 WebSize WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
     const WebSize& page_size_in_pixels,
-    int page_count) {
+    uint32_t page_count) {
   int spool_width = page_size_in_pixels.width;
   int spool_height = 0;
-  for (int page_index = 0; page_index < page_count; page_index++) {
+  for (uint32_t page_index = 0; page_index < page_count; page_index++) {
     // Make room for the 1px tall page separator.
     if (page_index)
       spool_height++;

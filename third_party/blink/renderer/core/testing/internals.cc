@@ -2320,7 +2320,7 @@ int Internals::numberOfPages(float page_width,
 }
 
 String Internals::pageProperty(String property_name,
-                               int page_number,
+                               unsigned page_number,
                                ExceptionState& exception_state) const {
   if (!GetFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -2333,7 +2333,7 @@ String Internals::pageProperty(String property_name,
 }
 
 String Internals::pageSizeAndMarginsInPixels(
-    int page_number,
+    unsigned page_number,
     int width,
     int height,
     int margin_top,

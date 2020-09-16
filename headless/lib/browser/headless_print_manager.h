@@ -77,8 +77,8 @@ class HeadlessPrintManager
   HEADLESS_EXPORT static PageRangeStatus PageRangeTextToPages(
       base::StringPiece page_range_text,
       bool ignore_invalid_page_ranges,
-      int pages_count,
-      std::vector<int>* pages);
+      uint32_t pages_count,
+      std::vector<uint32_t>* pages);
 
   // Prints the current document immediately. Since the rendering is
   // asynchronous, the actual printing will not be completed on the return of

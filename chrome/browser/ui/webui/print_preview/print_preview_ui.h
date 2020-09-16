@@ -90,11 +90,11 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Returns true if |page_number| is the last page in |pages_to_render_|.
   // |page_number| is a 0-based number.
-  bool LastPageComposited(int page_number) const;
+  bool LastPageComposited(uint32_t page_number) const;
 
   // Get the 0-based index of the |page_number| in |pages_to_render_|.
   // Same as above, |page_number| is a 0-based number.
-  int GetPageToNupConvertIndex(int page_number) const;
+  uint32_t GetPageToNupConvertIndex(uint32_t page_number) const;
 
   std::vector<base::ReadOnlySharedMemoryRegion> TakePagesForNupConvert();
 
@@ -153,11 +153,11 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Notifies the Web UI that the 0-based page |page_number| rendering is being
   // processed and an OnPendingPreviewPage() call is imminent. Returns whether
   // |page_number| is the expected page.
-  bool OnPendingPreviewPage(int page_number);
+  bool OnPendingPreviewPage(uint32_t page_number);
 
   // Notifies the Web UI that the 0-based page |page_number| has been rendered.
   // |preview_request_id| indicates which request resulted in this response.
-  void OnDidPreviewPage(int page_number,
+  void OnDidPreviewPage(uint32_t page_number,
                         scoped_refptr<base::RefCountedMemory> data,
                         int preview_request_id);
 
@@ -190,7 +190,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Allows tests to wait until the print preview dialog is loaded.
   class TestDelegate {
    public:
-    virtual void DidGetPreviewPageCount(int page_count) = 0;
+    virtual void DidGetPreviewPageCount(uint32_t page_count) = 0;
     virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) = 0;
 
    protected:
@@ -279,7 +279,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   base::string16 initiator_title_;
 
   // The list of 0-based page numbers that will be rendered.
-  std::vector<int> pages_to_render_;
+  std::vector<uint32_t> pages_to_render_;
 
   // The list of pages to be converted.
   std::vector<base::ReadOnlySharedMemoryRegion> pages_for_nup_convert_;

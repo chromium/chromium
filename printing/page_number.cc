@@ -13,14 +13,15 @@
 
 namespace printing {
 
-PageNumber::PageNumber(const PrintSettings& settings, int document_page_count) {
+PageNumber::PageNumber(const PrintSettings& settings,
+                       uint32_t document_page_count) {
   Init(settings, document_page_count);
 }
 
 PageNumber::PageNumber()
     : ranges_(nullptr),
-      page_number_(-1),
-      page_range_index_(-1),
+      page_number_(kInvalidPageIndex),
+      page_range_index_(kInvalidPageIndex),
       document_page_count_(0) {}
 
 void PageNumber::operator=(const PageNumber& other) {
@@ -30,7 +31,8 @@ void PageNumber::operator=(const PageNumber& other) {
   document_page_count_ = other.document_page_count_;
 }
 
-void PageNumber::Init(const PrintSettings& settings, int document_page_count) {
+void PageNumber::Init(const PrintSettings& settings,
+                      uint32_t document_page_count) {
   DCHECK(document_page_count);
   ranges_ = settings.ranges().empty() ? NULL : &settings.ranges();
   document_page_count_ = document_page_count;
@@ -41,16 +43,16 @@ void PageNumber::Init(const PrintSettings& settings, int document_page_count) {
     if (document_page_count) {
       page_number_ = 0;
     } else {
-      page_number_ = -1;
+      page_number_ = kInvalidPageIndex;
     }
-    page_range_index_ = -1;
+    page_range_index_ = kInvalidPageIndex;
   }
 }
 
 int PageNumber::operator++() {
   if (!ranges_) {
     // Switch to next page.
-    if (++page_number_ == document_page_count_) {
+    if (++page_number_ >= document_page_count_) {
       // Finished.
       *this = npos();
     }
@@ -61,7 +63,7 @@ int PageNumber::operator++() {
     if (page_number_ > (*ranges_)[page_range_index_].to) {
       DCHECK(ranges_->size() <=
              static_cast<size_t>(std::numeric_limits<int>::max()));
-      if (++page_range_index_ == static_cast<int>(ranges_->size())) {
+      if (++page_range_index_ == ranges_->size()) {
         // Finished.
         *this = npos();
       } else {
@@ -69,7 +71,7 @@ int PageNumber::operator++() {
       }
     }
   }
-  return ToInt();
+  return ToUint();
 }
 
 bool PageNumber::operator==(const PageNumber& other) const {

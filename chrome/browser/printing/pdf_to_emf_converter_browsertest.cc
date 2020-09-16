@@ -4,7 +4,10 @@
 
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 
+#include <stdint.h>
 #include <windows.h>
+
+#include <limits>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
@@ -32,17 +35,19 @@ constexpr gfx::Size k200DpiSize = gfx::Size(200, 200);
 
 constexpr size_t kHeaderSize = sizeof(ENHMETAHEADER);
 
+constexpr uint32_t kInvalidPageCount = std::numeric_limits<uint32_t>::max();
+
 void StartCallbackImpl(base::OnceClosure quit_closure,
-                       int* page_count_out,
-                       int page_count_in) {
+                       uint32_t* page_count_out,
+                       uint32_t page_count_in) {
   *page_count_out = page_count_in;
   std::move(quit_closure).Run();
 }
 
 void GetPageCallbackImpl(base::OnceClosure quit_closure,
-                         int* page_number_out,
+                         uint32_t* page_number_out,
                          std::unique_ptr<MetafilePlayer>* file_out,
-                         int page_number_in,
+                         uint32_t page_number_in,
                          float scale_factor,
                          std::unique_ptr<MetafilePlayer> file_in) {
   *page_number_out = page_number_in;
@@ -133,9 +138,9 @@ class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
   }
 
   bool StartPdfConverter(const PdfRenderSettings& pdf_settings,
-                         int expected_page_count) {
+                         uint32_t expected_page_count) {
     base::RunLoop run_loop;
-    int page_count = -1;
+    uint32_t page_count = kInvalidPageCount;
     pdf_converter_ = PdfConverter::StartPdfConverter(
         test_input_, pdf_settings,
         base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(),
@@ -144,9 +149,9 @@ class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
     return pdf_converter_ && (expected_page_count == page_count);
   }
 
-  bool GetPage(int page_number_in) {
+  bool GetPage(uint32_t page_number_in) {
     base::RunLoop run_loop;
-    int page_number = -1;
+    uint32_t page_number = kInvalidPageCount;
     pdf_converter_->GetPage(
         page_number_in,
         base::BindRepeating(&GetPageCallbackImpl, run_loop.QuitClosure(),
@@ -227,12 +232,12 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, FailureNoTempFile) {
   ScopedSimulateFailureCreatingTempFileForTests fail_creating_temp_file;
 
   base::RunLoop run_loop;
-  int page_count = -1;
+  uint32_t page_count = kInvalidPageCount;
   std::unique_ptr<PdfConverter> pdf_converter = PdfConverter::StartPdfConverter(
       base::MakeRefCounted<base::RefCountedStaticMemory>(), PdfRenderSettings(),
       base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(), &page_count));
   run_loop.Run();
-  EXPECT_EQ(0, page_count);
+  EXPECT_EQ(0u, page_count);
 }
 
 IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, FailureBadPdf) {
@@ -240,12 +245,12 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, FailureBadPdf) {
       base::MakeRefCounted<base::RefCountedStaticMemory>("0123456789", 10);
 
   base::RunLoop run_loop;
-  int page_count = -1;
+  uint32_t page_count = kInvalidPageCount;
   std::unique_ptr<PdfConverter> pdf_converter = PdfConverter::StartPdfConverter(
       bad_pdf_data, PdfRenderSettings(),
       base::BindOnce(&StartCallbackImpl, run_loop.QuitClosure(), &page_count));
   run_loop.Run();
-  EXPECT_EQ(0, page_count);
+  EXPECT_EQ(0u, page_count);
 }
 
 IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, EmfBasic) {
@@ -253,11 +258,11 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, EmfBasic) {
       kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
       /*autorotate=*/false,
       /*use_color=*/true, PdfRenderSettings::Mode::NORMAL);
-  constexpr int kNumberOfPages = 3;
+  constexpr uint32_t kNumberOfPages = 3;
 
   ASSERT_TRUE(GetTestInput("pdf_converter_basic.pdf"));
   ASSERT_TRUE(StartPdfConverter(pdf_settings, kNumberOfPages));
-  for (int i = 0; i < kNumberOfPages; ++i) {
+  for (uint32_t i = 0; i < kNumberOfPages; ++i) {
     ASSERT_TRUE(GetPage(i));
     ASSERT_TRUE(GetPageExpectedEmfData(
         GetFileNameForPageNumber("pdf_converter_basic_emf_page_", i)));

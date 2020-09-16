@@ -87,7 +87,7 @@ int PrinterQuery::cookie() const {
 }
 
 void PrinterQuery::GetSettings(GetSettingsAskParam ask_user_for_settings,
-                               int expected_page_count,
+                               uint32_t expected_page_count,
                                bool has_selection,
                                mojom::MarginType margin_type,
                                bool is_scripted,

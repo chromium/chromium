@@ -5,6 +5,8 @@
 #ifndef PRINTING_PRINT_JOB_CONSTANTS_H_
 #define PRINTING_PRINT_JOB_CONSTANTS_H_
 
+#include <stdint.h>
+
 #include "printing/printing_export.h"
 
 namespace printing {
@@ -79,6 +81,9 @@ PRINTING_EXPORT extern const char kSettingAdvancedSettings[];
 PRINTING_EXPORT extern const int FIRST_PAGE_INDEX;
 PRINTING_EXPORT extern const int COMPLETE_PREVIEW_DOCUMENT_INDEX;
 PRINTING_EXPORT extern const char kSettingOpenPDFInPreview[];
+
+PRINTING_EXPORT extern const uint32_t kInvalidPageIndex;
+PRINTING_EXPORT extern const uint32_t kMaxPageCount;
 
 #if defined(USE_CUPS)
 // Printer color models

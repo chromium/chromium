@@ -103,9 +103,9 @@ void PrintManager::RenderFrameDeleted(
 }
 
 void PrintManager::DidGetPrintedPagesCount(int32_t cookie,
-                                           int32_t number_pages) {
+                                           uint32_t number_pages) {
   DCHECK_GT(cookie, 0);
-  DCHECK_GT(number_pages, 0);
+  DCHECK_GT(number_pages, 0u);
   number_pages_ = number_pages;
 }
 

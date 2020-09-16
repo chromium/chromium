@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -187,7 +188,7 @@ void PrintViewManagerBase::PrintDocument(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerBase::OnPrintSettingsDone(
     scoped_refptr<base::RefCountedMemory> print_data,
-    int page_count,
+    uint32_t page_count,
     PrinterHandler::PrintCallback callback,
     std::unique_ptr<printing::PrinterQuery> printer_query) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -226,7 +227,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
 
 void PrintViewManagerBase::StartLocalPrintJob(
     scoped_refptr<base::RefCountedMemory> print_data,
-    int page_count,
+    uint32_t page_count,
     int cookie,
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -274,7 +275,7 @@ base::string16 PrintViewManagerBase::RenderSourceName() {
 }
 
 void PrintViewManagerBase::DidGetPrintedPagesCount(int32_t cookie,
-                                                   int32_t number_pages) {
+                                                   uint32_t number_pages) {
   PrintManager::DidGetPrintedPagesCount(cookie, number_pages);
   OpportunisticallyCreatePrintJob(cookie);
 }
@@ -478,7 +479,8 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
     case JobEventDetails::DOC_DONE: {
       // Don't care about the actual printing process, except on Android.
 #if defined(OS_ANDROID)
-      PdfWritingDone(number_pages_);
+      DCHECK_LE(number_pages_, kMaxPageCount);
+      PdfWritingDone(base::checked_cast<int>(number_pages_));
 #endif
       break;
     }

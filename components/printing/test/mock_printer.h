@@ -77,16 +77,16 @@ class MockPrinter {
   // Functions that handles IPC events.
   void GetDefaultPrintSettings(printing::mojom::PrintParams* params);
   void ScriptedPrint(int cookie,
-                     int expected_pages_count,
+                     uint32_t expected_pages_count,
                      bool has_selection,
                      printing::mojom::PrintPagesParams* settings);
   void UpdateSettings(int cookie,
                       printing::mojom::PrintPagesParams* params,
-                      const std::vector<int>& page_range_array,
+                      const std::vector<uint32_t>& page_range_array,
                       int margins_type,
                       const gfx::Size& page_size,
                       int scale_factor);
-  void SetPrintedPagesCount(int cookie, int number_pages);
+  void SetPrintedPagesCount(int cookie, uint32_t number_pages);
   void PrintPage(const printing::mojom::DidPrintDocumentParams& params);
 
   // Functions that retrieve the output pages.
@@ -136,8 +136,8 @@ class MockPrinter {
   Status printer_status_;
 
   // The output of a printing job.
-  int number_pages_;
-  int page_number_;
+  uint32_t number_pages_;
+  uint32_t page_number_;
 
   // Used only in the preview sequence.
   bool is_first_request_;

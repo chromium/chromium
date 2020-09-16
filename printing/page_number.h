@@ -18,7 +18,7 @@ class PrintSettings;
 class PRINTING_EXPORT PageNumber {
  public:
   // Initializes the page to the first page in the settings's range or 0.
-  PageNumber(const PrintSettings& settings, int document_page_count);
+  PageNumber(const PrintSettings& settings, uint32_t document_page_count);
 
   PageNumber();
 
@@ -26,10 +26,10 @@ class PRINTING_EXPORT PageNumber {
 
   // Initializes the page to the first page in the setting's range or 0. It
   // initialize to npos if the range is empty and document_page_count is 0.
-  void Init(const PrintSettings& settings, int document_page_count);
+  void Init(const PrintSettings& settings, uint32_t document_page_count);
 
   // Converts to a page numbers.
-  int ToInt() const { return page_number_; }
+  uint32_t ToUint() const { return page_number_; }
 
   // Calculates the next page in the serie.
   int operator++();
@@ -46,15 +46,15 @@ class PRINTING_EXPORT PageNumber {
   // The page range to follow.
   const PageRanges* ranges_;
 
-  // The next page to be printed. -1 when not printing.
-  int page_number_;
+  // The next page to be printed. |kInvalidPageIndex| when not printing.
+  uint32_t page_number_;
 
-  // The next page to be printed. -1 when not used. Valid only if
-  // document()->settings().range.empty() is false.
-  int page_range_index_;
+  // The next page to be printed. |kInvalidPageIndex| when not used. Valid only
+  // if document()->settings().range.empty() is false.
+  uint32_t page_range_index_;
 
   // Number of expected pages in the document. Used when ranges_ is NULL.
-  int document_page_count_;
+  uint32_t document_page_count_;
 };
 
 // Debug output support.
@@ -62,7 +62,7 @@ template <class E, class T>
 inline typename std::basic_ostream<E, T>& operator<<(
     typename std::basic_ostream<E, T>& ss,
     const PageNumber& page) {
-  return ss << page.ToInt();
+  return ss << page.ToUint();
 }
 
 }  // namespace printing

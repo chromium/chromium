@@ -17,15 +17,15 @@ using PageRanges = std::vector<PageRange>;
 
 // Print range is inclusive. To select one page, set from == to.
 struct PRINTING_EXPORT PageRange {
-  int from;
-  int to;
+  uint32_t from;
+  uint32_t to;
 
   bool operator==(const PageRange& rhs) const {
     return from == rhs.from && to == rhs.to;
   }
 
   // Retrieves the sorted list of unique pages in the page ranges.
-  static std::vector<int> GetPages(const PageRanges& ranges);
+  static std::vector<uint32_t> GetPages(const PageRanges& ranges);
 };
 
 }  // namespace printing

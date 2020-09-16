@@ -18,6 +18,7 @@
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/test/mock_render_thread.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/print_job_constants.h"
 
 namespace base {
 class DictionaryValue;
@@ -51,13 +52,13 @@ class PrintMockRenderThread : public content::MockRenderThread {
   void set_print_dialog_user_response(bool response);
 
   // Cancel print preview when print preview has |page| remaining pages.
-  void set_print_preview_cancel_page_number(int page);
+  void set_print_preview_cancel_page_number(uint32_t page);
 
   // Get the number of pages to generate for print preview.
-  int print_preview_pages_remaining() const;
+  uint32_t print_preview_pages_remaining() const;
 
   // Get a vector of print preview pages.
-  const std::vector<std::pair<int, uint32_t>>& print_preview_pages() const;
+  const std::vector<std::pair<uint32_t, uint32_t>>& print_preview_pages() const;
 #endif
 
   MockPrinter* GetPrinter() { return printer_.get(); }
@@ -97,13 +98,13 @@ class PrintMockRenderThread : public content::MockRenderThread {
 
   // Simulates cancelling print preview if |print_preview_pages_remaining_|
   // equals this.
-  int print_preview_cancel_page_number_ = -1;
+  uint32_t print_preview_cancel_page_number_ = printing::kInvalidPageIndex;
 
   // Number of pages to generate for print preview.
-  int print_preview_pages_remaining_ = 0;
+  uint32_t print_preview_pages_remaining_ = 0;
 
   // Vector of <page_number, content_data_size> that were previewed.
-  std::vector<std::pair<int, uint32_t>> print_preview_pages_;
+  std::vector<std::pair<uint32_t, uint32_t>> print_preview_pages_;
 #endif
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

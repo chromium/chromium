@@ -149,28 +149,33 @@ TEST(PrintJobTest, PageRangeMapping) {
   content::BrowserTaskEnvironment task_environment;
 
   int page_count = 4;
-  std::vector<int> input_full = {0, 1, 2, 3};
-  std::vector<int> expected_output_full = {0, 1, 2, 3};
+  std::vector<uint32_t> input_full = {0, 1, 2, 3};
+  std::vector<uint32_t> expected_output_full = {0, 1, 2, 3};
   EXPECT_EQ(expected_output_full,
             PrintJob::GetFullPageMapping(input_full, page_count));
 
-  std::vector<int> input_12 = {1, 2};
-  std::vector<int> expected_output_12 = {-1, 1, 2, -1};
+  std::vector<uint32_t> input_12 = {1, 2};
+  std::vector<uint32_t> expected_output_12 = {kInvalidPageIndex, 1, 2,
+                                              kInvalidPageIndex};
   EXPECT_EQ(expected_output_12,
             PrintJob::GetFullPageMapping(input_12, page_count));
 
-  std::vector<int> input_03 = {0, 3};
-  std::vector<int> expected_output_03 = {0, -1, -1, 3};
+  std::vector<uint32_t> input_03 = {0, 3};
+  std::vector<uint32_t> expected_output_03 = {0, kInvalidPageIndex,
+                                              kInvalidPageIndex, 3};
   EXPECT_EQ(expected_output_03,
             PrintJob::GetFullPageMapping(input_03, page_count));
 
-  std::vector<int> input_0 = {0};
-  std::vector<int> expected_output_0 = {0, -1, -1, -1};
+  std::vector<uint32_t> input_0 = {0};
+  std::vector<uint32_t> expected_output_0 = {
+      0, kInvalidPageIndex, kInvalidPageIndex, kInvalidPageIndex};
   EXPECT_EQ(expected_output_0,
             PrintJob::GetFullPageMapping(input_0, page_count));
 
-  std::vector<int> input_invalid = {4, 100};
-  std::vector<int> expected_output_invalid = {-1, -1, -1, -1};
+  std::vector<uint32_t> input_invalid = {4, 100};
+  std::vector<uint32_t> expected_output_invalid = {
+      kInvalidPageIndex, kInvalidPageIndex, kInvalidPageIndex,
+      kInvalidPageIndex};
   EXPECT_EQ(expected_output_invalid,
             PrintJob::GetFullPageMapping(input_invalid, page_count));
 }

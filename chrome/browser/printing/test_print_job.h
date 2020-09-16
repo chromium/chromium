@@ -39,7 +39,7 @@ class TestPrintJob : public PrintJob {
   // All remaining functions are PrintJob implementation.
   void Initialize(std::unique_ptr<PrinterQuery> query,
                   const base::string16& name,
-                  int page_count) override;
+                  uint32_t page_count) override;
 
   // Sets |job_pending_| to true.
   void StartPrinting() override;

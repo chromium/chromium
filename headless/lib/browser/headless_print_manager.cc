@@ -72,15 +72,15 @@ std::string HeadlessPrintManager::PrintResultToString(PrintResult result) {
 HeadlessPrintManager::PageRangeStatus
 HeadlessPrintManager::PageRangeTextToPages(base::StringPiece page_range_text,
                                            bool ignore_invalid_page_ranges,
-                                           int pages_count,
-                                           std::vector<int>* pages) {
+                                           uint32_t pages_count,
+                                           std::vector<uint32_t>* pages) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
        base::SplitStringPiece(page_range_text, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     printing::PageRange range;
     if (range_string.find("-") == base::StringPiece::npos) {
-      if (!base::StringToInt(range_string, &range.from))
+      if (!base::StringToUint(range_string, &range.from))
         return SYNTAX_ERROR;
       range.to = range.from;
     } else if (range_string == "-") {
@@ -88,18 +88,18 @@ HeadlessPrintManager::PageRangeTextToPages(base::StringPiece page_range_text,
       range.to = pages_count;
     } else if (base::StartsWith(range_string, "-")) {
       range.from = 1;
-      if (!base::StringToInt(range_string.substr(1), &range.to))
+      if (!base::StringToUint(range_string.substr(1), &range.to))
         return SYNTAX_ERROR;
     } else if (base::EndsWith(range_string, "-")) {
       range.to = pages_count;
-      if (!base::StringToInt(range_string.substr(0, range_string.length() - 1),
-                             &range.from))
+      if (!base::StringToUint(range_string.substr(0, range_string.length() - 1),
+                              &range.from))
         return SYNTAX_ERROR;
     } else {
       auto tokens = base::SplitStringPiece(
           range_string, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      if (tokens.size() != 2 || !base::StringToInt(tokens[0], &range.from) ||
-          !base::StringToInt(tokens[1], &range.to))
+      if (tokens.size() != 2 || !base::StringToUint(tokens[0], &range.from) ||
+          !base::StringToUint(tokens[1], &range.to))
         return SYNTAX_ERROR;
     }
 
