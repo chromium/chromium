@@ -20,7 +20,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -28,15 +27,12 @@ import org.chromium.chrome.browser.identity.UniqueIdentificationGenerator;
 import org.chromium.chrome.browser.identity.UniqueIdentificationGeneratorFactory;
 import org.chromium.chrome.browser.identity.UuidBasedUniqueIdentificationGenerator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -416,40 +412,6 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
      */
     protected ProfileSyncService createProfileSyncService() {
         return null;
-    }
-
-    /**
-     * TODO(https://crbug.com/1126814): Remove this method once all its usages are migrated.
-     */
-    @Deprecated
-    private void signinAndEnableSyncInternal(final Account account, boolean setFirstSetupComplete) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IdentityServicesProvider.get()
-                    .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signinAndEnableSync(
-                            SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
-                                @Override
-                                public void onSignInComplete() {
-                                    if (setFirstSetupComplete) {
-                                        mProfileSyncService.setFirstSetupComplete(
-                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
-                                    }
-                                }
-
-                                @Override
-                                public void onSignInAborted() {
-                                    Assert.fail("Sign-in was aborted");
-                                }
-                            });
-        });
-        enableUKM();
-        if (setFirstSetupComplete) {
-            SyncTestUtil.waitForSyncActive();
-            SyncTestUtil.triggerSyncAndWaitForCompletion();
-        } else {
-            SyncTestUtil.waitForSyncTransportActive();
-        }
-        Assert.assertEquals(account, mAccountManagerTestRule.getCurrentSignedInAccount());
     }
 
     private static void enableUKM() {
