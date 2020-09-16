@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/parent_access_controller.h"
+#include "ash/child_accounts/parent_access_controller_impl.h"
 
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/login_button.h"
@@ -22,17 +22,16 @@ namespace {
 
 using ::testing::_;
 
-class ParentAccessControllerTest : public LoginTestBase {
+class ParentAccessControllerImplTest : public LoginTestBase {
  protected:
-  ParentAccessControllerTest()
+  ParentAccessControllerImplTest()
       : account_id_(AccountId::FromUserEmail("child@gmail.com")) {}
-  ~ParentAccessControllerTest() override = default;
+  ~ParentAccessControllerImplTest() override = default;
 
   // LoginScreenTest:
   void SetUp() override {
     LoginTestBase::SetUp();
     login_client_ = std::make_unique<MockLoginScreenClient>();
-    controller_ = std::make_unique<ParentAccessController>();
   }
 
   void TearDown() override {
@@ -63,9 +62,9 @@ class ParentAccessControllerTest : public LoginTestBase {
 
   void StartParentAccess(const AccountId& account_id, SupervisedAction action) {
     validation_time_ = base::Time::Now();
-    controller_->ShowWidget(
+    ash::ParentAccessController::Get()->ShowWidget(
         account_id,
-        base::BindOnce(&ParentAccessControllerTest::OnFinished,
+        base::BindOnce(&ParentAccessControllerImplTest::OnFinished,
                        base::Unretained(this)),
         action, false, validation_time_);
     view_ =
@@ -73,14 +72,14 @@ class ParentAccessControllerTest : public LoginTestBase {
   }
 
   // Verifies expectation that UMA |action| was logged.
-  void ExpectUMAActionReported(ParentAccessController::UMAAction action,
+  void ExpectUMAActionReported(ParentAccessControllerImpl::UMAAction action,
                                int bucket_count,
                                int total_count) {
     histogram_tester_.ExpectBucketCount(
-        ParentAccessController::kUMAParentAccessCodeAction, action,
+        ParentAccessControllerImpl::kUMAParentAccessCodeAction, action,
         bucket_count);
     histogram_tester_.ExpectTotalCount(
-        ParentAccessController::kUMAParentAccessCodeAction, total_count);
+        ParentAccessControllerImpl::kUMAParentAccessCodeAction, total_count);
   }
 
   // Simulates entering a code. |success| determines whether the code will be
@@ -99,8 +98,6 @@ class ParentAccessControllerTest : public LoginTestBase {
     }
   }
 
-  std::unique_ptr<ParentAccessController> controller_;
-
   const AccountId account_id_;
   std::unique_ptr<MockLoginScreenClient> login_client_;
 
@@ -118,12 +115,12 @@ class ParentAccessControllerTest : public LoginTestBase {
   PinRequestView* view_ = nullptr;  // Owned by test widget view hierarchy.
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ParentAccessControllerTest);
+  DISALLOW_COPY_AND_ASSIGN(ParentAccessControllerImplTest);
 };
 
 // Tests parent access dialog showing/hiding and focus behavior for parent
 // access.
-TEST_F(ParentAccessControllerTest, ParentAccessDialogFocus) {
+TEST_F(ParentAccessControllerImplTest, ParentAccessDialogFocus) {
   EXPECT_FALSE(PinRequestWidget::Get());
 
   StartParentAccess();
@@ -139,105 +136,106 @@ TEST_F(ParentAccessControllerTest, ParentAccessDialogFocus) {
 }
 
 // Tests correct UMA reporting for parent access.
-TEST_F(ParentAccessControllerTest, ParentAccessUMARecording) {
+TEST_F(ParentAccessControllerImplTest, ParentAccessUMARecording) {
   StartParentAccess(SupervisedAction::kUnlockTimeLimits);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kTimeLimits, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kTimeLimits, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 1,
-                          1);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 1, 1);
 
   StartParentAccess(SupervisedAction::kUpdateTimezone);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kTimezoneChange, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kTimezoneChange, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 2,
-                          2);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 2, 2);
 
   // The below usage depends on the session state.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kTimeChangeInSession, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kTimeChangeInSession, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 3,
-                          3);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 3, 3);
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kTimeChangeLoginScreen, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kTimeChangeLoginScreen, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 4,
-                          4);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 4, 4);
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   StartParentAccess(SupervisedAction::kUpdateClock);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kTimeChangeInSession, 2);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kTimeChangeInSession, 2);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 5,
-                          5);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 5, 5);
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   StartParentAccess(SupervisedAction::kReauth);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kReauhLoginScreen, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 6,
-                          6);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 6, 6);
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   StartParentAccess(EmptyAccountId(), SupervisedAction::kAddUser);
   histogram_tester_.ExpectBucketCount(
-      ParentAccessController::kUMAParentAccessCodeUsage,
-      ParentAccessController::UMAUsage::kAddUserLoginScreen, 1);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+      ParentAccessControllerImpl::UMAUsage::kAddUserLoginScreen, 1);
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 7,
-                          7);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 7, 7);
 
   histogram_tester_.ExpectTotalCount(
-      ParentAccessController::kUMAParentAccessCodeUsage, 7);
+      ParentAccessControllerImpl::kUMAParentAccessCodeUsage, 7);
   EXPECT_EQ(7, back_action_);
 }
 
 // Tests successful parent access validation flow.
-TEST_F(ParentAccessControllerTest, ParentAccessSuccessfulValidation) {
+TEST_F(ParentAccessControllerImplTest, ParentAccessSuccessfulValidation) {
   StartParentAccess();
   SimulateValidation(true);
 
   EXPECT_EQ(1, successful_validation_);
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kValidationSuccess,
-                          1, 1);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kValidationSuccess, 1, 1);
 }
 
 // Tests unsuccessful parent access flow, including help button and cancelling
 // the request.
-TEST_F(ParentAccessControllerTest, ParentAccessUnsuccessfulValidation) {
+TEST_F(ParentAccessControllerImplTest, ParentAccessUnsuccessfulValidation) {
   StartParentAccess();
   SimulateValidation(false);
 
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kValidationError,
-                          1, 1);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kValidationError, 1, 1);
 
   EXPECT_CALL(*login_client_, ShowParentAccessHelpApp(_)).Times(1);
   SimulateButtonPress(PinRequestView::TestApi(view_).help_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kGetHelp, 1, 2);
+  ExpectUMAActionReported(ParentAccessControllerImpl::UMAAction::kGetHelp, 1,
+                          2);
 
   SimulateButtonPress(PinRequestView::TestApi(view_).back_button());
-  ExpectUMAActionReported(ParentAccessController::UMAAction::kCanceledByUser, 1,
-                          3);
+  ExpectUMAActionReported(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser, 1, 3);
 }
 
 }  // namespace

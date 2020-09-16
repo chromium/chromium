@@ -142,7 +142,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       account_id =
           user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
     }
-    ash::LoginScreen::Get()->ShowParentAccessWidget(
+    ash::ParentAccessController::Get()->ShowWidget(
         account_id,
         base::BindOnce(&SetTimeMessageHandler::OnParentAccessValidation,
                        weak_factory_.GetWeakPtr()),

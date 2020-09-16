@@ -176,7 +176,7 @@ void LoginScreenClient::ShowGaiaSignin(const AccountId& prefilled_account) {
           supervised_action)) {
     // Show the client native parent access widget and processed to GAIA signin
     // flow in |OnParentAccessValidation| when validation success.
-    ash::LoginScreen::Get()->ShowParentAccessWidget(
+    ash::ParentAccessController::Get()->ShowWidget(
         prefilled_account,
         base::BindOnce(&LoginScreenClient::OnParentAccessValidation,
                        weak_ptr_factory_.GetWeakPtr(), prefilled_account),

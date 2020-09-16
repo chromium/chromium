@@ -13,7 +13,6 @@
 #include "ash/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
-#include "ash/login/parent_access_controller.h"
 #include "ash/login/ui/bottom_status_indicator.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/lock_screen_media_controls_view.h"

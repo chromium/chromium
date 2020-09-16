@@ -9,10 +9,10 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/child_accounts/parent_access_controller_impl.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
-#include "ash/login/parent_access_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 #include "ash/login/ui/lock_screen.h"

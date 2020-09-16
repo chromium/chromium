@@ -47,13 +47,6 @@ void TestLoginScreen::ShowGuestButtonInOobe(bool show) {}
 
 void TestLoginScreen::ShowParentAccessButton(bool show) {}
 
-void TestLoginScreen::ShowParentAccessWidget(
-    const AccountId& child_account_id,
-    base::OnceCallback<void(bool success)> callback,
-    ash::SupervisedAction action,
-    bool extra_dimmer,
-    base::Time validation_time) {}
-
 void TestLoginScreen::SetAllowLoginAsGuest(bool allow_guest) {}
 
 std::unique_ptr<ash::ScopedGuestButtonBlocker>

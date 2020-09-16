@@ -35,11 +35,6 @@ class TestLoginScreen : public ash::LoginScreen {
   void EnableShutdownButton(bool enable) override;
   void ShowGuestButtonInOobe(bool show) override;
   void ShowParentAccessButton(bool show) override;
-  void ShowParentAccessWidget(const AccountId& child_account_id,
-                              base::OnceCallback<void(bool success)> callback,
-                              ash::SupervisedAction action,
-                              bool extra_dimmer,
-                              base::Time validation_time) override;
   void SetAllowLoginAsGuest(bool allow_guest) override;
   std::unique_ptr<ash::ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker()
       override;

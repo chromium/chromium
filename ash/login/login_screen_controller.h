@@ -118,14 +118,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   std::unique_ptr<ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker()
       override;
 
-  // TODO(agawronska): Change all callers of this to use
-  // Shell::Get()->parent_access_controller()->ShowWidget() directly and delete
-  // this method.
-  void ShowParentAccessWidget(const AccountId& child_account_id,
-                              base::OnceCallback<void(bool success)> callback,
-                              SupervisedAction action,
-                              bool extra_dimmer,
-                              base::Time validation_time) override;
   void RequestSecurityTokenPin(SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
   bool SetLoginShelfGestureHandler(const base::string16& nudge_text,

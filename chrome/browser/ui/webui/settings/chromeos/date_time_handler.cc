@@ -150,7 +150,7 @@ void DateTimeHandler::HandleShowParentAccessForTimeZone(
     return;
   }
 
-  ash::LoginScreen::Get()->ShowParentAccessWidget(
+  ash::ParentAccessController::Get()->ShowWidget(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
       base::BindOnce(&DateTimeHandler::OnParentAccessValidation,
                      weak_ptr_factory_.GetWeakPtr()),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/parent_access_controller.h"
+#include "ash/child_accounts/parent_access_controller_impl.h"
 
 #include "ash/login/login_screen_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -66,19 +66,19 @@ base::string16 GetAccessibleTitle() {
 
 }  // namespace
 
-ParentAccessController::ParentAccessController() {}
+ParentAccessControllerImpl::ParentAccessControllerImpl() {}
 
-ParentAccessController::~ParentAccessController() = default;
-
-// static
-constexpr char ParentAccessController::kUMAParentAccessCodeAction[];
+ParentAccessControllerImpl::~ParentAccessControllerImpl() = default;
 
 // static
-constexpr char ParentAccessController::kUMAParentAccessCodeUsage[];
+constexpr char ParentAccessControllerImpl::kUMAParentAccessCodeAction[];
 
-void RecordParentAccessAction(ParentAccessController::UMAAction action) {
-  UMA_HISTOGRAM_ENUMERATION(ParentAccessController::kUMAParentAccessCodeAction,
-                            action);
+// static
+constexpr char ParentAccessControllerImpl::kUMAParentAccessCodeUsage[];
+
+void RecordParentAccessAction(ParentAccessControllerImpl::UMAAction action) {
+  UMA_HISTOGRAM_ENUMERATION(
+      ParentAccessControllerImpl::kUMAParentAccessCodeAction, action);
 }
 
 void RecordParentAccessUsage(const AccountId& child_account_id,
@@ -86,40 +86,41 @@ void RecordParentAccessUsage(const AccountId& child_account_id,
   switch (action) {
     case SupervisedAction::kUnlockTimeLimits: {
       UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessController::kUMAParentAccessCodeUsage,
-          ParentAccessController::UMAUsage::kTimeLimits);
+          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+          ParentAccessControllerImpl::UMAUsage::kTimeLimits);
       return;
     }
     case SupervisedAction::kUpdateClock: {
       bool is_login = Shell::Get()->session_controller()->GetSessionState() ==
                       session_manager::SessionState::LOGIN_PRIMARY;
       UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessController::kUMAParentAccessCodeUsage,
-          is_login ? ParentAccessController::UMAUsage::kTimeChangeLoginScreen
-                   : ParentAccessController::UMAUsage::kTimeChangeInSession);
+          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+          is_login
+              ? ParentAccessControllerImpl::UMAUsage::kTimeChangeLoginScreen
+              : ParentAccessControllerImpl::UMAUsage::kTimeChangeInSession);
       return;
     }
     case SupervisedAction::kUpdateTimezone: {
       UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessController::kUMAParentAccessCodeUsage,
-          ParentAccessController::UMAUsage::kTimezoneChange);
+          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+          ParentAccessControllerImpl::UMAUsage::kTimezoneChange);
       return;
     }
     case SupervisedAction::kAddUser:
       UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessController::kUMAParentAccessCodeUsage,
-          ParentAccessController::UMAUsage::kAddUserLoginScreen);
+          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+          ParentAccessControllerImpl::UMAUsage::kAddUserLoginScreen);
       return;
     case SupervisedAction::kReauth:
       UMA_HISTOGRAM_ENUMERATION(
-          ParentAccessController::kUMAParentAccessCodeUsage,
-          ParentAccessController::UMAUsage::kReauhLoginScreen);
+          ParentAccessControllerImpl::kUMAParentAccessCodeUsage,
+          ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen);
       return;
   }
   NOTREACHED() << "Unknown SupervisedAction";
 }
 
-PinRequestView::SubmissionResult ParentAccessController::OnPinSubmitted(
+PinRequestView::SubmissionResult ParentAccessControllerImpl::OnPinSubmitted(
     const std::string& pin) {
   bool pin_is_valid =
       Shell::Get()->login_screen_controller()->ValidateParentAccessCode(
@@ -128,12 +129,13 @@ PinRequestView::SubmissionResult ParentAccessController::OnPinSubmitted(
   if (pin_is_valid) {
     VLOG(1) << "Parent access code successfully validated";
     RecordParentAccessAction(
-        ParentAccessController::UMAAction::kValidationSuccess);
+        ParentAccessControllerImpl::UMAAction::kValidationSuccess);
     return PinRequestView::SubmissionResult::kPinAccepted;
   }
 
   VLOG(1) << "Invalid parent access code entered";
-  RecordParentAccessAction(ParentAccessController::UMAAction::kValidationError);
+  RecordParentAccessAction(
+      ParentAccessControllerImpl::UMAAction::kValidationError);
   PinRequestWidget::Get()->UpdateState(
       PinRequestViewState::kError,
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PARENT_ACCESS_TITLE_ERROR),
@@ -141,12 +143,13 @@ PinRequestView::SubmissionResult ParentAccessController::OnPinSubmitted(
   return PinRequestView::SubmissionResult::kPinError;
 }
 
-void ParentAccessController::OnBack() {
-  RecordParentAccessAction(ParentAccessController::UMAAction::kCanceledByUser);
+void ParentAccessControllerImpl::OnBack() {
+  RecordParentAccessAction(
+      ParentAccessControllerImpl::UMAAction::kCanceledByUser);
 }
 
-void ParentAccessController::OnHelp(gfx::NativeWindow parent_window) {
-  RecordParentAccessAction(ParentAccessController::UMAAction::kGetHelp);
+void ParentAccessControllerImpl::OnHelp(gfx::NativeWindow parent_window) {
+  RecordParentAccessAction(ParentAccessControllerImpl::UMAAction::kGetHelp);
   // TODO(https://crbug.com/999387): Remove this when handling touch
   // cancellation is fixed for system modal windows.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -159,7 +162,7 @@ void ParentAccessController::OnHelp(gfx::NativeWindow parent_window) {
           parent_window));
 }
 
-bool ParentAccessController::ShowWidget(
+bool ParentAccessControllerImpl::ShowWidget(
     const AccountId& child_account_id,
     PinRequest::OnPinRequestDone on_exit_callback,
     SupervisedAction action,
