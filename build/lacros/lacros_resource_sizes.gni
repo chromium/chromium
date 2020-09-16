@@ -10,7 +10,7 @@ template("lacros_resource_sizes_test") {
   generate_wrapper(target_name) {
     forward_variables_from(invoker, [ "data_deps" ])
     executable = "//build/lacros/lacros_resource_sizes.py"
-    wrapper_script = "$root_out_dir/bin/${target_name}"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
 
     deps = [ "//build/lacros:lacros_resource_sizes_py" ]
     executable_args = [
