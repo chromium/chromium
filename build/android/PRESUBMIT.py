@@ -28,7 +28,7 @@ def CommonChecks(input_api, output_api):
           input_api,
           output_api,
           pylintrc='pylintrc',
-          block_list=[
+          files_to_skip=[
               r'.*_pb2\.py',
               r'.*list_java_targets\.py',  # crbug.com/1100664
           ] + build_pys,
@@ -50,8 +50,8 @@ def CommonChecks(input_api, output_api):
       input_api.canned_checks.GetPylint(
           input_api,
           output_api,
-          allow_list=build_pys,
-          block_list=[
+          files_to_check=build_pys,
+          files_to_skip=[
               r'.*_pb2\.py',
               r'.*_pb2\.py',
           ],
