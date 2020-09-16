@@ -341,6 +341,12 @@ const char kFakeDriveFsLauncherChrootPath[] =
 const char kFakeDriveFsLauncherSocketPath[] =
     "fake-drivefs-launcher-socket-path";
 
+// Specifies number of recommended (fake) ARC apps during user onboarding.
+// App descriptions are generated locally instead of being fetched from server.
+// Limited to ChromeOS-on-linux and test images only.
+const char kFakeArcRecommendedAppsForTesting[] =
+    "fake-arc-recommended-apps-for-testing";
+
 // Fingerprint sensor location indicates the physical sensor's location. The
 // value is a string with possible values: "power-button-top-left",
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".

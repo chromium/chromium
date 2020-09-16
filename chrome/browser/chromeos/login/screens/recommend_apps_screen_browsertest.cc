@@ -64,11 +64,11 @@ struct FakeAppInfo {
   const std::string name;
 };
 
-class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
+class StubRecommendAppsFetcher : public RecommendAppsFetcher {
  public:
-  explicit FakeRecommendAppsFetcher(RecommendAppsFetcherDelegate* delegate)
+  explicit StubRecommendAppsFetcher(RecommendAppsFetcherDelegate* delegate)
       : delegate_(delegate) {}
-  ~FakeRecommendAppsFetcher() override = default;
+  ~StubRecommendAppsFetcher() override = default;
 
   bool started() const { return started_; }
   int retries() const { return retries_; }
@@ -228,7 +228,7 @@ class RecommendAppsScreenTest : public OobeBaseTest {
 
   RecommendAppsScreen* recommend_apps_screen_;
   base::Optional<RecommendAppsScreen::Result> screen_result_;
-  FakeRecommendAppsFetcher* recommend_apps_fetcher_ = nullptr;
+  StubRecommendAppsFetcher* recommend_apps_fetcher_ = nullptr;
 
   LoginManagerMixin login_manager_{&mixin_host_};
 
@@ -245,7 +245,7 @@ class RecommendAppsScreenTest : public OobeBaseTest {
     EXPECT_EQ(delegate, recommend_apps_screen_);
     EXPECT_FALSE(recommend_apps_fetcher_);
 
-    auto fetcher = std::make_unique<FakeRecommendAppsFetcher>(delegate);
+    auto fetcher = std::make_unique<StubRecommendAppsFetcher>(delegate);
     recommend_apps_fetcher_ = fetcher.get();
     return fetcher;
   }
