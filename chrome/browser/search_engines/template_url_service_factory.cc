@@ -24,7 +24,7 @@
 #include "rlz/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "components/rlz/rlz_tracker.h"
+#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
 // static

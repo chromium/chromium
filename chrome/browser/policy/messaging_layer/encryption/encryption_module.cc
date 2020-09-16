@@ -4,10 +4,11 @@
 
 #include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
-#include "base/test/task_environment.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"

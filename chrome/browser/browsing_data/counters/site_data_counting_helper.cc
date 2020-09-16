@@ -28,7 +28,7 @@
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
-#include "components/cdm/browser/media_drm_storage_impl.h"
+#include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #endif
 
 using content::BrowserThread;

@@ -118,9 +118,6 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/media/media_feeds_ui.h"
-#include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
-#include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
-#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
@@ -164,6 +161,9 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom.h"
+#include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
+#include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
@@ -195,8 +195,8 @@
 #endif
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
-#include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
-#include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"
+#include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
+#include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "chromeos/components/telemetry_extension_ui/telemetry_extension_ui.h"
 #endif
 

@@ -291,7 +291,7 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
-#include "components/rlz/rlz_tracker.h"
+#include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
 #if BUILDFLAG(IS_LACROS)

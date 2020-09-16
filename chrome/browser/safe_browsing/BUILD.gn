@@ -15,6 +15,8 @@ static_library("safe_browsing") {
     "url_checker_delegate_impl.h",
   ]
 
+  public_deps = []
+
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/common",
@@ -241,10 +243,12 @@ static_library("safe_browsing") {
         "signature_evaluator_mac.h",
         "signature_evaluator_mac.mm",
       ]
-      deps += [
-        ":advanced_protection",
+      public_deps += [
         ":chrome_enterprise_url_lookup_service",
         ":chrome_enterprise_url_lookup_service_factory",
+      ]
+      deps += [
+        ":advanced_protection",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
         "//chrome/common/safe_browsing:disk_image_type_sniffer_mac",
@@ -280,37 +284,43 @@ static_library("safe_browsing") {
   }
 }
 
-source_set("chrome_enterprise_url_lookup_service_factory") {
-  sources = [
-    "chrome_enterprise_url_lookup_service_factory.cc",
-    "chrome_enterprise_url_lookup_service_factory.h",
-  ]
+if (safe_browsing_mode == 1) {
+  source_set("chrome_enterprise_url_lookup_service_factory") {
+    visibility = [ ":*" ]
 
-  deps = [
-    ":chrome_enterprise_url_lookup_service",
-    ":verdict_cache_manager_factory",
-    "//chrome/common",
-    "//components/keyed_service/content",
-    "//content/public/browser",
-  ]
-}
+    sources = [
+      "chrome_enterprise_url_lookup_service_factory.cc",
+      "chrome_enterprise_url_lookup_service_factory.h",
+    ]
 
-source_set("chrome_enterprise_url_lookup_service") {
-  sources = [
-    "chrome_enterprise_url_lookup_service.cc",
-    "chrome_enterprise_url_lookup_service.h",
-  ]
+    deps = [
+      ":chrome_enterprise_url_lookup_service",
+      ":verdict_cache_manager_factory",
+      "//chrome/common",
+      "//components/keyed_service/content",
+      "//content/public/browser",
+    ]
+  }
 
-  deps = [
-    "//components/prefs",
-    "//components/safe_browsing/core:csd_proto",
-    "//components/safe_browsing/core:realtimeapi_proto",
-    "//components/safe_browsing/core:verdict_cache_manager",
-    "//components/safe_browsing/core/realtime:policy_engine",
-    "//components/safe_browsing/core/realtime:url_lookup_service_base",
-    "//components/sync",
-    "//services/network/public/cpp:cpp",
-  ]
+  source_set("chrome_enterprise_url_lookup_service") {
+    visibility = [ ":*" ]
+
+    sources = [
+      "chrome_enterprise_url_lookup_service.cc",
+      "chrome_enterprise_url_lookup_service.h",
+    ]
+
+    deps = [
+      "//components/prefs",
+      "//components/safe_browsing/core:csd_proto",
+      "//components/safe_browsing/core:realtimeapi_proto",
+      "//components/safe_browsing/core:verdict_cache_manager",
+      "//components/safe_browsing/core/realtime:policy_engine",
+      "//components/safe_browsing/core/realtime:url_lookup_service_base",
+      "//components/sync",
+      "//services/network/public/cpp:cpp",
+    ]
+  }
 }
 
 source_set("url_lookup_service_factory") {

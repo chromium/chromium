@@ -37,7 +37,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "rlz/lib/machine_id.h"
+#include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif
 
 namespace {

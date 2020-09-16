@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/reputation/local_heuristics.h"
-#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/browser/reputation/safety_tips_config.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/omnibox/common/omnibox_features.h"

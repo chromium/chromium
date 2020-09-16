@@ -113,8 +113,16 @@ static_library("test_support") {
   sources = [
     "../browser/autofill/automated_tests/cache_replayer.cc",
     "../browser/autofill/automated_tests/cache_replayer.h",
+    "../browser/notifications/notification_display_service_tester.cc",
+    "../browser/notifications/notification_display_service_tester.h",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.cc",
     "../browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h",
+    "../browser/search_engines/template_url_service_factory_test_util.cc",
+    "../browser/search_engines/template_url_service_factory_test_util.h",
+    "../browser/search_engines/template_url_service_test_util.cc",
+    "../browser/search_engines/template_url_service_test_util.h",
+    "../browser/signin/identity_test_environment_profile_adaptor.cc",
+    "../browser/signin/identity_test_environment_profile_adaptor.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
     "base/chrome_test_launcher.cc",
@@ -318,8 +326,12 @@ static_library("test_support") {
       "../browser/chromeos/arc/tracing/arc_app_performance_tracing_test_helper.h",
       "../browser/chromeos/file_manager/file_manager_test_util.cc",
       "../browser/chromeos/file_manager/file_manager_test_util.h",
+      "../browser/chromeos/login/users/fake_chrome_user_manager.cc",
+      "../browser/chromeos/login/users/fake_chrome_user_manager.h",
       "../browser/chromeos/ownership/fake_owner_settings_service.cc",
       "../browser/chromeos/ownership/fake_owner_settings_service.h",
+      "../browser/chromeos/settings/device_settings_test_helper.cc",
+      "../browser/chromeos/settings/device_settings_test_helper.h",
       "../browser/chromeos/settings/scoped_cros_settings_test_helper.cc",
       "../browser/chromeos/settings/scoped_cros_settings_test_helper.h",
       "../browser/component_updater/fake_cros_component_manager.cc",
@@ -347,6 +359,11 @@ static_library("test_support") {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base/ime/init",
+    ]
+    deps += [
+      "//chromeos/cryptohome",
+      "//chromeos/dbus",
+      "//chromeos/dbus/power",
     ]
   }
 
@@ -398,6 +415,10 @@ static_library("test_support") {
       "../browser/extensions/extension_browsertest.h",
       "../browser/extensions/permissions_test_util.cc",
       "../browser/extensions/permissions_test_util.h",
+      "../browser/extensions/test_extension_environment.cc",
+      "../browser/extensions/test_extension_environment.h",
+      "../browser/extensions/test_extension_prefs.cc",
+      "../browser/extensions/test_extension_prefs.h",
       "../browser/ui/web_applications/test/ssl_test_utils.cc",
       "../browser/ui/web_applications/test/ssl_test_utils.h",
       "../browser/ui/web_applications/test/web_app_browsertest_util.cc",
@@ -5887,12 +5908,20 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "../browser/interstitials/security_interstitial_idn_test.cc",
+      "../browser/interstitials/security_interstitial_idn_test.h",
+      "../browser/password_manager/password_manager_test_base.cc",
+      "../browser/password_manager/password_manager_test_base.h",
       "../browser/ssl/cert_verifier_browser_test.cc",
       "../browser/ssl/cert_verifier_browser_test.h",
+      "../browser/ssl/cert_verifier_platform_browser_test.cc",
+      "../browser/ssl/cert_verifier_platform_browser_test.h",
       "../browser/ui/search/instant_test_utils.cc",
       "../browser/ui/search/instant_test_utils.h",
       "../browser/ui/search/local_ntp_test_utils.cc",
       "../browser/ui/search/local_ntp_test_utils.h",
+      "../browser/ui/webui/signin/login_ui_test_utils.cc",
+      "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",
       "../browser/web_applications/test/profile_test_helper.h",
       "base/in_process_browser_test.cc",

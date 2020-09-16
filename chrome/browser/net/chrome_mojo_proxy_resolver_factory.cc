@@ -19,7 +19,7 @@
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 #if defined(OS_ANDROID)
-#include "services/proxy_resolver/proxy_resolver_factory_impl.h"
+#include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck crbug.com/1125897
 #else
 #include "content/public/browser/service_process_host.h"
 #include "services/strings/grit/services_strings.h"
