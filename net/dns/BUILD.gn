@@ -182,11 +182,6 @@ source_set("host_resolver") {
   # Restricted access so we can keep track of all usage external to the
   # network stack and network service.
   friend = [
-    # DNS Config and Overrides for Chrome browser.
-    # TODO (ericorth): Make DnsConfig(Overrides) public so //chrome/browser does
-    # not need to depend on host_resolver.
-    "//chrome/browser",
-
     # chromecast/browser/url_request_context_factory.cc
     # URLRequestContext creation for chromecast.
     "//chromecast/browser",

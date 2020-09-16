@@ -1541,7 +1541,6 @@ static_library("ui") {
       "//components/network_session_configurator/common",
       "//components/page_load_metrics/browser",
       "//components/performance_manager:site_data_proto",
-      "//components/printing/browser",
       "//components/profile_metrics",
       "//components/safety_check",
       "//components/search_provider_logos",

@@ -40,7 +40,7 @@
 
 #if !defined(OS_ANDROID)
 #include "base/files/memory_mapped_file.h"
-#include "third_party/hunspell/google/bdict.h"  // nogncheck crbug.com/1125897
+#include "third_party/hunspell/google/bdict.h"
 #endif
 
 using content::BrowserThread;
