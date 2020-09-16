@@ -249,7 +249,6 @@ no_check_targets = [
   "//third_party/blink/renderer/core/workers:*",  # 289 errors
   "//third_party/blink/renderer/core/xmlhttprequest:*",  # 49 errors
   "//third_party/blink/renderer/core:*",  # 823 errors
-  "//third_party/blink/renderer/modules/font_access:*",  # 3 errors
   "//third_party/blink/renderer/modules/peerconnection:*",  # 43 errors
 
   "//third_party/breakpad:*",  # 34 errors
