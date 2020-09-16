@@ -1286,6 +1286,7 @@
 <translation id="2505127913256479918">এই তত্ত্বাবধানে থাকা অ্যাকাউন্ট শীঘ্রই সরিয়ে দেওয়া হবে</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{স্ক্রিন #}one{স্ক্রিন #}other{স্ক্রিন #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />-এর <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">তার ডিভাইসে 'নিয়ারবাই শেয়ার' ফিচার চালু হওয়ার পরে, আপনার আশেপাশে উপলভ্য ডিভাইস</translation>
 <translation id="250704661983564564">ডিসপ্লে সেট করা</translation>
 <translation id="2507253002925770350">টিকিট সরানো হয়েছে</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> পজ করা আছে</translation>
@@ -3136,6 +3137,7 @@
 <translation id="4762718786438001384">ডিভাইসের ডিস্কের স্থান আশংকাজনকভাবে কম</translation>
 <translation id="4763408175235639573">আপনি যখন এই পৃষ্ঠাটি দেখেছিলেন তখন নিম্নোক্ত কুকিগুলি সেট হয়েছিল</translation>
 <translation id="4765582662863429759">Android Messages-কে আপনার ফোন থেকে Chromebook-এ টেক্সট রিলে করতে অনুমতি দেয়</translation>
+<translation id="476598255842811483">আপনার ডিভাইসে 'নিয়ারবাই শেয়ার' ফিচার চালু না করা পর্যন্ত কেউ আপনার ডিভাইস দেখতে পাবেন না</translation>
 <translation id="4768332406694066911">আপনার পরিচয় শনাক্ত করে এমন সংস্থাগুলি থেকে শংসাপত্র আপনার কাছে আছে</translation>
 <translation id="477647109558161443">ডেস্কটপ শর্টকাট তৈরি করুন</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
@@ -5668,6 +5670,7 @@
 <translation id="786073089922909430">পরিষেবা: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ডাউনলোড করা</translation>
 <translation id="7864539943188674973">ব্লুটুথ অক্ষম করুন</translation>
+<translation id="7866352732146932341">আপনার ডিভাইসে 'নিয়ারবাই শেয়ার' ফিচার চালু হওয়ার পরে, আপনার আশেপাশে উপলভ্য ডিভাইস</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - যুক্ত করা হয়েছে</translation>
 <translation id="7870730066603611552">সেট-আপের পর সিঙ্কের বিকল্পগুলির রিভিউ</translation>
 <translation id="7870790288828963061">এর থেকে আরও নতুন ভার্সনের কোনও কিয়স্ক অ্যাপ্লিকেশন পাওয়া যায়নি৷ USB স্টিক সরান৷</translation>

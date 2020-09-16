@@ -217,7 +217,7 @@
 <translation id="1752021286346845558">Caixa de correo 8</translation>
 <translation id="1753706481035618306">Número de páxina</translation>
 <translation id="1763864636252898013">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o sistema operativo do teu dispositivo non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
-<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
+<translation id="1768211456781949159"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="1772163372082567643">O servidor que vas visitar, <ph name="ORIGIN" />, definiu un título
     que require que se aplique unha política de orixe a todas as solicitudes que reciba. Non
     obstante, o título ten un formato incorrecto, o que impide que o navegador complete
@@ -368,7 +368,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Escoller método de entrega</translation>
 <translation id="2465688316154986572">Grampa</translation>
-<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar diagnósticos da rede<ph name="END_LINK" /></translation>
+<translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar diagnóstico de rede<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Orde de 1 a N</translation>
 <translation id="2479410451996844060">URL de busca non válido.</translation>
 <translation id="2482878487686419369">Notificacións</translation>
@@ -796,7 +796,7 @@
     &lt;p&gt;Lembra volver activar o programa de antivirus cando remates.&lt;/p&gt;
     &lt;h4&gt;Paso 5: Recibe axuda adicional&lt;/h4&gt;
     &lt;p&gt;Se aínda ves este erro, contacta co propietario do sitio web.&lt;/p&gt;</translation>
-<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proba a executar diagnósticos da rede<ph name="END_LINK" />.</translation>
+<translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
@@ -1682,7 +1682,7 @@ Detalles adicionais:
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>
 <translation id="7888575728750733395">Intent de renderización da impresión</translation>
-<translation id="7894280532028510793">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de rede<ph name="END_LINK" />.</translation>
+<translation id="7894280532028510793">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (sobre)</translation>
 <translation id="7932579305932748336">Recubrimento</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
@@ -1889,7 +1889,7 @@ Detalles adicionais:
 <translation id="884923133447025588">Non se atopou ningún mecanismo de revogación.</translation>
 <translation id="885730110891505394">Compartindo con Google</translation>
 <translation id="8858065207712248076">Chrome recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
-<translation id="885906927438988819">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos da rede de Windows<ph name="END_LINK" />.</translation>
+<translation id="885906927438988819">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar o diagnóstico de rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Erro ao analizar a configuración da política</translation>
 <translation id="8866928039507595380">Dobrez</translation>
 <translation id="886872106311861689">B3</translation>
