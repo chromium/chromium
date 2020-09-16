@@ -28,6 +28,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
+
 /**
  * Tests the behavior of the Site Settings UI.
  */
@@ -100,6 +102,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(84)
+    @DisabledTest(message = "TODO(crbug.com/1128184): Fix flakiness.")
     public void testSingleSiteLocationAccess() throws InterruptedException {
         try {
             Intents.init();
