@@ -85,7 +85,7 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
   endpoint_info_out->weight = weight;
 
-  return delegate->CanSetClient(group_key.origin, endpoint_url);
+  return delegate->CanSetClient(group_key.origin, endpoint_info_out->url);
 }
 
 // Processes a single endpoint group tuple received in a Report-To header.
