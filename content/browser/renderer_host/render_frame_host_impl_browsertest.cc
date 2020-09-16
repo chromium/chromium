@@ -3717,26 +3717,17 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 // Check that same site navigation correctly resets document_used_web_otp_.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        SameSiteNavigationResetsDocumentUsedWebOTP) {
-  const GURL first_url(embedded_test_server()->GetURL("/title1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), first_url));
+  const GURL first_url(
+      embedded_test_server()->GetURL("/page_with_webotp.html"));
+  const GURL second_url(embedded_test_server()->GetURL("/empty.html"));
 
-  std::string script = R"(
-    var element = document.createElement('div');
-    document.body.appendChild(element);
-    navigator.credentials.get({
-      otp: {transport:['sms']}
-    })
-    .then(content => element.value = content.code);
-  )";
-  EXPECT_TRUE(ExecuteScript(web_contents(), script));
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  // Load a URL that maps to the same SiteInstance as the second URL, to make
+  // sure the second navigation will not be cross-process.
+  ASSERT_TRUE(NavigateToURL(shell(), first_url));
 
   RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
   EXPECT_TRUE(main_rfh->DocumentUsedWebOTP());
 
-  // Loads a URL that maps to the same SiteInstance as the first URL, to make
-  // sure the navigation will not be cross-process.
-  const GURL second_url(embedded_test_server()->GetURL("/title2.html"));
   ASSERT_TRUE(NavigateToURL(shell(), second_url));
   EXPECT_FALSE(main_rfh->DocumentUsedWebOTP());
 }

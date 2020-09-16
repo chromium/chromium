@@ -1,0 +1,9 @@
+<input autocomplete="one-time-code">
+<script>
+  const ac = document.querySelector('input[autocomplete="one-time-code"]');
+  navigator.credentials.get({
+    otp: {transport:['sms']}
+  })
+  .then(content => ac.value = content.code);
+</script>
+
