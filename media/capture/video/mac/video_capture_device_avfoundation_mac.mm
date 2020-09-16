@@ -28,6 +28,10 @@
 
 namespace {
 
+// Logitech 4K Pro
+constexpr NSString* kModelIdLogitech4KPro =
+    @"UVC Camera VendorID_1133 ProductID_2175";
+
 constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
 constexpr FourCharCode kDefaultFourCCPixelFormat =
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;  // NV12 (a.k.a. 420v)
@@ -261,11 +265,16 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   if (best_fourcc == kCMVideoCodecType_JPEG_OpenDML) {
-    // Capturing MJPEG directly never worked. Request a conversion to what has
-    // historically been the default pixel format.
-    // TODO(https://crbug.com/1124884): Investigate the performance of
-    // performing MJPEG ourselves.
-    best_fourcc = kCMPixelFormat_422YpCbCr8;
+    // Capturing MJPEG for some cameras directly doesn't work (they don't
+    // forward frames to our sample callback), but for some reason macOS is able
+    // to pull it off without extreme latency introduced if we specify UYVY
+    // output format.
+    // TODO(crbugs.com/1124884): figure out if there's another workaround.
+    if ([[_captureDevice modelID] isEqualToString:kModelIdLogitech4KPro]) {
+      LOG(WARNING) << "Activating MJPEG workaround for camera "
+                   << base::SysNSStringToUTF8(kModelIdLogitech4KPro);
+      best_fourcc = kCMPixelFormat_422YpCbCr8;
+    }
   }
 
   VLOG(2) << __func__ << ": configuring '" << MacFourCCToString(best_fourcc)
