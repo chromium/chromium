@@ -4,10 +4,10 @@
 
 #include "content/browser/scoped_active_url.h"
 
-#include "content/browser/frame_host/frame_tree.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/browser/frame_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"

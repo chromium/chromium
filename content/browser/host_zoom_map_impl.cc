@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
-#include "content/browser/frame_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
