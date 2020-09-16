@@ -51,6 +51,8 @@ const char kComponentArch[] =
     "x64";
 #elif defined(ARCH_CPU_ARMEL)
     "arm";
+#elif defined(ARCH_CPU_ARM64)
+    "arm64";
 #else
     "unsupported_arch";
 #endif
