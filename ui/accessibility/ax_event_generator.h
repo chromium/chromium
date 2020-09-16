@@ -97,10 +97,11 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     WIN_IACCESSIBLE_STATE_CHANGED,
   };
 
-  struct EventParams {
+  struct AX_EXPORT EventParams {
     EventParams(Event event,
                 ax::mojom::EventFrom event_from,
                 const std::vector<AXEventIntent>& event_intents);
+    EventParams(const EventParams& other);
     ~EventParams();
     Event event;
     ax::mojom::EventFrom event_from;

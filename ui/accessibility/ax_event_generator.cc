@@ -68,6 +68,8 @@ AXEventGenerator::EventParams::EventParams(
     const std::vector<AXEventIntent>& event_intents)
     : event(event), event_from(event_from), event_intents(event_intents) {}
 
+AXEventGenerator::EventParams::EventParams(const EventParams& other) = default;
+
 AXEventGenerator::EventParams::~EventParams() = default;
 
 AXEventGenerator::TargetedEvent::TargetedEvent(AXNode* node,
@@ -107,11 +109,17 @@ AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator++() {
   if (map_iter_ == map_.end())
     return *this;
 
+  DCHECK(set_iter_ != map_iter_->second.end())
+      << "The set of events should not be empty";
   set_iter_++;
-  while (map_iter_ != map_.end() && set_iter_ == map_iter_->second.end()) {
+
+  if (set_iter_ == map_iter_->second.end()) {
     map_iter_++;
-    if (map_iter_ != map_.end())
+    if (map_iter_ != map_.end()) {
       set_iter_ = map_iter_->second.begin();
+      DCHECK(set_iter_ != map_iter_->second.end())
+          << "The set of events should not be empty";
+    }
   }
 
   return *this;
@@ -723,10 +731,10 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
 void AXEventGenerator::PostprocessEvents() {
   std::map<AXNode*, bool> ancestor_ignored_changed_map;
 
-  auto iter = tree_events_.begin();
-  while (iter != tree_events_.end()) {
-    AXNode* node = iter->first;
-    std::set<EventParams>& node_events = iter->second;
+  // First pass through |tree_events_|, remove events that we do not need.
+  for (auto& iter : tree_events_) {
+    AXNode* node = iter.first;
+    std::set<EventParams>& node_events = iter.second;
 
     // A newly created live region or alert should not *also* fire a
     // live region changed event.
@@ -773,10 +781,14 @@ void AXEventGenerator::PostprocessEvents() {
       }
       parent = parent->GetUnignoredParent();
     }
+  }
 
-    // If this was the only event, remove the node entirely from the
-    // tree events.
-    if (node_events.size() == 0)
+  // Second pass through |tree_events_|, remove nodes that do not have any
+  // events left.
+  auto iter = tree_events_.begin();
+  while (iter != tree_events_.end()) {
+    std::set<EventParams>& node_events = iter->second;
+    if (node_events.empty())
       iter = tree_events_.erase(iter);
     else
       ++iter;
