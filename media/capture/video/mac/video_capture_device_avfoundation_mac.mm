@@ -50,6 +50,82 @@ std::string MacFourCCToString(OSType fourcc) {
 
 }  // anonymous namespace
 
+namespace media {
+
+AVCaptureDeviceFormat* FindBestCaptureFormat(
+    NSArray<AVCaptureDeviceFormat*>* formats,
+    int width,
+    int height,
+    float frame_rate) {
+  AVCaptureDeviceFormat* bestCaptureFormat = nil;
+  VideoPixelFormat bestPixelFormat = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
+  bool bestMatchesFrameRate = false;
+  Float64 bestMaxFrameRate = 0;
+
+  for (AVCaptureDeviceFormat* captureFormat in formats) {
+    const FourCharCode fourcc =
+        CMFormatDescriptionGetMediaSubType([captureFormat formatDescription]);
+    VideoPixelFormat pixelFormat =
+        [VideoCaptureDeviceAVFoundation FourCCToChromiumPixelFormat:fourcc];
+    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(
+        [captureFormat formatDescription]);
+    Float64 maxFrameRate = 0;
+    bool matchesFrameRate = false;
+    for (AVFrameRateRange* frameRateRange in
+         [captureFormat videoSupportedFrameRateRanges]) {
+      maxFrameRate = std::max(maxFrameRate, [frameRateRange maxFrameRate]);
+      matchesFrameRate |= [frameRateRange minFrameRate] <= frame_rate &&
+                          frame_rate <= [frameRateRange maxFrameRate];
+    }
+
+    // If the pixel format is unsupported by our code, then it is not useful.
+    if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)
+      continue;
+
+    // If our CMSampleBuffers will have a different size than the native
+    // capture, then we will not be the fast path.
+    if (dimensions.width != width || dimensions.height != height)
+      continue;
+
+    // Prefer a capture format that handles the requested framerate to one
+    // that doesn't.
+    if (bestCaptureFormat) {
+      if (bestMatchesFrameRate && !matchesFrameRate)
+        continue;
+      if (matchesFrameRate && !bestMatchesFrameRate)
+        bestCaptureFormat = nil;
+    }
+
+    // Prefer a capture format with a lower maximum framerate, under the
+    // assumption that that may have lower power consumption.
+    if (bestCaptureFormat) {
+      if (bestMaxFrameRate < maxFrameRate)
+        continue;
+      if (maxFrameRate < bestMaxFrameRate)
+        bestCaptureFormat = nil;
+    }
+
+    // Finally, compare according to Chromium preference.
+    if (bestCaptureFormat) {
+      if (VideoCaptureFormat::ComparePixelFormatPreference(bestPixelFormat,
+                                                           pixelFormat)) {
+        continue;
+      }
+    }
+
+    bestCaptureFormat = captureFormat;
+    bestPixelFormat = pixelFormat;
+    bestMaxFrameRate = maxFrameRate;
+    bestMatchesFrameRate = matchesFrameRate;
+  }
+
+  VLOG(1) << "Selecting AVCaptureDevice format "
+          << VideoPixelFormatToString(bestPixelFormat);
+  return bestCaptureFormat;
+}
+
+}  // namespace media
+
 @implementation VideoCaptureDeviceAVFoundation
 
 #pragma mark Class methods
@@ -174,8 +250,7 @@ std::string MacFourCCToString(OSType fourcc) {
   _frameHeight = height;
   _frameRate = frameRate;
   _bestCaptureFormat.reset(
-      media::FindBestCaptureFormat([VideoCaptureDeviceAVFoundation class],
-                                   [_captureDevice formats], width, height,
+      media::FindBestCaptureFormat([_captureDevice formats], width, height,
                                    frameRate),
       base::scoped_policy::RETAIN);
   // Default to NV12, a pixel format commonly supported by web cameras.

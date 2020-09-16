@@ -15,17 +15,6 @@
 
 namespace media {
 
-// Find the best capture format from |formats| for the specified dimensions and
-// frame rate. Returns an element of |formats|, or nil.
-// |implementation| is a class implementing FourCCToChromiumPixelFormat, which
-// our VideoCaptureDeviceAVFoundationProtocol implementations do.
-AVCaptureDeviceFormat* CAPTURE_EXPORT
-FindBestCaptureFormat(Class implementation,
-                      NSArray<AVCaptureDeviceFormat*>* formats,
-                      int width,
-                      int height,
-                      float frame_rate);
-
 // Returns a dictionary of capture devices with friendly name and unique id.
 // VideoCaptureDeviceMac should call this function to fetch the list of devices
 // available in the system; this method returns the list of device names that

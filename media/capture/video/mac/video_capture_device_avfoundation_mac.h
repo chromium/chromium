@@ -15,6 +15,18 @@
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
+namespace media {
+
+// Find the best capture format from |formats| for the specified dimensions and
+// frame rate. Returns an element of |formats|, or nil.
+AVCaptureDeviceFormat* CAPTURE_EXPORT
+FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
+                      int width,
+                      int height,
+                      float frame_rate);
+
+}  // namespace media
+
 // TODO(crbug.com/1126690): rename this file to be suffixed by the
 // "next generation" moniker.
 CAPTURE_EXPORT
