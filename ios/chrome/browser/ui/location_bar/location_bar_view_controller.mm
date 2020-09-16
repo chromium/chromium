@@ -226,27 +226,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self switchToEditing:NO];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-
-  [self updateCachedClipboardState];
-
-  [NSNotificationCenter.defaultCenter
-      addObserver:self
-         selector:@selector(pasteboardDidChange:)
-             name:UIPasteboardChangedNotification
-           object:nil];
-
-  // The pasteboard changed notification doesn't fire if the clipboard changes
-  // while the app is in the background, so update the state whenever the app
-  // becomes active.
-  [NSNotificationCenter.defaultCenter
-      addObserver:self
-         selector:@selector(applicationDidBecomeActive:)
-             name:UIApplicationDidBecomeActiveNotification
-           object:nil];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
@@ -553,21 +532,17 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   RecordAction(UserMetricsAction("MobileToolbarShareMenu"));
 }
 
-- (void)pasteboardDidChange:(NSNotification*)notification {
-  [self updateCachedClipboardState];
-}
-
-- (void)applicationDidBecomeActive:(NSNotification*)notification {
-  [self updateCachedClipboardState];
-}
-
-- (void)updateCachedClipboardState {
+// Updates the cached clipboard content type and calls |completion| when the
+// update process is finished.  If this is called while an update is already in
+// progress, it will return NO and the completion will never be called.
+// Otherwise, returns YES.
+- (BOOL)updateCachedClipboardStateWithCompletion:(void (^)(void))completion {
   // Sometimes, checking the clipboard state itself causes the clipboard to
   // emit a UIPasteboardChangedNotification, leading to an infinite loop. For
   // now, just prevent re-checking the clipboard state, but hopefully this will
   // be fixed in a future iOS version (see crbug.com/1049053 for crash details).
   if (self.isUpdatingCachedClipboardState) {
-    return;
+    return NO;
   }
   self.isUpdatingCachedClipboardState = YES;
   self.hasCopiedContent = NO;
@@ -594,7 +569,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
           weakSelf.copiedContentType = ClipboardContentType::Text;
         }
         weakSelf.isUpdatingCachedClipboardState = NO;
+        completion();
       }));
+  return YES;
 }
 
 #pragma mark - UIMenu
@@ -614,17 +591,19 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
         initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_TEXT)
                action:@selector(searchCopiedText:)]);
 
-    if (@available(iOS 13, *)) {
-      [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
-    } else {
-      [menu setTargetRect:self.locationBarSteadyView.frame inView:self.view];
-      [menu setMenuVisible:YES animated:YES];
-    }
-    // When the menu is manually presented, it doesn't get focused by
-    // Voiceover. This notification forces voiceover to select the
-    // presented menu.
-    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                    menu);
+    DCHECK([self updateCachedClipboardStateWithCompletion:^() {
+      if (@available(iOS 13, *)) {
+        [menu showMenuFromView:self.view rect:self.locationBarSteadyView.frame];
+      } else {
+        [menu setTargetRect:self.locationBarSteadyView.frame inView:self.view];
+        [menu setMenuVisible:YES animated:YES];
+      }
+      // When the menu is manually presented, it doesn't get focused by
+      // Voiceover. This notification forces voiceover to select the
+      // presented menu.
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                      menu);
+    }]);
   }
 }
 
@@ -634,9 +613,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     return YES;
   }
 
-  if (action == @selector(searchCopiedImage:) ||
-      action == @selector(visitCopiedLink:) ||
-      action == @selector(searchCopiedText:)) {
+  BOOL isClipboardAction = action == @selector(searchCopiedImage:) ||
+                           action == @selector(visitCopiedLink:) ||
+                           action == @selector(searchCopiedText:);
+  if (self.locationBarSteadyView.isFirstResponder && isClipboardAction) {
     if (!self.hasCopiedContent) {
       return NO;
     }
