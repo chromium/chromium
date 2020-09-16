@@ -193,7 +193,8 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if defined(PA_HAS_64_BITS_POINTERS)
+#if defined(PA_HAS_64_BITS_POINTERS) && \
+    !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (IsPartitionAllocGigaCageEnabled())
     internal::PartitionAddressSpace::UninitForTesting();
 #endif
