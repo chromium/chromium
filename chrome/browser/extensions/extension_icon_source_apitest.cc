@@ -18,14 +18,7 @@
 
 using ExtensionIconSourceTest = extensions::ExtensionApiTest;
 
-// Times out on Mac and Win. http://crbug.com/238705
-#if defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_IconsLoaded DISABLED_IconsLoaded
-#else
-#define MAYBE_IconsLoaded IconsLoaded
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoaded) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoaded) {
   base::FilePath basedir = test_data_dir_.AppendASCII("icons");
   ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_with_permission")));
   ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_no_permission")));
@@ -69,14 +62,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
   EXPECT_EQ(result, "invalid (96\xC3\x97""96)");
 }
 
-// Times out on Mac and Win. http://crbug.com/238705
-#if defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_IconsLoadedIncognito DISABLED_IconsLoadedIncognito
-#else
-#define MAYBE_IconsLoadedIncognito IconsLoadedIncognito
-#endif
-
-IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, MAYBE_IconsLoadedIncognito) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoadedIncognito) {
   base::FilePath basedir = test_data_dir_.AppendASCII("icons");
   ASSERT_TRUE(LoadExtensionIncognito(
       basedir.AppendASCII("extension_with_permission")));
