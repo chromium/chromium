@@ -1,6 +1,7 @@
 include_rules = [
   "+components/discardable_memory",
   "+components/download",
+  "+components/tracing/common",
   "+content",
   "+device/bluetooth",
   "+device/gamepad",

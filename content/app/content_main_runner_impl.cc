@@ -543,8 +543,8 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
 }
 
 // static
-ContentMainRunnerImpl* ContentMainRunnerImpl::Create() {
-  return new ContentMainRunnerImpl();
+std::unique_ptr<ContentMainRunnerImpl> ContentMainRunnerImpl::Create() {
+  return std::make_unique<ContentMainRunnerImpl>();
 }
 
 ContentMainRunnerImpl::ContentMainRunnerImpl() {
@@ -1012,7 +1012,7 @@ void ContentMainRunnerImpl::Shutdown() {
 }
 
 // static
-ContentMainRunner* ContentMainRunner::Create() {
+std::unique_ptr<ContentMainRunner> ContentMainRunner::Create() {
   return ContentMainRunnerImpl::Create();
 }
 

@@ -92,8 +92,7 @@ source_set("app") {
   check_includes = false
 
   sources = [
-    "content_service_manager_main_delegate.cc",
-    "content_service_manager_main_delegate.h",
+    "content_main.cc",
     "mojo/mojo_init.cc",
     "mojo/mojo_init.h",
     "service_manager_environment.cc",
@@ -118,7 +117,7 @@ source_set("app") {
     sources += [
       "android/content_child_process_service_delegate.cc",
       "android/content_jni_onload.cc",
-      "android/content_main.cc",
+      "android/content_main_android.cc",
       "android/library_loader_hooks.cc",
       "android/library_loader_hooks.h",
     ]
@@ -126,8 +125,15 @@ source_set("app") {
       "//mojo/public/java/system:native_support",
       "//ui/gl",
     ]
-  } else {
-    sources += [ "content_main.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac_init.h",
+      "mac_init.mm",
+    ]
+
+    frameworks = [ "Foundation.framework" ]
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_APP_CONTENT_MAIN_RUNNER_H_
 #define CONTENT_PUBLIC_APP_CONTENT_MAIN_RUNNER_H_
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -17,7 +19,7 @@ class CONTENT_EXPORT ContentMainRunner {
   virtual ~ContentMainRunner() {}
 
   // Create a new ContentMainRunner object.
-  static ContentMainRunner* Create();
+  static std::unique_ptr<ContentMainRunner> Create();
 
   // Initialize all necessary content state.
   virtual int Initialize(const ContentMainParams& params) = 0;

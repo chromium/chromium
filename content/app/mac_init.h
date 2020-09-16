@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_EMBEDDER_MAC_INIT_H_
-#define SERVICES_SERVICE_MANAGER_EMBEDDER_MAC_INIT_H_
+#ifndef CONTENT_APP_MAC_INIT_H_
+#define CONTENT_APP_MAC_INIT_H_
 
-namespace service_manager {
+namespace content {
 
 // Perform any necessary Mac initialization.
 void InitializeMac();
 
-}  // namespace service_manager
+}  // namespace content
 
-#endif  // SERVICES_SERVICE_MANAGER_EMBEDDER_MAC_INIT_H_
+#endif  // CONTENT_APP_MAC_INIT_H_

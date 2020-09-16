@@ -5,13 +5,13 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
-#include "content/app/content_service_manager_main_delegate.h"
 #include "content/public/android/content_jni_headers/ContentMain_jni.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/app/content_main_runner.h"
 #include "content/public/common/content_client.h"
-#include "services/service_manager/embedder/main.h"
 
 using base::LazyInstance;
 using base::android::JavaParamRef;
@@ -20,8 +20,11 @@ namespace content {
 
 namespace {
 
-LazyInstance<std::unique_ptr<service_manager::MainDelegate>>::DestructorAtExit
-    g_service_manager_main_delegate = LAZY_INSTANCE_INITIALIZER;
+ContentMainRunner* GetContentMainRunner() {
+  static base::NoDestructor<std::unique_ptr<ContentMainRunner>> runner{
+      ContentMainRunner::Create()};
+  return runner->get();
+}
 
 LazyInstance<std::unique_ptr<ContentMainDelegate>>::DestructorAtExit
     g_content_main_delegate = LAZY_INSTANCE_INITIALIZER;
@@ -44,22 +47,9 @@ class ContentClientCreator {
 static jint JNI_ContentMain_Start(JNIEnv* env,
                                   jboolean start_service_manager_only) {
   TRACE_EVENT0("startup", "content::Start");
-
-  DCHECK(!g_service_manager_main_delegate.Get() || !start_service_manager_only);
-
-  if (!g_service_manager_main_delegate.Get()) {
-    g_service_manager_main_delegate.Get() =
-        std::make_unique<ContentServiceManagerMainDelegate>(
-            ContentMainParams(g_content_main_delegate.Get().get()));
-  }
-
-  static_cast<ContentServiceManagerMainDelegate*>(
-      g_service_manager_main_delegate.Get().get())
-      ->SetStartServiceManagerOnly(start_service_manager_only);
-
-  service_manager::MainParams main_params(
-      g_service_manager_main_delegate.Get().get());
-  return service_manager::Main(main_params);
+  ContentMainParams params(g_content_main_delegate.Get().get());
+  params.minimal_browser_mode = start_service_manager_only;
+  return RunContentProcess(params, GetContentMainRunner());
 }
 
 void SetContentMainDelegate(ContentMainDelegate* delegate) {

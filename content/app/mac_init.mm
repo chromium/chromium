@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/service_manager/embedder/mac_init.h"
+#include "content/app/mac_init.h"
 
 #import <Cocoa/Cocoa.h>
 
-namespace service_manager {
+namespace content {
 
 void InitializeMac() {
   [[NSUserDefaults standardUserDefaults] registerDefaults:@{
@@ -28,4 +28,4 @@ void InitializeMac() {
   }];
 }
 
-}  // namespace service_manager
+}  // namespace content

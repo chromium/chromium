@@ -10,27 +10,14 @@ if (!is_ios) {
   # problematic.
   component("embedder") {
     public = [
-      "main.h",
-      "main_delegate.h",
       "set_process_title.h",
       "shared_file_util.h",
     ]
 
     sources = [
-      "main.cc",
-      "main_delegate.cc",
       "set_process_title.cc",
       "shared_file_util.cc",
     ]
-
-    if (is_mac) {
-      sources += [
-        "mac_init.h",
-        "mac_init.mm",
-      ]
-
-      frameworks = [ "Foundation.framework" ]
-    }
 
     deps = [
       "//base:base_static",

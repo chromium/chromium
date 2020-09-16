@@ -39,7 +39,7 @@ class ServiceManagerEnvironment;
 
 class ContentMainRunnerImpl : public ContentMainRunner {
  public:
-  static ContentMainRunnerImpl* Create();
+  static std::unique_ptr<ContentMainRunnerImpl> Create();
 
   ContentMainRunnerImpl();
   ~ContentMainRunnerImpl() override;
