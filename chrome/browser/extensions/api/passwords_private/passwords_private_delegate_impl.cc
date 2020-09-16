@@ -478,11 +478,11 @@ PasswordsPrivateDelegateImpl::GetCompromisedCredentials() {
   return password_check_delegate_.GetCompromisedCredentials();
 }
 
-void PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword(
+void PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword(
     api::passwords_private::InsecureCredential credential,
     api::passwords_private::PlaintextReason reason,
     content::WebContents* web_contents,
-    PlaintextCompromisedPasswordCallback callback) {
+    PlaintextInsecurePasswordCallback callback) {
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
@@ -492,21 +492,20 @@ void PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword(
     return;
   }
 
-  std::move(callback).Run(
-      password_check_delegate_.GetPlaintextCompromisedPassword(
-          std::move(credential)));
+  std::move(callback).Run(password_check_delegate_.GetPlaintextInsecurePassword(
+      std::move(credential)));
 }
 
-bool PasswordsPrivateDelegateImpl::ChangeCompromisedCredential(
+bool PasswordsPrivateDelegateImpl::ChangeInsecureCredential(
     const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
-  return password_check_delegate_.ChangeCompromisedCredential(credential,
-                                                              new_password);
+  return password_check_delegate_.ChangeInsecureCredential(credential,
+                                                           new_password);
 }
 
-bool PasswordsPrivateDelegateImpl::RemoveCompromisedCredential(
+bool PasswordsPrivateDelegateImpl::RemoveInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) {
-  return password_check_delegate_.RemoveCompromisedCredential(credential);
+  return password_check_delegate_.RemoveInsecureCredential(credential);
 }
 
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(

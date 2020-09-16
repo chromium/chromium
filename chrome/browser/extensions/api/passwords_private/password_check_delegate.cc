@@ -324,41 +324,40 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
 }
 
 base::Optional<api::passwords_private::InsecureCredential>
-PasswordCheckDelegate::GetPlaintextCompromisedPassword(
+PasswordCheckDelegate::GetPlaintextInsecurePassword(
     api::passwords_private::InsecureCredential credential) const {
-  const CredentialWithPassword* compromised_credential =
-      FindMatchingCompromisedCredential(credential);
-  if (!compromised_credential)
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
     return base::nullopt;
 
   credential.password = std::make_unique<std::string>(
-      base::UTF16ToUTF8(compromised_credential->password));
+      base::UTF16ToUTF8(insecure_credential->password));
   return credential;
 }
 
-bool PasswordCheckDelegate::ChangeCompromisedCredential(
+bool PasswordCheckDelegate::ChangeInsecureCredential(
     const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
   // Try to obtain the original CredentialWithPassword. Return false if fails.
-  const CredentialWithPassword* compromised_credential =
-      FindMatchingCompromisedCredential(credential);
-  if (!compromised_credential)
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
     return false;
 
-  return insecure_credentials_manager_.UpdateCredential(*compromised_credential,
+  return insecure_credentials_manager_.UpdateCredential(*insecure_credential,
                                                         new_password);
 }
 
-bool PasswordCheckDelegate::RemoveCompromisedCredential(
+bool PasswordCheckDelegate::RemoveInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) {
   // Try to obtain the original CredentialWithPassword. Return false if fails.
-  const CredentialWithPassword* compromised_credential =
-      FindMatchingCompromisedCredential(credential);
-  if (!compromised_credential)
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
     return false;
 
-  return insecure_credentials_manager_.RemoveCredential(
-      *compromised_credential);
+  return insecure_credentials_manager_.RemoveCredential(*insecure_credential);
 }
 
 void PasswordCheckDelegate::StartPasswordCheck(
@@ -517,23 +516,22 @@ void PasswordCheckDelegate::OnCredentialDone(
 }
 
 const CredentialWithPassword*
-PasswordCheckDelegate::FindMatchingCompromisedCredential(
+PasswordCheckDelegate::FindMatchingInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) const {
-  const CredentialWithPassword* compromised_credential =
+  const CredentialWithPassword* insecure_credential =
       insecure_credential_id_generator_.TryGetKey(credential.id);
-  if (!compromised_credential)
+  if (!insecure_credential)
     return nullptr;
 
-  if (credential.signon_realm != compromised_credential->signon_realm ||
-      credential.username !=
-          base::UTF16ToUTF8(compromised_credential->username) ||
+  if (credential.signon_realm != insecure_credential->signon_realm ||
+      credential.username != base::UTF16ToUTF8(insecure_credential->username) ||
       (credential.password &&
        *credential.password !=
-           base::UTF16ToUTF8(compromised_credential->password))) {
+           base::UTF16ToUTF8(insecure_credential->password))) {
     return nullptr;
   }
 
-  return compromised_credential;
+  return insecure_credential;
 }
 
 void PasswordCheckDelegate::NotifyPasswordCheckStatusChanged() {

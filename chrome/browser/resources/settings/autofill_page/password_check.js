@@ -117,8 +117,8 @@ Polymer({
     },
 
     /**
-     * The ids of compromised credentials for which user clicked "Change
-     * Password" button
+     * The ids of insecure credentials for which user clicked "Change Password"
+     * button
      * @private
      */
     clickedChangePasswordIds_: {
@@ -298,12 +298,12 @@ Polymer({
   /** @private */
   onEditPasswordClick_() {
     this.passwordManager
-        .getPlaintextCompromisedPassword(
+        .getPlaintextInsecurePassword(
             assert(this.activePassword_),
             chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(
-            compromisedCredential => {
-              this.activePassword_ = compromisedCredential;
+            insecureCredential => {
+              this.activePassword_ = insecureCredential;
               this.showPasswordEditDialog_ = true;
             },
             error => {

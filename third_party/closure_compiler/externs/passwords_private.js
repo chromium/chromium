@@ -276,14 +276,14 @@ chrome.passwordsPrivate.getCompromisedCredentials = function(callback) {};
 /**
  * Requests the plaintext password for |credential|. |callback| gets invoked
  * with the same |credential|, whose |password| field will be set.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential The
- *     compromised credential whose password is being retrieved.
+ * @param {!chrome.passwordsPrivate.InsecureCredential} credential The insecure
+ *     credential whose password is being retrieved.
  * @param {!chrome.passwordsPrivate.PlaintextReason} reason The reason why the
  *     plaintext password is requested.
  * @param {function(!chrome.passwordsPrivate.InsecureCredential): void} callback
  *     The callback that gets invoked with the result.
  */
-chrome.passwordsPrivate.getPlaintextCompromisedPassword = function(
+chrome.passwordsPrivate.getPlaintextInsecurePassword = function(
     credential, reason, callback) {};
 
 /**
@@ -295,7 +295,7 @@ chrome.passwordsPrivate.getPlaintextCompromisedPassword = function(
  * @param {function(): void=} callback The callback that gets invoked in the
  *     end.
  */
-chrome.passwordsPrivate.changeCompromisedCredential = function(
+chrome.passwordsPrivate.changeInsecureCredential = function(
     credential, new_password, callback) {};
 
 /**
@@ -304,17 +304,17 @@ chrome.passwordsPrivate.changeCompromisedCredential = function(
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential
  * @param {function(): void=} callback
  */
-chrome.passwordsPrivate.removeCompromisedCredential = function(
+chrome.passwordsPrivate.removeInsecureCredential = function(
     credential, callback) {};
 
 /**
- * Starts a check for compromised passwords. Invokes |callback| on completion.
+ * Starts a check for insecure passwords. Invokes |callback| on completion.
  * @param {function(): void=} callback
  */
 chrome.passwordsPrivate.startPasswordCheck = function(callback) {};
 
 /**
- * Stops checking for compromised passwords. Invokes |callback| on completion.
+ * Stops checking for insecure passwords. Invokes |callback| on completion.
  * @param {function(): void=} callback
  */
 chrome.passwordsPrivate.stopPasswordCheck = function(callback) {};

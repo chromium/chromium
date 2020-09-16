@@ -57,27 +57,27 @@ class PasswordCheckDelegate
 
   // Requests the plaintext password for |credential|. If successful, this
   // returns |credential| with its |password| member set. This can fail if no
-  // matching compromised credential can be found in the password store.
+  // matching insecure credential can be found in the password store.
   base::Optional<api::passwords_private::InsecureCredential>
-  GetPlaintextCompromisedPassword(
+  GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential) const;
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
-  bool ChangeCompromisedCredential(
+  bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password);
 
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
-  bool RemoveCompromisedCredential(
+  bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
-  // Requests to start a check for compromised passwords. Invokes |callback|
-  // once a check is running or the request was stopped via StopPasswordCheck().
+  // Requests to start a check for insecure passwords. Invokes |callback| once a
+  // check is running or the request was stopped via StopPasswordCheck().
   void StartPasswordCheck(
       StartPasswordCheckCallback callback = base::DoNothing());
-  // Stops checking for compromised passwords.
+  // Stops checking for insecure passwords.
   void StopPasswordCheck();
 
   // Returns the current status of the password check.
@@ -116,7 +116,7 @@ class PasswordCheckDelegate
   // Returns a pointer to the matching CredentialWithPassword on success or
   // nullptr otherwise.
   const password_manager::CredentialWithPassword*
-  FindMatchingCompromisedCredential(
+  FindMatchingInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) const;
 
   // Tries to notify the PasswordsPrivateEventRouter that the password check
@@ -136,7 +136,7 @@ class PasswordCheckDelegate
   // passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
-  // Used to obtain the list of compromised credentials.
+  // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_;
 
   // Adapter used to start, monitor and stop a bulk leak check.

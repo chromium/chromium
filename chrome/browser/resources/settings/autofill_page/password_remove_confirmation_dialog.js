@@ -42,7 +42,7 @@ Polymer({
   onRemoveClick_() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordManagerProxy.PasswordCheckInteraction.REMOVE_PASSWORD);
-    this.passwordManager_.removeCompromisedCredential(assert(this.item));
+    this.passwordManager_.removeInsecureCredential(assert(this.item));
     this.$.dialog.close();
   },
 

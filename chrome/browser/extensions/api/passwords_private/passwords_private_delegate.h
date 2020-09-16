@@ -40,7 +40,7 @@ class PasswordsPrivateDelegate : public KeyedService {
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
-  using PlaintextCompromisedPasswordCallback = base::OnceCallback<void(
+  using PlaintextInsecurePasswordCallback = base::OnceCallback<void(
       base::Optional<api::passwords_private::InsecureCredential>)>;
 
   ~PasswordsPrivateDelegate() override = default;
@@ -134,27 +134,27 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Requests the plaintext password for |credential| due to |reason|. If
   // successful, |callback| gets invoked with the same |credential|, whose
   // |password| field will be set.
-  virtual void GetPlaintextCompromisedPassword(
+  virtual void GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
-      PlaintextCompromisedPasswordCallback callback) = 0;
+      PlaintextInsecurePasswordCallback callback) = 0;
 
   // Attempts to change the stored password of |credential| to |new_password|.
   // Returns whether the change succeeded.
-  virtual bool ChangeCompromisedCredential(
+  virtual bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) = 0;
 
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
-  virtual bool RemoveCompromisedCredential(
+  virtual bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) = 0;
 
-  // Requests to start a check for compromised passwords. Invokes |callback|
+  // Requests to start a check for insecure passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().
   virtual void StartPasswordCheck(StartPasswordCheckCallback callback) = 0;
-  // Stops a check for compromised passwords.
+  // Stops a check for insecure passwords.
   virtual void StopPasswordCheck() = 0;
 
   // Returns the current status of the password check.

@@ -271,85 +271,82 @@ ResponseAction PasswordsPrivateGetCompromisedCredentialsFunction::Run() {
           GetDelegate(browser_context())->GetCompromisedCredentials())));
 }
 
-// PasswordsPrivateGetPlaintextCompromisedPasswordFunction:
-PasswordsPrivateGetPlaintextCompromisedPasswordFunction::
-    ~PasswordsPrivateGetPlaintextCompromisedPasswordFunction() = default;
+// PasswordsPrivateGetPlaintextInsecurePasswordFunction:
+PasswordsPrivateGetPlaintextInsecurePasswordFunction::
+    ~PasswordsPrivateGetPlaintextInsecurePasswordFunction() = default;
 
-ResponseAction PasswordsPrivateGetPlaintextCompromisedPasswordFunction::Run() {
+ResponseAction PasswordsPrivateGetPlaintextInsecurePasswordFunction::Run() {
   auto parameters =
-      api::passwords_private::GetPlaintextCompromisedPassword::Params::Create(
+      api::passwords_private::GetPlaintextInsecurePassword::Params::Create(
           *args_);
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->GetPlaintextCompromisedPassword(
+      ->GetPlaintextInsecurePassword(
           std::move(parameters->credential), parameters->reason,
           GetSenderWebContents(),
-          base::BindOnce(
-              &PasswordsPrivateGetPlaintextCompromisedPasswordFunction::
-                  GotCredential,
-              this));
+          base::BindOnce(&PasswordsPrivateGetPlaintextInsecurePasswordFunction::
+                             GotCredential,
+                         this));
 
   // GotCredential() might respond before we reach this point.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void PasswordsPrivateGetPlaintextCompromisedPasswordFunction::GotCredential(
+void PasswordsPrivateGetPlaintextInsecurePasswordFunction::GotCredential(
     base::Optional<api::passwords_private::InsecureCredential> credential) {
   if (!credential) {
-    Respond(Error(
-        "Could not obtain plaintext compromised password. Either the user is "
-        "not authenticated or no matching password could be found."));
+    Respond(
+        Error("Could not obtain plaintext insecure password. Either the user "
+              "is not authenticated or no matching password could be found."));
     return;
   }
 
   Respond(ArgumentList(
-      api::passwords_private::GetPlaintextCompromisedPassword::Results::Create(
+      api::passwords_private::GetPlaintextInsecurePassword::Results::Create(
           *credential)));
 }
 
-// PasswordsPrivateChangeCompromisedCredentialFunction:
-PasswordsPrivateChangeCompromisedCredentialFunction::
-    ~PasswordsPrivateChangeCompromisedCredentialFunction() = default;
+// PasswordsPrivateChangeInsecureCredentialFunction:
+PasswordsPrivateChangeInsecureCredentialFunction::
+    ~PasswordsPrivateChangeInsecureCredentialFunction() = default;
 
-ResponseAction PasswordsPrivateChangeCompromisedCredentialFunction::Run() {
+ResponseAction PasswordsPrivateChangeInsecureCredentialFunction::Run() {
   auto parameters =
-      api::passwords_private::ChangeCompromisedCredential::Params::Create(
-          *args_);
+      api::passwords_private::ChangeInsecureCredential::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (parameters->new_password.empty()) {
     return RespondNow(
-        Error("Could not change the compromised credential. The new password "
+        Error("Could not change the insecure credential. The new password "
               "can't be empty."));
   }
 
   if (!GetDelegate(browser_context())
-           ->ChangeCompromisedCredential(parameters->credential,
-                                         parameters->new_password)) {
+           ->ChangeInsecureCredential(parameters->credential,
+                                      parameters->new_password)) {
     return RespondNow(Error(
-        "Could not change the compromised credential. Either the user is not "
+        "Could not change the insecure credential. Either the user is not "
         "authenticated or no matching password could be found."));
   }
 
   return RespondNow(NoArguments());
 }
 
-// PasswordsPrivateRemoveCompromisedCredentialFunction:
-PasswordsPrivateRemoveCompromisedCredentialFunction::
-    ~PasswordsPrivateRemoveCompromisedCredentialFunction() = default;
+// PasswordsPrivateRemoveInsecureCredentialFunction:
+PasswordsPrivateRemoveInsecureCredentialFunction::
+    ~PasswordsPrivateRemoveInsecureCredentialFunction() = default;
 
-ResponseAction PasswordsPrivateRemoveCompromisedCredentialFunction::Run() {
+ResponseAction PasswordsPrivateRemoveInsecureCredentialFunction::Run() {
   auto parameters =
-      api::passwords_private::RemoveCompromisedCredential::Params::Create(
-          *args_);
+      api::passwords_private::RemoveInsecureCredential::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!GetDelegate(browser_context())
-           ->RemoveCompromisedCredential(parameters->credential)) {
+           ->RemoveInsecureCredential(parameters->credential)) {
     return RespondNow(
-        Error("Could not remove the compromised credential. Probably no "
-              "matching password could be found."));
+        Error("Could not remove the insecure credential. Probably no matching "
+              "password could be found."));
   }
 
   return RespondNow(NoArguments());

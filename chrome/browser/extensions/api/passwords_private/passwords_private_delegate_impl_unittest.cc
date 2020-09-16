@@ -583,34 +583,33 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
   delegate.ExportPasswords(mock_accepted.Get(), nullptr);
 }
 
-// Verifies that PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword
+// Verifies that PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword
 // fails if the re-auth fails.
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestReauthOnGetPlaintextCompromisedPasswordFails) {
+       TestReauthOnGetPlaintextInsecurePasswordFails) {
   PasswordsPrivateDelegateImpl delegate(&profile_);
 
   MockReauthCallback reauth_callback;
   delegate.set_os_reauth_call(reauth_callback.Get());
 
   base::MockCallback<
-      PasswordsPrivateDelegate::PlaintextCompromisedPasswordCallback>
+      PasswordsPrivateDelegate::PlaintextInsecurePasswordCallback>
       credential_callback;
 
   EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
       .WillOnce(Return(false));
   EXPECT_CALL(credential_callback, Run(Eq(base::nullopt)));
 
-  delegate.GetPlaintextCompromisedPassword(
+  delegate.GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential(),
       api::passwords_private::PLAINTEXT_REASON_VIEW, nullptr,
       credential_callback.Get());
 }
 
-// Verifies that PasswordsPrivateDelegateImpl::GetPlaintextCompromisedPassword
+// Verifies that PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword
 // succeeds if the re-auth succeeds and there is a matching compromised
 // credential in the store.
-TEST_F(PasswordsPrivateDelegateImplTest,
-       TestReauthOnGetPlaintextCompromisedPassword) {
+TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
   PasswordsPrivateDelegateImpl delegate(&profile_);
 
   autofill::PasswordForm form = CreateSampleForm();
@@ -628,7 +627,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   delegate.set_os_reauth_call(reauth_callback.Get());
 
   base::MockCallback<
-      PasswordsPrivateDelegate::PlaintextCompromisedPasswordCallback>
+      PasswordsPrivateDelegate::PlaintextInsecurePasswordCallback>
       credential_callback;
 
   base::Optional<api::passwords_private::InsecureCredential> opt_credential;
@@ -636,7 +635,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(credential_callback, Run).WillOnce(MoveArg(&opt_credential));
 
-  delegate.GetPlaintextCompromisedPassword(
+  delegate.GetPlaintextInsecurePassword(
       std::move(credential), api::passwords_private::PLAINTEXT_REASON_VIEW,
       nullptr, credential_callback.Get());
 

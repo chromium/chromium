@@ -72,15 +72,15 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override;
-  void GetPlaintextCompromisedPassword(
+  void GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
-      PlaintextCompromisedPasswordCallback callback) override;
-  bool ChangeCompromisedCredential(
+      PlaintextInsecurePasswordCallback callback) override;
+  bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) override;
-  bool RemoveCompromisedCredential(
+  bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;

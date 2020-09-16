@@ -49,19 +49,19 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                               content::WebContents* web_contents) override;
   std::vector<api::passwords_private::InsecureCredential>
   GetCompromisedCredentials() override;
-  void GetPlaintextCompromisedPassword(
+  void GetPlaintextInsecurePassword(
       api::passwords_private::InsecureCredential credential,
       api::passwords_private::PlaintextReason reason,
       content::WebContents* web_contents,
-      PlaintextCompromisedPasswordCallback callback) override;
-  // Fake implementation of ChangeCompromisedCredential. This succeeds if the
-  // delegate knows of a compromised credential with the same id.
-  bool ChangeCompromisedCredential(
+      PlaintextInsecurePasswordCallback callback) override;
+  // Fake implementation of ChangeInsecureCredential. This succeeds if the
+  // delegate knows of a insecure credential with the same id.
+  bool ChangeInsecureCredential(
       const api::passwords_private::InsecureCredential& credential,
       base::StringPiece new_password) override;
-  // Fake implementation of RemoveCompromisedCredential. This succeeds if the
-  // delegate knows of a compromised credential with the same id.
-  bool RemoveCompromisedCredential(
+  // Fake implementation of RemoveInsecureCredential. This succeeds if the
+  // delegate knows of a insecure credential with the same id.
+  bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
@@ -114,9 +114,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   base::Optional<base::string16> plaintext_password_ =
       base::ASCIIToUTF16("plaintext");
 
-  // List of compromised credentials.
-  std::vector<api::passwords_private::InsecureCredential>
-      compromised_credentials_;
+  // List of insecure credentials.
+  std::vector<api::passwords_private::InsecureCredential> insecure_credentials_;
   Profile* profile_ = nullptr;
 
   bool is_opted_in_for_account_storage_ = false;

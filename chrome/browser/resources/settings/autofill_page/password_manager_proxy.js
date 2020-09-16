@@ -210,10 +210,10 @@ export class PasswordManagerProxy {
   getPasswordCheckStatus() {}
 
   /**
-   * Requests to remove |compromisedCredential| from the password store.
-   * @param {!PasswordManagerProxy.InsecureCredential} compromisedCredential
+   * Requests to remove |insecureCredential| from the password store.
+   * @param {!PasswordManagerProxy.InsecureCredential} insecureCredential
    */
-  removeCompromisedCredential(compromisedCredential) {}
+  removeInsecureCredential(insecureCredential) {}
 
   /**
    * Add an observer to the compromised passwords change.
@@ -230,13 +230,13 @@ export class PasswordManagerProxy {
   removeCompromisedCredentialsListener(listener) {}
 
   /**
-   * Remove an observer to the compromised passwords change.
+   * Add an observer to the passwords check status change.
    * @param {function(!PasswordManagerProxy.PasswordCheckStatus):void} listener
    */
   addPasswordCheckStatusListener(listener) {}
 
   /**
-   * Remove an observer to the compromised passwords change.
+   * Remove an observer to the passwords check status change.
    * @param {function(!PasswordManagerProxy.PasswordCheckStatus):void} listener
    */
   removePasswordCheckStatusListener(listener) {}
@@ -250,7 +250,7 @@ export class PasswordManagerProxy {
    *     that resolves to the InsecureCredential with the password field
    *     populated.
    */
-  getPlaintextCompromisedPassword(credential, reason) {}
+  getPlaintextInsecurePassword(credential, reason) {}
 
   /**
    * Requests to change the password of |credential| to |new_password|.
@@ -259,7 +259,7 @@ export class PasswordManagerProxy {
    * @return {!Promise<void>} A promise that resolves when the password is
    *     updated.
    */
-  changeCompromisedCredential(credential, newPassword) {}
+  changeInsecureCredential(credential, newPassword) {}
 
   /**
    * Records a given interaction on the Password Check page.
@@ -529,8 +529,8 @@ export class PasswordManagerImpl {
   }
 
   /** @override */
-  removeCompromisedCredential(compromisedCredential) {
-    chrome.passwordsPrivate.removeCompromisedCredential(compromisedCredential);
+  removeInsecureCredential(insecureCredential) {
+    chrome.passwordsPrivate.removeInsecureCredential(insecureCredential);
   }
 
   /** @override */
@@ -557,9 +557,9 @@ export class PasswordManagerImpl {
   }
 
   /** @override */
-  getPlaintextCompromisedPassword(credential, reason) {
+  getPlaintextInsecurePassword(credential, reason) {
     return new Promise((resolve, reject) => {
-      chrome.passwordsPrivate.getPlaintextCompromisedPassword(
+      chrome.passwordsPrivate.getPlaintextInsecurePassword(
           credential, reason, credentialWithPassword => {
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError.message);
@@ -572,9 +572,9 @@ export class PasswordManagerImpl {
   }
 
   /** @override */
-  changeCompromisedCredential(credential, newPassword) {
+  changeInsecureCredential(credential, newPassword) {
     return new Promise(resolve => {
-      chrome.passwordsPrivate.changeCompromisedCredential(
+      chrome.passwordsPrivate.changeInsecureCredential(
           credential, newPassword, resolve);
     });
   }

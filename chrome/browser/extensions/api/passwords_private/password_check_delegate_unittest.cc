@@ -492,8 +492,7 @@ TEST_F(PasswordCheckDelegateTest, OnGetCompromisedCredentials) {
             event_router_observer().events().at(kEventName)->histogram_value);
 }
 
-TEST_F(PasswordCheckDelegateTest,
-       GetPlaintextCompromisedPasswordRejectsWrongId) {
+TEST_F(PasswordCheckDelegateTest, GetPlaintextInsecurePasswordRejectsWrongId) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -506,11 +505,11 @@ TEST_F(PasswordCheckDelegateTest,
   // password fails.
   credential.id = 1;
   EXPECT_EQ(base::nullopt,
-            delegate().GetPlaintextCompromisedPassword(std::move(credential)));
+            delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
 TEST_F(PasswordCheckDelegateTest,
-       GetPlaintextCompromisedPasswordRejectsWrongSignonRealm) {
+       GetPlaintextInsecurePasswordRejectsWrongSignonRealm) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -523,11 +522,11 @@ TEST_F(PasswordCheckDelegateTest,
   // plaintext password fails.
   credential.signon_realm = kExampleOrg;
   EXPECT_EQ(base::nullopt,
-            delegate().GetPlaintextCompromisedPassword(std::move(credential)));
+            delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
 TEST_F(PasswordCheckDelegateTest,
-       GetPlaintextCompromisedPasswordRejectsWrongUsername) {
+       GetPlaintextInsecurePasswordRejectsWrongUsername) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -540,11 +539,11 @@ TEST_F(PasswordCheckDelegateTest,
   // plaintext password fails.
   credential.signon_realm = kUsername2;
   EXPECT_EQ(base::nullopt,
-            delegate().GetPlaintextCompromisedPassword(std::move(credential)));
+            delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
 
 TEST_F(PasswordCheckDelegateTest,
-       GetPlaintextCompromisedPasswordReturnsCorrectPassword) {
+       GetPlaintextInsecurePasswordReturnsCorrectPassword) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -557,7 +556,7 @@ TEST_F(PasswordCheckDelegateTest,
   EXPECT_EQ(nullptr, credential.password);
 
   base::Optional<InsecureCredential> opt_credential =
-      delegate().GetPlaintextCompromisedPassword(std::move(credential));
+      delegate().GetPlaintextInsecurePassword(std::move(credential));
   ASSERT_TRUE(opt_credential.has_value());
   EXPECT_EQ(0, opt_credential->id);
   EXPECT_EQ(kExampleCom, opt_credential->signon_realm);
@@ -565,8 +564,8 @@ TEST_F(PasswordCheckDelegateTest,
   EXPECT_EQ(kPassword1, *opt_credential->password);
 }
 
-// Test that changing a compromised password fails if the ids don't match.
-TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialIdMismatch) {
+// Test that changing a insecure password fails if the ids don't match.
+TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialIdMismatch) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -576,12 +575,12 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialIdMismatch) {
   EXPECT_EQ(0, credential.id);
   credential.id = 1;
 
-  EXPECT_FALSE(delegate().ChangeCompromisedCredential(credential, "new_pass"));
+  EXPECT_FALSE(delegate().ChangeInsecureCredential(credential, "new_pass"));
 }
 
-// Test that changing a compromised password fails if the underlying compromised
+// Test that changing a insecure password fails if the underlying insecure
 // credential no longer exists.
-TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialStaleData) {
+TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialStaleData) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -592,11 +591,11 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialStaleData) {
   store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  EXPECT_FALSE(delegate().ChangeCompromisedCredential(credential, "new_pass"));
+  EXPECT_FALSE(delegate().ChangeInsecureCredential(credential, "new_pass"));
 }
 
-// Test that changing a compromised password succeeds.
-TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialSuccess) {
+// Test that changing a insecure password succeeds.
+TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialSuccess) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -609,15 +608,15 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialSuccess) {
   EXPECT_EQ(base::UTF8ToUTF16(kPassword1),
             store().stored_passwords().at(kExampleCom).at(0).password_value);
 
-  EXPECT_TRUE(delegate().ChangeCompromisedCredential(credential, kPassword2));
+  EXPECT_TRUE(delegate().ChangeInsecureCredential(credential, kPassword2));
   RunUntilIdle();
 
   EXPECT_EQ(base::UTF8ToUTF16(kPassword2),
             store().stored_passwords().at(kExampleCom).at(0).password_value);
 }
 
-// Test that changing a compromised password removes duplicates from store.
-TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialRemovesDupes) {
+// Test that changing a insecure password removes duplicates from store.
+TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialRemovesDupes) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1,
                                      "different_element"));
@@ -628,7 +627,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialRemovesDupes) {
 
   InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
-  EXPECT_TRUE(delegate().ChangeCompromisedCredential(credential, kPassword2));
+  EXPECT_TRUE(delegate().ChangeInsecureCredential(credential, kPassword2));
   RunUntilIdle();
 
   EXPECT_EQ(1u, store().stored_passwords().at(kExampleCom).size());
@@ -638,8 +637,8 @@ TEST_F(PasswordCheckDelegateTest, ChangeCompromisedCredentialRemovesDupes) {
           store().stored_passwords().at(kExampleCom).at(0).password_value));
 }
 
-// Test that removing a compromised password fails if the ids don't match.
-TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialIdMismatch) {
+// Test that removing a insecure password fails if the ids don't match.
+TEST_F(PasswordCheckDelegateTest, RemoveInsecureCredentialIdMismatch) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -649,12 +648,12 @@ TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialIdMismatch) {
   EXPECT_EQ(0, credential.id);
   credential.id = 1;
 
-  EXPECT_FALSE(delegate().RemoveCompromisedCredential(credential));
+  EXPECT_FALSE(delegate().RemoveInsecureCredential(credential));
 }
 
-// Test that removing a compromised password fails if the underlying compromised
+// Test that removing a insecure password fails if the underlying insecure
 // credential no longer exists.
-TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialStaleData) {
+TEST_F(PasswordCheckDelegateTest, RemoveInsecureCredentialStaleData) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -664,23 +663,23 @@ TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialStaleData) {
   store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
-  EXPECT_FALSE(delegate().RemoveCompromisedCredential(credential));
+  EXPECT_FALSE(delegate().RemoveInsecureCredential(credential));
 }
 
-// Test that removing a compromised password succeeds.
-TEST_F(PasswordCheckDelegateTest, RemoveCompromisedCredentialSuccess) {
+// Test that removing a insecure password succeeds.
+TEST_F(PasswordCheckDelegateTest, RemoveInsecureCredentialSuccess) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddCompromisedCredentials(MakeCompromised(kExampleCom, kUsername1));
   RunUntilIdle();
 
   InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
-  EXPECT_TRUE(delegate().RemoveCompromisedCredential(credential));
+  EXPECT_TRUE(delegate().RemoveInsecureCredential(credential));
   RunUntilIdle();
   EXPECT_TRUE(store().IsEmpty());
 
   // Expect another removal of the same credential to fail.
-  EXPECT_FALSE(delegate().RemoveCompromisedCredential(credential));
+  EXPECT_FALSE(delegate().RemoveInsecureCredential(credential));
 }
 
 // Tests that we don't create an entry in the database if there is no matching

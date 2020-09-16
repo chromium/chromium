@@ -327,7 +327,7 @@ var availableTests = [
         });
   },
 
-  function getPlaintextCompromisedPassword() {
+  function getPlaintextInsecurePassword() {
     var compromisedCredential = {
       id: 0,
       formattedOrigin: 'example.com',
@@ -342,7 +342,7 @@ var availableTests = [
       },
     };
 
-    chrome.passwordsPrivate.getPlaintextCompromisedPassword(
+    chrome.passwordsPrivate.getPlaintextInsecurePassword(
         compromisedCredential, chrome.passwordsPrivate.PlaintextReason.VIEW,
         credentialWithPassword => {
           chrome.test.assertEq('plaintext', credentialWithPassword.password);
@@ -350,7 +350,7 @@ var availableTests = [
         });
   },
 
-  function getPlaintextCompromisedPasswordFails() {
+  function getPlaintextInsecurePasswordFails() {
     var compromisedCredential = {
       id: 0,
       formattedOrigin: 'example.com',
@@ -365,19 +365,18 @@ var availableTests = [
       },
     };
 
-    chrome.passwordsPrivate.getPlaintextCompromisedPassword(
+    chrome.passwordsPrivate.getPlaintextInsecurePassword(
         compromisedCredential, chrome.passwordsPrivate.PlaintextReason.VIEW,
         credentialWithPassword => {
           chrome.test.assertLastError(
-              'Could not obtain plaintext compromised password. Either the ' +
-              'user is not authenticated or no matching password could be ' +
-              'found.');
+              'Could not obtain plaintext insecure password. Either the user ' +
+              'is not authenticated or no matching password could be found.');
           chrome.test.succeed();
         });
   },
 
-  function changeCompromisedCredentialWithEmptyPasswordFails() {
-    chrome.passwordsPrivate.changeCompromisedCredential(
+  function changeInsecureCredentialWithEmptyPasswordFails() {
+    chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
           formattedOrigin: 'example.com',
@@ -393,14 +392,14 @@ var availableTests = [
         },
         '', () => {
           chrome.test.assertLastError(
-              'Could not change the compromised credential. The new password ' +
+              'Could not change the insecure credential. The new password ' +
               'can\'t be empty.');
           chrome.test.succeed();
         });
   },
 
-  function changeCompromisedCredentialFails() {
-    chrome.passwordsPrivate.changeCompromisedCredential(
+  function changeInsecureCredentialFails() {
+    chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
           formattedOrigin: 'example.com',
@@ -416,14 +415,14 @@ var availableTests = [
         },
         'new_pass', () => {
           chrome.test.assertLastError(
-              'Could not change the compromised credential. Either the user ' +
-              'is not authenticated or no matching password could be found.');
+              'Could not change the insecure credential. Either the user is ' +
+              'not authenticated or no matching password could be found.');
           chrome.test.succeed();
         });
   },
 
-  function changeCompromisedCredentialSucceeds() {
-    chrome.passwordsPrivate.changeCompromisedCredential(
+  function changeInsecureCredentialSucceeds() {
+    chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
           formattedOrigin: 'example.com',
@@ -443,8 +442,8 @@ var availableTests = [
         });
   },
 
-  function removeCompromisedCredentialFails() {
-    chrome.passwordsPrivate.removeCompromisedCredential(
+  function removeInsecureCredentialFails() {
+    chrome.passwordsPrivate.removeInsecureCredential(
         {
           id: 0,
           formattedOrigin: 'example.com',
@@ -460,15 +459,15 @@ var availableTests = [
         },
         () => {
           chrome.test.assertLastError(
-              'Could not remove the compromised credential. Probably no ' +
+              'Could not remove the insecure credential. Probably no ' +
               'matching password could be found.');
           // Ensure that the callback is invoked.
           chrome.test.succeed();
         });
   },
 
-  function removeCompromisedCredentialSucceeds() {
-    chrome.passwordsPrivate.removeCompromisedCredential(
+  function removeInsecureCredentialSucceeds() {
+    chrome.passwordsPrivate.removeInsecureCredential(
         {
           id: 0,
           formattedOrigin: 'example.com',

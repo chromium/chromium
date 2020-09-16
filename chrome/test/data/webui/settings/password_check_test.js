@@ -424,7 +424,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     const {id, username, formattedOrigin} =
-        await passwordManager.whenCalled('removeCompromisedCredential');
+        await passwordManager.whenCalled('removeInsecureCredential');
 
     assertEquals(
         PasswordManagerProxy.PasswordCheckInteraction.REMOVE_PASSWORD,
@@ -990,7 +990,7 @@ suite('PasswordsCheckSection', function() {
     checkPasswordSection.$.menuEditPassword.click();
     // Since we did not specify a plaintext password above, this request
     // should fail.
-    await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+    await passwordManager.whenCalled('getPlaintextInsecurePassword');
     // Verify that the edit dialog has not become visible.
     flush();
     expectFalse(isElementVisible(
@@ -1017,7 +1017,7 @@ suite('PasswordsCheckSection', function() {
     node.$.more.click();
     checkPasswordSection.$.menuEditPassword.click();
     const {credential, reason} =
-        await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+        await passwordManager.whenCalled('getPlaintextInsecurePassword');
     expectEquals(passwordManager.data.leakedCredentials[0], credential);
     expectEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
 
@@ -1052,7 +1052,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     const {newPassword} =
-        await passwordManager.whenCalled('changeCompromisedCredential');
+        await passwordManager.whenCalled('changeInsecureCredential');
     assertEquals(
         PasswordManagerProxy.PasswordCheckInteraction.EDIT_PASSWORD,
         interaction);
@@ -1069,8 +1069,7 @@ suite('PasswordsCheckSection', function() {
     editDialog.$.passwordInput.value = 'yadhtribym';
     editDialog.$.cancel.click();
 
-    assertEquals(
-        0, passwordManager.getCallCount('changeCompromisedCredential'));
+    assertEquals(0, passwordManager.getCallCount('changeInsecureCredential'));
   });
 
   test('startEqualsTrueSearchParameterStartsCheck', async function() {
@@ -1112,7 +1111,7 @@ suite('PasswordsCheckSection', function() {
         PasswordManagerProxy.PasswordCheckInteraction.SHOW_PASSWORD,
         interaction);
     const {reason} =
-        await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+        await passwordManager.whenCalled('getPlaintextInsecurePassword');
     expectEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);
     assertEquals('text', node.$.leakedPassword.type);
     assertEquals('test4', node.$.leakedPassword.value);
@@ -1141,7 +1140,7 @@ suite('PasswordsCheckSection', function() {
     // Open the more actions menu and click 'Show Password'.
     node.$.more.click();
     checkPasswordSection.$.menuShowPassword.click();
-    await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+    await passwordManager.whenCalled('getPlaintextInsecurePassword');
     // Verify that password field didn't change
     assertEquals('password', node.$.leakedPassword.type);
     assertNotEquals('test4', node.$.leakedPassword.value);
@@ -1187,7 +1186,7 @@ suite('PasswordsCheckSection', function() {
     checkPasswordSection.$$('settings-password-edit-disclaimer-dialog')
         .$.edit.click();
 
-    await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+    await passwordManager.whenCalled('getPlaintextInsecurePassword');
     flush();
     assertTrue(isElementVisible(
         checkPasswordSection.$$('settings-password-check-edit-dialog')));
@@ -1217,7 +1216,7 @@ suite('PasswordsCheckSection', function() {
 
       passwordManager.plaintextPassword_ = 'test4';
       node.tokenRequestManager.resolve();
-      await passwordManager.whenCalled('getPlaintextCompromisedPassword');
+      await passwordManager.whenCalled('getPlaintextInsecurePassword');
 
       assertEquals('text', node.$.leakedPassword.type);
       assertEquals('test4', node.$.leakedPassword.value);

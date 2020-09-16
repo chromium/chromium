@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview PasswordCheckListItem represents one leaked credential in the
- * list of compromised passwords.
+ * @fileoverview PasswordCheckListItem represents one insecure credential in the
+ * list of insecure passwords.
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
@@ -152,11 +152,11 @@ Polymer({
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordManagerProxy.PasswordCheckInteraction.SHOW_PASSWORD);
     this.passwordManager_
-        .getPlaintextCompromisedPassword(
+        .getPlaintextInsecurePassword(
             assert(this.item), chrome.passwordsPrivate.PlaintextReason.VIEW)
         .then(
-            compromisedCredential => {
-              this.set('item', compromisedCredential);
+            insecureCredential => {
+              this.set('item', insecureCredential);
             },
             error => {
               // <if expr="chromeos">

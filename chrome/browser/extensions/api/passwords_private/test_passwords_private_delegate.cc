@@ -202,11 +202,11 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   return credentials;
 }
 
-void TestPasswordsPrivateDelegate::GetPlaintextCompromisedPassword(
+void TestPasswordsPrivateDelegate::GetPlaintextInsecurePassword(
     api::passwords_private::InsecureCredential credential,
     api::passwords_private::PlaintextReason reason,
     content::WebContents* web_contents,
-    PlaintextCompromisedPasswordCallback callback) {
+    PlaintextInsecurePasswordCallback callback) {
   // Return a mocked password value.
   if (!plaintext_password_) {
     std::move(callback).Run(base::nullopt);
@@ -218,25 +218,24 @@ void TestPasswordsPrivateDelegate::GetPlaintextCompromisedPassword(
   std::move(callback).Run(std::move(credential));
 }
 
-// Fake implementation of ChangeCompromisedCredential. This succeeds if the
-// delegate knows of a compromised credential with the same id.
-bool TestPasswordsPrivateDelegate::ChangeCompromisedCredential(
+// Fake implementation of ChangeInsecureCredential. This succeeds if the
+// delegate knows of a insecure credential with the same id.
+bool TestPasswordsPrivateDelegate::ChangeInsecureCredential(
     const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
-  return std::any_of(compromised_credentials_.begin(),
-                     compromised_credentials_.end(),
-                     [&credential](const auto& compromised_credential) {
-                       return compromised_credential.id == credential.id;
+  return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
+                     [&credential](const auto& insecure_credential) {
+                       return insecure_credential.id == credential.id;
                      });
 }
 
-// Fake implementation of RemoveCompromisedCredential. This succeeds if the
-// delegate knows of a compromised credential with the same id.
-bool TestPasswordsPrivateDelegate::RemoveCompromisedCredential(
+// Fake implementation of RemoveInsecureCredential. This succeeds if the
+// delegate knows of a insecure credential with the same id.
+bool TestPasswordsPrivateDelegate::RemoveInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) {
-  return base::EraseIf(compromised_credentials_,
-                       [&credential](const auto& compromised_credential) {
-                         return compromised_credential.id == credential.id;
+  return base::EraseIf(insecure_credentials_,
+                       [&credential](const auto& insecure_credential) {
+                         return insecure_credential.id == credential.id;
                        }) != 0;
 }
 
@@ -274,7 +273,7 @@ void TestPasswordsPrivateDelegate::SetOptedInForAccountStorage(bool opted_in) {
 void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {
   api::passwords_private::InsecureCredential cred;
   cred.id = id;
-  compromised_credentials_.push_back(std::move(cred));
+  insecure_credentials_.push_back(std::move(cred));
 }
 
 void TestPasswordsPrivateDelegate::SendSavedPasswordsList() {

@@ -8,10 +8,9 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 /**
- * This behavior bundles functionality required to get compromised credentials
- * and status of password check.
- * It is used by <settings-password-check> <passwords-section> and
- * <settings-autofill-page>.
+ * This behavior bundles functionality required to get insecure credentials and
+ * status of password check. It is used by <settings-password-check>
+ * <passwords-section> and <settings-autofill-page>.
  *
  * @polymerBehavior
  */
