@@ -1748,6 +1748,8 @@ static_library("ui") {
       "app_list/search/drive_quick_access_result.h",
       "app_list/search/file_chip_result.cc",
       "app_list/search/file_chip_result.h",
+      "app_list/search/files/drive_zero_state_provider.cc",
+      "app_list/search/files/drive_zero_state_provider.h",
       "app_list/search/files/file_result.cc",
       "app_list/search/files/file_result.h",
       "app_list/search/launcher_search/launcher_search_icon_image_loader.cc",
