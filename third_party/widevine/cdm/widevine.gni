@@ -47,8 +47,17 @@ if (is_mac && target_cpu == "arm64") {
   bundle_widevine_cdm = false
 }
 
+declare_args() {
+# Enable Widevine CDM host verification, which will sign additional binaries
+# with Widevine certs and copy signature files as needed. Only enabled by
+# default on official bots. For developers building with "is_official_build"
+# locally without Widevine certs, this will cause a build failure, which can
+# be suppressed by manually setting `enable_widevine_cdm_host_verification` to
+# false.
 enable_widevine_cdm_host_verification =
     enable_library_widevine_cdm && enable_cdm_host_verification
+    && is_official_build
+}
 
 template("widevine_sign_file") {
   # For official builds, generate a signature file for |file| which will
