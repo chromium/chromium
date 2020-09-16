@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include "base/process/process_metrics.h"
 #include "chromeos/chromeos_export.h"
@@ -26,7 +27,12 @@ CalculateAvailableMemoryUserSpaceKB(const base::SystemMemoryInfoKB& info,
                                     uint64_t ram_swap_weight);
 
 // GetAvailableMemoryKB returns the available memory in KiB.
-uint64_t GetAvailableMemoryKB();
+CHROMEOS_EXPORT uint64_t GetAvailableMemoryKB();
+
+// GetMemoryMarginsKB returns a pair of uint64_t. The first value is the
+// critical memory pressure level, the second value is the moderate memory
+// pressure level.
+CHROMEOS_EXPORT std::pair<uint64_t, uint64_t> GetMemoryMarginsKB();
 
 // The memory parameters are saved for optimization.  If these memory
 // parameters are changed, call this function to update the saved values.

@@ -173,6 +173,11 @@ uint64_t GetAvailableMemoryKB() {
                                              ram_swap_weight);
 }
 
+std::pair<uint64_t, uint64_t> GetMemoryMarginsKB() {
+  // TODO(b/149833548): Implement this function.
+  return {0, 0};
+}
+
 void UpdateMemoryParameters() {
   reserved_free = GetReservedMemoryKB();
   min_filelist = ReadFileToUint64(base::FilePath(kMinFilelist));
