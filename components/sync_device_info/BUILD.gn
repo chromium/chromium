@@ -4,6 +4,12 @@
 
 import("//build/config/features.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 static_library("sync_device_info") {
   sources = [
     "device_count_metrics_provider.cc",
@@ -28,11 +34,6 @@ static_library("sync_device_info") {
     "local_device_info_provider_impl.h",
     "local_device_info_util.cc",
     "local_device_info_util.h",
-    "local_device_info_util_android.cc",
-    "local_device_info_util_ios.mm",
-    "local_device_info_util_linux.cc",
-    "local_device_info_util_mac.mm",
-    "local_device_info_util_win.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -53,11 +54,28 @@ static_library("sync_device_info") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (is_android) {
+    sources += [ "local_device_info_util_android.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [ "local_device_info_util_ios.mm" ]
+  }
+
+  if (is_linux) {
+    sources += [ "local_device_info_util_linux.cc" ]
+  }
+
   if (is_mac) {
+    sources += [ "local_device_info_util_mac.mm" ]
     frameworks = [
       "CoreFoundation.framework",
       "SystemConfiguration.framework",  # For local_device_info_util_mac.mm.
     ]
+  }
+
+  if (is_win) {
+    sources += [ "local_device_info_util_win.cc" ]
   }
 
   if (is_chromeos) {
