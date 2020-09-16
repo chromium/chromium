@@ -69,26 +69,35 @@ class PortFactory(object):
 
         _check_configuration_and_target(self._host.filesystem, options)
 
+        port_class, class_name = self.get_port_class(port_name)
+        if port_class is None:
+            raise NotImplementedError('unsupported platform: "%s"' % port_name)
+
+        full_port_name = port_class.determine_full_port_name(
+            self._host, options,
+            class_name if 'browser_test' in port_name else port_name)
+        return port_class(self._host,
+                          full_port_name,
+                          options=options,
+                          **kwargs)
+
+    @classmethod
+    def get_port_class(cls, port_name):
+        """Returns a Port subclass and its name for the given port_name."""
         if 'browser_test' in port_name:
             module_name, class_name = port_name.rsplit('.', 1)
             module = __import__(module_name, globals(), locals(), [], -1)
             port_class_name = module.get_port_class_name(class_name)
             if port_class_name is not None:
-                cls = module.__dict__[port_class_name]
-                port_name = cls.determine_full_port_name(
-                    self._host, options, class_name)
-                return cls(self._host, port_name, options=options, **kwargs)
+                return module.__dict__[port_class_name], class_name
         else:
-            for port_class in self.PORT_CLASSES:
+            for port_class in cls.PORT_CLASSES:
                 module_name, class_name = port_class.rsplit('.', 1)
                 module = __import__(module_name, globals(), locals(), [], -1)
-                cls = module.__dict__[class_name]
-                if port_name.startswith(cls.port_name):
-                    port_name = cls.determine_full_port_name(
-                        self._host, options, port_name)
-                    return cls(
-                        self._host, port_name, options=options, **kwargs)
-        raise NotImplementedError('unsupported platform: "%s"' % port_name)
+                port_class = module.__dict__[class_name]
+                if port_name.startswith(port_class.port_name):
+                    return port_class, class_name
+        return None, None
 
     def all_port_names(self, platform=None):
         """Returns a list of all valid, fully-specified, "real" port names.

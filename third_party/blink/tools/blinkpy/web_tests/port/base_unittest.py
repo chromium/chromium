@@ -39,6 +39,7 @@ from blinkpy.common.system.platform_info_mock import MockPlatformInfo
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.port.base import Port, VirtualTestSuite
+from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.port.test import add_unit_tests_to_mock_filesystem, WEB_TEST_DIR, TestPort
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -1712,7 +1713,6 @@ class PortTest(LoggingTestCase):
         self.assertIn('--disable-system-font-check',
                       port.additional_driver_flags())
 
-
     def test_enable_tracing(self):
         options, _ = optparse.OptionParser().parse_args([])
         options.enable_tracing = '*,-blink'
@@ -1723,6 +1723,27 @@ class PortTest(LoggingTestCase):
                 '--trace-startup-duration=0',
                 '--trace-startup-file=trace_layout_test_non_virtual_TIME.json',
             ], port.args_for_test('non/virtual'))
+
+    def test_all_systems(self):
+        # Port.ALL_SYSTEMS should match CONFIGURATION_SPECIFIER_MACROS.
+        all_systems = []
+        for system in Port.ALL_SYSTEMS:
+            self.assertEqual(len(system), 2)
+            all_systems.append(system[0])
+        all_systems.sort()
+        configuration_specifier_macros = []
+        for macros in Port.CONFIGURATION_SPECIFIER_MACROS.values():
+            configuration_specifier_macros += macros
+        configuration_specifier_macros.sort()
+        self.assertListEqual(all_systems, configuration_specifier_macros)
+
+    def test_configuration_specifier_macros(self):
+        # CONFIGURATION_SPECIFIER_MACROS should contain all SUPPORTED_VERSIONS
+        # of each port. Must use real Port classes in this test.
+        for port_name, versions in Port.CONFIGURATION_SPECIFIER_MACROS.items():
+            port_class, _ = PortFactory.get_port_class(port_name)
+            self.assertIsNotNone(port_class, port_name)
+            self.assertListEqual(versions, list(port_class.SUPPORTED_VERSIONS))
 
 
 class NaturalCompareTest(unittest.TestCase):
