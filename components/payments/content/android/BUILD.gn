@@ -109,6 +109,7 @@ android_library("java") {
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/PaymentUIsObserver.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
+    "java/src/org/chromium/components/payments/SkipToGPayHelper.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/SupportedDelegations.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",

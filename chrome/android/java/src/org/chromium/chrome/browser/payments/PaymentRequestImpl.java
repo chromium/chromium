@@ -57,6 +57,7 @@ import org.chromium.components.payments.PaymentRequestUpdateEventListener;
 import org.chromium.components.payments.PaymentUIsObserver;
 import org.chromium.components.payments.PaymentValidator;
 import org.chromium.components.payments.Section;
+import org.chromium.components.payments.SkipToGPayHelper;
 import org.chromium.components.payments.UrlUtil;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -252,7 +253,7 @@ public class PaymentRequestImpl
         assert details != null;
 
         boolean googlePayBridgeActivated = googlePayBridgeEligible
-                && SkipToGPayHelper.canActivateExperiment(mWebContents, rawMethodData);
+                && SkipToGPayHelperUtil.canActivateExperiment(mWebContents, rawMethodData);
 
         Map<String, PaymentMethodData> methodData =
                 getValidatedMethodData(rawMethodData, googlePayBridgeActivated);

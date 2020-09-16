@@ -73,7 +73,7 @@ public final class SkipToGPayHelperTest {
     void assertCanActivateExperiment(boolean expected) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(expected,
-                    SkipToGPayHelper.canActivateExperiment(
+                    SkipToGPayHelperUtil.canActivateExperiment(
                             mRule.getWebContents(), mTestMethodData));
         });
     }

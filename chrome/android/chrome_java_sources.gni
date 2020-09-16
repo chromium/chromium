@@ -1265,7 +1265,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
   "java/src/org/chromium/chrome/browser/payments/SettingsAutofillAndPaymentsObserver.java",
   "java/src/org/chromium/chrome/browser/payments/ShippingStrings.java",
-  "java/src/org/chromium/chrome/browser/payments/SkipToGPayHelper.java",
+  "java/src/org/chromium/chrome/browser/payments/SkipToGPayHelperUtil.java",
   "java/src/org/chromium/chrome/browser/payments/TwaPackageManagerDelegate.java",
   "java/src/org/chromium/chrome/browser/payments/UrlUtils.java",
   "java/src/org/chromium/chrome/browser/payments/handler/PaymentHandlerActionModeCallback.java",
