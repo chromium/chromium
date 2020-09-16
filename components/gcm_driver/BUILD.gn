@@ -5,6 +5,12 @@
 import("//build/buildflag_header.gni")
 import("//components/gcm_driver/config.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 buildflag_header("gcm_buildflags") {
   header = "gcm_buildflags.h"
   flags = [ "USE_GCM_FROM_PLATFORM=$use_gcm_from_platform" ]
@@ -81,6 +87,7 @@ static_library("gcm_driver") {
   }
 
   if (use_gcm_from_platform) {
+    assert(is_android)
     sources += [
       "gcm_driver_android.cc",
       "gcm_driver_android.h",
@@ -167,10 +174,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "gcm_delayed_task_controller_unittest.cc",
-    "gcm_stats_recorder_android_unittest.cc",
-  ]
+  sources = [ "gcm_delayed_task_controller_unittest.cc" ]
 
   deps = [
     ":gcm_driver",
@@ -187,6 +191,10 @@ source_set("unit_tests") {
     "//third_party/leveldatabase",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  if (is_android) {
+    sources += [ "gcm_stats_recorder_android_unittest.cc" ]
+  }
 
   if (!use_gcm_from_platform) {
     sources += [

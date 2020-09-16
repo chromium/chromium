@@ -7,3 +7,6 @@ declare_args() {
   # includes GMS which provides the GCM client.
   use_gcm_from_platform = is_android
 }
+
+# Using the platform GCM is only supported on Android.
+assert(!use_gcm_from_platform || is_android)
