@@ -324,12 +324,17 @@ class BaseIsolatedScriptArgsAdapter(object):
   def clean_up_after_test_run(self):
     pass
 
+  def do_pre_test_run_tasks(self):
+    pass
+
   def do_post_test_run_tasks(self):
     pass
 
   def run_test(self):
     self.parse_args()
     cmd = self.generate_isolated_script_cmd()
+
+    self.do_pre_test_run_tasks()
 
     env = os.environ.copy()
 
