@@ -382,20 +382,44 @@ class ProgressCenterPanel {
   }
 
   /**
+   * Test if we have an empty or all whitespace string.
+   * @param {string} candidate String we're checking.
+   * @return {boolean} true if there's content in the candidate.
+   */
+  isNonEmptyString_(candidate) {
+    if (!candidate || candidate.trim().length === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Generate destination string for display on the feedback panel.
    * @param {!ProgressCenterItem} item Item we're generating a message for.
    * @param {Object} info Cached information to use for formatting.
    * @return {string} String formatted based on the item state.
    */
   generateDestinationString_(item, info) {
+    const hasDestination = this.isNonEmptyString_(info['destination']);
     switch (item.state) {
       case 'progressing':
-        return strf('TO_FOLDER_NAME', info['destination']);
+        if (hasDestination) {
+          return strf('TO_FOLDER_NAME', info['destination']);
+        }
+        break;
       case 'completed':
         if (item.type === ProgressItemType.COPY) {
-          return strf('COPIED_TO', info['destination']);
+          if (hasDestination) {
+            return strf('COPIED_TO', info['destination']);
+          } else {
+            return str('COPIED');
+          }
         } else if (item.type === ProgressItemType.MOVE) {
-          return strf('MOVED_TO', info['destination']);
+          if (hasDestination) {
+            return strf('MOVED_TO', info['destination']);
+          } else {
+            return str('MOVED');
+          }
         }
         break;
       case 'error':
@@ -417,28 +441,50 @@ class ProgressCenterPanel {
    * @return {string} String formatted based on the item state.
    */
   generatePrimaryString_(item, info) {
+    const hasDestination = this.isNonEmptyString_(info['destination']);
     switch (item.state) {
       case 'progressing':
+        // Source and primary string are the same for missing destination.
+        if (!hasDestination) {
+          return this.generateSourceString_(item, info);
+        }
+        // fall through
       case 'completed':
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
-            return strf(
-                'COPY_FILE_NAME_LONG', info['source'], info['destination']);
+            if (hasDestination) {
+              return strf(
+                  'COPY_FILE_NAME_LONG', info['source'], info['destination']);
+            } else {
+              return strf('FILE_COPIED', info['source']);
+            }
           } else if (item.type === ProgressItemType.MOVE) {
-            return strf(
-                'MOVE_FILE_NAME_LONG', info['source'], info['destination']);
+            if (hasDestination) {
+              return strf(
+                  'MOVE_FILE_NAME_LONG', info['source'], info['destination']);
+            } else {
+              return strf('FILE_MOVED', info['source']);
+            }
           } else {
             return item.message;
           }
         } else {
           if (item.type === ProgressItemType.COPY) {
-            return strf(
-                'COPY_ITEMS_REMAINING_LONG', info['source'],
-                info['destination']);
+            if (hasDestination) {
+              return strf(
+                  'COPY_ITEMS_REMAINING_LONG', info['source'],
+                  info['destination']);
+            } else {
+              return strf('FILE_ITEMS_COPIED', info['source']);
+            }
           } else if (item.type === ProgressItemType.MOVE) {
-            return strf(
-                'MOVE_ITEMS_REMAINING_LONG', info['source'],
-                info['destination']);
+            if (hasDestination) {
+              return strf(
+                  'MOVE_ITEMS_REMAINING_LONG', info['source'],
+                  info['destination']);
+            } else {
+              return strf('FILE_ITEMS_MOVED', info['source']);
+            }
           } else {
             return item.message;
           }

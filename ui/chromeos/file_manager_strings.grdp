@@ -721,6 +721,9 @@
   <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_ITEMS_REMAINING" desc="File Manager status message.">
     Importing <ph name="FILE_COUNT">$1<ex>5</ex></ph> files...
   </message>
+  <message name="IDS_FILE_BROWSER_COPIED" desc="File Manager status message.">
+    Copied.
+  </message>
   <message name="IDS_FILE_BROWSER_COPIED_TO" desc="File Manager status message.">
     Copied to <ph name="FOLDER_NAME">$1<ex>images</ex></ph>.
   </message>
@@ -758,8 +761,20 @@
   <message name="IDS_FILE_BROWSER_COPY_UNEXPECTED_ERROR" desc="File Manager error message.">
     Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE">$1<ex>Could not copy</ex></ph>
   </message>
+  <message name="IDS_FILE_BROWSER_FILE_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> copied.
+  </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items
+  </message>
+  <message name="IDS_FILE_BROWSER_FILE_ITEMS_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items copied.
+  </message>
+  <message name="IDS_FILE_BROWSER_FILE_ITEMS_MOVED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved.
+  </message>
+  <message name="IDS_FILE_BROWSER_FILE_MOVED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> moved.
   </message>
    <!-- TODO (crbug/1093603): Clean up after FilesTransferDetails launch. -->
   <message name="IDS_FILE_BROWSER_MOVE_FILE_NAME" desc="File Manager status message.">
@@ -786,6 +801,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_MOVE_UNEXPECTED_ERROR" desc="File Manager error message.">
     Move failed, unexpected error: <ph name="ERROR_MESSAGE">$1<ex>Could not move</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_MOVED" desc="File Manager status message.">
+    Moved.
   </message>
   <message name="IDS_FILE_BROWSER_MOVED_TO" desc="File Manager status message.">
     Moved to <ph name="FOLDER_NAME">$1<ex>images</ex></ph>.
