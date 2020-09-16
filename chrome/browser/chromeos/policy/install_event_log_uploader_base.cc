@@ -69,7 +69,7 @@ void InstallEventLogUploaderBase::OnUploadDone(bool success) {
     OnUploadSuccess();
     return;
   }
-  PostTaskForStartSerialization(retry_backoff_ms_);
+  PostTaskForStartSerialization();
   retry_backoff_ms_ = std::min(retry_backoff_ms_ << 1, kMaxRetryBackoffMs);
 }
 

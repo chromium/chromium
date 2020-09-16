@@ -56,8 +56,7 @@ void ArcAppInstallEventLogUploader::OnUploadSuccess() {
   delegate_->OnUploadSuccess();
 }
 
-void ArcAppInstallEventLogUploader::PostTaskForStartSerialization(
-    const int retry_backoff_ms) {
+void ArcAppInstallEventLogUploader::PostTaskForStartSerialization() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&InstallEventLogUploaderBase::StartSerialization,

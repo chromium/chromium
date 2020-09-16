@@ -55,7 +55,7 @@ class ArcAppInstallEventLogUploader : public InstallEventLogUploaderBase {
  private:
   // InstallEventLogUploaderBase:
   void CheckDelegateSet() override;
-  void PostTaskForStartSerialization(const int retry_backoff_ms) override;
+  void PostTaskForStartSerialization() override;
   void CancelClientUpload() override;
   void OnUploadSuccess() override;
   void StartSerialization() override;

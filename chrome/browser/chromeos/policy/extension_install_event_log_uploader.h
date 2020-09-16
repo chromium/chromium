@@ -57,8 +57,7 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
  private:
   // InstallEventLogUploaderBase:
   void CheckDelegateSet() override;
-  // TODO(crbug/1096483): Accept base::TimeDelta as a parameter instead of int.
-  void PostTaskForStartSerialization(const int retry_backoff_ms) override;
+  void PostTaskForStartSerialization() override;
   void CancelClientUpload() override;
   void OnUploadSuccess() override;
   void StartSerialization() override;

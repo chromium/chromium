@@ -53,8 +53,7 @@ void ExtensionInstallEventLogUploader::OnUploadSuccess() {
   delegate_->OnExtensionLogUploadSuccess();
 }
 
-void ExtensionInstallEventLogUploader::PostTaskForStartSerialization(
-    const int retry_backoff_ms) {
+void ExtensionInstallEventLogUploader::PostTaskForStartSerialization() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExtensionInstallEventLogUploader::StartSerialization,

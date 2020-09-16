@@ -68,8 +68,8 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
   // Notifies delegate on success of upload.
   virtual void OnUploadSuccess() = 0;
 
-  // Posts a new task to start serialization after |retry_backoff_ms| ms.
-  virtual void PostTaskForStartSerialization(const int retry_backoff_ms) = 0;
+  // Posts a new task to start serialization after |retry_backoff_ms_| ms.
+  virtual void PostTaskForStartSerialization() = 0;
 
   // The client used to upload logs to the server.
   CloudPolicyClient* client_ = nullptr;
