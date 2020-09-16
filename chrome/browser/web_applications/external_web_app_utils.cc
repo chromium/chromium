@@ -16,6 +16,11 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/constants/chromeos_switches.h"
+#include "components/arc/arc_util.h"
+#endif  // defined(OS_CHROMEOS)
+
 namespace web_app {
 
 namespace {
@@ -44,6 +49,21 @@ constexpr char kCreateShortcuts[] = "create_shortcuts";
 //  - if the feature is enabled, the app will be installed
 //  - if the feature is not enabled, the app will be removed.
 constexpr char kFeatureName[] = "feature_name";
+
+#if defined(OS_CHROMEOS)
+
+// kDisableIfArcSupported is an optional bool which specifies whether to skip
+// install of the app if the device supports Arc (Chrome OS only).
+// Defaults to false.
+constexpr char kDisableIfArcSupported[] = "disable_if_arc_supported";
+
+// kDisableIfTabletFormFactor is an optional bool which specifies whether to
+// skip install of the app if the device is a tablet form factor.
+// This is only for Chrome OS tablets, Android does not use any of this code.
+// Defaults to false.
+constexpr char kDisableIfTabletFormFactor[] = "disable_if_tablet_form_factor";
+
+#endif  // defined(OS_CHROMEOS)
 
 // kLaunchContainer is a required string which can be "window" or "tab"
 // and controls what sort of container the web app is launched in.
@@ -175,6 +195,28 @@ base::Optional<ExternalInstallOptions> ParseConfig(
 
   // It doesn't make sense to hide the app and also create shortcuts for it.
   DCHECK(!(hide_from_user && create_shortcuts));
+
+#if defined(OS_CHROMEOS)
+  value = app_config.FindKey(kDisableIfArcSupported);
+  if (value) {
+    if (!value->is_bool()) {
+      LOG(ERROR) << file << " had an invalid " << kDisableIfArcSupported;
+      return base::nullopt;
+    }
+    if (value->GetBool() && arc::IsArcAvailable())
+      return base::nullopt;
+  }
+
+  value = app_config.FindKey(kDisableIfTabletFormFactor);
+  if (value) {
+    if (!value->is_bool()) {
+      LOG(ERROR) << file << " had an invalid " << kDisableIfTabletFormFactor;
+      return base::nullopt;
+    }
+    if (value->GetBool() && chromeos::switches::IsTabletFormFactor())
+      return base::nullopt;
+  }
+#endif  // defined(OS_CHROMEOS)
 
   value = app_config.FindKeyOfType(kLaunchContainer, base::Value::Type::STRING);
   if (!value) {

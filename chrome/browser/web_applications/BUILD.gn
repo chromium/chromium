@@ -113,6 +113,7 @@ source_set("web_applications") {
 
   if (is_chromeos) {
     deps += [
+      "//chromeos/constants",
       "//components/arc:arc_base",
       "//components/arc/mojom",
     ]
@@ -236,6 +237,7 @@ source_set("web_applications_unit_tests") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/chromeos",
+      "//chromeos/constants",
       "//components/arc:arc",
       "//components/arc:arc_test_support",
       "//components/arc/mojom",

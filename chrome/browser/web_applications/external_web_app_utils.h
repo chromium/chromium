@@ -19,6 +19,9 @@ namespace web_app {
 
 class FileUtilsWrapper;
 
+// TODO(https://crbug.com/1128801): Record and log parsing errors more
+// effectively. At the moment they're indistinguishable from disabled apps to
+// the caller.
 base::Optional<ExternalInstallOptions> ParseConfig(
     FileUtilsWrapper& file_utils,
     const base::FilePath& dir,

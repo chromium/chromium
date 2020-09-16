@@ -11,6 +11,12 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_CHROMEOS)
+#include "base/command_line.h"
+#include "chromeos/constants/chromeos_switches.h"
+#include "components/arc/arc_util.h"
+#endif  // defined(OS_CHROMEOS)
+
 namespace web_app {
 
 class ExternalWebAppUtilsTest : public testing::Test {
@@ -32,6 +38,17 @@ class ExternalWebAppUtilsTest : public testing::Test {
     });
   }
 
+  base::Optional<ExternalInstallOptions> ParseConfig(
+      const char* app_config_string) {
+    base::Optional<base::Value> app_config =
+        base::JSONReader::Read(app_config_string);
+    DCHECK(app_config);
+    FileUtilsWrapper file_utils;
+    return ::web_app::ParseConfig(file_utils, /*dir=*/base::FilePath(),
+                                  /*file=*/base::FilePath(),
+                                  /*user_type=*/"test", app_config.value());
+  }
+
   WebApplicationInfoFactory ParseOfflineManifest(
       const char* offline_manifest_string) {
     base::Optional<base::Value> offline_manifest =
@@ -47,7 +64,107 @@ class ExternalWebAppUtilsTest : public testing::Test {
   std::unique_ptr<TestFileUtils> file_utils_;
 };
 
-// ParseConfig() is tested by ScanDirForExternalWebAppsTest.
+// ParseConfig() is also tested by ScanDirForExternalWebAppsTest.
+
+#if defined(OS_CHROMEOS)
+
+namespace {
+
+std::string BoolParamToString(
+    const ::testing::TestParamInfo<bool>& bool_param) {
+  return bool_param.param ? "true" : "false";
+}
+
+using IsTablet = bool;
+using IsArcSupported = bool;
+
+}  // namespace
+
+class ExternalWebAppUtilsTabletTest
+    : public ExternalWebAppUtilsTest,
+      public ::testing::WithParamInterface<IsTablet> {
+ public:
+  ExternalWebAppUtilsTabletTest() {
+    if (GetParam()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          chromeos::switches::kEnableTabletFormFactor);
+    }
+  }
+  ~ExternalWebAppUtilsTabletTest() override = default;
+
+  bool is_tablet() const { return GetParam(); }
+};
+
+TEST_P(ExternalWebAppUtilsTabletTest, DisableIfTabletFormFactor) {
+  base::Optional<ExternalInstallOptions> disable_true_config = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "disable_if_tablet_form_factor": true,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_EQ(disable_true_config.has_value(), !is_tablet());
+
+  base::Optional<ExternalInstallOptions> disable_false_config = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "disable_if_tablet_form_factor": false,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_TRUE(disable_false_config.has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternalWebAppUtilsTabletTest,
+                         ::testing::Values(true, false),
+                         BoolParamToString);
+
+class ExternalWebAppUtilsArcTest
+    : public ExternalWebAppUtilsTest,
+      public ::testing::WithParamInterface<IsArcSupported> {
+ public:
+  ExternalWebAppUtilsArcTest() {
+    if (GetParam()) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+          chromeos::switches::kArcAvailability, "officially-supported");
+    }
+  }
+  ~ExternalWebAppUtilsArcTest() override = default;
+
+  bool is_arc_supported() const { return GetParam(); }
+};
+
+TEST_P(ExternalWebAppUtilsArcTest, DisableIfArcSupported) {
+  base::Optional<ExternalInstallOptions> disable_true_config = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "disable_if_arc_supported": true,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_EQ(disable_true_config.has_value(), !is_arc_supported());
+
+  base::Optional<ExternalInstallOptions> disable_false_config = ParseConfig(R"(
+    {
+      "app_url": "https://test.org",
+      "launch_container": "window",
+      "disable_if_arc_supported": false,
+      "user_type": ["test"]
+    }
+  )");
+  EXPECT_TRUE(disable_false_config.has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternalWebAppUtilsArcTest,
+                         ::testing::Values(true, false),
+                         BoolParamToString);
+
+#endif  // defined(OS_CHROMEOS)
 
 // TODO(crbug.com/1119710): Loading icon.png is flaky on Windows.
 #if defined(OS_WIN)
