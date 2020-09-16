@@ -876,6 +876,62 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /**
    * An event handler for when the browser tells the PDF Viewer to perform a
+   * save on the attachment at a certain index. Callers of this function must
+   * be responsible for checking whether the attachment size is valid for
+   * downloading.
+   * @param {!CustomEvent<number>} e The event which contains the index of
+   *     attachment to be downloaded.
+   * @private
+   */
+  async onSaveAttachment_(e) {
+    const index = e.detail;
+    const size = this.attachments_[index].size;
+    assert(size !== -1);
+
+    let dataArray = [];
+    // If the attachment size is 0, skip requesting the backend to fetch the
+    // attachment data.
+    if (size !== 0) {
+      const result = await this.currentController.saveAttachment(index);
+
+      // Cap the PDF attachment size at 100 MB. This cap should be kept in sync
+      // with and is also enforced in pdf/out_of_process_instance.cc.
+      const MAX_FILE_SIZE = 100 * 1000 * 1000;
+      const bufView = new Uint8Array(result.dataToSave);
+      assert(
+          bufView.length <= MAX_FILE_SIZE,
+          `File too large to be saved: ${bufView.length} bytes.`);
+      assert(
+          bufView.length === size,
+          `Received attachment size does not match its expected value: ${
+              size} bytes.`);
+
+      dataArray = [result.dataToSave];
+    }
+
+    const blob = new Blob(dataArray);
+    const fileName = this.attachments_[index].name;
+    chrome.fileSystem.chooseEntry(
+        {type: 'saveFile', suggestedName: fileName}, entry => {
+          if (chrome.runtime.lastError) {
+            if (chrome.runtime.lastError.message !== 'User cancelled') {
+              console.error(
+                  'chrome.fileSystem.chooseEntry failed: ' +
+                  chrome.runtime.lastError.message);
+            }
+            return;
+          }
+          entry.createWriter(writer => {
+            writer.write(blob);
+            // Unblock closing the window now that the user has saved
+            // successfully.
+            chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
+          });
+        });
+  }
+
+  /**
+   * An event handler for when the browser tells the PDF Viewer to perform a
    * save.
    * @param {string} streamUrl unique identifier for a PDF Viewer instance.
    * @private
@@ -1009,7 +1065,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
         entry => {
           if (chrome.runtime.lastError) {
             if (chrome.runtime.lastError.message !== 'User cancelled') {
-              console.log(
+              console.error(
                   'chrome.fileSystem.chooseEntry failed: ' +
                   chrome.runtime.lastError.message);
             }

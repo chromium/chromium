@@ -96,6 +96,9 @@ export class InkController extends ContentController {
   }
 
   /** @override */
+  saveAttachment(index) {}
+
+  /** @override */
   undo() {
     this.inkHost_.undo();
   }

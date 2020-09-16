@@ -15,6 +15,15 @@ export let MessageData;
 
 /**
  * @typedef {{
+ *   type: string,
+ *   dataToSave: Array,
+ *   messageId: string,
+ * }}
+ */
+let SaveAttachmentDataMessageData;
+
+/**
+ * @typedef {{
  *   dataToSave: Array,
  *   token: string,
  *   fileName: string
@@ -102,6 +111,14 @@ export class ContentController {
    * @abstract
    */
   save(requestType) {}
+
+  /**
+   * Requests that the attachment at a certain index be saved.
+   * @param {number} index The index of the attachment to be saved.
+   * @return {Promise<{type: string, dataToSave: Array, messageId: string}>}
+   * @abstract
+   */
+  saveAttachment(index) {}
 
   /**
    * Loads PDF document from `data` activates UI.
@@ -356,6 +373,14 @@ export class PluginController extends ContentController {
       saveRequestType: requestType,
     });
     return resolver.promise;
+  }
+
+  /** @override */
+  saveAttachment(index) {
+    return this.postMessageWithReply_({
+      type: 'saveAttachment',
+      attachmentIndex: index,
+    });
   }
 
   /** @override */

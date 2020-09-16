@@ -132,10 +132,9 @@ constexpr char kJSPrintType[] = "print";
 // Save attachment (Page -> Plugin)
 constexpr char kJSSaveAttachmentType[] = "saveAttachment";
 constexpr char kJSAttachmentIndex[] = "attachmentIndex";
-constexpr char kJSAttachmentToken[] = "attachmentToken";
 // Save attachment data (Plugin -> Page)
 constexpr char kJSSaveAttachmentDataType[] = "saveAttachmentData";
-constexpr char kJSAttachmentDataToSave[] = "attachmentDataToSave";
+constexpr char kJSAttachmentDataToSave[] = "dataToSave";
 // Save (Page -> Plugin)
 constexpr char kJSSaveType[] = "save";
 constexpr char kJSToken[] = "token";
@@ -1728,7 +1727,7 @@ void OutOfProcessInstance::HandleResetPrintPreviewModeMessage(
 
 void OutOfProcessInstance::HandleSaveAttachmentMessage(
     const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSAttachmentToken)).is_string() ||
+  if (!dict.Get(pp::Var(kJSMessageId)).is_string() ||
       !dict.Get(pp::Var(kJSAttachmentIndex)).is_int() ||
       dict.Get(pp::Var(kJSAttachmentIndex)).AsInt() < 0) {
     NOTREACHED();
@@ -1739,14 +1738,14 @@ void OutOfProcessInstance::HandleSaveAttachmentMessage(
   const std::vector<DocumentAttachmentInfo>& list =
       engine()->GetDocumentAttachmentInfoList();
   if (static_cast<size_t>(index) >= list.size() || !list[index].is_readable ||
-      list[index].size_bytes == 0) {
+      !IsSaveDataSizeValid(list[index].size_bytes)) {
     NOTREACHED();
     return;
   }
 
   pp::VarDictionary message;
   message.Set(kType, kJSSaveAttachmentDataType);
-  message.Set(kJSAttachmentToken, dict.Get(pp::Var(kJSAttachmentToken)));
+  message.Set(kJSMessageId, dict.Get(pp::Var(kJSMessageId)));
   // This will be overwritten if the save is successful.
   message.Set(kJSAttachmentDataToSave, pp::Var(pp::Var::Null()));
 
