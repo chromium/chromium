@@ -127,6 +127,8 @@ static_library("performance_manager") {
     "render_process_host_proxy.cc",
     "render_process_user_data.cc",
     "render_process_user_data.h",
+    "service_worker_client.cc",
+    "service_worker_client.h",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",
     "tab_helper_frame_node_source.cc",

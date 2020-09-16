@@ -310,6 +310,15 @@ void ServiceWorkerContextAdapter::OnNoControllees(int64_t version_id,
     observer.OnNoControllees(version_id, scope);
 }
 
+void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
+    int64_t version_id,
+    const std::string& uuid,
+    content::GlobalFrameRoutingId render_frame_host_id) {
+  for (auto& observer : observer_list_)
+    observer.OnControlleeNavigationCommitted(version_id, uuid,
+                                             render_frame_host_id);
+}
+
 void ServiceWorkerContextAdapter::OnReportConsoleMessage(
     int64_t version_id,
     const GURL& scope,
