@@ -496,7 +496,8 @@ class MetaBuildWrapper(object):
 
     self.Print('')
     if self.args.swarmed:
-      return self._RunUnderSwarming(self.args.path, self.args.target)
+      cmd, _ = self.GetIsolateCommand(self.args.target, vals)
+      return self._RunUnderSwarming(self.args.path, self.args.target, cmd)
     else:
       return self._RunLocallyIsolated(self.args.path, self.args.target)
 
@@ -527,7 +528,7 @@ class MetaBuildWrapper(object):
       if zip_dir:
         self.RemoveDirectory(zip_dir)
 
-  def _RunUnderSwarming(self, build_dir, target):
+  def _RunUnderSwarming(self, build_dir, target, isolate_cmd):
     isolate_server = 'isolateserver.appspot.com'
     namespace = 'default-gzip'
     swarming_server = 'chromium-swarm.appspot.com'
@@ -598,15 +599,21 @@ class MetaBuildWrapper(object):
     cmd = [
         self.executable,
         self.PathJoin('tools', 'swarming_client', 'swarming.py'),
-          'run',
-          '-s', isolated_hash,
-          '-I', isolate_server,
-          '--namespace', namespace,
-          '-S', swarming_server,
-          '--tags=purpose:user-debug-mb',
-      ] + tags + dimensions
+        'run',
+        '-s',
+        isolated_hash,
+        '-I',
+        isolate_server,
+        '--namespace',
+        namespace,
+        '-S',
+        swarming_server,
+        '--tags=purpose:user-debug-mb',
+        '--relative-cwd',
+        self.ToSrcRelPath(build_dir),
+    ] + tags + dimensions + ['--raw-cmd', '--'] + list(isolate_cmd)
     if self.args.extra_args:
-      cmd += ['--'] + self.args.extra_args
+      cmd += self.args.extra_args
     self.Print('')
     ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
     return ret
