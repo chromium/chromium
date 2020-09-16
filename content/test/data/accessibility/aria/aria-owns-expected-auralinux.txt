@@ -1,0 +1,21 @@
+[document web]
+++[list]
+++++[list item]
+++++++[panel]
+++++++++[static] name='• '
+++++++[section]
+++++++++[static] name='One'
+++++[list item]
+++++++[panel]
+++++++++[static] name='•'
+++++++[section]
+++++++++[static] name='Two'
+++++[list item]
+++++++[panel]
+++++++++[static] name='• '
+++++++[static] name='Four'
+++[list item]
+++++[panel]
+++++++[static] name='•'
+++++[section]
+++++++[static] name='Three'

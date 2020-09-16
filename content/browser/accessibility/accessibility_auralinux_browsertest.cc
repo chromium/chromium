@@ -1481,6 +1481,49 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   EXPECT_FALSE(saw_selection_change_in_child2);
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       SetCaretInTextWithGeneratedContent) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <body>
+      <style>h1.generated::before{content:"   [   ";}</style>
+      <style>h1.generated::after{content:"   ]   ";}</style>
+      <h1 class="generated">Foo</h1>
+      </body>
+      </html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* heading = atk_object_ref_accessible_child(document, 0);
+  ASSERT_EQ(atk_object_get_role(heading), ATK_ROLE_HEADING);
+
+  // The accessible text for the heading should match the rendered text and
+  // not the DOM text.
+  gchar* text = atk_text_get_text(ATK_TEXT(heading), 0, -1);
+  ASSERT_STREQ(text, "[ Foo ]");
+  g_free(text);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
+
+  int length = atk_text_get_character_count(ATK_TEXT(heading));
+  for (int i = 0; i < length; i++) {
+    atk_text_set_caret_offset(ATK_TEXT(heading), i);
+
+    // We aren't getting kTextSelectionChanged or kDocumentSelectionChanged for
+    // the following offsets in the generated content. Recheck this after the
+    // crasher bug is fixed.
+    if (i == 1 || i == 6)
+      continue;
+
+    waiter.WaitForNotification();
+    ASSERT_EQ(i, atk_text_get_caret_offset(ATK_TEXT(heading)));
+  }
+
+  g_object_unref(heading);
+}
+
 // TODO(crbug.com/981913): This flakes on linux.
 IN_PROC_BROWSER_TEST_F(
     AccessibilityAuraLinuxBrowserTest,

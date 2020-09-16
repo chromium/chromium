@@ -471,14 +471,23 @@ String LayoutText::PlainText() const {
   // FIXME: this is just a stopgap until TextIterator is adapted to support
   // generated text.
   StringBuilder plain_text_builder;
-  for (InlineTextBox* text_box : TextBoxes()) {
-    String text = text_.Substring(text_box->Start(), text_box->Len())
-                      .SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace);
-    plain_text_builder.Append(text);
-    if (text_box->NextForSameLayoutObject() &&
-        text_box->NextForSameLayoutObject()->Start() > text_box->end() &&
-        text.length() && !text.Right(1).ContainsOnlyWhitespaceOrEmpty())
+  unsigned last_end_offset = 0;
+  for (const auto& text_box : GetTextBoxInfo()) {
+    if (!text_box.dom_length)
+      continue;
+
+    // Append a trailing space of the last |text_box| if it was collapsed.
+    const unsigned end_offset = text_box.dom_start_offset + text_box.dom_length;
+    if (last_end_offset && text_box.dom_start_offset > last_end_offset &&
+        !IsASCIISpace(text_[end_offset - 1])) {
       plain_text_builder.Append(kSpaceCharacter);
+    }
+    last_end_offset = end_offset;
+
+    String text =
+        text_.Substring(text_box.dom_start_offset, text_box.dom_length)
+            .SimplifyWhiteSpace(WTF::kDoNotStripWhiteSpace);
+    plain_text_builder.Append(text);
   }
   return plain_text_builder.ToString();
 }

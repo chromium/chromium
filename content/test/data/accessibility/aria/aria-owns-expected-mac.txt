@@ -6,12 +6,16 @@ AXWebArea
 ++++++AXGroup
 ++++++++AXStaticText AXValue='One'
 ++++AXGroup
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='•'
+++++++++AXStaticText AXValue='•'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Two'
+++++AXGroup
+++++++AXListMarker AXValue='• '
+++++++++AXStaticText AXValue='• '
+++++++AXStaticText AXValue='Four'
 ++AXGroup
-++++AXListMarker AXValue='• '
-++++++AXStaticText AXValue='• '
+++++AXListMarker AXValue='•'
+++++++AXStaticText AXValue='•'
 ++++AXGroup
 ++++++AXStaticText AXValue='Three'

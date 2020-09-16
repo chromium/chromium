@@ -775,6 +775,46 @@ TEST_P(ParameterizedLayoutTextTest, GetTextBoxInfoWithEllipsisForPseudoAfter) {
   EXPECT_EQ(LayoutRect(30, 0, 10, 10), boxes[0].local_rect);
 }
 
+// Test the specialized code path in |PlainText| for when |!GetNode()|.
+TEST_P(ParameterizedLayoutTextTest, PlainTextInPseudo) {
+  SetBodyInnerHTML(String(R"HTML(
+    <style>
+    :root {
+      font-family: monospace;
+      font-size: 10px;
+    }
+    #before_parent::before {
+      display: inline-block;
+      width: 5ch;
+      content: "123 456";
+    }
+    #before_parent_cjk::before {
+      display: inline-block;
+      width: 5ch;
+      content: "123)HTML") +
+                   String(u"\u4E00") + R"HTML(456";
+    }
+    </style>
+    <div id="before_parent"></div>
+    <div id="before_parent_cjk"></div>
+  )HTML");
+
+  const auto GetPlainText = [](const LayoutObject* parent) {
+    const LayoutObject* before = parent->SlowFirstChild();
+    EXPECT_TRUE(before->IsBeforeContent());
+    const LayoutText* before_text = ToLayoutText(before->SlowFirstChild());
+    EXPECT_FALSE(before_text->GetNode());
+    return before_text->PlainText();
+  };
+
+  const LayoutObject* before_parent =
+      GetLayoutObjectByElementId("before_parent");
+  EXPECT_EQ("123 456", GetPlainText(before_parent));
+  const LayoutObject* before_parent_cjk =
+      GetLayoutObjectByElementId("before_parent_cjk");
+  EXPECT_EQ(String(u"123\u4E00456"), GetPlainText(before_parent_cjk));
+}
+
 TEST_P(ParameterizedLayoutTextTest,
        IsBeforeAfterNonCollapsedCharacterNoLineWrap) {
   // Basic tests

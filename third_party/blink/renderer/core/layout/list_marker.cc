@@ -173,9 +173,21 @@ String ListMarker::MarkerTextWithoutSuffix(const LayoutObject& marker) const {
 
 String ListMarker::TextAlternative(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
-  // For accessibility, return the marker string in the logical order even in
-  // RTL, reflecting speech order.
-  return MarkerTextWithSuffix(marker);
+  DCHECK_NE(marker_text_type_, kUnresolved);
+  if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved) {
+    // For accessibility, return the marker string in the logical order even in
+    // RTL, reflecting speech order.
+    return MarkerTextWithSuffix(marker);
+  }
+
+  LayoutObject* child = marker.SlowFirstChild();
+
+  // There should be a single text child
+  DCHECK(child);
+  DCHECK(child->IsText());
+  DCHECK(!child->NextSibling());
+
+  return ToLayoutText(child)->PlainText();
 }
 
 void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {

@@ -1240,6 +1240,43 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(text->GetId(), anchor_waiter.event_target_id());
 }
 
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest, GeneratedText) {
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(
+      "data:text/html,"
+      "<style>h1.generated::before{content:'   [   ';}"
+      "h1.generated::after{content:'   ]    ';}</style>"
+      "<h1 class='generated'>Foo</h1>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+
+  const BrowserAccessibility* heading = root->PlatformGetChild(0);
+  ASSERT_EQ(3U, heading->PlatformChildCount());
+
+  const BrowserAccessibility* static1 = heading->PlatformGetChild(0);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static1->GetData().role);
+  EXPECT_STREQ(
+      "[ ",
+      GetAttr(static1->node(), ax::mojom::StringAttribute::kName).c_str());
+
+  const BrowserAccessibility* static2 = heading->PlatformGetChild(1);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static2->GetData().role);
+  EXPECT_STREQ(
+      "Foo",
+      GetAttr(static2->node(), ax::mojom::StringAttribute::kName).c_str());
+
+  const BrowserAccessibility* static3 = heading->PlatformGetChild(2);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, static3->GetData().role);
+  EXPECT_STREQ(
+      " ]",
+      GetAttr(static3->node(), ax::mojom::StringAttribute::kName).c_str());
+}
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        FocusFiresJavascriptOnfocus) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
