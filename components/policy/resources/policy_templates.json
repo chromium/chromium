@@ -23117,7 +23117,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'desc': '''This feature enables suggestions for new content to explore. Includes apps, webpages, and more.
       If this policy is set to True, then suggestions for new content to explore will be enabled.
       If this policy is set to False, then suggestions for new content to explore will be disabled.
-      If this policy is left unset, then suggestions for new content to explore will be disabled for managed users.
+      If this policy is left unset, then suggestions for new content to explore will be disabled for managed users and enabled for other users.
       '''
     },
     {
