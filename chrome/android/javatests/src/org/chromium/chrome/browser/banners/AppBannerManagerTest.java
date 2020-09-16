@@ -256,17 +256,21 @@ public class AppBannerManagerTest {
         }
     }
 
-    private static String getExpectedDialogTitle(Tab tab) {
-        return TabUtils.getActivity(tab).getString(AppBannerManager.getHomescreenLanguageOption());
+    private static String getExpectedDialogTitle(Tab tab) throws Exception {
+        String title = ThreadUtils.runOnUiThreadBlocking(() -> {
+            return TabUtils.getActivity(tab).getString(
+                    AppBannerManager.getHomescreenLanguageOption(tab).titleTextId);
+        });
+        return title;
     }
 
-    private void waitUntilNoDialogsShowing(final Tab tab) {
+    private void waitUntilNoDialogsShowing(final Tab tab) throws Exception {
         UiObject dialogUiObject =
                 mUiDevice.findObject(new UiSelector().text(getExpectedDialogTitle(tab)));
         dialogUiObject.waitUntilGone(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
     }
 
-    private void tapAndWaitForModalBanner(final Tab tab) {
+    private void tapAndWaitForModalBanner(final Tab tab) throws Exception {
         TouchCommon.singleClickView(tab.getView());
 
         UiObject dialogUiObject =

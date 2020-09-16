@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.text.TextUtils;
 
-import androidx.annotation.StringRes;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -28,6 +27,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -148,15 +148,16 @@ public class AddToHomescreenTest {
 
         TestAddToHomescreenCoordinator(Context context, WindowAndroid windowAndroid,
                 ModalDialogManager modalDialogManager, String title) {
-            super(context, windowAndroid, modalDialogManager);
+            super(null, context, windowAndroid, modalDialogManager);
             mTitle = title;
         }
 
         @Override
         protected AddToHomescreenDialogView initView(
-                @StringRes int titleText, AddToHomescreenViewDelegate delegate) {
+                AppBannerManager.InstallStringPair installStrings,
+                AddToHomescreenViewDelegate delegate) {
             return new AddToHomescreenDialogView(
-                    mActivityContext, mModalDialogManager, titleText, delegate) {
+                    mActivityContext, mModalDialogManager, installStrings, delegate) {
                 @Override
                 void setTitle(String title) {
                     if (TextUtils.isEmpty(mTitle)) {

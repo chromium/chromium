@@ -39,16 +39,15 @@ class Profile;
 // what we count as a day matches what the user perceives to be days.
 class AppBannerSettingsHelper {
  public:
-  // An enum for determining the title to use for the add to homescreen / app
-  // banner functionality.
+  // An enum containing possible app menu verbiage for installing a web app.
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.banners
-  enum LanguageOption {
-    LANGUAGE_OPTION_DEFAULT = 0,
-    LANGUAGE_OPTION_MIN = LANGUAGE_OPTION_DEFAULT,
-    LANGUAGE_OPTION_ADD = 1,
-    LANGUAGE_OPTION_INSTALL = 2,
-    LANGUAGE_OPTION_MAX = LANGUAGE_OPTION_INSTALL,
+  enum AppMenuVerbiage {
+    APP_MENU_OPTION_UNKNOWN = 0,
+    APP_MENU_OPTION_MIN = APP_MENU_OPTION_UNKNOWN,
+    APP_MENU_OPTION_ADD_TO_HOMESCREEN = 1,
+    APP_MENU_OPTION_INSTALL = 2,
+    APP_MENU_OPTION_MAX = APP_MENU_OPTION_INSTALL,
   };
 
   // The various types of banner events recorded as timestamps in the app banner
@@ -166,10 +165,6 @@ class AppBannerSettingsHelper {
 
   // Updates all values from field trial.
   static void UpdateFromFieldTrial();
-
-  // Queries variations to determine which language option should be used for
-  // app banners and add to homescreen.
-  static LanguageOption GetHomescreenLanguageOption();
 
   // Returns whether we are out of |scope|'s animation suppression period and
   // can show an animation.

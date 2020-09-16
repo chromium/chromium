@@ -61,7 +61,6 @@ const char kBannerParamsKey[] = "AppBannerTriggering";
 const char kBannerParamsEngagementTotalKey[] = "site_engagement_total";
 const char kBannerParamsDaysAfterBannerDismissedKey[] = "days_after_dismiss";
 const char kBannerParamsDaysAfterBannerIgnoredKey[] = "days_after_ignore";
-const char kBannerParamsLanguageKey[] = "language_option";
 
 // Total engagement score required before a banner will actually be triggered.
 double gTotalEngagementToTrigger = kDefaultTotalEngagementToTrigger;
@@ -462,21 +461,6 @@ void AppBannerSettingsHelper::UpdateFromFieldTrial() {
   // engagement to trigger from the params variations.
   UpdateDaysBetweenShowing();
   UpdateSiteEngagementToTrigger();
-}
-
-AppBannerSettingsHelper::LanguageOption
-AppBannerSettingsHelper::GetHomescreenLanguageOption() {
-  std::string param = variations::GetVariationParamValue(
-      kBannerParamsKey, kBannerParamsLanguageKey);
-  unsigned int language_option = 0;
-
-  if (param.empty() || !base::StringToUint(param, &language_option) ||
-      language_option < LANGUAGE_OPTION_MIN ||
-      language_option > LANGUAGE_OPTION_MAX) {
-    return LANGUAGE_OPTION_DEFAULT;
-  }
-
-  return static_cast<LanguageOption>(language_option);
 }
 
 bool AppBannerSettingsHelper::CanShowInstallTextAnimation(

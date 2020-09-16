@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -34,22 +33,26 @@ public class AddToHomescreenCoordinator {
     @VisibleForTesting
     ModalDialogManager mModalDialogManager;
     private WindowAndroid mWindowAndroid;
+    private Tab mTab;
 
     @VisibleForTesting
-    AddToHomescreenCoordinator(Context activityContext, WindowAndroid windowAndroid,
+    AddToHomescreenCoordinator(Tab tab, Context activityContext, WindowAndroid windowAndroid,
             ModalDialogManager modalDialogManager) {
         mActivityContext = activityContext;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
+        mTab = tab;
     }
 
     /**
      * Starts and shows the add-to-homescreen UI component for the given {@link WebContents}.
      * @return whether add-to-homescreen UI was started successfully.
      */
-    public static boolean showForAppMenu(Context activityContext, WindowAndroid windowAndroid,
-            ModalDialogManager modalDialogManager, WebContents webContents) {
-        return new AddToHomescreenCoordinator(activityContext, windowAndroid, modalDialogManager)
+    public static boolean showForAppMenu(Tab tab, Context activityContext,
+            WindowAndroid windowAndroid, ModalDialogManager modalDialogManager,
+            WebContents webContents) {
+        return new AddToHomescreenCoordinator(
+                tab, activityContext, windowAndroid, modalDialogManager)
                 .showForAppMenu(webContents);
     }
 
@@ -83,7 +86,7 @@ public class AddToHomescreenCoordinator {
         if (modalDialogManager == null) return 0;
 
         AddToHomescreenCoordinator coordinator =
-                new AddToHomescreenCoordinator(activity, windowAndroid, modalDialogManager);
+                new AddToHomescreenCoordinator(tab, activity, windowAndroid, modalDialogManager);
         return coordinator.buildMediatorAndShowDialog().getNativeMediator();
     }
 
@@ -97,7 +100,8 @@ public class AddToHomescreenCoordinator {
         AddToHomescreenMediator addToHomescreenMediator =
                 new AddToHomescreenMediator(model, mWindowAndroid);
         PropertyModelChangeProcessor.create(model,
-                initView(AppBannerManager.getHomescreenLanguageOption(), addToHomescreenMediator),
+                initView(AppBannerManager.getHomescreenLanguageOption(mTab),
+                        addToHomescreenMediator),
                 AddToHomescreenViewBinder::bind);
         return addToHomescreenMediator;
     }
@@ -107,9 +111,9 @@ public class AddToHomescreenCoordinator {
      * Extracted into a separate method for easier testing.
      */
     @VisibleForTesting
-    protected AddToHomescreenDialogView initView(
-            @StringRes int titleText, AddToHomescreenViewDelegate delegate) {
-        return new AddToHomescreenDialogView(mActivityContext, mModalDialogManager,
-                AppBannerManager.getHomescreenLanguageOption(), delegate);
+    protected AddToHomescreenDialogView initView(AppBannerManager.InstallStringPair installStrings,
+            AddToHomescreenViewDelegate delegate) {
+        return new AddToHomescreenDialogView(
+                mActivityContext, mModalDialogManager, installStrings, delegate);
     }
 }

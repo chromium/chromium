@@ -638,8 +638,11 @@ public class PortalsTest {
         });
         CriteriaHelper.pollUiThread(() -> !AppBannerManager.forTab(tab).isRunningForTesting());
         TouchCommon.singleClickView(tab.getView());
-        String expectedDialogTitle = mActivityTestRule.getActivity().getString(
-                AppBannerManager.getHomescreenLanguageOption());
+
+        String expectedDialogTitle = ThreadUtils.runOnUiThreadBlocking(() -> {
+            return mActivityTestRule.getActivity().getString(
+                    AppBannerManager.getHomescreenLanguageOption(tab).titleTextId);
+        });
         UiObject dialogUiObject = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
                                           .findObject(new UiSelector().text(expectedDialogTitle));
         Assert.assertTrue(dialogUiObject.waitForExists(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL));

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.view.Menu;
 import android.view.SubMenu;
 import android.view.View;
@@ -33,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
+import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -202,9 +204,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -216,9 +219,51 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
                 R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
                 R.id.preferences_id, R.id.help_id};
+        Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab,
+                R.string.menu_bookmarks, R.string.menu_recent_tabs, R.string.menu_history,
+                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_find_in_page,
+                R.string.menu_add_to_homescreen, 0, R.string.menu_settings, R.string.menu_help};
         Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
                 R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+        assertMenuTitlesAreEqual(menu, expectedTitles);
+        assertActionBarItemsAreEqual(menu, expectedActionBarItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_Phone_RegularPage_WithPwa() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.isNativePage()).thenReturn(false);
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
+        doReturn(new AppBannerManager.InstallStringPair(R.string.menu_add_to_homescreen_install,
+                         R.string.menu_add_to_homescreen_install))
+                .when(mAppMenuPropertiesDelegate)
+                .getAddToHomeScreenTitle(mTab);
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
+                R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
+                R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
+                R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
+                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.preferences_id, R.id.help_id};
+        Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab,
+                R.string.menu_bookmarks, R.string.menu_recent_tabs, R.string.menu_history,
+                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_find_in_page,
+                R.string.menu_add_to_homescreen_install, 0, R.string.menu_settings,
+                R.string.menu_help};
+        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
+                R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
+        assertMenuItemsAreEqual(menu, expectedItems);
+        assertMenuTitlesAreEqual(menu, expectedTitles);
         assertActionBarItemsAreEqual(menu, expectedActionBarItems);
     }
 
@@ -232,9 +277,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mAppMenuPropertiesDelegate)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowManagedByMenuItem(any(Tab.class));
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
@@ -263,9 +309,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowReaderModePrefs(any(Tab.class));
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowUpdateMenuItem();
         doReturn(false).when(mAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -288,9 +335,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowReaderModePrefs(any(Tab.class));
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowUpdateMenuItem();
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowIconBeforeItem();
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -317,9 +365,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowRegroupedMenu();
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowUpdateMenuItem();
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowMoveToOtherWindow();
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -352,9 +401,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowRegroupedMenu();
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -385,9 +435,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
         doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowRegroupedMenu();
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
 
         Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
         Menu menu = createTestMenu();
@@ -481,6 +532,20 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         Assert.assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
+    }
+
+    private void assertMenuTitlesAreEqual(Menu menu, Integer... expectedTitles) {
+        Context context = ContextUtils.getApplicationContext();
+        int expectedIndex = 0;
+        for (int i = 0; i < menu.size(); i++) {
+            if (menu.getItem(i).isVisible()) {
+                Assert.assertEquals(expectedTitles[expectedIndex] == 0
+                                ? null
+                                : context.getString(expectedTitles[expectedIndex]),
+                        menu.getItem(i).getTitle());
+                expectedIndex++;
+            }
+        }
     }
 
     private void assertActionBarItemsAreEqual(Menu menu, Integer... expectedItems) {

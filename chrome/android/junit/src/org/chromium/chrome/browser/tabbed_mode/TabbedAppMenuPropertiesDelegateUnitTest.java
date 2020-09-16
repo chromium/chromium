@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -133,9 +134,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any());
-        doReturn(R.string.menu_add_to_homescreen)
+        doReturn(new AppBannerManager.InstallStringPair(
+                         R.string.menu_add_to_homescreen, R.string.add))
                 .when(mTabbedAppMenuPropertiesDelegate)
-                .getAddToHomeScreenTitle();
+                .getAddToHomeScreenTitle(mTab);
         when(mManagedBrowserUtilsJniMock.hasBrowserPoliciesApplied(any())).thenReturn(true);
 
         Menu menu = createTestMenu();

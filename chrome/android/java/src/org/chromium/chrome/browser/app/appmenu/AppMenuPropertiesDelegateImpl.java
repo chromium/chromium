@@ -19,7 +19,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -90,6 +89,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private Callback<BookmarkBridge> mBookmarkBridgeSupplierCallback;
     private boolean mUpdateMenuItemVisible;
     private ShareUtils mShareUtils;
+
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
             MenuGroup.START_SURFACE_MODE_MENU, MenuGroup.TABLET_EMPTY_MODE_MENU})
@@ -556,7 +556,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 homescreenItem.setVisible(false);
                 openWebApkItem.setVisible(true);
             } else {
-                homescreenItem.setTitle(getAddToHomeScreenTitle());
+                AppBannerManager.InstallStringPair installStrings =
+                        getAddToHomeScreenTitle(currentTab);
+                homescreenItem.setTitle(installStrings.titleTextId);
                 homescreenItem.setVisible(true);
                 openWebApkItem.setVisible(false);
             }
@@ -567,8 +569,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public @StringRes int getAddToHomeScreenTitle() {
-        return AppBannerManager.getHomescreenLanguageOption();
+    public AppBannerManager.InstallStringPair getAddToHomeScreenTitle(Tab currentTab) {
+        return AppBannerManager.getHomescreenLanguageOption(currentTab);
     }
 
     @Override

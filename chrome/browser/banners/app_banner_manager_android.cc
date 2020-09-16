@@ -520,11 +520,6 @@ AppBannerManager* AppBannerManager::FromWebContents(
 }
 
 // static
-jint JNI_AppBannerManager_GetHomescreenLanguageOption(JNIEnv* env) {
-  return AppBannerSettingsHelper::GetHomescreenLanguageOption();
-}
-
-// static
 base::android::ScopedJavaLocalRef<jobject>
 JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
     JNIEnv* env,
@@ -533,6 +528,16 @@ JNI_AppBannerManager_GetJavaBannerManagerForWebContents(
       content::WebContents::FromJavaWebContents(java_web_contents));
   return manager ? manager->GetJavaBannerManager()
                  : base::android::ScopedJavaLocalRef<jobject>();
+}
+
+// static
+base::android::ScopedJavaLocalRef<jstring>
+JNI_AppBannerManager_GetInstallableWebAppName(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_web_contents) {
+  return base::android::ConvertUTF16ToJavaString(
+      env, AppBannerManager::GetInstallableWebAppName(
+               content::WebContents::FromJavaWebContents(java_web_contents)));
 }
 
 // static

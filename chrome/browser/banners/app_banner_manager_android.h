@@ -55,6 +55,12 @@ class AppBannerManagerAndroid
   // Returns a reference to the Java-side AppBannerManager owned by this object.
   const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
 
+  // Returns the name of the installable web app, if the name has been
+  // determined (and blank if not).
+  base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppName(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
+
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jobj);

@@ -2060,7 +2060,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Could not open app
       </message>
       <message name="IDS_MENU_ADD_TO_HOMESCREEN_INSTALL" desc="Menu item for adding a shortcut to the Home screen. [CHAR-LIMIT=27]">
-        Install web app
+        Install app
       </message>
       <message name="IDS_APP_BANNER_ADD" desc="A button in an app banner to confirm adding a site to homescreen">
         Add

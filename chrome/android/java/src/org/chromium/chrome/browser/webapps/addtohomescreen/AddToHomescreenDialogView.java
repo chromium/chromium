@@ -21,11 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.banners.AppBannerManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -63,7 +63,8 @@ class AddToHomescreenDialogView implements View.OnClickListener, ModalDialogProp
     private boolean mCanSubmit;
 
     AddToHomescreenDialogView(Context context, ModalDialogManager modalDialogManager,
-            @StringRes int titleText, AddToHomescreenViewDelegate delegate) {
+            AppBannerManager.InstallStringPair installStrings,
+            AddToHomescreenViewDelegate delegate) {
         assert delegate != null;
 
         mModalDialogManager = modalDialogManager;
@@ -118,8 +119,9 @@ class AddToHomescreenDialogView implements View.OnClickListener, ModalDialogProp
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, resources, titleText)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.add)
+                        .with(ModalDialogProperties.TITLE, resources, installStrings.titleTextId)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                installStrings.buttonTextId)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.cancel)

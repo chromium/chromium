@@ -2012,8 +2012,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 RecordUserAction.record("MobileMenuPrint");
             }
         } else if (id == R.id.add_to_homescreen_id) {
-            AddToHomescreenCoordinator.showForAppMenu(
-                    this, getWindowAndroid(), getModalDialogManager(), currentTab.getWebContents());
+            AddToHomescreenCoordinator.showForAppMenu(currentTab, this, getWindowAndroid(),
+                    getModalDialogManager(), currentTab.getWebContents());
             RecordUserAction.record("MobileMenuAddToHomescreen");
         } else if (id == R.id.open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();
