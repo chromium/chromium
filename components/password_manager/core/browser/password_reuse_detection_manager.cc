@@ -21,7 +21,7 @@ namespace password_manager {
 namespace {
 constexpr size_t kMaxNumberOfCharactersToStore = 45;
 constexpr TimeDelta kMaxInactivityTime = TimeDelta::FromSeconds(10);
-}
+}  // namespace
 
 PasswordReuseDetectionManager::PasswordReuseDetectionManager(
     PasswordManagerClient* client)
@@ -103,11 +103,14 @@ void PasswordReuseDetectionManager::OnPaste(const base::string16 text) {
   store->CheckReuse(input, main_frame_url_.GetOrigin().spec(), this);
 }
 
-void PasswordReuseDetectionManager::OnReuseFound(
+void PasswordReuseDetectionManager::OnReuseCheckDone(
+    bool is_reuse_found,
     size_t password_length,
     base::Optional<PasswordHashData> reused_protected_password_hash,
     const std::vector<MatchingReusedCredential>& matching_reused_credentials,
     int saved_passwords) {
+  if (!is_reuse_found)
+    return;
   reuse_on_this_page_was_found_ = true;
   metrics_util::PasswordType reused_password_type = GetReusedPasswordType(
       reused_protected_password_hash, matching_reused_credentials.size());

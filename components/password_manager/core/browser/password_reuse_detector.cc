@@ -104,8 +104,10 @@ void PasswordReuseDetector::CheckReuse(
     const std::string& domain,
     PasswordReuseDetectorConsumer* consumer) {
   DCHECK(consumer);
-  if (input.size() < kMinPasswordLengthToCheck)
+  if (input.size() < kMinPasswordLengthToCheck) {
+    consumer->OnReuseCheckDone(false, 0, base::nullopt, {}, saved_passwords_);
     return;
+  }
 
   base::Optional<PasswordHashData> reused_gaia_password_hash =
       CheckGaiaPasswordReuse(input, domain);
@@ -128,8 +130,10 @@ void PasswordReuseDetector::CheckReuse(
       std::max({saved_reused_password_length, gaia_reused_password_length,
                 enterprise_reused_password_length});
 
-  if (max_reused_password_length == 0)
+  if (max_reused_password_length == 0) {
+    consumer->OnReuseCheckDone(false, 0, base::nullopt, {}, saved_passwords_);
     return;
+  }
 
   base::Optional<PasswordHashData> reused_protected_password_hash =
       base::nullopt;
@@ -138,9 +142,9 @@ void PasswordReuseDetector::CheckReuse(
   } else if (enterprise_reused_password_length != 0) {
     reused_protected_password_hash = std::move(reused_enterprise_password_hash);
   }
-  consumer->OnReuseFound(max_reused_password_length,
-                         reused_protected_password_hash,
-                         matching_reused_credentials, saved_passwords_);
+  consumer->OnReuseCheckDone(true, max_reused_password_length,
+                             reused_protected_password_hash,
+                             matching_reused_credentials, saved_passwords_);
 }
 
 base::Optional<PasswordHashData> PasswordReuseDetector::CheckGaiaPasswordReuse(

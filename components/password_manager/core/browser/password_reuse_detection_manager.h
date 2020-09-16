@@ -37,7 +37,8 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   void OnPaste(const base::string16 text);
 
   // PasswordReuseDetectorConsumer implementation
-  void OnReuseFound(
+  void OnReuseCheckDone(
+      bool is_reuse_found,
       size_t password_length,
       base::Optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,

@@ -1214,12 +1214,12 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
     if (test_data.reused_password_len != 0) {
       const std::vector<MatchingReusedCredential> credentials = {
           {"https://www.google.com", base::ASCIIToUTF16("username1")}};
-      EXPECT_CALL(
-          mock_consumer,
-          OnReuseFound(test_data.reused_password_len, Matches(base::nullopt),
-                       ElementsAreArray(credentials), 2));
+      EXPECT_CALL(mock_consumer,
+                  OnReuseCheckDone(true, test_data.reused_password_len,
+                                   Matches(base::nullopt),
+                                   ElementsAreArray(credentials), 2));
     } else {
-      EXPECT_CALL(mock_consumer, OnReuseFound(_, _, _, _)).Times(0);
+      EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
     }
 
     store->CheckReuse(base::WideToUTF16(test_data.input), test_data.domain,
@@ -1254,8 +1254,8 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // Check that sync password reuse is found.
   MockPasswordReuseDetectorConsumer mock_consumer;
   EXPECT_CALL(mock_consumer,
-              OnReuseFound(sync_password.size(), Matches(sync_password_hash),
-                           IsEmpty(), 0));
+              OnReuseCheckDone(true, sync_password.size(),
+                               Matches(sync_password_hash), IsEmpty(), 0));
   store->CheckReuse(input, "https://facebook.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1271,8 +1271,8 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
 
   // Check that Gaia password reuse is found.
   EXPECT_CALL(mock_consumer,
-              OnReuseFound(gaia_password.size(), Matches(gaia_password_hash),
-                           IsEmpty(), 0));
+              OnReuseCheckDone(true, gaia_password.size(),
+                               Matches(gaia_password_hash), IsEmpty(), 0));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1281,7 +1281,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // hash.
   store->ClearGaiaPasswordHash("sync_username");
   EXPECT_EQ(1u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
-  EXPECT_CALL(mock_consumer, OnReuseFound(_, _, _, _)).Times(1);
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, _, _, _, _)).Times(1);
   store->CheckReuse(input, "https://facebook.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1290,7 +1290,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // password hash.
   store->ClearAllGaiaPasswordHash();
   EXPECT_EQ(0u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
-  EXPECT_CALL(mock_consumer, OnReuseFound(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1304,9 +1304,9 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   ASSERT_TRUE(enterprise_password_hash.has_value());
 
   // Check that enterprise password reuse is found.
-  EXPECT_CALL(mock_consumer,
-              OnReuseFound(enterprise_password.size(),
-                           Matches(enterprise_password_hash), IsEmpty(), 0));
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(true, enterprise_password.size(),
+                                              Matches(enterprise_password_hash),
+                                              IsEmpty(), 0));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1315,7 +1315,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // password hash.
   store->ClearAllEnterprisePasswordHash();
   EXPECT_EQ(0u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
-  EXPECT_CALL(mock_consumer, OnReuseFound(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(input, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1333,8 +1333,8 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
 
   // Check that gmail password reuse is found.
   EXPECT_CALL(mock_consumer,
-              OnReuseFound(gmail_password.size(), Matches(gmail_password_hash),
-                           IsEmpty(), 0));
+              OnReuseCheckDone(true, gmail_password.size(),
+                               Matches(gmail_password_hash), IsEmpty(), 0));
   store->CheckReuse(gmail_password, "https://example.com", &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
@@ -1355,14 +1355,14 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   // password hash.
   store->ClearAllNonGmailPasswordHash();
   EXPECT_EQ(1u, prefs.GetList(prefs::kPasswordHashDataList)->GetList().size());
-  EXPECT_CALL(mock_consumer, OnReuseFound(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_consumer, OnReuseCheckDone(false, _, _, _, _));
   store->CheckReuse(non_sync_gaia_password, "https://example.com",
                     &mock_consumer);
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
   EXPECT_CALL(mock_consumer,
-              OnReuseFound(gmail_password.size(), Matches(gmail_password_hash),
-                           IsEmpty(), 0))
+              OnReuseCheckDone(true, gmail_password.size(),
+                               Matches(gmail_password_hash), IsEmpty(), 0))
       .Times(1);
   store->CheckReuse(gmail_password, "https://example.com", &mock_consumer);
   WaitForPasswordStore();

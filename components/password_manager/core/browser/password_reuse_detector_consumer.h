@@ -24,16 +24,19 @@ class PasswordReuseDetectorConsumer
   PasswordReuseDetectorConsumer();
   virtual ~PasswordReuseDetectorConsumer();
 
-  // Called when a password reuse is found.
-  // |password_length| is the length of the re-used password, or the max length
-  // if multiple passwords were matched. |reused_protected_password_hash| is the
-  // Gaia or enterprise password that matches the reuse.
-  // |matching_reused_credentials| is the list of MatchingReusedCredentials that
-  // contains the signon_realm which the |password| is saved (may be empty if
-  // |reused_protected_password_hash| is not null) on and the username,
-  // |saved_passwords| is the total number of passwords (with unique domains)
-  // stored in Password Manager.
-  virtual void OnReuseFound(
+  // Called when a password reuse check is finished. |reuse_found| indicates
+  // whether a reuse was found. When a reuse is found, |password_length| is the
+  // length of the re-used password, or the max length if multiple passwords
+  // were matched. |reused_protected_password_hash| is the Gaia or enterprise
+  // password that matches the reuse. |matching_reused_credentials| is the list
+  // of MatchingReusedCredentials that contains the signon_realm which the
+  // |password| is saved (may be empty if |reused_protected_password_hash| is
+  // not null) on and the username, |saved_passwords| is the total number of
+  // passwords (with unique domains) stored in Password Manager. When no reuse
+  // is found, |password_length| is 0, |reused_protected_password_hash| is
+  // nullopt, and |matching_reused_credentials| is empty.
+  virtual void OnReuseCheckDone(
+      bool is_reuse_found,
       size_t password_length,
       base::Optional<PasswordHashData> reused_protected_password_hash,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
