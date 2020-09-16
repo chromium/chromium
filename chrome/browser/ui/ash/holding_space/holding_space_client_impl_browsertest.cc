@@ -73,10 +73,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItem) {
   }
 }
 
-// Verifies that `HoldingSpaceClient::OpenItemInFolder()` works as intended when
+// Verifies that `HoldingSpaceClient::ShowItemInFolder()` works as intended when
 // attempting to open holding space items backed by both non-existing and
 // existing files.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItemInFolder) {
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, ShowItemInFolder) {
   ASSERT_TRUE(HoldingSpaceController::Get());
 
   auto* holding_space_client = HoldingSpaceController::Get()->client();
@@ -90,10 +90,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItemInFolder) {
             /*placeholder=*/gfx::ImageSkia(),
             /*async_bitmap_resolver=*/base::DoNothing()));
 
-    // We expect `HoldingSpaceClient::OpenItemInFolder()` to fail when the
+    // We expect `HoldingSpaceClient::ShowItemInFolder()` to fail when the
     // backing file for `holding_space_item` does not exist.
     base::RunLoop run_loop;
-    holding_space_client->OpenItemInFolder(
+    holding_space_client->ShowItemInFolder(
         *holding_space_item,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_FALSE(success);
@@ -106,10 +106,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, OpenItemInFolder) {
     // Create a holding space item backed by a newly created txt file.
     HoldingSpaceItem* holding_space_item = AddPinnedFile();
 
-    // We expect `HoldingSpaceClient::OpenItemInFolder()` to succeed when the
+    // We expect `HoldingSpaceClient::ShowItemInFolder()` to succeed when the
     // backing file for `holding_space_item` exists.
     base::RunLoop run_loop;
-    holding_space_client->OpenItemInFolder(
+    holding_space_client->ShowItemInFolder(
         *holding_space_item,
         base::BindLambdaForTesting([&run_loop](bool success) {
           EXPECT_TRUE(success);

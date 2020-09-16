@@ -34,9 +34,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual void OpenItem(const HoldingSpaceItem& item,
                         SuccessCallback callback) = 0;
 
-  // Attempts to open the specified holding space `item` in its folder.
+  // Attempts to show the specified holding space `item` in its folder.
   // Success is returned via the supplied `callback`.
-  virtual void OpenItemInFolder(const HoldingSpaceItem& item,
+  virtual void ShowItemInFolder(const HoldingSpaceItem& item,
                                 SuccessCallback callback) = 0;
 
   // Pins the specified `item`.

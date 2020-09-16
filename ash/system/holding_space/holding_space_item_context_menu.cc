@@ -54,7 +54,7 @@ void HoldingSpaceItemContextMenu::ExecuteCommand(int command_id,
       HoldingSpaceController::Get()->client()->PinItem(*item_);
       break;
     case HoldingSpaceCommandId::kShowInFolder:
-      HoldingSpaceController::Get()->client()->OpenItemInFolder(
+      HoldingSpaceController::Get()->client()->ShowItemInFolder(
           *item_, base::DoNothing());
       break;
     case HoldingSpaceCommandId::kUnpinItem:
