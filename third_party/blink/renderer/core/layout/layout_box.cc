@@ -3623,14 +3623,14 @@ bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
     return false;
   }
 
-  LayoutUnit logical_height = ComputeLogicalHeightUsing(
-      kMainOrPreferredSize, StyleRef().LogicalHeight(),
-      /* intrinsic_content_height */ kIndefiniteSize);
-  if (logical_height == kIndefiniteSize)
+  LogicalExtentComputedValues values;
+  values.extent_ = kIndefiniteSize;
+  ComputeLogicalHeight(values);
+  if (values.extent_ == kIndefiniteSize)
     return false;
 
   if (out_logical_height)
-    *out_logical_height = logical_height;
+    *out_logical_height = values.extent_;
   return true;
 }
 

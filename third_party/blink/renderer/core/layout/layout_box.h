@@ -502,7 +502,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     Length h = StyleRef().LogicalHeight();
     return StyleRef().AspectRatio() &&
            (h.IsAuto() ||
-            (h.IsPercentOrCalc() &&
+            (!IsOutOfFlowPositioned() && h.IsPercentOrCalc() &&
              ComputePercentageLogicalHeight(h) == kIndefiniteSize));
   }
   bool ComputeLogicalWidthFromAspectRatio(LayoutUnit* logical_width) const;
