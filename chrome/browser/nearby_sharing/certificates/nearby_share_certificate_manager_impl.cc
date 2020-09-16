@@ -336,10 +336,18 @@ void NearbyShareCertificateManagerImpl::OnStop() {
 void NearbyShareCertificateManagerImpl::OnAllowlistChanged(
     bool were_contacts_added_to_allowlist,
     bool were_contacts_removed_from_allowlist) {
+  // Contacts that are newly added to the allowlist can use the existing set of
+  // selected-contacts visibility certificates. The existing certificates will
+  // be distributed to the newly allowed contacts as soon as they check in with
+  // the Nearby Share server.
   if (!were_contacts_removed_from_allowlist)
     return;
 
-  certificate_storage_->ClearPrivateCertificates();
+  // We do not want to continue using the current selected-contacts visibility
+  // certificates because they might have been shared with contacts no longer on
+  // the allowlist.
+  certificate_storage_->ClearPrivateCertificatesOfVisibility(
+      nearby_share::mojom::Visibility::kSelectedContacts);
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
@@ -352,7 +360,13 @@ void NearbyShareCertificateManagerImpl::OnContactsUploaded(
   if (!did_contacts_change_since_last_upload)
     return;
 
-  certificate_storage_->ClearPrivateCertificates();
+  // If the contact list changed, all-contacts visibility certificates need to
+  // be recreated because the current certificates might have been shared with
+  // people no longer on the user's contact list. (Ideally, we would only
+  // recreate all-contacts visibility certificates when contacts are *removed*
+  // from the contact list, but we do not have this information.)
+  certificate_storage_->ClearPrivateCertificatesOfVisibility(
+      nearby_share::mojom::Visibility::kAllContacts);
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }
 
@@ -363,6 +377,7 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceDataChanged(
   if (!did_device_name_change && !did_full_name_change && !did_icon_url_change)
     return;
 
+  // Recreate all private certificates to ensure up-to-date metadata.
   certificate_storage_->ClearPrivateCertificates();
   private_certificate_expiration_scheduler_->MakeImmediateRequest();
 }

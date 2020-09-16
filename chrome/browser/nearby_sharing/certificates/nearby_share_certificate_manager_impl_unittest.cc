@@ -540,17 +540,28 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RevokePrivateCertificates_OnAllowlistChanged) {
   cert_manager_->Start();
 
-  // Destroy and recreate private certificates if contacts were removed from the
-  // user's list of selected contacts.
+  // Destroy and recreate seleted-contacts visibility private certificates if
+  // contacts were removed from the user's list of selected contacts.
   size_t num_expected_calls = 0;
   for (bool were_contacts_added_to_allowlist : {true, false}) {
     for (bool were_contacts_removed_from_allowlist : {true, false}) {
+      cert_store_->ReplacePrivateCertificates(private_certificates_);
       contact_manager_->NotifyAllowlistChanged(
           were_contacts_added_to_allowlist,
           were_contacts_removed_from_allowlist);
+
+      std::vector<NearbySharePrivateCertificate> certs =
+          *cert_store_->GetPrivateCertificates();
+
       if (were_contacts_removed_from_allowlist) {
         ++num_expected_calls;
-        EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
+        EXPECT_EQ(3u, certs.size());
+        for (const NearbySharePrivateCertificate& cert : certs) {
+          EXPECT_NE(nearby_share::mojom::Visibility::kSelectedContacts,
+                    cert.visibility());
+        }
+      } else {
+        EXPECT_EQ(6u, certs.size());
       }
 
       EXPECT_EQ(num_expected_calls,
@@ -563,15 +574,26 @@ TEST_F(NearbyShareCertificateManagerImplTest,
        RevokePrivateCertificates_OnContactsUploaded) {
   cert_manager_->Start();
 
-  // Destroy and recreate private certificates if the user's contact list has
-  // changed since the last upload.
+  // Destroy and recreate all-contacts visibility private certificates if the
+  // user's contact list has changed since the last upload.
   size_t num_expected_calls = 0;
   for (bool did_contacts_change_since_last_upload : {true, false}) {
+    cert_store_->ReplacePrivateCertificates(private_certificates_);
     contact_manager_->NotifyContactsUploaded(
         did_contacts_change_since_last_upload);
+
+    std::vector<NearbySharePrivateCertificate> certs =
+        *cert_store_->GetPrivateCertificates();
+
     if (did_contacts_change_since_last_upload) {
       ++num_expected_calls;
-      EXPECT_TRUE(cert_store_->GetPrivateCertificates()->empty());
+      EXPECT_EQ(3u, certs.size());
+      for (const NearbySharePrivateCertificate& cert : certs) {
+        EXPECT_NE(nearby_share::mojom::Visibility::kAllContacts,
+                  cert.visibility());
+      }
+    } else {
+      EXPECT_EQ(6u, certs.size());
     }
 
     EXPECT_EQ(num_expected_calls,
