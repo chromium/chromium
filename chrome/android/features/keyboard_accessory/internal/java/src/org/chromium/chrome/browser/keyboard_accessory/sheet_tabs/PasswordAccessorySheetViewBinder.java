@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -23,17 +21,13 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.HorizontalListDividerDrawable;
 import org.chromium.ui.modelutil.ListModel;
 
@@ -191,49 +185,6 @@ class PasswordAccessorySheetViewBinder {
             }
             text.setCompoundDrawablePadding(mPadding);
             text.setCompoundDrawablesRelative(icon, null, null, null);
-        }
-    }
-
-    /**
-     * Provides default favicons and helps to fetch and set favicons. It automatically discards
-     * out-of-date responses which are common for recycled ViewHolder.
-     */
-    static class FaviconHelper {
-        private final Resources mResources;
-        private final RoundedIconGenerator mIconGenerator;
-        private final int mDesiredSize;
-
-        /**
-         * Creates a new helper.
-         * @param context The {@link Context} used to fetch resources and create Drawables.
-         */
-        FaviconHelper(Context context) {
-            mResources = context.getResources();
-            mDesiredSize = mResources.getDimensionPixelSize(
-                    R.dimen.keyboard_accessory_suggestion_icon_size);
-            mIconGenerator = FaviconUtils.createCircularIconGenerator(mResources);
-        }
-
-        Drawable getDefaultIcon(String origin) {
-            return FaviconUtils.getIconDrawableWithoutFilter(null, origin,
-                    R.color.default_favicon_background_color, mIconGenerator, mResources,
-                    mDesiredSize);
-        }
-
-        /**
-         * Resets favicon in case the container is recycled. Then queries a favicon for the origin.
-         * @param origin The origin URL of the favicon.
-         * @param setIconCallback Callback called with fetched icons. May be called with null.
-         */
-        void fetchFavicon(String origin, Callback<Drawable> setIconCallback) {
-            final LargeIconBridge mIconBridge =
-                    new LargeIconBridge(Profile.getLastUsedRegularProfile());
-            mIconBridge.getLargeIconForStringUrl(origin, mDesiredSize,
-                    (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                        Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon, origin,
-                                fallbackColor, mIconGenerator, mResources, mDesiredSize);
-                        setIconCallback.onResult(drawable);
-                    });
         }
     }
 

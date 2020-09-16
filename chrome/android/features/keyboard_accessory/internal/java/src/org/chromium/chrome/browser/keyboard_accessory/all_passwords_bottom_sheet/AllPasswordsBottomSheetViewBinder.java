@@ -11,13 +11,18 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
+import android.graphics.drawable.Drawable;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -138,8 +143,22 @@ class AllPasswordsBottomSheetViewBinder {
             passwordView.getPrimaryTextView().setTransformationMethod(
                     new PasswordTransformationMethod());
             passwordView.getPrimaryTextView().setText(credential.getPassword());
+
+            // Set the default icon, then try to get a better one.
+            FaviconHelper faviconHelper = new FaviconHelper(view.getContext());
+            ImageView iconView = view.findViewById(R.id.favicon);
+            setIconForBitmap(iconView, faviconHelper.getDefaultIcon(credential.getOriginUrl()));
+            faviconHelper.fetchFavicon(
+                    credential.getOriginUrl(), icon -> setIconForBitmap(iconView, icon));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    private static void setIconForBitmap(ImageView iconView, @Nullable Drawable icon) {
+        final int kIconSize = iconView.getContext().getResources().getDimensionPixelSize(
+                R.dimen.keyboard_accessory_suggestion_icon_size);
+        if (icon != null) icon.setBounds(0, 0, kIconSize, kIconSize);
+        iconView.setImageDrawable(icon);
     }
 }
