@@ -461,6 +461,11 @@ void* CrashThread(void* arg) {
   return nullptr;
 }
 
+// Helper function to call pthread_exit(nullptr).
+_Noreturn __NO_SAFESTACK void exception_pthread_exit() {
+  pthread_exit(nullptr);
+}
+
 // Runs the CrashThread function in a separate thread.
 void SpawnCrashThread(int death_location, uintptr_t* child_crash_addr) {
   zx::event event;
@@ -496,7 +501,7 @@ void SpawnCrashThread(int death_location, uintptr_t* child_crash_addr) {
       sizeof(exception_info), 1, nullptr, nullptr);
   ASSERT_EQ(status, ZX_OK);
 
-  // Get the crash address.
+  // Get the crash address and point the thread towards exiting.
   zx::thread zircon_thread;
   status = exception.get_thread(&zircon_thread);
   ASSERT_EQ(status, ZX_OK);
@@ -506,14 +511,26 @@ void SpawnCrashThread(int death_location, uintptr_t* child_crash_addr) {
   ASSERT_EQ(status, ZX_OK);
 #if defined(ARCH_CPU_X86_64)
   *child_crash_addr = static_cast<uintptr_t>(buffer.rip);
+  buffer.rip = reinterpret_cast<uintptr_t>(exception_pthread_exit);
 #elif defined(ARCH_CPU_ARM64)
   *child_crash_addr = static_cast<uintptr_t>(buffer.pc);
+  buffer.pc = reinterpret_cast<uintptr_t>(exception_pthread_exit);
 #else
 #error Unsupported architecture
 #endif
+  ASSERT_EQ(zircon_thread.write_state(ZX_THREAD_STATE_GENERAL_REGS, &buffer,
+                                      sizeof(buffer)),
+            ZX_OK);
 
-  status = zircon_thread.kill();
-  ASSERT_EQ(status, ZX_OK);
+  // Clear the exception so the thread continues.
+  uint32_t state = ZX_EXCEPTION_STATE_HANDLED;
+  ASSERT_EQ(
+      exception.set_property(ZX_PROP_EXCEPTION_STATE, &state, sizeof(state)),
+      ZX_OK);
+  exception.reset();
+
+  // Join the exiting pthread.
+  ASSERT_EQ(pthread_join(thread, nullptr), 0);
 }
 
 TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
