@@ -68,7 +68,10 @@ if (is_android) {
   }
 
   generate_jni("jni_headers") {
-    visibility = [ ":*" ]
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
 
     sources = [
       "android/java/src/org/chromium/chrome/browser/video_tutorials/VideoTutorialServiceFactory.java",

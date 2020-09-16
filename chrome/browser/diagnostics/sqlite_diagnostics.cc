@@ -28,7 +28,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "storage/browser/database/database_tracker.h"
-#include "third_party/sqlite/sqlite3.h"
+#include "third_party/sqlite/sqlite3.h"  // nogncheck crbug.com/1126800
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/constants/chromeos_constants.h"

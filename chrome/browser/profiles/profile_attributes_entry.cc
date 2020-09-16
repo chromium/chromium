@@ -40,7 +40,7 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #endif
 

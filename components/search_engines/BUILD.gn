@@ -50,6 +50,7 @@ static_library("search_engines") {
   ]
 
   public_deps = [
+    ":prepopulated_engines",
     ":search_engine_type",
     "//base",
     "//components/google/core/common",
@@ -61,7 +62,6 @@ static_library("search_engines") {
   ]
 
   deps = [
-    ":prepopulated_engines",
     "//base:i18n",
     "//components/country_codes",
     "//components/database_utils",

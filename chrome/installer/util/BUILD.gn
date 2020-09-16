@@ -86,14 +86,17 @@ static_library("with_no_strings") {
       "shell_util.h",
     ]
 
-    public_deps += [ ":did_run_support" ]
+    public_deps += [
+      ":did_run_support",
 
-    deps += [
       # Need to depend on the generated strings target since files here
       # depend on the generated header, but only depend on the ":strings"
       # target (which actually compiles and causes the generated code to be
       # linked) from the ":util" target.
       ":generate_strings",
+    ]
+
+    deps += [
       "//base:i18n",
       "//base/third_party/dynamic_annotations",
       "//build:branding_buildflags",
