@@ -690,9 +690,11 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  // Convert and pass along any MessagePorts contained in the message.
+  // Include outgoing MessagePorts in the message.
   std::vector<blink::WebMessagePort> message_ports;
   if (message.has_outgoing_transfer()) {
+    // Verify that all the Transferables are valid before we start allocating
+    // resources to them.
     for (const fuchsia::web::OutgoingTransferable& outgoing :
          message.outgoing_transfer()) {
       if (!outgoing.is_message_port()) {

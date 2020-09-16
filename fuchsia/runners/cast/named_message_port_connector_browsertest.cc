@@ -9,54 +9,38 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/fit_adapter.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"
-#include "fuchsia/base/message_port.h"
 #include "fuchsia/base/result_receiver.h"
 #include "fuchsia/base/test_navigation_listener.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
-#include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
+#include "fuchsia/runners/cast/named_message_port_connector.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "url/url_constants.h"
 
-class NamedMessagePortConnectorFuchsiaTest
-    : public cr_fuchsia::WebEngineBrowserTest {
+class NamedMessagePortConnectorTest : public cr_fuchsia::WebEngineBrowserTest {
  public:
-  NamedMessagePortConnectorFuchsiaTest() {
+  NamedMessagePortConnectorTest() {
     set_test_server_root(base::FilePath("fuchsia/runners/cast/testdata"));
-    navigation_listener_.SetBeforeAckHook(base::BindRepeating(
-        &NamedMessagePortConnectorFuchsiaTest::OnBeforeAckHook,
-        base::Unretained(this)));
+    navigation_listener_.SetBeforeAckHook(
+        base::BindRepeating(&NamedMessagePortConnectorTest::OnBeforeAckHook,
+                            base::Unretained(this)));
   }
 
-  ~NamedMessagePortConnectorFuchsiaTest() override = default;
+  ~NamedMessagePortConnectorTest() override = default;
 
  protected:
   // BrowserTestBase implementation.
   void SetUpOnMainThread() override {
     cr_fuchsia::WebEngineBrowserTest::SetUpOnMainThread();
     frame_ = WebEngineBrowserTest::CreateFrame(&navigation_listener_);
-
-    static bool g_js_resources_loaded = false;
-    if (!g_js_resources_loaded) {
-      base::FilePath pak_file;
-      bool result = base::PathService::Get(base::DIR_ASSETS, &pak_file);
-      DCHECK(result);
-      pak_file = pak_file.Append(
-          FILE_PATH_LITERAL("components/cast/named_message_port_connector/"
-                            "named_message_port_connector_resources.pak"));
-      DCHECK(base::PathExists(pak_file));
-      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-          pak_file, ui::ScaleFactor::SCALE_FACTOR_NONE);
-      g_js_resources_loaded = true;
-    }
-    connector_ =
-        std::make_unique<NamedMessagePortConnectorFuchsia>(frame_.get());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    connector_ = std::make_unique<NamedMessagePortConnector>(frame_.get());
   }
 
   // Intercepts the page load event to trigger the injection of |connector_|'s
@@ -66,15 +50,8 @@ class NamedMessagePortConnectorFuchsiaTest
       fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
           callback) {
     if (change.has_is_main_document_loaded() &&
-        change.is_main_document_loaded()) {
-      frame_->PostMessage("*",
-                          std::move(*cr_fuchsia::FidlWebMessageFromBlink(
-                              connector_->GetConnectMessage(),
-                              cr_fuchsia::TransferableHostType::kRemote)),
-                          [](fuchsia::web::Frame_PostMessage_Result result) {
-                            DCHECK(result.is_response());
-                          });
-    }
+        change.is_main_document_loaded())
+      connector_->OnPageLoad();
 
     // Allow the TestNavigationListener's usual navigation event processing flow
     // to continue.
@@ -83,42 +60,36 @@ class NamedMessagePortConnectorFuchsiaTest
 
   std::unique_ptr<base::RunLoop> navigate_run_loop_;
   fuchsia::web::FramePtr frame_;
-  std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
+  std::unique_ptr<NamedMessagePortConnector> connector_;
   cr_fuchsia::TestNavigationListener navigation_listener_;
 
-  DISALLOW_COPY_AND_ASSIGN(NamedMessagePortConnectorFuchsiaTest);
+  DISALLOW_COPY_AND_ASSIGN(NamedMessagePortConnectorTest);
 };
 
-IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
+IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorTest, EndToEnd) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url(embedded_test_server()->GetURL("/connector.html"));
 
   fuchsia::web::NavigationControllerPtr controller;
   frame_->GetNavigationController(controller.NewRequest());
 
-  std::string received_port_name;
   fidl::InterfaceHandle<fuchsia::web::MessagePort> received_port;
   base::RunLoop receive_port_run_loop;
-  connector_->RegisterPortHandler(base::BindRepeating(
-      [](std::string* received_port_name,
-         fidl::InterfaceHandle<fuchsia::web::MessagePort>* received_port,
-         base::RunLoop* receive_port_run_loop, base::StringPiece port_name,
-         blink::WebMessagePort port) -> bool {
-        *received_port_name = port_name.as_string();
-        *received_port = cr_fuchsia::FidlMessagePortFromBlink(std::move(port));
+  connector_->Register(base::BindRepeating(
+      [](fidl::InterfaceHandle<fuchsia::web::MessagePort>* received_port,
+         base::RunLoop* receive_port_run_loop, base::StringPiece name,
+         fidl::InterfaceHandle<fuchsia::web::MessagePort> message_port) {
+        *received_port = std::move(message_port);
         receive_port_run_loop->Quit();
-        return true;
       },
-      base::Unretained(&received_port_name), base::Unretained(&received_port),
+      base::Unretained(&received_port),
       base::Unretained(&receive_port_run_loop)));
 
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
   navigation_listener_.RunUntilUrlEquals(test_url);
 
-  // The JS code in connector.html should connect to the port "echo".
   receive_port_run_loop.Run();
-  EXPECT_EQ(received_port_name, "echo");
 
   fuchsia::web::MessagePortPtr message_port = received_port.Bind();
 
@@ -159,11 +130,9 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
   }
 }
 
-// Tests that the NamedMessagePortConnectorFuchsia can receive more than one
-// port over its lifetime.
-IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, MultiplePorts) {
-  constexpr size_t kExpectedPortCount = 3;
-
+// Tests that the NamedMessagePortConnector can receive more than one port over
+// its lifetime.
+IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorTest, MultiplePorts) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url(
       embedded_test_server()->GetURL("/connector_multiple_ports.html"));
@@ -173,18 +142,15 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, MultiplePorts) {
 
   std::vector<fidl::InterfaceHandle<fuchsia::web::MessagePort>> received_ports;
   base::RunLoop receive_ports_run_loop;
-  connector_->RegisterPortHandler(base::BindRepeating(
+  connector_->Register(base::BindRepeating(
       [](std::vector<fidl::InterfaceHandle<fuchsia::web::MessagePort>>*
              received_ports,
-         base::RunLoop* receive_ports_run_loop, base::StringPiece,
-         blink::WebMessagePort port) -> bool {
-        received_ports->push_back(
-            cr_fuchsia::FidlMessagePortFromBlink(std::move(port)));
+         base::RunLoop* receive_ports_run_loop, base::StringPiece name,
+         fidl::InterfaceHandle<fuchsia::web::MessagePort> message_port) {
+        received_ports->push_back(std::move(message_port));
 
-        if (received_ports->size() == kExpectedPortCount)
+        if (received_ports->size() == 3)
           receive_ports_run_loop->Quit();
-
-        return true;
       },
       base::Unretained(&received_ports),
       base::Unretained(&receive_ports_run_loop)));
@@ -192,6 +158,7 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, MultiplePorts) {
   EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
   navigation_listener_.RunUntilUrlEquals(test_url);
+
   receive_ports_run_loop.Run();
 
   for (fidl::InterfaceHandle<fuchsia::web::MessagePort>& message_port :

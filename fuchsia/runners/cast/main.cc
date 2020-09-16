@@ -9,7 +9,6 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
@@ -19,8 +18,6 @@
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/base/inspect.h"
 #include "fuchsia/runners/cast/cast_runner.h"
-#include "mojo/core/embedder/embedder.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 
@@ -49,16 +46,6 @@ bool AllowMainContextSharing() {
   return false;
 }
 
-void LoadResources() {
-  base::FilePath pak_file;
-  bool result = base::PathService::Get(base::DIR_ASSETS, &pak_file);
-  DCHECK(result);
-  pak_file = pak_file.Append(
-      FILE_PATH_LITERAL("components/cast_api_bindings/"
-                        "named_message_port_connector_resources.pak"));
-  ui::ResourceBundle::InitSharedInstanceWithPakPath(pak_file);
-}
-
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -71,10 +58,6 @@ int main(int argc, char** argv) {
   CHECK(cr_fuchsia::InitLoggingFromCommandLine(
       *base::CommandLine::ForCurrentProcess()))
       << "Failed to initialize logging.";
-
-  mojo::core::Init();
-
-  LoadResources();
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
