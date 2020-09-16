@@ -35,7 +35,7 @@ public class WebViewPackageError {
     public static final String CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT = "Change provider";
     // The developer UI application label should be used in the placeholder.
     public static final String DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE =
-            "%s is not the system's current selected WebView provider";
+            "%s is not the system's currently selected WebView provider";
     // The developer UI application label should be used in the placeholder.
     public static final String DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE =
             "You are using DevTools for (%s) which is not the system's currently selected "
