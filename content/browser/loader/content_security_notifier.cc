@@ -4,7 +4,7 @@
 
 #include "content/browser/loader/content_security_notifier.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {

@@ -5,9 +5,9 @@
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 
 #include "base/values.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/browser/frame_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"

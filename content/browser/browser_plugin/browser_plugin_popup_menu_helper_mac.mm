@@ -4,7 +4,7 @@
 
 #include "content/browser/browser_plugin/browser_plugin_popup_menu_helper_mac.h"
 
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/browser/render_widget_host.h"
 

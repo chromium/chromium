@@ -11,7 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/task/post_task.h"
 #include "components/payments/content/icon/icon_size.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
