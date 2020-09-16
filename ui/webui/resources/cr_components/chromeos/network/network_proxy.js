@@ -6,8 +6,6 @@
  * @fileoverview Polymer element for displaying and editing network proxy
  * values.
  */
-(function() {
-'use strict';
 
 Polymer({
   is: 'network-proxy',
@@ -563,4 +561,3 @@ Polymer({
     return property === value;
   },
 });
-})();

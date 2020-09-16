@@ -253,7 +253,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_network_behavior_mojo.m",
     ":cr_policy_network_indicator_mojo.m",
     ":mojo_interface_provider.m",
-
     ":network_apnlist.m",
     ":network_choose_mobile.m",
     ":network_config.m",
@@ -262,17 +261,15 @@ js_type_check("closure_compile_module") {
     ":network_config_select.m",
     ":network_config_toggle.m",
     ":network_icon.m",
-
     ":network_ip_config.m",
     ":network_list.m",
     ":network_list_item.m",
     ":network_list_types.m",
     ":network_listener_behavior.m",
-
     ":network_nameservers.m",
     ":network_password_input.m",
     ":network_property_list_mojo.m",
-    #  ":network_proxy.m",
+    ":network_proxy.m",
     ":network_proxy_exclusions.m",
     ":network_proxy_input.m",
     ":network_select.m",
@@ -511,9 +508,20 @@ js_library("network_property_list_mojo.m") {
 js_library("network_proxy.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_proxy.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":cr_policy_network_behavior_mojo.m",
+    ":network_proxy_exclusions.m",
+    ":network_proxy_input.m",
+    ":network_shared_css.m",
+    ":onc_mojo.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ ":network_proxy_module" ]
 }
 
 js_library("network_proxy_exclusions.m") {
@@ -612,6 +620,7 @@ group("polymer3_elements") {
     ":network_property_list_mojo_module",
     ":network_proxy_exclusions_module",
     ":network_proxy_input_module",
+    ":network_proxy_module",
     ":network_select_module",
     ":network_shared_css_module",
     ":network_siminfo_module",
@@ -622,9 +631,7 @@ polymer_modulizer("cr_policy_network_indicator_mojo") {
   js_file = "cr_policy_network_indicator_mojo.js"
   html_file = "cr_policy_network_indicator_mojo.html"
   html_type = "dom-module"
-  auto_imports = cr_components_chromeos_auto_imports + [
-    "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorBehavior,CrPolicyIndicatorType",
-  ]
+  auto_imports = cr_components_chromeos_auto_imports + [ "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorBehavior,CrPolicyIndicatorType" ]
 }
 
 polymer_modulizer("network_apnlist") {
@@ -639,13 +646,14 @@ polymer_modulizer("network_choose_mobile") {
   html_file = "network_choose_mobile.html"
   html_type = "dom-module"
   auto_imports = cr_components_chromeos_auto_imports
-  namespace_rewrites = cr_components_chromeos_namespace_rewrites + [
-    "cros_network_config.mojom.m.js|cros_network_config.mojom-lite.js",
-    "ip_address.mojom.m.js|ip_address.mojom-lite.js",
-    "mojo_bindings_lite.m.js|mojo_bindings_lite.js",
-    "network_types.mojom.m.js|network_types.mojom-lite.js",
-    "time.mojom.m.js|time.mojom-lite.js",
-  ]
+  namespace_rewrites =
+      cr_components_chromeos_namespace_rewrites + [
+        "cros_network_config.mojom.m.js|cros_network_config.mojom-lite.js",
+        "ip_address.mojom.m.js|ip_address.mojom-lite.js",
+        "mojo_bindings_lite.m.js|mojo_bindings_lite.js",
+        "network_types.mojom.m.js|network_types.mojom-lite.js",
+        "time.mojom.m.js|time.mojom-lite.js",
+      ]
 }
 
 polymer_modulizer("network_config") {
@@ -740,6 +748,14 @@ polymer_modulizer("network_proxy_exclusions") {
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
 
+polymer_modulizer("network_proxy") {
+  js_file = "network_proxy.js"
+  html_file = "network_proxy.html"
+  html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+}
+
 polymer_modulizer("network_proxy_input") {
   js_file = "network_proxy_input.js"
   html_file = "network_proxy_input.html"
@@ -779,7 +795,6 @@ js_modulizer("modulize") {
     "network_config_element_behavior.js",
     "network_listener_behavior.js",
     "network_list_types.js",
-    "network_proxy.js",
     "onc_mojo.js",
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites

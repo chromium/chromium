@@ -45,6 +45,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ['NetworkPropertyListMojo', 'network/network_property_list_mojo_test.js', []],
   ['NetworkProxyExclusions', 'network/network_proxy_exclusions_test.js', []],
   ['NetworkProxyInput', 'network/network_proxy_input_test.js', []],
+  ['NetworkProxy', 'network/network_proxy_test.js', []],
   ['NetworkSiminfo', 'network/network_siminfo_test.js', []],
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 

@@ -23,10 +23,10 @@ js_modulizer("modulize") {
     "network_property_list_mojo_test.js",
     "network_proxy_exclusions_test.js",
     "network_proxy_input_test.js",
+    "network_proxy_test.js",
     "network_select_test.js",
     "network_siminfo_test.js",
   ]
-  namespace_rewrites = [
-    "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
-  ]
+  namespace_rewrites =
+      [ "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl" ]
 }
