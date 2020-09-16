@@ -24,6 +24,7 @@
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
@@ -144,11 +145,13 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
   // Creates and shows an X window with |bounds|.
   x11::Window CreateAndShowXWindow(const gfx::Rect& bounds) {
     x11::Window root = ui::GetX11RootWindow();
-    x11::Window window = static_cast<x11::Window>(
-        XCreateSimpleWindow(xdisplay(), static_cast<uint32_t>(root), 0, 0, 1, 1,
-                            0,    // border_width
-                            0,    // border
-                            0));  // background
+    auto window = connection()->GenerateId<x11::Window>();
+    connection()->CreateWindow({
+        .wid = window,
+        .parent = root,
+        .width = 1,
+        .height = 1,
+    });
 
     ui::SetUseOSWindowFrame(window, false);
     ShowAndSetXWindowBounds(window, bounds);
@@ -168,6 +171,7 @@ class X11TopmostWindowFinderTest : public test::DesktopWidgetTestInteractive {
                      CWX | CWY | CWWidth | CWHeight, &changes);
   }
 
+  x11::Connection* connection() { return x11::Connection::Get(); }
   Display* xdisplay() { return gfx::GetXDisplay(); }
 
   // Returns the topmost X window at the passed in screen position.
@@ -261,7 +265,7 @@ TEST_F(X11TopmostWindowFinderTest, Basic) {
   EXPECT_EQ(window1,
             FindTopmostLocalProcessWindowWithIgnore(150, 195, window3));
 
-  XDestroyWindow(xdisplay(), static_cast<uint32_t>(x11_window2));
+  connection()->DestroyWindow({x11_window2});
 }
 
 // Test that the minimized state is properly handled.
@@ -298,7 +302,7 @@ TEST_F(X11TopmostWindowFinderTest, Minimized) {
   EXPECT_NE(x11_window1, FindTopmostXWindowAt(350, 150));
   EXPECT_NE(x11_window2, FindTopmostXWindowAt(350, 150));
 
-  XDestroyWindow(xdisplay(), static_cast<uint32_t>(x11_window2));
+  connection()->DestroyWindow({x11_window2});
 }
 
 // Test that non-rectangular windows are properly handled.
@@ -342,7 +346,7 @@ TEST_F(X11TopmostWindowFinderTest, NonRectangular) {
   EXPECT_NE(window1, FindTopmostXWindowAt(305, 105));
   EXPECT_NE(window2, FindTopmostXWindowAt(305, 105));
 
-  XDestroyWindow(xdisplay(), static_cast<uint32_t>(window2));
+  connection()->DestroyWindow({window2});
 }
 
 // Test that a window with an empty shape are properly handled.
@@ -399,19 +403,19 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   x11::Window window = CreateAndShowXWindow(gfx::Rect(100, 100, 100, 100));
 
   x11::Window root = ui::GetX11RootWindow();
-  XSetWindowAttributes swa;
-  swa.override_redirect = true;
-  x11::Window menu_window = static_cast<x11::Window>(XCreateWindow(
-      xdisplay(), static_cast<uint32_t>(root), 0, 0, 1, 1,
-      0,                                                   // border width
-      static_cast<int>(x11::WindowClass::CopyFromParent),  // depth
-      static_cast<int>(x11::WindowClass::InputOutput),
-      nullptr,  // visual
-      CWOverrideRedirect, &swa));
-  {
-    ui::SetAtomProperty(menu_window, "_NET_WM_WINDOW_TYPE", "ATOM",
-                        gfx::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
-  }
+  auto menu_window = connection()->GenerateId<x11::Window>();
+  connection()->CreateWindow({
+      .wid = menu_window,
+      .parent = root,
+      .width = 1,
+      .height = 1,
+      .c_class = x11::WindowClass::CopyFromParent,
+      .override_redirect = x11::Bool32(true),
+  });
+
+  ui::SetAtomProperty(menu_window, "_NET_WM_WINDOW_TYPE", "ATOM",
+                      gfx::GetAtom("_NET_WM_WINDOW_TYPE_MENU"));
+
   ui::SetUseOSWindowFrame(menu_window, false);
   ShowAndSetXWindowBounds(menu_window, gfx::Rect(140, 110, 100, 100));
   ui::X11EventSource::GetInstance()->DispatchXEvents();
@@ -425,8 +429,8 @@ TEST_F(X11TopmostWindowFinderTest, DISABLED_Menu) {
   EXPECT_EQ(menu_window, FindTopmostXWindowAt(150, 120));
   EXPECT_EQ(menu_window, FindTopmostXWindowAt(210, 120));
 
-  XDestroyWindow(xdisplay(), static_cast<uint32_t>(window));
-  XDestroyWindow(xdisplay(), static_cast<uint32_t>(menu_window));
+  connection()->DestroyWindow({window});
+  connection()->DestroyWindow({menu_window});
 }
 
 }  // namespace views

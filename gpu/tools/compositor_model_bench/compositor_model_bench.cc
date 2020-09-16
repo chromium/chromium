@@ -34,15 +34,16 @@
 #include "gpu/tools/compositor_model_bench/render_model_utils.h"
 #include "gpu/tools/compositor_model_bench/render_models.h"
 #include "gpu/tools/compositor_model_bench/render_tree.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/init/gl_factory.h"
 
-using base::TimeTicks;
 using base::DirectoryExists;
 using base::PathExists;
+using base::TimeTicks;
 using std::string;
 
 struct SimulationSpecification {
@@ -64,7 +65,6 @@ class Simulator {
       : output_path_(output_path),
         seconds_per_test_(seconds_per_test),
         display_(nullptr),
-        window_(0),
         gl_context_(nullptr),
         window_width_(WINDOW_WIDTH),
         window_height_(WINDOW_HEIGHT) {}
@@ -75,7 +75,7 @@ class Simulator {
     glXDestroyContext(display_, gl_context_);
 
     // Destroy window and display.
-    XDestroyWindow(display_, window_);
+    connection_->DestroyWindow({window_});
     XCloseDisplay(display_);
   }
 
@@ -87,8 +87,9 @@ class Simulator {
     //  name, but that's not really harmful (we'll still warn about it though.)
     spec.simulation_name = path.BaseName().RemoveExtension().MaybeAsASCII();
     if (spec.simulation_name.empty()) {
-      LOG(WARNING) << "Simulation for path " << path.LossyDisplayName() <<
-        " will have a blank simulation name, since the file name isn't ASCII";
+      LOG(WARNING) << "Simulation for path " << path.LossyDisplayName()
+                   << " will have a blank simulation name, since the file name "
+                      "isn't ASCII";
     }
     spec.input_path = path;
     spec.model_under_test = ForwardRenderModel;
@@ -155,21 +156,31 @@ class Simulator {
       return false;
     }
 
-    // Get properties of the screen.
-    int screen = XDefaultScreen(display_);
-    int root_window = XDefaultRootWindow(display_);
-
     // Creates the window.
-    window_ = XCreateSimpleWindow(
-        display_, root_window, 1, 1, window_width_, window_height_, 0,
-        XBlackPixel(display_, screen), XBlackPixel(display_, screen));
-    XStoreName(display_, window_, "Compositor Model Bench");
+    auto black_pixel = connection_->default_screen().black_pixel;
+    window_ = connection_->GenerateId<x11::Window>();
+    connection_->CreateWindow({
+        .wid = window_,
+        .parent = connection_->default_root(),
+        .x = 1,
+        .y = 1,
+        .width = window_width_,
+        .height = window_height_,
+        .background_pixel = black_pixel,
+        .border_pixel = black_pixel,
+        .event_mask = x11::EventMask::Exposure | x11::EventMask::KeyPress |
+                      x11::EventMask::StructureNotify,
+    });
+    ui::SetStringProperty(window_, x11::Atom::WM_NAME, x11::Atom::STRING,
+                          "Compositor Model Bench");
 
-    XSelectInput(display_, window_,
-                 ExposureMask | KeyPressMask | StructureNotifyMask);
-    XMapWindow(display_, window_);
+    connection_->MapWindow({window_});
 
-    XResizeWindow(display_, window_, WINDOW_WIDTH, WINDOW_HEIGHT);
+    connection_->ConfigureWindow({
+        .window = window_,
+        .width = WINDOW_WIDTH,
+        .height = WINDOW_HEIGHT,
+    });
 
     return true;
   }
@@ -181,10 +192,9 @@ class Simulator {
       return false;
     }
 
-    XWindowAttributes attributes;
-    XGetWindowAttributes(display_, window_, &attributes);
     XVisualInfo visual_info_template;
-    visual_info_template.visualid = XVisualIDFromVisual(attributes.visual);
+    if (auto reply = connection_->GetWindowAttributes({window_}).Sync())
+      visual_info_template.visualid = static_cast<uint32_t>(reply->visual);
     int visual_info_count = 0;
     constexpr int kVisualIdMask = 1;
     XVisualInfo* visual_info_list = XGetVisualInfo(
@@ -200,7 +210,8 @@ class Simulator {
       return false;
     }
 
-    if (!glXMakeCurrent(display_, window_, gl_context_)) {
+    if (!glXMakeCurrent(display_, static_cast<uint32_t>(window_),
+                        gl_context_)) {
       glXDestroyContext(display_, gl_context_);
       gl_context_ = nullptr;
       return false;
@@ -239,7 +250,7 @@ class Simulator {
     if (current_sim_)
       current_sim_->Update();
 
-    glXSwapBuffers(display_, window_);
+    glXSwapBuffers(display_, static_cast<uint32_t>(window_));
 
     auto window = static_cast<x11::Window>(window_);
     x11::ExposeEvent ev{
@@ -272,13 +283,12 @@ class Simulator {
     while (sims_completed_.size()) {
       SimulationSpecification i = sims_completed_.front();
       fprintf(f,
-        "\t\t{\"simulation_name\":\"%s\",\n"
-        "\t\t\t\"render_model\":\"%s\",\n"
-        "\t\t\t\"frames_drawn\":%d\n"
-        "\t\t},\n",
-        i.simulation_name.c_str(),
-        ModelToString(i.model_under_test),
-        i.frames_rendered);
+              "\t\t{\"simulation_name\":\"%s\",\n"
+              "\t\t\t\"render_model\":\"%s\",\n"
+              "\t\t\t\"frames_drawn\":%d\n"
+              "\t\t},\n",
+              i.simulation_name.c_str(), ModelToString(i.model_under_test),
+              i.frames_rendered);
       sims_completed_.pop();
     }
 
@@ -296,7 +306,7 @@ class Simulator {
     }
 
     if (sims_remaining_.size() &&
-      sims_remaining_.front().simulation_start_time.is_null()) {
+        sims_remaining_.front().simulation_start_time.is_null()) {
       while (sims_remaining_.size() && !InitializeNextTest()) {
         sims_remaining_.pop();
       }
@@ -334,7 +344,7 @@ class Simulator {
   // GUI data
   std::unique_ptr<x11::Connection> connection_;
   Display* display_;
-  Window window_;
+  x11::Window window_ = x11::Window::None;
   GLXContext gl_context_;
   int window_width_;
   int window_height_;
@@ -346,17 +356,18 @@ int main(int argc, char* argv[]) {
   const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
 
   if (argc != 3 && argc != 4) {
-    LOG(INFO) << "Usage: \n" <<
-      cl->GetProgram().BaseName().LossyDisplayName() <<
-      "--in=[input path] --out=[output path] (duration=[seconds])\n"
-      "The input path specifies either a JSON configuration file or\n"
-      "a directory containing only these files\n"
-      "(if a directory is specified, simulations will be run for\n"
-      "all files in that directory and subdirectories)\n"
-      "The optional duration parameter specifies the (integer)\n"
-      "number of seconds to be spent on each simulation.\n"
-      "Performance measurements for the specified simulation(s) are\n"
-      "written to the output path.";
+    LOG(INFO)
+        << "Usage: \n"
+        << cl->GetProgram().BaseName().LossyDisplayName()
+        << "--in=[input path] --out=[output path] (duration=[seconds])\n"
+           "The input path specifies either a JSON configuration file or\n"
+           "a directory containing only these files\n"
+           "(if a directory is specified, simulations will be run for\n"
+           "all files in that directory and subdirectories)\n"
+           "The optional duration parameter specifies the (integer)\n"
+           "number of seconds to be spent on each simulation.\n"
+           "Performance measurements for the specified simulation(s) are\n"
+           "written to the output path.";
     return -1;
   }
 

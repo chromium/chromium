@@ -106,7 +106,9 @@ class GL_EXPORT NativeViewGLSurfaceGLX : public GLSurfaceGLX {
   // Checks if event is Expose for child window.
   bool CanHandleEvent(x11::Event* xevent);
 
-  gfx::AcceleratedWidget window() const { return window_; }
+  gfx::AcceleratedWidget window() const {
+    return static_cast<gfx::AcceleratedWidget>(window_);
+  }
 
  private:
   // The handle for the drawable to make current or swap.
@@ -116,7 +118,7 @@ class GL_EXPORT NativeViewGLSurfaceGLX : public GLSurfaceGLX {
   gfx::AcceleratedWidget parent_window_;
 
   // Child window, used to control resizes so that they're in-order with GL.
-  gfx::AcceleratedWidget window_;
+  x11::Window window_;
 
   // GLXDrawable for the window.
   GLXWindow glx_window_;
@@ -155,7 +157,7 @@ class GL_EXPORT UnmappedNativeViewGLSurfaceGLX : public GLSurfaceGLX {
   gfx::Size size_;
   GLXFBConfig config_;
   // Unmapped dummy window, used to provide a compatible surface.
-  gfx::AcceleratedWidget window_;
+  x11::Window window_;
 
   // GLXDrawable for the window.
   GLXWindow glx_window_;

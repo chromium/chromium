@@ -6,6 +6,7 @@
 
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11.h"
+#include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
 
@@ -19,33 +20,33 @@ NativeViewGLSurfaceEGLX11GLES2::NativeViewGLSurfaceEGLX11GLES2(
     : NativeViewGLSurfaceEGLX11(x11::Window::None), parent_window_(window) {}
 
 bool NativeViewGLSurfaceEGLX11GLES2::InitializeNativeWindow() {
-  Display* x11_display = GetXNativeDisplay();
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(x11_display, static_cast<uint32_t>(parent_window_),
-                            &attributes)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window "
+  auto* connection = GetXNativeConnection();
+  auto geometry = connection->GetGeometry({parent_window_}).Sync();
+  if (!geometry) {
+    LOG(ERROR) << "GetGeometry failed for window "
                << static_cast<uint32_t>(parent_window_) << ".";
     return false;
   }
 
-  size_ = gfx::Size(attributes.width, attributes.height);
+  size_ = gfx::Size(geometry->width, geometry->height);
 
   // Create a child window, with a CopyFromParent visual (to avoid inducing
   // extra blits in the driver), that we can resize exactly in Resize(),
   // correctly ordered with GL, so that we don't have invalid transient states.
   // See https://crbug.com/326995.
-  XSetWindowAttributes swa;
-  memset(&swa, 0, sizeof(swa));
-  swa.background_pixmap = 0;
-  swa.bit_gravity = NorthWestGravity;
-  window_ = XCreateWindow(x11_display, static_cast<uint32_t>(parent_window_), 0,
-                          0, size_.width(), size_.height(), 0,
-                          static_cast<int>(x11::WindowClass::CopyFromParent),
-                          static_cast<int>(x11::WindowClass::InputOutput),
-                          nullptr, CWBackPixmap | CWBitGravity, &swa);
-  XMapWindow(x11_display, window_);
-  XSelectInput(x11_display, window_, ExposureMask);
-  XFlush(x11_display);
+  set_window(connection->GenerateId<x11::Window>());
+  connection->CreateWindow({
+      .wid = window(),
+      .parent = parent_window_,
+      .width = size_.width(),
+      .height = size_.height(),
+      .c_class = x11::WindowClass::InputOutput,
+      .background_pixmap = x11::Pixmap::None,
+      .bit_gravity = x11::Gravity::NorthWest,
+      .event_mask = x11::EventMask::Exposure,
+  });
+  connection->MapWindow({window()});
+  connection->Flush();
 
   return true;
 }
@@ -54,10 +55,10 @@ void NativeViewGLSurfaceEGLX11GLES2::Destroy() {
   NativeViewGLSurfaceEGLX11::Destroy();
 
   if (window_) {
-    Display* x11_display = GetXNativeDisplay();
-    XDestroyWindow(x11_display, window_);
+    auto* connection = GetXNativeConnection();
+    connection->DestroyWindow({window()});
     window_ = 0;
-    XFlush(x11_display);
+    connection->Flush();
   }
 }
 
@@ -65,10 +66,10 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
   if (!config_) {
     // Get a config compatible with the window
     DCHECK(window_);
-    XWindowAttributes win_attribs;
-    if (!XGetWindowAttributes(GetXNativeDisplay(), window_, &win_attribs)) {
+    auto* connection = GetXNativeConnection();
+    auto geometry = connection->GetGeometry({window()}).Sync();
+    if (!geometry)
       return nullptr;
-    }
 
     // Try matching the window depth with an alpha channel,
     // because we're worried the destination alpha width could
@@ -90,7 +91,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
                                EGL_SURFACE_TYPE,
                                EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
                                EGL_NONE};
-    config_attribs[kBufferSizeOffset] = win_attribs.depth;
+    config_attribs[kBufferSizeOffset] = geometry->depth;
 
     EGLDisplay display = GetHardwareDisplay();
     EGLint num_configs;
@@ -109,7 +110,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
         return nullptr;
       }
 
-      if (config_depth == win_attribs.depth) {
+      if (config_depth == geometry->depth) {
         return config_;
       }
     }
@@ -140,7 +141,13 @@ bool NativeViewGLSurfaceEGLX11GLES2::Resize(const gfx::Size& size,
   size_ = size;
 
   eglWaitGL();
-  XResizeWindow(GetXNativeDisplay(), window_, size.width(), size.height());
+  auto* connection = GetXNativeConnection();
+  connection->ConfigureWindow({
+      .window = window(),
+      .width = size.width(),
+      .height = size.height(),
+  });
+  connection->Flush();
   eglWaitNative(EGL_CORE_NATIVE_ENGINE);
 
   return true;

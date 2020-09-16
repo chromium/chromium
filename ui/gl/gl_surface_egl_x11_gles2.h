@@ -34,6 +34,11 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11GLES2
  protected:
   ~NativeViewGLSurfaceEGLX11GLES2() override;
 
+  x11::Window window() const { return static_cast<x11::Window>(window_); }
+  void set_window(x11::Window window) {
+    window_ = static_cast<uint32_t>(window);
+  }
+
  private:
   // XEventDispatcher:
   bool DispatchXEvent(x11::Event* xev) override;

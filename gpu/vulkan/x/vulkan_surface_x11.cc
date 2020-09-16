@@ -47,38 +47,40 @@ class VulkanSurfaceX11::ExposeEventForwarder : public ui::XEventDispatcher {
 std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     VkInstance vk_instance,
     x11::Window parent_window) {
-  XDisplay* display = gfx::GetXDisplay();
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(display, static_cast<uint32_t>(parent_window),
-                            &attributes)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window "
+  auto* connection = x11::Connection::Get();
+  auto geometry = connection->GetGeometry({parent_window}).Sync();
+  if (!geometry) {
+    LOG(ERROR) << "GetGeometry failed for window "
                << static_cast<uint32_t>(parent_window) << ".";
     return nullptr;
   }
-  Window window = XCreateWindow(
-      display, static_cast<uint32_t>(parent_window), 0, 0, attributes.width,
-      attributes.height, 0, static_cast<int>(x11::WindowClass::CopyFromParent),
-      static_cast<int>(x11::WindowClass::InputOutput), nullptr, 0, nullptr);
-  if (!window) {
-    LOG(ERROR) << "XCreateWindow failed.";
+
+  auto window = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = window,
+      .parent = parent_window,
+      .width = geometry->width,
+      .height = geometry->height,
+      .c_class = x11::WindowClass::InputOutput,
+  });
+  if (connection->MapWindow({window}).Sync().error) {
+    LOG(ERROR) << "Failed to create or map window.";
     return nullptr;
   }
-  XMapWindow(display, window);
-  XFlush(display);
 
   VkSurfaceKHR vk_surface;
   VkXlibSurfaceCreateInfoKHR surface_create_info = {
       VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR};
-  surface_create_info.dpy = display;
-  surface_create_info.window = window;
+  surface_create_info.dpy = connection->display();
+  surface_create_info.window = static_cast<uint32_t>(window);
   VkResult result = vkCreateXlibSurfaceKHR(vk_instance, &surface_create_info,
                                            nullptr, &vk_surface);
   if (VK_SUCCESS != result) {
     DLOG(ERROR) << "vkCreateXlibSurfaceKHR() failed: " << result;
     return nullptr;
   }
-  return std::make_unique<VulkanSurfaceX11>(
-      vk_instance, vk_surface, parent_window, static_cast<x11::Window>(window));
+  return std::make_unique<VulkanSurfaceX11>(vk_instance, vk_surface,
+                                            parent_window, window);
 }
 
 VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
@@ -99,10 +101,10 @@ void VulkanSurfaceX11::Destroy() {
   VulkanSurface::Destroy();
   expose_event_forwarder_.reset();
   if (window_ != x11::Window::None) {
-    Display* display = gfx::GetXDisplay();
-    XDestroyWindow(display, static_cast<uint32_t>(window_));
+    auto* connection = x11::Connection::Get();
+    connection->DestroyWindow({window_});
     window_ = x11::Window::None;
-    XFlush(display);
+    connection->Flush();
   }
 }
 

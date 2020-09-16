@@ -19,7 +19,7 @@ namespace {
 
 class XrandrIntervalOnlyVSyncProvider : public gfx::VSyncProvider {
  public:
-  explicit XrandrIntervalOnlyVSyncProvider(Display* display)
+  explicit XrandrIntervalOnlyVSyncProvider()
       : interval_(base::TimeDelta::FromSeconds(1 / 60.)) {}
 
   void GetVSyncParameters(UpdateVSyncCallback callback) override {
@@ -86,8 +86,9 @@ gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
   // views::DesktopWindowTreeHostX11::InitX11Window back to None for the
   // XWindow associated to this surface after the first SwapBuffers has
   // happened, to avoid showing a weird white background while resizing.
-  if (GetXNativeDisplay() && !has_swapped_buffers_) {
-    XSetWindowBackgroundPixmap(GetXNativeDisplay(), window_, 0);
+  if (GetXNativeConnection()->display() && !has_swapped_buffers_) {
+    XSetWindowBackgroundPixmap(GetXNativeConnection()->display(), window_, 0);
+    GetXNativeConnection()->Flush();
     has_swapped_buffers_ = true;
   }
   return result;
@@ -97,13 +98,13 @@ NativeViewGLSurfaceEGLX11::~NativeViewGLSurfaceEGLX11() {
   Destroy();
 }
 
-Display* NativeViewGLSurfaceEGLX11::GetXNativeDisplay() const {
-  return reinterpret_cast<Display*>(GetNativeDisplay());
+x11::Connection* NativeViewGLSurfaceEGLX11::GetXNativeConnection() const {
+  return x11::Connection::Get();
 }
 
 std::unique_ptr<gfx::VSyncProvider>
 NativeViewGLSurfaceEGLX11::CreateVsyncProviderInternal() {
-  return std::make_unique<XrandrIntervalOnlyVSyncProvider>(GetXNativeDisplay());
+  return std::make_unique<XrandrIntervalOnlyVSyncProvider>();
 }
 
 bool NativeViewGLSurfaceEGLX11::DispatchXEvent(x11::Event* x11_event) {

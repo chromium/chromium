@@ -35,7 +35,7 @@ class GL_EXPORT NativeViewGLSurfaceEGLX11 : public NativeViewGLSurfaceEGL,
  protected:
   ~NativeViewGLSurfaceEGLX11() override;
 
-  Display* GetXNativeDisplay() const;
+  x11::Connection* GetXNativeConnection() const;
 
  private:
   // NativeViewGLSurfaceEGL overrides:

@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "ui/events/x/x11_window_event_manager.h"
+#include "ui/gfx/x/xproto.h"
 
 namespace ui {
 
@@ -26,23 +27,24 @@ TestCompositorHostX11::TestCompositorHostX11(
 TestCompositorHostX11::~TestCompositorHostX11() = default;
 
 void TestCompositorHostX11::Show() {
-  XDisplay* display = gfx::GetXDisplay();
-  XSetWindowAttributes swa;
-  swa.override_redirect = true;
-  window_ = static_cast<x11::Window>(XCreateWindow(
-      display, XDefaultRootWindow(display),  // parent
-      bounds_.x(), bounds_.y(), bounds_.width(), bounds_.height(),
-      0,                                                   // border width
-      static_cast<int>(x11::WindowClass::CopyFromParent),  // depth
-      static_cast<int>(x11::WindowClass::InputOutput),
-      nullptr,  // visual
-      CWOverrideRedirect, &swa));
+  auto* connection = x11::Connection::Get();
+  window_ = connection->GenerateId<x11::Window>();
+  connection->CreateWindow({
+      .wid = window_,
+      .parent = connection->default_root(),
+      .x = bounds_.x(),
+      .y = bounds_.y(),
+      .width = bounds_.width(),
+      .height = bounds_.height(),
+      .c_class = x11::WindowClass::InputOutput,
+      .override_redirect = x11::Bool32(true),
+  });
   window_events_ =
       std::make_unique<XScopedEventSelector>(window_, ExposureMask);
-  XMapWindow(display, static_cast<uint32_t>(window_));
+  connection->MapWindow({window_});
   // Since this window is override-redirect, syncing is sufficient
   // to ensure the map is complete.
-  XSync(display, false);
+  connection->Sync();
   allocator_.GenerateId();
   compositor_.SetAcceleratedWidget(
       static_cast<gfx::AcceleratedWidget>(window_));

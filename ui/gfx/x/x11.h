@@ -297,28 +297,6 @@ int XGrabKey(Display*, int, unsigned int, Window, Bool, int, int);
 int XUngrabKey(Display*, int, unsigned int, Window);
 int XSelectInput(Display*, Window, long);
 int XSetWindowBackgroundPixmap(Display*, Window, Pixmap);
-Window XCreateWindow(Display*,
-                     Window,
-                     int,
-                     int,
-                     unsigned int,
-                     unsigned int,
-                     unsigned int,
-                     int,
-                     unsigned int,
-                     Visual*,
-                     unsigned long,
-                     XSetWindowAttributes*);
-Window XCreateSimpleWindow(Display*,
-                           Window,
-                           int,
-                           int,
-                           unsigned int,
-                           unsigned int,
-                           unsigned int,
-                           unsigned long,
-                           unsigned long);
-int XDestroyWindow(Display*, Window);
 Status XGetWindowAttributes(Display*, Window, XWindowAttributes*);
 VisualID XVisualIDFromVisual(Visual*);
 int XResizeWindow(Display*, Window, unsigned int, unsigned int);

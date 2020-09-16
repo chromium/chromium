@@ -24,6 +24,7 @@ if ((is_linux || is_chromeos) && use_x11 && current_cpu != "arm") {
 
     deps = [
       "//base",
+      "//ui/base/x",
       "//ui/gfx/x",
       "//ui/gl",
       "//ui/gl/init",
