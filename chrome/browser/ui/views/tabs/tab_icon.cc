@@ -40,8 +40,9 @@ constexpr int kLoadingAnimationStrokeWidthDp = 2;
 // the browser theme.
 bool ShouldThemifyFaviconForUrl(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
+         url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
          url.host_piece() != chrome::kChromeUIHelpHost &&
-         url.host_piece() != chrome::kChromeUIAppLauncherPageHost;
+         url.host_piece() != chrome::kChromeUIVersionHost;
 }
 
 bool NetworkStateIsAnimated(TabNetworkState network_state) {

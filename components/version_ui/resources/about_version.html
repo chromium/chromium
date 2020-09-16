@@ -8,6 +8,10 @@ about:version template page
   <head>
     <meta charset="utf-8">
     <title>$i18n{title}</title>
+<if expr="not is_android and not is_ios">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="chrome://theme/current-channel-logo">
+</if>
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <if expr="is_android or is_ios">
     <meta name="viewport" content="width=device-width">
