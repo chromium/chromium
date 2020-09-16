@@ -22,7 +22,6 @@
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 #if defined(OS_ANDROID)
-#include "base/android/build_info.h"
 #include "components/infobars/android/infobar_android.h"  // nogncheck
 #include "components/infobars/core/infobar_manager.h"  // nogncheck
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -321,15 +320,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoTranslateBrowserTest,
 
 // Test if there was an error during translation.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationError) {
-#if defined(OS_ANDROID)
-  // TODO(crbug.com/1094903): Determine why this test times out on the M
-  // trybot.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-#endif
-
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -420,15 +410,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationTimeoutError) {
 
 // Test that autotranslation kicks in if configured via prefs.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, Autotranslation) {
-#if defined(OS_ANDROID)
-  // TODO(crbug.com/1094903): Determine why this test times out on the M
-  // trybot.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-#endif
-
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -511,13 +492,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
 #if defined(OS_ANDROID)
 // Test that the translation can be successfully initiated via infobar.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
-  // TODO(crbug.com/1094903): Determine why this test times out on the M
-  // trybot.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   auto* infobar_service = InfoBarService::FromWebContents(web_contents);
 
