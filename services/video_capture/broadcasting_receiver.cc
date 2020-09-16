@@ -56,11 +56,6 @@ void CloneSharedBufferToRawFileDescriptorHandle(
 #endif
 }
 
-void CloneGpuMemoryBufferHandle(const gfx::GpuMemoryBufferHandle& source,
-                                media::mojom::VideoBufferHandlePtr* target) {
-  (*target)->set_gpu_memory_buffer_handle(source.Clone());
-}
-
 }  // anonymous namespace
 
 BroadcastingReceiver::ClientContext::ClientContext(
@@ -134,10 +129,18 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
   media::mojom::VideoBufferHandlePtr result =
       media::mojom::VideoBufferHandle::New();
 
-  // If the source uses mailbox hanldes, i.e. textures, we pass those through
+  // If the source uses mailbox handles, i.e. textures, we pass those through
   // without conversion, no matter what clients requested.
   if (buffer_handle_->is_mailbox_handles()) {
     result->set_mailbox_handles(buffer_handle_->get_mailbox_handles()->Clone());
+    return result;
+  }
+
+  // If the source uses GpuMemoryBuffer handles, we pass those through without
+  // conversion, no matter what clients requested.
+  if (buffer_handle_->is_gpu_memory_buffer_handle()) {
+    result->set_gpu_memory_buffer_handle(
+        buffer_handle_->get_gpu_memory_buffer_handle().Clone());
     return result;
   }
 
@@ -171,8 +174,7 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       }
       break;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
-      CloneGpuMemoryBufferHandle(buffer_handle_->get_gpu_memory_buffer_handle(),
-                                 &result);
+      NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
       break;
   }
   return result;
