@@ -7,6 +7,7 @@ Checks a policy_templates.json file for conformity to its syntax specification.
 '''
 
 import argparse
+import ast
 import json
 import os
 import re
@@ -199,6 +200,20 @@ def MergeDict(*dicts):
   for dictionary in dicts:
     result.update(dictionary)
   return result
+
+
+class DuplicateKeyVisitor(ast.NodeVisitor):
+  def visit_Dict(self, node):
+    seen_keys = set()
+    for i, node_key in enumerate(node.keys):
+      key = ast.literal_eval(node_key)
+      if key in seen_keys:
+        raise ValueError("Duplicate key '%s' in line %d found." %
+                         (key, node.values[i].lineno))
+      seen_keys.add(key)
+
+    # Recursively check for all nested objects.
+    self.generic_visit(node)
 
 
 class PolicyTemplateChecker(object):
@@ -1516,7 +1531,12 @@ class PolicyTemplateChecker(object):
   def Main(self, filename, options, original_file_contents, current_version):
     try:
       with open(filename, "rb") as f:
-        data = eval(f.read().decode("UTF-8"))
+        raw_data = f.read().decode("UTF-8")
+        data = eval(raw_data)
+        DuplicateKeyVisitor().visit(ast.parse(raw_data))
+    except ValueError as e:
+      self._Error(str(e))
+      return 1
     except:
       import traceback
       traceback.print_exc(file=sys.stdout)
