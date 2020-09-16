@@ -22,10 +22,10 @@ target(link_target_type, "renderer") {
   # internal content ones) should depend on the public one.
   visibility = [
     ":for_content_tests",
+    "//chromecast/media/audio:*",
     "//content/app:*",
     "//content/public/renderer:renderer_sources",
     "//content/renderer:audio_decoder_fuzzer",
-    "//chromecast/media/audio:*",
   ]
 
   sources = [
@@ -137,7 +137,6 @@ target(link_target_type, "renderer") {
     "media/audio/audio_device_factory.h",
     "media/audio/audio_renderer_mixer_manager.cc",
     "media/audio/audio_renderer_mixer_manager.h",
-    "media/audio/audio_renderer_sink_cache.h",
     "media/audio/audio_renderer_sink_cache_impl.cc",
     "media/audio/audio_renderer_sink_cache_impl.h",
     "media/audio_decoder.cc",

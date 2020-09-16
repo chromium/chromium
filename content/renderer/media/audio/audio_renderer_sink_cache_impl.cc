@@ -90,7 +90,7 @@ struct AudioRendererSinkCacheImpl::CacheEntry {
 };
 
 // static
-void AudioRendererSinkCache::ObserveFrame(RenderFrame* frame) {
+void AudioRendererSinkCacheImpl::ObserveFrame(RenderFrame* frame) {
   new AudioRendererSinkCacheImpl::FrameObserver(frame);
 }
 

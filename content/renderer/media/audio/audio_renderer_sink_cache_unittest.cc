@@ -372,7 +372,7 @@ TEST_F(AudioRendererSinkCacheTest, MultithreadedAccess) {
   // Release the sink on the second thread.
   PostAndWaitUntilDone(
       thread2,
-      base::BindOnce(&AudioRendererSinkCache::ReleaseSink,
+      base::BindOnce(&blink::AudioRendererSinkCache::ReleaseSink,
                      base::Unretained(cache_.get()), base::RetainedRef(sink)));
 
   EXPECT_EQ(0, sink_count());

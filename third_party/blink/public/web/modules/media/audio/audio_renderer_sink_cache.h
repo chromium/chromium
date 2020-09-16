@@ -2,40 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
-#define CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
+#define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
 
 #include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "media/base/output_device_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace media {
 class AudioRendererSink;
 }
 
-namespace content {
-class RenderFrame;
+namespace blink {
 
 // Caches AudioRendererSink instances, provides them to the clients for usage,
 // tracks their used/unused state, reuses them to obtain output device
 // information, garbage-collects unused sinks.
 // Must live on the main render thread. Thread safe.
-class CONTENT_EXPORT AudioRendererSinkCache {
+//
+// TODO(https://crrev.com/787252): Move this header out of the Blink public API
+// layer.
+class BLINK_MODULES_EXPORT AudioRendererSinkCache {
  public:
   virtual ~AudioRendererSinkCache() {}
 
-  // If called, the cache will drop sinks belonging to the specified frame on
-  // navigation.
-  static void ObserveFrame(RenderFrame* frame);
-
   // Returns output device information for a specified sink.
   virtual media::OutputDeviceInfo GetSinkInfo(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
       const std::string& device_id) = 0;
 
@@ -43,7 +41,7 @@ class CONTENT_EXPORT AudioRendererSinkCache {
   // calling ReleaseSink(). The sink must be stopped by the user before
   // deletion, but after releasing it from the cache.
   virtual scoped_refptr<media::AudioRendererSink> GetSink(
-      const blink::LocalFrameToken& source_frame_token,
+      const LocalFrameToken& source_frame_token,
       const std::string& device_id) = 0;
 
   // Notifies the cache that the sink is not in use any more. Must be
@@ -58,6 +56,6 @@ class CONTENT_EXPORT AudioRendererSinkCache {
   DISALLOW_COPY_AND_ASSIGN(AudioRendererSinkCache);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_H_

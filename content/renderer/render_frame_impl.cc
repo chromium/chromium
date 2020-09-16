@@ -109,7 +109,7 @@
 #include "content/renderer/loader/web_url_request_util.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/audio/audio_device_factory.h"
-#include "content/renderer/media/audio/audio_renderer_sink_cache.h"
+#include "content/renderer/media/audio/audio_renderer_sink_cache_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
 #include "content/renderer/mhtml_handle_writer.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
@@ -2051,7 +2051,7 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
                                   GetBrowserInterfaceBroker());
   }
 
-  AudioRendererSinkCache::ObserveFrame(this);
+  AudioRendererSinkCacheImpl::ObserveFrame(this);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

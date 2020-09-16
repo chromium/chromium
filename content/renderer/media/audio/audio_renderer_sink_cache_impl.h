@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_AUDIO_AUDIO_RENDERER_SINK_CACHE_IMPL_H_
 
-#include "content/renderer/media/audio/audio_renderer_sink_cache.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_renderer_sink_cache.h"
 
 #include <string>
 #include <vector>
@@ -20,9 +20,11 @@
 
 namespace content {
 
+class RenderFrame;
+
 // AudioRendererSinkCache implementation.
 class CONTENT_EXPORT AudioRendererSinkCacheImpl
-    : public AudioRendererSinkCache {
+    : public blink::AudioRendererSinkCache {
  public:
   class FrameObserver;
 
@@ -31,6 +33,14 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
       base::RepeatingCallback<scoped_refptr<media::AudioRendererSink>(
           const blink::LocalFrameToken& frame_token,
           const media::AudioSinkParameters& params)>;
+
+  // If called, the cache will drop sinks belonging to the specified frame on
+  // navigation.
+  //
+  // TODO(https://crbug.com/787252): Move the declaration back to
+  // AudioRendererSinkCache when this header moves to
+  // blink/renderer/modules/media/audio.
+  static void ObserveFrame(RenderFrame* frame);
 
   // |cleanup_task_runner| will be used to delete sinks when they are unused,
   // AudioRendererSinkCacheImpl must outlive any tasks posted to it. Since
@@ -42,7 +52,7 @@ class CONTENT_EXPORT AudioRendererSinkCacheImpl
 
   ~AudioRendererSinkCacheImpl() final;
 
-  // AudioSinkCache implementation:
+  // AudioRendererSinkCache implementation:
   media::OutputDeviceInfo GetSinkInfo(
       const blink::LocalFrameToken& source_frame_token,
       const base::UnguessableToken& session_id,
