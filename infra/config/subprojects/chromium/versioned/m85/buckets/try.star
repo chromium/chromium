@@ -445,14 +445,14 @@ try_.chromium_linux_builder(
 try_.chromium_mac_builder(
     name = "mac-rel",
     goma_jobs = goma.jobs.J150,
-    os = os.MAC_10_13,
+    os = os.MAC_DEFAULT,
     tryjob = try_.job(),
 )
 
 try_.chromium_mac_builder(
     name = "mac_chromium_compile_dbg_ng",
     goma_jobs = goma.jobs.J150,
-    os = os.MAC_10_13,
+    os = os.MAC_DEFAULT,
     tryjob = try_.job(),
 )
 

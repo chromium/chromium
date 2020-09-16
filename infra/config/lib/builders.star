@@ -65,7 +65,8 @@ os = struct(
     MAC_10_14 = os_enum("Mac-10.14", os_category.MAC),
     MAC_10_15 = os_enum("Mac-10.15", os_category.MAC),
     MAC_11_0 = os_enum("Mac-11.0", os_category.MAC),
-    MAC_DEFAULT = os_enum("Mac-10.13", os_category.MAC),
+    # TODO(crbug/1121185): Remove 10.13 once builders have been migrated to 10.15.
+    MAC_DEFAULT = os_enum("Mac-10.13|Mac-10.15", os_category.MAC),
     MAC_ANY = os_enum("Mac", os_category.MAC),
     WINDOWS_7 = os_enum("Windows-7", os_category.WINDOWS),
     WINDOWS_8_1 = os_enum("Windows-8.1", os_category.WINDOWS),
