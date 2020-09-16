@@ -576,6 +576,12 @@ void IdentityManager::OnGaiaCookieDeletedByUserAction() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsCookieDeletedByUserAction();
   }
+#if defined(OS_ANDROID)
+  if (java_identity_manager_) {
+    Java_IdentityManager_onAccountsCookieDeletedByUserAction(
+        base::android::AttachCurrentThread(), java_identity_manager_);
+  }
+#endif
 }
 
 void IdentityManager::OnAccessTokenRequested(const CoreAccountId& account_id,

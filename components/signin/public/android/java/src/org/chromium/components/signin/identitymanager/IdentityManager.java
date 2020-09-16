@@ -39,6 +39,12 @@ public class IdentityManager {
          * event).
          */
         void onPrimaryAccountCleared(CoreAccountInfo account);
+
+        /**
+         * Called when the Gaia cookie has been deleted explicitly by a user action, e.g. from
+         * the settings.
+         */
+        default void onAccountsCookieDeletedByUserAction() {}
     }
     /**
      * A simple callback for getAccessToken.
@@ -108,6 +114,13 @@ public class IdentityManager {
     public void onPrimaryAccountCleared(CoreAccountInfo account) {
         for (Observer observer : mObservers) {
             observer.onPrimaryAccountCleared(account);
+        }
+    }
+
+    @CalledByNative
+    private void onAccountsCookieDeletedByUserAction() {
+        for (Observer observer : mObservers) {
+            observer.onAccountsCookieDeletedByUserAction();
         }
     }
 
