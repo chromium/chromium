@@ -795,6 +795,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "TODO(crbug.com/1128345): Fix flakiness.")
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
