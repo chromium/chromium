@@ -19,38 +19,38 @@
     },
 
     function editKeywordAsOriginal(next) {
-      startEditingAndDumpValue(Common.Color.Format.Original, 'border', next);
+      startEditingAndDumpValue('inspected1', Common.Color.Format.Original, 'border', next);
     },
 
     function editKeywordAsHex(next) {
-      startEditingAndDumpValue(Common.Color.Format.HEX, 'border', next);
+      startEditingAndDumpValue('inspected1', Common.Color.Format.HEX, 'border', next);
     },
 
     function editKeywordAsHSL(next) {
-      startEditingAndDumpValue(Common.Color.Format.HSL, 'border', next);
+      startEditingAndDumpValue('inspected1', Common.Color.Format.HSL, 'border', next);
     },
 
     function editKeywordAsRGB(next) {
-      startEditingAndDumpValue(Common.Color.Format.RGB, 'border', onValueDumped);
+      startEditingAndDumpValue('inspected1', Common.Color.Format.RGB, 'border', onValueDumped);
       function onValueDumped() {
         ElementsTestRunner.selectNodeAndWaitForStyles('inspected2', next);
       }
     },
 
     function editHexAsOriginal(next) {
-      startEditingAndDumpValue(Common.Color.Format.Original, 'color', next);
+      startEditingAndDumpValue('inspected2', Common.Color.Format.Original, 'color', next);
     },
 
     function editHexAsHex(next) {
-      startEditingAndDumpValue(Common.Color.Format.HEX, 'color', next);
+      startEditingAndDumpValue('inspected2', Common.Color.Format.HEX, 'color', next);
     },
 
     function editHexAsHSL(next) {
-      startEditingAndDumpValue(Common.Color.Format.HSL, 'color', next);
+      startEditingAndDumpValue('inspected2', Common.Color.Format.HSL, 'color', next);
     },
 
     function editHexAsRGB(next) {
-      startEditingAndDumpValue(Common.Color.Format.RGB, 'color', next);
+      startEditingAndDumpValue('inspected2', Common.Color.Format.RGB, 'color', next);
     },
 
     async function editNewProperty(next) {
@@ -75,15 +75,22 @@
     UI.panels.elements._stylesWidget.doUpdate().then(callback);
   }
 
-  function startEditingAndDumpValue(format, propertyName, next) {
+  function startEditingAndDumpValue(nodeId, format, propertyName, next) {
     setFormat(format, onFormatSet);
 
-    function onFormatSet() {
+    async function onFormatSet() {
+      await waitForStylesRebuild();
       treeElement = ElementsTestRunner.getElementStylePropertyTreeItem(propertyName);
       treeElement.startEditing(treeElement.valueElement);
       TestRunner.addResult(treeElement.valueElement.textContent);
       treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Escape'));
       next();
+    }
+
+    function waitForStylesRebuild(node) {
+      if (node && node.getAttribute('id') === nodeId)
+        return;
+      return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, '_nodeStylesUpdatedForTest').then(waitForStylesRebuild);
     }
   }
 })();

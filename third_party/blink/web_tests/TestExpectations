@@ -1788,9 +1788,6 @@ crbug.com/1051044 external/wpt/css/filter-effects/effect-reference-feimage-003.h
 
 crbug.com/524160 [ Debug ] http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-default-buffers.html [ Timeout ]
 
-# Awaiting DevTools roll.
-crbug.com/1075869 http/tests/devtools/elements/styles-1/color-aware-property-value-edit.js [ Pass Failure Timeout ]
-
 # On these platforms (all but Android) media tests don't currently use gpu-accelerated (proprietary) codecs, so no
 # benefit to running them again with gpu acceleration enabled.
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
