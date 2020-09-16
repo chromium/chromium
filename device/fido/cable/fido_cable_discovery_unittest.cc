@@ -343,8 +343,8 @@ class FakeFidoCableDiscovery : public FidoCableDiscovery {
         device, nonce, discovery_data.v1->session_pre_key);
   }
 
-  static std::array<uint8_t, 32> BogusQRGeneratorKey() {
-    std::array<uint8_t, 32> ret;
+  static std::array<uint8_t, kCableQRDataSize> BogusQRGeneratorKey() {
+    std::array<uint8_t, kCableQRDataSize> ret;
     memset(ret.data(), 0, ret.size());
     return ret;
   }

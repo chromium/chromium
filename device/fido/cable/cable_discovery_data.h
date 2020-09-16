@@ -10,7 +10,12 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "device/fido/fido_constants.h"
+
+namespace cbor {
+class Value;
+}
 
 namespace device {
 
@@ -26,10 +31,9 @@ constexpr size_t kCableQRDataSize =
 
 using CableEidArray = std::array<uint8_t, kCableEphemeralIdSize>;
 using CableSessionPreKeyArray = std::array<uint8_t, kCableSessionPreKeySize>;
-// QRGeneratorKey is a random, AES-256 key that is used by
-// |CableDiscoveryData::DeriveQRKeyMaterial| to encrypt a coarse timestamp and
-// generate QR secrets, EIDs, etc.
-using QRGeneratorKey = std::array<uint8_t, 32>;
+// QRGeneratorKey is a hang-over from old code that hasn't been renamed yet.
+// TODO(agl): remove
+using QRGeneratorKey = std::array<uint8_t, kCableQRDataSize>;
 // CableNonce is a nonce used in BLE handshaking.
 using CableNonce = std::array<uint8_t, 8>;
 // CableEidGeneratorKey is an AES-256 key that is used to encrypt a 64-bit nonce
@@ -105,20 +109,20 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
   // DeriveQRKeyMaterial returns a QR-secret given a generating key and a
   // timestamp.
   static std::array<uint8_t, kCableQRSecretSize> DeriveQRSecret(
-      base::span<const uint8_t, 32> qr_generator_key,
+      base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
       const int64_t tick);
 
   // DeriveIdentityKeySeed returns a seed that can be used to create a P-256
   // identity key for a handshake using |EC_KEY_derive_from_secret|.
   static CableIdentityKeySeed DeriveIdentityKeySeed(
-      base::span<const uint8_t, 32> qr_generator_key,
+      base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
       const int64_t tick);
 
   // DeriveQRData returns the QR data, a combination of QR secret and public
   // identity key. This is base64url-encoded and placed in a caBLE v2 QR code
   // with a prefix prepended.
   static CableQRData DeriveQRData(
-      base::span<const uint8_t, 32> qr_generator_key,
+      base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
       const int64_t tick);
 
   // version indicates whether v1 or v2 data is contained in this object.
@@ -155,6 +159,47 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
   void InitFromQRSecret(
       base::span<const uint8_t, kCableQRSecretSize> qr_secret);
 };
+
+namespace cablev2 {
+
+// Pairing represents information previously received from a caBLEv2
+// authenticator that enables future interactions to skip scanning a QR code.
+struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
+  Pairing();
+  ~Pairing();
+  Pairing(const Pairing&) = delete;
+  Pairing& operator=(const Pairing&) = delete;
+
+  // Parse builds a |Pairing| from an authenticator message. The signature
+  // within the structure is validated by using |local_identity_seed| and
+  // |handshake_hash|.
+  static base::Optional<std::unique_ptr<Pairing>> Parse(
+      const cbor::Value& cbor,
+      uint32_t tunnel_server_domain,
+      base::span<const uint8_t, kCableIdentityKeySeedSize> local_identity_seed,
+      base::span<const uint8_t, 32> handshake_hash);
+
+  // tunnel_server_domain is known to be a valid hostname as it's constructed
+  // from the 22-bit value in the BLE advert rather than being parsed as a
+  // string from the authenticator.
+  std::string tunnel_server_domain;
+  // contact_id is an opaque value that is sent to the tunnel service in order
+  // to identify the caBLEv2 authenticator.
+  std::vector<uint8_t> contact_id;
+  // id is an opaque identifier that is sent via the tunnel service, to the
+  // authenticator, to identify this specific pairing.
+  std::vector<uint8_t> id;
+  // secret is the shared secret that authenticates the desktop to the
+  // authenticator.
+  std::vector<uint8_t> secret;
+  // peer_public_key_x962 is the authenticator's public key.
+  std::array<uint8_t, kP256X962Length> peer_public_key_x962;
+  // name is a human-friendly name for the authenticator, specified by that
+  // authenticator. (For example "Pixel 3".)
+  std::string name;
+};
+
+}  // namespace cablev2
 
 }  // namespace device
 

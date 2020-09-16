@@ -41,6 +41,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Noise {
   std::vector<uint8_t> EncryptAndHash(base::span<const uint8_t> plaintext);
   base::Optional<std::vector<uint8_t>> DecryptAndHash(
       base::span<const uint8_t> ciphertext);
+  std::array<uint8_t, 32> handshake_hash() const;
 
   // MaxHashPoint calls |MixHash| with the uncompressed, X9.62 serialization of
   // |point|.

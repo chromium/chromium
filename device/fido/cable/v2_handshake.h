@@ -16,6 +16,7 @@
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
@@ -23,8 +24,6 @@ class GURL;
 
 namespace device {
 namespace cablev2 {
-
-constexpr size_t kNonceSize = 10;
 
 namespace tunnelserver {
 
@@ -62,26 +61,41 @@ constexpr uint32_t EncodeDomain(const char label[5], TLD tld) {
          tld_value;
 }
 
-// Action enumerates the two possible requests that can be made of a tunnel
-// server: to create a new tunnel or to connect to an existing one.
-enum class Action {
-  kNew,
-  kConnect,
-};
+// DecodeDomain converts a 22-bit tunnel server domain (as encoded by
+// |EncodeDomain|) into a string in dotted form.
+COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint32_t domain);
 
-// GetURL converts a 22-bit tunnel server domain (as encoded by |EncodeDomain|),
-// an action, and a tunnel ID, into a WebSockets-based URL.
+// GetNewTunnelURL converts a 22-bit tunnel server domain (as encoded by
+// |EncodeDomain|), and a tunnel ID, into a WebSockets-based URL for creating a
+// new tunnel.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetURL(uint32_t domain, Action action, base::span<const uint8_t, 16> id);
+GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id);
+
+// GetConnectURL converts a 22-bit tunnel server domain (as encoded by
+// |EncodeDomain|), a routing-ID, and a tunnel ID, into a WebSockets-based URL
+// for connecting to an existing tunnel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetConnectURL(uint32_t domain,
+                   std::array<uint8_t, kRoutingIdSize> routing_id,
+                   base::span<const uint8_t, 16> id);
+
+// GetContactURL gets a URL for contacting a previously-paired authenticator.
+// The |tunnel_server| is assumed to be a valid domain name and should have been
+// taken from a previous call to |DecodeDomain|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+GURL GetContactURL(const std::string& tunnel_server,
+                   base::span<const uint8_t> contact_id);
 
 }  // namespace tunnelserver
 
 namespace eid {
 
+// TODO(agl): this could probably be a class.
+
 // Components contains the parts of a decrypted EID.
 struct Components {
-  uint8_t shard_id;
   uint32_t tunnel_server_domain;
+  std::array<uint8_t, kRoutingIdSize> routing_id;
   std::array<uint8_t, kNonceSize> nonce;
 };
 
@@ -102,6 +116,39 @@ Components ToComponents(const CableEidArray& eid);
 
 }  // namespace eid
 
+// DerivedValueType enumerates the different types of values that might be
+// derived in caBLEv2 from some secret. The values this this enum are protocol
+// constants and thus must not change over time.
+enum class DerivedValueType : uint32_t {
+  kEIDKey = 1,
+  kTunnelID = 2,
+  kPSK = 3,
+  kPairedSecret = 4,
+  kIdentityKeySeed = 5,
+};
+
+namespace internal {
+COMPONENT_EXPORT(DEVICE_FIDO)
+void Derive(uint8_t* out,
+            size_t out_len,
+            base::span<const uint8_t> secret,
+            base::span<const uint8_t> nonce,
+            DerivedValueType type);
+}  // namespace internal
+
+// Derive derives a sub-secret from a secret and nonce. It is not possible to
+// learn anything about |secret| from the value of the sub-secret, assuming that
+// |secret| has sufficient size to prevent full enumeration of the
+// possibilities.
+template <size_t N>
+std::array<uint8_t, N> Derive(base::span<const uint8_t> secret,
+                              base::span<const uint8_t> nonce,
+                              DerivedValueType type) {
+  std::array<uint8_t, N> ret;
+  internal::Derive(ret.data(), N, secret, nonce, type);
+  return ret;
+}
+
 // EncodePaddedCBORMap encodes the given map and pads it to 256 bytes in such a
 // way that |DecodePaddedCBORMap| can decode it. The padding is done on the
 // assumption that the returned bytes will be encrypted and the encoded size of
@@ -116,12 +163,6 @@ base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<cbor::Value> DecodePaddedCBORMap(
     base::span<const uint8_t> input);
-
-// NonceAndEID contains both the random nonce chosen for an advert, as well as
-// the EID that was generated from it.
-typedef std::pair<std::array<uint8_t, kNonceSize>,
-                  std::array<uint8_t, device::kCableEphemeralIdSize>>
-    NonceAndEID;
 
 // Crypter handles the post-handshake encryption of CTAP2 messages.
 class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
@@ -153,18 +194,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
   uint32_t write_sequence_num_ = 0;
 };
 
+// HandshakeHash is the hashed transcript of a handshake. This can be used as a
+// channel-binding value. See
+// http://www.noiseprotocol.org/noise.html#channel-binding.
+using HandshakeHash = std::array<uint8_t, 32>;
+
 // HandshakeInitiator starts a caBLE v2 handshake and processes the single
 // response message from the other party. The handshake is always initiated from
 // the phone.
 class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
  public:
   HandshakeInitiator(
-      // psk_gen_key is either derived from QR-code secrets or comes from
-      // pairing data.
-      base::span<const uint8_t, 32> psk_gen_key,
-      // nonce is randomly generated per advertisement and ensures that BLE
-      // adverts are non-deterministic.
-      base::span<const uint8_t, kNonceSize> nonce,
+      // psk is derived from the connection nonce and either QR-code secrets
+      // pairing secrets.
+      base::span<const uint8_t, 32> psk,
       // peer_identity, if not nullopt, specifies that this is a QR handshake
       // and then contains a P-256 public key for the peer. Otherwise this is a
       // paired handshake.
@@ -190,9 +233,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
 
   // ProcessResponse processes the handshake response from the peer. If
   // successful it returns a |Crypter| for protecting future messages on the
-  // connection.
-  base::Optional<std::unique_ptr<Crypter>> ProcessResponse(
-      base::span<const uint8_t> response);
+  // connection and a handshake transcript for signing over if needed.
+  base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
+  ProcessResponse(base::span<const uint8_t> response);
 
  private:
   Noise noise_;
@@ -203,17 +246,33 @@ class COMPONENT_EXPORT(DEVICE_FIDO) HandshakeInitiator {
   bssl::UniquePtr<EC_KEY> ephemeral_key_;
 };
 
-// RespondToHandshake responds to a caBLE v2 handshake started by a peer. It
-// returns a Crypter for encrypting and decrypting future messages, as well as
-// the getInfo response from the phone.
+// ResponderResult is the result of a successful handshake from the responder's
+// side. It contains a Crypter for protecting future messages, the contents of
+// the getInfo response given by the peer, and a hash of the handshake
+// transcript.
+struct COMPONENT_EXPORT(DEVICE_FIDO) ResponderResult {
+  ResponderResult(std::unique_ptr<Crypter>,
+                  std::vector<uint8_t> getinfo_bytes,
+                  HandshakeHash);
+  ~ResponderResult();
+  ResponderResult(const ResponderResult&) = delete;
+  ResponderResult(ResponderResult&&);
+  ResponderResult& operator=(const ResponderResult&) = delete;
+
+  std::unique_ptr<Crypter> crypter;
+  std::vector<uint8_t> getinfo_bytes;
+  const HandshakeHash handshake_hash;
+};
+
+// RespondToHandshake responds to a caBLE v2 handshake started by a peer.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::pair<std::unique_ptr<Crypter>, std::vector<uint8_t>>>
-RespondToHandshake(
-    // For the first two arguments see |HandshakeInitiator| comments about
-    // |psk_gen_key| and |nonce|, and the |BuildInitialMessage| comment about
-    // |eid|.
-    base::span<const uint8_t, 32> psk_gen_key,
-    const NonceAndEID& nonce_and_eid,
+base::Optional<ResponderResult> RespondToHandshake(
+    // psk is derived from the connection nonce and either QR-code secrets or
+    // pairing secrets.
+    base::span<const uint8_t, 32> psk,
+    // eid is the EID that was advertised for this handshake. This is checked
+    // as part of the handshake.
+    base::span<const uint8_t, kCableEphemeralIdSize> eid,
     // identity_seed, if not nullopt, specifies that this is a QR handshake and
     // contains the seed for QR key for this client.
     base::Optional<base::span<const uint8_t, kCableIdentityKeySeedSize>>
@@ -225,6 +284,27 @@ RespondToHandshake(
     base::span<const uint8_t> in,
     // out_response is set to the response handshake message, if successful.
     std::vector<uint8_t>* out_response);
+
+// VerifyPairingSignature checks that |signature| is a valid signature of
+// |handshake_hash| by |peer_public_key_x962|. This is used by a phone to prove
+// possession of |peer_public_key_x962| since the |handshake_hash| encloses
+// random values generated by the desktop and thus is a fresh value.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bool VerifyPairingSignature(
+    base::span<const uint8_t, kCableIdentityKeySeedSize> identity_seed,
+    base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
+    base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
+        handshake_hash,
+    base::span<const uint8_t> signature);
+
+// CalculatePairingSignature generates a value that will satisfy
+// |VerifyPairingSignature|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::vector<uint8_t> CalculatePairingSignature(
+    const EC_KEY* identity_key,
+    base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
+    base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
+        handshake_hash);
 
 }  // namespace cablev2
 }  // namespace device

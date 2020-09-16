@@ -181,8 +181,10 @@ base::span<uint8_t> QRDataForCurrentTime(
     uint8_t out_buf[QRCode::V5::kInputBytes],
     base::span<const uint8_t, 32> qr_generator_key) {
   const int64_t current_tick = device::CableDiscoveryData::CurrentTimeTick();
+  // TODO(agl): fix this. Currently doing this in order to split up CLs.
+  device::QRGeneratorKey temp_key = {0};
   const device::CableQRData qr_data =
-      device::CableDiscoveryData::DeriveQRData(qr_generator_key, current_tick);
+      device::CableDiscoveryData::DeriveQRData(temp_key, current_tick);
 
   std::string base64_qr_data;
   base::Base64UrlEncode(

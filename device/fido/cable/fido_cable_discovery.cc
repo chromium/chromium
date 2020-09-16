@@ -526,9 +526,9 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
           !network_context_) {
         return;
       }
-      AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
-          network_context_, *result->discovery_data.v2, result->eid,
-          *result->decrypted_eid));
+      // Disabled in order to make each step of a multi-CL change compile.
+      // TODO(agl): reenable
+      // AddDevice(...);
       break;
     }
 

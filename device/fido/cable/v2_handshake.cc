@@ -7,9 +7,11 @@
 #include <array>
 #include <type_traits>
 
+#include "base/base64url.h"
 #include "base/bits.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -23,9 +25,14 @@
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 #include "url/gurl.h"
+
+namespace device {
+namespace cablev2 {
 
 namespace {
 
@@ -47,16 +54,39 @@ bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
   return true;
 }
 
+std::array<uint8_t, 32> PairingSignature(
+    const EC_KEY* identity_key,
+    base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
+    base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
+        handshake_hash) {
+  const EC_GROUP* const p256 = EC_KEY_get0_group(identity_key);
+  bssl::UniquePtr<EC_POINT> peer_public_key(EC_POINT_new(p256));
+  CHECK(EC_POINT_oct2point(p256, peer_public_key.get(),
+                           peer_public_key_x962.data(),
+                           peer_public_key_x962.size(),
+                           /*ctx=*/nullptr));
+  uint8_t shared_secret[32];
+  CHECK(ECDH_compute_key(shared_secret, sizeof(shared_secret),
+                         peer_public_key.get(), identity_key,
+                         /*kdf=*/nullptr) == sizeof(shared_secret));
+
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_signature;
+  unsigned expected_signature_len = 0;
+  CHECK(HMAC(EVP_sha256(), /*key=*/shared_secret, sizeof(shared_secret),
+             handshake_hash.data(), handshake_hash.size(),
+             expected_signature.data(), &expected_signature_len) != nullptr);
+  CHECK_EQ(expected_signature_len, EXTENT(expected_signature));
+  return expected_signature;
+}
+
 }  // namespace
 
-namespace device {
-namespace cablev2 {
-
 namespace tunnelserver {
-GURL GetURL(uint32_t domain, Action action, base::span<const uint8_t, 16> id) {
-  std::string ret = "wss://";
 
+std::string DecodeDomain(uint32_t domain) {
   static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
+
+  std::string ret;
   ret.push_back(kBase32Chars[(domain >> 17) & 0x1f]);
   ret.push_back(kBase32Chars[(domain >> 12) & 0x1f]);
   ret.push_back(kBase32Chars[(domain >> 7) & 0x1f]);
@@ -66,72 +96,113 @@ GURL GetURL(uint32_t domain, Action action, base::span<const uint8_t, 16> id) {
   static const char kTLDs[4][5] = {"com", "org", "net", "info"};
   ret += kTLDs[domain & 3];
 
-  switch (action) {
-    case Action::kNew:
-      ret += "/cable/new/";
-      break;
-    case Action::kConnect:
-      ret += "/cable/connect/";
-      break;
-  }
+  return ret;
+}
+
+GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id) {
+  std::string ret = "wss://" + DecodeDomain(domain) + "/cable/new/";
 
   ret += base::HexEncode(id);
   const GURL url(ret);
   DCHECK(url.is_valid());
   return url;
 }
+
+GURL GetConnectURL(uint32_t domain,
+                   std::array<uint8_t, kRoutingIdSize> routing_id,
+                   base::span<const uint8_t, 16> id) {
+  std::string ret = "wss://" + DecodeDomain(domain) + "/cable/connect/";
+
+  ret += base::HexEncode(routing_id);
+  ret += "/";
+  ret += base::HexEncode(id);
+
+  const GURL url(ret);
+  DCHECK(url.is_valid());
+  return url;
+}
+
+GURL GetContactURL(const std::string& tunnel_server,
+                   base::span<const uint8_t> contact_id) {
+  std::string contact_id_base64;
+  base::Base64UrlEncode(
+      base::StringPiece(reinterpret_cast<const char*>(contact_id.data()),
+                        contact_id.size()),
+      base::Base64UrlEncodePolicy::OMIT_PADDING, &contact_id_base64);
+  GURL ret(std::string("wss://") + tunnel_server + "/cable/contact/" +
+           contact_id_base64);
+  DCHECK(ret.is_valid());
+  return ret;
+}
+
 }  // namespace tunnelserver
 
 namespace eid {
 
 CableEidArray FromComponents(const Components& components) {
   DCHECK_EQ(components.tunnel_server_domain >> 22, 0u);
-  DCHECK_EQ(components.shard_id >> 6, 0);
 
-  const uint32_t header = components.tunnel_server_domain |
-                          (static_cast<uint32_t>(components.shard_id) << 22);
   CableEidArray eid;
-  constexpr size_t eid_size =
-      std::tuple_size<std::remove_reference<decltype(eid)>::type>::value;
-  memset(eid.data(), 0, eid.size());
-  static_assert(eid_size >= sizeof(header), "EID too small");
-  memcpy(eid.data(), &header, sizeof(header));
-  static_assert(eid_size == 6 + kNonceSize, "EID wrong size");
-  static_assert(
-      std::tuple_size<decltype(components.nonce)>::value == kNonceSize,
-      "Nonce wrong size");
-  memcpy(eid.data() + 6, components.nonce.data(), kNonceSize);
+  static_assert(EXTENT(eid) == 16, "");
+  eid[0] = components.tunnel_server_domain;
+  eid[1] = components.tunnel_server_domain >> 8;
+  eid[2] = components.tunnel_server_domain >> 16;
+  static_assert(EXTENT(components.routing_id) == 3, "");
+  eid[3] = components.routing_id[0];
+  eid[4] = components.routing_id[1];
+  eid[5] = components.routing_id[2];
+  eid[6] = 0;
+  eid[7] = 0;
+  static_assert(EXTENT(eid) == 8 + kNonceSize, "");
+  memcpy(&eid[8], components.nonce.data(), kNonceSize);
+
   return eid;
 }
 
 bool IsValid(const CableEidArray& eid) {
-  static_assert(
-      std::tuple_size<std::remove_reference<decltype(eid)>::type>::value >= 6,
-      "EID too small");
-  return (eid[3] & 0xc0) == 0 && eid[4] == 0 && eid[5] == 0;
+  static_assert(EXTENT(eid) >= 8, "");
+  return eid[6] == 0 && eid[7] == 0 && (eid[2] >> 6) == 0;
 }
 
 Components ToComponents(const CableEidArray& eid) {
   DCHECK(IsValid(eid));
 
-  constexpr size_t eid_size =
-      std::tuple_size<std::remove_reference<decltype(eid)>::type>::value;
   Components ret;
-  uint32_t header;
-  static_assert(eid_size >= sizeof(header), "EID too small");
-  memcpy(&header, eid.data(), sizeof(header));
-  ret.shard_id = (header >> 22) & 0x3f;
-  ret.tunnel_server_domain = header & 0x3fffff;
-  static_assert(eid_size == 6 + std::tuple_size<decltype(ret.nonce)>::value,
-                "EID too small");
-  memcpy(ret.nonce.data(), eid.data() + 6, ret.nonce.size());
+  static_assert(EXTENT(eid) == 16, "");
+  ret.tunnel_server_domain = static_cast<uint32_t>(eid[0]) |
+                             (static_cast<uint32_t>(eid[1]) << 8) |
+                             ((static_cast<uint32_t>(eid[2]) & 0x3f) << 16);
+  ret.routing_id[0] = eid[3];
+  ret.routing_id[1] = eid[4];
+  ret.routing_id[2] = eid[5];
+
+  static_assert(EXTENT(eid) == 8 + kNonceSize, "");
+  memcpy(ret.nonce.data(), &eid[8], kNonceSize);
   return ret;
 }
 
 }  // namespace eid
 
+namespace internal {
+
+void Derive(uint8_t* out,
+            size_t out_len,
+            base::span<const uint8_t> secret,
+            base::span<const uint8_t> nonce,
+            DerivedValueType type) {
+  static_assert(sizeof(DerivedValueType) <= sizeof(uint32_t), "");
+  const uint32_t type32 = static_cast<uint32_t>(type);
+
+  HKDF(out, out_len, EVP_sha256(), secret.data(), secret.size(),
+       /*salt=*/nonce.data(), nonce.size(),
+       /*info=*/reinterpret_cast<const uint8_t*>(&type32), sizeof(type32));
+}
+
+}  // namespace internal
+
 base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {
+  // TODO: this should pad to 1K, not 256 bytes.
   base::Optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
@@ -273,15 +344,12 @@ bool Crypter::IsCounterpartyOfForTesting(const Crypter& other) const {
 }
 
 HandshakeInitiator::HandshakeInitiator(
-    base::span<const uint8_t, 32> psk_gen_key,
-    base::span<const uint8_t, kNonceSize> nonce,
+    base::span<const uint8_t, 32> psk,
     base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
     bssl::UniquePtr<EC_KEY> local_identity)
-    : local_identity_(std::move(local_identity)) {
+    : psk_(fido_parsing_utils::Materialize(psk)),
+      local_identity_(std::move(local_identity)) {
   DCHECK(peer_identity.has_value() ^ static_cast<bool>(local_identity_));
-  HKDF(psk_.data(), psk_.size(), EVP_sha256(), psk_gen_key.data(),
-       psk_gen_key.size(), /*salt=*/nonce.data(), nonce.size(),
-       /*info=*/nullptr, 0);
   if (peer_identity) {
     peer_identity_ =
         fido_parsing_utils::Materialize<kP256X962Length>(*peer_identity);
@@ -359,8 +427,8 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage(
   return handshake_message;
 }
 
-base::Optional<std::unique_ptr<Crypter>> HandshakeInitiator::ProcessResponse(
-    base::span<const uint8_t> response) {
+base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
+HandshakeInitiator::ProcessResponse(base::span<const uint8_t> response) {
   if (response.size() < kP256X962Length) {
     FIDO_LOG(DEBUG) << "Handshake response truncated (" << response.size()
                     << " bytes)";
@@ -405,13 +473,22 @@ base::Optional<std::unique_ptr<Crypter>> HandshakeInitiator::ProcessResponse(
 
   std::array<uint8_t, 32> read_key, write_key;
   std::tie(write_key, read_key) = noise_.traffic_keys();
-  return std::make_unique<cablev2::Crypter>(read_key, write_key);
+  return std::make_pair(std::make_unique<cablev2::Crypter>(read_key, write_key),
+                        noise_.handshake_hash());
 }
 
-base::Optional<std::pair<std::unique_ptr<Crypter>, std::vector<uint8_t>>>
-RespondToHandshake(
-    base::span<const uint8_t, 32> psk_gen_key,
-    const NonceAndEID& nonce_and_eid,
+ResponderResult::ResponderResult(std::unique_ptr<Crypter> in_crypter,
+                                 std::vector<uint8_t> in_getinfo_bytes,
+                                 HandshakeHash in_handshake_hash)
+    : crypter(std::move(in_crypter)),
+      getinfo_bytes(std::move(in_getinfo_bytes)),
+      handshake_hash(in_handshake_hash) {}
+ResponderResult::~ResponderResult() = default;
+ResponderResult::ResponderResult(ResponderResult&&) = default;
+
+base::Optional<ResponderResult> RespondToHandshake(
+    base::span<const uint8_t, 32> psk,
+    base::span<const uint8_t, kCableEphemeralIdSize> eid,
     base::Optional<base::span<const uint8_t, kCableIdentityKeySeedSize>>
         identity_seed,
     base::Optional<base::span<const uint8_t, kP256X962Length>> peer_identity,
@@ -435,9 +512,8 @@ RespondToHandshake(
   }
 
   Noise noise;
-  uint8_t prologue[1 + kCableEphemeralIdSize];
-  DCHECK_EQ(nonce_and_eid.second.size(), kCableEphemeralIdSize);
-  memcpy(&prologue[1], nonce_and_eid.second.data(), kCableEphemeralIdSize);
+  uint8_t prologue[1 + EXTENT(eid)];
+  memcpy(&prologue[1], eid.data(), eid.size());
   if (identity) {
     noise.Init(device::Noise::HandshakeType::kNKpsk0);
     prologue[0] = 0;
@@ -449,12 +525,6 @@ RespondToHandshake(
     noise.MixHash(prologue);
     noise.MixHash(*peer_identity);
   }
-
-  std::array<uint8_t, 32> psk;
-  HKDF(psk.data(), psk.size(), EVP_sha256(), psk_gen_key.data(),
-       psk_gen_key.size(),
-       /*salt=*/nonce_and_eid.first.data(), nonce_and_eid.first.size(),
-       /*info=*/nullptr, 0);
 
   noise.MixKeyAndHash(psk);
   noise.MixHash(peer_point_bytes);
@@ -541,9 +611,39 @@ RespondToHandshake(
 
   std::array<uint8_t, 32> read_key, write_key;
   std::tie(read_key, write_key) = noise.traffic_keys();
-  return std::make_pair(
+  return base::make_optional<ResponderResult>(
       std::make_unique<Crypter>(read_key, write_key),
-      std::vector<uint8_t>(getinfo_it->second.GetBytestring()));
+      getinfo_it->second.GetBytestring(), noise.handshake_hash());
+}
+
+bool VerifyPairingSignature(
+    base::span<const uint8_t, kCableIdentityKeySeedSize> identity_seed,
+    base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
+    base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
+        handshake_hash,
+    base::span<const uint8_t> signature) {
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  bssl::UniquePtr<EC_KEY> identity_key(EC_KEY_derive_from_secret(
+      p256.get(), identity_seed.data(), identity_seed.size()));
+
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_signature =
+      PairingSignature(identity_key.get(), peer_public_key_x962,
+                       handshake_hash);
+  return signature.size() == EXTENT(expected_signature) &&
+         CRYPTO_memcmp(expected_signature.data(), signature.data(),
+                       EXTENT(expected_signature)) == 0;
+}
+
+std::vector<uint8_t> CalculatePairingSignature(
+    const EC_KEY* identity_key,
+    base::span<const uint8_t, kP256X962Length> peer_public_key_x962,
+    base::span<const uint8_t, std::tuple_size<HandshakeHash>::value>
+        handshake_hash) {
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_signature =
+      PairingSignature(identity_key, peer_public_key_x962, handshake_hash);
+  return std::vector<uint8_t>(expected_signature.begin(),
+                              expected_signature.end());
 }
 
 }  // namespace cablev2

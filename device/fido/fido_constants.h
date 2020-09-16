@@ -378,7 +378,18 @@ constexpr char kCableWebSocketProtocol[] = "fido.cable";
 
 // kCableShardIdHeader is the name of an HTTP header that is sent in the reply
 // from the tunnel server and which specifies the server's chosen shard number.
+// TODO(agl): remove. Only being kept around to allow things to compile.
 constexpr char kCableShardIdHeader[] = "X-caBLE-Shard";
+
+// kCableRoutingIdHeader is the name of an HTTP header that is sent in the reply
+// from the tunnel server and which specifies the server's chosen routing ID
+// which other parties can use to reach the same tunnel server.
+constexpr char kCableRoutingIdHeader[] = "X-caBLE-Routing-ID";
+
+// kCableClientPayloadHeader is the name of an HTTP header that is to
+// the tunnel server when performing a state-assisted handshake and which
+// includes the client's nonce and pairing ID.
+constexpr char kCableClientPayloadHeader[] = "X-caBLE-Client-Payload";
 
 // Maximum wait time before client error outs on device.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const base::TimeDelta kDeviceTimeout;

@@ -124,6 +124,10 @@ base::Optional<std::vector<uint8_t>> Noise::DecryptAndHash(
   return plaintext;
 }
 
+std::array<uint8_t, 32> Noise::handshake_hash() const {
+  return h_;
+}
+
 void Noise::MixHashPoint(const EC_POINT* point) {
   uint8_t x962[kP256X962Length];
   bssl::UniquePtr<EC_GROUP> p256(

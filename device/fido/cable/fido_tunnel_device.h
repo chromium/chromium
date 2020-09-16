@@ -7,11 +7,12 @@
 
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/fido_device.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace network {
 namespace mojom {
@@ -24,14 +25,29 @@ namespace cablev2 {
 
 class Crypter;
 class WebSocketAdapter;
+struct Pairing;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
  public:
+  // This constructor is used for QR-initiated connections.
+  FidoTunnelDevice(
+      network::mojom::NetworkContext* network_context,
+      base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback,
+      base::span<const uint8_t> secret,
+      base::span<const uint8_t, kCableIdentityKeySeedSize> local_identity_seed,
+      const CableEidArray& eid,
+      const CableEidArray& decrypted_eid);
+
+  // This constructor is used for pairing-initiated connections.
   FidoTunnelDevice(network::mojom::NetworkContext* network_context,
-                   const CableDiscoveryData::V2Data& v2data,
-                   const CableEidArray& eid,
-                   const CableEidArray& decrypted_eid);
+                   std::unique_ptr<Pairing> pairing);
+
   ~FidoTunnelDevice() override;
+
+  // MatchEID is only valid for a pairing-initiated connection. It returns true
+  // if the given |eid| matched this pending tunnel and thus this device is now
+  // ready.
+  bool MatchEID(const CableEidArray& eid);
 
   // FidoDevice:
   CancelToken DeviceTransact(std::vector<uint8_t> command,
@@ -45,20 +61,54 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   enum class State {
     kConnecting,
     kConnected,
+    kWaitingForEID,
     kHandshakeProcessed,
     kReady,
     kError,
   };
 
-  void OnTunnelReady(bool ok, base::Optional<uint8_t> shard_id);
+  struct QRInfo {
+    QRInfo();
+    ~QRInfo();
+    QRInfo(const QRInfo&) = delete;
+    QRInfo& operator=(const QRInfo&) = delete;
+
+    CableEidArray eid;
+    std::array<uint8_t, 32> psk;
+    base::OnceCallback<void(std::unique_ptr<Pairing>)> pairing_callback;
+    std::array<uint8_t, kCableIdentityKeySeedSize> local_identity_seed;
+    uint32_t tunnel_server_domain;
+    base::Optional<HandshakeHash> handshake_hash;
+  };
+
+  struct PairedInfo {
+    PairedInfo();
+    ~PairedInfo();
+    PairedInfo(const PairedInfo&) = delete;
+    PairedInfo& operator=(const PairedInfo&) = delete;
+
+    std::array<uint8_t, 32> eid_encryption_key;
+    std::array<uint8_t, kP256X962Length> peer_identity;
+    std::vector<uint8_t> secret;
+    base::Optional<CableEidArray> eid;
+    base::Optional<std::array<uint8_t, 32>> psk;
+    base::Optional<std::vector<uint8_t>> handshake_message;
+  };
+
+  // This is a dummy function to allow things to compile at each step of a
+  // multi-CL sequence.
+  void OnTunnelReady(bool ok, base::Optional<uint8_t> routing_id);
+  void OnTunnelReady_Future(
+      bool ok,
+      base::Optional<std::array<uint8_t, kRoutingIdSize>> routing_id);
   void OnTunnelData(base::Optional<base::span<const uint8_t>> data);
+  void ProcessHandshake(base::span<const uint8_t> data);
   void OnError();
   void MaybeFlushPendingMessage();
 
   State state_ = State::kConnecting;
-  std::array<uint8_t, 8> id_;
-  const CableDiscoveryData::V2Data v2data_;
-  cablev2::NonceAndEID nonce_and_eid_;
+  absl::variant<QRInfo, PairedInfo> info_;
+  const std::array<uint8_t, 8> id_;
   std::unique_ptr<WebSocketAdapter> websocket_client_;
   std::unique_ptr<Crypter> crypter_;
   std::vector<uint8_t> getinfo_response_bytes_;

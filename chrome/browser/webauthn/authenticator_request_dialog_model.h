@@ -362,7 +362,10 @@ class AuthenticatorRequestDialogModel {
   }
 
   base::span<const uint8_t, 32> qr_generator_key() const {
-    return *qr_generator_key_;
+    // TODO(agl): return the true generator key. This is currently broken to
+    // allow CLs to be split up reasonably.
+    static_assert(EXTENT(*qr_generator_key_) >= 32, "");
+    return base::span<const uint8_t, 32>(qr_generator_key_->data(), 32);
   }
 
   void CollectPIN(base::Optional<int> attempts,

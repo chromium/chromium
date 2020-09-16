@@ -145,6 +145,10 @@ class Defragmenter {
   bool expect_message_start_ = true;
 };
 
+typedef std::pair<std::array<uint8_t, device::cablev2::kNonceSize>,
+                  std::array<uint8_t, device::kCableEphemeralIdSize>>
+    NonceAndEID;
+
 // AuthenticatorState contains the keys for a caBLE v2 authenticator.
 struct AuthenticatorState {
   // pairing_data contains long-term keys, and information that is potentially
@@ -156,13 +160,13 @@ struct AuthenticatorState {
 
   // pairing_advert contains information about the BLE advert that is sent based
   // on the long-term keys.
-  device::cablev2::NonceAndEID pairing_advert;
+  NonceAndEID pairing_advert;
 
   // If doing a QR pairing, the following two members will be present.
 
   // qr_advert contains information about the BLE advert that is sent based on
   // QR pairing keys.
-  base::Optional<device::cablev2::NonceAndEID> qr_advert;
+  base::Optional<NonceAndEID> qr_advert;
   // qr_psk_gen_key contains the PSK generating key derived from the QR secret.
   base::Optional<device::CablePskGeneratorKey> qr_psk_gen_key;
   // peer_identity is the public-key of the desktop from the scanned QR code.
@@ -869,7 +873,7 @@ class CableInterface : public BLEClient::Delegate {
   CableInterface() = default;
 
   void StartAdvertising(const device::CableEidGeneratorKey& eid_gen_key,
-                        device::cablev2::NonceAndEID* out_nonce_and_eid) {
+                        NonceAndEID* out_nonce_and_eid) {
     std::array<uint8_t, device::kCableNonceSize> nonce;
     crypto::RandBytes(nonce);
 

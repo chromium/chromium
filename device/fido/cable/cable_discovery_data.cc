@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/time/time.h"
+#include "components/cbor/values.h"
 #include "crypto/random.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -26,7 +27,7 @@ enum class QRValue : uint8_t {
   IDENTITY_KEY_SEED = 1,
 };
 
-void DeriveQRValue(base::span<const uint8_t, 32> qr_generator_key,
+void DeriveQRValue(base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
                    const int64_t tick,
                    QRValue type,
                    base::span<uint8_t> out) {
@@ -157,7 +158,7 @@ int64_t CableDiscoveryData::CurrentTimeTick() {
 
 // static
 std::array<uint8_t, kCableQRSecretSize> CableDiscoveryData::DeriveQRSecret(
-    base::span<const uint8_t, 32> qr_generator_key,
+    base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
     const int64_t tick) {
   std::array<uint8_t, kCableQRSecretSize> ret;
   DeriveQRValue(qr_generator_key, tick, QRValue::QR_SECRET, ret);
@@ -166,7 +167,7 @@ std::array<uint8_t, kCableQRSecretSize> CableDiscoveryData::DeriveQRSecret(
 
 // static
 CableIdentityKeySeed CableDiscoveryData::DeriveIdentityKeySeed(
-    base::span<const uint8_t, 32> qr_generator_key,
+    base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
     const int64_t tick) {
   std::array<uint8_t, kCableIdentityKeySeedSize> ret;
   DeriveQRValue(qr_generator_key, tick, QRValue::IDENTITY_KEY_SEED, ret);
@@ -175,7 +176,7 @@ CableIdentityKeySeed CableDiscoveryData::DeriveIdentityKeySeed(
 
 // static
 CableQRData CableDiscoveryData::DeriveQRData(
-    base::span<const uint8_t, 32> qr_generator_key,
+    base::span<const uint8_t, kCableQRDataSize> qr_generator_key,
     const int64_t tick) {
   auto identity_key_seed = DeriveIdentityKeySeed(qr_generator_key, tick);
   bssl::UniquePtr<EC_GROUP> p256(
@@ -228,5 +229,60 @@ void CableDiscoveryData::InitFromQRSecret(
             sizeof(kTunnelIDGen) - 1);
   DCHECK(ok);
 }
+
+namespace cablev2 {
+
+Pairing::Pairing() = default;
+Pairing::~Pairing() = default;
+
+// static
+base::Optional<std::unique_ptr<Pairing>> Pairing::Parse(
+    const cbor::Value& cbor,
+    uint32_t tunnel_server_domain,
+    base::span<const uint8_t, kCableIdentityKeySeedSize> local_identity_seed,
+    base::span<const uint8_t, 32> handshake_hash) {
+  if (!cbor.is_map()) {
+    return base::nullopt;
+  }
+
+  const cbor::Value::MapValue& map = cbor.GetMap();
+  auto pairing = std::make_unique<Pairing>();
+
+  const std::array<cbor::Value::MapValue::const_iterator, 5> its = {
+      map.find(cbor::Value(1)), map.find(cbor::Value(2)),
+      map.find(cbor::Value(3)), map.find(cbor::Value(4)),
+      map.find(cbor::Value(6))};
+  const cbor::Value::MapValue::const_iterator name_it =
+      map.find(cbor::Value(5));
+  if (name_it == map.end() || !name_it->second.is_string() ||
+      std::any_of(
+          &its[0], &its[its.size()],
+          [&map](const cbor::Value::MapValue::const_iterator& it) -> bool {
+            return it == map.end() || !it->second.is_bytestring();
+          }) ||
+      its[3]->second.GetBytestring().size() !=
+          std::tuple_size<decltype(pairing->peer_public_key_x962)>::value) {
+  }
+
+  pairing->tunnel_server_domain =
+      tunnelserver::DecodeDomain(tunnel_server_domain),
+  pairing->contact_id = its[0]->second.GetBytestring();
+  pairing->id = its[1]->second.GetBytestring();
+  pairing->secret = its[2]->second.GetBytestring();
+  const std::vector<uint8_t>& peer_public_key = its[3]->second.GetBytestring();
+  std::copy(peer_public_key.begin(), peer_public_key.end(),
+            pairing->peer_public_key_x962.begin());
+  pairing->name = name_it->second.GetString();
+
+  if (!VerifyPairingSignature(local_identity_seed,
+                              pairing->peer_public_key_x962, handshake_hash,
+                              its[4]->second.GetBytestring())) {
+    return base::nullopt;
+  }
+
+  return pairing;
+}
+
+}  // namespace cablev2
 
 }  // namespace device
