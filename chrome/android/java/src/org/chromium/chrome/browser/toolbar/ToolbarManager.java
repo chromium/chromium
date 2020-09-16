@@ -761,7 +761,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     @Override
     public @Nullable View getMenuButtonView() {
-        return mToolbar.getMenuButton();
+        return mMenuButtonCoordinator.getMenuButton().getImageButton();
     }
 
     /**

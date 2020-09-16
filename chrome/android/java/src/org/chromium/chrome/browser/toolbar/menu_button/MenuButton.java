@@ -20,11 +20,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ThemeColorProvider;
@@ -81,6 +79,12 @@ public class MenuButton extends FrameLayout implements TintObserver {
 
     public ImageButton getImageButton() {
         return mMenuImageButton;
+    }
+
+    @Override
+    public void setOnKeyListener(OnKeyListener onKeyListener) {
+        if (mMenuImageButton == null) return;
+        mMenuImageButton.setOnKeyListener(onKeyListener);
     }
 
     /**

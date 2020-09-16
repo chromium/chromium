@@ -436,9 +436,8 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
         mToggleTabStackButton.setOnKeyListener(new KeyboardNavigationListener() {
             @Override
             public View getNextFocusForward() {
-                final ImageButton menuButton = getMenuButton();
-                if (menuButton != null && menuButton.isShown()) {
-                    return menuButton;
+                if (getMenuButtonCoordinator().isShown()) {
+                    return getMenuButtonCoordinator().getMenuButton();
                 } else {
                     return getCurrentTabView();
                 }
@@ -466,24 +465,23 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             mHomeButton.setOnClickListener(this);
         }
 
-        if (getMenuButton() != null) {
-            getMenuButton().setOnKeyListener(new KeyboardNavigationListener() {
-                @Override
-                public View getNextFocusForward() {
-                    return getCurrentTabView();
-                }
+        getMenuButtonCoordinator().setOnKeyListener(new KeyboardNavigationListener() {
+            @Override
+            public View getNextFocusForward() {
+                return getCurrentTabView();
+            }
 
-                @Override
-                public View getNextFocusBackward() {
-                    return mToggleTabStackButton;
-                }
+            @Override
+            public View getNextFocusBackward() {
+                return mToggleTabStackButton;
+            }
 
-                @Override
-                protected boolean handleEnterKeyPress() {
-                    return getMenuButtonHelper().onEnterKeyPress(getMenuButton());
-                }
-            });
-        }
+            @Override
+            protected boolean handleEnterKeyPress() {
+                return getMenuButtonCoordinator().onEnterKeyPress();
+            }
+        });
+
         onHomeButtonUpdate(HomepageManager.isHomepageEnabled());
 
         updateVisualsForLocationBarState();
@@ -1880,9 +1878,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
             mToggleTabStackButton.setVisibility(isGone ? GONE : VISIBLE);
         }
 
-        if (getMenuButton() != null) {
-            getMenuButton().setVisibility(inTabSwitcherMode ? GONE : VISIBLE);
-        }
+        getMenuButtonCoordinator().setVisibility(inTabSwitcherMode ? GONE : VISIBLE);
 
         triggerUrlFocusAnimation(inTabSwitcherMode && !urlHasFocus());
 
@@ -2600,9 +2596,7 @@ public class ToolbarPhone extends ToolbarLayout implements Invalidator.Client, O
      * buttons besides the optional button.
      */
     private boolean isMenuButtonPresent() {
-        final ImageButton menuButton = getMenuButton();
-        if (menuButton == null) return false;
-        return menuButton.isShown();
+        return getMenuButtonCoordinator().isShown();
     }
 
     private void requestLayoutHostUpdateForOptionalButton() {

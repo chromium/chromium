@@ -16,14 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
@@ -357,14 +354,6 @@ public abstract class ToolbarLayout
     @VisibleForTesting
     void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator menuButtonCoordinator) {
         mMenuButtonCoordinator = menuButtonCoordinator;
-    }
-
-    /**
-     * @return The {@link ImageButton} containing the menu button.
-     */
-    ImageButton getMenuButton() {
-        if (mMenuButtonCoordinator.getMenuButton() == null) return null;
-        return mMenuButtonCoordinator.getMenuButton().getImageButton();
     }
 
     /**

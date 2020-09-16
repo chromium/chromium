@@ -6,11 +6,10 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-
+import android.view.View.OnKeyListener;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -134,6 +133,22 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     }
 
     /**
+     * Handle the key press event on the menu button.
+     * @return Whether the app menu was shown as a result of this action.
+     */
+    public boolean onEnterKeyPress() {
+        if (mAppMenuButtonHelper == null || mMenuButton == null) return false;
+        return mAppMenuButtonHelper.onEnterKeyPress(mMenuButton.getImageButton());
+    }
+
+    /**
+     * @return Whether the menu button is present and visible.
+     */
+    public boolean isShown() {
+        return mMenuButton != null && mMenuButton.isShown();
+    }
+
+    /**
      * Get the underlying MenuButton view. Present for legacy reasons only; don't add new usages.
      */
     @Deprecated
@@ -159,6 +174,15 @@ public class MenuButtonCoordinator implements AppMenuObserver {
     public void setClickable(boolean isClickable) {
         if (mMenuButton == null) return;
         mMenuButton.setClickable(isClickable);
+    }
+
+    /**
+     * Sets the on key listener for the underlying menu button.
+     * @param onKeyListener Listener for key events.
+     */
+    public void setOnKeyListener(OnKeyListener onKeyListener) {
+        if (mMenuButton == null) return;
+        mMenuButton.setOnKeyListener(onKeyListener);
     }
 
     public void destroy() {

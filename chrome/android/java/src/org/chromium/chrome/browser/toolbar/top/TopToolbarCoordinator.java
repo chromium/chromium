@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -264,13 +263,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public MenuButton getMenuButtonWrapper() {
         return mMenuButtonCoordinator.getMenuButton();
-    }
-
-    /**
-     * @return The {@link ImageButton} containing the menu button.
-     */
-    public @Nullable ImageButton getMenuButton() {
-        return mToolbarLayout.getMenuButton();
     }
 
     @Override

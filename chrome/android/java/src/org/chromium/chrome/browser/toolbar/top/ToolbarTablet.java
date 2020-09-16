@@ -248,7 +248,7 @@ public class ToolbarTablet extends ToolbarLayout
         mBookmarkButton.setOnClickListener(this);
         mBookmarkButton.setOnLongClickListener(this);
 
-        getMenuButton().setOnKeyListener(new KeyboardNavigationListener() {
+        getMenuButtonCoordinator().setOnKeyListener(new KeyboardNavigationListener() {
             @Override
             public View getNextFocusForward() {
                 return getCurrentTabView();
@@ -261,7 +261,7 @@ public class ToolbarTablet extends ToolbarLayout
 
             @Override
             protected boolean handleEnterKeyPress() {
-                return getMenuButtonHelper().onEnterKeyPress(getMenuButton());
+                return getMenuButtonCoordinator().onEnterKeyPress();
             }
         });
         if (HomepageManager.isHomepageEnabled()) {
