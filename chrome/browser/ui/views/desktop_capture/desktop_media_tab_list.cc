@@ -91,7 +91,6 @@ class TabListViewObserver : public views::TableViewObserver {
   explicit TabListViewObserver(DesktopMediaListController* controller);
 
   void OnSelectionChanged() override;
-  void OnDoubleClick() override;
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
 
  private:
@@ -106,10 +105,6 @@ TabListViewObserver::TabListViewObserver(DesktopMediaListController* controller)
 
 void TabListViewObserver::OnSelectionChanged() {
   controller_->OnSourceSelectionChanged();
-}
-
-void TabListViewObserver::OnDoubleClick() {
-  controller_->AcceptSource();
 }
 
 void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {

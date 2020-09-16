@@ -12,6 +12,8 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
@@ -200,6 +202,11 @@ TEST_F(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleClick) {
   test_api_.GetAudioShareCheckbox()->SetChecked(false);
 
   test_api_.PressMouseOnSourceAtIndex(0, true);
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                run_loop_.QuitClosure());
+  run_loop_.Run();
+
   EXPECT_FALSE(picked_id().has_value());
 }
 
