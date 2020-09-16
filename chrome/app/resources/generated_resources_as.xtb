@@ -4275,6 +4275,7 @@
 <translation id="6164005077879661055">এই নিৰীক্ষণত থকা ব্যৱহাৰকাৰীজনক আঁতৰালে তেওঁৰ সৈতে জড়িত সকলো ফাইল আৰু স্থানীয় ডেটা স্থায়ীভাৱে মচা হ’ব। নিৰীক্ষণত থকা এই ব্যৱহাৰকাৰীকাৰীজনে চোৱা ৱেবছাইট আৰু ছেটিংসমূহ তথাপিও পৰিচালকে <ph name="MANAGEMENT_URL" />ত চাব পাৰিব।</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6166185671393271715">Chromeলৈ পাছৱর্ডসমূহ আমদানি কৰক</translation>
+<translation id="616831107264507309">পিছত পঢ়ক</translation>
 <translation id="6169040057125497443">আপোনাৰ মাইক্ৰ’ফ’ন পৰীক্ষা কৰক।</translation>
 <translation id="6169666352732958425">ডেস্কটপ কাষ্ট কৰিব পৰা নগ’ল।</translation>
 <translation id="6170470584681422115">ছেণ্ডৱিচ্চ</translation>
@@ -6656,7 +6657,6 @@
 <translation id="9063208415146866933">লাইন <ph name="ERROR_LINE_START" />ৰপৰা <ph name="ERROR_LINE_END" />লৈ কিবা আসোঁৱাহ আছে</translation>
 <translation id="9064275926664971810">এবাৰ ক্লিক কৰিয়েই ফর্মবোৰ পূৰাবলৈ স্বয়ংক্রিয়ভাৱে পূৰ কৰা সুবিধাটো সক্ষম কৰক</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
-<translation id="9065772380960598487">পাছত পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="9066773882585798925">ডাঙৰকৈ পঢ়া পাঠ শুনক</translation>
 <translation id="9066782832737749352">পাঠৰ পৰা কথন</translation>
 <translation id="9068849894565669697">ৰং বাছনি কৰক</translation>
@@ -6801,7 +6801,6 @@
 <translation id="947329552760389097">উপাদানসমূহ  &amp;পৰীক্ষা কৰক</translation>
 <translation id="951991426597076286">অস্বীকাৰ কৰক</translation>
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
-<translation id="956444359529327203">অতিথিৰ ৱিণ্ড’সমূহ বন্ধ কৰক</translation>
 <translation id="956500788634395331">আপুনি সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত</translation>
 <translation id="957960681186851048">এই ছাইটটোৱে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ চেষ্টা কৰিছিল</translation>
 <translation id="9580706199804957">Google সেৱাসমূহৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>

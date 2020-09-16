@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны</translation>
 <translation id="4269883910223712419">Адміністратар гэтай прылады мае наступныя магчымасці:</translation>
 <translation id="4279490309300973883">Адлюстраванне</translation>
+<translation id="4285498937028063278">Адмацаваць</translation>
 <translation id="4294319844246081198">Добрай раніцы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Выдаліць усе апавяшчэнні (<ph name="COUNT" />)</translation>
 <translation id="4303223480529385476">Разгарнуць панэль стану</translation>
@@ -332,7 +333,7 @@
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4379531060876907730">Гэта інструменты стыла</translation>
 <translation id="4389184120735010762">Вы націснулі спалучэнне клавіш для прыстыкаванай лупы. Уключыць яе?</translation>
-<translation id="4412944820643904175">Стан функцыі "<ph name="FEATURE_NAME" />": выключана.</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" />: выключана.</translation>
 <translation id="4421231901400348175">Абагульванне кантролю над экранам з карыстальнікам <ph name="HELPER_NAME" /> праз Аддаленую дапамогу.</translation>
 <translation id="4430019312045809116">Гучнасць</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>

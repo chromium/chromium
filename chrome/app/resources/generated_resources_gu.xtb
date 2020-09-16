@@ -1283,6 +1283,7 @@
 <translation id="2505127913256479918">આ નિરીક્ષિત એકાઉન્ટને ટૂંક સમયમાં કાઢી નાખવામાં આવશે</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{સ્ક્રીન #}one{સ્ક્રીન #}other{સ્ક્રીન #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> માંથી <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">તેમના ડિવાઇસ પર 'નજીકના શેર' સુવિધા ચાલુ હોય, ત્યારે તમારી નજીકના ડિવાઇસ</translation>
 <translation id="250704661983564564">ડિસ્પ્લેની ગોઠવણી</translation>
 <translation id="2507253002925770350">ટિકિટ કાઢી નાખી</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> થોભાવ્યું છે</translation>
@@ -3134,6 +3135,7 @@
 <translation id="4762718786438001384">ઉપકરણ ડિસ્ક સ્થાન અત્યંત ઓછું છે</translation>
 <translation id="4763408175235639573">જ્યારે તમે આ પેજ જોયું, ત્યારે નીચેની કુકી સેટ થઈ હતી</translation>
 <translation id="4765582662863429759">Android Messagesને તમારા ફોન પરથી તમારી Chromebook પર ટેક્સ્ટને પ્રસારિત કરવાની મંજૂરી આપે છે</translation>
+<translation id="476598255842811483">તમારા ડિવાઇસ પર જ્યાં સુધી તમે 'નજીકના શેર' ન ખોલો ત્યાં સુધી કોઈ નહીં</translation>
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
 <translation id="477647109558161443">ડેસ્કટૉપ શૉર્ટકટ બનાવો</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
@@ -4282,6 +4284,7 @@ USB ડિવાઇસ</translation>
 <translation id="6164005077879661055">એકવાર આ નિરીક્ષણ કરેલ વપરાશકર્તાને દૂર કરવામાં આવે પછી નિરીક્ષણ કરેલ વપરાશકર્તા સાથે સંકળાયેલી બધી ફાઇલો અને સ્થાનિક ડેટા કાયમી રૂપે કાઢી નાંખવામાં આવશે. નિરીક્ષણ કરેલ વપરાશકર્તા માટે મુલાકાત લીધેલી વેબસાઇટ્સ અને સેટિંગ્સ <ph name="MANAGEMENT_URL" /> પરના સંચાલકને હજી પણ દૃશ્યમાન હોઈ શકે છે.</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6166185671393271715">Chrome માં પાસવર્ડ્સને આયાત કરો</translation>
+<translation id="616831107264507309">પછીથી વાંચો</translation>
 <translation id="6169040057125497443">કૃપા કરીને તમારો માઇક્રોફોન તપાસો.</translation>
 <translation id="6169666352732958425">ડેસ્કટૉપને કાસ્ટ કરવામાં અસમર્થ.</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
@@ -5665,6 +5668,7 @@ USB ડિવાઇસ</translation>
 <translation id="786073089922909430">સેવા: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ડાઉનલોડ્સ</translation>
 <translation id="7864539943188674973">Bluetooth અક્ષમ કરો</translation>
+<translation id="7866352732146932341">તમારા ડિવાઇસ પર 'નજીકના શેર' સુવિધા ચાલુ હોય, ત્યારે તમારી નજીકના ડિવાઇસ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - જોડી કરેલ</translation>
 <translation id="7870730066603611552">સેટઅપ કર્યા પછી સિંક વિકલ્પો રિવ્યૂ કરો</translation>
 <translation id="7870790288828963061">નવા વર્ઝન સાથેની કોઈ કિઓસ્ક ઍપ્લિકેશન મળી નથી. અપડેટ કરવા માટે કંઈ નથી. કૃપા કરીને USB સ્ટીક દૂર કરો.</translation>
@@ -6665,7 +6669,6 @@ USB ડિવાઇસ</translation>
 <translation id="9063208415146866933">લાઇન <ph name="ERROR_LINE_START" /> થી <ph name="ERROR_LINE_END" />માં ભૂલ આવી છે</translation>
 <translation id="9064275926664971810">એક જ ક્લિકમાં ફોર્મ ભરવા માટે ઑટોમૅટિક રીતે ભરાવાનું ચાલુ કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
-<translation id="9065772380960598487">પછીથી વાંચોમાં ઉમેરો</translation>
 <translation id="9066773882585798925">ટેક્સ્ટ મોટેથી વંચાતી સાંભળો</translation>
 <translation id="9066782832737749352">ટેક્સ્ટ-ટુ-સ્પીચ</translation>
 <translation id="9068849894565669697">રંગ પસંદ કરો</translation>
@@ -6810,7 +6813,6 @@ USB ડિવાઇસ</translation>
 <translation id="947329552760389097">&amp;ઘટકોની તપાસ કરો</translation>
 <translation id="951991426597076286">નકારો</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
-<translation id="956444359529327203">અતિથિ વિંડો બંધ કરો</translation>
 <translation id="956500788634395331">તમને નુકસાન પહોંચાડવાની સંભાવના હોય એવા એક્સ્ટેંશનથી સુરક્ષિત કર્યા છે</translation>
 <translation id="957960681186851048">આ સાઇટે એકથી વધુ ફાઇલોને આપમેળે ડાઉનલોડ કરવાનો પ્રયાસ કર્યો</translation>
 <translation id="9580706199804957">Google સેવાઓ સાથે કનેક્ટ ન કરી શક્યાં</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1383876407941801731">Otsi</translation>
 <translation id="1566281227936819866">Kuvatud on salvestatud makseviisid</translation>
 <translation id="1717486229951421299">Loend mandaatidest, mis tuleb puudutusega täita, on avatud poolele kõrgusele.</translation>
 <translation id="207576718733492531">Loend mandaatidest, mis tuleb puudutusega täita, on suletud.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Loend mandaatidest, mis tuleb puudutusega täita, on avatud täiskõrgusele.</translation>
 <translation id="6393156038355142111">Soovita tugevat parooli</translation>
 <translation id="6696046606263842994">Täitke parooliväli</translation>
+<translation id="7029809446516969842">Paroolid</translation>
 <translation id="7299100402441711551">Kuva aadressid</translation>
 <translation id="7494879913343971937">Kuva paroolid</translation>
 <translation id="7758428186423745764">Täitke makseviisi väli</translation>

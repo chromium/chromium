@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
+<translation id="1383876407941801731">Rechercher</translation>
 <translation id="1566281227936819866">Affichage des modes paiement enregistrés</translation>
 <translation id="1717486229951421299">La liste d'authentifiants à remplir au toucher est ouverte à la mi-hauteur.</translation>
 <translation id="207576718733492531">La liste d'authentifiants à remplir au toucher est fermée.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">La liste d'authentifiants à remplir au toucher est ouverte à la pleine hauteur.</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe fort</translation>
 <translation id="6696046606263842994">Remplir le mot de passe</translation>
+<translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7299100402441711551">Afficher les adresses</translation>
 <translation id="7494879913343971937">Afficher les mots de passe</translation>
 <translation id="7758428186423745764">Remplir le mode de paiement</translation>

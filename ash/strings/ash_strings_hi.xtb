@@ -66,7 +66,7 @@
 <translation id="1550523713251050646">ज़्यादा विकल्पों के लिए क्लिक करें</translation>
 <translation id="1570871743947603115">ब्लूटूथ टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">इस सत्र में अपनी सभी गतिविधि ऐक्सेस करें</translation>
-<translation id="1611993646327628135">चालू करें</translation>
+<translation id="1611993646327628135">चालू है</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
 <translation id="1667964833127753507">न्यूट्रल कलर मोड, वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल नहीं करता है. इनकी जगह न्यूट्रल टोन के हल्के या गहरे रंगों के सेट का इस्तेमाल करता है.</translation>
@@ -81,7 +81,7 @@
 <translation id="1761222317188459878">नेटवर्क कनेक्शन टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">दाईं तरफ़ स्क्रोल करें</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
-<translation id="1787955149152357925">बंद है</translation>
+<translation id="1787955149152357925">बंद करें</translation>
 <translation id="181103072419391116">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="1812997170047690955">मेरी स्क्रीन पर क्या है?</translation>
 <translation id="1823873187264960516">ईथरनेट: <ph name="ADDRESS" /></translation>
@@ -319,6 +319,7 @@
 <translation id="4261870227682513959">सूचना सेटिंग दिखाएं. सूचनाएं बंद हैं</translation>
 <translation id="4269883910223712419">इस डिवाइस के एडमिन ये काम कर सकते हैं:</translation>
 <translation id="4279490309300973883">स्क्रीन शेयर करने की सुविधा चालू है</translation>
+<translation id="4285498937028063278">टैब बड़ी करें</translation>
 <translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="4303223480529385476">स्टेटस बताने वाली जगह को बड़ा करें</translation>

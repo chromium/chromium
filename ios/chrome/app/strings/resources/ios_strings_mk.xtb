@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Завршете го тоа што сте го започнале во другиот отворен прозорец на Chrome.</translation>
 <translation id="1974060860693918893">Напредни</translation>
 <translation id="1989112275319619282">Прелистувај</translation>
+<translation id="1992734845128748707">Променете го стандардниот прелистувач…</translation>
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
-<translation id="5352285283572729470">Поставкава е управувана</translation>
 <translation id="5388358297987318779">Отвори слика</translation>
 <translation id="5407969256130905701">Отфрли ги промените</translation>
 <translation id="5409365236829784218">Нема инсталирани апликации кои може да ја отворат датотеката.</translation>

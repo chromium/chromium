@@ -4284,6 +4284,7 @@
 স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে৷ এই তত্ত্বাবধানে থাকা ব্যবহারকারীর জন্য পরিদর্শিত এবং সেটিংস <ph name="MANAGEMENT_URL" />-এ পরিচালকের কাছে এখনো দৃশ্যমান হতে পারে৷</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166185671393271715">Chrome এ পাসওয়ার্ড আমদানি করুন</translation>
+<translation id="616831107264507309">পরে পড়ুন</translation>
 <translation id="6169040057125497443">অনুগ্রহ করে আপনার মাইক্রোফোন ভাল করে দেখে নিন।</translation>
 <translation id="6169666352732958425">ডেস্কটপ কাস্ট করতে ব্যর্থ হয়েছে।</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
@@ -6671,7 +6672,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> থেকে <ph name="ERROR_LINE_END" /> নম্বর লাইনে কোনও ভুল আছে</translation>
 <translation id="9064275926664971810">এক ক্লিকে ফর্মগুলি পূরণ করার জন্য স্বতঃপূর্ণ সক্ষম করুন</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
-<translation id="9065772380960598487">‘পরে পড়ুন’ বিকল্পে যোগ করুন</translation>
 <translation id="9066773882585798925">'টেক্সট পড়ে শোনানো'র বৈশিষ্ট্যটি চালু করুন</translation>
 <translation id="9066782832737749352">পাঠ্য থেকে ভাষ্য</translation>
 <translation id="9068849894565669697">রঙ বেছে নিন</translation>
@@ -6816,7 +6816,6 @@
 <translation id="947329552760389097">&amp;এলিমেন্ট ইন্সপেক্ট করুন</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="952992212772159698">সক্রিয় নেই</translation>
-<translation id="956444359529327203">'গেস্ট' উইন্ডো বন্ধ করুন</translation>
 <translation id="956500788634395331">আপনি সম্ভাব্য ক্ষতিকারক এক্সটেনশনগুলি থেকে নিরাপদে আছেন</translation>
 <translation id="957960681186851048">এই সাইটটি নিজে থেকে একাধিক ফাইল ডাউনলোড করার চেষ্টা করেছে</translation>
 <translation id="9580706199804957">Google পরিষেবাগুলির সাথে সংযুক্ত করা যায়নি</translation>

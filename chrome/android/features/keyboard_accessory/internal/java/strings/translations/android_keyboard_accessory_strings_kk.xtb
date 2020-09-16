@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1383876407941801731">Іздеу</translation>
 <translation id="1566281227936819866">Сақталған төлеу әдістері көрсетілуде.</translation>
 <translation id="1717486229951421299">Түрту арқылы толтырылатын тіркелу деректерінің тізімі жарты экранға ашылған.</translation>
 <translation id="207576718733492531">Түрту арқылы толтырылатын тіркелу деректерінің тізімі жабық.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Түрту арқылы толтырылатын тіркелу деректері тізімі толық экранға ашылған.</translation>
 <translation id="6393156038355142111">Күрделі құпия сөз ұсыну</translation>
 <translation id="6696046606263842994">Құпия сөзді енгізіңіз.</translation>
+<translation id="7029809446516969842">Құпия сөздер</translation>
 <translation id="7299100402441711551">Мекенжайларды көрсету</translation>
 <translation id="7494879913343971937">Құпия сөздерді көрсету</translation>
 <translation id="7758428186423745764">Төлеу әдісін енгізіңіз.</translation>

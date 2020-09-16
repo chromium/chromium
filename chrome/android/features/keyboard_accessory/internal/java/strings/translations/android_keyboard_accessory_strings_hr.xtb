@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1383876407941801731">Traži</translation>
 <translation id="1566281227936819866">Prikazuju se spremljeni načini plaćanja</translation>
 <translation id="1717486229951421299">Popis vjerodajnica za unos dodirom otvoren je na pola visine.</translation>
 <translation id="207576718733492531">Popis vjerodajnica za unos dodirom zatvoren je.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Popis vjerodajnica za unos dodirom otvoren je preko cijelog zaslona.</translation>
 <translation id="6393156038355142111">Predloži snažnu zaporku</translation>
 <translation id="6696046606263842994">Upišite zaporku</translation>
+<translation id="7029809446516969842">Zaporke</translation>
 <translation id="7299100402441711551">Prikaži adrese</translation>
 <translation id="7494879913343971937">Prikaz zaporki</translation>
 <translation id="7758428186423745764">Ispunite način plaćanja</translation>

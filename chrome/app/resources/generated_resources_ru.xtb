@@ -1285,6 +1285,7 @@
 <translation id="2505127913256479918">Скоро этот контролируемый аккаунт будет удален</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Экран #}one{Экран #}few{Экран #}many{Экран #}other{Экран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> из <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Устройства, находящиеся поблизости, если на них открыто окно "Обмен с окружением"</translation>
 <translation id="250704661983564564">Расположение дисплеев</translation>
 <translation id="2507253002925770350">Билет удален.</translation>
 <translation id="2507397597949272797">Работа приложения "<ph name="NAME" />" приостановлена</translation>
@@ -3136,6 +3137,7 @@
 <translation id="4762718786438001384">Свободное пространство почти закончилось</translation>
 <translation id="4763408175235639573">При посещении этой страницы на вашем компьютере были сохранены следующие файлы cookie:</translation>
 <translation id="4765582662863429759">Позволяет приложению "Android Сообщения" ретранслировать сообщения с вашего телефона на Chromebook</translation>
+<translation id="476598255842811483">Никто, если на вашем устройстве закрыто окно "Обмен с окружением"</translation>
 <translation id="4768332406694066911">У вас есть идентифицирующие вас сертификаты этих организаций</translation>
 <translation id="477647109558161443">Создать ярлык на рабочем столе</translation>
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4282,6 +4284,7 @@
 <translation id="6164005077879661055">После удаления контролируемого профиля все файлы и локальные данные, связанные с ним, будут удалены. Посещенные страницы и настройки этого профиля будут видны его менеджеру на странице: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6166185671393271715">Импорт паролей в Chrome</translation>
+<translation id="616831107264507309">Читать позже</translation>
 <translation id="6169040057125497443">Проверьте микрофон.</translation>
 <translation id="6169666352732958425">Не удается транслировать рабочий стол</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -5666,6 +5669,7 @@
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Загрузки</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
+<translation id="7866352732146932341">Устройства, находящиеся поблизости, если на вашем устройстве открыто окно "Обмен с окружением"</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Проверять параметры синхронизации после начала сеанса</translation>
 <translation id="7870790288828963061">Новых версий киоск-приложений нет. Обновление не требуется. Извлеките USB-накопитель.</translation>
@@ -6479,7 +6483,7 @@
 <translation id="8838601485495657486">Непрозрачный</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883911313571074303">Добавить примечание к изображению</translation>
-<translation id="8841843049738266382">Читать и изменять белый список пользователей</translation>
+<translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
 <translation id="8842594465773264717">Удалить этот отпечаток пальца</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8846132060409673887">Доступ к информации о производителе и модели компьютера</translation>
@@ -6670,7 +6674,6 @@
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Включить автозаполнение для быстрого добавления данных в веб-формы</translation>
 <translation id="9065203028668620118">Изменить</translation>
-<translation id="9065772380960598487">Добавить в список "Читать позже"</translation>
 <translation id="9066773882585798925">Позволяет прослушивать текст с экрана.</translation>
 <translation id="9066782832737749352">Озвучивание текста</translation>
 <translation id="9068849894565669697">Выберите цвет</translation>
@@ -6815,7 +6818,6 @@
 <translation id="947329552760389097">&amp;Проверить элементы</translation>
 <translation id="951991426597076286">Отклонить</translation>
 <translation id="952992212772159698">Не активировано</translation>
-<translation id="956444359529327203">Закрыть окна в гостевом режиме</translation>
 <translation id="956500788634395331">Включена защита от потенциально опасных расширений.</translation>
 <translation id="957960681186851048">Этот сайт попытался автоматически скачать несколько файлов</translation>
 <translation id="9580706199804957">Не удалось подключиться к сервисам Google</translation>

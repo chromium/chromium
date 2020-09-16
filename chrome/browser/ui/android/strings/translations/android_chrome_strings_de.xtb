@@ -185,6 +185,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 
 Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche verfeinern, indem Sie weitere Wörter auswählen oder Wörter ausschließen. Sie können Ihre Suche auch bearbeiten, indem Sie das Feld öffnen, auf das Symbol "In neuem Tab öffnen" tippen und dann im Suchfeld Ihre Änderungen vornehmen.</translation>
 <translation id="246532703174860178">Teilen</translation>
+<translation id="2478076885740497414">App installieren</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2494974097748878569">Google Assistant für Chrome</translation>
@@ -515,7 +516,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="510275257476243843">1 Stunde übrig</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5127805178023152808">Synchronisierung ist deaktiviert</translation>
-<translation id="5129038482087801250">Web-App installieren</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5136035049889637840">Ähnliche Produkte kaufen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">So nutzen Sie Google Drive</translation>

@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">सूचना सेटिंग्ज दाखवा. सूचना बंद आहेत</translation>
 <translation id="4269883910223712419">या डिव्हाइसचे प्रशासन पुढील गोष्टी करू शकते:</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
+<translation id="4285498937028063278">अनपिन</translation>
 <translation id="4294319844246081198">सुप्रभात <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सर्व <ph name="COUNT" /> सूचना साफ करा</translation>
 <translation id="4303223480529385476">स्थिती क्षेत्राचा विस्तार करा</translation>
@@ -444,7 +445,7 @@
 <translation id="5769373120130404283">गोपनीयता स्क्रीन</translation>
 <translation id="5777841717266010279">स्क्रीन सामायिकरण थांबवायचे?</translation>
 <translation id="5790085346892983794">यशस्वी</translation>
-<translation id="579415080077680903">सायलंट</translation>
+<translation id="579415080077680903">सायलंस</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /> थांबवा</translation>
 <translation id="5860033963881614850">बंद</translation>

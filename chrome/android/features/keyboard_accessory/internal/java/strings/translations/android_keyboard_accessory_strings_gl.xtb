@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
+<translation id="1383876407941801731">Buscar</translation>
 <translation id="1566281227936819866">Mostrando métodos de pago gardados</translation>
 <translation id="1717486229951421299">A lista de credenciais que se completarán ao tocar está aberta ata a metade da pantalla.</translation>
 <translation id="207576718733492531">A lista de credenciais que se completarán ao tocar está pechada.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">A lista de credenciais que se completarán ao tocar está aberta a pantalla completa.</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
 <translation id="6696046606263842994">Introduce o contrasinal</translation>
+<translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7299100402441711551">Mostrar enderezos</translation>
 <translation id="7494879913343971937">Mostra os contrasinais</translation>
 <translation id="7758428186423745764">Introduce o método de pago</translation>

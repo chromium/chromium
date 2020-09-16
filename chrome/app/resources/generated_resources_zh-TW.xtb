@@ -1286,6 +1286,7 @@
 <translation id="2505127913256479918">系統即將移除這個受監管的帳戶</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{螢幕 #}other{螢幕 #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />，總共 <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">開啟鄰近分享功能的附近裝置</translation>
 <translation id="250704661983564564">螢幕排列位置</translation>
 <translation id="2507253002925770350">已移除票證</translation>
 <translation id="2507397597949272797">「<ph name="NAME" />」已暫停</translation>
@@ -1473,7 +1474,7 @@
 <translation id="2731700343119398978">請稍候...</translation>
 <translation id="2731710757838467317">正在建立受監管使用者。這可能需要幾分鐘的時間。</translation>
 <translation id="2731971182069536520">系統管理員會在你下次重新啟動裝置時執行一次性更新，而這項更新會刪除你的本機資料。</translation>
-<translation id="2732134891301408122">第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
+<translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 之下的網站也會進行重設。</translation>
 <translation id="2735712963799620190">設定時間</translation>
 <translation id="2737363922397526254">收合...</translation>
@@ -3120,7 +3121,7 @@
 <translation id="4735803855089279419">系統無法判別這個裝置的裝置識別碼。</translation>
 <translation id="4736292055110123391">讓你在所有裝置上的書籤、密碼、歷史記錄及其他設定保持同步</translation>
 <translation id="473775607612524610">更新</translation>
-<translation id="473936925429402449">已選取，第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
+<translation id="473936925429402449">已選取 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="4739639199548674512">票證</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟網站音訊}other{開啟多個網站的音訊}}</translation>
@@ -3136,6 +3137,7 @@
 <translation id="4762718786438001384">裝置磁碟空間嚴重不足</translation>
 <translation id="4763408175235639573">系統在你瀏覽這個網頁時設定了下列 Cookie</translation>
 <translation id="4765582662863429759">允許 Android 訊息將簡訊內容從手機轉送到 Chromebook</translation>
+<translation id="476598255842811483">除非你在裝置上開啟鄰近分享功能，否則沒有人可與你分享內容</translation>
 <translation id="4768332406694066911">您有這些機構核發給您的憑證</translation>
 <translation id="477647109558161443">建立桌面捷徑</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密碼</translation>
@@ -4142,7 +4144,7 @@
 <translation id="6011449291337289699">清除網站資料</translation>
 <translation id="6015266928248016057">PUK 無效。剩餘重試次數：<ph name="RETRIES" /> 次。</translation>
 <translation id="6015796118275082299">年</translation>
-<translation id="6016178549409952427">瀏覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
+<translation id="6016178549409952427">前往 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 並還原至上一個版本</translation>
 <translation id="6016972670657536680">請選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
 <translation id="6017514345406065928">綠色</translation>
@@ -4282,6 +4284,7 @@
 <translation id="6164005077879661055">將這位受監管的使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機資料。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受監管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166185671393271715">將密碼匯入 Chrome 中</translation>
+<translation id="616831107264507309">稍後閱讀</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169666352732958425">無法投放桌面。</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -5666,6 +5669,7 @@
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7866352732146932341">你在裝置上開啟鄰近分享功能時，附近的裝置可與你分享內容</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步處理選項</translation>
 <translation id="7870790288828963061">找不到新版 Kiosk 應用程式，沒有可更新的內容。請移除 USB 隨身碟。</translation>
@@ -6670,7 +6674,6 @@
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>
 <translation id="9064275926664971810">啟用自動填入功能，輕鬆一按即可填妥表單</translation>
 <translation id="9065203028668620118">編輯</translation>
-<translation id="9065772380960598487">加入「稍後閱讀」</translation>
 <translation id="9066773882585798925">讓系統朗讀文字內容</translation>
 <translation id="9066782832737749352">文字轉語音</translation>
 <translation id="9068849894565669697">選取顏色</translation>
@@ -6815,7 +6818,6 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952992212772159698">未啟用</translation>
-<translation id="956444359529327203">關閉訪客視窗</translation>
 <translation id="956500788634395331">系統已限制可能有害的擴充功能</translation>
 <translation id="957960681186851048">這個網站試圖自動下載多個檔案</translation>
 <translation id="9580706199804957">無法連上 Google 服務</translation>

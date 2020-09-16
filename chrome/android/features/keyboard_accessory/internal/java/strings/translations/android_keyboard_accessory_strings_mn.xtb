@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1383876407941801731">Хайлт</translation>
 <translation id="1566281227936819866">Хадгалсан төлбөрийн хэрэгслийг харуулж байна</translation>
 <translation id="1717486229951421299">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалтыг хагас өндрөөр нээлээ.</translation>
 <translation id="207576718733492531">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалт хаалттай байна.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Хүрэхэд гүйцээж бөглөх мандат үнэмлэхийн жагсаалтыг бүтэн өндрөөр нээлээ.</translation>
 <translation id="6393156038355142111">Сайн нууц үг санал болгох</translation>
 <translation id="6696046606263842994">Нууц үг бөглөх</translation>
+<translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7299100402441711551">Хаяг харуулах</translation>
 <translation id="7494879913343971937">Нууц үгийг харуулах</translation>
 <translation id="7758428186423745764">Төлбөрийн аргыг бөглөх</translation>

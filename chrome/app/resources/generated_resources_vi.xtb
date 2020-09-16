@@ -1287,6 +1287,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2505127913256479918">Tài khoản được giám sát này sẽ sớm bị xóa</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Màn hình #}other{Màn hình #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> của <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật trên thiết bị của họ</translation>
 <translation id="250704661983564564">Sắp xếp màn hình</translation>
 <translation id="2507253002925770350">Đã xóa phiếu</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> đã bị tạm dừng</translation>
@@ -3138,6 +3139,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4762718786438001384">Dung lượng đĩa của thiết bị quá thấp</translation>
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
 <translation id="4765582662863429759">Cho phép Android Messages chuyển tiếp tin nhắn văn bản từ điện thoại sang Chromebook</translation>
+<translation id="476598255842811483">Không người nào cả, trừ phi bạn mở tính năng Chia sẻ lân cận trên thiết bị của mình</translation>
 <translation id="4768332406694066911">Bạn có các chứng chỉ từ những tổ chức nhận dạng bạn sau đây</translation>
 <translation id="477647109558161443">Tạo lối tắt trên màn hình</translation>
 <translation id="4776917500594043016">Mật khẩu cho <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6164005077879661055">Tất cả các tệp và dữ liệu trên máy được liên kết với người dùng được giám sát sẽ vĩnh viễn bị xóa khi người dùng được giám sát này bị xóa. Các trang web đã truy cập và các cài đặt của người dùng được giám sát này có thể vẫn hiển thị với người quản lý tại <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6166185671393271715">Nhập mật khẩu vào Chrome</translation>
+<translation id="616831107264507309">Đọc sau</translation>
 <translation id="6169040057125497443">Vui lòng kiểm tra micrô của bạn.</translation>
 <translation id="6169666352732958425">Không thể truyền màn hình nền.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -5668,6 +5671,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="786073089922909430">Dịch vụ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Tệp đã tải xuống</translation>
 <translation id="7864539943188674973">Tắt bluetooth</translation>
+<translation id="7866352732146932341">Các thiết bị ở gần bạn khi tính năng Chia sẻ lân cận đang bật trên thiết bị của bạn</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Đã ghép nối</translation>
 <translation id="7870730066603611552">Xem lại các tùy chọn đồng bộ hóa sau khi thiết lập</translation>
 <translation id="7870790288828963061">Không tìm thấy ứng dụng Kiosk nào có phiên bản mới hơn. Không có gì để cập nhật. Vui lòng rút thẻ USB.</translation>
@@ -6673,7 +6677,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9063208415146866933">Lỗi từ dòng <ph name="ERROR_LINE_START" /> đến <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Bật Tự động điền để điền các biểu mẫu chỉ bằng một lần nhấp</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
-<translation id="9065772380960598487">Thêm vào danh sách Đọc sau</translation>
 <translation id="9066773882585798925">Nghe đọc to văn bản</translation>
 <translation id="9066782832737749352">Chuyển văn bản sang lời nói</translation>
 <translation id="9068849894565669697">Chọn màu</translation>
@@ -6818,7 +6821,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="947329552760389097">&amp;Kiểm tra các yếu tố</translation>
 <translation id="951991426597076286">Từ chối</translation>
 <translation id="952992212772159698">Chưa được kích hoạt</translation>
-<translation id="956444359529327203">Đóng cửa sổ khách</translation>
 <translation id="956500788634395331">Bạn sẽ được bảo vệ khỏi các tiện ích có thể gây hại</translation>
 <translation id="957960681186851048">Trang web này đã cố gắng tự động tải nhiều tệp xuống</translation>
 <translation id="9580706199804957">Không thể kết nối với các dịch vụ của Google</translation>

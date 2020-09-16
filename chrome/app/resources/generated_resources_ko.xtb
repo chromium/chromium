@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">이 감독 대상 계정이 곧 삭제됩니다</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{화면 #}other{화면 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />중 <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">사용자의 기기에서 Nearby Share 실행 시 근처에 있는 기기</translation>
 <translation id="250704661983564564">디스플레이 배치</translation>
 <translation id="2507253002925770350">티켓 삭제됨</translation>
 <translation id="2507397597949272797"><ph name="NAME" />이(가) 일시중지됨</translation>
@@ -3136,6 +3137,7 @@
 <translation id="4762718786438001384">기기에 디스크 저장 공간 매우 부족</translation>
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
+<translation id="476598255842811483">기기에서 Nearby Share를 실행하지 않으면 아무도 공유할 수 없음</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="477647109558161443">바탕화면 바로가기 만들기</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />의 비밀번호</translation>
@@ -4282,6 +4284,7 @@
 <translation id="6164005077879661055">관리 대상 사용자를 제거하면 해당 관리 대상 사용자와 연결되어 있는 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. 하지만 관리자는 관리 대상 사용자의 방문한 웹사이트 및 설정을 <ph name="MANAGEMENT_URL" /> 페이지에서 계속 볼 수 있습니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166185671393271715">Chrome으로 비밀번호 가져오기</translation>
+<translation id="616831107264507309">나중에 읽기</translation>
 <translation id="6169040057125497443">마이크를 확인하세요.</translation>
 <translation id="6169666352732958425">데스크톱을 전송할 수 없음</translation>
 <translation id="6170470584681422115">샌드위치</translation>
@@ -5666,6 +5669,7 @@
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
+<translation id="7866352732146932341">내 기기에서 Nearby Share 실행 시 근처에 있는 기기</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
@@ -6671,7 +6675,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>
 <translation id="9064275926664971810">클릭 한 번으로 양식을 작성하는 자동 완성 사용</translation>
 <translation id="9065203028668620118">수정</translation>
-<translation id="9065772380960598487">나중에 읽기에 추가</translation>
 <translation id="9066773882585798925">텍스트 소리 내어 읽기</translation>
 <translation id="9066782832737749352">텍스트 음성 변환</translation>
 <translation id="9068849894565669697">색상 선택</translation>
@@ -6816,7 +6819,6 @@
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="952992212772159698">활성화되지 않음</translation>
-<translation id="956444359529327203">게스트 창 닫기</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>
 <translation id="9580706199804957">Google 서비스에 연결할 수 없음</translation>

@@ -4280,6 +4280,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6164005077879661055">Durch das Entfernen des betreuten Nutzers werden alle mit ihm verknüpften Dateien und lokalen Daten endgültig gelöscht. Besuchte Websites und Einstellungen des betreuten Nutzers kann der Manager möglicherweise weiterhin unter <ph name="MANAGEMENT_URL" /> einsehen.</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6166185671393271715">Passwörter in Chrome importieren</translation>
+<translation id="616831107264507309">Später lesen</translation>
 <translation id="6169040057125497443">Überprüfen Sie Ihr Mikrofon.</translation>
 <translation id="6169666352732958425">Der Desktop kann nicht übertragen werden</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -6668,7 +6669,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9063208415146866933">Fehler von Zeile <ph name="ERROR_LINE_START" /> bis <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">"Automatisches Ausfüllen" aktivieren, um Webformulare mit nur einem Klick auszufüllen</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
-<translation id="9065772380960598487">Zu "Später lesen" hinzufügen</translation>
 <translation id="9066773882585798925">Text vorlesen lassen</translation>
 <translation id="9066782832737749352">Sprachausgabe</translation>
 <translation id="9068849894565669697">Farbe auswählen</translation>
@@ -6813,7 +6813,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="947329552760389097">&amp;Elemente untersuchen</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="952992212772159698">Nicht aktiviert</translation>
-<translation id="956444359529327203">Gastfenster schließen</translation>
 <translation id="956500788634395331">Sie sind vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>
 <translation id="9580706199804957">Keine Verbindung mit Google-Diensten möglich</translation>

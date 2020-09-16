@@ -2658,11 +2658,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
           Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Riavvia all'uscita dell'utente se Android è stato avviato.</translation>
-<translation id="4950900960525118567">Questa funzionalità consente di attivare suggerimenti relativi a nuovi contenuti da esplorare, ad esempio app, pagine web e molto altro.
-      Se questo criterio viene impostato su True, i suggerimenti relativi a nuovi contenuti da esplorare vengono attivati.
-      Se questo criterio viene impostato su False, i suggerimenti relativi a nuovi contenuti da esplorare vengono disattivati.
-      Se questo criterio non viene impostato, i suggerimenti relativi a nuovi contenuti da esplorare vengono disattivati per gli utenti gestiti.
-      </translation>
 <translation id="4952347392677351397">Se il criterio viene impostato su 1, i siti web possono accedere e utilizzare i sensori, come i sensori di movimento e di luce. Se il criterio viene impostato su 2, l'accesso ai sensori viene negato.
 
       Se non viene configurato, si applica il criterio <ph name="ALLOW_SENSORS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>

@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Završite započetu radnju na drugom otvorenom prozoru Chromea.</translation>
 <translation id="1974060860693918893">Napredno</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
+<translation id="1992734845128748707">Promijenite zadani preglednik…</translation>
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
@@ -379,7 +380,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5339316356165661760">Uključi sinhronizaciju</translation>
-<translation id="5352285283572729470">Tom se postavkom upravlja</translation>
 <translation id="5388358297987318779">Otvori sliku</translation>
 <translation id="5407969256130905701">Odbaci izmjene</translation>
 <translation id="5409365236829784218">Nema instaliranih aplikacija koje mogu otvoriti ovaj fajl.</translation>

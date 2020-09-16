@@ -1287,6 +1287,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2505127913256479918">Acest cont supravegheat va fi eliminat în curând</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ecranul #}few{Ecranul #}other{Ecranul #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> din <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Dispozitive din apropiere, atunci când funcția Nearby Share este deschisă pe dispozitivul lor</translation>
 <translation id="250704661983564564">Aranjarea pe afișaj</translation>
 <translation id="2507253002925770350">Tichetul a fost eliminat</translation>
 <translation id="2507397597949272797">Aplicația <ph name="NAME" /> este întreruptă</translation>
@@ -3138,6 +3139,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4762718786438001384">Spațiul de pe hard diskul dispozitivului este foarte redus</translation>
 <translation id="4763408175235639573">La afișarea paginii au fost setate următoarele cookie-uri</translation>
 <translation id="4765582662863429759">Permite Android Messages să retransmită mesaje text din telefonul tău în Chromebook</translation>
+<translation id="476598255842811483">Nimeni, dacă nu deschizi Nearby Share pe dispozitiv</translation>
 <translation id="4768332406694066911">Ai certificate de la aceste organizații care te identifică</translation>
 <translation id="477647109558161443">Creează o comandă rapidă pe desktop</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6164005077879661055">Toate fișierele și datele locale asociate acestui utilizator monitorizat vor fi șterse definitiv după eliminarea acestui utilizator monitorizat. Site-urile web accesate și setările acestui utilizator monitorizat pot fi în continuare vizibile pentru manager la <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6166185671393271715">Importă parolele în Chrome</translation>
+<translation id="616831107264507309">Citește mai târziu</translation>
 <translation id="6169040057125497443">Verifică microfonul.</translation>
 <translation id="6169666352732958425">Nu se poate proiecta desktopul.</translation>
 <translation id="6170470584681422115">Sendviș</translation>
@@ -5668,6 +5671,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="786073089922909430">Serviciu: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descărcări</translation>
 <translation id="7864539943188674973">Dezactivați Bluetooth</translation>
+<translation id="7866352732146932341">Dispozitive din apropiere, atunci când funcția Nearby Share este deschisă pe dispozitivul tău</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – asociat</translation>
 <translation id="7870730066603611552">Examinează opțiunile de sincronizare după configurare</translation>
 <translation id="7870790288828963061">Nu s-a găsit nicio aplicație de tip chioșc cu o versiune mai recentă. Nimic de actualizat. Scoate stickul USB.</translation>
@@ -6673,7 +6677,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9063208415146866933">Eroare de la linia <ph name="ERROR_LINE_START" /> la linia <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Activează completarea automată pentru a completa formularele cu un singur clic</translation>
 <translation id="9065203028668620118">Editează</translation>
-<translation id="9065772380960598487">Adaugă la Citește mai târziu</translation>
 <translation id="9066773882585798925">Ascultă textul citit cu voce tare</translation>
 <translation id="9066782832737749352">Redarea vocală a textului</translation>
 <translation id="9068849894565669697">Selectați culoarea</translation>
@@ -6818,7 +6821,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="947329552760389097">&amp;Inspectează elementele</translation>
 <translation id="951991426597076286">Refuză</translation>
 <translation id="952992212772159698">Neactivat</translation>
-<translation id="956444359529327203">Închide ferestrele pentru invitați</translation>
 <translation id="956500788634395331">Beneficiezi de protecție împotriva extensiilor potențial dăunătoare</translation>
 <translation id="957960681186851048">Acest site a încercat să descarce automat mai multe fișiere</translation>
 <translation id="9580706199804957">Nu s-a putut conecta la serviciile Google</translation>

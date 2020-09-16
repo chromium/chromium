@@ -1286,6 +1286,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2505127913256479918">Aquest compte supervisat se suprimirà aviat</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Pantalla #}other{Pantalla #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Els dispositius a prop teu quan la funció Compartició Nearby està oberta al seu dispositiu</translation>
 <translation id="250704661983564564">Disposició de les pantalles</translation>
 <translation id="2507253002925770350">S'ha suprimit el tiquet</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> està en pausa</translation>
@@ -3136,6 +3137,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4762718786438001384">L'espai de disc del dispositiu és molt baix</translation>
 <translation id="4763408175235639573">S'han permès les galetes següents en visitar aquesta pàgina</translation>
 <translation id="4765582662863429759">Permet que Missatges Android retransmeti els missatges de text del telèfon al teu Chromebook</translation>
+<translation id="476598255842811483">Ningú, tret que obris la funció Compartició Nearby al teu dispositiu</translation>
 <translation id="4768332406694066911">Tens certificats d'aquestes organitzacions que t'identifiquen</translation>
 <translation id="477647109558161443">Crea una drecera de l'escriptori</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6164005077879661055">Tots els fitxers i les dades locals associats amb l'usuari supervisat se suprimiran permanentment quan aquest usuari supervisat se suprimeixi. És possible que el gestor encara pugui veure els llocs web visitats i la configuració d'aquest usuari supervisat a la pàgina <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166185671393271715">Importeu contrasenyes a Chrome</translation>
+<translation id="616831107264507309">Ho vull llegir més tard</translation>
 <translation id="6169040057125497443">Comprova el micròfon.</translation>
 <translation id="6169666352732958425">L'escriptori no es pot emetre.</translation>
 <translation id="6170470584681422115">Entrepà</translation>
@@ -5668,6 +5671,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="786073089922909430">Servei: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Baixades</translation>
 <translation id="7864539943188674973">Desactiva el Bluetooth</translation>
+<translation id="7866352732146932341">Els dispositius a prop teu quan la funció Compartició Nearby està oberta al teu dispositiu</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: vinculat</translation>
 <translation id="7870730066603611552">Mostra les opcions de sincronització en finalitzar la configuració</translation>
 <translation id="7870790288828963061">No s'ha trobat cap aplicació de Quiosc amb una versió més nova. No hi ha res per actualitzar. Extraieu la memòria USB.</translation>
@@ -6673,7 +6677,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9063208415146866933">Error des de la línia <ph name="ERROR_LINE_START" /> fins a la <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Activa Emplenament automàtic per emplenar els formularis amb un sol clic</translation>
 <translation id="9065203028668620118">Edita</translation>
-<translation id="9065772380960598487">Afegeix a Ho vull llegir més tard</translation>
 <translation id="9066773882585798925">Sent text en veu alta</translation>
 <translation id="9066782832737749352">Text a parla</translation>
 <translation id="9068849894565669697">Selecció de color</translation>
@@ -6818,7 +6821,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="947329552760389097">&amp;Inspecciona els elements</translation>
 <translation id="951991426597076286">Rebutja</translation>
 <translation id="952992212772159698">No activat</translation>
-<translation id="956444359529327203">Tanca les finestres de convidat</translation>
 <translation id="956500788634395331">Tens protecció contra les extensions potencialment perjudicials</translation>
 <translation id="957960681186851048">Aquest lloc web ha provat de baixar diversos fitxers automàticament</translation>
 <translation id="9580706199804957">No s'ha pogut establir la connexió amb els serveis de Google</translation>

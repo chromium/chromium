@@ -1287,6 +1287,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2505127913256479918">Ce compte supervisé sera supprimé prochainement</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Écran #}one{Écran #}other{Écran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> sur <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Appareils à proximité si leurs utlisateurs ont ouvert Partage à proximité</translation>
 <translation id="250704661983564564">Mode d'affichage de l'écran</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> mis en pause</translation>
@@ -3138,6 +3139,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4762718786438001384">Très peu d'espace disque disponible sur l'appareil</translation>
 <translation id="4763408175235639573">Les cookies suivants étaient autorisés lorsque vous avez consulté cette page</translation>
 <translation id="4765582662863429759">Autorise Android Messages à transmettre les SMS de votre téléphone à votre Chromebook</translation>
+<translation id="476598255842811483">Personne, sauf si vous avez ouvert Partage à proximité sur votre appareil</translation>
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4285,6 +4287,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6164005077879661055">Tous les fichiers et les données locales associés à l'utilisateur supervisé seront définitivement supprimés en même temps que cet utilisateur. Le gestionnaire peut toujours accéder aux sites Web consultés par l'utilisateur supervisé et aux paramètres de celui-ci à l'adresse <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166185671393271715">Importer des mots de passe dans Chrome</translation>
+<translation id="616831107264507309">Lire plus tard</translation>
 <translation id="6169040057125497443">Veuillez vérifier votre micro.</translation>
 <translation id="6169666352732958425">Impossible de caster le bureau</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -5669,6 +5672,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7864539943188674973">Désactiver le Bluetooth</translation>
+<translation id="7866352732146932341">Appareils à proximité si vous avez ouvert Partage à proximité sur votre appareil</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> associé</translation>
 <translation id="7870730066603611552">Vérifier les options de synchronisation après la configuration</translation>
 <translation id="7870790288828963061">Aucune nouvelle version d'une application kiosque n'a été trouvée. Aucune mise à jour n'est disponible. Veuillez débrancher la clé USB.</translation>
@@ -6674,7 +6678,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Activer la saisie automatique pour remplir les formulaires d'un simple clic</translation>
 <translation id="9065203028668620118">Modifier</translation>
-<translation id="9065772380960598487">Ajouter à la liste "Lire plus tard"</translation>
 <translation id="9066773882585798925">Écouter un texte lu à voix haute</translation>
 <translation id="9066782832737749352">Synthèse vocale</translation>
 <translation id="9068849894565669697">Sélectionner couleur</translation>
@@ -6819,7 +6822,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="947329552760389097">&amp;Examiner les éléments</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952992212772159698">Désactivé</translation>
-<translation id="956444359529327203">Fermer les fenêtres ouvertes en tant qu'invité</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement dangereuses</translation>
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>
 <translation id="9580706199804957">Impossible de se connecter aux services Google</translation>

@@ -670,7 +670,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2077129598763517140">Usar aceleração de hardware quando disponível</translation>
 <translation id="2077273864382355561">Intervalo de desligamento da tela no funcionamento com energia da bateria</translation>
 <translation id="2082205219176343977">Configurar a versão mínima permitida do Chrome para o dispositivo.</translation>
-<translation id="209586405398070749">Canal Estável</translation>
+<translation id="209586405398070749">Canal Stable</translation>
 <translation id="2098658257603918882">Ativar relato de uso e dados relacionados a falhas</translation>
 <translation id="2104418465060359056">Fornecer informações sobre extensões e plug-ins</translation>
 <translation id="2106627642643925514">Modifica o modo padrão de impressão com PIN. Se o modo não estiver disponível, a política será ignorada.</translation>
@@ -2653,11 +2653,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Será reinicializado quando o usuário sair se o Android tiver sido iniciado.</translation>
-<translation id="4950900960525118567">Esse recurso ativa sugestões de novos conteúdos para você conhecer. Inclui apps, páginas da Web e muito mais.
-      Se a política for definida como verdadeira, as sugestões de novos conteúdos serão ativadas.
-      Se ela for definida como falsa, as sugestões serão desativadas.
-      Se a política não for definida, as sugestões serão desativadas para os usuários gerenciados.
-      </translation>
 <translation id="4952347392677351397">Se a política for definida como 1, os sites poderão acessar e usar sensores de luz e movimento. Se for definida como 2, os sites não poderão acessar os sensores.
 
       Se a política não for definida, a <ph name="ALLOW_SENSORS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1566281227936819866">Zobrazují se uložené platební metody</translation>
 <translation id="1717486229951421299">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na polovinu výšky.</translation>
 <translation id="207576718733492531">Seznam identifikačních údajů k vyplnění při klepnutí je zavřený.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Seznam identifikačních údajů k vyplnění při klepnutí je otevřený na celou výšku.</translation>
 <translation id="6393156038355142111">Navrhnout silné heslo</translation>
 <translation id="6696046606263842994">Vyplnit heslo</translation>
+<translation id="7029809446516969842">Hesla</translation>
 <translation id="7299100402441711551">Zobrazit adresy</translation>
 <translation id="7494879913343971937">Zobrazovat hesla</translation>
 <translation id="7758428186423745764">Vyplnit platební metodu</translation>

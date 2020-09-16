@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="1383876407941801731">Szukaj</translation>
 <translation id="1566281227936819866">Pokazuję zapisane formy płatności</translation>
 <translation id="1717486229951421299">Lista uprawnień do wypełnienia po kliknięciu jest otwarta do połowy wysokości.</translation>
 <translation id="207576718733492531">Lista uprawnień do wypełnienia po kliknięciu jest zamknięta.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Lista uprawnień do wypełnienia po kliknięciu jest otwarta na całą wysokość.</translation>
 <translation id="6393156038355142111">Zaproponuj silne hasło</translation>
 <translation id="6696046606263842994">Uzupełnij hasło</translation>
+<translation id="7029809446516969842">Hasła</translation>
 <translation id="7299100402441711551">Pokaż adresy</translation>
 <translation id="7494879913343971937">Pokazuj hasła</translation>
 <translation id="7758428186423745764">Uzupełnij formę płatności</translation>

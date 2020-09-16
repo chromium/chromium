@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1383876407941801731">검색</translation>
 <translation id="1566281227936819866">저장된 결제 수단 표시 중</translation>
 <translation id="1717486229951421299">터치 시 작성되는 사용자 인증 정보 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="207576718733492531">터치 시 작성되는 사용자 인증 정보 목록이 닫혔습니다.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">터치 시 작성되는 사용자 인증 정보 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="6393156038355142111">안전한 비밀번호 추천</translation>
 <translation id="6696046606263842994">비밀번호 입력</translation>
+<translation id="7029809446516969842">비밀번호</translation>
 <translation id="7299100402441711551">주소 표시</translation>
 <translation id="7494879913343971937">비밀번호 표시</translation>
 <translation id="7758428186423745764">결제 수단 입력</translation>

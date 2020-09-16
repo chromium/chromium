@@ -1287,6 +1287,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2505127913256479918">Esta cuenta supervisada se eliminará pronto</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Pantalla #}other{Pantalla #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Dispositivos cercanos a ti cuando Compartir con Nearby esté abierto en esos dispositivos</translation>
 <translation id="250704661983564564">Disposición de las pantallas</translation>
 <translation id="2507253002925770350">Ticket eliminado</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> está en pausa</translation>
@@ -3137,6 +3138,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4762718786438001384">El espacio en disco del dispositivo está prácticamente agotado</translation>
 <translation id="4763408175235639573">Se han permitido las siguientes cookies al visitar esta página</translation>
 <translation id="4765582662863429759">Permite que Mensajes Android transmita mensajes desde tu teléfono al Chromebook</translation>
+<translation id="476598255842811483">Nadie, salvo que abras Compartir con Nearby en tu dispositivo</translation>
 <translation id="4768332406694066911">Tienes certificados de estas organizaciones que te identifican</translation>
 <translation id="477647109558161443">Crear un acceso directo del escritorio</translation>
 <translation id="4776917500594043016">Contraseña de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4283,6 +4285,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6164005077879661055">Todos los archivos y datos locales asociados al usuario supervisado se eliminarán de forma permanente una vez que se haya eliminado este usuario supervisado. Es posible que el administrador pueda seguir viendo la configuración y los sitios web visitados de este usuario supervisado en la página <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166185671393271715">Importar contraseñas a Chrome</translation>
+<translation id="616831107264507309">Leer más adelante</translation>
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169666352732958425">No se ha podido enviar el escritorio.</translation>
 <translation id="6170470584681422115">Bocadillo</translation>
@@ -5667,6 +5670,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="786073089922909430">Servicio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7864539943188674973">Inhabilitar Bluetooth</translation>
+<translation id="7866352732146932341">Dispositivos cercanos a ti cuando Compartir con Nearby esté abierto en tu dispositivo</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: vinculado</translation>
 <translation id="7870730066603611552">Revisar opciones de sincronización después de la configuración</translation>
 <translation id="7870790288828963061">No se ha encontrado ninguna aplicación de kiosco con una versión más reciente. No hay nada que actualizar. Extrae el dispositivo USB.</translation>
@@ -6672,7 +6676,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9063208415146866933">Error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Habilita Autocompletar para rellenar formularios web con un solo clic</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9065772380960598487">Añadir a Leer más tarde</translation>
 <translation id="9066773882585798925">Escuchar el texto leído en voz alta</translation>
 <translation id="9066782832737749352">Síntesis de voz</translation>
 <translation id="9068849894565669697">Seleccionar color</translation>
@@ -6817,7 +6820,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="952992212772159698">Sin activar</translation>
-<translation id="956444359529327203">Cerrar invitado</translation>
 <translation id="956500788634395331">Tienes protección frente a extensiones potencialmente dañinas</translation>
 <translation id="957960681186851048">Este sitio web ha intentado descargar varios archivos automáticamente</translation>
 <translation id="9580706199804957">No se ha podido conectar con los servicios de Google</translation>

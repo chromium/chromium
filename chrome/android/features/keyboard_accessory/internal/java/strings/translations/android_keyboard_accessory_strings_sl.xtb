@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1383876407941801731">Išči</translation>
 <translation id="1566281227936819866">Prikaz shranjenih plačilnih sredstev</translation>
 <translation id="1717486229951421299">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polovični višini.</translation>
 <translation id="207576718733492531">Seznam poverilnic, ki naj se izpolnijo ob dotiku, je zaprt.</translation>
@@ -14,6 +15,7 @@
 <translation id="5441504010984421144">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polni višini.</translation>
 <translation id="6393156038355142111">Predlagaj zapleteno geslo</translation>
 <translation id="6696046606263842994">Izpolni geslo</translation>
+<translation id="7029809446516969842">Gesla</translation>
 <translation id="7299100402441711551">Pokaži naslove</translation>
 <translation id="7494879913343971937">Prikaz gesel</translation>
 <translation id="7758428186423745764">Izpolni plačilno sredstvo</translation>

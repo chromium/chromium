@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">ستتم إزالة حسابك الخاضع للإشراف قريبًا</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{شاشة #}zero{شاشة #}two{شاشة #}few{شاشة #}many{شاشة #}other{شاشة #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> من <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">الأجهزة القريبة منك عندما تكون ميزة "المشاركة عن قرب" مفعَّلة فيها</translation>
 <translation id="250704661983564564">ترتيب العرض</translation>
 <translation id="2507253002925770350">تمت إزالة التذكرة</translation>
 <translation id="2507397597949272797">تم إيقاف <ph name="NAME" /> مؤقتًا</translation>
@@ -3135,6 +3136,7 @@
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>
 <translation id="4763408175235639573">تم ضبط ملفات تعريف الارتباط التالية عند عرض هذه الصفحة</translation>
 <translation id="4765582662863429759">‏للسماح لتطبيق "رسائل Android" بترحيل الرسائل النصية من هاتفك إلى جهاز Chromebook</translation>
+<translation id="476598255842811483">لا أحد ما لم تُفعِّل ميزة "المشاركة عن قرب" على جهازك</translation>
 <translation id="4768332406694066911">لديك شهادات تحدد هويتك من هذه المؤسسات</translation>
 <translation id="477647109558161443">إنشاء اختصار على سطح المكتب</translation>
 <translation id="4776917500594043016">كلمة مرور <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4283,6 +4285,7 @@
 إزالة هذا المستخدم الذي يخضع للإشراف. وقد تظل المواقع الإلكترونية التي تم الانتقال إليها والإعدادات التابعة للمستخدم الذي يخضع للإشراف مرئية للمدير على <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166185671393271715">‏استيراد كلمات المرور إلى Chrome</translation>
+<translation id="616831107264507309">القراءة لاحقًا</translation>
 <translation id="6169040057125497443">الرجاء التحقق من الميكروفون.</translation>
 <translation id="6169666352732958425">تعذر إرسال سطح المكتب.</translation>
 <translation id="6170470584681422115">ساندويتش</translation>
@@ -4970,7 +4973,7 @@
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7017004637493394352">‏قل "Ok Google" مرة أخرى</translation>
 <translation id="7017219178341817193">إضافة صفحة جديدة</translation>
-<translation id="7017354871202642555">لا يمكن تعيين الوضع بعد تعيين النافذة.</translation>
+<translation id="7017354871202642555">لا يمكن ضبط الوضع بعد تعيين النافذة.</translation>
 <translation id="7018275672629230621">الاطّلاع على سجل التصفح وتغييره</translation>
 <translation id="7019805045859631636">سريع</translation>
 <translation id="7022562585984256452">تم ضبط صفحتك الرئيسية.</translation>
@@ -5667,6 +5670,7 @@
 <translation id="786073089922909430">الخدمة: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ال&amp;تنزيلات</translation>
 <translation id="7864539943188674973">إيقاف البلوتوث</translation>
+<translation id="7866352732146932341">الأجهزة القريبة منك عندما تكون ميزة "المشاركة عن قرب" مفعَّلة على جهازك</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - تم الإقران</translation>
 <translation id="7870730066603611552">مراجعة خيارات المزامنة بعد الإعداد</translation>
 <translation id="7870790288828963061">‏لا توجد إصدارات أحدث لتطبيق Kiosk. لا يوجد شيء لتحديثه. يُرجى إزالة جهاز USB.</translation>
@@ -6672,7 +6676,6 @@
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">تفعيل الملء التلقائي لملء النماذج بنقرة واحدة</translation>
 <translation id="9065203028668620118">تعديل</translation>
-<translation id="9065772380960598487">إضافة إلى "القراءة لاحقًا"</translation>
 <translation id="9066773882585798925">سماع النص بصوت عالٍ</translation>
 <translation id="9066782832737749352">تحويل النَّص إلى الكلام</translation>
 <translation id="9068849894565669697">اختيار اللون</translation>
@@ -6817,7 +6820,6 @@
 <translation id="947329552760389097">وعناصر الفحص</translation>
 <translation id="951991426597076286">رفض</translation>
 <translation id="952992212772159698">غير نشطة</translation>
-<translation id="956444359529327203">إغلاق جميع النوافذ في وضع "الضيف"</translation>
 <translation id="956500788634395331">تمت حمايتك من إضافات يُحتمل أن تكون ضارة.</translation>
 <translation id="957960681186851048">حاول هذا الموقع تنزيل عدة ملفات تلقائيًا</translation>
 <translation id="9580706199804957">‏تعذر الاتصال بخدمات Google</translation>

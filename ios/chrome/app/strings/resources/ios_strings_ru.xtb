@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Завершите то, что вы делали в другом открытом окне Chrome.</translation>
 <translation id="1974060860693918893">Дополнительные</translation>
 <translation id="1989112275319619282">Выбрать</translation>
+<translation id="1992734845128748707">Изменить браузер по умолчанию</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5327248766486351172">Название</translation>
 <translation id="5339316356165661760">Включить синхронизацию</translation>
-<translation id="5352285283572729470">Это управляемая настройка</translation>
 <translation id="5388358297987318779">Открыть изображение</translation>
 <translation id="5407969256130905701">Сбросить изменения</translation>
 <translation id="5409365236829784218">Нет приложений, поддерживающих файлы этого типа.</translation>

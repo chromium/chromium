@@ -1283,6 +1283,7 @@
 <translation id="2505127913256479918">这个受监管帐号很快就会被移除</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{屏幕 #}other{屏幕 #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">您附近已开启“附近分享”功能的设备</translation>
 <translation id="250704661983564564">显示屏排列方式</translation>
 <translation id="2507253002925770350">票据已移除</translation>
 <translation id="2507397597949272797"><ph name="NAME" />已被暂停</translation>
@@ -3133,6 +3134,7 @@
 <translation id="4762718786438001384">设备磁盘空间严重不足</translation>
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
+<translation id="476598255842811483">无（除非您的设备开启“附近分享”功能）</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
 <translation id="477647109558161443">创建桌面快捷方式</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
@@ -4279,6 +4281,7 @@
 <translation id="6164005077879661055">删除该受监管用户后，与其相关联的所有文件和本地数据都会被永久删除，但管理员仍可以在 <ph name="MANAGEMENT_URL" /> 上查看该用户的设置和访问过的网站。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166185671393271715">将密码导入到 Chrome 中</translation>
+<translation id="616831107264507309">稍后阅读</translation>
 <translation id="6169040057125497443">请检查您的麦克风。</translation>
 <translation id="6169666352732958425">无法投射桌面。</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -5663,6 +5666,7 @@
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
+<translation id="7866352732146932341">当您的设备开启“附近分享”功能时位于您附近的设备</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
 <translation id="7870730066603611552">完成设置后查看同步选项</translation>
 <translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
@@ -6667,7 +6671,6 @@
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9064275926664971810">启用自动填充功能后，只需点击一次即可填写多个表单</translation>
 <translation id="9065203028668620118">编辑</translation>
-<translation id="9065772380960598487">添加到“稍后阅读”</translation>
 <translation id="9066773882585798925">让系统大声朗读文字</translation>
 <translation id="9066782832737749352">文字转语音</translation>
 <translation id="9068849894565669697">选择颜色</translation>
@@ -6812,7 +6815,6 @@
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="952992212772159698">未激活</translation>
-<translation id="956444359529327203">关闭访客窗口</translation>
 <translation id="956500788634395331">系统会保护您免受可能有害的扩展程序的威胁</translation>
 <translation id="957960681186851048">此网站试图自动下载多个文件</translation>
 <translation id="9580706199804957">无法连接到 Google 服务</translation>

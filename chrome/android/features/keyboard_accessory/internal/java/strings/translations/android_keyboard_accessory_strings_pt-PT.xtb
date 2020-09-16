@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1566281227936819866">A mostrar métodos de pagamento guardados…</translation>
 <translation id="1717486229951421299">Lista de credenciais a preencher com o toque aberta a meia altura.</translation>
 <translation id="207576718733492531">A lista de credenciais a preencher com o toque está fechada.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Lista de credenciais a preencher com o toque aberta em ecrã cheio.</translation>
 <translation id="6393156038355142111">Sugerir palavra-passe forte</translation>
 <translation id="6696046606263842994">Preencha a palavra-passe</translation>
+<translation id="7029809446516969842">Palavras-passe</translation>
 <translation id="7299100402441711551">Mostrar endereços</translation>
 <translation id="7494879913343971937">Mostrar palavras-passe</translation>
 <translation id="7758428186423745764">Preencha o método de pagamento</translation>

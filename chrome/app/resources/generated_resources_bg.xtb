@@ -1284,6 +1284,7 @@
 <translation id="2505127913256479918">Този контролиран профил скоро ще бъде премахнат</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> от <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Устройствата в близост, на които е отворена функцията „Споделяне наблизо“</translation>
 <translation id="250704661983564564">Позициониране на дисплеите</translation>
 <translation id="2507253002925770350">Пропускът бе премахнат</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> е на пауза</translation>
@@ -3137,6 +3138,7 @@
 <translation id="4762718786438001384">Мястото на диска на устройството е критично малко</translation>
 <translation id="4763408175235639573">Следните „бисквитки“ бяха зададени, когато разгледахте тази страница</translation>
 <translation id="4765582662863429759">Позволява на Android Messages да предава SMS съобщенията от телефона ви към вашия Chromebook</translation>
+<translation id="476598255842811483">Никой друг, освен ако не отворите функцията „Споделяне наблизо“ на устройството си</translation>
 <translation id="4768332406694066911">Имате идентифициращи ви сертификати от тези организации</translation>
 <translation id="477647109558161443">Създаване на пряк път на работния плот</translation>
 <translation id="4776917500594043016">Парола за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">Всички файлове и локални данни, свързани с контролирания потребител, ще бъдат изтрити за постоянно, щом той бъде премахнат. Посетените уебсайтове и настройките за него може все още да се виждат от мениджъра на адрес <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6166185671393271715">Импортиране на пароли в Chrome</translation>
+<translation id="616831107264507309">Четене по-късно</translation>
 <translation id="6169040057125497443">Моля, проверете микрофона си.</translation>
 <translation id="6169666352732958425">Предаването на работния плот не е възможно.</translation>
 <translation id="6170470584681422115">Сандвич</translation>
@@ -5668,6 +5671,7 @@
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Изтегляния</translation>
 <translation id="7864539943188674973">Деактивиране на Bluetooth</translation>
+<translation id="7866352732146932341">Устройствата в близост, когато функцията „Споделяне наблизо“ е отворена на устройството ви</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – сдвоено</translation>
 <translation id="7870730066603611552">Преглед на опциите за синхронизиране след настройването</translation>
 <translation id="7870790288828963061">Няма намерени павилионни приложения с по-нова версия. Няма нищо за актуализиране. Моля, извадете USB паметта.</translation>
@@ -6673,7 +6677,6 @@
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Активиране на автоматичното попълване на формуляри с едно кликване</translation>
 <translation id="9065203028668620118">Редактиране</translation>
-<translation id="9065772380960598487">Добавяне към „Четене по-късно“</translation>
 <translation id="9066773882585798925">Прослушване на текст, прочетен на глас</translation>
 <translation id="9066782832737749352">Синтезиран говор</translation>
 <translation id="9068849894565669697">Избор на цвят</translation>
@@ -6818,7 +6821,6 @@
 <translation id="947329552760389097">&amp;Инспектиране на елементите</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
 <translation id="952992212772159698">Не е активиран</translation>
-<translation id="956444359529327203">Затваряне на прозореца в режим на гост</translation>
 <translation id="956500788634395331">Защитени сте от потенциално опасни разширения</translation>
 <translation id="957960681186851048">Този сайт опита да изтегли автоматично няколко файла</translation>
 <translation id="9580706199804957">Не можа да се установи връзка с услугите на Google</translation>

@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1989112275319619282">Examinar</translation>
+<translation id="1992734845128748707">Cambiar navegador predeterminado…</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
@@ -379,7 +380,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
-<translation id="5352285283572729470">Esta é unha opción de configuración xestionada</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
 <translation id="5409365236829784218">Ningunha aplicación instalada que poida abrir este ficheiro.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1383876407941801731">Search</translation>
 <translation id="1566281227936819866">সেভ করা পেমেন্টের পদ্ধতি দেখানো হচ্ছে</translation>
 <translation id="1717486229951421299">টাচ করে পূরণ করা যাবে এমন ক্রেডেনশিয়ালের তালিকা হাফ স্ক্রিন জুড়ে খুলেছে।</translation>
 <translation id="207576718733492531">টাচ করে পূরণ করা যাবে এমন ক্রেডেনশিয়ালের তালিকা বন্ধ রয়েছে।</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">টাচ করে পূরণ করা যাবে এমন ক্রেডেনশিয়ালের তালিকা ফুল স্ক্রিন জুড়ে খুলেছে।</translation>
 <translation id="6393156038355142111">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
 <translation id="6696046606263842994">পাসওয়ার্ড লিখুন</translation>
+<translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7299100402441711551">ঠিকানা দেখুন</translation>
 <translation id="7494879913343971937">পাসওয়ার্ড দেখান</translation>
 <translation id="7758428186423745764">পেমেন্টের পদ্ধতি লিখুন</translation>

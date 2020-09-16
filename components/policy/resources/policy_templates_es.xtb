@@ -2685,11 +2685,6 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
           Nota: <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Reiniciar al cerrar sesión si se ha iniciado Android.</translation>
-<translation id="4950900960525118567">Esta función habilita sugerencias sobre contenido nuevo por descubrir. Incluye aplicaciones, páginas web y más.
-      Si se le asigna el valor "True" a esta política, se habilitarán las sugerencias sobre contenido nuevo por descubrir.
-      Si se le asigna el valor "False", se inhabilitarán las sugerencias sobre contenido nuevo por descubrir.
-      Si no se le asigna ningún valor a esta política, las sugerencias sobre contenido nuevo por descubrir se inhabilitarán para los usuarios administrados.
-      </translation>
 <translation id="4952347392677351397">Si se le asigna el valor 1 a esta política, los sitios web podrán usar y acceder a los sensores, como los de luz o movimiento. Si se le asigna el valor 2, se denegará el acceso a los sensores.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
@@ -2957,6 +2952,7 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="5293044154216294358">Si se asigna el valor "Verdadero" a esta política, los usuarios podrán jugar al juego del dinosaurio. Si se le asigna el valor "Falso", los usuarios no podrán acceder a este huevo de pascua cuando el dispositivo esté sin conexión.
 
       Si no se le asigna ningún valor, los usuarios no podrán jugar al juego del dinosaurio en dispositivos <ph name="PRODUCT_OS_NAME" /> registrados, pero podrán hacerlo en otras circunstancias.</translation>
+<translation id="529457411593078576">Habilitar los Términos del Servicio cuando CCT se ejecute por primera vez</translation>
 <translation id="5306186200045823863">Confiar en la infraestructura de PKI antigua de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo de incógnito</translation>
 <translation id="5311275381462687162">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> predeterminada</translation>
@@ -4586,6 +4582,17 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="747014869399137701">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar notificaciones de escritorio. Si se le asigna el valor 2, se denegarán las notificaciones de escritorio.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="7471828226549672843">De forma predeterminada, se mostrarán los Términos del Servicio la primera vez que se ejecute CCT. Si se asigna el valor "Inhabilitada" a esta política, no se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute ni posteriormente. Si se le asigna el valor "Habilitada" o no se le asigna ninguno, se mostrará el cuadro de diálogo de Términos del Servicio la primera vez que se ejecute. A continuación se describen otras advertencias:
+
+      - Esta política solo funciona en dispositivos Android totalmente gestionados que puedan configurar los proveedores de Unified Endpoint Management (gestión unificada de terminales).
+
+      - Si se inhabilita esta política, la política BrowserSignin no tendrá ningún efecto.
+
+      - Si se inhabilita esta política, no se enviarán métricas al servidor.
+
+      - Si se inhabilita esta política, las funciones del navegador estarán limitadas.
+
+      - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>

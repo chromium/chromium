@@ -1287,6 +1287,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2505127913256479918">Dit account dat onder toezicht staat, wordt binnenkort verwijderd</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Scherm #}other{Scherm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> van <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Apparaten bij jou in de buurt als 'Dichtbij delen' is geopend op het betreffende apparaat</translation>
 <translation id="250704661983564564">Schermindeling</translation>
 <translation id="2507253002925770350">Ticket verwijderd</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> is onderbroken</translation>
@@ -3138,6 +3139,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4762718786438001384">Er is zeer weinig schijfruimte beschikbaar op het apparaat</translation>
 <translation id="4763408175235639573">De volgende cookies zijn opgeslagen toen je deze pagina bekeek</translation>
 <translation id="4765582662863429759">Hiermee kan Android Berichten sms'jes van je telefoon naar je Chromebook doorsturen</translation>
+<translation id="476598255842811483">Niemand tenzij je 'Dichtbij delen' opent op je apparaat</translation>
 <translation id="4768332406694066911">Je hebt certificaten van deze organisaties waarmee je wordt geïdentificeerd</translation>
 <translation id="477647109558161443">Een snelkoppeling maken</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6164005077879661055">Alle bestanden en lokale gegevens gekoppeld aan de gebruiker met beperkte rechten worden permanent verwijderd zodra de gebruiker met beperkte rechten is verwijderd. Bezochte websites en instellingen voor deze gebruiker met beperkte rechten kunnen nog steeds zichtbaar zijn voor de beheerder op <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6166185671393271715">Wachtwoorden importeren in Chrome</translation>
+<translation id="616831107264507309">Later lezen</translation>
 <translation id="6169040057125497443">Controleer je microfoon</translation>
 <translation id="6169666352732958425">Kan desktop niet casten.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -5667,6 +5670,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7864539943188674973">Bluetooth uitschakelen</translation>
+<translation id="7866352732146932341">Apparaten bij jou in de buurt als 'Dichtbij delen' is geopend op je apparaat</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - gekoppeld</translation>
 <translation id="7870730066603611552">Synchronisatieopties bekijken na de installatie</translation>
 <translation id="7870790288828963061">Er zijn geen Kiosk-apps met een nieuwere versie gevonden. Er is niets om te updaten. Verwijder de USB-stick.</translation>
@@ -6673,7 +6677,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="9063208415146866933">Fout van regel <ph name="ERROR_LINE_START" /> tot en met <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Automatisch aanvullen inschakelen om formulieren met één klik in te vullen</translation>
 <translation id="9065203028668620118">Bewerken</translation>
-<translation id="9065772380960598487">Toevoegen aan 'Later lezen'</translation>
 <translation id="9066773882585798925">Tekst hardop voorlezen</translation>
 <translation id="9066782832737749352">Tekst-naar-spraak</translation>
 <translation id="9068849894565669697">Kleur selecteren</translation>
@@ -6818,7 +6821,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="947329552760389097">Elementen &amp;inspecteren</translation>
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="952992212772159698">Niet geactiveerd</translation>
-<translation id="956444359529327203">Gastvensters sluiten</translation>
 <translation id="956500788634395331">Je bent beschermd tegen potentieel schadelijke extensies</translation>
 <translation id="957960681186851048">Deze site heeft geprobeerd automatisch meerdere bestanden te downloaden</translation>
 <translation id="9580706199804957">Kan geen verbinding maken met Google-services</translation>

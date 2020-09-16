@@ -2637,11 +2637,6 @@
           注意：<ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="494613465159630803">Cast 接收器</translation>
 <translation id="494924690085329212">在用户退出后重新启动（如果 Android 已启动）。</translation>
-<translation id="4950900960525118567">如果您启用了此功能，系统便会显示建议的新内容以供探索，包括应用、网页等。
-      如果此政策设为 True，系统会启用“建议新内容以供探索”功能。
-      如果此政策设为 False，系统会停用“建议新内容以供探索”功能。
-      如果此政策未设置，系统会为受管用户停用“建议新内容以供探索”功能。
-      </translation>
 <translation id="4952347392677351397">如果此政策设为 1，系统会允许网站访问和使用传感器（例如动作传感器和光传感器）。如果此政策设为 2，系统会禁止使用传感器。
 
       如果此政策未设置，则意味着 <ph name="ALLOW_SENSORS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
@@ -2896,6 +2891,7 @@
 <translation id="5293044154216294358">如果此政策设为 True，用户可以玩恐龙游戏。如果此政策设为 False，用户无法在设备处于离线状态时玩恐龙复活节彩蛋游戏。
 
       如果此政策未设置，用户无法在已注册的 <ph name="PRODUCT_OS_NAME" />上玩恐龙游戏，但可在其他环境下玩这款游戏。</translation>
+<translation id="529457411593078576">在 CCT 首次运行期间启用《服务条款》</translation>
 <translation id="5306186200045823863">信任 Symantec Corporation 的旧版 PKI 基础架构</translation>
 <translation id="5307432759655324440">隐身模式的可用性</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
@@ -4514,6 +4510,17 @@
 <translation id="747014869399137701">如果此政策设为 1，系统会允许网站显示桌面通知。如果此政策设为 2，系统会禁止网站显示桌面通知。
 
       如果此政策未设置，则意味着 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
+<translation id="7471828226549672843">默认情况下，当 CCT 首次运行时，系统会显示《服务条款》。如果此政策已停用，《服务条款》对话框在首次运行体验或后续运行期间就不会出现。如果此政策已启用或未设置，《服务条款》对话框会在首次运行体验期间出现。其他注意事项：
+
+      - 此政策仅适用于可由统一端点管理供应商配置的全代管式 Android 设备。
+
+      - 如果此政策已停用，BrowserSignin 政策将不会产生任何效力。
+
+      - 如果此政策已停用，系统不会将指标发送给服务器。
+
+      - 如果此政策已停用，浏览器的功能会受到限制。
+
+      - 如果此政策已停用，管理员必须告知设备的最终用户。</translation>
 <translation id="747275827471712187">将这些网站上的 Cookie 恢复为旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行为</translation>
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>

@@ -4285,6 +4285,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6164005077879661055">Tutti i file e i dati locali associati all'utente controllato verranno eliminati definitivamente in seguito alla rimozione dell'utente. Le impostazioni e i siti web visitati relativi all'utente controllato potrebbero essere ancora visibili al gestore all'indirizzo <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
 <translation id="6166185671393271715">Importa le password in Chrome</translation>
+<translation id="616831107264507309">Leggi dopo</translation>
 <translation id="6169040057125497443">Controlla il microfono.</translation>
 <translation id="6169666352732958425">Impossibile trasmettere il desktop.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -6674,7 +6675,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9063208415146866933">Errore dalla riga <ph name="ERROR_LINE_START" /> alla riga <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Attiva la funzione Compilazione automatica per compilare i moduli con un singolo clic</translation>
 <translation id="9065203028668620118">Modifica</translation>
-<translation id="9065772380960598487">Aggiungi a Leggi più tardi</translation>
 <translation id="9066773882585798925">Attiva la lettura ad alta voce del testo</translation>
 <translation id="9066782832737749352">Sintesi vocale</translation>
 <translation id="9068849894565669697">Seleziona colore</translation>
@@ -6819,7 +6819,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952992212772159698">Non attivo</translation>
-<translation id="956444359529327203">Chiudi Ospite</translation>
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>
 <translation id="9580706199804957">Impossibile connettersi ai servizi Google</translation>

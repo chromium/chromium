@@ -1287,6 +1287,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2505127913256479918">Ovaj nadzirani račun uskoro će se ukloniti</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Zaslon #}one{Zaslon #}few{Zaslon #}other{Zaslon #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> od <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Uređaji u vašoj blizini kad je na njima otvoreno Dijeljenje s Android uređajima</translation>
 <translation id="250704661983564564">Raspored na zaslonu</translation>
 <translation id="2507253002925770350">Tiket uklonjen</translation>
 <translation id="2507397597949272797">Aplikacija <ph name="NAME" /> je pauzirana</translation>
@@ -3138,6 +3139,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4762718786438001384">Količina prostora na disku uređaja kritično je mala</translation>
 <translation id="4763408175235639573">Prilikom pregledavanja ove stranice postavljeni su sljedeći kolačići</translation>
 <translation id="4765582662863429759">Omogućuje Android porukama prijenos tekstnih poruka s vašeg telefona na Chromebook</translation>
+<translation id="476598255842811483">Nitko, osim ako na svojem uređaju otvorite Dijeljenje s Android uređajima</translation>
 <translation id="4768332406694066911">Imate certifikate ovih organizacija koji vas identificiraju</translation>
 <translation id="477647109558161443">Izradi novi prečac na radnoj površini</translation>
 <translation id="4776917500594043016">Zaporka za adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6164005077879661055">Sve datoteke i lokalni podaci povezani sa zaštićenim korisnikom trajno će se izbrisati kada se taj korisnik ukloni. Web-lokacije koje je taj korisnik posjetio i njegove postavke mogu i dalje biti vidljive upravitelju na adresi <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166185671393271715">Uvoz zaporki u Chrome</translation>
+<translation id="616831107264507309">Pročitajte kasnije</translation>
 <translation id="6169040057125497443">Provjerite mikrofon.</translation>
 <translation id="6169666352732958425">Emitiranje radne površine nije moguće.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -5668,6 +5671,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="786073089922909430">Usluga: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Preuzimanje</translation>
 <translation id="7864539943188674973">Onemogući Bluetooth</translation>
+<translation id="7866352732146932341">Uređaji u vašoj blizini kad je na vašem uređaju otvoreno Dijeljenje s Android uređajima</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – uparen</translation>
 <translation id="7870730066603611552">Pregledajte opcije sinkronizacije nakon postavljanja</translation>
 <translation id="7870790288828963061">Nisu pronađene aplikacije kioska s novijom verzijom. Nema ažuriranja. Uklonite USB privjesak.</translation>
@@ -6673,7 +6677,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9063208415146866933">Pogreška od <ph name="ERROR_LINE_START" />. do <ph name="ERROR_LINE_END" />. retka</translation>
 <translation id="9064275926664971810">Omogućuje automatsko popunjavanje obrazaca jednim klikom</translation>
 <translation id="9065203028668620118">Uredi</translation>
-<translation id="9065772380960598487">Dodaj na popis za kasnije čitanje</translation>
 <translation id="9066773882585798925">Slušanje teksta izgovorenog naglas</translation>
 <translation id="9066782832737749352">Pretvaranje teksta u govor</translation>
 <translation id="9068849894565669697">Odaberite boju</translation>
@@ -6818,7 +6821,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="947329552760389097">&amp;Provjeri elemente</translation>
 <translation id="951991426597076286">Odbijam</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
-<translation id="956444359529327203">Zatvori prozore u načinu rada za goste</translation>
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih proširenja</translation>
 <translation id="957960681186851048">Ta je web-lokacija pokušala automatski preuzeti više datoteka</translation>
 <translation id="9580706199804957">Povezivanje s Googleovim uslugama nije uspjelo</translation>

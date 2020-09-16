@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">Надгледуваната сметка ќе биде отстранета наскоро</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}one{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> од <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Уредите во ваша близина со отворена „Споделување во близина“</translation>
 <translation id="250704661983564564">Подредување на екранот</translation>
 <translation id="2507253002925770350">Билетот е отстранет</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> е на пауза</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">Просторот на дискот на уредот е критично низок</translation>
 <translation id="4763408175235639573">Кога ја посетивте страницава, се поставија следниве колачиња</translation>
 <translation id="4765582662863429759">Дозволува Android Messages да пренесува SMS-пораки од телефонот во вашиот Chromebook</translation>
+<translation id="476598255842811483">Никој, освен ако ја отворите „Споделување во близина“ на вашиот уред</translation>
 <translation id="4768332406694066911">Имате сертификати од овие организации што ве идентификуваат</translation>
 <translation id="477647109558161443">Создајте кратенка за работна површина</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">Сите датотеки и локални податоци што се поврзани со надгледуваниот корисник трајно ќе се избришат откако тој ќе се отстрани. Посетените веб-локации и поставки за надгледуваниот корисник можеби уште ќе бидат видливи за управникот на <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6166185671393271715">Увоз на лозинки во Chrome</translation>
+<translation id="616831107264507309">Прочитајте подоцна</translation>
 <translation id="6169040057125497443">Проверете го микрофонот.</translation>
 <translation id="6169666352732958425">Не може да се емитува десктопот.</translation>
 <translation id="6170470584681422115">Сендвич</translation>
@@ -5668,6 +5671,7 @@
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Преземања</translation>
 <translation id="7864539943188674973">Оневозможи Bluetooth</translation>
+<translation id="7866352732146932341">Уредите во ваша близина кога „Споделување во близина“ е отворена на вашиот уред</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7870730066603611552">Прегледајте ги опциите за синхронизација по поставувањето</translation>
 <translation id="7870790288828963061">Не се пронајдени апликации на Киоск со понова верзија. Нема што да се ажурира. Отстранете ја USB-меморијата.</translation>
@@ -6675,7 +6679,6 @@
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Овозможете „Автоматско пополнување“ за пополнување формулари со еден клик</translation>
 <translation id="9065203028668620118">Измени</translation>
-<translation id="9065772380960598487">Додај во „Прочитајте подоцна“</translation>
 <translation id="9066773882585798925">Слушнете го текстот прочитан на глас</translation>
 <translation id="9066782832737749352">Од текст во говор</translation>
 <translation id="9068849894565669697">Избери боја</translation>
@@ -6820,7 +6823,6 @@
 <translation id="947329552760389097">&amp;Проверете ги елементите</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952992212772159698">Не е активиран</translation>
-<translation id="956444359529327203">Затвори ги сите гостински</translation>
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>
 <translation id="9580706199804957">Не можеше да се поврзе со услугите на Google</translation>

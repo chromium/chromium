@@ -1286,6 +1286,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2505127913256479918">Tento kontrolovaný účet bude čoskoro odstránený</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Obrazovka #}few{Obrazovka #}many{Obrazovka #}other{Obrazovka #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Zariadenia vo vašom okolí, keď je v nich otvorené zdieľanie nablízku</translation>
 <translation id="250704661983564564">Usporiadanie zobrazenia</translation>
 <translation id="2507253002925770350">Ticket bol odstránený</translation>
 <translation id="2507397597949272797">Aplikácia <ph name="NAME" /> je pozastavená</translation>
@@ -3137,6 +3138,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4762718786438001384">Kritický nedostatok miesta na disku zariadenia</translation>
 <translation id="4763408175235639573">Počas zobrazenia tejto stránky boli nastavené nasledujúce súbory cookie</translation>
 <translation id="4765582662863429759">Umožňuje Správam pre Android prenášať textové správy z vášho telefónu do Chromebooku</translation>
+<translation id="476598255842811483">Nikto, kým v zariadení neotvoríte zdieľanie nablízku</translation>
 <translation id="4768332406694066911">Máte certifikáty z týchto organizácií, ktoré vás identifikujú</translation>
 <translation id="477647109558161443">Vytvoriť odkaz na pracovnej ploche</translation>
 <translation id="4776917500594043016">Heslo pre účet <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4283,6 +4285,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6164005077879661055">Všetky súbory a miestne údaje spojené s týmto kontrolovaným používateľom budú po jeho odstránení natrvalo odstránené. Správca bude môcť naďalej zobraziť navštívené webové stránky a nastavenia tohto používateľa na adrese <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6166185671393271715">Import hesiel do Chromu</translation>
+<translation id="616831107264507309">Prečítať neskôr</translation>
 <translation id="6169040057125497443">Skontrolujte mikrofón.</translation>
 <translation id="6169666352732958425">Plochu sa nepodarilo prenášať.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -5667,6 +5670,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Stiahnuté</translation>
 <translation id="7864539943188674973">Zakázať rozhranie Bluetooth</translation>
+<translation id="7866352732146932341">Zariadenia vo vašom okolí, keď máte v zariadení otvorené zdieľanie nablízku</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárované</translation>
 <translation id="7870730066603611552">Po nastavení prezrieť možnosti synchronizácie</translation>
 <translation id="7870790288828963061">Nenašli sa žiadne aplikácie Kiosku s novšou verziou. Nie je čo aktualizovať. Odoberte kľúč USB.</translation>
@@ -6671,7 +6675,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9063208415146866933">Chyba od riadka <ph name="ERROR_LINE_START" /> po <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Zapnúť automatické dopĺňanie a vypĺňať webové formuláre jediným kliknutím</translation>
 <translation id="9065203028668620118">Upraviť</translation>
-<translation id="9065772380960598487">Pridať do zoznamu Prečítať neskôr</translation>
 <translation id="9066773882585798925">Čítanie textu nahlas</translation>
 <translation id="9066782832737749352">Prevod textu na reč</translation>
 <translation id="9068849894565669697">Výber farby</translation>
@@ -6816,7 +6819,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="947329552760389097">&amp;Skontrolovať prvky</translation>
 <translation id="951991426597076286">Odmietnuť</translation>
 <translation id="952992212772159698">Neaktivované</translation>
-<translation id="956444359529327203">Zavrieť oknáhosťa</translation>
 <translation id="956500788634395331">Je aktivovaná ochrana pred potenciálne škodlivými rozšíreniami</translation>
 <translation id="957960681186851048">Tento web sa pokúsil automaticky stiahnuť viacero súborov</translation>
 <translation id="9580706199804957">Nepodarilo sa pripojiť k službám Google</translation>

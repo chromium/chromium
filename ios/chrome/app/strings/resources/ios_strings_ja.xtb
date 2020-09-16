@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">開いている別の Chrome ウィンドウでの作業を終了してください。</translation>
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1989112275319619282">閲覧</translation>
+<translation id="1992734845128748707">既定のブラウザを変更…</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
 <translation id="2073572773299281212">最終同期: <ph name="DAYS" /> 日前</translation>
 <translation id="2074131957428911366">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
@@ -164,7 +165,7 @@
 <translation id="2780046210906776326">メールアカウントなし</translation>
 <translation id="2781331604911854368">オン</translation>
 <translation id="2781692009645368755">Google Pay</translation>
-<translation id="2800683595868705743">タブ切り替えモードを終了</translation>
+<translation id="2800683595868705743">タブ切り替え機能を終了</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />、<ph name="STATE" />、<ph name="URL" /></translation>
 <translation id="2840687315230832938">最初の同期設定が終了していません</translation>
@@ -319,7 +320,7 @@
 <translation id="4634124774493850572">パスワードを使用</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
-<translation id="4659667755519643272">タブ切り替えモードを開始</translation>
+<translation id="4659667755519643272">タブ切り替え機能を開始</translation>
 <translation id="46614316059270592">パスワードを保存</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> としてログインしています。
 
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
-<translation id="5352285283572729470">この設定は管理されています</translation>
 <translation id="5388358297987318779">画像を開く</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
 <translation id="5409365236829784218">このファイルを開くアプリがインストールされていません。</translation>

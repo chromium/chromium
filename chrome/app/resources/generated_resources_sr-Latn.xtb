@@ -1284,6 +1284,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2505127913256479918">Ovaj nalog pod nadzorom će uskoro biti uklonjen</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}one{Ekran #}few{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> od <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Uređaji u blizini kada je Deljenje u blizini otvoreno na njihovim uređajima</translation>
 <translation id="250704661983564564">Raspored prikaza</translation>
 <translation id="2507253002925770350">Tiket je uklonjen</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> – pauzirano</translation>
@@ -3135,6 +3136,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4762718786438001384">Prostor na disku uređaja je zabrinjavajuće mali</translation>
 <translation id="4763408175235639573">Sledeći kolačići su postavljeni dok ste gledali ovu stranicu</translation>
 <translation id="4765582662863429759">Dozvoljava da Android Messages prenosi SMS-ove sa telefona na Chromebook</translation>
+<translation id="476598255842811483">Niko ako ne otvorite Deljenje u blizini na svom uređaju</translation>
 <translation id="4768332406694066911">Imate sertifikate sledećih organizacija koji vas identifikuju</translation>
 <translation id="477647109558161443">Napravi prečicu na radnoj površini</translation>
 <translation id="4776917500594043016">Lozinka za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4282,6 +4284,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6164005077879661055">Sve datoteke i lokalni podaci povezani sa korisnikom pod nadzorom će biti trajno izbrisani kada uklonite ovog korisnika pod nadzorom. Menadžer će možda i dalje moći da vidi posećene veb-sajtove i podešavanja za ovog korisnika pod nadzorom na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166185671393271715">Uvezite lozinke u Chrome</translation>
+<translation id="616831107264507309">Pročitajte kasnije</translation>
 <translation id="6169040057125497443">Proverite mikrofon.</translation>
 <translation id="6169666352732958425">Prebacivanje radne površine nije uspelo.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -5666,6 +5669,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="786073089922909430">Usluga: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Preuzimanja</translation>
 <translation id="7864539943188674973">Onemogući Bluetooth</translation>
+<translation id="7866352732146932341">Uređaji u blizini kada je Deljenje u blizini otvoreno na vašem uređaju</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Uparen je</translation>
 <translation id="7870730066603611552">Pregleda opcije sinhronizacije posle podešavanja</translation>
 <translation id="7870790288828963061">Nije pronađena nijedna kiosk aplikacija sa novijom verzijom. Nema šta da se ažurira. Uklonite USB memoriju.</translation>
@@ -6671,7 +6675,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9063208415146866933">Greška od <ph name="ERROR_LINE_START" />. do <ph name="ERROR_LINE_END" />. reda</translation>
 <translation id="9064275926664971810">Omogućavanje automatskog popunjavanja veb-obrazaca jednim klikom</translation>
 <translation id="9065203028668620118">Izmeni</translation>
-<translation id="9065772380960598487">Dodaj u odeljak Pročitajte kasnije</translation>
 <translation id="9066773882585798925">Slušajte čitanje teksta naglas</translation>
 <translation id="9066782832737749352">Pretvaranje teksta u govor</translation>
 <translation id="9068849894565669697">Izaberite boju</translation>
@@ -6816,7 +6819,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="947329552760389097">&amp;Proveri elemente</translation>
 <translation id="951991426597076286">Odbij</translation>
 <translation id="952992212772159698">Nije aktivirano</translation>
-<translation id="956444359529327203">Zatvori sve prozore u režimu gosta</translation>
 <translation id="956500788634395331">Štitimo vas od potencijalno štetnih dodataka</translation>
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>
 <translation id="9580706199804957">Povezivanje sa Google uslugama nije uspelo</translation>

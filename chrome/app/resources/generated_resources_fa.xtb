@@ -1284,6 +1284,7 @@
 <translation id="2505127913256479918">این حساب تحت‌نظارت به‌زودی برداشته می‌شود</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{صفحه #}one{صفحه #}other{صفحه #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> از <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">دستگاه‌های مجاور، زمانی که «هم‌رسانی با اطراف» در دستگاهشان باز است</translation>
 <translation id="250704661983564564">تنظیم نمایشگر</translation>
 <translation id="2507253002925770350">بلیت برداشته شد</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> متوقف شده است</translation>
@@ -3135,6 +3136,7 @@
 <translation id="4762718786438001384">فضای دیسک دستگاه بسیار کم است</translation>
 <translation id="4763408175235639573">وقتی این صفحه را مشاهده کردید، کوکی‌های زیر تنظیم شدند</translation>
 <translation id="4765582662863429759">‏به «پیام‌های Android» اجازه دهید پیام‌های متنی را از تلفن در Chromebook بازپخش کند</translation>
+<translation id="476598255842811483">هیچ‌کس، مگراینکه «هم‌رسانی با اطراف» را در دستگاهتان باز کنید</translation>
 <translation id="4768332406694066911">گواهی‌هایی از این سازمان‌ها دارید که هویت شما را شناسایی می‌کنند</translation>
 <translation id="477647109558161443">ایجاد میان‌بر میزکار</translation>
 <translation id="4776917500594043016">گذرواژه <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4281,6 +4283,7 @@
 <translation id="6164005077879661055">با حذف این کاربر نظارت‌شده، کلیه فایل‌ها و داده‌های محلی مربوط به کاربر نظارت‌شده برای همیشه حذف خواهند شد. وب‌سایت‌های بازدید شده و تنظیمات این کاربر نظارت‌شده همچنان برای مدیر در <ph name="MANAGEMENT_URL" /> قابل مشاهده خواهد بود.</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6166185671393271715">‏وارد کردن گذرواژه‌ها به Chrome</translation>
+<translation id="616831107264507309">خواندن در فرصتی دیگر</translation>
 <translation id="6169040057125497443">لطفاً میکروفون را بررسی کنید.</translation>
 <translation id="6169666352732958425">ارسال محتوای میز کار امکان‌پذیر نیست.</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
@@ -4493,7 +4496,7 @@
 <translation id="6429384232893414837">خطای به‌روزرسانی</translation>
 <translation id="6430814529589430811">‏Base64-ASCII رمزدار، تک گواهی</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> به‌روزرسانی را به‌صورت خودکار برای تمام کاربران این رایانه راه‌اندازی می‌کند.</translation>
-<translation id="6434309073475700221">صرف‌نظر</translation>
+<translation id="6434309073475700221">صرف‌نظرکردن</translation>
 <translation id="6434325376267409267">قبل از اینکه بتوانید از <ph name="APP_NAME" /> استفاده کنید باید دستگاه را به‌روزرسانی کنید.</translation>
 <translation id="6436164536244065364">نمایش در فروشگاه وب</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - پخش خودکار</translation>
@@ -5665,6 +5668,7 @@
 <translation id="786073089922909430">سرویس: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;فایلهای بارگیری‌شده</translation>
 <translation id="7864539943188674973">غیرفعال کردن بلوتوث</translation>
+<translation id="7866352732146932341">دستگاه‌های مجاور، زمانی که «هم‌رسانی با اطراف» در دستگاهتان باز است</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - مرتبط</translation>
 <translation id="7870730066603611552">مرور گزینه‌های همگام‌سازی به دنبال راه‌اندازی</translation>
 <translation id="7870790288828963061">‏برنامه‌های کیوسکی با نسخه جدیدتر پیدا نشد. موردی برای به‌روزرسانی وجود ندارد. لطفاً فلش USB را خارج کنید.</translation>
@@ -6670,7 +6674,6 @@
 <translation id="9063208415146866933">خطا از خط <ph name="ERROR_LINE_START" /> تا <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">برای پر کردن فرم‌ها با یک کلیک، «تکمیل خودکار» را فعال کنید</translation>
 <translation id="9065203028668620118">ویرایش</translation>
-<translation id="9065772380960598487">افزودن به «خواندن در فرصتی دیگر»</translation>
 <translation id="9066773882585798925">بلند خوانده شدن نوشتار</translation>
 <translation id="9066782832737749352">تبدیل نوشتار به‌ گفتار</translation>
 <translation id="9068849894565669697">انتخاب رنگ</translation>
@@ -6815,7 +6818,6 @@
 <translation id="947329552760389097">&amp;بازرسی عناصر</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="952992212772159698">فعال نشد</translation>
-<translation id="956444359529327203">بستن پنجره مهمان</translation>
 <translation id="956500788634395331">در برابر افزونه‌های بالقوه مضر محافظت می‌شوید</translation>
 <translation id="957960681186851048">این سایت تلاش کرده است چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="9580706199804957">‏به سرویس‌های Google متصل نشد</translation>

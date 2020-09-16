@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">Այս վերահսկվող հաշիվը շուտով կհեռացվի</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Էկրան #}one{Screen #}other{Էկրան #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Մոտակայքում գտնվող սարքերը, երբ «Փոխանակում մոտակա սարքերի հետ» գործառույթը միացված է կոնտակտների սարքում</translation>
 <translation id="250704661983564564">Էկրանի տեղադրություն</translation>
 <translation id="2507253002925770350">Տոմսը հեռացվել է</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> հավելվածի աշխատանքը դադարեցված է</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">Սարքի սկավառակում տարածքը ծայրահեղ քիչ է</translation>
 <translation id="4763408175235639573">Այս էջը դիտելիս տեղակայվել են հետևյալ քուքիները</translation>
 <translation id="4765582662863429759">Թույլ է տալիս Android Messages հավելվածին հեռարձակել ձեր հեռախոսի հաղորդագրությունները Chromebook-ին</translation>
+<translation id="476598255842811483">Ոչ ոք, քանի դեռ դուք չեք միացրել «Փոխանակում մոտակա սարքերի հետ» գործառույթը ձեր սարքում</translation>
 <translation id="4768332406694066911">Դուք այս կազմակերպություններից այնպիսի հավաստագրեր ունեք, որոնք ձեզ կարող են նույնականացնել</translation>
 <translation id="477647109558161443">Ստեղծել աշխատասեղանի դյուրանցում</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
@@ -4287,6 +4289,7 @@
 <translation id="6164005077879661055">Վերահսկվող օգտատիրոջ հետ կապված բոլոր ֆայլերը և տեղային տվյալներն ընդմիշտ կջնջվեն, եթե հեռացնեք այս պրոֆիլը, սակայն կառավարիչը կկարողանա տեսնել վերահսկվող օգտատիրոջ այցելած վեբկայքերը և կարգավորումները <ph name="MANAGEMENT_URL" />-ում:</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6166185671393271715">Գաղտնաբառերի ներմուծում Chrome</translation>
+<translation id="616831107264507309">Կարդալ ավելի ուշ</translation>
 <translation id="6169040057125497443">Ստուգեք խոսափողը</translation>
 <translation id="6169666352732958425">Չհաջողվեց հեռարձակել աշխատասեղանը:</translation>
 <translation id="6170470584681422115">Սենդվիչ</translation>
@@ -5670,6 +5673,7 @@
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
+<translation id="7866352732146932341">Մոտակայքում գտնվող սարքերը, երբ «Փոխանակում մոտակա սարքերի հետ» գործառույթը միացված է ձեր սարքում</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>
 <translation id="7870730066603611552">Ստուգել համաժամացման պարամետրերը աշխատաշրջանի մեկնարկից հետո</translation>
 <translation id="7870790288828963061">Kiosk հավելվածների ավելի նոր տարբերակներ չեն գտնվել: Թարմացում չի պահանջվում: Հեռացրեք USB հիշողությունը:</translation>
@@ -6674,7 +6678,6 @@
 <translation id="9063208415146866933">Սխալ <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /> տողերում</translation>
 <translation id="9064275926664971810">Միացնել ինքնալցումը՝ ձևաթղթերը մեկ սեղմումով լրացնելու համար</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
-<translation id="9065772380960598487">Ավելացնել «Կարդալ ավելի ուշ» ցանկում</translation>
 <translation id="9066773882585798925">Հնչեցրեք տեքստը</translation>
 <translation id="9066782832737749352">Տեքստի հնչեցում</translation>
 <translation id="9068849894565669697">Ընտրեք գույնը</translation>
@@ -6819,7 +6822,6 @@
 <translation id="947329552760389097">&amp;Ստուգել տարրերը</translation>
 <translation id="951991426597076286">Մերժել</translation>
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
-<translation id="956444359529327203">Փակել հյուրի պատուհանները</translation>
 <translation id="956500788634395331">Դուք պաշտպանված եք վտանգավոր ընդլայնումներից</translation>
 <translation id="957960681186851048">Այս կայքը փորձում էր ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="9580706199804957">Չհաջողվեց միանալ Google-ի ծառայություններին</translation>

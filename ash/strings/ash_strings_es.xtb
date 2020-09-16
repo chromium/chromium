@@ -319,6 +319,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4261870227682513959">Muestra la configuración de notificaciones. Las notificaciones están desactivadas.</translation>
 <translation id="4269883910223712419">El administrador de este dispositivo puede hacer lo siguiente:</translation>
 <translation id="4279490309300973883">Duplicando</translation>
+<translation id="4285498937028063278">No fijar</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
 <translation id="4303223480529385476">Ampliar área de estado</translation>
@@ -333,7 +334,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4379531060876907730">Estas son las herramientas del lápiz óptico</translation>
 <translation id="4389184120735010762">Has pulsado la combinación de teclas que activa la lupa fijada. ¿Quieres activarla?</translation>
-<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivada.</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
 <translation id="4421231901400348175">Compartiendo control de la pantalla con <ph name="HELPER_NAME" /> a través de Asistencia remota.</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
@@ -456,7 +457,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activada.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
 <translation id="5957083217255311415">Los datos móviles están desactivados.</translation>

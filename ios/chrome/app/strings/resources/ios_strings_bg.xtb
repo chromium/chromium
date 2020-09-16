@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
+<translation id="1992734845128748707">Промяна на браузъра по подразбиране…</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
-<translation id="5352285283572729470">Тази настройка е управлявана</translation>
 <translation id="5388358297987318779">Отваряне на изображението</translation>
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
 <translation id="5409365236829784218">Няма инсталирани приложения, които могат да отворят файла.</translation>

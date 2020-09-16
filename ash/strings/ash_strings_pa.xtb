@@ -66,7 +66,7 @@
 <translation id="1550523713251050646">ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1570871743947603115">ਬਲੂਟੁੱਥ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ਇਸ ਸ਼ੈਸ਼ਨ ਦੀ ਆਪਣੀ ਸਾਰੀ ਸਰਗਰਮੀ ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
-<translation id="1611993646327628135">ਚਾਲੂ ਕਰੋ</translation>
+<translation id="1611993646327628135">ਚਾਲੂ ਹੈ</translation>
 <translation id="1632985212731562677">ਸਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਬੰਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1654477262762802994">ਅਵਾਜ਼ੀ ਪੁੱਛਗਿੱਛ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="1667964833127753507">ਨਿਰਪੱਖ ਰੰਗ ਮੋਡ ਨਿਰਪੱਖ ਰੰਗ ਵਾਲੇ ਹਲਕੇ ਜਾਂ ਗੂੜ੍ਹੇ ਰੰਗ ਦੀਆਂ ਭਾਹਾਂ ਵਾਲੇ ਸੈੱਟ ਦੀ ਜਗ੍ਹਾ ਵਾਲਪੇਪਰ ਤੋਂ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੇ ਰੰਗਾਂ ਨੂੰ ਨਹੀਂ ਵਰਤਦਾ।</translation>
@@ -81,7 +81,7 @@
 <translation id="1761222317188459878">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="1782199038061388045">ਅਨੁਵਾਦ</translation>
-<translation id="1787955149152357925">ਬੰਦ ਕਰੋ</translation>
+<translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1812997170047690955">ਮੇਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕਿਹੜੀ ਸਮੱਗਰੀ ਮੌਜੂਦ ਹੈ?</translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ</translation>
 <translation id="4269883910223712419">ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਕੋਲ ਇਹ ਕਰਨ ਦੀ ਸਮਰੱਥਾ ਹੈ:</translation>
 <translation id="4279490309300973883">ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
+<translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="4294319844246081198">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ਸਾਰੀਆਂ <ph name="COUNT" /> ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4303223480529385476">ਸਥਿਤੀ ਖੇਤਰ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
@@ -395,7 +396,7 @@
 <translation id="5168181903108465623">ਕਾਸਟ ਡਿਵਾਈਸਾਂ ਉਪਲਬਧ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5207949376430453814">ਲਿਖਤ ਕੈਰੇਟ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
-<translation id="5208059991603368177">ਚਾਲੂ ਕਰੋ</translation>
+<translation id="5208059991603368177">ਚਾਲੂ ਹੈ</translation>
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="523505283826916779">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5260676007519551770">ਡੈਸਕ 4</translation>
@@ -626,7 +627,7 @@
 <translation id="7842569679327885685">ਚਿਤਾਵਨੀ: ਪ੍ਰਯੋਗਮਈ ਵਿਸ਼ੇਸ਼ਤਾ</translation>
 <translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
 <translation id="7868900307798234037">ਫਿੰਗਰਪ੍ਰਿੰਟ ਨਾਲ ਅਣਲਾਕ ਕਰਨਾ</translation>
-<translation id="7872786842639831132">ਬੰਦ ਕਰੋ</translation>
+<translation id="7872786842639831132">ਬੰਦ ਹੈ</translation>
 <translation id="7886169021410746335">ਪਰਦੇਦਾਰੀ ਸੈਟਿੰਗਾਂ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="7886277072580235377">ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਸੈਸ਼ਨ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ਕੋਈ ਈਮੇਲ ਭੇਜੋ</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1383876407941801731">Søg</translation>
 <translation id="1566281227936819866">Viser gemte betalingsmetoder</translation>
 <translation id="1717486229951421299">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i halv højde.</translation>
 <translation id="207576718733492531">Listen over loginoplysninger, der udfyldes ved berøring, er lukket.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Listen over loginoplysninger, der udfyldes ved berøring, er åbnet i fuld højde.</translation>
 <translation id="6393156038355142111">Foreslå en stærk adgangskode</translation>
 <translation id="6696046606263842994">Udfyld adgangskode</translation>
+<translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7299100402441711551">Vis adresser</translation>
 <translation id="7494879913343971937">Vis adgangskoder</translation>
 <translation id="7758428186423745764">Udfyld betalingsmetode</translation>

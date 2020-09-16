@@ -66,7 +66,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1550523713251050646">Fai clic para ver máis opcións</translation>
 <translation id="1570871743947603115">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
-<translation id="1611993646327628135">Función activada</translation>
+<translation id="1611993646327628135">Activado</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
@@ -81,7 +81,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1761222317188459878">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
 <translation id="1782199038061388045">tradución</translation>
-<translation id="1787955149152357925">Función desactivada</translation>
+<translation id="1787955149152357925">Desactivado</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1812997170047690955">Que se mostra na miña pantalla?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
@@ -319,6 +319,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4261870227682513959">Mostrar a configuración de notificacións. Están desactivadas</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode facer o seguinte:</translation>
 <translation id="4279490309300973883">Proxección</translation>
+<translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
 <translation id="4303223480529385476">Despregar área de estado</translation>
@@ -396,7 +397,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
-<translation id="5208059991603368177">Función activada</translation>
+<translation id="5208059991603368177">Activado</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
@@ -627,7 +628,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7868900307798234037">Desbloqueo con impresión dixital</translation>
-<translation id="7872786842639831132">Función desactivada</translation>
+<translation id="7872786842639831132">Desactivado</translation>
 <translation id="7886169021410746335">Axustar a configuración de privacidade</translation>
 <translation id="7886277072580235377">Cando saias da conta, borrarase a túa sesión de Internet. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Enviar un correo</translation>

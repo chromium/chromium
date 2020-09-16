@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1383876407941801731">جستجو</translation>
 <translation id="1566281227936819866">درحال نمایش روش‌های پرداخت ذخیره‌شده</translation>
 <translation id="1717486229951421299">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود، به‌صورت نیمه باز شده است.</translation>
 <translation id="207576718733492531">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود بسته شده است.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">فهرست اطلاعات کاربری که باید با لمس کردن تکمیل شود کاملاً باز شد.</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
 <translation id="6696046606263842994">گذرواژه را تکمیل کنید</translation>
+<translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7299100402441711551">نمایش نشانی‌ها</translation>
 <translation id="7494879913343971937">نمایش گذرواژه‌ها</translation>
 <translation id="7758428186423745764">روش پرداخت را تکمیل کنید</translation>

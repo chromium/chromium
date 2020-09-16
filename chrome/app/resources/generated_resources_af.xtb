@@ -1287,6 +1287,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2505127913256479918">Dié rekening onder toesig sal binnekort verwyder word</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skerm #}other{Skerm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> van <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Toestelle naby jou wanneer Nabydeling oop is op hulle toestel</translation>
 <translation id="250704661983564564">Vertoonrangskikking</translation>
 <translation id="2507253002925770350">Kaartjie is verwyder</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> is onderbreek</translation>
@@ -3138,6 +3139,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4762718786438001384">Toestel se skyfspasie is gevaarlik laag</translation>
 <translation id="4763408175235639573">Die volgende webkoekies is gestel toe jy hierdie bladsy bekyk het</translation>
 <translation id="4765582662863429759">Laat Android Boodskappe toe om SMS'e van jou foon af na jou Chromebook toe oor te dra</translation>
+<translation id="476598255842811483">Niemand nie, tensy jy Nabydeling op jou toestel oopmaak</translation>
 <translation id="4768332406694066911">Jy het sertifikate van hierdie organisasies af wat jou identifiseer</translation>
 <translation id="477647109558161443">Skep 'n werkskermkortpad</translation>
 <translation id="4776917500594043016">Wagwoord vir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4285,6 +4287,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6164005077879661055">Alle lêers en plaaslike data wat met die gebruiker onder toesig geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker onder toesig verwyder word. Besoekte webwerwe en instellings vir hierdie gebruiker sonder toesig kan dalk steeds by <ph name="MANAGEMENT_URL" /> vir die bestuurder sigbaar wees.</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6166185671393271715">Voer wagwoorde na Chrome in</translation>
+<translation id="616831107264507309">Lees later</translation>
 <translation id="6169040057125497443">Gaan jou mikrofoon na.</translation>
 <translation id="6169666352732958425">Kan nie werkskerm uitsaai nie.</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
@@ -5669,6 +5672,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="786073089922909430">Diens: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">Aflaaie</translation>
 <translation id="7864539943188674973">Deaktiveer Bluetooth</translation>
+<translation id="7866352732146932341">Toestelle naby jou wanneer Nabydeling oop is op jou toestel</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – saamgebind</translation>
 <translation id="7870730066603611552">Hersien sinkroniseeropsies ná opstelling</translation>
 <translation id="7870790288828963061">Geen Kioskprogramme met nuwer weergawe gevind nie. Niks om op te dateer nie. Verwyder asseblief die USB-stokkie.</translation>
@@ -6673,7 +6677,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9063208415146866933">Fout vanaf reël <ph name="ERROR_LINE_START" /> tot <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktiveer outovul om webvorms met 'n enkele klik in te vul</translation>
 <translation id="9065203028668620118">Wysig</translation>
-<translation id="9065772380960598487">Voeg by Lees later</translation>
 <translation id="9066773882585798925">Hoor hoe teks hardop gelees word</translation>
 <translation id="9066782832737749352">Teks-na-spraak</translation>
 <translation id="9068849894565669697">Kies kleur</translation>
@@ -6818,7 +6821,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="947329552760389097">&amp;Ondersoek elemente</translation>
 <translation id="951991426597076286">Weier</translation>
 <translation id="952992212772159698">Nie geaktiveer nie</translation>
-<translation id="956444359529327203">Maak gas toe</translation>
 <translation id="956500788634395331">Jy word teen potensieel skadelike uitbreidings beskerm</translation>
 <translation id="957960681186851048">Hierdie werf het probeer om veelvuldige lêers outomaties af te laai</translation>
 <translation id="9580706199804957">Kon nie aan Google-dienste koppel nie</translation>

@@ -2837,7 +2837,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4390000551125140321">{0,plural, =1{Incógnito}other{# ventanas de incógnito abiertas}}</translation>
 <translation id="439266289085815679"><ph name="USER_EMAIL" /> controla la configuración de Bluetooth.</translation>
 <translation id="4392896746540753732">Edita el archivo de configuración</translation>
-<translation id="4393691030048716353"><ph name="DOMAIN" /> inhabilitó la depuración de ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> inhabilitó la depuración ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
 <translation id="4394049700291259645">Inhabilitar</translation>
 <translation id="439817266247065935">El dispositivo no se apagó correctamente. Reinicia Linux para usar las apps de este sistema operativo.</translation>
 <translation id="4400367121200150367">Aquí aparecerán los sitios que nunca guardan las contraseñas</translation>
@@ -3529,7 +3529,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
 <translation id="5266113311903163739">Error en la importación de Entidad de certificación</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
-<translation id="5274738462757057090">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (disponible por el momento solo en inglés).</translation>
+<translation id="5274738462757057090">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento, disponible solo en inglés).</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de estado</translation>
@@ -4283,6 +4283,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6164005077879661055">Todos los archivos y los datos locales asociados al usuario supervisado se eliminarán de forma permanente una vez que se elimine este usuario supervisado. Es posible que el administrador pueda seguir viendo la configuración y los sitios web visitados de este usuario supervisado en <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166185671393271715">Importar contraseñas a Chrome</translation>
+<translation id="616831107264507309">Leer más tarde</translation>
 <translation id="6169040057125497443">Comprueba el micrófono.</translation>
 <translation id="6169666352732958425">No se puede transmitir el escritorio</translation>
 <translation id="6170470584681422115">Sándwich</translation>
@@ -6164,7 +6165,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8470214316007448308">Otras personas</translation>
 <translation id="8470513973197838199">Se guardaron contraseñas para <ph name="ORIGIN" /></translation>
-<translation id="8471256130228705232"><ph name="DOMAIN" /> está inhabilitando la depuración de ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que quieras conservar.</translation>
+<translation id="8471256130228705232"><ph name="DOMAIN" /> está inhabilitando la depuración ADB. Este proceso restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que quieras conservar.</translation>
 <translation id="8472623782143987204">respaldado por hardware</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8475313423285172237">Otro programa en tu computadora agregó una extensión que puede cambiar el funcionamiento de Chrome.</translation>
@@ -6673,7 +6674,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9063208415146866933">Se produjo un error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Habilita Autocompletar para llenar formularios con un solo clic</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9065772380960598487">Agregar para leer más tarde</translation>
 <translation id="9066773882585798925">Escucha el texto leído en voz alta</translation>
 <translation id="9066782832737749352">Texto a voz</translation>
 <translation id="9068849894565669697">Seleccionar color</translation>
@@ -6818,7 +6818,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="947329552760389097">Analizar elementos</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="952992212772159698">No activado</translation>
-<translation id="956444359529327203">Cerrar las ventanas de la sesión de invitado</translation>
 <translation id="956500788634395331">Cuentas con protección contra extensiones potencialmente dañinas</translation>
 <translation id="957960681186851048">Este sitio intentó descargar varios archivos automáticamente</translation>
 <translation id="9580706199804957">No se pudo establecer una conexión con los servicios de Google</translation>

@@ -4286,6 +4286,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6164005077879661055">All files and local data associated with the supervised user will be permanently deleted once this supervised user is removed. Visited websites and settings for this supervised user may still be visible by the manager at <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166185671393271715">Import Passwords To Chrome</translation>
+<translation id="616831107264507309">Read Later</translation>
 <translation id="6169040057125497443">Please check your microphone.</translation>
 <translation id="6169666352732958425">Unable to cast desktop.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -6676,7 +6677,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Enable Auto-fill to fill out forms in a single click</translation>
 <translation id="9065203028668620118">Edit</translation>
-<translation id="9065772380960598487">Add to read later</translation>
 <translation id="9066773882585798925">Hear text read aloud</translation>
 <translation id="9066782832737749352">Text-to-Speech</translation>
 <translation id="9068849894565669697">Select colour</translation>
@@ -6821,7 +6821,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="947329552760389097">&amp;Inspect Elements</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="952992212772159698">Not activated</translation>
-<translation id="956444359529327203">Close guest</translation>
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>
 <translation id="9580706199804957">Couldn’t connect with Google services</translation>

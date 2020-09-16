@@ -14,7 +14,7 @@
 <translation id="1084365883616172403">ការបង្ហោះតាម Facebook បានបញ្ចប់។</translation>
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
 <translation id="1104948393051856124">ព្រមទទួល និងបន្ត</translation>
-<translation id="110724200315609752">ប្ដូរទៅ "វិនដូបើក"</translation>
+<translation id="110724200315609752">ប្ដូរទៅ "វិនដូផ្សេង​ដែល​កំពុងបើក"</translation>
 <translation id="1112015203684611006">បានបរាជ័យក្នុងការបោះពុម្ព</translation>
 <translation id="1125564390852150847">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">បញ្ចប់អ្វីដែលអ្នក​កំពុងធ្វើនៅក្នុង​វិនដូ Chrome ដែលបើក​ផ្សេងទៀតរបស់អ្នក។</translation>
 <translation id="1974060860693918893">កម្រិតខ្ពស់</translation>
 <translation id="1989112275319619282">រុករក</translation>
+<translation id="1992734845128748707">ប្ដូរកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម…</translation>
 <translation id="2015722694326466240">ដើម្បី​មើល​ពាក្យសម្ងាត់ អ្នកត្រូវ​កំណត់​លេខ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុន​សិន។</translation>
 <translation id="2073572773299281212">ដំណើរការ <ph name="DAYS" /> ថ្ងៃ​មុន</translation>
 <translation id="2074131957428911366">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5339316356165661760">បើក​សមកាលកម្ម</translation>
-<translation id="5352285283572729470">ការកំណត់នេះ​ត្រូវបាន​គ្រប់គ្រង</translation>
 <translation id="5388358297987318779">បើករូបភាព</translation>
 <translation id="5407969256130905701">លុបចោល​ការផ្លាស់ប្ដូរ</translation>
 <translation id="5409365236829784218">គ្មានកម្មវិធីដែលបានដំឡើងណាអាចបើកឯកសារនេះបានទេ។</translation>

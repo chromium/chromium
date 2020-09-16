@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1566281227936819866">Đang hiển thị các phương thức thanh toán đã lưu</translation>
 <translation id="1717486229951421299">Danh sách thông tin đăng nhập mà bạn có thể chạm để điền đã được mở ở nửa dưới của màn hình.</translation>
 <translation id="207576718733492531">Danh sách thông tin đăng nhập mà bạn có thể chạm để điền đã bị đóng.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Danh sách các thông tin xác thực mà bạn có thể chạm để điền đã được mở ở toàn độ cao.</translation>
 <translation id="6393156038355142111">Đề xuất mật khẩu mạnh</translation>
 <translation id="6696046606263842994">Điền mật khẩu</translation>
+<translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7299100402441711551">Hiển thị địa chỉ</translation>
 <translation id="7494879913343971937">Hiển thị mật khẩu</translation>
 <translation id="7758428186423745764">Điền phương thức thanh toán</translation>

@@ -1284,6 +1284,7 @@
 <translation id="2505127913256479918">මෙම අධීක්‍ෂණ කෙරෙන ගිණුම ඉක්මනින් ඉවත් කරනු ලැබේ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{තිරය #}one{තිරය ​​#}other{තිරය ​​#}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> කින් <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">ඔවුන්ගේ උපාංගයෙහි ළඟ බෙදා ගැනීම විවෘත විට ඔබ අසල ඇති උපාංග</translation>
 <translation id="250704661983564564">සංදර්ශක පිළියෙළ</translation>
 <translation id="2507253002925770350">ප්‍රවේශපත්‍රය ඉවත් කළා</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> විරාම කෙරේ</translation>
@@ -3136,6 +3137,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4762718786438001384">උපාංග තැටි ඉඩ දරුණු ලෙස අඩුය</translation>
 <translation id="4763408175235639573">ඔබ මෙම පිටුව බැලූ විට පහත කුකී සකසන ලදී</translation>
 <translation id="4765582662863429759">Android පණිවුඩවලට ඔබේ දුරකථනයෙන් ඔබේ Chromebook වෙත පාඨ පිළියැවීමට අවසර දෙයි</translation>
+<translation id="476598255842811483">ඔබ ඔබගේ උපාංගයෙහි ළඟ බෙදා ගැනීම විවෘත කරන්නේ නම් මිස කිසිවෙකුට නොහැකිය</translation>
 <translation id="4768332406694066911">ඔබව හඳුනා ගන්නා මෙම සංවිධාන වෙතින් වන සහතික ඔබට තිබේ</translation>
 <translation id="477647109558161443">ඩෙස්ක්ටොප් කෙටි මගක් තනන්න</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> සඳහා රහස්වචනය</translation>
@@ -4283,6 +4285,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6164005077879661055">මෙම අධීක්ෂණය කළ  භාවිතකරු ඉවත් කළ විට අධීක්ෂණය කළ භාවිතකරු හා අදාළ ගොනු සහ ප්‍රාදේශී්‍ය දත්ත සියල්ල ස්ථිරවම මැකෙනු ඇත. මෙම අධීක්ෂණය කළ භාවිතකරු සඳහා නරඹන ලද වෙබ් අඩවි සහ පසුතල තවමත් <ph name="MANAGEMENT_URL" /> හිදී කළමනාකරුට දැකිය හැකිය.</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6166185671393271715">Chrome වෙත මුරපද ආයාත කරන්න</translation>
+<translation id="616831107264507309">පසුව කියවන්න</translation>
 <translation id="6169040057125497443">ඔබේ මයික්‍රෆෝනය පරීක්ෂා කරන්න.</translation>
 <translation id="6169666352732958425">වැඩතලය විකාශ කිරීමට නොහැකිය.</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
@@ -5664,6 +5667,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="786073089922909430">සේවය: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;බාගැනීම්</translation>
 <translation id="7864539943188674973">Bluetooth අක්‍රිය කරන්න</translation>
+<translation id="7866352732146932341">ඔබගේ උපාංගයෙහි ළඟ බෙදා ගැනීම විවෘත විට ඔබ අසල ඇති උපාංග</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - යුගල විය</translation>
 <translation id="7870730066603611552">පිහිටුවීමෙන් පසුව සමමුහුර්ත විකල්ප සමාලෝචනය කරන්න</translation>
 <translation id="7870790288828963061">නව අනුවාදයක් සමග Kiosk යෙදුමක් සොයාගත නොහැකි විය. යාවත්කාලීන කිරීමට කිසිවක් නොමැත. කරුණාකර USB දණ්ඩ ඉවත් කරන්න.</translation>
@@ -6668,7 +6672,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> සිට <ph name="ERROR_LINE_END" /> දක්වා මාර්ගයෙන් දෝෂයකි</translation>
 <translation id="9064275926664971810">තනි ක්ලික් කිරීමකින් පෝරම පිරවීමට ස්වයංපිරවුම සබල කිරීන්න</translation>
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
-<translation id="9065772380960598487">පසුව කියවීමට එක් කරන්න</translation>
 <translation id="9066773882585798925">පෙළ ශබ්ද නඟා කියවනවා අසන්න</translation>
 <translation id="9066782832737749352">පෙළ සිට කථනය</translation>
 <translation id="9068849894565669697">වර්ණය තෝරන්න</translation>
@@ -6813,7 +6816,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="947329552760389097">&amp;මූලද්‍රව්‍ය පරීක්‍ෂා කරන්න</translation>
 <translation id="951991426597076286">පිළිකෙව්</translation>
 <translation id="952992212772159698">සක්‍රීය කර නොමැත</translation>
-<translation id="956444359529327203">අමුත්තා වසන්න</translation>
 <translation id="956500788634395331">හානිකර විය හැකි දිගුවලින් ඔබ ආරක්‍ෂා කෙරේ</translation>
 <translation id="957960681186851048">මෙම අඩවිය ගොනු කිහිපයක් ස්වයංක්‍රීයව බාගැනීමට උත්සාහ කළේය</translation>
 <translation id="9580706199804957">Google සේවාවන් සමඟ සම්බන්ධ විය නොහැක</translation>

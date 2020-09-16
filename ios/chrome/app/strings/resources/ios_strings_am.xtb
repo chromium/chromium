@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">በእርስዎ ሌላኛው ክፍት የChrome መስኮት ላይ እያደረጉ ያሉትን ነገር ያጠናቅቁ።</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1989112275319619282">አስስ</translation>
+<translation id="1992734845128748707">ነባሪ አሳሽን ይቀይሩ…</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5327248766486351172">ስም</translation>
 <translation id="5339316356165661760">አስምርን ያብሩ</translation>
-<translation id="5352285283572729470">ይህ ቅንብር የሚተዳደር ነው</translation>
 <translation id="5388358297987318779">ምስል ክፈት</translation>
 <translation id="5407969256130905701">ለውጦችን አስወግድ</translation>
 <translation id="5409365236829784218">ይህን ፋይል መክፈት የሚችሉ መተግበሪያዎች አልተጫኑም።</translation>

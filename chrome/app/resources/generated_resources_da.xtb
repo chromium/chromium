@@ -1287,6 +1287,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2505127913256479918">Denne administrerede konto fjernes snart</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skærm #}one{Skærm #}other{Skærm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Enheder i nærheden, når "Deling tæt på" er åben på deres enheder</translation>
 <translation id="250704661983564564">Visningsopstilling</translation>
 <translation id="2507253002925770350">Billetten blev fjernet</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> er sat på pause</translation>
@@ -3138,6 +3139,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4762718786438001384">Der er næsten ikke mere diskplads på din enhed</translation>
 <translation id="4763408175235639573">Følgende cookies blev gemt, da du fik vist denne side</translation>
 <translation id="4765582662863429759">Tillader, at Android Beskeder videresender sms-beskeder fra din telefon til din Chromebook</translation>
+<translation id="476598255842811483">Ingen, medmindre du åbner "Deling tæt på" på din enhed</translation>
 <translation id="4768332406694066911">Du har certifikater fra disse organisationer, der identificerer dig</translation>
 <translation id="477647109558161443">Opret en genvej på skrivebordet</translation>
 <translation id="4776917500594043016">Adgangskode for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4285,6 +4287,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 slettes permanent, når den administrerede bruger fjernes. Besøgte websites og indstillinger for denne administrerede bruger er muligvis stadig synlige for administratoren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6166185671393271715">Importér adgangskoder til Chrome</translation>
+<translation id="616831107264507309">Læs senere</translation>
 <translation id="6169040057125497443">Tjek din mikrofon.</translation>
 <translation id="6169666352732958425">Skrivebordet kunne ikke castes.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -5668,6 +5671,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="786073089922909430">Tjeneste: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7864539943188674973">Deaktiver Bluetooth</translation>
+<translation id="7866352732146932341">Enheder i nærheden, når "Deling tæt på" er åben på din enhed</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> er parret</translation>
 <translation id="7870730066603611552">Gennemgå indstillingerne for synkronisering efter konfigurationen</translation>
 <translation id="7870790288828963061">Der blev ikke fundet nogen terminalapps med en nyere version. Intet at opdatere. Fjern USB-stikket.</translation>
@@ -6674,7 +6678,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9063208415146866933">Der er fejl på linje <ph name="ERROR_LINE_START" /> til <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivér AutoFyld for at udfylde formularer med et enkelt klik</translation>
 <translation id="9065203028668620118">Rediger</translation>
-<translation id="9065772380960598487">Føj til Læs senere</translation>
 <translation id="9066773882585798925">Få læst teksten højt</translation>
 <translation id="9066782832737749352">Oplæsning</translation>
 <translation id="9068849894565669697">Vælg farve</translation>
@@ -6819,7 +6822,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="947329552760389097">&amp;Inspect Elements (Undersøg elementer)</translation>
 <translation id="951991426597076286">Afvis</translation>
 <translation id="952992212772159698">Ikke aktiveret</translation>
-<translation id="956444359529327203">Luk gæstevinduer</translation>
 <translation id="956500788634395331">Du er beskyttet mod potentielt skadelige udvidelser</translation>
 <translation id="957960681186851048">Dette website har forsøgt at downloade flere filer automatisk</translation>
 <translation id="9580706199804957">Der kunne ikke oprettes forbindelse til Google-tjenester</translation>

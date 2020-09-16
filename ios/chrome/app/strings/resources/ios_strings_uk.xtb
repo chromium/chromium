@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Завершіть те, що ви робили в іншому відкритому вікні Chrome.</translation>
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1989112275319619282">Переглянути</translation>
+<translation id="1992734845128748707">Змінити веб-переглядач за умовчанням…</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5327248766486351172">Назва</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
-<translation id="5352285283572729470">Цим налаштуванням керує адміністратор</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>
 <translation id="5407969256130905701">Відхилити зміни</translation>
 <translation id="5409365236829784218">Немає встановлених програм, які можуть відкрити цей файл.</translation>

@@ -4285,6 +4285,7 @@
 <translation id="6164005077879661055">將這位受管使用者移除後，系統即會永久刪除所有與該使用者相關的檔案和本機數據。管理員仍可前往 <ph name="MANAGEMENT_URL" /> 查看這位受管使用者的網頁瀏覽記錄和設定。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6166185671393271715">將密碼匯入至 Chrome</translation>
+<translation id="616831107264507309">稍後閱讀</translation>
 <translation id="6169040057125497443">請檢查麥克風。</translation>
 <translation id="6169666352732958425">無法投放桌面。</translation>
 <translation id="6170470584681422115">三文治</translation>
@@ -6674,7 +6675,6 @@
 <translation id="9063208415146866933">第<ph name="ERROR_LINE_START" />至第<ph name="ERROR_LINE_END" />行有錯</translation>
 <translation id="9064275926664971810">啟用「自動填入」功能，輕鬆一按即可填妥表格</translation>
 <translation id="9065203028668620118">編輯</translation>
-<translation id="9065772380960598487">加入「稍後閱讀」</translation>
 <translation id="9066773882585798925">由系統讀出文字</translation>
 <translation id="9066782832737749352">文字轉語音</translation>
 <translation id="9068849894565669697">選取顏色</translation>
@@ -6819,7 +6819,6 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952992212772159698">未啟用</translation>
-<translation id="956444359529327203">關閉訪客視窗</translation>
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>
 <translation id="9580706199804957">無法連線至 Google 服務</translation>

@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">Гэты падкантрольны ўліковы запіс будзе неўзабаве выдалены.</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Экран #}one{Экран #}few{Экран #}many{Экран #}other{Экран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> з <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Прылады побач з вамі, калі на іх адкрыта акно функцыі "Абагульванне паблізу"</translation>
 <translation id="250704661983564564">Размяшчэнне дысплэяў</translation>
 <translation id="2507253002925770350">Білет выдалены</translation>
 <translation id="2507397597949272797">Работа праграмы "<ph name="NAME" />" прыпынена</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">Крытычна мала месца на дыску прылады</translation>
 <translation id="4763408175235639573">Наступныя файлы cookie былі запісаны, калі вы праглядалі гэту старонку.</translation>
 <translation id="4765582662863429759">Дазваляе праграме "Android Паведамленні" перадаваць SMS з тэлефона на Chromebook</translation>
+<translation id="476598255842811483">Ніхто, пакуль вы не адкрыеце на сваёй прыладзе акно функцыі "Абагульванне паблізу"</translation>
 <translation id="4768332406694066911">У вас ёсць сертыфікаты ад гэтых арганізацый, якія ідэнтыфікуюць вас</translation>
 <translation id="477647109558161443">Стварыць ярлык на працоўным стале</translation>
 <translation id="4776917500594043016">Пароль карыстальніка <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">Пры выдаленні падкантрольнага карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя. На старонцы <ph name="MANAGEMENT_URL" /> менеджар па-ранейшаму можа мець магчымасць бачыць гісторыю наведаных вэб-сайтаў і налады для гэтага карыстальніка.</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6166185671393271715">Імпарт пароляў у Chrome</translation>
+<translation id="616831107264507309">Чытаць пазней</translation>
 <translation id="6169040057125497443">Праверце мікрафон.</translation>
 <translation id="6169666352732958425">Не ўдалося трансліраваць працоўны стол.</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
@@ -5668,6 +5671,7 @@
 <translation id="786073089922909430">Сэрвіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
 <translation id="7864539943188674973">Адключыць Bluetooth</translation>
+<translation id="7866352732146932341">Прылады побач з вамі, калі на вашай прыладзе адкрыта акно функцыі "Абагульванне паблізу"</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – спалучана</translation>
 <translation id="7870730066603611552">Праверка параметраў сінхранізацыі пасля наладжвання</translation>
 <translation id="7870790288828963061">Праграм-кіёскаў навейшай версіі не знойдзена. Няма чаго абнаўляць. Выміце USB-сховішча.</translation>
@@ -6672,7 +6676,6 @@
 <translation id="9063208415146866933">Памылка з радка <ph name="ERROR_LINE_START" /> па <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Уключыць аўтазапаўненне для ўводу даных у формы адным націскам</translation>
 <translation id="9065203028668620118">Змяніць</translation>
-<translation id="9065772380960598487">Дадаць у спіс "Чытаць пазней"</translation>
 <translation id="9066773882585798925">Слухаць чытанне тэксту ўслых</translation>
 <translation id="9066782832737749352">Сінтэз маўлення</translation>
 <translation id="9068849894565669697">Выбар колеру</translation>
@@ -6817,7 +6820,6 @@
 <translation id="947329552760389097">&amp;Праверыць элементы</translation>
 <translation id="951991426597076286">Адхіліць</translation>
 <translation id="952992212772159698">Неактыўнае</translation>
-<translation id="956444359529327203">Закрыць гасцявыя вокны</translation>
 <translation id="956500788634395331">Вы абаронены ад патэнцыйна шкодных пашырэнняў</translation>
 <translation id="957960681186851048">Гэты сайт паспрабаваў аўтаматычна спампаваць некалькі файлаў</translation>
 <translation id="9580706199804957">Не ўдалося падключыцца да сэрвісаў Google</translation>

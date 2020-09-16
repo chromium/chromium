@@ -4286,6 +4286,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6164005077879661055">Semua fail dan data setempat yang dikaitkan dengan pengguna diselia akan dipadamkan secara kekal apabila pengguna diselia ini dialih keluar. Tapak web yang dilawati dan tetapan untuk pengguna diselia ini masih boleh dilihat oleh pengurus di <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6166185671393271715">Import Kata Laluan Ke Chrome</translation>
+<translation id="616831107264507309">Baca Kemudian</translation>
 <translation id="6169040057125497443">Sila periksa mikrofon anda.</translation>
 <translation id="6169666352732958425">Tidak dapat menghantar desktop.</translation>
 <translation id="6170470584681422115">Sandwic</translation>
@@ -6677,7 +6678,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="9063208415146866933">Ralat daripada baris <ph name="ERROR_LINE_START" /> hingga <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Dayakan Autolengkap untuk mengisi borang dengan satu klikan</translation>
 <translation id="9065203028668620118">Edit</translation>
-<translation id="9065772380960598487">Tambah pada Baca kemudian</translation>
 <translation id="9066773882585798925">Dengar teks dibaca dengan lantang</translation>
 <translation id="9066782832737749352">Teks kepada Pertuturan</translation>
 <translation id="9068849894565669697">Pilih warna</translation>
@@ -6822,7 +6822,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="947329552760389097">&amp;Periksa Unsur</translation>
 <translation id="951991426597076286">Tolak</translation>
 <translation id="952992212772159698">Tidak diaktifkan</translation>
-<translation id="956444359529327203">Tutup tetamu</translation>
 <translation id="956500788634395331">Anda dilindungi daripada sambungan yang mungkin berbahaya</translation>
 <translation id="957960681186851048">Tapak ini cuba memuat turun berbilang fail secara automatik</translation>
 <translation id="9580706199804957">Tidak dapat menyambung ke perkhidmatan Google</translation>

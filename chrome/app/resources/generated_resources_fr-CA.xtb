@@ -1287,6 +1287,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2505127913256479918">Ce compte supervisé sera bientôt supprimé</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Écran #}one{Écran #}other{Écran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Les appareils à proximité lorsque le partage à proximité est activé sur leur appareil</translation>
 <translation id="250704661983564564">Position des écrans</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
 <translation id="2507397597949272797">L'application <ph name="NAME" /> est interrompue</translation>
@@ -2840,7 +2841,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4390000551125140321">{0,plural, =1{Navigation privée}one{# fenêtre de navigation privée ouverte}other{# fenêtres de navigation privée ouvertes}}</translation>
 <translation id="439266289085815679">La configuration du Bluetooth est contrôlée par <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Modifier le fichier de configuration</translation>
-<translation id="4393691030048716353"><ph name="DOMAIN" /> a désactivé le débogage PDA. Après avoir redémarré votre <ph name="DEVICE_TYPE" />, vous ne pourrez plus télécharger des applications d'une source tierce.</translation>
+<translation id="4393691030048716353"><ph name="DOMAIN" /> a désactivé le débogage PDA. Après avoir redémarré votre <ph name="DEVICE_TYPE" />, vous ne pourrez plus télécharger d'applications d'une source tierce.</translation>
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439817266247065935">Votre appareil ne s'est pas éteint correctement. Redémarrez Linux pour utiliser les applications Linux.</translation>
 <translation id="4400367121200150367">Les sites pour lesquels vos mots de passe ne seront jamais enregistrés s'afficheront ici</translation>
@@ -3139,6 +3140,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4762718786438001384">Vous n'avez presque plus d'espace disque sur votre appareil</translation>
 <translation id="4763408175235639573">Les témoins suivants ont été définis lorsque vous avez consulté cette page</translation>
 <translation id="4765582662863429759">Autorise Android Messages à rediriger des messages texte de votre téléphone à votre Chromebook</translation>
+<translation id="476598255842811483">Personne, sauf si vous ouvrez le partage à proximité sur votre appareil</translation>
 <translation id="4768332406694066911">Vous avez des certificats provenant de ces organisations qui vous identifient</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776917500594043016">Mot de passe pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4285,6 +4287,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6164005077879661055">Tous les fichiers et toutes les données locales associés à l'utilisateur supervisé seront définitivement supprimés en même temps que cet utilisateur. Le gestionnaire peut toujours accéder aux sites Web consultés par l'utilisateur supervisé et aux paramètres de celui-ci à l'adresse <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166185671393271715">Importer les mots de passe dans Chrome</translation>
+<translation id="616831107264507309">Lire plus tard</translation>
 <translation id="6169040057125497443">Veuillez vérifier votre microphone.</translation>
 <translation id="6169666352732958425">Impossible de diffuser le bureau.</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -5669,6 +5672,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="786073089922909430">Service : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Téléchargements</translation>
 <translation id="7864539943188674973">Désactiver Bluetooth</translation>
+<translation id="7866352732146932341">Les appareils à proximité lorsque le partage à proximité est activé sur votre appareil</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />, associé</translation>
 <translation id="7870730066603611552">Examiner les options de synchronisation après configuration</translation>
 <translation id="7870790288828963061">Aucune application de kiosque avec une version plus récente trouvée. Aucune mise à jour à effectuer. Veuillez retirer la clé USB.</translation>
@@ -6673,7 +6677,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Activer le remplissage automatique afin de remplir les formulaires en un seul clic</translation>
 <translation id="9065203028668620118">Modifier</translation>
-<translation id="9065772380960598487">Ajouter à la section Lire plus tard</translation>
 <translation id="9066773882585798925">Lire à voix haute le texte à l'écran</translation>
 <translation id="9066782832737749352">Synthèse vocale</translation>
 <translation id="9068849894565669697">Sélectionner une couleur</translation>
@@ -6818,7 +6821,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="947329552760389097">&amp;Inspecter des éléments</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952992212772159698">Désactivé</translation>
-<translation id="956444359529327203">Fermer les fenêtres d'invité</translation>
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
 <translation id="9580706199804957">Impossible de se connecter aux services Google</translation>

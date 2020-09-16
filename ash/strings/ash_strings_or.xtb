@@ -48,6 +48,7 @@
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ଚାଲୁ</translation>
+<translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1419738280318246476">ବିଜ୍ଞପ୍ତି କାର୍ଯ୍ୟ ସମ୍ପାଦନ କରିବାକୁ ଡିଭାଇସ୍‌କୁ ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="1420408895951708260">ନାଇଟ୍ ଲାଇଟ୍‍କୁ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">ସ୍କ୍ରିନସଟ୍ ନିଆଯାଇଛି ଏବଂ କ୍ଲିପବୋର୍ଡରେ ସେଭ୍ କରାଯାଇଛି</translation>
@@ -65,6 +66,7 @@
 <translation id="1550523713251050646">ଅଧିକ ବିକଳ୍ପଗୁଡ଼ିକ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1570871743947603115">ବ୍ଲୁଟୁଥ୍‌ ଟୋଗଲ୍‌ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ଏହି ଅବଧିରେ ଆପଣଙ୍କର ସମସ୍ତ କାର୍ଯ୍ୟକଳାପ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
+<translation id="1611993646327628135">ଚାଲୁ ଅଛି</translation>
 <translation id="1632985212731562677">ସେଟିଂସ୍ &gt; ଆକ୍ସେସିବିଲିଟୀରେ 'ସ୍ୱିଚ୍ ଆକ୍ସେସ୍' ସୁବିଧା ଅକ୍ଷମ କରାଯାଇପାରିବ।</translation>
 <translation id="1654477262762802994">ଏକ ଭିଡିଓ କ୍ବେରୀ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1667964833127753507">ନ୍ୟୁଟ୍ରାଲ୍ କଲର ମୋଡ୍ ୱାଲପେପରରୁ ବାହାର କରାଯାଇଥିବା ରଙ୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ ନାହିଁ, ତାହା ପରିବର୍ତ୍ତେ ନ୍ୟୁଟ୍ରାଲ୍ ଟୋନ୍ ଥିବା ଫିକା କିମ୍ବା ଗାଢ଼ା ରଙ୍ଗର ଏକ ସେଟ୍ ବ୍ୟବହାର କରେ।</translation>
@@ -79,6 +81,7 @@
 <translation id="1761222317188459878">ନେଟ୍‌ୱର୍କ ସଂଯୋଗ ଟୋଗଲ୍‌ କରନ୍ତୁ।<ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1782199038061388045">ଅନୁବାଦ</translation>
+<translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1812997170047690955">ମୋ ସ୍କ୍ରିନ୍‌ରେ କ’ଣ ଅଛି?</translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
@@ -202,6 +205,7 @@
 <translation id="3077734595579995578">Shift</translation>
 <translation id="3081696990447829002">ମେନୁକୁ ପ୍ରସାରିତ କରନ୍ତୁ</translation>
 <translation id="3087734570205094154">ନିମ୍ନଭାଗ</translation>
+<translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">କର୍ସର୍ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" ପାଇଁ <ph name="INTENT" /> ପାଆନ୍ତୁ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ବ୍ଲୁଟୁଥ୍)</translation>
@@ -234,6 +238,7 @@
 <translation id="3371140690572404006">USB-C ଡିଭାଇସ୍‌ (ସମ୍ମୁଖ ଡାହାଣପଟ ପୋର୍ଟ)</translation>
 <translation id="3386978599540877378">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମ୍ୟାଗ୍ନିଫାୟାର୍</translation>
 <translation id="3400357268283240774">ଅତିରିକ୍ତ ସେଟିଂସ୍</translation>
+<translation id="3410336247007142655">ଗାଢ଼ ଥିମ୍ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="3413817803639110246">ଏପର୍ଯ୍ୟନ୍ତ ଦେଖିବା ପାଇଁ କିଛି ନାହିଁ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />ରୁ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
 <translation id="3430396595145920809">ପଛକୁ ଫେରିବାକୁ ଡାହାଣ ପାର୍ଶ୍ୱରୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
@@ -313,6 +318,7 @@
 <translation id="4261870227682513959">ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି</translation>
 <translation id="4269883910223712419">ଏହା କରିବାକୁ ଏହି ଡିଭାଇସ୍‌ର ବ୍ୟବସ୍ଥାପକଙ୍କ କ୍ଷମତା ରହିଛି:</translation>
 <translation id="4279490309300973883">ପ୍ରତିଫଳନ</translation>
+<translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="4294319844246081198">ସୁପ୍ରଭାତ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ସମସ୍ତ <ph name="COUNT" />ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4303223480529385476">ସ୍ଥିତି କ୍ଷେତ୍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
@@ -327,6 +333,7 @@
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4379531060876907730">ଏଗୁଡ଼ିକ ଆପଣଙ୍କର ଷ୍ଟାଇଲସ୍ ଟୁଲ୍ ଅଟେ</translation>
 <translation id="4389184120735010762">ଆପଣ ଡକ୍‍ ହୋ‍ଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ କ’ଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
 <translation id="4421231901400348175">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ରିମୋଟ୍‍ ସହାୟକ ମାଧ୍ୟମରେ <ph name="HELPER_NAME" />ସହିତ ସେୟାର୍‌ କରାଯାଉଛି।</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
@@ -346,6 +353,7 @@
 <translation id="4570957409596482333">ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ୍ ବଟନ୍</translation>
 <translation id="4577274620589681794">ସମୟ ସମାପ୍ତ ହୋଇଛି · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">ଏକ ଅଜଣା ରିସିଭର୍‌ରେ କାଷ୍ଟିଂ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="4596144739579517758">ଗାଢ଼ ଥିମ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4623167406982293031">ଆକାଉଣ୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4628757576491864469">ଡିଭାଇସ୍</translation>
 <translation id="4659419629803378708">ChromeVox ସକ୍ଷମ କରାଯାଇଛି</translation>
@@ -388,6 +396,7 @@
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5207949376430453814">ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
+<translation id="5208059991603368177">ଚାଲୁ ଅଛି</translation>
 <translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="523505283826916779">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍‌</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
@@ -399,6 +408,7 @@
 <translation id="5313326810920013265">ବ୍ଲୁଟୁଥ୍‍ ସେଟିଂସ୍‍</translation>
 <translation id="5314219114274263156">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ନିଆଯାଇଛି</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
+<translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
 <translation id="5397578532367286026">chrome.com ରେ ପରିଚାଳକ (<ph name="MANAGER_EMAIL" />) ଙ୍କ ଦ୍ଵାରା ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ବ୍ୟବହାର ପ୍ରଣାଳୀ ଓ ଇତିବୃତ୍ତିର ସମୀକ୍ଷା କରାଯାଇପାରିବ।</translation>
 <translation id="5400461572260843123">ଦ୍ରୁତ ସେଟିଂସ୍, ବିଜ୍ଞପ୍ତି କେନ୍ଦ୍ରକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ search + left ଦବାନ୍ତୁ।</translation>
@@ -435,6 +445,7 @@
 <translation id="5769373120130404283">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍</translation>
 <translation id="5777841717266010279">ସ୍କ୍ରିନ୍ ସେୟାରିଂ ବନ୍ଦ କରିବେ?</translation>
 <translation id="5790085346892983794">ସଫଳ ହୋଇଛି</translation>
+<translation id="579415080077680903">ସାଇଲେନ୍ସ</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
@@ -445,6 +456,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5920710855273935292">ମାଇକ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ଚାଲୁ ଅଛି।</translation>
 <translation id="5947494881799873997">ପୂର୍ବାବସ୍ଥାକୁ ଆଣନ୍ତୁ</translation>
 <translation id="595202126637698455">କାର୍ଯ୍ୟଦକ୍ଷତା ଟ୍ରେସିଂ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5957083217255311415">ମୋବାଇଲ୍ ଡାଟା ବନ୍ଦ ଅଛି।</translation>
@@ -469,6 +481,7 @@
 <translation id="615957422585914272">ଅନ୍-ସ୍କ୍ରିନ୍ କୀବୋର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="6164005077879661055">ଥରେ ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ି ଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ। ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ଦେଖାଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍ ଏବଂ ସେଟିଂସ୍ ଏବେବି <ph name="MANAGEMENT_URL" />ରେ ପରିଚାଳକଙ୍କ ଦ୍ୱାରା ଦେଖା ଦେଇପାରେ।</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="6192859646269780503">ଫୋନର ଅବସ୍ଥାନ ନିରୂପଣ କରନ୍ତୁ</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
 <translation id="6236290670123303279">ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -540,6 +553,7 @@
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
 <translation id="698231206551913481">ଥରେ ଏହି ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ିଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ।</translation>
 <translation id="7007983414944123363">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="7013005189539051442">ହଟସ୍ପଟ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />ରେ ଆସନ୍ତୁ।</translation>
 <translation id="7025533177575372252">ଆପଣଙ୍କର <ph name="DEVICE_NAME" />କୁ ନିଜ ଫୋନ୍ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7026338066939101231">ହ୍ରାସ</translation>
@@ -613,6 +627,7 @@
 <translation id="7842569679327885685">ଚେତାବନୀ: ପରୀକ୍ଷାମୂଳକ ବୈଶିଷ୍ଟ୍ୟ</translation>
 <translation id="7846634333498149051">କୀ'ବୋର୍ଡ</translation>
 <translation id="7868900307798234037">ଟିପ ଚିହ୍ନ ସାହାଯ୍ୟରେ ଅନ୍‌ଲକ୍ କରୁଛି</translation>
+<translation id="7872786842639831132">ବନ୍ଦ ଅଛି</translation>
 <translation id="7886169021410746335">ଗୋପନୀୟତା ସେଟିଂସ୍ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7886277072580235377">ଯେତେବେଳେ ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବେ ସେତେବେଳେ ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ୍ ଅବଧି ଖାଲି ହୋଇଯିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ଏକ ଇମେଲ୍ ପଠାନ୍ତୁ</translation>
@@ -717,6 +732,7 @@
 <translation id="8853703225951107899">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ପୁରୁଣା ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ଲାଗୁ ହେବ।</translation>
 <translation id="885387440427703469">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="8870509716567206129">ଆପ୍‍ ସ୍ପ୍ଲିଟ୍‍-ସ୍କ୍ରୀନକୁ ସମର୍ଥନ କରେନାହିଁ।</translation>
+<translation id="8871580645200179206">ଗାଢ଼ ଥିମ୍ ଟୋଗଲ୍ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8877788021141246043">ଗୋଟିଏ ରିମାଇଣ୍ଡର୍‌କୁ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="8878886163241303700">ସ୍କ୍ରିନ୍‍ର ବିସ୍ତାର କରନ୍ତୁ</translation>

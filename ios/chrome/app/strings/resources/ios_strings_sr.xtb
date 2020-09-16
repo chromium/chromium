@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Завршите оно што сте радили у другом отвореном Chrome прозору.</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1989112275319619282">Прегледај</translation>
+<translation id="1992734845128748707">Промените подразумевани прегледач…</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
 <translation id="2074131957428911366">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5327248766486351172">Назив</translation>
 <translation id="5339316356165661760">Укључи синхронизацију</translation>
-<translation id="5352285283572729470">Овим подешавањем се управља</translation>
 <translation id="5388358297987318779">Отвори слику</translation>
 <translation id="5407969256130905701">Одбаци промене</translation>
 <translation id="5409365236829784218">Није инсталирана ниједна апликација за отварање ове датотеке.</translation>

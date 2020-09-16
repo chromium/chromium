@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">この管理対象アカウントはまもなく削除されます</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{画面 #}other{画面 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> 中 <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">近くにある、ニアバイシェア画面が開いているデバイス</translation>
 <translation id="250704661983564564">ディスプレイの配置</translation>
 <translation id="2507253002925770350">チケットを削除しました</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> は一時停止中</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">デバイスのディスク空き領域が非常に少なくなっています</translation>
 <translation id="4763408175235639573">このページを表示したときに以下の Cookie が設定されました</translation>
 <translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
+<translation id="476598255842811483">あなたのデバイスでニアバイシェアを開かない場合、誰とも共有しません</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
 <translation id="477647109558161443">デスクトップ ショートカットを作成</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> のパスワード</translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">この監視対象ユーザーを削除すると、このユーザーに関連付けられたすべてのファイルとローカル データも完全に削除されます。この監視対象ユーザーがアクセスしたウェブサイトやこのユーザーの設定は引き続き、管理者が <ph name="MANAGEMENT_URL" /> で見ることができます。</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6166185671393271715">Chrome にパスワードをインポート</translation>
+<translation id="616831107264507309">後で読む</translation>
 <translation id="6169040057125497443">マイクを確認してください。</translation>
 <translation id="6169666352732958425">デスクトップをキャストできません。</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
@@ -5668,6 +5671,7 @@
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
+<translation id="7866352732146932341">あなたのデバイスでニアバイシェア画面が開いているときに近くにあるデバイス</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
@@ -6673,7 +6677,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
 <translation id="9064275926664971810">フォームにワンクリックで自動入力できるようにします</translation>
 <translation id="9065203028668620118">編集</translation>
-<translation id="9065772380960598487">[後で読む] に追加</translation>
 <translation id="9066773882585798925">テキストを読み上げます</translation>
 <translation id="9066782832737749352">テキスト読み上げ</translation>
 <translation id="9068849894565669697">色の選択</translation>
@@ -6818,7 +6821,6 @@
 <translation id="947329552760389097">要素の検証(&amp;I)</translation>
 <translation id="951991426597076286">同意しない</translation>
 <translation id="952992212772159698">無効</translation>
-<translation id="956444359529327203">ゲストモードを終了</translation>
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>
 <translation id="9580706199804957">Google サービスに接続できませんでした</translation>

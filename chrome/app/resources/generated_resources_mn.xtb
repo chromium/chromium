@@ -1282,6 +1282,7 @@
 <translation id="2505127913256479918">Энэ хяналттай бүртгэлийг удахгүй устгана</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{# дэлгэц}other{# дэлгэц}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />-ийн <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">Бусад хүний төхөөрөмж дээр Ойролцоо хуваалцах нээлттэй үед таны ойролцоо байх төхөөрөмжүүд</translation>
 <translation id="250704661983564564">Дэлгэцийн зохион байгуулалт</translation>
 <translation id="2507253002925770350">Тасалбарыг хассан</translation>
 <translation id="2507397597949272797"><ph name="NAME" />-г түр зогсоосон</translation>
@@ -3132,6 +3133,7 @@
 <translation id="4762718786438001384">Төхөөрөмжийн дискний багтаамж маш бага байна</translation>
 <translation id="4763408175235639573">Таныг энэ хуудсыг харахад дараах күүкийг тохируулсан</translation>
 <translation id="4765582662863429759">Андройд Мессежийг таны утаснаас таны Chromebook-д мессеж илгээхийг зөвшөөрдөг</translation>
+<translation id="476598255842811483">Та Ойролцоо хуваалцахыг төхөөрөмж дээрээ нээхгүй бол өөр хэн ч харахгүй</translation>
 <translation id="4768332406694066911">Танд эдгээр байгууллагаас таныг тодорхойлох сертификат байна</translation>
 <translation id="477647109558161443">Дэлгэц дээрх холбоос үүсгэх</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-ийн нууц үг</translation>
@@ -4278,6 +4280,7 @@
 <translation id="6164005077879661055">Хэрэв энэ хяналттай хэрэглэгчийг устгавал түүнтэй холбоотой бүх файлууд болон суурин өгөгдлүүд бүрмөсөн устах болно. Энэ хяналттай хэрэглэгчийн орж байсан вэб сайтууд болон тохиргоонуудыг <ph name="MANAGEMENT_URL" /> дэх менежер харах боломжтой байна.</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166185671393271715">Нууц үгийг Chrome-д импортлох</translation>
+<translation id="616831107264507309">Дараа унших</translation>
 <translation id="6169040057125497443">Микрофоноо шалгана уу.</translation>
 <translation id="6169666352732958425">Дэлгэцийг дамжуулах боломжгүй байна.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -5661,6 +5664,7 @@
 <translation id="786073089922909430">Үйлчилгээ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Татаж авалтууд</translation>
 <translation id="7864539943188674973">Bluetooth-ийг идэвхгүй болго</translation>
+<translation id="7866352732146932341">Таны төхөөрөмж дээр Ойролцоо хуваалцах нээлттэй үед таны ойролцоо байх төхөөрөмжүүд</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - Холбосон</translation>
 <translation id="7870730066603611552">Синк хийх сонголтын тохируулгыг хянах</translation>
 <translation id="7870790288828963061">Шинэ хувилбар бүхий ямар ч Киоск апп олдсонгүй. Шинэчлэх ямар ч зүйл алга. USB дискээ салгана уу.</translation>
@@ -6661,7 +6665,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>
 <translation id="9064275926664971810">Маягтыг нэг даралтаар бөглөхийн тулд Autofill-г идэвхжүүлнэ үү</translation>
 <translation id="9065203028668620118">Засварлах</translation>
-<translation id="9065772380960598487">Хожим унших руу нэмэх</translation>
 <translation id="9066773882585798925">Текстийг чангаар унших</translation>
 <translation id="9066782832737749352">Текст-яриа</translation>
 <translation id="9068849894565669697">Өнгө сонгох</translation>
@@ -6806,7 +6809,6 @@
 <translation id="947329552760389097">&amp;Элементүүдийг шалгах</translation>
 <translation id="951991426597076286">Татгалзах</translation>
 <translation id="952992212772159698">Идэвхжээгүй байна</translation>
-<translation id="956444359529327203">Зочны цонхыг хаах</translation>
 <translation id="956500788634395331">Таныг аюултай байж болзошгүй өргөтгөлөөс хамгаалж байна</translation>
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>
 <translation id="9580706199804957">Google-н үйлчилгээнд холбогдож чадсангүй</translation>

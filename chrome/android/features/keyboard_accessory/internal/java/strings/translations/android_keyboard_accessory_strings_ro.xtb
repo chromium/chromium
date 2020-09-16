@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1383876407941801731">Caută</translation>
 <translation id="1566281227936819866">Se afișează metodele de plată salvate</translation>
 <translation id="1717486229951421299">Lista datelor de conectare care trebuie completate la atingere este deschisă la jumătate din înălțime.</translation>
 <translation id="207576718733492531">Lista datelor de conectare care trebuie completate la atingere s-a închis.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Lista datelor de conectare care trebuie completate la atingere este deschisă la înălțimea completă.</translation>
 <translation id="6393156038355142111">Sugerează o parolă puternică</translation>
 <translation id="6696046606263842994">Completează parola</translation>
+<translation id="7029809446516969842">Parole</translation>
 <translation id="7299100402441711551">Arată adresele</translation>
 <translation id="7494879913343971937">Afișează parolele</translation>
 <translation id="7758428186423745764">Completează metoda de plată</translation>

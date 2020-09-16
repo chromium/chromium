@@ -2687,11 +2687,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
           Lưu ý: <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> (nếu đã được chỉ định) sẽ ghi đè chính sách này.</translation>
 <translation id="494613465159630803">Bộ thu Google Cast</translation>
 <translation id="494924690085329212">Khởi động lại khi đăng xuất người dùng nếu Android đã khởi động.</translation>
-<translation id="4950900960525118567">Tính năng này sẽ bật tùy chọn đề xuất nội dung mới để khám phá. Trong đó có cả các ứng dụng, trang web và nhiều nội dung khác.
-      Nếu bạn đặt chính sách này thành True, thì tùy chọn đề xuất nội dung mới để khám phá sẽ bật.
-      Nếu bạn đặt chính sách này thành False, thì tùy chọn đề xuất nội dung mới để khám phá sẽ tắt.
-      Nếu bạn không đặt chính sách này, thì tùy chọn đề xuất nội dung mới để khám phá sẽ tắt đối với những người dùng được quản lý.
-      </translation>
 <translation id="4952347392677351397">Nếu bạn đặt chính sách này thành 1, thì các trang web có thể truy cập và sử dụng cảm biến, chẳng hạn như cảm biến chuyển động và cảm biến ánh sáng. Nếu bạn đặt chính sách này thành 2, quyền sử dụng cảm biến sẽ bị từ chối.
 
       Nếu bạn không đặt chính sách này, <ph name="ALLOW_SENSORS_POLICY_NAME" /> sẽ được áp dụng nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
@@ -2959,6 +2954,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="5293044154216294358">Nếu bạn đặt chính sách này thành True, thì người dùng có thể chơi trò chơi khủng long. Nếu bạn đặt chính sách này thành False, thì người dùng không thể chơi trò chơi ẩn có tên khủng long khi thiết bị không có kết nối mạng.
 
       Nếu bạn không đặt chính sách này, thì người dùng không thể chơi trò chơi đó trên <ph name="PRODUCT_OS_NAME" /> đã đăng ký nhưng vẫn có thể chơi trong những trường hợp khác.</translation>
+<translation id="529457411593078576">Bật Điều khoản dịch vụ (ToS) trong lần chạy đầu tiên của CCT</translation>
 <translation id="5306186200045823863">Cho phép tin cậy Cơ sở hạ tầng khóa công khai (PKI) cũ của Symantec Corporation</translation>
 <translation id="5307432759655324440">Tính khả dụng của chế độ ẩn danh</translation>
 <translation id="5311275381462687162">Tùy chọn cài đặt mặc định cho hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ của cookie</translation>
@@ -4590,6 +4586,17 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="747014869399137701">Nếu bạn đặt chính sách này thành 1, thì trang web có thể hiển thị thông báo trên màn hình. Nếu bạn đặt chính sách này thành 2, thì trang web không thể hiển thị thông báo trên màn hình.
 
       Nếu bạn không đặt chính sách này, thì <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> sẽ áp dụng nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
+<translation id="7471828226549672843">Theo mặc định, Điều khoản dịch vụ sẽ hiển thị khi CCT được chạy lần đầu tiên. Nếu bạn đặt chính sách này thành Tắt, hộp thoại Điều khoản dịch vụ sẽ không xuất hiện trong lần chạy đầu tiên hoặc những lần chạy tiếp theo. Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì hộp thoại Điều khoản dịch vụ sẽ xuất hiện trong lần chạy đầu tiên. Các lưu ý khác:
+
+      – Chính sách này chỉ có trên những thiết bị Android được quản lý hoàn toàn. Những nhà cung cấp dịch vụ Quản lý điểm cuối hợp nhất có thể định cấu hình các thiết bị này.
+
+      – Nếu bạn đặt chính sách này thành Tắt, chính sách BrowserSignin sẽ không có hiệu lực.
+
+      – Nếu bạn đặt chính sách này thành Tắt, hệ thống sẽ không gửi các chỉ số​ tới máy chủ.
+
+      – Nếu bạn đặt chính sách này thành Tắt, chức năng của trình duyệt sẽ bị hạn chế.
+
+      – Nếu bạn đặt chính sách này thành Tắt, quản trị viên sẽ phải thông báo điều này cho người dùng cuối của thiết bị.</translation>
 <translation id="747275827471712187">Quay lại về hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ đối với cookie trên các trang web này</translation>
 <translation id="7477231245051133709">Bật tính năng hỗ trợ tiếp cận về đơn âm</translation>
 <translation id="7477239290070847560">Đích giao thức dựa trên máy in tự động định cấu hình (mDNS + DNS-SD)</translation>

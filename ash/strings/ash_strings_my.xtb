@@ -66,7 +66,7 @@
 <translation id="1550523713251050646">ပိုမိုရွေးစရာများအတွက် နှိပ်ပါ</translation>
 <translation id="1570871743947603115">'ဘလူးတုသ်' ကို အဖွင့်အပိတ် ပြုလုပ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ဤစက်ရှင်ရှိ သင့်လုပ်ဆောင်ချက်အားလုံးကို ဝင်ကြည့်နိုင်သည်</translation>
-<translation id="1611993646327628135">ဖွင့်</translation>
+<translation id="1611993646327628135">ဖွင့်ထားသည်</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးစွဲနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="1654477262762802994">အသံဖြင့် စတင် စုံစမ်းမေးမြန်းရန်</translation>
 <translation id="1667964833127753507">သဘာဝအရောင်မုဒ်သည် နောက်ခံမှ ထုတ်ထားသည့်အရောင်ကို မသုံးပါ၊ ၎င်းတို့ကို သဘာဝအရောင်စပ် အလင်း သို့မဟုတ် အမှောင် အရောင်ဖြင့် အစားထိုးသည်။</translation>
@@ -81,7 +81,7 @@
 <translation id="1761222317188459878">ကွန်ရက်ချိတ်ဆက်မှုကို အဖွင့်အပိတ်ပြုလုပ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
 <translation id="1782199038061388045">ဘာသာပြန်ခြင်း</translation>
-<translation id="1787955149152357925">ပိတ်ရန်</translation>
+<translation id="1787955149152357925">ပိတ်ထားသည်</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားပါသည်</translation>
 <translation id="1812997170047690955">ကျွန်ုပ်၏ ဖန်သားပြင်ပေါ်တွင် မည်သည့်အရာများ ရှိပါသလဲ။</translation>
 <translation id="1823873187264960516">အီသာနက်− <ph name="ADDRESS" /></translation>
@@ -205,7 +205,7 @@
 <translation id="3077734595579995578">shift ကီး</translation>
 <translation id="3081696990447829002">မီနူးကို ချဲ့ရန်</translation>
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
-<translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ပြောင်းပါ။ <ph name="STATE_TEXT" /></translation>
+<translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ပြောင်းရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">ကာဆာ ရွှေ့ရန်</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" အတွက် <ph name="INTENT" /> ရယူခြင်း</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ဘလူးတုသ်)</translation>
@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အကြောင်းကြားချက်များကို ပိတ်ထားသည်</translation>
 <translation id="4269883910223712419">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူသည် အောက်ပါတို့ကို လုပ်နိုင်သည်−</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
+<translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">သတိပေးချက် <ph name="COUNT" /> ခုလုံးကို ဖယ်ရှားပါ</translation>
 <translation id="4303223480529385476">အခြေအနေပြ နေရာကို ချဲ့ရန်</translation>
@@ -395,7 +396,7 @@
 <translation id="5168181903108465623">Cast စက်ကိရိယာများ ရနိုင်၏</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5207949376430453814">စာရိုက်ထည့်ရန်အကွက်ကို မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
-<translation id="5208059991603368177">ဖွင့်ရန်</translation>
+<translation id="5208059991603368177">ဖွင့်ထားသည်</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="523505283826916779">ရယူသုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>

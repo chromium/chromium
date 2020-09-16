@@ -205,7 +205,7 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Развернуть меню</translation>
 <translation id="3087734570205094154">Снизу</translation>
-<translation id="3090989381251959936">Включить или отключить функцию "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" /></translation>
+<translation id="3090989381251959936">Включить или отключить функцию "<ph name="FEATURE_NAME" />". <ph name="STATE_TEXT" />.</translation>
 <translation id="309749186376891736">Перемещение курсора</translation>
 <translation id="3098580329624789136">Как <ph name="INTENT" /> "<ph name="QUERY" />"</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">Показать настройки уведомлений. Уведомления отключены.</translation>
 <translation id="4269883910223712419">Администратор этого устройства имеет возможность:</translation>
 <translation id="4279490309300973883">Отражение</translation>
+<translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
 <translation id="4303223480529385476">Развернуть панель состояния</translation>
@@ -332,7 +333,7 @@
 <translation id="4378551569595875038">Подключение…</translation>
 <translation id="4379531060876907730">Инструменты для работы со стилусом</translation>
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
-<translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена.</translation>
+<translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
 <translation id="4421231901400348175">Доступ к экрану для <ph name="HELPER_NAME" /> с помощью удаленного помощника</translation>
 <translation id="4430019312045809116">Объем</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
@@ -352,7 +353,7 @@
 <translation id="4570957409596482333">Кнопка "Озвучивание при нажатии"</translation>
 <translation id="4577274620589681794">Время истекло · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
-<translation id="4596144739579517758">Тёмная тема отключена.</translation>
+<translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4628757576491864469">Устройства</translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
@@ -407,7 +408,7 @@
 <translation id="5313326810920013265">Настройки Bluetooth</translation>
 <translation id="5314219114274263156">Видео с экрана записано</translation>
 <translation id="5331975486040154427">Устройство USB-C (дальний порт слева)</translation>
-<translation id="5352250171825660495">Тёмная тема включена.</translation>
+<translation id="5352250171825660495">Тёмная тема включена</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) может просматривать данные об использовании и историю этого профиля на сайте chrome.com.</translation>
 <translation id="5400461572260843123">Быстрые настройки: чтобы открыть центр уведомлений, нажмите Поиск + Стрелка влево.</translation>
@@ -444,7 +445,7 @@
 <translation id="5769373120130404283">Экран конфиденциальности</translation>
 <translation id="5777841717266010279">Закрыть доступ к экрану?</translation>
 <translation id="5790085346892983794">Выполнено</translation>
-<translation id="579415080077680903">Беззвучный режим</translation>
+<translation id="579415080077680903">Тихий режим</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -455,7 +456,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5920710855273935292">Микрофон отключен.</translation>
-<translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена.</translation>
+<translation id="5946788582095584774">Функция "<ph name="FEATURE_NAME" />" включена</translation>
 <translation id="5947494881799873997">Отменить</translation>
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
 <translation id="5957083217255311415">Мобильный Интернет отключен.</translation>
@@ -480,7 +481,7 @@
 <translation id="615957422585914272">Показывать экранную клавиатуру</translation>
 <translation id="6164005077879661055">После удаления контролируемого профиля все файлы и локальные данные, связанные с ним, будут удалены. Посещенные страницы и настройки этого профиля будут видны его менеджеру на странице: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Подробнее</translation>
-<translation id="6192859646269780503">Функция "Найти телефон"</translation>
+<translation id="6192859646269780503">Найти телефон</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -731,7 +732,7 @@
 <translation id="8853703225951107899">Введенный PIN-код или пароль снова оказался недействительным. Если вы недавно меняли пароль, введите прежний. Новый пароль вступит в силу после того, как вы выйдете из аккаунта.</translation>
 <translation id="885387440427703469">Запись экрана отключена</translation>
 <translation id="8870509716567206129">Приложение не поддерживает разделение экрана.j</translation>
-<translation id="8871580645200179206">Включить или отключить тёмную тему. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Включить или отключить тёмную тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8877788021141246043">Создать напоминание</translation>
 <translation id="8878886163241303700">Раскрытый экран</translation>

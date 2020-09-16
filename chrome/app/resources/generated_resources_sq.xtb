@@ -1284,6 +1284,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2505127913256479918">Kjo llogari e mbikëqyrur do të hiqet së shpejti</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekrani #}other{Ekrani #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> nga <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Pajisjet pranë teje kur "Ndarja në afërsi" është e hapur në pajisjen e tyre</translation>
 <translation id="250704661983564564">Sistemimi i ekranit</translation>
 <translation id="2507253002925770350">Bileta u hoq</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> është vendosur në pauzë</translation>
@@ -3135,6 +3136,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4762718786438001384">Hapësira e diskut të pajisjes është jashtëzakonisht e ulët</translation>
 <translation id="4763408175235639573">Kukit e mëposhtme u vendosën kur vizitove këtë faqe</translation>
 <translation id="4765582662863429759">Lejon që "Mesazhet në Android" të ridrejtojnë mesazhet me tekst nga telefoni te pajisja jote Chromebook</translation>
+<translation id="476598255842811483">Askush në rast se nuk hap "Ndarjen në afërsi" në pajisjen tënde</translation>
 <translation id="4768332406694066911">Ke certifikata nga këto organizata që të identifikojnë</translation>
 <translation id="477647109558161443">Krijo një shkurtore për desktop</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4281,6 +4283,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6164005077879661055">Të gjithë skedarët dhe të dhënat lokale të lidhura me përdoruesin e kontrolluar do të fshihen përgjithmonë pasi të hiqet përdoruesi i kontrolluar. Sajtet e uebit të vizituara dhe cilësimet për këtë përdorues të kontrolluar mund të jenë akoma të dukshme nga menaxheri në <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
+<translation id="616831107264507309">Lexo më vonë</translation>
 <translation id="6169040057125497443">Kontrollo mikrofonin.</translation>
 <translation id="6169666352732958425">Desktopi nuk mund të transmetohet.</translation>
 <translation id="6170470584681422115">Sandviç</translation>
@@ -5664,6 +5667,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="786073089922909430">Shërbimi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Shkarkimet</translation>
 <translation id="7864539943188674973">Çaktivizo Bluetooth-in</translation>
+<translation id="7866352732146932341">Pajisjet pranë teje kur "Ndarja në afërsi" është e hapur në pajisjen tënde</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - E çiftuar</translation>
 <translation id="7870730066603611552">Rishiko opsionet e sinkronizimit pas konfigurimit</translation>
 <translation id="7870790288828963061">Nuk u gjetën aplikacione kioskë me version më të ri. Nuk ka asgjë për të përditësuar. Hiqe memorien USB.</translation>
@@ -6668,7 +6672,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9063208415146866933">Gabim nga rreshti <ph name="ERROR_LINE_START" /> deri në <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivizo plotësimin automatik për të plotësuar formularë me një klikim të vetëm</translation>
 <translation id="9065203028668620118">Redakto</translation>
-<translation id="9065772380960598487">Shto te "Lexo më vonë"</translation>
 <translation id="9066773882585798925">Dëgjoje tekstin të lexuar me zë të lartë</translation>
 <translation id="9066782832737749352">Teksti në të folur</translation>
 <translation id="9068849894565669697">Zgjidh ngjyrën</translation>
@@ -6813,7 +6816,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="947329552760389097">&amp;Inspekto elementet</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
-<translation id="956444359529327203">Mbyll vizitorin</translation>
 <translation id="956500788634395331">Je i mbrojtur nga shtesat që mund të jenë të dëmshme</translation>
 <translation id="957960681186851048">Ky sajt u përpoq të shkarkonte automatikisht shumë skedarë</translation>
 <translation id="9580706199804957">Nuk mund të lidhej me shërbimet e Google</translation>

@@ -48,6 +48,7 @@
 <translation id="1351937230027495976">مینو کو سکیڑیں</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1391102559483454063">آن</translation>
+<translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
 <translation id="1420408895951708260">نائٹ لائٹ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">اسکرین شاٹ لیا گیا اور کلپ بورڈ میں محفوظ کر دیا گیا</translation>
@@ -65,6 +66,7 @@
 <translation id="1550523713251050646">مزید اختیارات کیلئے کلک کریں</translation>
 <translation id="1570871743947603115">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
+<translation id="1611993646327628135">آن</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1667964833127753507">نیوٹرل رنگ موڈ وال پیپر ایکسٹریکٹیڈ رنگوں کا استعمال نہیں کرتا ہے، ان کی جگہ نیوٹرل طور پر ٹون کی گئی لائٹ یا گہری ہیوز والے سیٹ کا استعمال کیا جا رہا ہے۔</translation>
@@ -79,6 +81,7 @@
 <translation id="1761222317188459878">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
 <translation id="1782199038061388045">ترجمہ</translation>
+<translation id="1787955149152357925">آف</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="1812997170047690955">میری اسکرین پر کیا ہے؟</translation>
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
@@ -202,6 +205,7 @@
 <translation id="3077734595579995578">شفٹ</translation>
 <translation id="3081696990447829002">مینو کو پھیلائیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
+<translation id="3090989381251959936"><ph name="FEATURE_NAME" /> کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />" کیلئے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
@@ -234,6 +238,7 @@
 <translation id="3371140690572404006">‏USB-C آلہ (دائیں طرف کا اگلا پورٹ)</translation>
 <translation id="3386978599540877378">پوری اسکرین کا مکبّر</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
+<translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> سے غیر منسلک کریں</translation>
 <translation id="3430396595145920809">پیچھے جانے کیلئے دائیں سے سوائپ کریں</translation>
@@ -313,6 +318,7 @@
 <translation id="4261870227682513959">اطلاع کی ترتیبات دکھائیں۔ اطلاعات آف ہیں</translation>
 <translation id="4269883910223712419">اس آلہ کا منتظم یہ کام کر سکتا ہے:</translation>
 <translation id="4279490309300973883">مررنگ</translation>
+<translation id="4285498937028063278">پن ہٹائیں</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
@@ -327,6 +333,7 @@
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4379531060876907730">یہ آپ کے اسٹائلس ٹولز ہیں</translation>
 <translation id="4389184120735010762">آپ نے ڈاک کردہ مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
+<translation id="4412944820643904175"><ph name="FEATURE_NAME" /> آف ہے۔</translation>
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4430019312045809116">والیوم</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
@@ -346,6 +353,7 @@
 <translation id="4570957409596482333">سننے کیلئے منتخب کریں بٹن</translation>
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
+<translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
 <translation id="4628757576491864469">آلات</translation>
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
@@ -388,6 +396,7 @@
 <translation id="5168181903108465623">کاسٹ آلات دستیاب ہیں</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5207949376430453814">متن کیرٹ کو نمایاں کریں</translation>
+<translation id="5208059991603368177">آن</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5260676007519551770">ڈیسک 4</translation>
@@ -399,6 +408,7 @@
 <translation id="5313326810920013265">بلوٹوتھ کی ترتیبات</translation>
 <translation id="5314219114274263156">اسکرین ریکارڈنگ کی گئی</translation>
 <translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
+<translation id="5352250171825660495">گہری تھیم آن ہے</translation>
 <translation id="5379115545237091094">کافی زیادہ کوششیں</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="5400461572260843123">فوری ترتیبات، اطلاع کے مرکز تک رسائی حاصل کرنے کے لیے تلاش + بائیں تیر والے بٹن کو دبائيں۔</translation>
@@ -435,6 +445,7 @@
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5790085346892983794">کامیاب</translation>
+<translation id="579415080077680903">خاموش کریں</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /> کو روکیں</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -445,6 +456,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
 <translation id="5957083217255311415">موبائل ڈیٹا بند ہے۔</translation>
@@ -469,6 +481,7 @@
 <translation id="615957422585914272">آن اسکرین کی بورڈ دکھائیں</translation>
 <translation id="6164005077879661055">یہ تحفظ یافتہ صارف ہٹائے جانے پر تحفظ یافتہ صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا مستقل طور پر حذف کر دیے جائیں گے۔ اس تحفظ یافتہ صارف کیلئے ملاحظہ کردہ ویب سائٹس اور ترتیبات مینیجر کے ذریعے ابھی بھی <ph name="MANAGEMENT_URL" /> پر مرئی ہونگی۔</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
+<translation id="6192859646269780503">فون کا پتہ لگائیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -540,6 +553,7 @@
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="698231206551913481">اس صارف کو ہٹانے کے بعد اس صارف کے ساتھ وابستہ سبھی فائلیں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔</translation>
 <translation id="7007983414944123363">‏آپ کے PIN یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
+<translation id="7013005189539051442">ہاٹ اسپاٹ فعال کریں</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
@@ -613,6 +627,7 @@
 <translation id="7842569679327885685">انتباہ: تجرباتی خصوصیت</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7868900307798234037">فنگر پرنٹ سے غیر مقفل کیا جا رہا ہے</translation>
+<translation id="7872786842639831132">آف</translation>
 <translation id="7886169021410746335">رازداری کی ترتیبات کو ایڈجسٹ کریں</translation>
 <translation id="7886277072580235377">آپ کے سائن آؤٹ ہونے پر آپ کا انٹرنیٹ سیشن صاف ہو جائے گا۔ <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">ای میل بھیجیں</translation>
@@ -717,6 +732,7 @@
 <translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
 <translation id="885387440427703469">اسکرین کیپچر غیر فعال ہے</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
+<translation id="8871580645200179206">گہری تھیم کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
 <translation id="8877788021141246043">یاد دہانی سیٹ کریں</translation>
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>

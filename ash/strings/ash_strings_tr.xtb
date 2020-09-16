@@ -318,6 +318,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4261870227682513959">Bildirim ayarlarını göster. Bildirimler kapalı</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
+<translation id="4285498937028063278">Sabitlemeyi kaldır</translation>
 <translation id="4294319844246081198">Günaydın <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirimin tümünü temizle</translation>
 <translation id="4303223480529385476">Durum alanını genişlet</translation>
@@ -732,7 +733,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="885387440427703469">Ekran görüntüsü alma devre dışı</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
-<translation id="8871580645200179206">Koyu Temayı aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Koyu temayı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8877788021141246043">Hatırlatıcı oluştur</translation>
 <translation id="8878886163241303700">Genişletilmiş ekran</translation>

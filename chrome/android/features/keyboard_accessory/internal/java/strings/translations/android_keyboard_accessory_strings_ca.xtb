@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1566281227936819866">S'estan mostrant les formes de pagament desades</translation>
 <translation id="1717486229951421299">La llista de credencials que s'emplenaran amb un toc està oberta i ocupa la meitat inferior de la pantalla.</translation>
 <translation id="207576718733492531">La llista de credencials que s'emplenaran amb un toc està tancada.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">La llista de credencials que s'emplenaran amb un toc està oberta i ocupa tota la pantalla.</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
 <translation id="6696046606263842994">Emplena amb la contrasenya</translation>
+<translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7299100402441711551">Mostra les adreces</translation>
 <translation id="7494879913343971937">Mostra les contrasenyes</translation>
 <translation id="7758428186423745764">Emplena amb la forma de pagament</translation>

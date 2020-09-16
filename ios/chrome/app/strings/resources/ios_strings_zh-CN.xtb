@@ -14,7 +14,7 @@
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">接受并继续</translation>
-<translation id="110724200315609752">切换到另一已打开的窗口</translation>
+<translation id="110724200315609752">切换到另一个已打开的窗口</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
 <translation id="1974060860693918893">高级</translation>
 <translation id="1989112275319619282">浏览</translation>
+<translation id="1992734845128748707">更改默认浏览器…</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
-<translation id="5352285283572729470">这是一项受管设置</translation>
 <translation id="5388358297987318779">打开图片</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5409365236829784218">没有安装可打开此文件的应用。</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
+<translation id="1383876407941801731">Traži</translation>
 <translation id="1566281227936819866">Prikazuju se sačuvani načini plaćanja</translation>
 <translation id="1717486229951421299">Lista akreditiva za popunjavanje dodirom je otvorena na pola visine.</translation>
 <translation id="207576718733492531">Lista akreditiva za popunjavanje dodirom je zatvorena.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Lista akreditiva za popunjavanje dodirom je otvorena na cijelom ekranu.</translation>
 <translation id="6393156038355142111">Predloži jaku lozinku</translation>
 <translation id="6696046606263842994">Popunite polje za lozinku</translation>
+<translation id="7029809446516969842">Lozinke</translation>
 <translation id="7299100402441711551">Prikaz adresa</translation>
 <translation id="7494879913343971937">Prikaži lozinke</translation>
 <translation id="7758428186423745764">Popunite polje za način plaćanja</translation>

@@ -2686,11 +2686,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
 <translation id="494613465159630803">Récepteur Cast</translation>
 <translation id="494924690085329212">Redémarrer en cas de déconnexion de l'utilisateur si Android est lancé.</translation>
-<translation id="4950900960525118567">Cette fonctionnalité affiche des suggestions de nouveaux contenus à explorer. Les suggestions de contenu concernent des applications, des pages Web et bien plus.
-      Si cette règle est définie sur "True", les suggestions de nouveaux contenus à explorer sont activées.
-      Si cette règle est définie sur "False", les suggestions de nouveaux contenus à explorer sont désactivées.
-      Si cette règle n'est pas définie, les suggestions de nouveaux contenus à explorer sont désactivées pour les utilisateurs gérés.
-      </translation>
 <translation id="4952347392677351397">Si cette règle est définie sur "1", les sites Web peuvent accéder aux capteurs (de mouvement et de lumière, par exemple) et les utiliser. Si cette règle est définie sur "2", l'accès aux capteurs est refusé.
 
       Si cette règle n'est pas configurée, la règle <ph name="ALLOW_SENSORS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -2950,6 +2945,7 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5293044154216294358">Si cette règle est définie sur "True", les utilisateurs peuvent jouer au jeu avec le dinosaure. Si cette règle est définie sur "False", les utilisateurs ne peuvent pas jouer à ce jeu lorsque l'appareil est hors connexion.
 
       Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à ce jeu sur les appareils équipés de <ph name="PRODUCT_OS_NAME" />, mais ils le peuvent dans d'autres circonstances.</translation>
+<translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
 <translation id="5306186200045823863">Faire confiance à l'ancienne infrastructure PKI de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
@@ -4571,6 +4567,17 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="747014869399137701">Si cette règle est définie sur "1", les sites Web peuvent afficher des notifications sur le bureau. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher ces notifications.
 
       Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="7471828226549672843">Par défaut, les conditions d'utilisation sont affichées la première fois que des onglets personnalisés Chrome sont exécutés. Si cette règle est désactivée, la boîte de dialogue des conditions d'utilisation ne s'affiche ni à la première exécution, ni lors des suivantes. Si cette règle est activée ou qu'elle n'est pas configurée, la boîte de dialogue des conditions d'utilisation s'affiche à la première exécution. Notez également les points suivants :
+
+      - Cette règle ne peut être appliquée que sur des appareils Android entièrement gérés qui peuvent être configurés par des fournisseurs UEM (Unified Endpoint Management, gestion unifiée des points de terminaison).
+
+      - Si cette règle est désactivée, la règle BrowserSignin n'a aucune incidence.
+
+      - Si cette règle est désactivée, les statistiques ne sont pas transmises au serveur.
+
+      - Si cette règle est désactivée, les fonctionnalités du navigateur sont limitées.
+
+      - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="747275827471712187">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour les cookies sur ces sites</translation>
 <translation id="7477231245051133709">Activer la fonctionnalité d'accessibilité d'audio mono</translation>
 <translation id="7477239290070847560">Destinations des protocoles basés sur Zeroconf (mDNS + DNS-SD)</translation>

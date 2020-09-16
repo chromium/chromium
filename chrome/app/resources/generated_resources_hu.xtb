@@ -1287,6 +1287,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2505127913256479918">Ez a felügyelt fiók hamarosan eltávolításra kerül</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. képernyő}other{#. képernyő}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />, összesen: <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Az Ön közelében lévő eszközök, ha az eszközökön meg van nyitva a Közeli megosztás</translation>
 <translation id="250704661983564564">Kijelzőelrendezés</translation>
 <translation id="2507253002925770350">Jegy eltávolítva</translation>
 <translation id="2507397597949272797">A(z) <ph name="NAME" /> szünetel</translation>
@@ -3137,6 +3138,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4762718786438001384">Az eszköz lemezterülete nagyon kevés</translation>
 <translation id="4763408175235639573">A következő cookie-k beállítása akkor történt, amikor Ön megtekintette ezt az oldalt</translation>
 <translation id="4765582662863429759">Lehetővé teszi az Android Messages számára, hogy SMS-eket küldjön át a telefonról a Chromebookra</translation>
+<translation id="476598255842811483">Senki, ameddig Ön meg nem nyitja eszközén a Közeli megosztást</translation>
 <translation id="4768332406694066911">Ezektől a szervezetektől olyan tanúsítványai vannak, amelyek azonosítják</translation>
 <translation id="477647109558161443">Asztali parancsikon létrehozása</translation>
 <translation id="4776917500594043016">A(z) <ph name="USER_EMAIL_ADDRESS" /> fiókhoz tartozó jelszó</translation>
@@ -4285,6 +4287,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6164005077879661055">Amikor ezt a felügyelt felhasználót eltávolítják, minden hozzá tartozó fájl és helyi adat véglegesen törlődik. A felügyelt felhasználó felkeresett webhelyeit és beállításait a kezelő továbbra is láthatja a következő címen: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6166185671393271715">Jelszavak importálása a Chrome-ba</translation>
+<translation id="616831107264507309">Olvasás később</translation>
 <translation id="6169040057125497443">Ellenőrizze a mikrofont.</translation>
 <translation id="6169666352732958425">Nem lehet átküldeni az asztalt.</translation>
 <translation id="6170470584681422115">Szendvics</translation>
@@ -5669,6 +5672,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="786073089922909430">Szolgáltatás: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Letöltések</translation>
 <translation id="7864539943188674973">Bluetooth letiltása</translation>
+<translation id="7866352732146932341">Az Ön közelében lévő eszközök, ha eszközén meg van nyitva a Közeli megosztás</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – párosítva</translation>
 <translation id="7870730066603611552">Szinkronizálási beállítások ellenőrzése a beállítást követően</translation>
 <translation id="7870790288828963061">Nem található újabb verziójú kioszkalkalmazás, ezért nincs mit frissíteni. Kérjük, távolítsa el az USB-meghajtót.</translation>
@@ -6674,7 +6678,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="9063208415146866933">Hiba a következő sorokban: <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Használja az Automatikus kitöltést, amellyel az űrlapokat egyetlen kattintással kitöltheti</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
-<translation id="9065772380960598487">Hozzáadás a későbbi olvasnivalókhoz</translation>
 <translation id="9066773882585798925">Szöveg felolvastatása</translation>
 <translation id="9066782832737749352">Szövegfelolvasás</translation>
 <translation id="9068849894565669697">Szín kiválasztása</translation>
@@ -6819,7 +6822,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="947329552760389097">&amp;Elemek vizsgálata</translation>
 <translation id="951991426597076286">Elutasítás</translation>
 <translation id="952992212772159698">Nincs aktiválva</translation>
-<translation id="956444359529327203">Vendég munkamenet bezárása</translation>
 <translation id="956500788634395331">Védelmet élvez a potenciálisan kártékony bővítményekkel szemben</translation>
 <translation id="957960681186851048">Ez a webhely megpróbált automatikusan letölteni több fájlt</translation>
 <translation id="9580706199804957">Nem sikerült csatlakozni a Google-szolgáltatásokhoz</translation>

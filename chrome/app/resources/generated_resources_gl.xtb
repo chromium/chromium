@@ -1286,6 +1286,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2505127913256479918">Esta conta supervisada eliminarase en breve</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Pantalla #}other{Pantalla #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Os dispositivos que estean preto de ti cando estea aberta neles a función Compartir por Nearby</translation>
 <translation id="250704661983564564">Disposición da pantalla</translation>
 <translation id="2507253002925770350">Quitouse o tícket</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> púxose en pausa</translation>
@@ -3137,6 +3138,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4762718786438001384">O dispositivo ten pouquísimo espazo restante en disco</translation>
 <translation id="4763408175235639573">Establecéronse as seguintes cookies cando visualizaches esta páxina</translation>
 <translation id="4765582662863429759">Permite que a aplicación Mensaxes Android transmita as mensaxes do teu teléfono ao Chromebook</translation>
+<translation id="476598255842811483">Ninguén, a menos que abras no teu dispositivo a función Compartir por Nearby</translation>
 <translation id="4768332406694066911">Tes certificados destas organizacións que te identifican</translation>
 <translation id="477647109558161443">Crear acceso directo do escritorio</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4283,6 +4285,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6164005077879661055">É posible que todos os ficheiros e datos locais asociados co usuario supervisado se eliminen permanentemente en canto se elimine este usuario supervisado. É posible que o administrador de <ph name="MANAGEMENT_URL" /> continúe vendo os sitios web visitados e as configuracións deste usuario supervisado.</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6166185671393271715">Importar contrasinais en Chrome</translation>
+<translation id="616831107264507309">Ler máis tarde</translation>
 <translation id="6169040057125497443">Comproba o micrófono.</translation>
 <translation id="6169666352732958425">Non se puido emitir o escritorio.</translation>
 <translation id="6170470584681422115">Sándwich</translation>
@@ -5667,6 +5670,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="786073089922909430">Servizo: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7864539943188674973">Desactivar o Bluetooth</translation>
+<translation id="7866352732146932341">Os dispositivos que estean preto de ti cando estea aberta no teu dispositivo a función Compartir por Nearby</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: sincronizado</translation>
 <translation id="7870730066603611552">Revisar opcións de sincronización despois da configuración</translation>
 <translation id="7870790288828963061">Non se atopou ningunha aplicación de quiosco cunha versión máis recente. Non hai nada para actualizar. Retira a memoria USB.</translation>
@@ -6671,7 +6675,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9063208415146866933">Produciuse un erro da liña <ph name="ERROR_LINE_START" /> á <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Activa a función Autocompletar para completar formularios cun só clic</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9065772380960598487">Engadir a Ler máis tarde</translation>
 <translation id="9066773882585798925">Escoita o texto en voz alta</translation>
 <translation id="9066782832737749352">Síntese de voz</translation>
 <translation id="9068849894565669697">Seleccionar cor</translation>
@@ -6816,7 +6819,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="947329552760389097">&amp;Inspeccionar elementos</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="952992212772159698">Non activado</translation>
-<translation id="956444359529327203">Pechar ventás da sesión de invitado</translation>
 <translation id="956500788634395331">Tes protección contra extensións potencialmente daniñas</translation>
 <translation id="957960681186851048">Este sitio tentou descargar varios ficheiros automaticamente</translation>
 <translation id="9580706199804957">Non se puido establecer conexión cos servizos de Google</translation>

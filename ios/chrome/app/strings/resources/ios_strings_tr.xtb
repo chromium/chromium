@@ -14,7 +14,7 @@
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> dilini daima çevir</translation>
 <translation id="1104948393051856124">Kabul Et ve Devam Et</translation>
-<translation id="110724200315609752">Açık Pencereye Geç.</translation>
+<translation id="110724200315609752">Açık Pencereye Geç</translation>
 <translation id="1112015203684611006">Yazdırılamadı.</translation>
 <translation id="1125564390852150847">Yeni sekme oluştur.</translation>
 <translation id="1145536944570833626">Mevcut verileri silin.</translation>
@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Açık olan diğer Chrome pencerenizde yaptığınız işlemi tamamlayın.</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
 <translation id="1989112275319619282">Göz at</translation>
+<translation id="1992734845128748707">Varsayılan Tarayıcıyı Değiştir…</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Önce Etkindi</translation>
 <translation id="2074131957428911366">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK" />ayarlardan<ph name="END_LINK" /> seçebilirsiniz.</translation>
@@ -379,7 +380,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5327248766486351172">Ad</translation>
 <translation id="5339316356165661760">Senkronizasyonu Aç</translation>
-<translation id="5352285283572729470">Bu ayar yönetiliyor</translation>
 <translation id="5388358297987318779">Resmi Aç</translation>
 <translation id="5407969256130905701">Değişiklikleri Sil</translation>
 <translation id="5409365236829784218">Bu dosyayı açabilecek yüklü uygulama yok.</translation>
@@ -463,7 +463,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6219688215832490856">Asla Çevirme</translation>
 <translation id="6254066287920239840">Bağlantıları tarayıcı yerine uygulamada açın.</translation>
 <translation id="6255097610484507482">Kredi Kartını Düzenle</translation>
-<translation id="6284652193729350524"><ph name="LANGUAGE" /> dilini çevirmeyi öner</translation>
+<translation id="6284652193729350524"><ph name="LANGUAGE" /> diline çevirmeyi öner</translation>
 <translation id="6303969859164067831">Oturumu ve senkronizasyonu kapat</translation>
 <translation id="6308436439357671616">Böylece, fotoğraf çekebilir ve yükleyebilirsiniz.</translation>
 <translation id="6324528485781869530">Senkronizasyon Hesabını Değiştir</translation>

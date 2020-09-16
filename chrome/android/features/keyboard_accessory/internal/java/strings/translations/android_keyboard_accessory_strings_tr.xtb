@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1383876407941801731">Ara</translation>
 <translation id="1566281227936819866">Kayıtlı ödeme yöntemleri</translation>
 <translation id="1717486229951421299">Dokunarak doldurulacak kimlik bilgisi listesi ekranın yarısında açıldı.</translation>
 <translation id="207576718733492531">Dokunarak doldurulacak kimlik bilgisi listesi kapatıldı.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Dokunarak doldurulacak kimlik bilgisi listesi tam ekranda açıldı.</translation>
 <translation id="6393156038355142111">Güçlü şifre öner</translation>
 <translation id="6696046606263842994">Şifreyi doldur</translation>
+<translation id="7029809446516969842">Şifreler</translation>
 <translation id="7299100402441711551">Adresleri Göster</translation>
 <translation id="7494879913343971937">Şifreleri göster</translation>
 <translation id="7758428186423745764">Ödeme yöntemini doldur</translation>

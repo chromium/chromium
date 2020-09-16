@@ -1284,6 +1284,7 @@
 <translation id="2505127913256479918">Осы қадағаланатын есептік жазба жақында өшіріледі</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#-экран}other{#-экран}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ішінен <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">Nearby Share функциясы олардың құрылғысында ашылған кездегі маңайдағы құрылғылар</translation>
 <translation id="250704661983564564">Дисплейді реттеу</translation>
 <translation id="2507253002925770350">Билет өшірілді</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> кідіртілді</translation>
@@ -3135,6 +3136,7 @@
 <translation id="4762718786438001384">Құрылғы дискінде бос орын тым аз қалды</translation>
 <translation id="4763408175235639573">Осы бетті ашқанда, мына cookie файлдары орнатылды</translation>
 <translation id="4765582662863429759">Android Messages қолданбасына хабарларды телефоннан Chromebook құрылғысына жіберуге мүмкіндік береді</translation>
+<translation id="476598255842811483">Құрылғыда Nearby Share ашылмаса, ешкім</translation>
 <translation id="4768332406694066911">Осы ұйымдардан алынған және сізді анықтайтын сертификаттар бар</translation>
 <translation id="477647109558161443">Жұмыс үстеліндегі таңбаша жасау</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> құпия сөзі</translation>
@@ -4281,6 +4283,7 @@
 <translation id="6164005077879661055">Бақылаудағы пайдаланушыға қатысты барлық файлдар мен жергілікті деректер осы бақылаудағы пайдаланушы алып тасталғаннан кейін біржола жойылады. Осы бақылаудағы пайдаланушының кірген веб-сайттар мен параметрлері <ph name="MANAGEMENT_URL" /> сілтемесіндегі басқарушыға көрінуі мүмкін.</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6166185671393271715">Құпия сөздерді Chrome жүйесіне импорттау</translation>
+<translation id="616831107264507309">Кейінірек оқу</translation>
 <translation id="6169040057125497443">Микрофонды тексеріңіз.</translation>
 <translation id="6169666352732958425">Жұмыс үстелі трансляцияланбайды.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -5665,6 +5668,7 @@
 <translation id="786073089922909430">Қызмет: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Жүктеулер</translation>
 <translation id="7864539943188674973">Bluetooth өшіру</translation>
+<translation id="7866352732146932341">Nearby Share функциясы сіздің құрылғыда ашылған кездегі маңайдағы құрылғылар</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – жұпталды</translation>
 <translation id="7870730066603611552">Сеанс басталғаннан кейін, синхрондау опцияларын қарап шығу</translation>
 <translation id="7870790288828963061">Киоск қолданбаларының жаңа нұсқалары табылмады. Жаңартатын ештеңе жоқ. USB картасын алып тастаңыз.</translation>
@@ -6478,7 +6482,7 @@
 <translation id="8838601485495657486">Тұнық емес</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
 <translation id="883911313571074303">Кескінді аннотациялау</translation>
-<translation id="8841843049738266382">Рұқсат тізіміндегі пайдаланушыларды оқу және өзгерту</translation>
+<translation id="8841843049738266382">Рұқсаты бар пайдаланушылар тізімін оқу және өзгерту</translation>
 <translation id="8842594465773264717">Осы саусақ ізін жою</translation>
 <translation id="8845001906332463065">Анықтама алу</translation>
 <translation id="8846132060409673887">Компьютердің өндірушісі және моделі туралы ақпаратты оқыңыз</translation>
@@ -6669,7 +6673,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> аралығындағы жолдарда қате шықты</translation>
 <translation id="9064275926664971810">Түймені бір рет басып үлгіні толтыру үшін автотолтыру функциясын қосу</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
-<translation id="9065772380960598487">"Кейінірек оқу" жинағына қосу</translation>
 <translation id="9066773882585798925">Дауыстап оқылған мәтінді тыңдау</translation>
 <translation id="9066782832737749352">Мәтінді сөзге айналдыру</translation>
 <translation id="9068849894565669697">Түс таңдау</translation>
@@ -6814,7 +6817,6 @@
 <translation id="947329552760389097">&amp;Элементтерді тексеру</translation>
 <translation id="951991426597076286">Қабылдамау</translation>
 <translation id="952992212772159698">Белсендірілмеген</translation>
-<translation id="956444359529327203">Қонақ режимдерді жабу</translation>
 <translation id="956500788634395331">Сіз зиянды кеңейтімдерден қорғалғансыз.</translation>
 <translation id="957960681186851048">Бұл сайт бірнеше файлды автоматты түрде жүктеп алғысы келді</translation>
 <translation id="9580706199804957">Google қызметтеріне қосылмады</translation>

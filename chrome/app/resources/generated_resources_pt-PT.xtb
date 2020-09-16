@@ -4287,6 +4287,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6164005077879661055">Todos os ficheiros e dados locais associados ao utilizador supervisionado serão definitivamente eliminados depois de este utilizador supervisionado ser removido. Os Sites visitados e as definições deste utilizador supervisionado poderão continuar visíveis para o gestor em <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166185671393271715">Importar palavras-passe para o Chrome</translation>
+<translation id="616831107264507309">Ler mais tarde</translation>
 <translation id="6169040057125497443">Verifique o microfone.</translation>
 <translation id="6169666352732958425">Não é possível transmitir o ambiente de trabalho.</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
@@ -6676,7 +6677,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>
 <translation id="9064275926664971810">Ativar a funcionalidade de Preenchimento Automático para preencher formulários Web com um único clique</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9065772380960598487">Adicionar a Ler mais tarde</translation>
 <translation id="9066773882585798925">Ouvir o texto em voz alta</translation>
 <translation id="9066782832737749352">Síntese de voz</translation>
 <translation id="9068849894565669697">Selecionar cor</translation>
@@ -6821,7 +6821,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952992212772159698">Não activado</translation>
-<translation id="956444359529327203">Fechar janelas de convidado</translation>
 <translation id="956500788634395331">Tem proteção contra extensões potencialmente prejudiciais.</translation>
 <translation id="957960681186851048">Este site tentou transferir vários ficheiros automaticamente</translation>
 <translation id="9580706199804957">Não foi possível estabelecer ligação aos serviços Google.</translation>

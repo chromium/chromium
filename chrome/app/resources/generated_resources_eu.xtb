@@ -4286,6 +4286,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6164005077879661055">Erabiltzaile gainbegiratuarekin erlazionatutako fitxategi eta datu lokal guztiak betiko ezabatuko dira erabiltzaile gainbegiratua kentzean. Hala ere, erabiltzaile gainbegiratuak bisitatu dituen webguneak eta bere ezarpenak ikusten jarraitu ahal izango du kudeatzaileak <ph name="MANAGEMENT_URL" /> webgunean.</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6166185671393271715">Inportatu pasahitzak Chrome-ra</translation>
+<translation id="616831107264507309">Irakurri geroago</translation>
 <translation id="6169040057125497443">Egiaztatu mikrofonoa.</translation>
 <translation id="6169666352732958425">Ezin da igorri mahaigaina.</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
@@ -6675,7 +6676,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="9063208415146866933">Errore bat gertatu da <ph name="ERROR_LINE_START" />. eta <ph name="ERROR_LINE_END" />. lerroen artean</translation>
 <translation id="9064275926664971810">Gaitu betetze automatikoa inprimakiak klik bakarrarekin betetzeko</translation>
 <translation id="9065203028668620118">Editatu</translation>
-<translation id="9065772380960598487">Gehitu geroago irakurtzeko</translation>
 <translation id="9066773882585798925">Entzun testua ozen irakurrita</translation>
 <translation id="9066782832737749352">Testua ahots bihurtzeko eginbidea</translation>
 <translation id="9068849894565669697">Hautatu kolorea</translation>
@@ -6820,7 +6820,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="947329552760389097">&amp;Aztertu elementuak</translation>
 <translation id="951991426597076286">Baztertu</translation>
 <translation id="952992212772159698">Ez da aktibatu</translation>
-<translation id="956444359529327203">Itxi gonbidatuentzako leiho guztiak</translation>
 <translation id="956500788634395331">Luzapen kaltegarrien aurka babestuta zaude</translation>
 <translation id="957960681186851048">Hainbat fitxategi automatikoki deskargatzen saiatu da webgunea</translation>
 <translation id="9580706199804957">Ezin izan da konektatu Google-ren zerbitzuetara</translation>

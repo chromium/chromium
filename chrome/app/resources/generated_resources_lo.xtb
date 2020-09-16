@@ -1285,6 +1285,7 @@
 <translation id="2505127913256479918">ລະບົບຈະລຶບບັນຊີທີ່ມີການຄວບຄຸມເບິ່ງແຍງນີ້ອອກໃນໄວໆນີ້</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ໜ້າຈໍ #}other{ໜ້າຈໍ #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ຈາກ <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">ອຸປະກອນທີ່ຢູ່ໃກ້ທ່ານເມື່ອການແບ່ງປັນໃກ້ຄຽງເປີດຢູ່ໃນອຸປະກອນຂອງເຂົາເຈົ້າ</translation>
 <translation id="250704661983564564">ການຈັດວາງຈໍສະແດງຜົນ</translation>
 <translation id="2507253002925770350">ລຶບປີ້ອອກແລ້ວ</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> ຖືກຢຸດໄວ້ຊົ່ວຄາວ</translation>
@@ -3136,6 +3137,7 @@
 <translation id="4762718786438001384">ພື້ນທີ່ດິສກ໌ໃນອຸປະກອນເຫຼືອໜ້ອຍທີ່ສຸດ</translation>
 <translation id="4763408175235639573">ຄຸກກີ້ຕໍ່ໄປນີ້ຖືກຕັ້ງຂຶ້ນ ເມື່ອທ່ານເບິ່ງໜ້ານີ້</translation>
 <translation id="4765582662863429759">ອະນຸຍາດໃຫ້ Android Messages ສົ່ງຕໍ່ຂໍ້ຄວາມຈາກໂທລະສັບຂອງທ່ານໄປໃສ່ Chromebook ທ່ານ</translation>
+<translation id="476598255842811483">ບໍ່ມີໃຜເວັ້ນເສຍແຕ່ທ່ານຈະເປີດການແບ່ງປັນໃກ້ຄຽງໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="4768332406694066911">ທ່ານມີໃບຢັ້ງຢືນຈາກ​ໜ່ວຍ​ງານເຫຼົ່ານີ້ທີ່ລະບຸຕົວຕົນຂອງທ່ານ</translation>
 <translation id="477647109558161443">ສ້າງທາງລັດເດັສທັອບ</translation>
 <translation id="4776917500594043016">ລະ​ຫັດ​ຜ່ານ​ສໍາ​ລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4282,6 +4284,7 @@
 <translation id="6164005077879661055">ໄຟລ໌ ແລະຂໍ້ມູນກັບທີ່ທັງໝົດກ່ຽວຂ້ອງກັບຜູ້ໃຊ້ທີ່​ມີ​ການ​ຄວບ​ຄຸມ​ດູ​ແລຈະຖືກລຶບຖາວອນ ເມື່ອເອົາຜູ້ໃຊ້ທີ່​ມີ​ການ​ຄວບ​ຄຸມ​ດູ​ແລອອກໄປ. ຕົວຈັດການອາດຈະຍັງເຫັນເວັບໄຊທ໌ທີ່ເຂົ້າໄປເບິ່ງ ແລະການຕັ້ງຄ່າສໍາລັບຜູ້ໃຊ້ທີ່​ມີ​ການ​ຄວບ​ຄຸມ​ດູ​ແລໄດ້ຢູ່ທີ່ <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6166185671393271715">ນໍາເຂົ້າລະຫັດຜ່ານຫາ Chrome</translation>
+<translation id="616831107264507309">ອ່ານໃນພາຍຫຼັງ</translation>
 <translation id="6169040057125497443">ກະລຸນາກວດເບິ່ງໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
 <translation id="6169666352732958425">ບໍ່ສາມາດສົ່ງສັນຍານເດັສທັອບໄດ້.</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
@@ -5665,6 +5668,7 @@
 <translation id="786073089922909430">ການບໍລິການ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ດາວ​ໂຫຼດ</translation>
 <translation id="7864539943188674973">ປິດໃຊ້ງານ Bluetooth</translation>
+<translation id="7866352732146932341">ອຸປະກອນທີ່ຢູ່ໃກ້ທ່ານເມື່ອການແບ່ງປັນໃກ້ຄຽງເປີດຢູ່ໃນອຸປະກອນຂອງທ່ານ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ຈັບຄູ່ແລ້ວ</translation>
 <translation id="7870730066603611552">ກວດເບິ່ງຕົວເລືອກການຊິ້ງຂໍ້ມູນຫຼັງຈາກການຕັ້ງຄ່າ</translation>
 <translation id="7870790288828963061">ບໍ່ພົບ​ແອັບ Kiosk ລຸ້ນ​ໃໝ່​ກວ່າ​ໃດ. ບໍ່​ມີ​ອັນ​ໃດ​ຈະ​ອັບ​ເດດ. ກະ​ລຸ​ນາ​ເອົາ USB ອອກ.</translation>
@@ -6669,7 +6673,6 @@
 <translation id="9063208415146866933">ຜິດພາດຈາກແຖວ <ph name="ERROR_LINE_START" /> ຫາ <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">ເປີດໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດເພື່ອປະກອບແບບຟອມຕ່າງໆດ້ວຍການຄລິກຄັ້ງດຽວ</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>
-<translation id="9065772380960598487">ເພີ່ມໃສ່ອ່ານໃນພາຍຫຼັງ</translation>
 <translation id="9066773882585798925">ຟັງການອ່ານຂໍ້ຄວາມດັງໆ</translation>
 <translation id="9066782832737749352">ການ​ປ່ຽນ​ຂໍ້​ຄວາມ​ເປັນ​ສຽງເວົ້າ</translation>
 <translation id="9068849894565669697">ເລືອກສີ​</translation>
@@ -6814,7 +6817,6 @@
 <translation id="947329552760389097">&amp;ກວດກາອົງປະກອບ</translation>
 <translation id="951991426597076286">ປະຕິເສດ</translation>
 <translation id="952992212772159698">ບໍ່ໄດ້ເປີດໃຊ້ງານ</translation>
-<translation id="956444359529327203">ເລືອກແຂກ</translation>
 <translation id="956500788634395331">ທ່ານໄດ້ຮັບການປົກປ້ອງຈາກສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ</translation>
 <translation id="957960681186851048">ເວັບໄຊນີ້ໄດ້ພະຍາຍາມດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="9580706199804957">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບການບໍລິການຂອງ Google ໄດ້</translation>

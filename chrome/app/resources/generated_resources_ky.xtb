@@ -1287,6 +1287,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2505127913256479918">Бул көзөмөлдөгөн аккаунт жакында өчүрүлөт</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#-экран}other{#-экран}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ичинен <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">Nearby Share функциясы түзмөгүндө ачык болгон мезгилдеги жаныңыздагы түзмөктөр</translation>
 <translation id="250704661983564564">Дисплейдеги нерселерди жайгаштыруу</translation>
 <translation id="2507253002925770350">Билет өчүрүлдү</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> тындырылды</translation>
@@ -3138,6 +3139,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4762718786438001384">Түзмөктүн дискинде бош орун өтө аз</translation>
 <translation id="4763408175235639573">Бул барак каралганда төмөнкү кукилер коюлган</translation>
 <translation id="4765582662863429759">Android жазышууларындагы билдирүүлөрдү телефонуңуздан Chromebook'уңузга өткөрүп берип турат</translation>
+<translation id="476598255842811483">Nearby Share түзмөгүңүздө ачылмайынча эч ким көрбөйт</translation>
 <translation id="4768332406694066911">Сизде ушул уюмдардын сиздин аныктыгыңызды текшерген тастыктамалары бар</translation>
 <translation id="477647109558161443">Иш тактадагы кыска жолду түзүү</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> үчүн сырсөз</translation>
@@ -4284,6 +4286,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6164005077879661055">Көзөмөлдөнгөн колдонуучуга тийиштүү бардык файлдар менен жергиликтүү дайындар, көзөмөлдөнгөн колдонуучу чыгарылып салынганда биротоло жок болот. Көзөмөлдөнгөн колдонуучу кирген веб-сайттарды жана жөндөөлөрдү жетекчи бул жерден көрө алат <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6166185671393271715">Chrome'го сырсөздөрдү импорттоо</translation>
+<translation id="616831107264507309">Кийинчерээк окуу</translation>
 <translation id="6169040057125497443">Микрофонуңузду текшериңиз.</translation>
 <translation id="6169666352732958425">Иш тактасы тышкы экранга чыгарылбай жатат.</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -5668,6 +5671,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="786073089922909430">Кызмат: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Жүктөлүп алынгандар</translation>
 <translation id="7864539943188674973">Bluetooth'ду өчүрүп коюу</translation>
+<translation id="7866352732146932341">Nearby Share функциясы түзмөгүңүздө ачык болгон мезгилдеги жаныңыздагы түзмөктөр</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> жупташты</translation>
 <translation id="7870730066603611552">Сеанс башталгандан кийин шайкештирүү параметрлерин карап чыгуу</translation>
 <translation id="7870790288828963061">Жаңыраак версиядагы Kiosk колдонмолору табылган жок. Жаңыртыла турган эч нерсе жок. USB түзмөгүн сууруп салыңыз.</translation>
@@ -6672,7 +6676,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> сабынан <ph name="ERROR_LINE_END" /> сабына чейин ката бар</translation>
 <translation id="9064275926664971810">Формаларды бир чыкылдатуу менен толтуруу үчүн Автотолтурууну иштетүү</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
-<translation id="9065772380960598487">Кийинчерээк окуу бөлүмүнө кошуу</translation>
 <translation id="9066773882585798925">Тексттин окулушун угуу</translation>
 <translation id="9066782832737749352">Кеп синтезатору</translation>
 <translation id="9068849894565669697">Түс тандоо</translation>
@@ -6817,7 +6820,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="947329552760389097">&amp;Элементтерди иликтөө</translation>
 <translation id="951991426597076286">Четке кагуу</translation>
 <translation id="952992212772159698">Жандырылган эмес</translation>
-<translation id="956444359529327203">Конок режимин жабуу</translation>
 <translation id="956500788634395331">Мүмкүн болгон кооптуу кеңейтүүлөрдөн корголуп турасыз</translation>
 <translation id="957960681186851048">Бул сайт бир нече файлды автоматтык түрдө жүктөп алууга аракет кылды</translation>
 <translation id="9580706199804957">Google кызматтарына туташпай калды</translation>

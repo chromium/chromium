@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Gör klart det du höll på med i det andra öppna Chrome-fönstret.</translation>
 <translation id="1974060860693918893">Avancerat</translation>
 <translation id="1989112275319619282">Bläddra</translation>
+<translation id="1992734845128748707">Ändra standardwebbläsare …</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5327248766486351172">Namn</translation>
 <translation id="5339316356165661760">Aktivera synkronisering</translation>
-<translation id="5352285283572729470">Den här inställningen hanteras</translation>
 <translation id="5388358297987318779">Öppna bild</translation>
 <translation id="5407969256130905701">Ignorera ändringar</translation>
 <translation id="5409365236829784218">Det finns inga installerade appar som kan öppna filen.</translation>

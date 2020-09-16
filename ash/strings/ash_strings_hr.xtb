@@ -238,7 +238,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3371140690572404006">USB-C uređaj (prednji desni priključak)</translation>
 <translation id="3386978599540877378">povećalo cijelog zaslona</translation>
 <translation id="3400357268283240774">Dodatne postavke</translation>
-<translation id="3410336247007142655">Prikaz postavki Tamne teme</translation>
+<translation id="3410336247007142655">Prikaz postavki tamne teme</translation>
 <translation id="3413817803639110246">Još nema ničega</translation>
 <translation id="3428447136709161042">Želite li prekinuti vezu s mrežom <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Prijeđite prstom zdesna da biste se vratili</translation>
@@ -318,6 +318,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4261870227682513959">Prikaz postavki obavijesti. Obavijesti su isključene</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja ima sljedeće mogućnosti:</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
+<translation id="4285498937028063278">Otkvači</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
 <translation id="4303223480529385476">Proširite područje statusa</translation>
@@ -731,7 +732,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
 <translation id="885387440427703469">Snimanje zaslona onemogućeno</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
-<translation id="8871580645200179206">Uključite ili isključite Tamnu temu. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Uključite ili isključite tamnu temu. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Niste povezani</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8878886163241303700">Produljenje zaslona</translation>

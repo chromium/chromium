@@ -319,6 +319,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4261870227682513959">Kuvab märguandeseaded. Märguanded on välja lülitatud</translation>
 <translation id="4269883910223712419">Selle seadme administraator saab teha järgmist.</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
+<translation id="4285498937028063278">Vabasta</translation>
 <translation id="4294319844246081198">Tere hommikust, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Kustuta kõik <ph name="COUNT" /> märguannet</translation>
 <translation id="4303223480529385476">Laienda olekuala</translation>
@@ -408,7 +409,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5313326810920013265">Bluetoothi seaded</translation>
 <translation id="5314219114274263156">Jäädvustati ekraanisalvestis</translation>
 <translation id="5331975486040154427">C-tüüpi USB-seade (tagumine vasakpoolne port)</translation>
-<translation id="5352250171825660495">Tume teema on sisse lülitatud</translation>
+<translation id="5352250171825660495">Tume teema on sees</translation>
 <translation id="5379115545237091094">Liiga palju katseid</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
 <translation id="5400461572260843123">Kiirseaded, märguandekeskusele juurdepääsemiseks vajutage otsinguklahvi ja vasaknoolt.</translation>
@@ -456,7 +457,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
-<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sisse lülitatud.</translation>
+<translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>
 <translation id="5947494881799873997">Ennista</translation>
 <translation id="595202126637698455">Toimivuse jälgimine on lubatud</translation>
 <translation id="5957083217255311415">Mobiilne andmeside on välja lülitatud.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
+<translation id="1383876407941801731">Претражи</translation>
 <translation id="1566281227936819866">Приказују се сачувани начини плаћања</translation>
 <translation id="1717486229951421299">Листа акредитива који треба да се унесу на додир се отворила до половине екрана.</translation>
 <translation id="207576718733492531">Листа акредитива који треба да се унесу на додир је затворена.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Листа акредитива који треба да се унесу на додир се отворила на целом екрану,</translation>
 <translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6696046606263842994">Попуните поље за лозинку</translation>
+<translation id="7029809446516969842">Лозинке</translation>
 <translation id="7299100402441711551">Прикажи адресе</translation>
 <translation id="7494879913343971937">Приказуј лозинке</translation>
 <translation id="7758428186423745764">Попуните поље за начин плаћања</translation>

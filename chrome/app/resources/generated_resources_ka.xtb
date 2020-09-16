@@ -1286,6 +1286,7 @@
 <translation id="2505127913256479918">ზედამხედველობის ქვეშ მყოფი ანგარიში მალე ამოიშლება</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ეკრანი #}other{ეკრანი #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> სულ: <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">ახლომახლო მოწყობილობები, როცა მახლობლად გაზიარება გახსნილია მათ მოწყობილობაზე</translation>
 <translation id="250704661983564564">ჩვენების მოწყობა</translation>
 <translation id="2507253002925770350">ბილეთი ამოიშალა</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> დაპაუზებულია</translation>
@@ -3137,6 +3138,7 @@
 <translation id="4762718786438001384">მოწყობილობის დისკზე ხელმისაწვდომი მეხსიერება კრიტიკულად არასაკმარისია</translation>
 <translation id="4763408175235639573">ამ გვერდის დათვალიერებისას შეიქმნა შემდეგი ქუქი-ჩანაწერები</translation>
 <translation id="4765582662863429759">საშუალებას აძლევს Android Messages-ს, მოახდინოს ტექსტური შეტყობინებების რეტრანსლირება ტელეფონიდან თქვენს Chromebook-ში</translation>
+<translation id="476598255842811483">არავინ, სანამ მახლობლად გაზიარებას არ გახსნით თქვენს მოწყობილობაზე</translation>
 <translation id="4768332406694066911">თქვენ შენახული გაქვთ ქვემოთ ჩამოთვლილი ორგანიზაციების სერტიფიკატები, რომლებიც თქვენს ამოცნობას ახორციელებს</translation>
 <translation id="477647109558161443">დესკტოპის მალსახმობის შექმნა</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
@@ -4283,6 +4285,7 @@
 <translation id="6164005077879661055">კონტროლის ქვეშ მყოფ ამ მომხმარებელთან დაკავშირებული ფაილები და ლოკალური მონაცემები სამუდამოდ წაიშლება ამ მომხმარებლის წაშლის შემთხვევაში. ამ მომხმარებლის მიერ მონახულებული ვებსაიტები და პარამეტრები შეიძლება მაინც ხილვადი დარჩეს მმართველისთვის აქ: <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166185671393271715">პაროლების იმპორტი Chrome-ში</translation>
+<translation id="616831107264507309">მოგვიანებით წაკითხვა</translation>
 <translation id="6169040057125497443">შეამოწმეთ თქვენი მიკროფონი.</translation>
 <translation id="6169666352732958425">დესკტოპის ტრანსლირება შეუძლებელია.</translation>
 <translation id="6170470584681422115">სენდვიჩი</translation>
@@ -5667,6 +5670,7 @@
 <translation id="786073089922909430">სერვისი: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ჩ&amp;ამოტვირთვები</translation>
 <translation id="7864539943188674973">გამორთეთ Bluetooth</translation>
+<translation id="7866352732146932341">ახლომახლო მოწყობილობები, როცა მახლობლად გაზიარება გახსნილია თქვენს მოწყობილობაზე</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> — დაწყვილებული</translation>
 <translation id="7870730066603611552">დაყენების შემდეგ სინქრონიზაციის ვარიანტების გადახედვა</translation>
 <translation id="7870790288828963061">Kiosk აპები უფრო ახალი ვერსიით ვერ მოიძებნა. განსაახლებელი არაფერია. ამოიღეთ USB დისკი.</translation>
@@ -6670,7 +6674,6 @@
 <translation id="9063208415146866933">შეცდომა ხაზებში <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">ფორმების ერთი დაწკაპუნებით შესავსებად, ავტომატური შევსების ფუნქციის ჩართვა</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
-<translation id="9065772380960598487">მოგვიანებით წასაკითხში დამატება</translation>
 <translation id="9066773882585798925">ტექსტის გახმოვანების მოსმენა</translation>
 <translation id="9066782832737749352">ტექსტის გახმოვანება</translation>
 <translation id="9068849894565669697">აირჩიეთ ფერი</translation>
@@ -6815,7 +6818,6 @@
 <translation id="947329552760389097">ელემენტების შ&amp;ემოწმება</translation>
 <translation id="951991426597076286">უარყოფა</translation>
 <translation id="952992212772159698">არ არის გააქტიურებული</translation>
-<translation id="956444359529327203">სტუმრის ფანჯრების დახურვა</translation>
 <translation id="956500788634395331">თქვენ დაცული ხართ პოტენციურად საზიანო გაფართოებებისგან</translation>
 <translation id="957960681186851048">ამ საიტმა ცადა, ავტომატურად ჩამოეტვირთა რამდენიმე ფაილი</translation>
 <translation id="9580706199804957">Google-ის სერვისებთან დაკავშირება ვერ მოხერხდა</translation>

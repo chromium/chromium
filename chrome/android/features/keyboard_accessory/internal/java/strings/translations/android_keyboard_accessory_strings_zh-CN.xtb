@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1383876407941801731">搜索</translation>
 <translation id="1566281227936819866">显示的是已保存的付款方式</translation>
 <translation id="1717486229951421299">轻触即可填充的凭据的列表已半屏打开。</translation>
 <translation id="207576718733492531">轻触即可填充的凭据的列表已关闭。</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">轻触即可填充的凭据的列表已全屏打开。</translation>
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6696046606263842994">填充密码</translation>
+<translation id="7029809446516969842">密码</translation>
 <translation id="7299100402441711551">显示地址</translation>
 <translation id="7494879913343971937">显示密码</translation>
 <translation id="7758428186423745764">填充付款方式</translation>

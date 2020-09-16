@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1383876407941801731">Keresés</translation>
 <translation id="1566281227936819866">Mentett fizetési módok megjelenítése</translation>
 <translation id="1717486229951421299">Az érintéssel kitöltendő hitelesítő adatok listája félmagasságban megnyitva.</translation>
 <translation id="207576718733492531">Az érintéssel kitölthető hitelesítési adatok listája be van zárva.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Az érintéssel kitöltendő hitelesítő adatok listája teljes magasságban megnyitva.</translation>
 <translation id="6393156038355142111">Erős jelszó ajánlása</translation>
 <translation id="6696046606263842994">Jelszó kitöltése</translation>
+<translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7299100402441711551">Címek megjelenítése</translation>
 <translation id="7494879913343971937">Jelszavak mutatása</translation>
 <translation id="7758428186423745764">Fizetési mód kitöltése</translation>

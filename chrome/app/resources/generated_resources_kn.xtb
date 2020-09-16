@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">ಈ ಮೇಲ್ವಿಚಾರಣೆಯ ಖಾತೆಯನ್ನು ಶೀಘ್ರವೇ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ಸ್ಕ್ರೀನ್ #}one{ಸ್ಕ್ರೀನ್ #}other{ಸ್ಕ್ರೀನ್ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ರಲ್ಲಿ <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">ನಿಮ್ಮ ಸಮೀಪದಲ್ಲಿರುವ Nearby ಶೇರ್ ತೆರೆದಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="250704661983564564">ಡಿಸ್‌ಪ್ಲೇ ಜೋಡಣೆ</translation>
 <translation id="2507253002925770350">ಟಿಕೆಟ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">ಸಾಧನ ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ ತೀರಾ ಕಡಿಮೆ ಇದೆ</translation>
 <translation id="4763408175235639573">ನೀವು ಈ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುವಾಗ ಕೆಳಗಿನ ಕುಕೀಗಳನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="4765582662863429759">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ನಿಮ್ಮ Chromebook ಗೆ ಪಠ್ಯ ಸಂದೇಶಗಳನ್ನು ರಿಲೇ ಮಾಡಲು, Android ಸಂದೇಶಗಳನ್ನು ಅನುಮತಿಸುತ್ತದೆ</translation>
+<translation id="476598255842811483">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು Nearby ಶೇರ್ ಅನ್ನು ತೆರೆಯದಿದ್ದರೆ ಯಾರಿಗೂ ಕಾಣಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4768332406694066911">ನಿಮ್ಮನ್ನು ಗುರುತಿಸುವ ಈ ಸಂಸ್ಥೆಗಳ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಹೊಂದಿರುವಿರಿ</translation>
 <translation id="477647109558161443">ಒಂದು ಡೆಸ್ಕ್‌ಟಾಪ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -4286,6 +4288,7 @@
 <translation id="6164005077879661055">ಈ ಮೇಲ್ವಿಚಾರಣೆ ಬಳಕೆದಾರರನ್ನು ಒಮ್ಮೆ ತೆಗೆದುಹಾಕಿದರೆ, ಮೇಲ್ವಿಚಾರಣೆ ಬಳಕೆದಾರರೊಂದಿಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಎಲ್ಲ ಫೈಲ್‌ಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ. ಈ ಮೇಲ್ವಿಚಾರಣೆ ಬಳಕೆದಾರಿಗಾಗಿ ಭೇಟಿ ನೀಡಲಾದ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳು <ph name="MANAGEMENT_URL" /> ನಲ್ಲಿ ನಿರ್ವಾಹಕರಿಗೆ ಈಗಲೂ ಗೋಚರಿಸಬಹುದು.</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6166185671393271715">Chrome ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
+<translation id="616831107264507309">ನಂತರ ಓದಿ</translation>
 <translation id="6169040057125497443">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="6169666352732958425">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="6170470584681422115">ಸ್ಯಾಂಡ್‌ವಿಚ್</translation>
@@ -5670,6 +5673,7 @@
 <translation id="786073089922909430">ಸೇವೆ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7864539943188674973">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="7866352732146932341">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ Nearby ಶೇರ್ ತೆರೆದಿರುವಾಗ ನಿಮ್ಮ ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ಜೋಡಿಸಲಾಗಿದೆ</translation>
 <translation id="7870730066603611552">ಸೆಟಪ್ ನಂತರ ಸಿಂಕ್ ಆಯ್ಕೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7870790288828963061">ಹೊಸ ಆವೃತ್ತಿಯೊಂದಿಗೆ ಯಾವುದೇ ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಏನೂ ಇಲ್ಲ. ದಯವಿಟ್ಟು USB ಸ್ಟಿಕ್ ತೆಗೆದುಹಾಕಿ.</translation>
@@ -6672,7 +6676,6 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>
 <translation id="9064275926664971810">ಒಂದು ಕ್ಲಿಕ್‌ನೊಂದಿಗೆ ವೆಬ್ ಫಾರ್ಮ್‌ಗಳನ್ನು ತುಂಬಲು ಸ್ವಯಂ ತುಂಬುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
-<translation id="9065772380960598487">ನಂತರ ಓದಿ ಎಂಬ ಆಯ್ಕೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="9066773882585798925">ಪಠ್ಯವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದುವುದನ್ನು ಆಲಿಸಿ</translation>
 <translation id="9066782832737749352">ಪಠ್ಯದಿಂದ ಧ್ವನಿ</translation>
 <translation id="9068849894565669697">ಬಣ್ಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -6818,7 +6821,6 @@
 <translation id="947329552760389097">&amp;ಅಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="951991426597076286">ನಿರಾಕರಿಸಿ</translation>
 <translation id="952992212772159698">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</translation>
-<translation id="956444359529327203">ಗೆಸ್ಟ್ ವಿಂಡೋ ಮುಚ್ಚಿರಿ</translation>
 <translation id="956500788634395331">ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="957960681186851048">ಈ ಸೈಟ್‌ ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಯತ್ನಿಸಿದೆ</translation>
 <translation id="9580706199804957">Google ಸೇವೆಗಳ ಮೂಲಕ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>

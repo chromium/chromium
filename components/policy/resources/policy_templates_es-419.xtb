@@ -2669,10 +2669,6 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" />, anulará esta política.</translation>
 <translation id="494613465159630803">Receptor de Cast</translation>
 <translation id="494924690085329212">Reinicia cuando el usuario sale de su cuenta si se inició Android.</translation>
-<translation id="4950900960525118567">Esta función habilita sugerencias de nuevo contenido para explorar. Incluye apps, páginas web y mucho más.
-      Si estableces esta política como verdadera, se habilitarán las sugerencias de nuevo contenido para explorar.
-      Si la estableces como falsa, se inhabilitarán estas sugerencias.
-      Si no la estableces, se inhabilitarán las sugerencias para los usuarios administrados.</translation>
 <translation id="4952347392677351397">Si la estableces en 1, los sitios web podrán usar y acceder a los sensores, como los de movimiento y luz. Si estableces la política en 2, se rechazará el acceso a los sensores.
 
       Si no la estableces, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>

@@ -1284,6 +1284,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2505127913256479918">Denne administrerte kontoen fjernes snart</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skjerm #}other{Skjerm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> av <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Enheter i nærheten av deg når nærdeling er åpen på enhetene deres</translation>
 <translation id="250704661983564564">Skjermoppsett</translation>
 <translation id="2507253002925770350">Saken er fjernet</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> er satt på pause</translation>
@@ -3133,6 +3134,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4762718786438001384">Det er kritisk lite plass på enheten</translation>
 <translation id="4763408175235639573">Følgende informasjonskapsler ble angitt da du besøkte denne siden</translation>
 <translation id="4765582662863429759">Tillater at Android Messages videresender tekstmeldinger fra telefonen din til Chromebook</translation>
+<translation id="476598255842811483">Ingen, med mindre du åpner nærdeling på enheten din</translation>
 <translation id="4768332406694066911">Du har sertifikater som identifiserer deg, fra disse organisasjonene</translation>
 <translation id="477647109558161443">Opprett en snarvei på skrivebordet</translation>
 <translation id="4776917500594043016">Passord for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4279,6 +4281,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6164005077879661055">Alle filer og lokale data tilknyttet den administrerte brukeren slettes permanent når den administrerte brukeren fjernes. Besøkte nettsteder og innstillinger for denne administrerte brukeren kan fortsatt ses av administratoren på <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6166185671393271715">Importér passord i Chrome</translation>
+<translation id="616831107264507309">Les senere</translation>
 <translation id="6169040057125497443">Sjekk mikrofonen din.</translation>
 <translation id="6169666352732958425">Kan ikke caste skrivebordet.</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
@@ -5663,6 +5666,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="786073089922909430">Tjeneste: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">Ne&amp;dlastinger</translation>
 <translation id="7864539943188674973">Deaktiver Bluetooth</translation>
+<translation id="7866352732146932341">Enheter i nærheten av deg når nærdeling er åpen på enheten din</translation>
 <translation id="786957569166715433">«<ph name="DEVICE_NAME" />» er tilkoblet</translation>
 <translation id="7870730066603611552">Gå gjennom alternativene for synkronisering etter konfigureringen</translation>
 <translation id="7870790288828963061">Fant ingen Kiosk-apper med nyere versjon. Ingenting å oppdatere. Ta ut USB-pinnen.</translation>
@@ -6668,7 +6672,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9063208415146866933">Feil fra linje <ph name="ERROR_LINE_START" /> til linje <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Slå på Autofyll for å fylle ut skjemaer ved hjelp av ett enkelt klikk</translation>
 <translation id="9065203028668620118">Endre</translation>
-<translation id="9065772380960598487">Legg til i Les senere</translation>
 <translation id="9066773882585798925">Få tekst lest opp</translation>
 <translation id="9066782832737749352">Tekst til tale</translation>
 <translation id="9068849894565669697">Velg farge</translation>
@@ -6813,7 +6816,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="947329552760389097">&amp;Undersøk elementer</translation>
 <translation id="951991426597076286">Avvis</translation>
 <translation id="952992212772159698">Ikke aktivert</translation>
-<translation id="956444359529327203">Lukk alle gjestevinduer</translation>
 <translation id="956500788634395331">Du er beskyttet mot potensielt skadelige utvidelser</translation>
 <translation id="957960681186851048">Dette nettstedet prøvde å laste ned flere filer automatisk</translation>
 <translation id="9580706199804957">Kunne ikke koble til Google-tjenester</translation>

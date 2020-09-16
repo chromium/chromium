@@ -1286,6 +1286,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2505127913256479918">Tento dozorovaný účet bude brzy odstraněn</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Obrazovka #}few{Obrazovka #}many{Obrazovka #}other{Obrazovka #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Zařízení, která jsou poblíž, když je v nich zapnuté sdílení nablízko</translation>
 <translation id="250704661983564564">Uspořádání displejů</translation>
 <translation id="2507253002925770350">Lístek byl odstraněn</translation>
 <translation id="2507397597949272797">Prohlížeč <ph name="NAME" /> je pozastaven</translation>
@@ -3136,6 +3137,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4762718786438001384">Na disku zařízení je kriticky málo místa</translation>
 <translation id="4763408175235639573">Při zobrazení této stránky byly nastaveny následující soubory cookie</translation>
 <translation id="4765582662863429759">Povoluje Zprávám pro Android předávat zprávy SMS z telefonu do Chromebooku</translation>
+<translation id="476598255842811483">Nikdo, pokud v zařízení neotevřete sdílení nablízko</translation>
 <translation id="4768332406694066911">Od následujících organizací máte certifikáty, které vás identifikují</translation>
 <translation id="477647109558161443">Vytvořit zástupce na ploše</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4282,6 +4284,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6164005077879661055">Po odebrání dozorovaného uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena. Navštívené weby a nastavení tohoto dozorovaného uživatele může správce i nadále zobrazit na adrese <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6166185671393271715">Import hesel do Chromu</translation>
+<translation id="616831107264507309">Přečíst později</translation>
 <translation id="6169040057125497443">Zkontrolujte mikrofon.</translation>
 <translation id="6169666352732958425">Plochu nelze odeslat.</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -5666,6 +5669,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Stažené soubory</translation>
 <translation id="7864539943188674973">Vypnout Bluetooth</translation>
+<translation id="7866352732146932341">Zařízení, která jsou poblíž, když máte zapnuté sdílení nablízko</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárováno</translation>
 <translation id="7870730066603611552">Po nastavení zkontrolovat možnosti synchronizace</translation>
 <translation id="7870790288828963061">Nebyly nalezeny žádné novější verze terminálových aplikací. Aktualizaci není třeba provést. Vyjměte jednotku USB.</translation>
@@ -6670,7 +6674,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9063208415146866933">Chyba na řádku <ph name="ERROR_LINE_START" /> až <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Aktivujte automatické vyplňování a vyplňujte webové formuláře jedním kliknutím.</translation>
 <translation id="9065203028668620118">Upravit</translation>
-<translation id="9065772380960598487">Přidat do seznamu Přečíst později</translation>
 <translation id="9066773882585798925">Čtení textu nahlas</translation>
 <translation id="9066782832737749352">Převod textu na řeč</translation>
 <translation id="9068849894565669697">Výběr barvy</translation>
@@ -6815,7 +6818,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="947329552760389097">&amp;Prozkoumat prvky</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="952992212772159698">Není aktivováno</translation>
-<translation id="956444359529327203">Zavřít okna hosta</translation>
 <translation id="956500788634395331">Jste chráněni před potenciálně škodlivými rozšířenými</translation>
 <translation id="957960681186851048">Tento web se pokusil automaticky stáhnout několik souborů</translation>
 <translation id="9580706199804957">Ke službám Google se nelze připojit</translation>

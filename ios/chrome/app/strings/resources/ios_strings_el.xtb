@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Ολοκληρώστε την εργασία σας στο άλλο ανοικτό παράθυρο του Chrome.</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
+<translation id="1992734845128748707">Αλλαγή προεπιλεγμένου προγράμματος περιήγησης…</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5327248766486351172">Όνομα</translation>
 <translation id="5339316356165661760">Ενεργοποίηση συγχρονισμού</translation>
-<translation id="5352285283572729470">Αυτή η ρύθμιση είναι διαχειριζόμενη</translation>
 <translation id="5388358297987318779">Άνοιγμα εικόνας</translation>
 <translation id="5407969256130905701">Απόρριψη αλλαγών</translation>
 <translation id="5409365236829784218">Δεν υπάρχουν εγκατεστ. εφαρμογές για το άνοιγμα του αρχείου</translation>

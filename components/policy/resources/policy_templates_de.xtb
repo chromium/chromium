@@ -2651,11 +2651,6 @@ Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verf
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" />" diese Richtlinie.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
-<translation id="4950900960525118567">Mit dieser Funktion werden Vorschläge zur Entdeckung neuer Inhalte aktiviert. Das kann u. a. Apps und Webseiten einschließen.
-      Wenn diese Richtlinie auf "True" gesetzt ist, werden Vorschläge zur Entdeckung neuer Inhalte aktiviert.
-      Ist diese Richtlinie auf "False" gesetzt, werden Vorschläge zur Entdeckung neuer Inhalte deaktiviert.
-      Ist diese Richtlinie nicht konfiguriert, werden Vorschläge zur Entdeckung neuer Inhalte für verwaltete Nutzer deaktiviert.
-      </translation>
 <translation id="4952347392677351397">Wenn die Richtlinie auf "1" gesetzt ist, dürfen Websites auf Sensoren wie Bewegungs- und Lichtsensoren zugreifen und diese nutzen. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf Sensoren blockiert.
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ALLOW_SENSORS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>

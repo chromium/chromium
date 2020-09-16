@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Gjør deg ferdig med det du holdt på med i det andre åpne Chrome-vinduet.</translation>
 <translation id="1974060860693918893">Avanserte</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
+<translation id="1992734845128748707">Bytt standardnettleser…</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5339316356165661760">Slå på synkronisering</translation>
-<translation id="5352285283572729470">Denne innstillingen er administrert</translation>
 <translation id="5388358297987318779">Åpne bildet</translation>
 <translation id="5407969256130905701">Forkast endringer</translation>
 <translation id="5409365236829784218">Ingen av de installerte appene kan åpne denne filen.</translation>

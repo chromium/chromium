@@ -4284,6 +4284,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6164005077879661055">Kuzatuvdagi profil o‘chirilganda unga bog‘liq barcha fayllar va mahalliy ma’lumotlar tozalanadi. Bu profil brauzeri tarixi va sozlamalari uning boshqaruvchisiga quyidagi sahifada ko‘rinadi: <ph name="MANAGEMENT_URL" /></translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6166185671393271715">Parollarni Chrome’ga import qilish</translation>
+<translation id="616831107264507309">Keyinroq o‘qish</translation>
 <translation id="6169040057125497443">Mikrofonni tekshiring.</translation>
 <translation id="6169666352732958425">Ekranni aks ettirib bo‘lmadi.</translation>
 <translation id="6170470584681422115">Sendvich</translation>
@@ -5553,7 +5554,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ekraningiz chetini chegaralar bilan moslang</translation>
 <translation id="7760004034676677601">Bu boshqa bosh sahifami?</translation>
-<translation id="7764225426217299476">Manzil qo‘shish</translation>
+<translation id="7764225426217299476">Manzil kiritish</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> saytidan <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
 <translation id="7766082757934713382">Tarmoq trafik sarfini avtomatik ishga tushuvchi ilovalar va tizim uchun yangilanishlarni pauza qilish orqali kamaytirish mumkin.</translation>
@@ -6672,7 +6673,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> – <ph name="ERROR_LINE_END" /> qatorlar oralig‘ida xato bor</translation>
 <translation id="9064275926664971810">Veb-shakllarni birgina harakat bilan avtomatik to‘ldirish xususiyatini yoqish</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
-<translation id="9065772380960598487">Keyinroq oʻqish</translation>
 <translation id="9066773882585798925">Matnni o‘qib eshittirish</translation>
 <translation id="9066782832737749352">Nutq sintezatori</translation>
 <translation id="9068849894565669697">Rangni tanlang</translation>
@@ -6818,7 +6818,6 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="947329552760389097">Elementlarni &amp;tekshirish</translation>
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="952992212772159698">Faollashtirilmagan</translation>
-<translation id="956444359529327203">Mehmon rejimidagi oynalarni yopish</translation>
 <translation id="956500788634395331">Zararli kengaytmalardan himoyalangansiz</translation>
 <translation id="957960681186851048">Bu sayt bir necha fayllarni avtomatik yuklab olishga urinib ko‘rdi</translation>
 <translation id="9580706199804957">Google xizmatlariga ulanib bo‘lmadi</translation>

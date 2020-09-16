@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1566281227936819866">Zobrazujú sa uložené spôsoby platby</translation>
 <translation id="1717486229951421299">Zoznam prihlasovacích údajov na vyplnenie po klepnutí je otvorený na polovičnú výšku.</translation>
 <translation id="207576718733492531">Zoznam prihlasovacích údajov na vyplnenie po klepnutí je zatvorený.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Zoznam prihlasovacích údajov na vyplnenie po klepnutí je otvorený na úplnú výšku.</translation>
 <translation id="6393156038355142111">Navrhnúť silné heslo</translation>
 <translation id="6696046606263842994">Vyplňte heslo</translation>
+<translation id="7029809446516969842">Heslá</translation>
 <translation id="7299100402441711551">Zobraziť adresy</translation>
 <translation id="7494879913343971937">Zobrazovať heslá</translation>
 <translation id="7758428186423745764">Vyplňte spôsob platby</translation>

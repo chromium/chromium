@@ -1280,6 +1280,7 @@
 <translation id="2505127913256479918">ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଆକାଉଣ୍ଟ ଖୁବ୍ ଶୀଘ୍ର କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ସ୍କ୍ରିନ୍‌ #}other{ସ୍କ୍ରିନ୍‌ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ର <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">ସେମାନଙ୍କ ଡିଭାଇସରେ Nearby Share ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ ଆଖପାଖରେ ଥିବା ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="250704661983564564">ଡିସପ୍ଲେ ବ୍ୟବସ୍ଥିତ କରିବା ସେଟିଂସ୍</translation>
 <translation id="2507253002925770350">ଟିକେଟ୍‍କୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="2507397597949272797"><ph name="NAME" />କୁ ବିରତ କରାଯାଇଛି</translation>
@@ -1467,6 +1468,7 @@
 <translation id="2731700343119398978">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ...</translation>
 <translation id="2731710757838467317">ଆପଣଙ୍କର ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତା ସୃଷ୍ଟି କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="2731971182069536520">ଆଗାମୀ ଥର ଆପଣ ନିଜର ଡିଭାଇସ୍ ରିଷ୍ଟାର୍ଟ କଲେ, ଆପଣଙ୍କର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ ଗୋଟିଏ ଥର ଅପ୍‌ଡେଟ୍ ସୁବିଧା କାର୍ଯ୍ୟକାରୀ କରିବେ ଯାହା ଆପଣଙ୍କର ସ୍ଥାନୀୟ ଡାଟାକୁ ଡିଲିଟ୍ କରିଦେବ।</translation>
+<translation id="2732134891301408122"><ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> ଅଧୀନରେ ଥିବା ସାଇଟ୍‌ଗୁଡ଼ିକ ମଧ୍ୟ ରିସେଟ୍ ହୋଇଯିବ।</translation>
 <translation id="2735712963799620190">ସମୟସୂଚୀ ନିର୍ଦ୍ଧାରଣ କରନ୍ତୁ</translation>
 <translation id="2737363922397526254">ସଙ୍କୁଚିତ କରନ୍ତୁ...</translation>
@@ -3113,6 +3115,7 @@
 <translation id="4735803855089279419">ଏହି ଡିଭାଇସ୍ ପାଇଁ ଡିଭାଇସ୍ ଚିହ୍ନଟକାରୀ ନିର୍ଦ୍ଦିଷ୍ଟ କରିବାରେ ସିଷ୍ଟମ୍ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4736292055110123391">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଆପଣଙ୍କ ବୁକ୍‌ମାର୍କ, ପାସ୍‌ୱର୍ଡ, ଇତିବୃତ୍ତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
+<translation id="473936925429402449">ଚୟନ କରାଯାଇଛି, <ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="4739639199548674512">ଟିକେଟ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" /> ଏହା ଜାଣନ୍ତୁ ଯେ କିପରି ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକୁ ଅପ୍‌ଡେଟ୍ କରିବେ<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ସାଇଟ୍ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}other{ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନ୍‌ମ୍ୟୁଟ୍ କରନ୍ତୁ}}</translation>
@@ -3128,6 +3131,7 @@
 <translation id="4762718786438001384">ଡିଭାଇସ୍ ଡିସ୍କ୍ ସ୍ଥାନ ଅତ୍ୟନ୍ତ କମ୍</translation>
 <translation id="4763408175235639573">ଯେତେବେଳେ ଆପଣ ଏହି ପୃଷ୍ଠା ଦେଖିଥିଲେ, ସେତେବେଳେ ନିମ୍ନରେ ଦିଆଯାଇଥିବା କୁକୀଗୁଡ଼ିକ ସେଟ୍ କରାଯାଇଥିଲା</translation>
 <translation id="4765582662863429759">ଆପଣଙ୍କର ଫୋନ୍‌ରୁ Chromebookକୁ ଟେକ୍ସଟ୍‍ ପ୍ରତିସାରଣ କରିବାକୁ Androidର ମେସେଜ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଏ।</translation>
+<translation id="476598255842811483">ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣ Nearby Share ଚାଲୁ ନକରିବା ପର୍ଯ୍ୟନ୍ତ କେହି ଏହାକୁ ଦେଖିପାରିବେ ନାହିଁ</translation>
 <translation id="4768332406694066911">ଆପଣଙ୍କ ପାଖରେ ଏହି ସଂଗଠନଗୁଡ଼ିକରୁ ସାର୍ଟିଫିକେଟ୍‍ଗୁଡ଼ିକ ଅଛି ଯାହା ଆପଣଙ୍କୁ ଚିହ୍ନଟ କରିଥାଏ</translation>
 <translation id="477647109558161443">ଏକ ଡେସ୍କଟପ୍ ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ଙ୍କ ପାଇଁ ପାସ୍‌ୱାର୍ଡ</translation>
@@ -4134,6 +4138,7 @@
 <translation id="6011449291337289699">ସାଇଟ୍‍ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6015266928248016057">ଅବୈଧ PUK। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ ବାକି ଅଛି: <ph name="RETRIES" /> ଥର।</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
+<translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6016551720757758985">ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରିଆସିବା ସହିତ Powerwashକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6016972670657536680">ଭାଷା ଓ କୀ-ବୋର୍ଡ ବଟନ୍‍କୁ ଚୟନ କରନ୍ତୁ। ବର୍ତ୍ତମାନ ଚୟନିତ ଭାଷା ହେଉଛି <ph name="LANGUAGE" />।</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
@@ -4273,6 +4278,7 @@
 <translation id="6164005077879661055">ଥରେ ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ କାଢ଼ି ଦେବା ପରେ, ତାଙ୍କର ସମସ୍ତ ଫାଇଲ୍ ଓ ସ୍ଥାନୀୟ ଡାଟାକୁ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ କରିଦିଆଯିବ। ଏହି ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ଦେଖାଯାଇଥିବା ୱେବ୍‌ସାଇଟ୍ ଏବଂ ସେଟିଂସ୍ ଏବେବି <ph name="MANAGEMENT_URL" />ରେ ପରିଚାଳକଙ୍କ ଦ୍ୱାରା ଦେଖା ଦେଇପାରେ।</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6166185671393271715">Chromeକୁ ପାସ୍‍ୱର୍ଡ ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="616831107264507309">ପରେ ପଢ଼ନ୍ତୁ</translation>
 <translation id="6169040057125497443">ଦୟାକରି, ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‍ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="6169666352732958425">ଡେସ୍କଟପ୍ କାଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="6170470584681422115">ସାଣ୍ଡୱିଚ୍</translation>
@@ -5659,6 +5665,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="786073089922909430">ସେବା: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ଡାଉନଲୋଡସମୂହ</translation>
 <translation id="7864539943188674973">ବ୍ଲୁଟୁଥ୍ ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="7866352732146932341">ଆପଣଙ୍କ ଡିଭାଇସରେ Nearby Share ଚାଲୁ ଥିବା ସମୟରେ ଆପଣଙ୍କ ଆଖପାଖରେ ଥିବା ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ପେୟାର୍ ହୋଇଛି</translation>
 <translation id="7870730066603611552">ସେଟ୍‍ଅପ୍ ପରେ ସିଙ୍କ ବିକଳ୍ପର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="7870790288828963061">ନୂତନ ସଂସ୍କରଣର କୌଣସି କିଓସ୍କୋ ଆପ୍ସ ମିଳିଲା ନାହିଁ। ଅପ୍‌ଡେଟ୍‍ କରିବାକୁ କିଛି ନାହିଁ। ଦୟାକରି USB ଷ୍ଟିକ୍‍ କାଢ଼ନ୍ତୁ।</translation>
@@ -6439,6 +6446,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8811862054141704416">Crostini ମାଇକ୍ରୋଫୋନ୍ ଆକ୍ସେସ୍</translation>
 <translation id="8812552797690463522">ଏହି ନେଟୱାର୍କ ଆପଣଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଇଛି।</translation>
 <translation id="8812593354822910461">ଆପଣଙ୍କୁ <ph name="DOMAIN" />ରୁ ସାଇନ୍ ଆଉଟ୍ କରିଦେବା ବ୍ରାଉଜିଂ ଡାଟା (<ph name="URL" />)କୁ ମଧ୍ୟ ଖାଲି କରନ୍ତୁ। <ph name="LEARN_MORE" /></translation>
+<translation id="8813277370772331957">ମୋତେ ପରେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />ରେ ସାଇନ୍ ଇନ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8813872945700551674">"<ph name="EXTENSION_NAME" />"କୁ ଅନୁମୋଦନ କରିବା ପାଇଁ ଜଣେ ବାପା କିମ୍ବା ମା'ଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="8813969267212093033">ଏହି ଭାଷାରେ ସିଷ୍ଟ‌ମ୍ ଟେକ୍ସଟ୍ ଦେଖାଇଥାଏ</translation>
@@ -6469,6 +6477,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8838601485495657486">ଅସ୍ୱଚ୍ଛ</translation>
 <translation id="8838770651474809439">ହାମ୍‌ବର୍ଗର୍</translation>
 <translation id="883911313571074303">ଆନୋଟେଟ୍ ଛବି</translation>
+<translation id="8841843049738266382">ଆଲାଉଲିଷ୍ଟରେ ଥିବା ଉପଯୋଗକର୍ତ୍ତାମାନଙ୍କୁ ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8842594465773264717">ଏହି ଟିପଚିହ୍ନକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8846132060409673887">ଏହି କମ୍ପ୍ୟୁଟର୍‍‍ର ନିର୍ମାତା ଓ ମଡେଲ୍ ବିଷୟରେ ପଢ଼ନ୍ତୁ</translation>
@@ -6659,7 +6668,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9063208415146866933">ଲାଇନ୍ <ph name="ERROR_LINE_START" /> ରୁ <ph name="ERROR_LINE_END" /> ପର୍ଯ୍ୟନ୍ତ ତ୍ରୁଟି</translation>
 <translation id="9064275926664971810">ଗୋଟିଏ କ୍ଲିକ୍‌ରେ ଫର୍ମ ପୂରଣ କରିବାକୁ ଅଟୋଫିଲ୍‍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
-<translation id="9065772380960598487">'ପରେ ପଢ଼ିବା'ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9066773882585798925">ଜୋରରେ ପଢ଼ାଯାଉଥିବା ଟେକ୍ସଟ୍ ଶୁଣନ୍ତୁ</translation>
 <translation id="9066782832737749352">ଟେକ୍ସଟ୍‌ରୁ ସ୍ପିଚ୍</translation>
 <translation id="9068849894565669697">ରଙ୍ଗ ଚୟନ କରନ୍ତୁ</translation>
@@ -6804,7 +6812,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="947329552760389097">&amp;ଉପାଦାନଗୁଡ଼ିକ ନିରୀକ୍ଷଣ କରନ୍ତୁ</translation>
 <translation id="951991426597076286">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
-<translation id="956444359529327203">ଅତିଥି ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="956500788634395331">ଆପଣ ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ଅଛନ୍ତି</translation>
 <translation id="957960681186851048">ଏହି ସାଇଟ୍ ସ୍ୱଚାଳିତ ଭାବେ ଏକାଧିକ ଫାଇଲ୍ ଡାଉନ୍‍‍ଲୋଡ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
 <translation id="9580706199804957">Google ସେବା ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1383876407941801731">Search</translation>
 <translation id="1566281227936819866">सेव किए गए भुगतान के तरीके दिखाए जा रहे हैं</translation>
 <translation id="1717486229951421299">टच करके भरी जाने वाली क्रेडेंशियल की सूची आधी स्क्रीन में खुली हुई है.</translation>
 <translation id="207576718733492531">टच करके भरी जाने वाली क्रेडेंशियल की सूची बंद है.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">टच करके भरी जाने वाली क्रेडेंशियल की सूची पूरी स्क्रीन में खुली हुई है.</translation>
 <translation id="6393156038355142111">मज़बूत पासवर्ड सुझाएं</translation>
 <translation id="6696046606263842994">पासवर्ड डालें</translation>
+<translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7299100402441711551">पतों की जानकारी दिखाओ</translation>
 <translation id="7494879913343971937">पासवर्ड दिखाएं</translation>
 <translation id="7758428186423745764">भुगतान का तरीका डालें</translation>

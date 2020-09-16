@@ -318,6 +318,7 @@
 <translation id="4261870227682513959">Εμφάνιση ρυθμίσεων ειδοποιήσεων. Οι ειδοποιήσεις είναι απενεργοποιημένες.</translation>
 <translation id="4269883910223712419">Ο διαχειριστής αυτής της συσκευής μπορεί να εκτελεί τις ακόλουθες ενέργειες:</translation>
 <translation id="4279490309300973883">Κατοπτρισμός</translation>
+<translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
 <translation id="4294319844246081198">Καλημέρα <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Διαγραφή και των <ph name="COUNT" /> ειδοποιήσεων</translation>
 <translation id="4303223480529385476">Ανάπτυξη περιοχής κατάστασης</translation>
@@ -352,7 +353,7 @@
 <translation id="4570957409596482333">Κουμπί "Επιλέξτε για αυτόματη ανάγνωση"</translation>
 <translation id="4577274620589681794">Ο χρόνος τελείωσε · <ph name="LABEL" /></translation>
 <translation id="4585337515783392668">Διακοπή μετάδοσης σε άγνωστο δέκτη</translation>
-<translation id="4596144739579517758">Το Σκούρο θέμα είναι απενεργοποιημένο</translation>
+<translation id="4596144739579517758">Το Σκούρο θέμα είναι απενεργοποιημένο.</translation>
 <translation id="4623167406982293031">Επαλήθευση λογαριασμού</translation>
 <translation id="4628757576491864469">Συσκευές</translation>
 <translation id="4659419629803378708">Το ChromeVox ενεργοποιήθηκε</translation>
@@ -407,7 +408,7 @@
 <translation id="5313326810920013265">Ρυθμίσεις Bluetooth</translation>
 <translation id="5314219114274263156">Λήψη εγγραφής οθόνης</translation>
 <translation id="5331975486040154427">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
-<translation id="5352250171825660495">Το Σκούρο θέμα είναι ενεργοποιημένο</translation>
+<translation id="5352250171825660495">Το Σκούρο θέμα είναι ενεργοποιημένο.</translation>
 <translation id="5379115545237091094">Πάρα πολλές προσπάθειες</translation>
 <translation id="5397578532367286026">Ο διαχειριστής (<ph name="MANAGER_EMAIL" />) μπορεί να ελέγξει τη χρήση και το ιστορικό αυτού του χρήστη στη διεύθυνση chrome.com.</translation>
 <translation id="5400461572260843123">Γρήγορες ρυθμίσεις, πατήστε Αναζήτηση και αριστερά για πρόσβαση στο κέντρο ειδοποιήσεων.</translation>

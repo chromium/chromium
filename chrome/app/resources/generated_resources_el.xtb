@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">Αυτός ο εποπτευόμενος λογαριασμός θα καταργηθεί σύντομα</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Οθόνη #}other{Οθόνη  #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> από <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Συσκευές που βρίσκονται κοντά σας όταν είναι ανοιχτή σε αυτές η λειτουργία Κοινοποίηση κοντά</translation>
 <translation id="250704661983564564">Διάταξη οθόνης</translation>
 <translation id="2507253002925770350">Το εισιτήριο καταργήθηκε.</translation>
 <translation id="2507397597949272797">Η εφαρμογή <ph name="NAME" /> τέθηκε σε παύση</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">Ο ελεύθερος χώρος στον δίσκο της συσκευής είναι οριακός</translation>
 <translation id="4763408175235639573">Όταν είδατε αυτήν τη σελίδα, ορίστηκαν τα ακόλουθα cookie</translation>
 <translation id="4765582662863429759">Επιτρέπει στο Android Messages τη μετάδοση μηνυμάτων κειμένου από το τηλέφωνό σας στο Chromebook</translation>
+<translation id="476598255842811483">Κανένας εκτός και αν ανοίξετε στη συσκευή σας τη λειτουργία Κοινοποίηση κοντά</translation>
 <translation id="4768332406694066911">Διαθέτετε πιστοποιητικά από αυτούς τους οργανισμούς που σας προσδιορίζουν</translation>
 <translation id="477647109558161443">Δημιουργία συντόμευσης επιφάνειας εργασίας</translation>
 <translation id="4776917500594043016">Κωδικός πρόσβασης για <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4285,6 +4287,7 @@
 <translation id="6164005077879661055">Όλα τα αρχεία και τα τοπικά δεδομένα που σχετίζονται με το χρήστη υπό επίβλεψη θα διαγραφούν οριστικά μόλις καταργηθεί ο χρήστης υπό επίβλεψη. Οι ιστοσελίδες που έχει επισκεφτεί και οι ρυθμίσεις που έχει επιλέξει ενδεχομένως να εξακολουθούν να εμφανίζονται στο διαχειριστή στη διεύθυνση <ph name="MANAGEMENT_URL" /> .</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6166185671393271715">Εισαγωγή κωδικών πρόσβασης στο Chrome</translation>
+<translation id="616831107264507309">Ανάγνωση αργότερα</translation>
 <translation id="6169040057125497443">Ελέγξτε το μικρόφωνό σας.</translation>
 <translation id="6169666352732958425">Αδυναμία μετάδοσης επιφάνειας εργασίας.</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
@@ -5669,6 +5672,7 @@
 <translation id="786073089922909430">Υπηρεσία: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Λήψεις</translation>
 <translation id="7864539943188674973">Απενεργοποίηση Bluetooth</translation>
+<translation id="7866352732146932341">Συσκευές που βρίσκονται κοντά σας όταν έχετε ανοιχτή στη συσκευή σας τη λειτουργία Κοινοποίηση κοντά</translation>
 <translation id="786957569166715433">Έγινε σύζευξη της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Έλεγχος επιλογών συγχρονισμού μετά τη ρύθμιση</translation>
 <translation id="7870790288828963061">Δεν βρέθηκαν εφαρμογές kiosk με νεότερη έκδοση. Δεν υπάρχουν στοιχεία προς ενημέρωση. Αφαιρέστε τη συσκευή USB.</translation>
@@ -6672,7 +6676,6 @@
 <translation id="9063208415146866933">Σφάλμα από τη γραμμή <ph name="ERROR_LINE_START" /> έως <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Ενεργοποίηση Αυτόματης συμπλήρωσης για τη συμπλήρωση φορμών με ένα μόνο κλικ</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
-<translation id="9065772380960598487">Προσθήκη στη λίστα Ανάγνωση αργότερα</translation>
 <translation id="9066773882585798925">Ακρόαση εκφώνησης κειμένου</translation>
 <translation id="9066782832737749352">Κείμενο σε ομιλία</translation>
 <translation id="9068849894565669697">Επιλογή χρώματος</translation>
@@ -6817,7 +6820,6 @@
 <translation id="947329552760389097">&amp;Inspect Elements</translation>
 <translation id="951991426597076286">Απόρριψη</translation>
 <translation id="952992212772159698">Μη ενεργοποιημένο</translation>
-<translation id="956444359529327203">Κλείσιμο παραθύρου επισκέπτη</translation>
 <translation id="956500788634395331">Είστε προστατευμένοι από δυνητικά επιβλαβείς επεκτάσεις.</translation>
 <translation id="957960681186851048">Αυτός ο ιστότοπος επιχείρησε να κατεβάσει αυτόματα πολλά αρχεία</translation>
 <translation id="9580706199804957">Δεν ήταν δυνατή η σύνδεση με τις υπηρεσίες Google</translation>

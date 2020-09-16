@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">निगरानी में रखे गए इस उपयोगकर्ता खाते को जल्द ही हटा दिया जाएगा</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{स्क्रीन #}one{स्क्रीन #}other{स्क्रीन #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> में से <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">आप अपने आस-पास के डिवाइस के साथ फ़ाइलें शेयर कर सकते हैं, अगर उन पर आस-पास शेयर करने की सुविधा चालू हो</translation>
 <translation id="250704661983564564">डिसप्ले की सेटिंग</translation>
 <translation id="2507253002925770350">टिकट हटाया गया</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> को रोका गया</translation>
@@ -3137,6 +3138,7 @@
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
 <translation id="4763408175235639573">जब आपने इस पेज को देखा था, तब इन कुकी को सेट किया गया था</translation>
 <translation id="4765582662863429759">Android मैसेज को अपने Chromebook से अपने फ़ोन पर लेख भेजने की मंज़ूरी दें</translation>
+<translation id="476598255842811483">जब तक आप आस-पास शेयर करने की सुविधा चालू नहीं करते, तब तक कोई भी आपके डिवाइस के साथ फ़ाइलें शेयर नहीं कर सकता</translation>
 <translation id="4768332406694066911">आपके पास इन संगठनों के प्रमाणपत्र हैं जो आपकी पहचान करते हैं</translation>
 <translation id="477647109558161443">एक डेस्कटॉप शॉर्टकट बनाएं</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> के लिए पासवर्ड</translation>
@@ -4283,6 +4285,7 @@
 <translation id="6164005077879661055">'निगरानी में रखे गए इस उपयोगकर्ता' को हटाने के बाद, निगरानी में रखे गए उपयोगकर्ता से जुड़ीं सभी फ़ाइलें और 'स्थानीय डेटा' हमेशा के लिए मिट जाएंगे. 'निगरानी में रखे गए इस उपयोगकर्ता' की देखी गईं वेबसाइटें और सेटिंग <ph name="MANAGEMENT_URL" /> पर प्रबंधक को अब भी दिखेंगी.</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6166185671393271715">Chrome में पासवर्ड आयात करें</translation>
+<translation id="616831107264507309">बाद में पढ़ें</translation>
 <translation id="6169040057125497443">कृपया अपना माइक्रोफ़ोन जाँचें.</translation>
 <translation id="6169666352732958425">डेस्‍कटॉप कास्ट करने में असमर्थ.</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
@@ -5666,6 +5669,7 @@
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;डाउनलोड</translation>
 <translation id="7864539943188674973">ब्लूटूथ अक्षम करें</translation>
+<translation id="7866352732146932341">अगर आपके डिवाइस पर आस-पास शेयर करने की सुविधा चालू है, तो आस-पास के डिवाइस आपके साथ फ़ाइलें शेयर कर सकते हैं</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - युग्मित किया गया</translation>
 <translation id="7870730066603611552">सेटअप के बाद सिंक विकल्पों की समीक्षा करें</translation>
 <translation id="7870790288828963061">सबसे नए वर्शन वाला कोई भी कियोस्‍क ऐप्लिकेशन नहीं मिला. अपडेट करने के लिए कुछ नहीं है. कृपया 'यूएसबी स्‍टिक' को निकालें.</translation>
@@ -6480,7 +6484,7 @@
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">हैमबर्गर</translation>
 <translation id="883911313571074303">इमेज पर टिप्पणी लिखें</translation>
-<translation id="8841843049738266382">जिन लोगों या संगठनों को अनुमति मिली है उनकी सूची में शामिल उपयोगकर्ताओं को पढ़ें और बदलें</translation>
+<translation id="8841843049738266382">अनुमित वाले उपयोगकर्ताओं की सूची को देखने और बदलाव करने का ऐक्सेस दें</translation>
 <translation id="8842594465773264717">इस फ़िंगरप्रिंट को मिटाएं</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8846132060409673887">इस कंप्यूटर का निर्माता और मॉडल पढ़ें</translation>
@@ -6671,7 +6675,6 @@
 <translation id="9063208415146866933">लाइन <ph name="ERROR_LINE_START" /> से <ph name="ERROR_LINE_END" /> तक में गड़बड़ी</translation>
 <translation id="9064275926664971810">फ़ॉर्म को एक ही क्लिक में भरने के लिए ऑटोमैटिक भरना चालू करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
-<translation id="9065772380960598487">'बाद में पढ़ें' में जोड़ें</translation>
 <translation id="9066773882585798925">ज़ोर से पढ़ा गया लेख सुनें</translation>
 <translation id="9066782832737749352">लिखाई को बोली में बदलना</translation>
 <translation id="9068849894565669697">रंग चुनें</translation>
@@ -6816,7 +6819,6 @@
 <translation id="947329552760389097">&amp;एलिमेंट जाँचें</translation>
 <translation id="951991426597076286">अस्वीकार करें</translation>
 <translation id="952992212772159698">सक्रिय नहीं किया गया</translation>
-<translation id="956444359529327203">गेस्ट विंडो बंद करें</translation>
 <translation id="956500788634395331">आप ऐसे एक्सटेंशन से सुरक्षित हैं जो शायद नुकसान पहुंचा सकते हैं</translation>
 <translation id="957960681186851048">इस साइट ने अपने आप  कई फ़ाइलें डाउनलोड करने की कोशिश की है</translation>
 <translation id="9580706199804957">Google सेवाओं से कनेक्ट नहीं हो सका</translation>

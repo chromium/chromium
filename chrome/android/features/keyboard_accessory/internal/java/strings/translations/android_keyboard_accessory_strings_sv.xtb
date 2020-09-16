@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1383876407941801731">Sök</translation>
 <translation id="1566281227936819866">Sparade betalningsmetoder visas</translation>
 <translation id="1717486229951421299">Listan över användaruppgifter som ska fyllas i med ett tryck har öppnats över halva skärmen.</translation>
 <translation id="207576718733492531">Listan över användaruppgifter som ska fyllas i med ett tryck är stängd.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Listan över användaruppgifter som ska fyllas i med ett tryck har öppnats över hela skärmen.</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6696046606263842994">Fyll i lösenord</translation>
+<translation id="7029809446516969842">Lösenord</translation>
 <translation id="7299100402441711551">Visa adresser</translation>
 <translation id="7494879913343971937">Visa lösenord</translation>
 <translation id="7758428186423745764">Fyll i betalningsmetod</translation>

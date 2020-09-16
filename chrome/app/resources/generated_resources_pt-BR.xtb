@@ -4289,6 +4289,7 @@ Não exponha nenhuma informação confidencial.</translation>
 permanentemente excluídos assim que esse usuário for removido. Os websites visitados por esse usuário supervisionado e suas configurações ainda poderão ser vistos pelo administrador em <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166185671393271715">Importar senhas para o Chrome</translation>
+<translation id="616831107264507309">Ler mais tarde</translation>
 <translation id="6169040057125497443">Verifique seu microfone.</translation>
 <translation id="6169666352732958425">Não é possível transmitir a área de trabalho.</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
@@ -6679,7 +6680,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> a <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Ativar o Preenchimento automático e preencher formulários com um clique</translation>
 <translation id="9065203028668620118">Editar</translation>
-<translation id="9065772380960598487">Adicionar a "Ler mais tarde"</translation>
 <translation id="9066773882585798925">Ouvir o texto lido em voz alta</translation>
 <translation id="9066782832737749352">Conversão de texto em voz</translation>
 <translation id="9068849894565669697">Selecionar cor</translation>
@@ -6824,7 +6824,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="947329552760389097">&amp;Inspecionar elementos</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952992212772159698">Desativado</translation>
-<translation id="956444359529327203">Fechar modo de visitante</translation>
 <translation id="956500788634395331">Você tem proteção contra extensões possivelmente nocivas</translation>
 <translation id="957960681186851048">Este site tentou fazer o download de vários arquivos automaticamente</translation>
 <translation id="9580706199804957">Não foi possível conectar-se aos serviços do Google</translation>

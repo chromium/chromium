@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1383876407941801731">Որոնում</translation>
 <translation id="1566281227936819866">Ցուցադրվում են պահված վճարման եղանակները</translation>
 <translation id="1717486229951421299">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են էկրանի կեսով:</translation>
 <translation id="207576718733492531">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված չեն։</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="6393156038355142111">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="6696046606263842994">Լրացրեք գաղտնաբառը</translation>
+<translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7299100402441711551">Ցույց տալ հասցեները</translation>
 <translation id="7494879913343971937">Ցուցադրել գաղտնաբառերը</translation>
 <translation id="7758428186423745764">Լրացրեք վճարման եղանակը</translation>

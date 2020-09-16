@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">ఈ పర్యవేక్షిత వినియోగదారు ప్రొఫైల్‌ త్వరలో తీసివేయబడుతుంది</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{స్క్రీన్ #}other{స్క్రీన్ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />లో <ph name="RECEIVED_AMOUNT" /></translation>
+<translation id="250642123108534012">వారి పరికరంలో సమీప షేరింగ్ తెరిచివున్నప్పుడు మీకు సమీపంలో ఉన్న పరికరాలు</translation>
 <translation id="250704661983564564">డిస్‌ప్లే అమరిక</translation>
 <translation id="2507253002925770350">టిక్కెట్ తీసివేయబడింది</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> పాజ్ చేయబడింది</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">పరికరంలో డిస్క్ స్థలం చాలా తక్కువగా ఉంది</translation>
 <translation id="4763408175235639573">మీరు ఈ పేజీని వీక్షించినప్పుడు కింది కుక్కీలు సెట్ చేయబడ్డాయి</translation>
 <translation id="4765582662863429759">మీ ఫోన్‌లో ఉన్న వచనాన్ని మీ Chromebookలో చూపడానికి Android సందేశాలుని అనుమతిస్తుంది</translation>
+<translation id="476598255842811483">మీ పరికరంలో మీరు సమీప షేరింగ్‌ను తెరిస్తే తప్ప ఎవ్వరికీ కనబడదు</translation>
 <translation id="4768332406694066911">మిమ్మల్ని గుర్తించే ఈ సంస్థల నుండి మీకు ప్రమాణపత్రాలు ఉన్నాయి</translation>
 <translation id="477647109558161443">డెస్క్‌టాప్ షార్ట్‌కట్‍ను క్రియేట్ చేయండి</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">ఈ పర్యవేక్షించబడే వినియోగదారు తీసివేయబడినప్పుడు, పర్యవేక్షించబడే వినియోగదారుతో అనుబంధించబడిన అన్ని ఫైల్‌లు మరియు స్థానిక డేటా శాశ్వతంగా తొలగించబడతాయి. ఈ పర్యవేక్షించబడే వినియోగదారు సందర్శించిన వెబ్‌సైట్‌లు మరియు వీరి సెట్టింగ్‌లు ఇప్పటికీ <ph name="MANAGEMENT_URL" />లో నిర్వాహకునికి కనిపించవచ్చు.</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6166185671393271715">Chromeకి పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
+<translation id="616831107264507309">తర్వాత చదవండి</translation>
 <translation id="6169040057125497443">దయచేసి మీ మైక్రోఫోన్‌ని తనిఖీ చేయండి.</translation>
 <translation id="6169666352732958425">డెస్క్‌టాప్‌ను ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6170470584681422115">శాండ్విచ్</translation>
@@ -5667,6 +5670,7 @@
 <translation id="786073089922909430">సేవ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;డౌన్‌లోడ్‌లు</translation>
 <translation id="7864539943188674973">Bluetoothని నిలిపివేయి</translation>
+<translation id="7866352732146932341">మీ పరికరంలో సమీప షేరింగ్ తెరిచివున్నప్పుడు మీకు సమీపంలో ఉన్న పరికరాలు</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - జత చేయబడింది</translation>
 <translation id="7870730066603611552">సెటప్ చేసిన తర్వాత సింక్ ఎంపికలను సమీక్షించండి</translation>
 <translation id="7870790288828963061">సరికొత్త వెర్షన్ అందుబాటులో ఉన్న కియోస్క్ యాప్‌లేవీ కనుగొనబడలేదు. అప్‌డేట్ చేయడానికి ఏదీ లేదు. దయచేసి USB స్టిక్‌ను తీసివేయండి.</translation>
@@ -6669,7 +6673,6 @@
 <translation id="9063208415146866933">పంక్తి <ph name="ERROR_LINE_START" /> నుండి <ph name="ERROR_LINE_END" /> వరకు ఎర్రర్</translation>
 <translation id="9064275926664971810">ఫారమ్‌లను ఒకే క్లిక్‌లో నింపడానికి స్వీయపూరింపును ప్రారంభిస్తుంది</translation>
 <translation id="9065203028668620118">సవరించు</translation>
-<translation id="9065772380960598487">'తర్వాత చదవండి'కి జోడించండి</translation>
 <translation id="9066773882585798925">వినేందుకు వీలుగా వచనం గట్టిగా చదవబడుతుంది</translation>
 <translation id="9066782832737749352">వచనం నుండి ప్రసంగం</translation>
 <translation id="9068849894565669697">రంగుని ఎంచుకోండి</translation>
@@ -6814,7 +6817,6 @@
 <translation id="947329552760389097">&amp;మూలకాలను పర్యవేక్షించు</translation>
 <translation id="951991426597076286">తిరస్కరించు</translation>
 <translation id="952992212772159698">సక్రియం చెయ్యబడలేదు</translation>
-<translation id="956444359529327203">గెస్ట్ విండోను మూసివేయి</translation>
 <translation id="956500788634395331">మీకు హానికరమైన ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ ఉంది</translation>
 <translation id="957960681186851048">ఈ సైట్ ఆటోమెటిక్‌గా పలు ఫైల్‌లను డౌన్‌లోడ్ చేయడానికి ప్రయత్నించింది</translation>
 <translation id="9580706199804957">Google సేవలకు కనెక్ట్ చేయడం సాధ్యం కాలేదు</translation>

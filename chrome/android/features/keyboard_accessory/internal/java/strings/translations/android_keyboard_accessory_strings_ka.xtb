@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1383876407941801731">ძიება</translation>
 <translation id="1566281227936819866">ნაჩვენებია გადახდის შენახული მეთოდები</translation>
 <translation id="1717486229951421299">შეხებისას შესავსები ავტორიზაციის მონაცემების სია გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="207576718733492531">შეხებისას შესავსები ავტორიზაციის მონაცემების სია დახურულია.</translation>
@@ -15,6 +16,7 @@
 <translation id="5441504010984421144">შეხებისას შესავსები ავტორიზაციის მონაცემების სია გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="6393156038355142111">ძლიერი პაროლის შემოთავაზება</translation>
 <translation id="6696046606263842994">პაროლის შევსება</translation>
+<translation id="7029809446516969842">პაროლები</translation>
 <translation id="7299100402441711551">მისამართების ჩვენება</translation>
 <translation id="7494879913343971937">პაროლების ჩვენება</translation>
 <translation id="7758428186423745764">გადახდის მეთოდის შესახებ ინფორმაციის შევსება</translation>

@@ -98,6 +98,7 @@
 <translation id="1965935827552890526">Ljúktu því sem þú ert að gera í öðrum opnum Chrome glugga.</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
 <translation id="1989112275319619282">Skoða</translation>
+<translation id="1992734845128748707">Breyta um sjálfgefinn vafra…</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
@@ -379,7 +380,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5327248766486351172">Heiti</translation>
 <translation id="5339316356165661760">Kveikja á samstillingu</translation>
-<translation id="5352285283572729470">Þessari stillingu er stjórnað</translation>
 <translation id="5388358297987318779">Opna mynd</translation>
 <translation id="5407969256130905701">Fleygja breytingum</translation>
 <translation id="5409365236829784218">Engin uppsett forrit geta opnað þessa skrá.</translation>

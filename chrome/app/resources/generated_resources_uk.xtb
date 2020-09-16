@@ -1287,6 +1287,7 @@
 <translation id="2505127913256479918">Цей контрольований обліковий запис незабаром буде видалено</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}one{Екран #}few{Екран #}many{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> із <ph name="TOTAL_SIZE" /></translation>
+<translation id="250642123108534012">Пристрої, які є поблизу та на яких відкрито вікно функції "Передавання поблизу"</translation>
 <translation id="250704661983564564">Розміщення дисплея</translation>
 <translation id="2507253002925770350">Квиток видалено</translation>
 <translation id="2507397597949272797"><ph name="NAME" />: призупинено</translation>
@@ -3138,6 +3139,7 @@
 <translation id="4762718786438001384">На диску пристрою дуже мало вільного місця</translation>
 <translation id="4763408175235639573">Файли cookie, створені під час перегляду сторінки</translation>
 <translation id="4765582662863429759">Дозволяє сервісу Android Повідомлення передавати SMS із телефона на Chromebook</translation>
+<translation id="476598255842811483">Ніхто, якщо на вашому пристрої закрите вікно функції "Передавання поблизу"</translation>
 <translation id="4768332406694066911">Вас ідентифікують сертифікати від цих організацій</translation>
 <translation id="477647109558161443">Створити ярлик на робочому столі</translation>
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4284,6 +4286,7 @@
 <translation id="6164005077879661055">Усі файли та локальні дані, пов’язані з контрольованим користувачем, буде назавжди видалено, якщо вилучити цього контрольованого користувача. Менеджер усе одно може бачити веб-сайти, які відвідував цей контрольований користувач, і його налаштування на сторінці <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166185671393271715">Імпортувати паролі в Chrome</translation>
+<translation id="616831107264507309">Читати пізніше</translation>
 <translation id="6169040057125497443">Перевірте мікрофон.</translation>
 <translation id="6169666352732958425">Не вдається транслювати робочий стіл.</translation>
 <translation id="6170470584681422115">Сендвіч</translation>
@@ -5668,6 +5671,7 @@
 <translation id="786073089922909430">Сервіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Завантаження</translation>
 <translation id="7864539943188674973">Вимкнути Bluetooth</translation>
+<translation id="7866352732146932341">Пристрої, які є поблизу, коли на вашому пристрої відкрито вікно функції "Передавання поблизу"</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: підключено</translation>
 <translation id="7870730066603611552">Після налаштування перевірте параметри синхронізації</translation>
 <translation id="7870790288828963061">Новіші версії додатків-терміналів не знайдено. Помилка оновлення. Витягніть носій USB.</translation>
@@ -6673,7 +6677,6 @@
 <translation id="9063208415146866933">Помилка в рядках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Увімкнути "Автозаповнення", щоб заповнювати форми одним кліком</translation>
 <translation id="9065203028668620118">Редагувати</translation>
-<translation id="9065772380960598487">Додати в розділ "Читати пізніше"</translation>
 <translation id="9066773882585798925">Озвучуйте текст</translation>
 <translation id="9066782832737749352">Синтез мовлення</translation>
 <translation id="9068849894565669697">Вибрати колір</translation>
@@ -6818,7 +6821,6 @@
 <translation id="947329552760389097">&amp;Перевірити елементи</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="952992212772159698">Не активовано</translation>
-<translation id="956444359529327203">Закрити вікна в гостьовому режимі</translation>
 <translation id="956500788634395331">Пристрій захищено від потенційно шкідливих розширень</translation>
 <translation id="957960681186851048">Цей сайт намагався автоматично завантажити декілька файлів</translation>
 <translation id="9580706199804957">Не вдалося під’єднатися до служб Google</translation>
