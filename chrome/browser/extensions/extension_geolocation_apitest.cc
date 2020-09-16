@@ -13,6 +13,7 @@ class GeolocationApiTest : public extensions::ExtensionApiTest {
 
   // InProcessBrowserTest
   void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
   }
@@ -21,16 +22,12 @@ class GeolocationApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
 
-// http://crbug.com/68287
-IN_PROC_BROWSER_TEST_F(GeolocationApiTest,
-                       DISABLED_ExtensionGeolocationAccessFail) {
+IN_PROC_BROWSER_TEST_F(GeolocationApiTest, ExtensionGeolocationAccessFail) {
   // Test that geolocation cannot be accessed from extension without permission.
   ASSERT_TRUE(RunExtensionTest("geolocation/no_permission")) << message_;
 }
 
-// Timing out. http://crbug.com/128412
-IN_PROC_BROWSER_TEST_F(GeolocationApiTest,
-                       DISABLED_ExtensionGeolocationAccessPass) {
+IN_PROC_BROWSER_TEST_F(GeolocationApiTest, ExtensionGeolocationAccessPass) {
   // Test that geolocation can be accessed from extension with permission.
   ASSERT_TRUE(RunExtensionTest("geolocation/has_permission")) << message_;
 }
