@@ -8,6 +8,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/optional.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
 
@@ -183,14 +184,18 @@ void DarkModeImageClassifier::GetSamples(const PaintImage& paint_image,
   int num_blocks_x = kMaxBlocks;
   int num_blocks_y = kMaxBlocks;
 
-  if (num_sampled_pixels > src.width() * src.height())
-    num_sampled_pixels = src.width() * src.height();
+  // Crash reports indicate that the src can be less than 1, so make
+  // sure it goes to 1. We know it is not 0 because GetBitmap above
+  // will return false for zero-sized src.
+  IntSize rounded_src(ceil(src.width()), ceil(src.height()));
 
-  if (num_blocks_x > src.width())
-    num_blocks_x = floor(src.width());
+  if (num_sampled_pixels > rounded_src.Width() * rounded_src.Height())
+    num_sampled_pixels = rounded_src.Width() * rounded_src.Height();
 
-  if (num_blocks_y > src.height())
-    num_blocks_y = floor(src.height());
+  if (num_blocks_x > rounded_src.Width())
+    num_blocks_x = rounded_src.Width();
+  if (num_blocks_y > rounded_src.Height())
+    num_blocks_y = rounded_src.Height();
 
   int pixels_per_block = num_sampled_pixels / (num_blocks_x * num_blocks_y);
 
