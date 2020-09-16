@@ -330,7 +330,7 @@ void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
   registrar().NotifyWebAppUninstalled(app_id);
   WebAppProviderBase::GetProviderBase(profile_)
       ->os_integration_manager()
-      .UninstallOsHooks(app_id, base::DoNothing());
+      .UninstallAllOsHooks(app_id, base::DoNothing());
 
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);

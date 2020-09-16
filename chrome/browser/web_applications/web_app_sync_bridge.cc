@@ -521,7 +521,7 @@ void WebAppSyncBridge::ApplySyncChangesToRegistrar(
     registrar_->NotifyWebAppUninstalled(app_id);
     WebAppProviderBase::GetProviderBase(profile())
         ->os_integration_manager()
-        .UninstallOsHooks(app_id, base::DoNothing());
+        .UninstallAllOsHooks(app_id, base::DoNothing());
   }
 
   std::vector<WebApp*> apps_to_install;

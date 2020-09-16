@@ -197,7 +197,7 @@ void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
     NotifyWebAppProfileWillBeDeleted(app.app_id());
     WebAppProviderBase::GetProviderBase(profile())
         ->os_integration_manager()
-        .UninstallOsHooks(app.app_id(), base::DoNothing());
+        .UninstallAllOsHooks(app.app_id(), base::DoNothing());
   }
   // We can't do registry_.clear() here because it makes in-memory registry
   // diverged from the sync server registry and from the on-disk registry

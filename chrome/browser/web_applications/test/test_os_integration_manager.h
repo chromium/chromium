@@ -30,7 +30,10 @@ class TestOsIntegrationManager : public OsIntegrationManager {
                       std::unique_ptr<WebApplicationInfo> web_app_info,
                       InstallOsHooksOptions options) override;
   void UninstallOsHooks(const AppId& app_id,
+                        const OsHooksResults& os_hooks,
                         UninstallOsHooksCallback callback) override;
+  void UninstallAllOsHooks(const AppId& app_id,
+                           UninstallOsHooksCallback callback) override;
   void UpdateOsHooks(const AppId& app_id,
                      base::StringPiece old_name,
                      const WebApplicationInfo& web_app_info) override;

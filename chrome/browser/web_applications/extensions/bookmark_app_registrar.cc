@@ -81,7 +81,7 @@ void BookmarkAppRegistrar::OnExtensionUninstalled(
     NotifyWebAppUninstalled(extension->id());
     web_app::WebAppProviderBase::GetProviderBase(profile())
         ->os_integration_manager()
-        .UninstallOsHooks(extension->id(), base::DoNothing());
+        .UninstallAllOsHooks(extension->id(), base::DoNothing());
 
     bookmark_app_being_observed_ = nullptr;
   }
@@ -104,7 +104,7 @@ void BookmarkAppRegistrar::OnExtensionUnloaded(
     NotifyWebAppProfileWillBeDeleted(extension->id());
     web_app::WebAppProviderBase::GetProviderBase(profile())
         ->os_integration_manager()
-        .UninstallOsHooks(extension->id(), base::DoNothing());
+        .UninstallAllOsHooks(extension->id(), base::DoNothing());
   }
 
   bookmark_app_being_observed_ = nullptr;

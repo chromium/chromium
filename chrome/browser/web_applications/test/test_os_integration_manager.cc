@@ -74,6 +74,13 @@ void TestOsIntegrationManager::InstallOsHooks(
 
 void TestOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
+    const OsHooksResults& os_hooks,
+    UninstallOsHooksCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void TestOsIntegrationManager::UninstallAllOsHooks(
+    const AppId& app_id,
     UninstallOsHooksCallback callback) {
   NOTIMPLEMENTED();
 }

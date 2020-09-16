@@ -136,7 +136,16 @@ void OsIntegrationManager::InstallOsHooks(
   }
 }
 
+void OsIntegrationManager::UninstallAllOsHooks(
+    const AppId& app_id,
+    UninstallOsHooksCallback callback) {
+  OsHooksResults os_hooks;
+  os_hooks.set();
+  UninstallOsHooks(app_id, os_hooks, std::move(callback));
+}
+
 void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
+                                            const OsHooksResults& os_hooks,
                                             UninstallOsHooksCallback callback) {
   DCHECK(shortcut_manager_);
 
@@ -148,31 +157,42 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
           &OsHooksBarrierInfo::Run,
           base::Owned(new OsHooksBarrierInfo(std::move(callback))));
 
-  if (ShouldRegisterShortcutsMenuWithOs()) {
+  if (os_hooks[OsHookType::kShortcutsMenu] &&
+      ShouldRegisterShortcutsMenuWithOs()) {
     barrier.Run(OsHookType::kShortcutsMenu,
                 UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath()));
   } else {
     barrier.Run(OsHookType::kShortcutsMenu, /*completed=*/true);
   }
 
-  std::unique_ptr<ShortcutInfo> shortcut_info =
-      shortcut_manager_->BuildShortcutInfo(app_id);
-  base::FilePath shortcut_data_dir =
-      internals::GetShortcutDataDir(*shortcut_info);
+  if (os_hooks[OsHookType::kShortcuts] || os_hooks[OsHookType::kRunOnOsLogin]) {
+    std::unique_ptr<ShortcutInfo> shortcut_info =
+        shortcut_manager_->BuildShortcutInfo(app_id);
+    base::FilePath shortcut_data_dir =
+        internals::GetShortcutDataDir(*shortcut_info);
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    ScheduleUnregisterRunOnOsLogin(
-        shortcut_info->profile_path, shortcut_info->title,
-        base::BindOnce(barrier, OsHookType::kRunOnOsLogin));
+    if (os_hooks[OsHookType::kRunOnOsLogin] &&
+        base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
+      ScheduleUnregisterRunOnOsLogin(
+          shortcut_info->profile_path, shortcut_info->title,
+          base::BindOnce(barrier, OsHookType::kRunOnOsLogin));
+    } else {
+      barrier.Run(OsHookType::kRunOnOsLogin, /*completed=*/true);
+    }
+
+    if (os_hooks[OsHookType::kShortcuts]) {
+      internals::ScheduleDeletePlatformShortcuts(
+          shortcut_data_dir, std::move(shortcut_info),
+          base::BindOnce(barrier, OsHookType::kShortcuts));
+    } else {
+      barrier.Run(OsHookType::kShortcuts, /*completed=*/true);
+    }
   }
-
-  internals::ScheduleDeletePlatformShortcuts(
-      shortcut_data_dir, std::move(shortcut_info),
-      base::BindOnce(barrier, OsHookType::kShortcuts));
 
   // TODO(https://crbug.com/1108109) we should return the result of file handler
   // unregistration and record errors during unregistration.
-  file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
+  if (os_hooks[OsHookType::kFileHandlers])
+    file_handler_manager_->DisableAndUnregisterOsFileHandlers(app_id);
   barrier.Run(OsHookType::kFileHandlers, /*completed=*/true);
 
   DeleteSharedAppShims(app_id);

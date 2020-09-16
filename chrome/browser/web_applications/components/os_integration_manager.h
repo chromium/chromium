@@ -79,11 +79,20 @@ class OsIntegrationManager {
                               std::unique_ptr<WebApplicationInfo> web_app_info,
                               InstallOsHooksOptions options);
 
-  // Uninstall all OS hooks for the web app.
+  // Uninstall specific OS hooks for the web app.
+  // Used when removing specific hooks resulting from an app setting change.
+  // Example: Running on OS login.
   // TODO(https://crbug.com/1108109) we should record uninstall result and allow
   // callback. virtual for testing
   virtual void UninstallOsHooks(const AppId& app_id,
+                                const OsHooksResults& os_hooks,
                                 UninstallOsHooksCallback callback);
+
+  // Uninstall all OS hooks for the web app.
+  // Used when uninstalling a web app.
+  // virtual for testing
+  virtual void UninstallAllOsHooks(const AppId& app_id,
+                                   UninstallOsHooksCallback callback);
 
   // Update all needed OS hooks for the web app.
   // virtual for testing
