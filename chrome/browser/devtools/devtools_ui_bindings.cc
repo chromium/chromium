@@ -1283,7 +1283,7 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
   if (!(boundary_value >= 0 && boundary_value <= 100 && sample >= 0 &&
         sample < boundary_value)) {
     // TODO(nick): Replace with chrome::bad_message::ReceivedBadMessage().
-    frontend_host_->BadMessageRecieved();
+    frontend_host_->BadMessageReceived();
     return;
   }
 
@@ -1308,7 +1308,7 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
       name == kDevToolsGridOverlayOpenedFromHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
-    frontend_host_->BadMessageRecieved();
+    frontend_host_->BadMessageReceived();
 }
 
 void DevToolsUIBindings::RecordPerformanceHistogram(const std::string& name,

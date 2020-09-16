@@ -22,7 +22,7 @@ class DevToolsFrontendHostImpl : public DevToolsFrontendHost,
       const HandleMessageCallback& handle_message_callback);
   ~DevToolsFrontendHostImpl() override;
 
-  void BadMessageRecieved() override;
+  void BadMessageReceived() override;
 
  private:
   // blink::mojom::DevToolsFrontendHost implementation.

@@ -86,7 +86,7 @@ DevToolsFrontendHostImpl::DevToolsFrontendHostImpl(
 
 DevToolsFrontendHostImpl::~DevToolsFrontendHostImpl() = default;
 
-void DevToolsFrontendHostImpl::BadMessageRecieved() {
+void DevToolsFrontendHostImpl::BadMessageReceived() {
   bad_message::ReceivedBadMessage(web_contents_->GetMainFrame()->GetProcess(),
                                   bad_message::DFH_BAD_EMBEDDER_MESSAGE);
 }

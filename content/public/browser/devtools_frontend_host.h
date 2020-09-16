@@ -42,7 +42,7 @@ class DevToolsFrontendHost {
 
   CONTENT_EXPORT virtual ~DevToolsFrontendHost() {}
 
-  CONTENT_EXPORT virtual void BadMessageRecieved() {}
+  CONTENT_EXPORT virtual void BadMessageReceived() {}
 
   // Returns bundled DevTools frontend resource by |path|. Returns null if
   // |path| does not correspond to any frontend resource.
