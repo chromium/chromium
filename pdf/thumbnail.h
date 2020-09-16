@@ -17,8 +17,8 @@ class Thumbnail final {
  public:
   Thumbnail();
   Thumbnail(const gfx::Size& page_size, float device_pixel_ratio);
-  Thumbnail(Thumbnail&& other) noexcept;
-  Thumbnail& operator=(Thumbnail&& other) noexcept;
+  Thumbnail(Thumbnail&& other);
+  Thumbnail& operator=(Thumbnail&& other);
   ~Thumbnail();
 
   SkBitmap& bitmap() { return bitmap_; }
