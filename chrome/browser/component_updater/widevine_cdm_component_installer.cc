@@ -63,8 +63,12 @@ const char kWidevineCdmPlatform[] =
     "mac";
 #elif defined(OS_WIN)
     "win";
-#else  // OS_LINUX, etc. TODO(viettrungluu): Separate out Chrome OS and Android?
+#elif defined(OS_CHROMEOS)
+    "cros";
+#elif defined(OS_LINUX)
     "linux";
+#else
+#error This file should only be included for supported platforms.
 #endif
 
 // Name of the Widevine CDM architecture in the component manifest.
@@ -73,8 +77,12 @@ const char kWidevineCdmArch[] =
     "x86";
 #elif defined(ARCH_CPU_X86_64)
     "x64";
-#else  // TODO(viettrungluu): Support an ARM check?
-    "???";
+#elif defined(ARCH_CPU_ARMEL)
+    "arm";
+#elif defined(ARCH_CPU_ARM64)
+    "arm64";
+#else
+#error This file should only be included for supported architecture.
 #endif
 
 // Widevine CDM is packaged as a multi-CRX. Widevine CDM binaries are located in
