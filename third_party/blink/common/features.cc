@@ -722,7 +722,7 @@ const base::Feature kCompressParkableStrings{"CompressParkableStrings",
 // Whether ParkableStrings can be written out to disk.
 // Depends on compression above.
 const base::Feature kParkableStringsToDisk{"ParkableStringsToDisk",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsParkableStringsToDiskEnabled() {
   return base::FeatureList::IsEnabled(kParkableStringsToDisk) &&

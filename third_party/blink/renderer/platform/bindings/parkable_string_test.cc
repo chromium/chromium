@@ -864,6 +864,13 @@ TEST_F(ParkableStringTest, CompressionDisabled) {
   EXPECT_FALSE(parkable.Impl()->may_be_parked());
 }
 
+TEST_F(ParkableStringTest, CompressionDisabledDisablesDisk) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kCompressParkableStrings);
+
+  EXPECT_FALSE(features::IsParkableStringsToDiskEnabled());
+}
+
 TEST_F(ParkableStringTest, Aging) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
