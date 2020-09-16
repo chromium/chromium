@@ -115,6 +115,10 @@ bool MediaPermissionDispatcher::IsEncryptedMediaEnabled() {
   return render_frame_->GetRendererPreferences().enable_encrypted_media;
 }
 
+void MediaPermissionDispatcher::NotifyUnsupportedPlatform() {
+  GetCdmInfobarService()->NotifyUnsupportedPlatform();
+}
+
 uint32_t MediaPermissionDispatcher::RegisterCallback(
     PermissionStatusCB permission_status_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -136,6 +140,16 @@ MediaPermissionDispatcher::GetPermissionService() {
   }
 
   return permission_service_.get();
+}
+
+media::mojom::CdmInfobarService*
+MediaPermissionDispatcher::GetCdmInfobarService() {
+  if (!cdm_infobar_service_) {
+    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+        cdm_infobar_service_.BindNewPipeAndPassReceiver());
+  }
+
+  return cdm_infobar_service_.get();
 }
 
 void MediaPermissionDispatcher::OnPermissionStatus(
