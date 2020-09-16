@@ -3011,8 +3011,7 @@ TEST_F(DownloadProtectionServiceTest, DoesNotSendPingForCancelledDownloads) {
 }
 
 TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
-  if (!base::FeatureList::IsEnabled(kMalwareScanEnabled) &&
-      !base::FeatureList::IsEnabled(kContentComplianceEnabled))
+  if (!flag_enabled())
     return;
 
   base::FilePath test_zip;
@@ -3071,8 +3070,7 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
 }
 
 TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
-  if (!base::FeatureList::IsEnabled(kMalwareScanEnabled) &&
-      !base::FeatureList::IsEnabled(kContentComplianceEnabled))
+  if (!flag_enabled())
     return;
 
   base::FilePath test_zip;
@@ -3134,8 +3132,7 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
 }
 
 TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
-  if (!base::FeatureList::IsEnabled(kMalwareScanEnabled) &&
-      !base::FeatureList::IsEnabled(kContentComplianceEnabled))
+  if (!flag_enabled())
     return;
 
   base::FilePath test_file;

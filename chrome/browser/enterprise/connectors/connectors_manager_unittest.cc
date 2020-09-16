@@ -184,10 +184,7 @@ class ConnectorsManagerLegacyPoliciesTest
       public testing::WithParamInterface<std::tuple<AnalysisConnector, T>> {
  public:
   ConnectorsManagerLegacyPoliciesTest<T>() {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kContentComplianceEnabled,
-         safe_browsing::kMalwareScanEnabled},
-        {});
+    scoped_feature_list_.InitWithFeatures({}, {});
   }
 
   AnalysisConnector connector() const { return std::get<0>(this->GetParam()); }

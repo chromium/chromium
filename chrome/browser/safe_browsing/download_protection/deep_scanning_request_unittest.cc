@@ -169,33 +169,15 @@ class DeepScanningRequestTest : public testing::Test {
 
   void EnableAllFeatures() {
     SetFeatures({enterprise_connectors::kEnterpriseConnectorsEnabled},
-                {kMalwareScanEnabled, kContentComplianceEnabled,
-                 extensions::SafeBrowsingPrivateEventRouter::
+                {extensions::SafeBrowsingPrivateEventRouter::
                      kRealtimeReportingFeature});
   }
 
   void DisableAllFeatures() {
     SetFeatures(
         {},
-        {kMalwareScanEnabled, kContentComplianceEnabled,
-         extensions::SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature,
+        {extensions::SafeBrowsingPrivateEventRouter::kRealtimeReportingFeature,
          enterprise_connectors::kEnterpriseConnectorsEnabled});
-  }
-
-  const std::vector<base::Feature> DlpFeatures() {
-    return {enterprise_connectors::kEnterpriseConnectorsEnabled};
-  }
-
-  const std::vector<base::Feature> MalwareFeatures() {
-    return {enterprise_connectors::kEnterpriseConnectorsEnabled};
-  }
-
-  const std::vector<base::Feature> DisabledMalwareFeatures() {
-    return {kMalwareScanEnabled};
-  }
-
-  const std::vector<base::Feature> DisabledDlpFeatures() {
-    return {kContentComplianceEnabled};
   }
 
   void ValidateDefaultSettings(
@@ -288,39 +270,6 @@ TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
   }
   {
     DisableAllFeatures();
-    DeepScanningRequest request(
-        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
-        dlp_and_malware_settings());
-    request.Start();
-    expect_dlp_and_malware_tags();
-  }
-  {
-    SetFeatures(/*enabled*/ DlpFeatures(),
-                /*disabled*/ DisabledMalwareFeatures());
-    DeepScanningRequest request(
-        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
-        dlp_and_malware_settings());
-    request.Start();
-    expect_dlp_and_malware_tags();
-  }
-  {
-    SetFeatures(/*enabled*/ MalwareFeatures(),
-                /*disabled*/ DisabledDlpFeatures());
-    DeepScanningRequest request(
-        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
-        dlp_and_malware_settings());
-    request.Start();
-    expect_dlp_and_malware_tags();
-  }
-  {
-    // Validate that the Connector feature still allows scanning if the other
-    // two flags are off.
-    SetFeatures(
-        /*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
-        /*disabled*/ {kMalwareScanEnabled, kContentComplianceEnabled});
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_,
@@ -794,8 +743,8 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 }
 
 TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
-  SetFeatures(/*enabled*/ MalwareFeatures(),
-              /*disabled*/ {kContentComplianceEnabled});
+  SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
+              /*disabled*/ {});
   SetMalwarePolicyForConnectors(SEND_UPLOADS_AND_DOWNLOADS);
   ClearUrlsToCheckComplianceOfDownloadsForConnectors();
 

@@ -37,11 +37,6 @@ extern const base::Feature kCaptureInlineJavascriptForGoogleAds;
 // Enables client side detection on Android.
 extern const base::Feature kClientSideDetectionForAndroid;
 
-// Controls whether to do deep scanning for DLP. If both this feature and
-// the enterprise policies are enabled, the downloaded and uploaded files are
-// sent for scanning.
-extern const base::Feature kContentComplianceEnabled;
-
 // Enable the addition of access tokens to download pings for enhanced
 // protection users.
 extern const base::Feature kDownloadRequestWithToken;
@@ -52,11 +47,6 @@ extern const base::Feature kEnhancedProtection;
 // Controls whether the limited list size experiment is enabled. This experiment
 // limits the number of entries stored in each Safe Browsing list.
 extern const base::Feature kLimitedListSizeForIOS;
-
-// Controls whether to do deep scanning for malware. If both this feature and
-// the enterprise policies are enabled, the downloaded and uploaded files are
-// sent for scanning.
-extern const base::Feature kMalwareScanEnabled;
 
 // Enable password protection for non-Google accounts.
 extern const base::Feature kPasswordProtectionForSavedPasswords;
