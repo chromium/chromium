@@ -33,12 +33,15 @@ class WebAppUiManager;
 // OsHooksResults contains the result of all Os hook deployments
 using OsHooksResults = std::bitset<OsHookType::kMaxValue + 1>;
 
-// Used to pass install options configured from upstream caller
+// Used to pass install options configured from upstream caller.
+// All options are disabled by default.
 struct InstallOsHooksOptions {
-  bool add_to_applications_menu = false;
+  InstallOsHooksOptions();
+  InstallOsHooksOptions(const InstallOsHooksOptions& other);
+
+  OsHooksResults os_hooks;
   bool add_to_desktop = false;
   bool add_to_quick_launch_bar = false;
-  bool run_on_os_login = false;
 };
 
 // Callback made after InstallOsHooks is finished.

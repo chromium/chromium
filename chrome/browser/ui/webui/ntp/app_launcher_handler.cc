@@ -970,10 +970,13 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
   web_app_provider_->registry_controller().SetAppInstallTime(app_id,
                                                              base::Time::Now());
   web_app::InstallOsHooksOptions options;
-  options.add_to_applications_menu = true;
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = false;
-  options.run_on_os_login = false;
+  options.os_hooks[web_app::OsHookType::kShortcuts] = true;
+  options.os_hooks[web_app::OsHookType::kShortcutsMenu] = true;
+  options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
+  options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
+
   web_app_provider_->os_integration_manager().InstallOsHooks(
       app_id,
       base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,

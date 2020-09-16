@@ -46,7 +46,7 @@ void TestOsIntegrationManager::InstallOsHooks(
 
   did_add_to_desktop_ = options.add_to_desktop;
 
-  if (options.add_to_applications_menu && can_create_shortcuts_) {
+  if (options.os_hooks[OsHookType::kShortcuts] && can_create_shortcuts_) {
     bool success = true;
     auto it = next_create_shortcut_results_.find(app_id);
     if (it != next_create_shortcut_results_.end()) {
@@ -59,7 +59,7 @@ void TestOsIntegrationManager::InstallOsHooks(
     }
   }
 
-  if (options.run_on_os_login) {
+  if (options.os_hooks[OsHookType::kRunOnOsLogin]) {
     ++num_register_run_on_os_login_calls_;
     os_hooks_results[OsHookType::kRunOnOsLogin] = true;
   }

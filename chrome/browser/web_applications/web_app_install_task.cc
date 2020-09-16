@@ -776,21 +776,27 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
 
   InstallOsHooksOptions options;
 
-  options.add_to_applications_menu = true;
+  options.os_hooks[OsHookType::kShortcuts] = true;
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
-  options.run_on_os_login = web_app_info->run_on_os_login;
+  options.os_hooks[OsHookType::kRunOnOsLogin] = web_app_info->run_on_os_login;
 
   if (install_source_ == WebappInstallSource::SYNC)
     options.add_to_quick_launch_bar = false;
 
   if (install_params_) {
-    options.add_to_applications_menu =
+    options.os_hooks[OsHookType::kShortcuts] =
         install_params_->add_to_applications_menu;
     options.add_to_desktop = install_params_->add_to_desktop;
     options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
-    options.run_on_os_login = install_params_->run_on_os_login;
+    options.os_hooks[OsHookType::kRunOnOsLogin] =
+        install_params_->run_on_os_login;
   }
+
+  // TODO(crbug.com/1087219): Determine if file handlers should be
+  // configured from somewhere else rather than always true.
+  options.os_hooks[OsHookType::kFileHandlers] = true;
+  options.os_hooks[OsHookType::kShortcutsMenu] = true;
 
   auto hooks_created_callback = base::BindOnce(
       &WebAppInstallTask::OnOsHooksCreated, weak_ptr_factory_.GetWeakPtr(),
