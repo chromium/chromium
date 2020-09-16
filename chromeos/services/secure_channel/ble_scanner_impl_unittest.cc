@@ -17,8 +17,8 @@
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/fake_ble_scanner.h"
-#include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
 #include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
+#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,16 +89,15 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     fake_delegate_ = std::make_unique<FakeBleScannerObserver>();
-    fake_ble_service_data_helper_ =
-        std::make_unique<FakeBleServiceDataHelper>();
+    fake_bluetooth_helper_ = std::make_unique<FakeBluetoothHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
-    ble_scanner_ = BleScannerImpl::Factory::Create(
-        fake_ble_service_data_helper_.get(), fake_ble_synchronizer_.get(),
-        mock_adapter_);
+    ble_scanner_ = BleScannerImpl::Factory::Create(fake_bluetooth_helper_.get(),
+                                                   fake_ble_synchronizer_.get(),
+                                                   mock_adapter_);
     ble_scanner_->AddObserver(fake_delegate_.get());
 
     auto fake_service_data_provider =
@@ -186,7 +185,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     const std::vector<FakeBleScannerObserver::Result>& results =
         fake_delegate_->handled_scan_results();
 
-    fake_ble_service_data_helper_->SetIdentifiedDevice(
+    fake_bluetooth_helper_->SetIdentifiedDevice(
         service_data, expected_remote_device, is_background_advertisement);
 
     size_t num_results_before_call = results.size();
@@ -234,8 +233,8 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     return discovery_session_weak_ptr_.get();
   }
 
-  FakeBleServiceDataHelper* fake_ble_service_data_helper() {
-    return fake_ble_service_data_helper_.get();
+  FakeBluetoothHelper* fake_bluetooth_helper() {
+    return fake_bluetooth_helper_.get();
   }
 
   const multidevice::RemoteDeviceRefList& test_devices() {
@@ -269,7 +268,7 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   const multidevice::RemoteDeviceRefList test_devices_;
 
   std::unique_ptr<FakeBleScannerObserver> fake_delegate_;
-  std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;
+  std::unique_ptr<FakeBluetoothHelper> fake_bluetooth_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
@@ -312,7 +311,7 @@ TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
 
   // Set the device to be a foreground advertisement, even though the registered
   // role is listener.
-  fake_ble_service_data_helper()->SetIdentifiedDevice(
+  fake_bluetooth_helper()->SetIdentifiedDevice(
       "wrongRoleServiceData", test_devices()[0],
       false /* is_background_advertisement */);
 

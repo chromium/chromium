@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 
 #include "base/stl_util.h"
 
@@ -10,22 +10,22 @@ namespace chromeos {
 
 namespace secure_channel {
 
-FakeBleServiceDataHelper::FakeBleServiceDataHelper() = default;
+FakeBluetoothHelper::FakeBluetoothHelper() = default;
 
-FakeBleServiceDataHelper::~FakeBleServiceDataHelper() = default;
+FakeBluetoothHelper::~FakeBluetoothHelper() = default;
 
-void FakeBleServiceDataHelper::SetAdvertisement(
+void FakeBluetoothHelper::SetAdvertisement(
     const DeviceIdPair& device_id_pair,
     const DataWithTimestamp& service_data) {
   device_id_pair_to_service_data_map_.insert({device_id_pair, service_data});
 }
 
-void FakeBleServiceDataHelper::RemoveAdvertisement(
+void FakeBluetoothHelper::RemoveAdvertisement(
     const DeviceIdPair& device_id_pair) {
   device_id_pair_to_service_data_map_.erase(device_id_pair);
 }
 
-void FakeBleServiceDataHelper::SetIdentifiedDevice(
+void FakeBluetoothHelper::SetIdentifiedDevice(
     const std::string& service_data,
     multidevice::RemoteDeviceRef identified_device,
     bool is_background_advertisement) {
@@ -35,7 +35,7 @@ void FakeBleServiceDataHelper::SetIdentifiedDevice(
 }
 
 std::unique_ptr<DataWithTimestamp>
-FakeBleServiceDataHelper::GenerateForegroundAdvertisement(
+FakeBluetoothHelper::GenerateForegroundAdvertisement(
     const DeviceIdPair& device_id_pair) {
   if (!base::Contains(device_id_pair_to_service_data_map_, device_id_pair))
     return nullptr;
@@ -44,8 +44,8 @@ FakeBleServiceDataHelper::GenerateForegroundAdvertisement(
       device_id_pair_to_service_data_map_.at(device_id_pair));
 }
 
-base::Optional<BleServiceDataHelper::DeviceWithBackgroundBool>
-FakeBleServiceDataHelper::PerformIdentifyRemoteDevice(
+base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
+FakeBluetoothHelper::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const DeviceIdPairSet& device_id_pair_set) {
   if (!base::Contains(service_data_to_device_with_background_bool_map_,

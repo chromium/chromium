@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
+#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 
 #include <memory>
 
@@ -88,9 +88,9 @@ multidevice::RemoteDeviceRef CreateLocalDevice(int id) {
 
 }  // namespace
 
-class SecureChannelBleServiceDataHelperImplTest : public testing::Test {
+class SecureChannelBluetoothHelperImplTest : public testing::Test {
  protected:
-  SecureChannelBleServiceDataHelperImplTest()
+  SecureChannelBluetoothHelperImplTest()
       : test_local_device_1_(CreateLocalDevice(1)),
         test_local_device_2_(CreateLocalDevice(2)),
         test_remote_devices_(
@@ -104,7 +104,7 @@ class SecureChannelBleServiceDataHelperImplTest : public testing::Test {
                                 test_local_device_2_.GetDeviceId());
   }
 
-  ~SecureChannelBleServiceDataHelperImplTest() override = default;
+  ~SecureChannelBluetoothHelperImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -139,10 +139,9 @@ class SecureChannelBleServiceDataHelperImplTest : public testing::Test {
         });
     remote_device_cache_->SetRemoteDevices(devices);
 
-    helper_ =
-        BleServiceDataHelperImpl::Factory::Create(remote_device_cache_.get());
+    helper_ = BluetoothHelperImpl::Factory::Create(remote_device_cache_.get());
 
-    static_cast<BleServiceDataHelperImpl*>(helper_.get())
+    static_cast<BluetoothHelperImpl*>(helper_.get())
         ->SetTestDoubles(std::move(fake_background_eid_generator),
                          std::move(mock_foreground_eid_generator));
   }
@@ -158,7 +157,7 @@ class SecureChannelBleServiceDataHelperImplTest : public testing::Test {
 
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
 
-  std::unique_ptr<BleServiceDataHelper> helper_;
+  std::unique_ptr<BluetoothHelper> helper_;
 
   multidevice::RemoteDeviceRef test_local_device_1_;
   multidevice::RemoteDeviceRef test_local_device_2_;
@@ -168,10 +167,10 @@ class SecureChannelBleServiceDataHelperImplTest : public testing::Test {
   DataWithTimestamp fake_advertisement_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleServiceDataHelperImplTest);
+  DISALLOW_COPY_AND_ASSIGN(SecureChannelBluetoothHelperImplTest);
 };
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestGenerateForegroundAdvertisement_CannotGenerateAdvertisement) {
   fake_ble_advertisement_generator_->set_advertisement(nullptr);
   EXPECT_FALSE(helper_->GenerateForegroundAdvertisement(
@@ -179,7 +178,7 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
                    test_local_device_1_.GetDeviceId() /* local_device_id */)));
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestGenerateForegroundAdvertisement) {
   auto data_with_timestamp = helper_->GenerateForegroundAdvertisement(
       DeviceIdPair(test_remote_devices_[0].GetDeviceId() /* remote_device_id */,
@@ -187,21 +186,21 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
   EXPECT_EQ(fake_advertisement_, *data_with_timestamp);
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestGenerateForegroundAdvertisement_InvalidLocalDevice) {
   EXPECT_FALSE(helper_->GenerateForegroundAdvertisement(
       DeviceIdPair(test_remote_devices_[0].GetDeviceId() /* remote_device_id */,
                    "invalid local device id" /* local_device_id */)));
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestGenerateForegroundAdvertisement_InvalidRemoteDevice) {
   EXPECT_FALSE(helper_->GenerateForegroundAdvertisement(
       DeviceIdPair("invalid remote device id" /* remote_device_id */,
                    test_local_device_1_.GetDeviceId() /* local_device_id */)));
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestIdentifyRemoteDevice_InvalidAdvertisementLength) {
   std::string invalid_service_data = "a";
   mock_foreground_eid_generator_->set_identified_device_id(
@@ -215,7 +214,7 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
   EXPECT_FALSE(device_with_background_bool);
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestIdentifyRemoteDevice_ForegroundAdvertisement) {
   std::string valid_service_data_for_registered_device = "abcde";
   ASSERT_TRUE(valid_service_data_for_registered_device.size() >=
@@ -246,7 +245,7 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
   EXPECT_FALSE(device_with_background_bool->second);
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestIdentifyRemoteDevice_ForegroundAdvertisement_NoRegisteredDevice) {
   std::string valid_service_data = "abcde";
   ASSERT_TRUE(valid_service_data.size() >=
@@ -260,7 +259,7 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
   EXPECT_FALSE(device_with_background_bool);
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestIdentifyRemoteDevice_BackgroundAdvertisement) {
   std::string valid_service_data_for_registered_device = "ab";
   ASSERT_TRUE(valid_service_data_for_registered_device.size() >=
@@ -291,7 +290,7 @@ TEST_F(SecureChannelBleServiceDataHelperImplTest,
   EXPECT_TRUE(device_with_background_bool->second);
 }
 
-TEST_F(SecureChannelBleServiceDataHelperImplTest,
+TEST_F(SecureChannelBluetoothHelperImplTest,
        TestIdentifyRemoteDevice_BackgroundAdvertisement_NoRegisteredDevice) {
   std::string valid_service_data_for_registered_device = "ab";
   ASSERT_TRUE(valid_service_data_for_registered_device.size() >=

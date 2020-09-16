@@ -16,12 +16,6 @@ namespace multidevice {
 class RemoteDeviceRef;
 }  // namespace multidevice
 
-namespace tether {
-class BleAdvertiserImplTest;
-class BleServiceDataHelperImplTest;
-class AdHocBleAdvertiserImplTest;
-}  // namespace tether
-
 namespace secure_channel {
 
 // Generates advertisements for the ProximityAuth BLE advertisement scheme.
@@ -45,10 +39,7 @@ class BleAdvertisementGenerator {
 
  private:
   friend class SecureChannelBleAdvertisementGeneratorTest;
-  friend class SecureChannelBleServiceDataHelperImplTest;
-  friend class tether::BleAdvertiserImplTest;
-  friend class tether::BleServiceDataHelperImplTest;
-  friend class tether::AdHocBleAdvertiserImplTest;
+  friend class SecureChannelBluetoothHelperImplTest;
 
   static BleAdvertisementGenerator* instance_;
 

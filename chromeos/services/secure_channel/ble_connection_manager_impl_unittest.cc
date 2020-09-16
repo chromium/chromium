@@ -26,8 +26,8 @@
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_ble_advertiser.h"
 #include "chromeos/services/secure_channel/fake_ble_scanner.h"
-#include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
 #include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
+#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_disconnector.h"
@@ -56,12 +56,10 @@ constexpr base::TimeDelta kConnectionToAuthenticationTime =
 
 class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
  public:
-  FakeBleAdvertiserFactory(
-      FakeBleServiceDataHelper* expected_fake_ble_service_data_helper,
-      FakeBleSynchronizer* expected_fake_ble_synchronizer,
-      FakeTimerFactory* expected_fake_timer_factory)
-      : expected_fake_ble_service_data_helper_(
-            expected_fake_ble_service_data_helper),
+  FakeBleAdvertiserFactory(FakeBluetoothHelper* expected_fake_bluetooth_helper,
+                           FakeBleSynchronizer* expected_fake_ble_synchronizer,
+                           FakeTimerFactory* expected_fake_timer_factory)
+      : expected_fake_bluetooth_helper_(expected_fake_bluetooth_helper),
         expected_fake_ble_synchronizer_(expected_fake_ble_synchronizer),
         expected_fake_timer_factory_(expected_fake_timer_factory) {}
 
@@ -73,11 +71,11 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
   // BleAdvertiserImpl::Factory:
   std::unique_ptr<BleAdvertiser> CreateInstance(
       BleAdvertiser::Delegate* delegate,
-      BleServiceDataHelper* ble_service_data_helper,
+      BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer_base,
       TimerFactory* timer_factory,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) override {
-    EXPECT_EQ(expected_fake_ble_service_data_helper_, ble_service_data_helper);
+    EXPECT_EQ(expected_fake_bluetooth_helper_, bluetooth_helper);
     EXPECT_EQ(expected_fake_ble_synchronizer_, ble_synchronizer_base);
     EXPECT_EQ(expected_fake_timer_factory_, timer_factory);
     EXPECT_FALSE(instance_);
@@ -89,7 +87,7 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
 
   FakeBleAdvertiser* instance_ = nullptr;
 
-  FakeBleServiceDataHelper* expected_fake_ble_service_data_helper_;
+  FakeBluetoothHelper* expected_fake_bluetooth_helper_;
   FakeBleSynchronizer* expected_fake_ble_synchronizer_;
   FakeTimerFactory* expected_fake_timer_factory_;
 
@@ -259,8 +257,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
-    fake_ble_service_data_helper_ =
-        std::make_unique<FakeBleServiceDataHelper>();
+    fake_bluetooth_helper_ = std::make_unique<FakeBluetoothHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
     fake_ble_scanner_ = std::make_unique<FakeBleScanner>();
 
@@ -270,7 +267,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
     test_clock_->SetNow(base::Time::UnixEpoch());
 
     fake_ble_advertiser_factory_ = std::make_unique<FakeBleAdvertiserFactory>(
-        fake_ble_service_data_helper_.get(), fake_ble_synchronizer_.get(),
+        fake_bluetooth_helper_.get(), fake_ble_synchronizer_.get(),
         fake_timer_factory_.get());
     BleAdvertiserImpl::Factory::SetFactoryForTesting(
         fake_ble_advertiser_factory_.get());
@@ -296,7 +293,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
         fake_authenticated_channel_factory_.get());
 
     manager_ = BleConnectionManagerImpl::Factory::Create(
-        mock_adapter_, fake_ble_service_data_helper_.get(),
+        mock_adapter_, fake_bluetooth_helper_.get(),
         fake_ble_synchronizer_.get(), fake_ble_scanner_.get(),
         fake_timer_factory_.get(), test_clock_.get());
   }
@@ -795,7 +792,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
       fake_authenticated_channel_factory_;
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
-  std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;
+  std::unique_ptr<FakeBluetoothHelper> fake_bluetooth_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   std::unique_ptr<FakeBleScanner> fake_ble_scanner_;
   std::unique_ptr<FakeTimerFactory> fake_timer_factory_;

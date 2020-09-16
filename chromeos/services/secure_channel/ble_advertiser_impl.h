@@ -28,7 +28,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class BleServiceDataHelper;
+class BluetoothHelper;
 class BleSynchronizerBase;
 class ErrorTolerantBleAdvertisement;
 class SharedResourceScheduler;
@@ -56,7 +56,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
    public:
     static std::unique_ptr<BleAdvertiser> Create(
         Delegate* delegate,
-        BleServiceDataHelper* ble_service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
         TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
@@ -67,7 +67,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
     virtual ~Factory();
     virtual std::unique_ptr<BleAdvertiser> CreateInstance(
         Delegate* delegate,
-        BleServiceDataHelper* ble_service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer_base,
         TimerFactory* timer_factory,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) = 0;
@@ -98,7 +98,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
 
   BleAdvertiserImpl(
       Delegate* delegate,
-      BleServiceDataHelper* ble_service_data_helper,
+      BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer_base,
       TimerFactory* timer_factory,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
@@ -132,7 +132,7 @@ class BleAdvertiserImpl : public BleAdvertiser {
   void AttemptToNotifyFailureToGenerateAdvertisement(
       const DeviceIdPair& device_id_pair);
 
-  BleServiceDataHelper* ble_service_data_helper_;
+  BluetoothHelper* bluetooth_helper_;
   BleSynchronizerBase* ble_synchronizer_base_;
   TimerFactory* timer_factory_;
 

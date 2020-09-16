@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
+#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -35,36 +35,35 @@ const size_t kMinNumBytesInForegroundServiceData = 4;
 }  // namespace
 
 // static
-BleServiceDataHelperImpl::Factory*
-    BleServiceDataHelperImpl::Factory::test_factory_ = nullptr;
+BluetoothHelperImpl::Factory* BluetoothHelperImpl::Factory::test_factory_ =
+    nullptr;
 
 // static
-std::unique_ptr<BleServiceDataHelper> BleServiceDataHelperImpl::Factory::Create(
+std::unique_ptr<BluetoothHelper> BluetoothHelperImpl::Factory::Create(
     multidevice::RemoteDeviceCache* remote_device_cache) {
   if (test_factory_)
     return test_factory_->CreateInstance(remote_device_cache);
 
-  return base::WrapUnique(new BleServiceDataHelperImpl(remote_device_cache));
+  return base::WrapUnique(new BluetoothHelperImpl(remote_device_cache));
 }
 
 // static
-void BleServiceDataHelperImpl::Factory::SetFactoryForTesting(
-    Factory* test_factory) {
+void BluetoothHelperImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
   test_factory_ = test_factory;
 }
 
-BleServiceDataHelperImpl::Factory::~Factory() = default;
+BluetoothHelperImpl::Factory::~Factory() = default;
 
-BleServiceDataHelperImpl::BleServiceDataHelperImpl(
+BluetoothHelperImpl::BluetoothHelperImpl(
     multidevice::RemoteDeviceCache* remote_device_cache)
     : remote_device_cache_(remote_device_cache),
       background_eid_generator_(std::make_unique<BackgroundEidGenerator>()),
       foreground_eid_generator_(std::make_unique<ForegroundEidGenerator>()) {}
 
-BleServiceDataHelperImpl::~BleServiceDataHelperImpl() = default;
+BluetoothHelperImpl::~BluetoothHelperImpl() = default;
 
 std::unique_ptr<DataWithTimestamp>
-BleServiceDataHelperImpl::GenerateForegroundAdvertisement(
+BluetoothHelperImpl::GenerateForegroundAdvertisement(
     const DeviceIdPair& device_id_pair) {
   base::Optional<multidevice::RemoteDeviceRef> local_device =
       remote_device_cache_->GetRemoteDevice(
@@ -92,8 +91,8 @@ BleServiceDataHelperImpl::GenerateForegroundAdvertisement(
       *remote_device, local_device->public_key());
 }
 
-base::Optional<BleServiceDataHelper::DeviceWithBackgroundBool>
-BleServiceDataHelperImpl::PerformIdentifyRemoteDevice(
+base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
+BluetoothHelperImpl::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const DeviceIdPairSet& device_id_pair_set) {
   base::flat_map<std::string, std::vector<std::string>>
@@ -131,8 +130,8 @@ BleServiceDataHelperImpl::PerformIdentifyRemoteDevice(
   return base::nullopt;
 }
 
-base::Optional<BleServiceDataHelper::DeviceWithBackgroundBool>
-BleServiceDataHelperImpl::PerformIdentifyRemoteDevice(
+base::Optional<BluetoothHelper::DeviceWithBackgroundBool>
+BluetoothHelperImpl::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const std::string& local_device_id,
     const std::vector<std::string>& remote_device_ids) {
@@ -178,14 +177,14 @@ BleServiceDataHelperImpl::PerformIdentifyRemoteDevice(
   if (identified_device_id.empty())
     return base::nullopt;
 
-  return BleServiceDataHelper::DeviceWithBackgroundBool(
+  return BluetoothHelper::DeviceWithBackgroundBool(
       *remote_device_cache_->GetRemoteDevice(
           base::nullopt /* instance_id */,
           identified_device_id /* legacy_device_id */),
       is_background_advertisement);
 }
 
-void BleServiceDataHelperImpl::SetTestDoubles(
+void BluetoothHelperImpl::SetTestDoubles(
     std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
     std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator) {
   background_eid_generator_ = std::move(background_eid_generator);

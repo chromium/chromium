@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_SERVICE_DATA_HELPER_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_SERVICE_DATA_HELPER_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -22,9 +22,9 @@ namespace secure_channel {
 // Provides the ability to generate BLE advertisement service data and, given
 // service data that has been received in a BLE discovery session, identify the
 // device which sent the advertisement.
-class BleServiceDataHelper {
+class BluetoothHelper {
  public:
-  virtual ~BleServiceDataHelper();
+  virtual ~BluetoothHelper();
 
   // Generates service data to be used in a foreground BLE advertisement from
   // the device with ID |local_device_id| to the device with ID
@@ -44,17 +44,17 @@ class BleServiceDataHelper {
       const DeviceIdPairSet& device_id_pair_set);
 
  protected:
-  BleServiceDataHelper();
+  BluetoothHelper();
 
   virtual base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
       const std::string& service_data,
       const DeviceIdPairSet& device_id_pair_set) = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(BleServiceDataHelper);
+  DISALLOW_COPY_AND_ASSIGN(BluetoothHelper);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_SERVICE_DATA_HELPER_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_BLUETOOTH_HELPER_H_

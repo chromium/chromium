@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SERVICE_DATA_HELPER_H_
-#define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SERVICE_DATA_HELPER_H_
+#ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLUETOOTH_HELPER_H_
+#define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLUETOOTH_HELPER_H_
 
 #include <memory>
 #include <string>
@@ -13,18 +13,18 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
-// Test BleServiceDataHelper implementation.
-class FakeBleServiceDataHelper : public BleServiceDataHelper {
+// Test BluetoothHelper implementation.
+class FakeBluetoothHelper : public BluetoothHelper {
  public:
-  FakeBleServiceDataHelper();
-  ~FakeBleServiceDataHelper() override;
+  FakeBluetoothHelper();
+  ~FakeBluetoothHelper() override;
 
   // Sets the data to be returned by a GenerateForegroundAdvertisement() call.
   void SetAdvertisement(const DeviceIdPair& device_id_pair,
@@ -38,7 +38,7 @@ class FakeBleServiceDataHelper : public BleServiceDataHelper {
                            bool is_background_advertisement);
 
  private:
-  // BleServiceDataHelper:
+  // BluetoothHelper:
   std::unique_ptr<DataWithTimestamp> GenerateForegroundAdvertisement(
       const DeviceIdPair& device_id_pair) override;
   base::Optional<DeviceWithBackgroundBool> PerformIdentifyRemoteDevice(
@@ -51,11 +51,11 @@ class FakeBleServiceDataHelper : public BleServiceDataHelper {
   std::unordered_map<std::string, DeviceWithBackgroundBool>
       service_data_to_device_with_background_bool_map_;
 
-  DISALLOW_COPY_AND_ASSIGN(FakeBleServiceDataHelper);
+  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothHelper);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_SERVICE_DATA_HELPER_H_
+#endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLUETOOTH_HELPER_H_

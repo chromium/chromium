@@ -25,7 +25,7 @@ namespace secure_channel {
 
 namespace {
 
-// TODO(hansberry): Share this constant with BleServiceDataHelper.
+// TODO(hansberry): Share this constant with BluetoothHelper.
 const size_t kMinNumBytesInServiceData = 2;
 
 }  // namespace
@@ -35,16 +35,16 @@ BleScannerImpl::Factory* BleScannerImpl::Factory::test_factory_ = nullptr;
 
 // static
 std::unique_ptr<BleScanner> BleScannerImpl::Factory::Create(
-    BleServiceDataHelper* service_data_helper,
+    BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer,
     scoped_refptr<device::BluetoothAdapter> adapter) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(service_data_helper, ble_synchronizer,
+    return test_factory_->CreateInstance(bluetooth_helper, ble_synchronizer,
                                          adapter);
   }
 
   return base::WrapUnique(
-      new BleScannerImpl(service_data_helper, ble_synchronizer, adapter));
+      new BleScannerImpl(bluetooth_helper, ble_synchronizer, adapter));
 }
 
 // static
@@ -63,10 +63,10 @@ BleScannerImpl::ServiceDataProvider::ExtractProximityAuthServiceData(
       device::BluetoothUUID(kAdvertisingServiceUuid));
 }
 
-BleScannerImpl::BleScannerImpl(BleServiceDataHelper* service_data_helper,
+BleScannerImpl::BleScannerImpl(BluetoothHelper* bluetooth_helper,
                                BleSynchronizerBase* ble_synchronizer,
                                scoped_refptr<device::BluetoothAdapter> adapter)
-    : service_data_helper_(service_data_helper),
+    : bluetooth_helper_(bluetooth_helper),
       ble_synchronizer_(ble_synchronizer),
       adapter_(adapter),
       service_data_provider_(std::make_unique<ServiceDataProvider>()) {
@@ -202,7 +202,7 @@ void BleScannerImpl::HandleDeviceUpdated(
       base::WriteInto(&service_data_str, service_data->size() + 1);
   memcpy(string_contents_ptr, service_data->data(), service_data->size());
 
-  auto potential_result = service_data_helper_->IdentifyRemoteDevice(
+  auto potential_result = bluetooth_helper_->IdentifyRemoteDevice(
       service_data_str, GetAllDeviceIdPairs());
 
   // There was service data for the ProximityAuth UUID, but it did not apply to
@@ -217,7 +217,7 @@ void BleScannerImpl::HandleDeviceUpdated(
 
 void BleScannerImpl::HandlePotentialScanResult(
     const std::string& service_data,
-    const BleServiceDataHelper::DeviceWithBackgroundBool& potential_result,
+    const BluetoothHelper::DeviceWithBackgroundBool& potential_result,
     device::BluetoothDevice* bluetooth_device) {
   std::vector<std::pair<ConnectionMedium, ConnectionRole>> results;
 

@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/ble_scanner.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace device {
@@ -24,7 +24,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class BleServiceDataHelper;
+class BluetoothHelper;
 class BleSynchronizerBase;
 
 // Concrete BleScanner implementation.
@@ -34,7 +34,7 @@ class BleScannerImpl : public BleScanner,
   class Factory {
    public:
     static std::unique_ptr<BleScanner> Create(
-        BleServiceDataHelper* service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         scoped_refptr<device::BluetoothAdapter> adapter);
     static void SetFactoryForTesting(Factory* test_factory);
@@ -42,7 +42,7 @@ class BleScannerImpl : public BleScanner,
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<BleScanner> CreateInstance(
-        BleServiceDataHelper* service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         scoped_refptr<device::BluetoothAdapter> adapter) = 0;
 
@@ -65,7 +65,7 @@ class BleScannerImpl : public BleScanner,
         device::BluetoothDevice* bluetooth_device);
   };
 
-  BleScannerImpl(BleServiceDataHelper* service_data_helper,
+  BleScannerImpl(BluetoothHelper* bluetooth_helper,
                  BleSynchronizerBase* ble_synchronizer,
                  scoped_refptr<device::BluetoothAdapter> adapter);
 
@@ -94,13 +94,13 @@ class BleScannerImpl : public BleScanner,
   void HandleDeviceUpdated(device::BluetoothDevice* bluetooth_device);
   void HandlePotentialScanResult(
       const std::string& service_data,
-      const BleServiceDataHelper::DeviceWithBackgroundBool& potential_result,
+      const BluetoothHelper::DeviceWithBackgroundBool& potential_result,
       device::BluetoothDevice* bluetooth_device);
 
   void SetServiceDataProviderForTesting(
       std::unique_ptr<ServiceDataProvider> service_data_provider);
 
-  BleServiceDataHelper* service_data_helper_;
+  BluetoothHelper* bluetooth_helper_;
   BleSynchronizerBase* ble_synchronizer_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
 

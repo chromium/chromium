@@ -14,8 +14,8 @@
 #include "chromeos/services/secure_channel/authenticated_channel.h"
 #include "chromeos/services/secure_channel/ble_connection_manager_impl.h"
 #include "chromeos/services/secure_channel/ble_scanner_impl.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper_impl.h"
 #include "chromeos/services/secure_channel/ble_synchronizer.h"
+#include "chromeos/services/secure_channel/bluetooth_helper_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters_impl.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/pending_connection_manager_impl.h"
@@ -68,19 +68,18 @@ SecureChannelImpl::SecureChannelImpl(
     : bluetooth_adapter_(std::move(bluetooth_adapter)),
       timer_factory_(TimerFactoryImpl::Factory::Create()),
       remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
-      ble_service_data_helper_(BleServiceDataHelperImpl::Factory::Create(
-          remote_device_cache_.get())),
+      bluetooth_helper_(
+          BluetoothHelperImpl::Factory::Create(remote_device_cache_.get())),
       ble_synchronizer_(BleSynchronizer::Factory::Create(bluetooth_adapter_)),
-      ble_scanner_(
-          BleScannerImpl::Factory::Create(ble_service_data_helper_.get(),
-                                          ble_synchronizer_.get(),
-                                          bluetooth_adapter_)),
-      ble_connection_manager_(BleConnectionManagerImpl::Factory::Create(
-          bluetooth_adapter_,
-          ble_service_data_helper_.get(),
-          ble_synchronizer_.get(),
-          ble_scanner_.get(),
-          timer_factory_.get())),
+      ble_scanner_(BleScannerImpl::Factory::Create(bluetooth_helper_.get(),
+                                                   ble_synchronizer_.get(),
+                                                   bluetooth_adapter_)),
+      ble_connection_manager_(
+          BleConnectionManagerImpl::Factory::Create(bluetooth_adapter_,
+                                                    bluetooth_helper_.get(),
+                                                    ble_synchronizer_.get(),
+                                                    ble_scanner_.get(),
+                                                    timer_factory_.get())),
       pending_connection_manager_(PendingConnectionManagerImpl::Factory::Create(
           this /* delegate */,
           ble_connection_manager_.get(),

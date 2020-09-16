@@ -11,7 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/ble_service_data_helper.h"
+#include "chromeos/services/secure_channel/bluetooth_helper.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/services/secure_channel/shared_resource_scheduler.h"
 #include "chromeos/services/secure_channel/timer_factory.h"
@@ -37,19 +37,19 @@ BleAdvertiserImpl::Factory* BleAdvertiserImpl::Factory::test_factory_ = nullptr;
 // static
 std::unique_ptr<BleAdvertiser> BleAdvertiserImpl::Factory::Create(
     Delegate* delegate,
-    BleServiceDataHelper* ble_service_data_helper,
+    BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
     TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(delegate, ble_service_data_helper,
+    return test_factory_->CreateInstance(delegate, bluetooth_helper,
                                          ble_synchronizer_base, timer_factory,
                                          sequenced_task_runner);
   }
 
-  return base::WrapUnique(new BleAdvertiserImpl(
-      delegate, ble_service_data_helper, ble_synchronizer_base, timer_factory,
-      sequenced_task_runner));
+  return base::WrapUnique(
+      new BleAdvertiserImpl(delegate, bluetooth_helper, ble_synchronizer_base,
+                            timer_factory, sequenced_task_runner));
 }
 
 // static
@@ -64,12 +64,12 @@ const int64_t BleAdvertiserImpl::kNumSecondsPerAdvertisementTimeslot = 10;
 
 BleAdvertiserImpl::BleAdvertiserImpl(
     Delegate* delegate,
-    BleServiceDataHelper* ble_service_data_helper,
+    BluetoothHelper* bluetooth_helper,
     BleSynchronizerBase* ble_synchronizer_base,
     TimerFactory* timer_factory,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : BleAdvertiser(delegate),
-      ble_service_data_helper_(ble_service_data_helper),
+      bluetooth_helper_(bluetooth_helper),
       ble_synchronizer_base_(ble_synchronizer_base),
       timer_factory_(timer_factory),
       sequenced_task_runner_(sequenced_task_runner),
@@ -290,7 +290,7 @@ void BleAdvertiserImpl::AttemptToAddActiveAdvertisement(size_t index_to_add) {
   const DeviceIdPair pair =
       active_advertisement_requests_[index_to_add]->device_id_pair;
   std::unique_ptr<DataWithTimestamp> service_data =
-      ble_service_data_helper_->GenerateForegroundAdvertisement(pair);
+      bluetooth_helper_->GenerateForegroundAdvertisement(pair);
 
   // If an advertisement could not be created, the request is immediately
   // removed. It's also tracked to prevent future operations from referencing

@@ -29,7 +29,7 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class BleServiceDataHelper;
+class BluetoothHelper;
 class BleSynchronizerBase;
 class SecureChannelDisconnector;
 class TimerFactory;
@@ -48,7 +48,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
    public:
     static std::unique_ptr<BleConnectionManager> Create(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-        BleServiceDataHelper* ble_service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         TimerFactory* timer_factory,
@@ -59,7 +59,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     virtual ~Factory();
     virtual std::unique_ptr<BleConnectionManager> CreateInstance(
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-        BleServiceDataHelper* ble_service_data_helper,
+        BluetoothHelper* bluetooth_helper,
         BleSynchronizerBase* ble_synchronizer,
         BleScanner* ble_scanner,
         TimerFactory* timer_factory,
@@ -106,7 +106,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
 
   BleConnectionManagerImpl(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      BleServiceDataHelper* ble_service_data_helper,
+      BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer,
       BleScanner* ble_scanner,
       TimerFactory* timer_factory,

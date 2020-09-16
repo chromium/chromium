@@ -30,7 +30,7 @@ namespace secure_channel {
 
 class BleConnectionManager;
 class BleScanner;
-class BleServiceDataHelper;
+class BluetoothHelper;
 class BleSynchronizerBase;
 class TimerFactory;
 
@@ -174,7 +174,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::unique_ptr<TimerFactory> timer_factory_;
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
-  std::unique_ptr<BleServiceDataHelper> ble_service_data_helper_;
+  std::unique_ptr<BluetoothHelper> bluetooth_helper_;
   std::unique_ptr<BleSynchronizerBase> ble_synchronizer_;
   std::unique_ptr<BleScanner> ble_scanner_;
   std::unique_ptr<BleConnectionManager> ble_connection_manager_;

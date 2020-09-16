@@ -14,8 +14,8 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/services/secure_channel/fake_ble_advertiser.h"
-#include "chromeos/services/secure_channel/fake_ble_service_data_helper.h"
 #include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
+#include "chromeos/services/secure_channel/fake_bluetooth_helper.h"
 #include "chromeos/services/secure_channel/fake_error_tolerant_ble_advertisement.h"
 #include "chromeos/services/secure_channel/fake_one_shot_timer.h"
 #include "chromeos/services/secure_channel/fake_timer_factory.h"
@@ -31,9 +31,9 @@ class FakeErrorTolerantBleAdvertisementFactory
     : public ErrorTolerantBleAdvertisementImpl::Factory {
  public:
   FakeErrorTolerantBleAdvertisementFactory(
-      BleServiceDataHelper* ble_service_data_helper,
+      BluetoothHelper* bluetooth_helper,
       BleSynchronizerBase* ble_synchronizer_base)
-      : ble_service_data_helper_(ble_service_data_helper),
+      : bluetooth_helper_(bluetooth_helper),
         ble_synchronizer_base_(ble_synchronizer_base) {}
   ~FakeErrorTolerantBleAdvertisementFactory() override = default;
 
@@ -54,9 +54,9 @@ class FakeErrorTolerantBleAdvertisementFactory
       const DeviceIdPair& device_id_pair,
       std::unique_ptr<DataWithTimestamp> advertisement_data,
       BleSynchronizerBase* ble_synchronizer) override {
-    EXPECT_EQ(*ble_service_data_helper_->GenerateForegroundAdvertisement(
-                  device_id_pair),
-              *advertisement_data);
+    EXPECT_EQ(
+        *bluetooth_helper_->GenerateForegroundAdvertisement(device_id_pair),
+        *advertisement_data);
     EXPECT_EQ(ble_synchronizer_base_, ble_synchronizer);
 
     ++num_instances_created_;
@@ -82,7 +82,7 @@ class FakeErrorTolerantBleAdvertisementFactory
     EXPECT_EQ(1u, num_deleted);
   }
 
-  BleServiceDataHelper* ble_service_data_helper_;
+  BluetoothHelper* bluetooth_helper_;
   BleSynchronizerBase* ble_synchronizer_base_;
 
   base::Optional<DeviceIdPair> last_created_device_id_pair_;
@@ -106,21 +106,20 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     fake_delegate_ = std::make_unique<FakeBleAdvertiserDelegate>();
-    fake_ble_service_data_helper_ =
-        std::make_unique<FakeBleServiceDataHelper>();
+    fake_bluetooth_helper_ = std::make_unique<FakeBluetoothHelper>();
     fake_ble_synchronizer_ = std::make_unique<FakeBleSynchronizer>();
     fake_timer_factory_ = std::make_unique<FakeTimerFactory>();
 
     fake_advertisement_factory_ =
         std::make_unique<FakeErrorTolerantBleAdvertisementFactory>(
-            fake_ble_service_data_helper_.get(), fake_ble_synchronizer_.get());
+            fake_bluetooth_helper_.get(), fake_ble_synchronizer_.get());
     ErrorTolerantBleAdvertisementImpl::Factory::SetFactoryForTesting(
         fake_advertisement_factory_.get());
 
     test_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
 
     advertiser_ = BleAdvertiserImpl::Factory::Create(
-        fake_delegate_.get(), fake_ble_service_data_helper_.get(),
+        fake_delegate_.get(), fake_bluetooth_helper_.get(),
         fake_ble_synchronizer_.get(), fake_timer_factory_.get(), test_runner_);
   }
 
@@ -194,7 +193,7 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
       // Generate fake service data using the two device IDs.
       std::stringstream ss;
       ss << request.remote_device_id() << "+" << request.local_device_id();
-      fake_ble_service_data_helper_->SetAdvertisement(
+      fake_bluetooth_helper_->SetAdvertisement(
           request,
           DataWithTimestamp(ss.str() /* data */, kDefaultStartTimestamp,
                             kDefaultEndTimestamp));
@@ -257,15 +256,15 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
 
   base::TestSimpleTaskRunner* test_runner() { return test_runner_.get(); }
   BleAdvertiser* advertiser() { return advertiser_.get(); }
-  FakeBleServiceDataHelper* fake_ble_service_data_helper() {
-    return fake_ble_service_data_helper_.get();
+  FakeBluetoothHelper* fake_bluetooth_helper() {
+    return fake_bluetooth_helper_.get();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeBleAdvertiserDelegate> fake_delegate_;
-  std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;
+  std::unique_ptr<FakeBluetoothHelper> fake_bluetooth_helper_;
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   std::unique_ptr<FakeTimerFactory> fake_timer_factory_;
 
