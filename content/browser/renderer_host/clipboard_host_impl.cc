@@ -89,14 +89,12 @@ ClipboardHostImpl::ClipboardHostImpl(
   // |render_frame_host| may be null in unit tests.
   if (render_frame_host) {
     render_frame_routing_id_ = render_frame_host->GetRoutingID();
-    render_frame_pid_ = render_frame_host->GetProcess()->GetID();
+    render_process_id_ = render_frame_host->GetProcess()->GetID();
     clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
         ui::ClipboardBuffer::kCopyPaste,
         std::make_unique<ui::ClipboardDataEndpoint>(
             render_frame_host->GetLastCommittedOrigin()));
   } else {
-    render_frame_routing_id_ = MSG_ROUTING_NONE;
-    render_frame_pid_ = ChildProcessHost::kInvalidUniqueID;
     clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
         ui::ClipboardBuffer::kCopyPaste);
   }
@@ -386,7 +384,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
     std::string data) {
   // May not have a RenderFrameHost in tests.
   RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_pid_, render_frame_routing_id_);
+      RenderFrameHostImpl::FromID(render_process_id_, render_frame_routing_id_);
   if (render_frame_host) {
     render_frame_host->IsClipboardPasteAllowed(
         data_type, data,
@@ -418,7 +416,7 @@ void ClipboardHostImpl::CleanupObsoleteRequests() {
 std::unique_ptr<ui::ClipboardDataEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
   RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_pid_, render_frame_routing_id_);
+      RenderFrameHostImpl::FromID(render_process_id_, render_frame_routing_id_);
   if (render_frame_host) {
     return std::make_unique<ui::ClipboardDataEndpoint>(
         render_frame_host->GetLastCommittedOrigin());
