@@ -173,7 +173,7 @@ class SwapChainPresenter : public base::PowerObserver {
   gfx::Size swap_chain_size_;
 
   // Current swap chain format.
-  DXGI_FORMAT swap_chain_format_;
+  DXGI_FORMAT swap_chain_format_ = DXGI_FORMAT_B8G8R8A8_UNORM;
 
   // Whether the swap chain was reallocated, and next present will be the first.
   bool first_present_ = false;
