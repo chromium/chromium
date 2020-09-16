@@ -40,6 +40,10 @@ SHIM_ALWAYS_EXPORT void* memalign(size_t align, size_t s) __THROW {
   return ShimMemalign(align, s, nullptr);
 }
 
+SHIM_ALWAYS_EXPORT void* aligned_alloc(size_t align, size_t s) __THROW {
+  return ShimMemalign(align, s, nullptr);
+}
+
 SHIM_ALWAYS_EXPORT void* valloc(size_t size) __THROW {
   return ShimValloc(size, nullptr);
 }
