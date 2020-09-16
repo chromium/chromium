@@ -548,9 +548,14 @@ void SurfaceAggregator::EmitSurfaceContent(
       source_sqs->de_jelly_delta_y == 0;
 
   if (frame.metadata.delegated_ink_metadata) {
+    // The metadata must be taken off of the surface, rather than a copy being
+    // made, in order to ensure that the delegated ink metadata is used for
+    // exactly one frame. Otherwise, it could potentially end up being used to
+    // draw the same trail on multiple frames if a new CompositorFrame wasn't
+    // generated.
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(dest_pass->transform_to_root_target, combined_transform),
-        frame.metadata.delegated_ink_metadata.get());
+        surface->TakeDelegatedInkMetadata());
   }
 
   const CompositorRenderPassList& referenced_passes = render_pass_list;
@@ -1147,10 +1152,17 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
   if (frame.metadata.delegated_ink_metadata) {
+    DCHECK(surface->GetActiveFrame().metadata.delegated_ink_metadata ==
+           frame.metadata.delegated_ink_metadata);
+    // The metadata must be taken off of the surface, rather than a copy being
+    // made, in order to ensure that the delegated ink metadata is used for
+    // exactly one frame. Otherwise, it could potentially end up being used to
+    // draw the same trail on multiple frames if a new CompositorFrame wasn't
+    // generated.
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(source_pass_list.back()->transform_to_root_target,
                        surface_transform),
-        frame.metadata.delegated_ink_metadata.get());
+        surface->TakeDelegatedInkMetadata());
   }
 
   bool apply_surface_transform_to_root_pass = true;
@@ -1899,7 +1911,7 @@ bool SurfaceAggregator::IsRootSurface(const Surface* surface) const {
 // aggregated frame, after which the member is then cleared.
 void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
     const gfx::Transform& parent_quad_to_root_target_transform,
-    DelegatedInkMetadata* metadata) {
+    std::unique_ptr<DelegatedInkMetadata> metadata) {
   if (delegated_ink_metadata_) {
     // This member could already be populated in two scenarios:
     //   1. The delegated ink metadata was committed to a frame's metadata that

@@ -739,4 +739,9 @@ void Surface::ActivatePendingFrameForInheritedDeadline() {
   ActivatePendingFrameForDeadline();
 }
 
+std::unique_ptr<DelegatedInkMetadata> Surface::TakeDelegatedInkMetadata() {
+  DCHECK(active_frame_data_);
+  return active_frame_data_->TakeDelegatedInkMetadata();
+}
+
 }  // namespace viz

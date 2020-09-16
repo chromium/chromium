@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -244,6 +245,8 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   void ActivateIfDeadlinePassed();
 
+  std::unique_ptr<DelegatedInkMetadata> TakeDelegatedInkMetadata();
+
   base::WeakPtr<Surface> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
@@ -252,6 +255,12 @@ class VIZ_SERVICE_EXPORT Surface final {
     FrameData(FrameData&& other);
     ~FrameData();
     FrameData& operator=(FrameData&& other);
+
+    // Delegated ink metadata should only be used for a single frame, so it
+    // should be taken from the FrameData to use.
+    std::unique_ptr<DelegatedInkMetadata> TakeDelegatedInkMetadata() {
+      return std::move(frame.metadata.delegated_ink_metadata);
+    }
 
     CompositorFrame frame;
     uint64_t frame_index;

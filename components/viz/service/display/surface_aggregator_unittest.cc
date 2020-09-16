@@ -8031,7 +8031,7 @@ void ExpectDelegatedInkMetadataIsEqual(const DelegatedInkMetadata& lhs,
 }
 
 // Basic test to confirm that ink metadata on a child surface will be
-// transformed by the parent.
+// transformed by the parent and only used once.
 TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   std::vector<Quad> child_quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
@@ -8098,6 +8098,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
+
+  // Then confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id);
+  EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
 // Confirm that transforms are aggregated as the tree is walked and correctly
@@ -8241,6 +8246,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
+
+  // Then confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id);
+  EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
 // Confirm the metadata is transformed correctly and makes it to the aggregated
@@ -8367,6 +8377,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
+
+  // Then confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id);
+  EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
 // Confirm the the metadata with the most recent timestamp is used when
@@ -8507,6 +8522,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), expected_metadata);
+
+  // Then confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id);
+  EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
 // Confirm that delegated ink metadata on an undrawn surface is not on the
@@ -8578,6 +8598,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
+
+  // Then confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  auto new_aggregated_frame = AggregateFrame(root_surface_id);
+  EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
