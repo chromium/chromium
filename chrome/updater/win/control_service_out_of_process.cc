@@ -130,17 +130,10 @@ void UpdaterControlObserver::OnCompleteOnSTA() {
 
 ControlServiceOutOfProcess::ControlServiceOutOfProcess(ServiceScope /*scope*/)
     : com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
-  Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      &ControlServiceOutOfProcess::ModuleStop);
-}
+          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
 
 ControlServiceOutOfProcess::~ControlServiceOutOfProcess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void ControlServiceOutOfProcess::ModuleStop() {
-  DVLOG(2) << __func__ << ": COM client is shutting down.";
 }
 
 void ControlServiceOutOfProcess::Uninitialize() {

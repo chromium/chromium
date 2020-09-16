@@ -56,8 +56,6 @@ class UpdateServiceOutOfProcess : public UpdateService {
                    StateChangeCallback state_update,
                    Callback callback);
 
-  static void ModuleStop();
-
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 

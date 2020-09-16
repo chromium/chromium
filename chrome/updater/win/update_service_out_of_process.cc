@@ -288,15 +288,9 @@ UpdateServiceOutOfProcess::UpdateServiceOutOfProcess(ServiceScope service_scope)
       com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
   DCHECK_EQ(service_scope, ServiceScope::kUser);
-  Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      &UpdateServiceOutOfProcess::ModuleStop);
 }
 
 UpdateServiceOutOfProcess::~UpdateServiceOutOfProcess() = default;
-
-void UpdateServiceOutOfProcess::ModuleStop() {
-  DVLOG(2) << __func__ << ": COM client is shutting down.";
-}
 
 void UpdateServiceOutOfProcess::RegisterApp(
     const RegistrationRequest& request,

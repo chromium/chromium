@@ -111,6 +111,7 @@ source_set("lib") {
   defines = [ "SECURITY_WIN32" ]
 
   libs = [
+    "RuntimeObject.lib",
     "secur32.lib",
     "taskschd.lib",
     "winhttp.lib",
