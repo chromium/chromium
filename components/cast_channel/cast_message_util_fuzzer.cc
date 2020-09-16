@@ -159,8 +159,8 @@ DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
       CreateReceiverStatusRequest(input.source_id(), input.request_id());
       break;
     }
-    default:
-      NOTREACHED();
+    case CastMessageUtilInputs::INPUT_NOT_SET:
+      break;
   }
 }
 
