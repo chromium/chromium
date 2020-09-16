@@ -4575,10 +4575,6 @@ void RenderProcessHostImpl::ProcessDied(
 
   // It should not be possible for a process death notification to come in
   // while we are dying.
-  if (deleting_soon_) {
-    // TODO(crbug.com/1115216): Temporary to debug crbug.com/1115216.
-    base::debug::DumpWithoutCrashing();
-  }
   DCHECK(!deleting_soon_);
 
   // child_process_launcher_ can be NULL in single process mode or if fast
