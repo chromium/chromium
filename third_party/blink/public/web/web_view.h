@@ -33,6 +33,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -477,7 +479,16 @@ class WebView {
   // after.
   virtual void PaintContent(cc::PaintCanvas*, const gfx::Rect& viewport) = 0;
 
-  // Suspend and resume ---------------------------------------------------
+  // Web preferences ---------------------------------------------------
+
+  // Applies blink related preferences to this view.
+  BLINK_EXPORT static void ApplyWebPreferences(
+      const web_pref::WebPreferences& prefs,
+      WebView* web_view);
+
+  virtual void SetWebPreferences(
+      const web_pref::WebPreferences& preferences) = 0;
+  virtual const web_pref::WebPreferences& GetWebPreferences() = 0;
 
   // TODO(lfg): Remove this once the refactor of WebView/WebWidget is
   // completed.

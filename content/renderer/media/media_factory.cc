@@ -380,7 +380,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
                                      sink_id.Utf8()));
 
   const blink::web_pref::WebPreferences webkit_preferences =
-      render_frame_->GetWebkitPreferences();
+      render_frame_->GetBlinkPreferences();
   bool embedded_media_experience_enabled = false;
 #if defined(OS_ANDROID)
   embedded_media_experience_enabled =

@@ -48,6 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
@@ -476,7 +477,7 @@ class BlinkSettingsFieldTrialTest : public testing::Test {
   }
 
   void AppendBlinkSettingsSwitch(const char* value) {
-    command_line_.AppendSwitchASCII(switches::kBlinkSettings, value);
+    command_line_.AppendSwitchASCII(blink::switches::kBlinkSettings, value);
   }
 
  private:
@@ -494,13 +495,13 @@ const char BlinkSettingsFieldTrialTest::kFakeGroupName[] = "FakeGroup";
 
 TEST_F(BlinkSettingsFieldTrialTest, NoFieldTrial) {
   AppendContentBrowserClientSwitches();
-  EXPECT_FALSE(command_line().HasSwitch(switches::kBlinkSettings));
+  EXPECT_FALSE(command_line().HasSwitch(blink::switches::kBlinkSettings));
 }
 
 TEST_F(BlinkSettingsFieldTrialTest, FieldTrialWithoutParams) {
   CreateFieldTrial(kDisallowFetchFieldTrialName, kFakeGroupName);
   AppendContentBrowserClientSwitches();
-  EXPECT_FALSE(command_line().HasSwitch(switches::kBlinkSettings));
+  EXPECT_FALSE(command_line().HasSwitch(blink::switches::kBlinkSettings));
 }
 
 TEST_F(BlinkSettingsFieldTrialTest, BlinkSettingsSwitchAlreadySpecified) {
@@ -508,18 +509,18 @@ TEST_F(BlinkSettingsFieldTrialTest, BlinkSettingsSwitchAlreadySpecified) {
   CreateFieldTrialWithParams(kDisallowFetchFieldTrialName, kFakeGroupName,
                              "key1", "value1", "key2", "value2");
   AppendContentBrowserClientSwitches();
-  EXPECT_TRUE(command_line().HasSwitch(switches::kBlinkSettings));
-  EXPECT_EQ("foo",
-            command_line().GetSwitchValueASCII(switches::kBlinkSettings));
+  EXPECT_TRUE(command_line().HasSwitch(blink::switches::kBlinkSettings));
+  EXPECT_EQ("foo", command_line().GetSwitchValueASCII(
+                       blink::switches::kBlinkSettings));
 }
 
 TEST_F(BlinkSettingsFieldTrialTest, FieldTrialEnabled) {
   CreateFieldTrialWithParams(kDisallowFetchFieldTrialName, kFakeGroupName,
                              "key1", "value1", "key2", "value2");
   AppendContentBrowserClientSwitches();
-  EXPECT_TRUE(command_line().HasSwitch(switches::kBlinkSettings));
-  EXPECT_EQ("key1=value1,key2=value2",
-            command_line().GetSwitchValueASCII(switches::kBlinkSettings));
+  EXPECT_TRUE(command_line().HasSwitch(blink::switches::kBlinkSettings));
+  EXPECT_EQ("key1=value1,key2=value2", command_line().GetSwitchValueASCII(
+                                           blink::switches::kBlinkSettings));
 }
 
 #if !defined(OS_ANDROID)

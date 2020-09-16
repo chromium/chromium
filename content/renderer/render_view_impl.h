@@ -137,10 +137,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // or not.
   bool widgets_never_composited() const { return widgets_never_composited_; }
 
-  const blink::web_pref::WebPreferences& webkit_preferences() const {
-    return webkit_preferences_;
-  }
-
   const blink::mojom::RendererPreferences& renderer_preferences() const {
     return renderer_preferences_;
   }
@@ -241,8 +237,8 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   RenderFrameImpl* GetMainRenderFrame() override;
   int GetRoutingID() override;
   float GetZoomLevel() override;
-  const blink::web_pref::WebPreferences& GetWebkitPreferences() override;
-  void SetWebkitPreferences(
+  const blink::web_pref::WebPreferences& GetBlinkPreferences() override;
+  void SetBlinkPreferences(
       const blink::web_pref::WebPreferences& preferences) override;
   blink::WebView* GetWebView() override;
   bool GetContentStateImmediately() override;
@@ -456,7 +452,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 
   // Settings ------------------------------------------------------------------
 
-  blink::web_pref::WebPreferences webkit_preferences_;
   blink::mojom::RendererPreferences renderer_preferences_;
   // These are observing changes in |renderer_preferences_|. This is used for
   // keeping WorkerFetchContext in sync.

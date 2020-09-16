@@ -56,11 +56,6 @@ class CONTENT_EXPORT RenderView : public IPC::Sender {
   // been closed but not yet destroyed are excluded).
   static void ForEach(RenderViewVisitor* visitor);
 
-  // Applies WebKit related preferences to this view.
-  static void ApplyWebPreferences(
-      const blink::web_pref::WebPreferences& preferences,
-      blink::WebView* web_view);
-
   // Returns the main RenderFrame.
   virtual RenderFrame* GetMainRenderFrame() = 0;
 
@@ -71,11 +66,11 @@ class CONTENT_EXPORT RenderView : public IPC::Sender {
   virtual float GetZoomLevel() = 0;
 
   // Gets WebKit related preferences associated with this view.
-  virtual const blink::web_pref::WebPreferences& GetWebkitPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences& GetBlinkPreferences() = 0;
 
   // Overrides the WebKit related preferences associated with this view. Note
   // that the browser process may update the preferences at any time.
-  virtual void SetWebkitPreferences(
+  virtual void SetBlinkPreferences(
       const blink::web_pref::WebPreferences& preferences) = 0;
 
   // Returns the associated WebView. May return NULL when the view is closing.

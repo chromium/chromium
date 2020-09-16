@@ -2771,12 +2771,12 @@ void TestRunner::OnTestPreferencesChanged(const TestPreferences& test_prefs,
                                           RenderFrame* frame) {
   RenderView* render_view = frame->GetRenderView();
   blink::web_pref::WebPreferences web_prefs =
-      render_view->GetWebkitPreferences();
+      render_view->GetBlinkPreferences();
 
   // Turns the TestPreferences into WebPreferences.
   ExportWebTestSpecificPreferences(test_prefs, &web_prefs);
 
-  render_view->SetWebkitPreferences(web_prefs);
+  render_view->SetBlinkPreferences(web_prefs);
 
   GetWebTestControlHostRemote()->OverridePreferences(web_prefs);
 }

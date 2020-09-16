@@ -58,7 +58,7 @@ bool AwContentSettingsClient::AllowRunningInsecureContent(
 }
 
 bool AwContentSettingsClient::ShouldAutoupgradeMixedContent() {
-  return render_frame()->GetWebkitPreferences().allow_mixed_content_upgrades;
+  return render_frame()->GetBlinkPreferences().allow_mixed_content_upgrades;
 }
 
 void AwContentSettingsClient::OnDestruct() {

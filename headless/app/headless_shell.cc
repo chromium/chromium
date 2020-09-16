@@ -692,7 +692,7 @@ int HeadlessShellMain(int argc, const char** argv) {
 
     // Renderer flags
     command_line.AppendSwitch(cc::switches::kDisableThreadedAnimation);
-    command_line.AppendSwitch(::switches::kDisableThreadedScrolling);
+    command_line.AppendSwitch(blink::switches::kDisableThreadedScrolling);
     command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);
   }
 

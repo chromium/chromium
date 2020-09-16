@@ -12,6 +12,7 @@
 #include "content/public/browser/android/compositor.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace content {
@@ -40,7 +41,7 @@ void SetContentCommandLineFlags(bool single_process) {
       base::android::SDK_VERSION_MARSHMALLOW) {
     parsed_command_line->AppendSwitch(switches::kEnableLongpressDragSelection);
     parsed_command_line->AppendSwitchASCII(
-        switches::kTouchTextSelectionStrategy, "direction");
+        blink::switches::kTouchTextSelectionStrategy, "direction");
   }
 
   // On legacy low-memory devices the behavior has not been studied with regard

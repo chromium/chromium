@@ -32,7 +32,6 @@
 #include "components/printing/common/print_messages.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/escape.h"
@@ -950,7 +949,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver());
-  content::RenderView::ApplyWebPreferences(prefs, web_view);
+  blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, base::UnguessableToken::Create(), nullptr);
   frame_.Reset(main_frame);
@@ -1492,7 +1491,7 @@ void PrintRenderFrameHelper::PrepareFrameForPreviewDocument() {
     auto pauser_to_destroy = print_preview_context_.TakePauser();
 
   prep_frame_view_->CopySelectionIfNeeded(
-      render_frame()->GetWebkitPreferences(),
+      render_frame()->GetBlinkPreferences(),
       base::BindOnce(&PrintRenderFrameHelper::OnFramePreparedForPreviewDocument,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -2308,7 +2307,7 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
   DCHECK(!print_pages_params_->params->selection_only ||
          print_pages_params_->pages.empty());
   prep_frame_view_->CopySelectionIfNeeded(
-      render_frame()->GetWebkitPreferences(),
+      render_frame()->GetBlinkPreferences(),
       base::BindOnce(&PrintRenderFrameHelper::OnFramePreparedForPrintPages,
                      weak_ptr_factory_.GetWeakPtr()));
   return true;

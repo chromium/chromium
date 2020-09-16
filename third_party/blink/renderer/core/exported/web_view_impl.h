@@ -215,6 +215,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetDeviceColorSpaceForTesting(
       const gfx::ColorSpace& color_space) override;
   void PaintContent(cc::PaintCanvas*, const gfx::Rect&) override;
+  void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
+  const web_pref::WebPreferences& GetWebPreferences() override;
 
   // Overrides the page's background and base background color. You
   // can use this to enforce a transparent background, which is useful if you
@@ -537,6 +539,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // browser.
   void DoDeferredCloseWindowSoon();
 
+  // Applies blink related preferences to this view.
+  void UpdateWebPreferences(const blink::web_pref::WebPreferences& preferences);
+
   WebViewImpl(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
@@ -770,6 +775,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   WebSize preferred_size_;
 
   Persistent<EventListener> popup_mouse_wheel_event_listener_;
+
+  web_pref::WebPreferences web_preferences_;
 
   // The local root whose document has |popup_mouse_wheel_event_listener_|
   // registered.

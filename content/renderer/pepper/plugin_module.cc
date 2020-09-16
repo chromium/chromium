@@ -733,7 +733,7 @@ RendererPpapiHostImpl* PluginModule::CreateOutOfProcessModule(
 
   if (!dispatcher->Init(channel_handle, &GetInterface,
                         ppapi::Preferences(PpapiPreferencesBuilder::Build(
-                            render_frame->render_view()->webkit_preferences(),
+                            render_frame->render_view()->GetBlinkPreferences(),
                             gpu_feature_info)),
                         hung_filter.get(), task_runner)) {
     return nullptr;

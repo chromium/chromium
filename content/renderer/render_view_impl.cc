@@ -93,6 +93,7 @@
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
@@ -263,136 +264,6 @@ WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
 
 namespace {
 
-typedef void (*SetFontFamilyWrapper)(blink::WebSettings*,
-                                     const base::string16&,
-                                     UScriptCode);
-
-void SetStandardFontFamilyWrapper(WebSettings* settings,
-                                  const base::string16& font,
-                                  UScriptCode script) {
-  settings->SetStandardFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetFixedFontFamilyWrapper(WebSettings* settings,
-                               const base::string16& font,
-                               UScriptCode script) {
-  settings->SetFixedFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetSerifFontFamilyWrapper(WebSettings* settings,
-                               const base::string16& font,
-                               UScriptCode script) {
-  settings->SetSerifFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetSansSerifFontFamilyWrapper(WebSettings* settings,
-                                   const base::string16& font,
-                                   UScriptCode script) {
-  settings->SetSansSerifFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetCursiveFontFamilyWrapper(WebSettings* settings,
-                                 const base::string16& font,
-                                 UScriptCode script) {
-  settings->SetCursiveFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetFantasyFontFamilyWrapper(WebSettings* settings,
-                                 const base::string16& font,
-                                 UScriptCode script) {
-  settings->SetFantasyFontFamily(WebString::FromUTF16(font), script);
-}
-
-void SetPictographFontFamilyWrapper(WebSettings* settings,
-                                    const base::string16& font,
-                                    UScriptCode script) {
-  settings->SetPictographFontFamily(WebString::FromUTF16(font), script);
-}
-
-// If |scriptCode| is a member of a family of "similar" script codes, returns
-// the script code in that family that is used by WebKit for font selection
-// purposes.  For example, USCRIPT_KATAKANA_OR_HIRAGANA and USCRIPT_JAPANESE are
-// considered equivalent for the purposes of font selection.  WebKit uses the
-// script code USCRIPT_KATAKANA_OR_HIRAGANA.  So, if |scriptCode| is
-// USCRIPT_JAPANESE, the function returns USCRIPT_KATAKANA_OR_HIRAGANA.  WebKit
-// uses different scripts than the ones in Chrome pref names because the version
-// of ICU included on certain ports does not have some of the newer scripts.  If
-// |scriptCode| is not a member of such a family, returns |scriptCode|.
-UScriptCode GetScriptForWebSettings(UScriptCode scriptCode) {
-  switch (scriptCode) {
-    case USCRIPT_HIRAGANA:
-    case USCRIPT_KATAKANA:
-    case USCRIPT_JAPANESE:
-      return USCRIPT_KATAKANA_OR_HIRAGANA;
-    case USCRIPT_KOREAN:
-      return USCRIPT_HANGUL;
-    default:
-      return scriptCode;
-  }
-}
-
-void ApplyFontsFromMap(const blink::web_pref::ScriptFontFamilyMap& map,
-                       SetFontFamilyWrapper setter,
-                       WebSettings* settings) {
-  for (auto it = map.begin(); it != map.end(); ++it) {
-    int32_t script = u_getPropertyValueEnum(UCHAR_SCRIPT, (it->first).c_str());
-    if (script >= 0 && script < USCRIPT_CODE_LIMIT) {
-      UScriptCode code = static_cast<UScriptCode>(script);
-      (*setter)(settings, it->second, GetScriptForWebSettings(code));
-    }
-  }
-}
-
-void ApplyCommandLineToSettings(WebSettings* settings) {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  settings->SetThreadedScrollingEnabled(
-      !command_line.HasSwitch(switches::kDisableThreadedScrolling));
-
-  WebSettings::SelectionStrategyType selection_strategy;
-  if (command_line.GetSwitchValueASCII(switches::kTouchTextSelectionStrategy) ==
-      "direction")
-    selection_strategy = WebSettings::SelectionStrategyType::kDirection;
-  else
-    selection_strategy = WebSettings::SelectionStrategyType::kCharacter;
-  settings->SetSelectionStrategy(selection_strategy);
-
-  std::string passive_listeners_default =
-      command_line.GetSwitchValueASCII(switches::kPassiveListenersDefault);
-  if (!passive_listeners_default.empty()) {
-    WebSettings::PassiveEventListenerDefault passive_default =
-        WebSettings::PassiveEventListenerDefault::kFalse;
-    if (passive_listeners_default == "true")
-      passive_default = WebSettings::PassiveEventListenerDefault::kTrue;
-    else if (passive_listeners_default == "forcealltrue")
-      passive_default = WebSettings::PassiveEventListenerDefault::kForceAllTrue;
-    settings->SetPassiveEventListenerDefault(passive_default);
-  }
-
-  std::string network_quiet_timeout =
-      command_line.GetSwitchValueASCII(switches::kNetworkQuietTimeout);
-  if (!network_quiet_timeout.empty()) {
-    double network_quiet_timeout_seconds = 0.0;
-    if (base::StringToDouble(network_quiet_timeout,
-                             &network_quiet_timeout_seconds))
-      settings->SetNetworkQuietTimeout(network_quiet_timeout_seconds);
-  }
-
-  if (command_line.HasSwitch(switches::kBlinkSettings)) {
-    std::vector<std::string> blink_settings = base::SplitString(
-        command_line.GetSwitchValueASCII(switches::kBlinkSettings), ",",
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    for (const std::string& setting : blink_settings) {
-      size_t pos = setting.find('=');
-      settings->SetFromStrings(
-          blink::WebString::FromLatin1(setting.substr(0, pos)),
-          blink::WebString::FromLatin1(
-              pos == std::string::npos ? "" : setting.substr(pos + 1)));
-    }
-  }
-}
-
 content::mojom::WindowContainerType WindowFeaturesToContainerType(
     const blink::WebWindowFeatures& window_features) {
   if (window_features.background) {
@@ -414,7 +285,6 @@ RenderViewImpl::RenderViewImpl(CompositorDependencies* compositor_deps,
           params.renderer_wide_named_frame_lookup),
       widgets_never_composited_(params.never_composited),
       compositor_deps_(compositor_deps),
-      webkit_preferences_(params.web_preferences),
       session_storage_namespace_id_(params.session_storage_namespace_id) {
   DCHECK(!session_storage_namespace_id_.empty())
       << "Session storage namespace must be populated.";
@@ -451,8 +321,7 @@ void RenderViewImpl::Initialize(
 
   bool local_main_frame = params->main_frame_routing_id != MSG_ROUTING_NONE;
 
-  ApplyWebPreferences(webkit_preferences_, GetWebView());
-  ApplyCommandLineToSettings(GetWebView()->GetSettings());
+  webview_->SetWebPreferences(params->web_preferences);
 
   if (local_main_frame) {
     main_render_frame_ = RenderFrameImpl::CreateMainFrame(
@@ -546,400 +415,6 @@ void RenderView::ForEach(RenderViewVisitor* visitor) {
 }
 
 /*static*/
-void RenderView::ApplyWebPreferences(
-    const blink::web_pref::WebPreferences& prefs,
-    WebView* web_view) {
-  WebSettings* settings = web_view->GetSettings();
-  ApplyFontsFromMap(prefs.standard_font_family_map,
-                    SetStandardFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.fixed_font_family_map,
-                    SetFixedFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.serif_font_family_map,
-                    SetSerifFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.sans_serif_font_family_map,
-                    SetSansSerifFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.cursive_font_family_map,
-                    SetCursiveFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.fantasy_font_family_map,
-                    SetFantasyFontFamilyWrapper, settings);
-  ApplyFontsFromMap(prefs.pictograph_font_family_map,
-                    SetPictographFontFamilyWrapper, settings);
-  settings->SetDefaultFontSize(prefs.default_font_size);
-  settings->SetDefaultFixedFontSize(prefs.default_fixed_font_size);
-  settings->SetMinimumFontSize(prefs.minimum_font_size);
-  settings->SetMinimumLogicalFontSize(prefs.minimum_logical_font_size);
-  settings->SetDefaultTextEncodingName(
-      WebString::FromASCII(prefs.default_encoding));
-  settings->SetJavaScriptEnabled(prefs.javascript_enabled);
-  settings->SetWebSecurityEnabled(prefs.web_security_enabled);
-  settings->SetLoadsImagesAutomatically(prefs.loads_images_automatically);
-  settings->SetImagesEnabled(prefs.images_enabled);
-  settings->SetPluginsEnabled(prefs.plugins_enabled);
-  settings->SetDOMPasteAllowed(prefs.dom_paste_enabled);
-  settings->SetTextAreasAreResizable(prefs.text_areas_are_resizable);
-  settings->SetAllowScriptsToCloseWindows(prefs.allow_scripts_to_close_windows);
-  settings->SetDownloadableBinaryFontsEnabled(prefs.remote_fonts_enabled);
-  settings->SetJavaScriptCanAccessClipboard(
-      prefs.javascript_can_access_clipboard);
-  WebRuntimeFeatures::EnableXSLT(prefs.xslt_enabled);
-  settings->SetDNSPrefetchingEnabled(prefs.dns_prefetching_enabled);
-  blink::WebNetworkStateNotifier::SetSaveDataEnabled(prefs.data_saver_enabled);
-  settings->SetLocalStorageEnabled(prefs.local_storage_enabled);
-  settings->SetSyncXHRInDocumentsEnabled(prefs.sync_xhr_in_documents_enabled);
-  WebRuntimeFeatures::EnableDatabase(prefs.databases_enabled);
-  settings->SetOfflineWebApplicationCacheEnabled(
-      prefs.application_cache_enabled);
-  settings->SetShouldProtectAgainstIpcFlooding(
-      !prefs.disable_ipc_flooding_protection);
-  settings->SetHyperlinkAuditingEnabled(prefs.hyperlink_auditing_enabled);
-  settings->SetCookieEnabled(prefs.cookie_enabled);
-  settings->SetNavigateOnDragDrop(prefs.navigate_on_drag_drop);
-
-  // By default, allow_universal_access_from_file_urls is set to false and thus
-  // we mitigate attacks from local HTML files by not granting file:// URLs
-  // universal access. Only test shell will enable this.
-  settings->SetAllowUniversalAccessFromFileURLs(
-      prefs.allow_universal_access_from_file_urls);
-  settings->SetAllowFileAccessFromFileURLs(
-      prefs.allow_file_access_from_file_urls);
-
-  settings->SetWebGL1Enabled(prefs.webgl1_enabled);
-  settings->SetWebGL2Enabled(prefs.webgl2_enabled);
-
-  // Enable WebGL errors to the JS console if requested.
-  settings->SetWebGLErrorsToConsoleEnabled(
-      prefs.webgl_errors_to_console_enabled);
-
-  settings->SetHideScrollbars(prefs.hide_scrollbars);
-
-  // Enable gpu-accelerated 2d canvas if requested on the command line.
-  WebRuntimeFeatures::EnableAccelerated2dCanvas(
-      prefs.accelerated_2d_canvas_enabled);
-
-  // Enable new canvas 2d api features
-  WebRuntimeFeatures::EnableNewCanvas2DAPI(prefs.new_canvas_2d_api_enabled);
-
-  // Disable antialiasing for 2d canvas if requested on the command line.
-  settings->SetAntialiased2dCanvasEnabled(
-      !prefs.antialiased_2d_canvas_disabled);
-
-  // Disable antialiasing of clips for 2d canvas if requested on the command
-  // line.
-  settings->SetAntialiasedClips2dCanvasEnabled(
-      prefs.antialiased_clips_2d_canvas_enabled);
-
-  // Tabs to link is not part of the settings. WebCore calls
-  // ChromeClient::tabsToLinks which is part of the glue code.
-  web_view->SetTabsToLinks(prefs.tabs_to_links);
-
-  settings->SetAllowRunningOfInsecureContent(
-      prefs.allow_running_insecure_content);
-  settings->SetDisableReadingFromCanvas(prefs.disable_reading_from_canvas);
-  settings->SetStrictMixedContentChecking(prefs.strict_mixed_content_checking);
-
-  settings->SetStrictlyBlockBlockableMixedContent(
-      prefs.strictly_block_blockable_mixed_content);
-
-  settings->SetStrictMixedContentCheckingForPlugin(
-      prefs.block_mixed_plugin_content);
-
-  settings->SetStrictPowerfulFeatureRestrictions(
-      prefs.strict_powerful_feature_restrictions);
-  settings->SetAllowGeolocationOnInsecureOrigins(
-      prefs.allow_geolocation_on_insecure_origins);
-  settings->SetPasswordEchoEnabled(prefs.password_echo_enabled);
-  settings->SetShouldPrintBackgrounds(prefs.should_print_backgrounds);
-  settings->SetShouldClearDocumentBackground(
-      prefs.should_clear_document_background);
-  settings->SetEnableScrollAnimator(prefs.enable_scroll_animator);
-  settings->SetPrefersReducedMotion(prefs.prefers_reduced_motion);
-
-  WebRuntimeFeatures::EnableTouchEventFeatureDetection(
-      prefs.touch_event_feature_detection_enabled);
-  settings->SetMaxTouchPoints(prefs.pointer_events_max_touch_points);
-  settings->SetAvailablePointerTypes(prefs.available_pointer_types);
-  settings->SetPrimaryPointerType(
-      static_cast<blink::PointerType>(prefs.primary_pointer_type));
-  settings->SetAvailableHoverTypes(prefs.available_hover_types);
-  settings->SetPrimaryHoverType(
-      static_cast<blink::HoverType>(prefs.primary_hover_type));
-  settings->SetBarrelButtonForDragEnabled(prefs.barrel_button_for_drag_enabled);
-
-  settings->SetEditingBehavior(
-      static_cast<WebSettings::EditingBehavior>(prefs.editing_behavior));
-
-  settings->SetSupportsMultipleWindows(prefs.supports_multiple_windows);
-
-  settings->SetMainFrameClipsContent(!prefs.record_whole_document);
-
-  settings->SetSmartInsertDeleteEnabled(prefs.smart_insert_delete_enabled);
-
-  settings->SetSpatialNavigationEnabled(prefs.spatial_navigation_enabled);
-  // Spatnav depends on KeyboardFocusableScrollers. The WebUI team has
-  // disabled KFS because they need more time to update their custom elements,
-  // crbug.com/907284. Meanwhile, we pre-ship KFS to spatnav users.
-  if (prefs.spatial_navigation_enabled)
-    WebRuntimeFeatures::EnableKeyboardFocusableScrollers(true);
-
-  settings->SetSelectionIncludesAltImageText(true);
-
-  settings->SetV8CacheOptions(
-      static_cast<WebSettings::V8CacheOptions>(prefs.v8_cache_options));
-
-  settings->SetImageAnimationPolicy(
-      static_cast<WebSettings::ImageAnimationPolicy>(prefs.animation_policy));
-
-  settings->SetPresentationRequiresUserGesture(
-      prefs.user_gesture_required_for_presentation);
-
-  if (prefs.text_tracks_enabled) {
-    settings->SetTextTrackKindUserPreference(
-        WebSettings::TextTrackKindUserPreference::kCaptions);
-  } else {
-    settings->SetTextTrackKindUserPreference(
-        WebSettings::TextTrackKindUserPreference::kDefault);
-  }
-  settings->SetTextTrackBackgroundColor(
-      WebString::FromASCII(prefs.text_track_background_color));
-  settings->SetTextTrackTextColor(
-      WebString::FromASCII(prefs.text_track_text_color));
-  settings->SetTextTrackTextSize(
-      WebString::FromASCII(prefs.text_track_text_size));
-  settings->SetTextTrackTextShadow(
-      WebString::FromASCII(prefs.text_track_text_shadow));
-  settings->SetTextTrackFontFamily(
-      WebString::FromASCII(prefs.text_track_font_family));
-  settings->SetTextTrackFontStyle(
-      WebString::FromASCII(prefs.text_track_font_style));
-  settings->SetTextTrackFontVariant(
-      WebString::FromASCII(prefs.text_track_font_variant));
-  settings->SetTextTrackMarginPercentage(prefs.text_track_margin_percentage);
-  settings->SetTextTrackWindowColor(
-      WebString::FromASCII(prefs.text_track_window_color));
-  settings->SetTextTrackWindowPadding(
-      WebString::FromASCII(prefs.text_track_window_padding));
-  settings->SetTextTrackWindowRadius(
-      WebString::FromASCII(prefs.text_track_window_radius));
-
-  // Needs to happen before SetDefaultPageScaleLimits below since that'll
-  // recalculate the final page scale limits and that depends on this setting.
-  settings->SetShrinksViewportContentToFit(
-      prefs.shrinks_viewport_contents_to_fit);
-
-  // Needs to happen before SetIgnoreViewportTagScaleLimits below.
-  web_view->SetDefaultPageScaleLimits(prefs.default_minimum_page_scale_factor,
-                                      prefs.default_maximum_page_scale_factor);
-
-  settings->SetFullscreenSupported(prefs.fullscreen_supported);
-  settings->SetTextAutosizingEnabled(prefs.text_autosizing_enabled);
-  settings->SetDoubleTapToZoomEnabled(prefs.double_tap_to_zoom_enabled);
-  blink::WebNetworkStateNotifier::SetNetworkQualityWebHoldback(
-      static_cast<blink::WebEffectiveConnectionType>(
-          prefs.network_quality_estimator_web_holdback));
-
-  settings->SetDontSendKeyEventsToJavascript(
-      prefs.dont_send_key_events_to_javascript);
-  settings->SetWebAppScope(WebString::FromASCII(prefs.web_app_scope.spec()));
-
-#if defined(OS_ANDROID)
-  settings->SetAllowCustomScrollbarInMainFrame(false);
-  settings->SetAccessibilityFontScaleFactor(prefs.font_scale_factor);
-  settings->SetDeviceScaleAdjustment(prefs.device_scale_adjustment);
-  web_view->SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom);
-  settings->SetAutoZoomFocusedNodeToLegibleScale(true);
-  settings->SetDefaultVideoPosterURL(
-      WebString::FromASCII(prefs.default_video_poster_url.spec()));
-  settings->SetSupportDeprecatedTargetDensityDPI(
-      prefs.support_deprecated_target_density_dpi);
-  settings->SetUseLegacyBackgroundSizeShorthandBehavior(
-      prefs.use_legacy_background_size_shorthand_behavior);
-  settings->SetWideViewportQuirkEnabled(prefs.wide_viewport_quirk);
-  settings->SetUseWideViewport(prefs.use_wide_viewport);
-  settings->SetForceZeroLayoutHeight(prefs.force_zero_layout_height);
-  settings->SetViewportMetaMergeContentQuirk(
-      prefs.viewport_meta_merge_content_quirk);
-  settings->SetViewportMetaNonUserScalableQuirk(
-      prefs.viewport_meta_non_user_scalable_quirk);
-  settings->SetViewportMetaZeroValuesQuirk(
-      prefs.viewport_meta_zero_values_quirk);
-  settings->SetClobberUserAgentInitialScaleQuirk(
-      prefs.clobber_user_agent_initial_scale_quirk);
-  settings->SetIgnoreMainFrameOverflowHiddenQuirk(
-      prefs.ignore_main_frame_overflow_hidden_quirk);
-  settings->SetReportScreenSizeInPhysicalPixelsQuirk(
-      prefs.report_screen_size_in_physical_pixels_quirk);
-  settings->SetShouldReuseGlobalForUnownedMainFrame(
-      prefs.reuse_global_for_unowned_main_frame);
-  settings->SetPreferHiddenVolumeControls(true);
-  settings->SetSpellCheckEnabledByDefault(prefs.spellcheck_enabled_by_default);
-
-  WebRuntimeFeatures::EnableVideoFullscreenOrientationLock(
-      prefs.video_fullscreen_orientation_lock_enabled);
-  WebRuntimeFeatures::EnableVideoRotateToFullscreen(
-      prefs.video_rotate_to_fullscreen_enabled);
-  settings->SetEmbeddedMediaExperienceEnabled(
-      prefs.embedded_media_experience_enabled);
-  settings->SetImmersiveModeEnabled(prefs.immersive_mode_enabled);
-  settings->SetDoNotUpdateSelectionOnMutatingSelectionRange(
-      prefs.do_not_update_selection_on_mutating_selection_range);
-  WebRuntimeFeatures::EnableCSSHexAlphaColor(prefs.css_hex_alpha_color_enabled);
-  WebRuntimeFeatures::EnableScrollTopLeftInterop(
-      prefs.scroll_top_left_interop_enabled);
-  WebRuntimeFeatures::EnableSurfaceEmbeddingFeatures(
-      !prefs.disable_features_depending_on_viz);
-  WebRuntimeFeatures::EnableAcceleratedSmallCanvases(
-      !prefs.disable_accelerated_small_canvases);
-  if (prefs.reenable_web_components_v0) {
-    WebRuntimeFeatures::EnableShadowDOMV0(true);
-    WebRuntimeFeatures::EnableCustomElementsV0(true);
-    WebRuntimeFeatures::EnableHTMLImports(true);
-  }
-#endif  // defined(OS_ANDROID)
-  settings->SetForceDarkModeEnabled(prefs.force_dark_mode_enabled);
-
-  settings->SetAccessibilityAlwaysShowFocus(prefs.always_show_focus);
-  settings->SetAutoplayPolicy(prefs.autoplay_policy);
-  settings->SetViewportEnabled(prefs.viewport_enabled);
-  settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
-  settings->SetViewportStyle(
-      static_cast<blink::WebViewportStyle>(prefs.viewport_style));
-
-  settings->SetLoadWithOverviewMode(prefs.initialize_at_minimum_page_scale);
-  settings->SetMainFrameResizesAreOrientationChanges(
-      prefs.main_frame_resizes_are_orientation_changes);
-
-  settings->SetShowContextMenuOnMouseUp(prefs.context_menu_on_mouse_up);
-  settings->SetAlwaysShowContextMenuOnTouch(
-      prefs.always_show_context_menu_on_touch);
-  settings->SetSmoothScrollForFindEnabled(prefs.smooth_scroll_for_find_enabled);
-
-  settings->SetHideDownloadUI(prefs.hide_download_ui);
-
-  settings->SetPresentationReceiver(prefs.presentation_receiver);
-
-  settings->SetMediaControlsEnabled(prefs.media_controls_enabled);
-
-  settings->SetLowPriorityIframesThreshold(
-      static_cast<blink::WebEffectiveConnectionType>(
-          prefs.low_priority_iframes_threshold));
-
-  settings->SetPictureInPictureEnabled(
-      prefs.picture_in_picture_enabled &&
-      MediaFactory::GetVideoSurfaceLayerMode() !=
-          blink::WebMediaPlayer::SurfaceLayerMode::kNever);
-
-  settings->SetDataSaverHoldbackWebApi(
-      prefs.data_saver_holdback_web_api_enabled);
-
-  settings->SetLazyLoadEnabled(prefs.lazy_load_enabled);
-  settings->SetPreferredColorScheme(prefs.preferred_color_scheme);
-
-  for (const auto& ect_distance_pair :
-       prefs.lazy_frame_loading_distance_thresholds_px) {
-    switch (ect_distance_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-        settings->SetLazyFrameLoadingDistanceThresholdPxUnknown(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-        settings->SetLazyFrameLoadingDistanceThresholdPxOffline(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-        settings->SetLazyFrameLoadingDistanceThresholdPxSlow2G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
-        settings->SetLazyFrameLoadingDistanceThresholdPx2G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
-        settings->SetLazyFrameLoadingDistanceThresholdPx3G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
-        settings->SetLazyFrameLoadingDistanceThresholdPx4G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-        continue;
-    }
-    NOTREACHED();
-  }
-
-  for (const auto& ect_distance_pair :
-       prefs.lazy_image_loading_distance_thresholds_px) {
-    switch (ect_distance_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-        settings->SetLazyImageLoadingDistanceThresholdPxUnknown(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-        settings->SetLazyImageLoadingDistanceThresholdPxOffline(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-        settings->SetLazyImageLoadingDistanceThresholdPxSlow2G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
-        settings->SetLazyImageLoadingDistanceThresholdPx2G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
-        settings->SetLazyImageLoadingDistanceThresholdPx3G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
-        settings->SetLazyImageLoadingDistanceThresholdPx4G(
-            ect_distance_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-        continue;
-    }
-    NOTREACHED();
-  }
-
-  for (const auto& fully_load_k_pair : prefs.lazy_image_first_k_fully_load) {
-    switch (fully_load_k_pair.first) {
-      case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-        settings->SetLazyImageFirstKFullyLoadUnknown(fully_load_k_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-        settings->SetLazyImageFirstKFullyLoadSlow2G(fully_load_k_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_2G:
-        settings->SetLazyImageFirstKFullyLoad2G(fully_load_k_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_3G:
-        settings->SetLazyImageFirstKFullyLoad3G(fully_load_k_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_4G:
-        settings->SetLazyImageFirstKFullyLoad4G(fully_load_k_pair.second);
-        continue;
-      case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-        continue;
-    }
-    NOTREACHED();
-  }
-
-  settings->SetTouchDragDropEnabled(prefs.touch_drag_drop_enabled);
-  settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
-
-#if defined(OS_MAC)
-  web_view->SetMaximumLegibleScale(prefs.default_maximum_page_scale_factor);
-#endif
-
-#if defined(OS_WIN)
-  WebRuntimeFeatures::EnableMiddleClickAutoscroll(true);
-#endif
-
-  WebRuntimeFeatures::EnableTranslateService(prefs.translate_service_available);
-}
-
-/*static*/
 RenderViewImpl* RenderViewImpl::Create(
     CompositorDependencies* compositor_deps,
     mojom::CreateViewParamsPtr params,
@@ -1002,14 +477,14 @@ void RenderViewImpl::SetActiveForWidget(bool active) {
 }
 
 bool RenderViewImpl::SupportsMultipleWindowsForWidget() {
-  return webkit_preferences_.supports_multiple_windows;
+  return webview_->GetWebPreferences().supports_multiple_windows;
 }
 
 bool RenderViewImpl::ShouldAckSyntheticInputImmediately() {
   // TODO(bokan): The RequestPresentation API appears not to function in VR. As
   // a short term workaround for https://crbug.com/940063, ACK input
   // immediately rather than using RequestPresentation.
-  if (webkit_preferences_.immersive_mode_enabled)
+  if (webview_->GetWebPreferences().immersive_mode_enabled)
     return true;
   return false;
 }
@@ -1222,7 +697,7 @@ WebView* RenderViewImpl::CreateView(
 
   view_params->window_was_created_with_opener = true;
   view_params->renderer_preferences = renderer_preferences_.Clone();
-  view_params->web_preferences = webkit_preferences_;
+  view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
   view_params->main_frame_frame_token = reply->main_frame_frame_token;
   view_params->main_frame_routing_id = reply->main_frame_route_id;
@@ -1516,11 +991,11 @@ float RenderViewImpl::GetZoomLevel() {
   return webview_->ZoomLevel();
 }
 
-const blink::web_pref::WebPreferences& RenderViewImpl::GetWebkitPreferences() {
-  return webkit_preferences_;
+const blink::web_pref::WebPreferences& RenderViewImpl::GetBlinkPreferences() {
+  return webview_->GetWebPreferences();
 }
 
-void RenderViewImpl::SetWebkitPreferences(
+void RenderViewImpl::SetBlinkPreferences(
     const blink::web_pref::WebPreferences& preferences) {
   OnUpdateWebPreferences(preferences);
 }
@@ -1535,9 +1010,7 @@ bool RenderViewImpl::GetContentStateImmediately() {
 
 void RenderViewImpl::OnUpdateWebPreferences(
     const blink::web_pref::WebPreferences& prefs) {
-  webkit_preferences_ = prefs;
-  ApplyWebPreferences(webkit_preferences_, GetWebView());
-  ApplyCommandLineToSettings(GetWebView()->GetSettings());
+  webview_->SetWebPreferences(prefs);
 }
 
 void RenderViewImpl::OnSetRendererPrefs(

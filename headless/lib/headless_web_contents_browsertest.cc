@@ -39,6 +39,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -844,7 +845,7 @@ class HeadlessWebContentsBeginFrameControlTest
     command_line->AppendSwitch(::switches::kDisableNewContentRenderingTimeout);
     command_line->AppendSwitch(cc::switches::kDisableCheckerImaging);
     command_line->AppendSwitch(cc::switches::kDisableThreadedAnimation);
-    command_line->AppendSwitch(::switches::kDisableThreadedScrolling);
+    command_line->AppendSwitch(blink::switches::kDisableThreadedScrolling);
   }
 
   void OnCreateTargetResult(

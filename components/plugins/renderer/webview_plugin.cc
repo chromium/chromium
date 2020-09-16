@@ -16,7 +16,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/renderer/render_view.h"
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "skia/ext/platform_canvas.h"
@@ -268,7 +267,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver());
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
-  content::RenderView::ApplyWebPreferences(preferences, web_view_);
+  blink::WebView::ApplyWebPreferences(preferences, web_view_);
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view_, this, nullptr, base::UnguessableToken::Create(), nullptr);
   // The created WebFrameWidget is owned by the |web_frame|.

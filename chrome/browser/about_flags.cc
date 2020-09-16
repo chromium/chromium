@@ -287,9 +287,9 @@ const FeatureEntry::Choice kOverlayStrategiesChoices[] = {
 const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kTouchSelectionStrategyCharacter,
-     switches::kTouchTextSelectionStrategy, "character"},
+     blink::switches::kTouchTextSelectionStrategy, "character"},
     {flag_descriptions::kTouchSelectionStrategyDirection,
-     switches::kTouchTextSelectionStrategy, "direction"}};
+     blink::switches::kTouchTextSelectionStrategy, "direction"}};
 
 const FeatureEntry::Choice kTraceUploadURL[] = {
     {flags_ui::kGenericExperimentChoiceDisabled, "", ""},
@@ -306,9 +306,9 @@ const FeatureEntry::Choice kTraceUploadURL[] = {
 const FeatureEntry::Choice kPassiveListenersChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kPassiveEventListenerTrue,
-     switches::kPassiveListenersDefault, "true"},
+     blink::switches::kPassiveListenersDefault, "true"},
     {flag_descriptions::kPassiveEventListenerForceAllTrue,
-     switches::kPassiveListenersDefault, "forcealltrue"},
+     blink::switches::kPassiveListenersDefault, "forcealltrue"},
 };
 
 const FeatureEntry::Choice kDataReductionProxyServerExperiment[] = {
@@ -2909,7 +2909,7 @@ const FeatureEntry kFeatureEntries[] = {
          "IPH_DemoMode")},
     {"disable-threaded-scrolling", flag_descriptions::kThreadedScrollingName,
      flag_descriptions::kThreadedScrollingDescription, kOsAll,
-     SINGLE_DISABLE_VALUE_TYPE(switches::kDisableThreadedScrolling)},
+     SINGLE_DISABLE_VALUE_TYPE(blink::switches::kDisableThreadedScrolling)},
     {"extension-content-verification",
      flag_descriptions::kExtensionContentVerificationName,
      flag_descriptions::kExtensionContentVerificationDescription, kOsDesktop,
@@ -3278,9 +3278,9 @@ const FeatureEntry kFeatureEntries[] = {
      // features controlled by kBlinkSettings, we'll need to add logic to
      // merge the flag values.
      ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(
-         switches::kBlinkSettings,
+         blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=true",
-         switches::kBlinkSettings,
+         blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=false")},
 #if defined(OS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,

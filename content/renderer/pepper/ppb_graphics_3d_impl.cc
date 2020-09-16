@@ -218,7 +218,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
     return false;
 
   const blink::web_pref::WebPreferences& prefs =
-      render_frame->GetWebkitPreferences();
+      render_frame->GetBlinkPreferences();
 
   // 3D access might be disabled.
   if (!prefs.pepper_3d_enabled)

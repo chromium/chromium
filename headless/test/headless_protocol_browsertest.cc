@@ -301,7 +301,7 @@ class HeadlessProtocolCompositorBrowserTest
         // impl-thread are disabled, see go/headless-rendering.
         cc::switches::kDisableThreadedAnimation,
         cc::switches::kDisableCheckerImaging,
-        switches::kDisableThreadedScrolling,
+        blink::switches::kDisableThreadedScrolling,
 
         // Ensure that image animations don't resync their animation timestamps
         // when looping back around.

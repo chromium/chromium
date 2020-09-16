@@ -34,7 +34,7 @@ PluginPlaceholderBase::PluginPlaceholderBase(
       plugin_(WebViewPlugin::Create(render_frame->GetRenderView(),
                                     this,
                                     render_frame
-                                        ? render_frame->GetWebkitPreferences()
+                                        ? render_frame->GetBlinkPreferences()
                                         : blink::web_pref::WebPreferences(),
                                     html_data,
                                     GURL(kPluginPlaceholderDataURL))),

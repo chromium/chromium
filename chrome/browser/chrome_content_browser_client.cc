@@ -2085,8 +2085,8 @@ void MaybeAppendBlinkSettingsSwitchForFieldTrial(
     return;
   }
 
-  if (browser_command_line.HasSwitch(switches::kBlinkSettings) ||
-      command_line->HasSwitch(switches::kBlinkSettings)) {
+  if (browser_command_line.HasSwitch(blink::switches::kBlinkSettings) ||
+      command_line->HasSwitch(blink::switches::kBlinkSettings)) {
     // The field trials should be configured to force users that specify the
     // blink-settings flag into a group with no params, and we return
     // above if no params were specified, so it's an error if we reach
@@ -2096,7 +2096,7 @@ void MaybeAppendBlinkSettingsSwitchForFieldTrial(
     return;
   }
 
-  command_line->AppendSwitchASCII(switches::kBlinkSettings,
+  command_line->AppendSwitchASCII(blink::switches::kBlinkSettings,
                                   base::JoinString(blink_settings, ","));
 }
 

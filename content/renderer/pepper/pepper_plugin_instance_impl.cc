@@ -2539,7 +2539,7 @@ PP_Var PepperPluginInstanceImpl::GetDefaultCharSet(PP_Instance instance) {
   if (!render_frame_)
     return PP_MakeUndefined();
   return StringVar::StringToPPVar(
-      render_frame_->render_view()->webkit_preferences().default_encoding);
+      render_frame_->render_view()->GetBlinkPreferences().default_encoding);
 }
 
 void PepperPluginInstanceImpl::SetPluginToHandleFindRequests(

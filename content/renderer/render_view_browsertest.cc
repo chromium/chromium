@@ -75,6 +75,7 @@
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -3061,7 +3062,7 @@ TEST_F(RenderViewImplBlinkSettingsTest, Default) {
 
 TEST_F(RenderViewImplBlinkSettingsTest, CommandLine) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kBlinkSettings, "viewportEnabled=true");
+      blink::switches::kBlinkSettings, "viewportEnabled=true");
   DoSetUp();
   EXPECT_TRUE(settings()->ViewportEnabled());
 }
@@ -3088,7 +3089,7 @@ TEST_F(RenderViewImplBlinkSettingsTest, DefaultPageScaleSettings) {
   prefs.shrinks_viewport_contents_to_fit = true;
   prefs.default_minimum_page_scale_factor = 0.1f;
   prefs.default_maximum_page_scale_factor = 5.5f;
-  view()->SetWebkitPreferences(prefs);
+  view()->SetBlinkPreferences(prefs);
 
   EXPECT_EQ(1.f, view()->GetWebView()->PageScaleFactor());
   EXPECT_EQ(1.f, view()->GetWebView()->MinimumPageScaleFactor());

@@ -6,3 +6,12 @@ include_rules = [
   "+ui/base/mojom/ui_base_types.mojom-shared.h",
   "+ui/gfx/transform.h",
 ]
+
+specific_include_rules = {
+  "web_view_impl\.cc": [
+    "+base/command_line.h",
+    "+components/viz/common/features.h",
+    "+media/base/media_switches.h",
+    "+third_party/icu/source/common/unicode/uscript.h",
+  ],
+}

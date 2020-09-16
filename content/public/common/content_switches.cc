@@ -43,12 +43,6 @@ const char kAndroidFontsPath[]          = "android-fonts-path";
 // TODO(enne): remove this once app cache has been removed.
 const char kAppCacheForceEnabled[] = "app-cache-force-enabled";
 
-// Set blink settings. Format is <name>[=<value],<name>[=<value>],...
-// The names are declared in Settings.json5. For boolean type, use "true",
-// "false", or omit '=<value>' part to set to true. For enum type, use the int
-// value of the enum value. Applied after other command line flags and prefs.
-const char kBlinkSettings[]                 = "blink-settings";
-
 // Causes the browser process to crash on startup.
 const char kBrowserCrashTest[]              = "crash-test";
 
@@ -270,9 +264,6 @@ const char kDisableTestCerts[]              = "disable-test-root-certs";
 
 // Disable multithreaded GPU compositing of web content.
 const char kDisableThreadedCompositing[]    = "disable-threaded-compositing";
-
-// Disable multithreaded, compositor scrolling of web content.
-const char kDisableThreadedScrolling[]      = "disable-threaded-scrolling";
 
 // Disable V8 idle tasks.
 const char kDisableV8IdleTasks[]            = "disable-v8-idle-tasks";
@@ -569,13 +560,6 @@ const char kMojoCoreLibraryPath[] = "mojo-core-library-path";
 // Use a Mojo-based LocalStorage implementation.
 const char kMojoLocalStorage[]              = "mojo-local-storage";
 
-// Sets the timeout seconds of the network-quiet timers in IdlenessDetector.
-// Used by embedders who want to change the timeout time in order to run web
-// contents on various embedded devices and changeable network bandwidths in
-// different regions. For example, it's useful when using FirstMeaningfulPaint
-// signal to dismiss a splash screen.
-const char kNetworkQuietTimeout[] = "network-quiet-timeout";
-
 // Disables the use of a zygote process for forking child processes. Instead,
 // child processes will be forked and exec'd directly. Note that --no-sandbox
 // should also be used together with this flag because the sandbox needs the
@@ -594,13 +578,6 @@ const char kNumRasterThreads[]              = "num-raster-threads";
 // value to 'never' to disable throttling.
 const char kOverridePluginPowerSaverForTesting[] =
     "override-plugin-power-saver-for-testing";
-
-// Override the default value for the 'passive' field in javascript
-// addEventListener calls. Values are defined as:
-//  'documentonlytrue' to set the default be true only for document level nodes.
-//  'true' to set the default to be true on all nodes (when not specified).
-//  'forcealltrue' to force the value on all nodes.
-const char kPassiveListenersDefault[] = "passive-listeners-default";
 
 // Argument to the process type that indicates a PPAPI broker process type.
 const char kPpapiBrokerProcess[]            = "ppapi-broker";
@@ -768,11 +745,6 @@ const char kTouchEventFeatureDetectionAuto[] = "auto";
 const char kTouchEventFeatureDetectionEnabled[] = "enabled";
 //   disabled: touch events are disabled.
 const char kTouchEventFeatureDetectionDisabled[] = "disabled";
-
-// Controls how text selection granularity changes when touch text selection
-// handles are dragged. Should be "character" or "direction". If not specified,
-// the platform default is used.
-const char kTouchTextSelectionStrategy[]    = "touch-selection-strategy";
 
 // Accepts specified file URL of a trustable WebBundle file. This flag
 // should be used only for testing purpose.
