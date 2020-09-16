@@ -56,6 +56,42 @@ size_t NumExpectedPrivateCertificates() {
   return kVisibilities.size() * kNearbyShareNumPrivateCertificates;
 }
 
+base::Optional<nearbyshare::proto::EncryptedMetadata> BuildMetadata(
+    base::Optional<std::string> device_name,
+    base::Optional<std::string> full_name,
+    base::Optional<std::string> icon_url,
+    device::BluetoothAdapter* bluetooth_adapter) {
+  nearbyshare::proto::EncryptedMetadata metadata;
+  if (!device_name) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Cannot create private certificate metadata; missing device name.";
+    return base::nullopt;
+  }
+
+  metadata.set_device_name(*device_name);
+  if (full_name) {
+    metadata.set_full_name(*full_name);
+  }
+  if (icon_url) {
+    metadata.set_icon_url(*icon_url);
+  }
+  std::array<uint8_t, 6> bytes;
+  if (bluetooth_adapter &&
+      device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes)) {
+    metadata.set_bluetooth_mac_address(std::string(bytes.begin(), bytes.end()));
+  } else {
+    NS_LOG(WARNING) << __func__
+                    << ": No valid Bluetooth MAC available for private "
+                    << "certificate metadata.";
+    // TODO(https://crbug.com/1122641): Decide the best way to handle
+    // missing/invalid Bluetooth MAC addresses. Also, log a metric to track how
+    // often this happens.
+  }
+
+  return metadata;
+}
+
 void RecordGetDecryptedPublicCertificateResultMetric(
     GetDecryptedPublicCertificateResult result) {
   base::UmaHistogramEnumeration(
@@ -355,86 +391,52 @@ void NearbyShareCertificateManagerImpl::OnPrivateCertificateExpiration() {
   NS_LOG(VERBOSE)
       << __func__
       << ": Private certificate expiration detected; refreshing certificates.";
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   base::Time now = clock_->Now();
-  base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs;
-  base::flat_map<nearby_share::mojom::Visibility, base::Time> latest_not_after;
-  for (nearby_share::mojom::Visibility visibility : kVisibilities) {
-    num_valid_certs[visibility] = 0;
-    latest_not_after[visibility] = now;
-  }
+  certificate_storage_->RemoveExpiredPrivateCertificates(now);
 
-  // Remove all expired certificates.
-  std::vector<NearbySharePrivateCertificate> old_certs =
+  std::vector<NearbySharePrivateCertificate> certs =
       *certificate_storage_->GetPrivateCertificates();
-  std::vector<NearbySharePrivateCertificate> new_certs;
-  for (const NearbySharePrivateCertificate& cert : old_certs) {
-    if (IsNearbyShareCertificateExpired(
-            now, cert.not_after(),
-            /*use_public_certificate_tolerance=*/false)) {
-      continue;
-    }
-    ++num_valid_certs[cert.visibility()];
-    latest_not_after[cert.visibility()] =
-        std::max(latest_not_after[cert.visibility()], cert.not_after());
-    new_certs.push_back(cert);
-  }
-
-  if (!old_certs.empty() && new_certs.size() == old_certs.size()) {
+  if (certs.size() == NumExpectedPrivateCertificates()) {
     NS_LOG(VERBOSE) << __func__
                     << ": All private certificates are still valid.";
     private_certificate_expiration_scheduler_->HandleResult(/*success=*/true);
     return;
   }
 
-  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-      &NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh,
-      weak_ptr_factory_.GetWeakPtr(), std::move(new_certs),
-      std::move(num_valid_certs), std::move(latest_not_after)));
-}
+  // Determine how many private certificates of each visibility need to be
+  // created, and determine the validity period for the new certificates.
+  base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs;
+  base::flat_map<nearby_share::mojom::Visibility, base::Time> latest_not_after;
+  for (nearby_share::mojom::Visibility visibility : kVisibilities) {
+    num_valid_certs[visibility] = 0;
+    latest_not_after[visibility] = now;
+  }
+  for (const NearbySharePrivateCertificate& cert : certs) {
+    ++num_valid_certs[cert.visibility()];
+    latest_not_after[cert.visibility()] =
+        std::max(latest_not_after[cert.visibility()], cert.not_after());
+  }
 
-void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
-    std::vector<NearbySharePrivateCertificate> new_certs,
-    base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs,
-    base::flat_map<nearby_share::mojom::Visibility, base::Time>
-        latest_not_after,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
-  nearbyshare::proto::EncryptedMetadata metadata;
-
-  base::Optional<std::string> device_name =
-      local_device_data_manager_->GetDeviceName();
-  if (!device_name) {
-    NS_LOG(WARNING)
-        << __func__
-        << ": Cannot create private certificates; missing device name.";
+  base::Optional<nearbyshare::proto::EncryptedMetadata> metadata =
+      BuildMetadata(local_device_data_manager_->GetDeviceName(),
+                    local_device_data_manager_->GetFullName(),
+                    local_device_data_manager_->GetIconUrl(),
+                    bluetooth_adapter.get());
+  if (!metadata) {
     private_certificate_expiration_scheduler_->HandleResult(/*success=*/false);
     return;
   }
-  metadata.set_device_name(*device_name);
 
-  base::Optional<std::string> full_name =
-      local_device_data_manager_->GetFullName();
-  base::Optional<std::string> icon_url =
-      local_device_data_manager_->GetIconUrl();
-  if (full_name) {
-    metadata.set_full_name(*full_name);
-  }
-  if (icon_url) {
-    metadata.set_icon_url(*icon_url);
-  }
-
-  std::array<uint8_t, 6> bytes;
-  if (bluetooth_adapter &&
-      device::ParseBluetoothAddress(bluetooth_adapter->GetAddress(), bytes)) {
-    metadata.set_bluetooth_mac_address(std::string(bytes.begin(), bytes.end()));
-  } else {
-    NS_LOG(WARNING) << __func__
-                    << ": No valid Bluetooth MAC available during private "
-                    << "certificate creation.";
-    // TODO(https://crbug.com/1122641): Decide the best way to handle
-    // missing/invalid Bluetooth MAC addresses. Also, log a metric to track how
-    // often this happens.
-  }
-
+  // Add new certificates if necessary. Each visibility should have
+  // kNearbyShareNumPrivateCertificates.
   NS_LOG(VERBOSE)
       << __func__ << ": Creating "
       << kNearbyShareNumPrivateCertificates -
@@ -443,18 +445,17 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
       << kNearbyShareNumPrivateCertificates -
              num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
       << " selected-contacts visibility private certificates.";
-  // Add new certificates if necessary. Each visibility should have
-  // kNearbyShareNumPrivateCertificates.
   for (nearby_share::mojom::Visibility visibility : kVisibilities) {
     while (num_valid_certs[visibility] < kNearbyShareNumPrivateCertificates) {
-      new_certs.emplace_back(
-          visibility, /*not_before=*/latest_not_after[visibility], metadata);
+      certs.emplace_back(visibility,
+                         /*not_before=*/latest_not_after[visibility],
+                         *metadata);
       ++num_valid_certs[visibility];
-      latest_not_after[visibility] = new_certs.back().not_after();
+      latest_not_after[visibility] = certs.back().not_after();
     }
   }
 
-  certificate_storage_->ReplacePrivateCertificates(new_certs);
+  certificate_storage_->ReplacePrivateCertificates(certs);
   NotifyPrivateCertificatesChanged();
   private_certificate_expiration_scheduler_->HandleResult(/*success=*/true);
 

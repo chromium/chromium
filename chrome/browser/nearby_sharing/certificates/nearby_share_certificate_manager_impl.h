@@ -150,10 +150,6 @@ class NearbyShareCertificateManagerImpl
   void OnPrivateCertificateExpiration();
 
   void FinishPrivateCertificateRefresh(
-      std::vector<NearbySharePrivateCertificate> new_certs,
-      base::flat_map<nearby_share::mojom::Visibility, size_t> num_valid_certs,
-      base::flat_map<nearby_share::mojom::Visibility, base::Time>
-          latest_not_after,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
 
   // Invoked by the certificate upload scheduler when private certificates need
