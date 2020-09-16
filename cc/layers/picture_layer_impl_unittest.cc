@@ -6219,6 +6219,22 @@ TEST_P(LCDTextTest, Filter) {
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no filter");
 }
 
+TEST_P(LCDTextTest, FilterAnimation) {
+  FilterOperations blur_filter;
+  blur_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
+  SetFilter(layer_, blur_filter);
+  CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect, "filter");
+
+  GetEffectNode(layer_)->has_potential_filter_animation = true;
+  SetFilter(layer_, FilterOperations());
+  CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
+                     "filter animation");
+
+  GetEffectNode(layer_)->has_potential_filter_animation = false;
+  SetFilter(layer_, FilterOperations());
+  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no filter");
+}
+
 TEST_P(LCDTextTest, BackdropFilter) {
   FilterOperations backdrop_filter;
   backdrop_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
@@ -6230,6 +6246,28 @@ TEST_P(LCDTextTest, BackdropFilter) {
                      descendant_);
 
   SetBackdropFilter(descendant_, FilterOperations());
+  UpdateDrawProperties(host_impl()->active_tree());
+  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no backdrop-filter",
+                     layer_);
+}
+
+TEST_P(LCDTextTest, BackdropFilterAnimation) {
+  FilterOperations backdrop_filter;
+  backdrop_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
+  SetBackdropFilter(descendant_, backdrop_filter);
+  UpdateDrawProperties(host_impl()->active_tree());
+  CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
+                     "backdrop-filter", layer_);
+  CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "backdrop-filter",
+                     descendant_);
+
+  GetEffectNode(descendant_)->has_potential_backdrop_filter_animation = true;
+  SetBackdropFilter(descendant_, FilterOperations());
+  UpdateDrawProperties(host_impl()->active_tree());
+  CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
+                     "backdrop-filter animation", layer_);
+
+  GetEffectNode(descendant_)->has_potential_backdrop_filter_animation = false;
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no backdrop-filter",
                      layer_);

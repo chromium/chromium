@@ -777,7 +777,8 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
     } else {
       node->target_id = effect_tree->parent(node)->target_id;
     }
-    if (!node->backdrop_filters.IsEmpty())
+    if (!node->backdrop_filters.IsEmpty() ||
+        node->has_potential_backdrop_filter_animation)
       last_backdrop_filter = node->id;
     node->affected_by_backdrop_filter = false;
   }
@@ -795,7 +796,8 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
       current_target_id = kInvalidNodeId;
     // While down to kContentsRootNodeId, move |current_target_id| forward if
     // |node| has backdrop filter.
-    if (!node->backdrop_filters.IsEmpty() &&
+    if ((!node->backdrop_filters.IsEmpty() ||
+         node->has_potential_backdrop_filter_animation) &&
         current_target_id == kInvalidNodeId)
       current_target_id = node->target_id;
   }
