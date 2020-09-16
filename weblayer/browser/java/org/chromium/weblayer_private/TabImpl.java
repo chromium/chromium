@@ -19,6 +19,7 @@ import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 import android.webkit.ValueCallback;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -990,21 +991,22 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
             hideFindInPageUiAndNotifyClient();
         }
 
+        BrowserViewController viewController = getViewController();
         // Don't animate when hiding the controls unless an animation was requested by
         // BrowserControlsContainerView.
         boolean animate = constraint != BrowserControlsState.HIDDEN
-                || mBrowser.getViewController().shouldAnimateBrowserControlsHeightChanges();
+                || (viewController != null
+                        && viewController.shouldAnimateBrowserControlsHeightChanges());
 
         // If the renderer is not controlling the offsets (possibly hung or crashed). Then this
         // needs to force the controls to show (because notification from the renderer will not
         // happen). For js dialogs, the renderer's update will come when the dialog is hidden, and
         // since that animates from 0 height, it causes a flicker since the override is already set
         // to fully show. Thus, disable animation.
-        if (constraint == BrowserControlsState.SHOWN && mBrowser != null
-                && mBrowser.getActiveTab() == this
+        if (constraint == BrowserControlsState.SHOWN && mBrowser.getActiveTab() == this
                 && !TabImplJni.get().isRendererControllingBrowserControlsOffsets(mNativeTab)) {
             mViewAndroidDelegate.setIgnoreRendererUpdates(true);
-            getViewController().showControls();
+            if (viewController != null) viewController.showControls();
             animate = false;
         } else {
             mViewAndroidDelegate.setIgnoreRendererUpdates(false);
@@ -1043,10 +1045,12 @@ public final class TabImpl extends ITab.Stub implements LoginPrompt.Observer {
 
     /**
      * Returns the BrowserViewController for this TabImpl, but only if this
-     * is the active TabImpl.
+     * is the active TabImpl. Can also return null if in the middle of shutdown
+     * or Browser is not attached to any activity.
      */
+    @Nullable
     private BrowserViewController getViewController() {
-        return (mBrowser.getActiveTab() == this) ? mBrowser.getViewController() : null;
+        return (mBrowser.getActiveTab() == this) ? mBrowser.getPossiblyNullViewController() : null;
     }
 
     @VisibleForTesting
