@@ -203,27 +203,29 @@ void TouchFactory::SetupXI2ForXWindow(x11::Window window) {
   auto* connection = x11::Connection::Get();
 
   x11::Input::EventMask mask{};
+  mask.mask.push_back({});
+  auto* mask_data = mask.mask.data();
 
-  SetXinputMask(&mask, x11::Input::CrossingEvent::Enter);
-  SetXinputMask(&mask, x11::Input::CrossingEvent::Leave);
-  SetXinputMask(&mask, x11::Input::CrossingEvent::FocusIn);
-  SetXinputMask(&mask, x11::Input::CrossingEvent::FocusOut);
+  SetXinputMask(mask_data, x11::Input::CrossingEvent::Enter);
+  SetXinputMask(mask_data, x11::Input::CrossingEvent::Leave);
+  SetXinputMask(mask_data, x11::Input::CrossingEvent::FocusIn);
+  SetXinputMask(mask_data, x11::Input::CrossingEvent::FocusOut);
 
-  SetXinputMask(&mask, x11::Input::DeviceEvent::TouchBegin);
-  SetXinputMask(&mask, x11::Input::DeviceEvent::TouchUpdate);
-  SetXinputMask(&mask, x11::Input::DeviceEvent::TouchEnd);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::TouchBegin);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::TouchUpdate);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::TouchEnd);
 
-  SetXinputMask(&mask, x11::Input::DeviceEvent::ButtonPress);
-  SetXinputMask(&mask, x11::Input::DeviceEvent::ButtonRelease);
-  SetXinputMask(&mask, x11::Input::DeviceEvent::Motion);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::ButtonPress);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::ButtonRelease);
+  SetXinputMask(mask_data, x11::Input::DeviceEvent::Motion);
   // HierarchyChanged and DeviceChanged allow X11EventSource to still pick up
   // these events.
-  SetXinputMask(&mask, x11::Input::HierarchyEvent::opcode);
-  SetXinputMask(&mask, x11::Input::DeviceChangedEvent::opcode);
+  SetXinputMask(mask_data, x11::Input::HierarchyEvent::opcode);
+  SetXinputMask(mask_data, x11::Input::DeviceChangedEvent::opcode);
 #if defined(OS_CHROMEOS)
   if (base::SysInfo::IsRunningOnChromeOS()) {
-    SetXinputMask(&mask, x11::Input::DeviceEvent::KeyPress);
-    SetXinputMask(&mask, x11::Input::DeviceEvent::KeyRelease);
+    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyPress);
+    SetXinputMask(mask_data, x11::Input::DeviceEvent::KeyRelease);
   }
 #endif
 
