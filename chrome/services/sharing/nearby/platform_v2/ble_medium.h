@@ -30,8 +30,10 @@ class BleMedium : public api::BleMedium,
   BleMedium& operator=(const BleMedium&) = delete;
 
   // api::BleMedium:
-  bool StartAdvertising(const std::string& service_id,
-                        const ByteArray& advertisement) override;
+  bool StartAdvertising(
+      const std::string& service_id,
+      const ByteArray& advertisement,
+      const std::string& fast_advertisement_service_uuid) override;
   bool StopAdvertising(const std::string& service_id) override;
   bool StartScanning(
       const std::string& service_id,

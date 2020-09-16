@@ -40,7 +40,6 @@ const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kRemoteEndpointInfo[] = {0x0d, 0x07, 0x06, 0x08, 0x09};
 const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
-const int32_t kQuality = 5201314;
 const int64_t kPayloadId = 612721831;
 const char kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
 const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
@@ -122,8 +121,8 @@ class FakeConnectionLifecycleListener
   }
 
   void OnBandwidthChanged(const std::string& endpoint_id,
-                          int32_t quality) override {
-    bandwidth_changed_cb.Run(endpoint_id, quality);
+                          mojom::Medium medium) override {
+    bandwidth_changed_cb.Run(endpoint_id, medium);
   }
 
   mojo::Receiver<mojom::ConnectionLifecycleListener> receiver{this};
@@ -135,7 +134,7 @@ class FakeConnectionLifecycleListener
       base::DoNothing();
   base::RepeatingCallback<void(const std::string&)> disconnected_cb =
       base::DoNothing();
-  base::RepeatingCallback<void(const std::string&, int32_t)>
+  base::RepeatingCallback<void(const std::string&, mojom::Medium)>
       bandwidth_changed_cb = base::DoNothing();
 };
 
@@ -553,9 +552,9 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnBandwidthUpgrade) {
   base::RunLoop upgraded_run_loop;
   fake_connection_life_cycle_listener.bandwidth_changed_cb =
       base::BindLambdaForTesting(
-          [&](const std::string& endpoint_id, int32_t quality) {
+          [&](const std::string& endpoint_id, mojom::Medium medium) {
             EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_id);
-            EXPECT_EQ(kQuality, quality);
+            EXPECT_EQ(mojom::Medium::kWebRtc, medium);
             upgraded_run_loop.Quit();
           });
 
@@ -564,7 +563,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnBandwidthUpgrade) {
       .WillOnce([&](ClientProxy* client, const std::string& endpoint_id) {
         client_proxy = client;
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_id);
-        client_proxy->OnBandwidthChanged(endpoint_id, kQuality);
+        client_proxy->OnBandwidthChanged(endpoint_id, Medium::WEB_RTC);
         return Status{Status::kSuccess};
       });
   base::RunLoop bandwidth_upgrade_run_loop;

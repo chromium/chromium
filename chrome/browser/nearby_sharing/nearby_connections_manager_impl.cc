@@ -504,7 +504,7 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
 
 void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     const std::string& endpoint_id,
-    int32_t quality) {
+    Medium medium) {
   NS_LOG(VERBOSE) << __func__;
   // TODO(crbug/1111458): Support TransferManager.
 }

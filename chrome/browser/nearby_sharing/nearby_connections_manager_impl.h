@@ -92,6 +92,7 @@ class NearbyConnectionsManagerImpl
   using PayloadTransferUpdatePtr =
       location::nearby::connections::mojom::PayloadTransferUpdatePtr;
   using Status = location::nearby::connections::mojom::Status;
+  using Medium = location::nearby::connections::mojom::Medium;
 
   FRIEND_TEST_ALL_PREFIXES(NearbyConnectionsManagerImplTest,
                            DiscoveryProcessStopped);
@@ -114,7 +115,7 @@ class NearbyConnectionsManagerImpl
                             Status status) override;
   void OnDisconnected(const std::string& endpoint_id) override;
   void OnBandwidthChanged(const std::string& endpoint_id,
-                          int32_t quality) override;
+                          Medium medium) override;
 
   // PayloadListener:
   void OnPayloadReceived(const std::string& endpoint_id,

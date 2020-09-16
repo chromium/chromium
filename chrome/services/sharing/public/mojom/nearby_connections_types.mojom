@@ -223,3 +223,16 @@ enum BandwidthQuality {
   // High quality, e.g. connected via WebRTC or WiFi LAN.
   kHigh,
 };
+
+enum Medium {
+  kUnknown,
+  kMdns,
+  kBluetooth,
+  kWifiHotspot,
+  kBle,
+  kWifiLan,
+  kWifiAware,
+  kNfc,
+  kWifiDirect,
+  kWebRtc,
+};

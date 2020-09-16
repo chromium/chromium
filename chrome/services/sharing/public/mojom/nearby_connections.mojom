@@ -89,7 +89,7 @@ interface ConnectionLifecycleListener {
   //
   // endpoint_id - The identifier for the remote endpoint.
   // quality     - The new quality for the connection.
-  OnBandwidthChanged(string endpoint_id, int32 quality);
+  OnBandwidthChanged(string endpoint_id, Medium medium);
 };
 
 // Listener for payload status. Methods in this interface are called from

@@ -100,6 +100,31 @@ mojom::PayloadStatus PayloadStatusToMojom(PayloadProgressInfo::Status status) {
   }
 }
 
+mojom::Medium MediumToMojom(Medium medium) {
+  switch (medium) {
+    case Medium::UNKNOWN_MEDIUM:
+      return mojom::Medium::kUnknown;
+    case Medium::MDNS:
+      return mojom::Medium::kMdns;
+    case Medium::BLUETOOTH:
+      return mojom::Medium::kBluetooth;
+    case Medium::WIFI_HOTSPOT:
+      return mojom::Medium::kWifiHotspot;
+    case Medium::BLE:
+      return mojom::Medium::kBle;
+    case Medium::WIFI_LAN:
+      return mojom::Medium::kWifiLan;
+    case Medium::WIFI_AWARE:
+      return mojom::Medium::kWifiAware;
+    case Medium::NFC:
+      return mojom::Medium::kNfc;
+    case Medium::WIFI_DIRECT:
+      return mojom::Medium::kWifiDirect;
+    case Medium::WEB_RTC:
+      return mojom::Medium::kWebRtc;
+  }
+}
+
 BooleanMediumSelector MediumSelectorFromMojom(
     mojom::MediumSelection* allowed_mediums) {
   return BooleanMediumSelector{

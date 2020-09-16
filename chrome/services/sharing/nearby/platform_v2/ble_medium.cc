@@ -19,8 +19,10 @@ BleMedium::~BleMedium() {
   }
 }
 
-bool BleMedium::StartAdvertising(const std::string& service_id,
-                                 const ByteArray& advertisement) {
+bool BleMedium::StartAdvertising(
+    const std::string& service_id,
+    const ByteArray& advertisement,
+    const std::string& fast_advertisement_service_uuid) {
   StopAdvertising(service_id);
 
   auto service_uuid = device::BluetoothUUID(service_id);
@@ -202,7 +204,8 @@ void BleMedium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
     if (ble_peripheral->GetAdvertisementBytes(service_id).Empty())
       continue;
 
-    it.second.peripheral_discovered_cb(*ble_peripheral, service_id);
+    it.second.peripheral_discovered_cb(*ble_peripheral, service_id,
+                                       /*fast_advertisement=*/true);
   }
 }
 

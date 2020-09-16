@@ -26,6 +26,8 @@ namespace {
 
 const char kServiceName[] = "NearbySharing";
 const char kServiceId1[] = "00000000-0000-0000-0000-000000000001";
+const char kFastAdvertisementServiceId1[] =
+    "00000000-0000-0000-0000-000000000011";
 const char kServiceId2[] = "00000000-0000-0000-0000-000000000002";
 const char kDeviceAddress[] = "DeviceAddress";
 const char kDeviceServiceData1Str[] = "Device_Advertisement1";
@@ -62,7 +64,8 @@ class BleMediumTest : public testing::Test {
     discovered_peripheral_callback_ = {
         .peripheral_discovered_cb =
             [this](api::BlePeripheral& peripheral,
-                   const std::string& service_id) {
+                   const std::string& service_id, bool fast_advertisement) {
+              EXPECT_TRUE(fast_advertisement);
               OnPeripheralDiscovered(peripheral, service_id);
             },
         .peripheral_lost_cb =
@@ -224,14 +227,16 @@ TEST_F(BleMediumTest, TestAdvertising) {
   ASSERT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
       device::BluetoothUUID(kServiceId2)));
 
-  ble_medium_->StartAdvertising(kServiceId1, ByteArray(kDeviceServiceData1Str));
+  ble_medium_->StartAdvertising(kServiceId1, ByteArray(kDeviceServiceData1Str),
+                                kFastAdvertisementServiceId1);
   EXPECT_EQ(GetByteVector(kDeviceServiceData1Str),
             *fake_adapter_->GetRegisteredAdvertisementServiceData(
                 device::BluetoothUUID(kServiceId1)));
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
       device::BluetoothUUID(kServiceId2)));
 
-  ble_medium_->StartAdvertising(kServiceId2, ByteArray(kDeviceServiceData2Str));
+  ble_medium_->StartAdvertising(kServiceId2, ByteArray(kDeviceServiceData2Str),
+                                kFastAdvertisementServiceId1);
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
       device::BluetoothUUID(kServiceId1)));
   EXPECT_EQ(GetByteVector(kDeviceServiceData2Str),

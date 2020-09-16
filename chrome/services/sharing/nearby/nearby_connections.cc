@@ -64,11 +64,11 @@ ConnectionRequestInfo CreateConnectionRequestInfo(
                 remote->OnDisconnected(endpoint_id);
               },
           .bandwidth_changed_cb =
-              [remote](const std::string& endpoint_id, std::int32_t quality) {
+              [remote](const std::string& endpoint_id, Medium medium) {
                 if (!remote)
                   return;
 
-                remote->OnBandwidthChanged(endpoint_id, quality);
+                remote->OnBandwidthChanged(endpoint_id, MediumToMojom(medium));
               },
       },
   };
