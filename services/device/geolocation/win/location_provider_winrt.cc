@@ -33,7 +33,6 @@ using ABI::Windows::Devices::Geolocation::PositionAccuracy;
 using ABI::Windows::Devices::Geolocation::PositionChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::PositionStatus;
 using ABI::Windows::Devices::Geolocation::StatusChangedEventArgs;
-using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::IReference;
 using ABI::Windows::Foundation::ITypedEventHandler;
 using ABI::Windows::Foundation::TimeSpan;

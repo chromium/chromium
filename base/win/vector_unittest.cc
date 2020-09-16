@@ -86,7 +86,6 @@ namespace win {
 
 namespace {
 
-using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::Uri;
 using ABI::Windows::Foundation::Collections::CollectionChange;
 using ABI::Windows::Foundation::Collections::CollectionChange_ItemChanged;
