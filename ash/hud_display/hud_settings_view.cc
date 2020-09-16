@@ -5,13 +5,17 @@
 #include "ash/hud_display/hud_settings_view.h"
 
 #include "ash/hud_display/hud_properties.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
+#include "cc/debug/layer_tree_debug_state.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -48,7 +52,7 @@ class HUDCheckboxHandler {
 
 namespace {
 
-base::RepeatingCallback<void(views::Checkbox*)> GetUpdateStateCallback(
+base::RepeatingCallback<void(views::Checkbox*)> GetVisDebugUpdateStateCallback(
     const bool viz::DebugRendererSettings::*field) {
   return base::BindRepeating(
       [](const bool viz::DebugRendererSettings::*field,
@@ -62,7 +66,7 @@ base::RepeatingCallback<void(views::Checkbox*)> GetUpdateStateCallback(
       field);
 }
 
-base::RepeatingCallback<void(views::Checkbox*)> GetHandleClickCallback(
+base::RepeatingCallback<void(views::Checkbox*)> GetVisDebugHandleClickCallback(
     bool viz::DebugRendererSettings::*field) {
   return base::BindRepeating(
       [](bool viz::DebugRendererSettings::*field, views::Checkbox* checkbox) {
@@ -73,6 +77,37 @@ base::RepeatingCallback<void(views::Checkbox*)> GetHandleClickCallback(
             manager->debug_renderer_settings();
         debug_settings.*field = checkbox->GetChecked();
         manager->UpdateDebugRendererSettings(debug_settings);
+      },
+      field);
+}
+
+base::RepeatingCallback<void(views::Checkbox*)> GetCCDebugUpdateStateCallback(
+    const bool cc::LayerTreeDebugState::*field) {
+  return base::BindRepeating(
+      [](const bool cc::LayerTreeDebugState::*field,
+         views::Checkbox* checkbox) {
+        bool is_enabled = false;
+        aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
+        for (auto* window : root_windows) {
+          ui::Compositor* compositor = window->GetHost()->compositor();
+          is_enabled |= compositor->GetLayerTreeDebugState().*field;
+        }
+        checkbox->SetChecked(is_enabled);
+      },
+      field);
+}
+
+base::RepeatingCallback<void(views::Checkbox*)> GetCCDebugHandleClickCallback(
+    bool cc::LayerTreeDebugState::*field) {
+  return base::BindRepeating(
+      [](bool cc::LayerTreeDebugState::*field, views::Checkbox* checkbox) {
+        aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
+        for (auto* window : root_windows) {
+          ui::Compositor* compositor = window->GetHost()->compositor();
+          cc::LayerTreeDebugState state = compositor->GetLayerTreeDebugState();
+          state.*field = checkbox->GetChecked();
+          compositor->SetLayerTreeDebugState(state);
+        }
       },
       field);
 }
@@ -339,25 +374,30 @@ HUDSettingsView::HUDSettingsView() {
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(this, checkbox_contaner,
                    base::ASCIIToUTF16("Tint composited content")),
-      GetUpdateStateCallback(
+      GetVisDebugUpdateStateCallback(
           &viz::DebugRendererSettings::tint_composited_content),
-      GetHandleClickCallback(
+      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::tint_composited_content)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(this, checkbox_contaner,
                    base::ASCIIToUTF16("Show overdraw feedback")),
-      GetUpdateStateCallback(
+      GetVisDebugUpdateStateCallback(
           &viz::DebugRendererSettings::show_overdraw_feedback),
-      GetHandleClickCallback(
+      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::show_overdraw_feedback)));
   checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
       add_checkbox(this, checkbox_contaner,
                    base::ASCIIToUTF16("Show aggregated damage")),
-      GetUpdateStateCallback(
+      GetVisDebugUpdateStateCallback(
           &viz::DebugRendererSettings::show_aggregated_damage),
-      GetHandleClickCallback(
+      GetVisDebugHandleClickCallback(
           &viz::DebugRendererSettings::show_aggregated_damage)));
-
+  checkbox_handlers_.push_back(std::make_unique<HUDCheckboxHandler>(
+      add_checkbox(this, checkbox_contaner,
+                   base::ASCIIToUTF16("Show paint rect.")),
+      GetCCDebugUpdateStateCallback(&cc::LayerTreeDebugState::show_paint_rects),
+      GetCCDebugHandleClickCallback(
+          &cc::LayerTreeDebugState::show_paint_rects)));
   AddChildView(std::make_unique<AnimationSpeedControl>());
 }
 
