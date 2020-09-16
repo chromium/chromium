@@ -6463,6 +6463,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kTemporaryHoldingSpace)},
 #endif
 
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+    {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
+     flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

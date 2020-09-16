@@ -4510,6 +4510,12 @@ const char kEnableMediaFeedsBackgroundFetchDescription[] =
     "Enables the Media Feeds background fetch feature which allows feeds to be "
     "fetched in the background. Requires #enable-media-feeds to be enabled. ";
 
+const char kEnableOopPrintDriversName[] =
+    "Enables Out-of-Process Printer Drivers";
+const char kEnableOopPrintDriversDescription[] =
+    "Enables printing interactions with the operating system to be performed "
+    "out-of-process.";
+
 const char kRemoteCopyReceiverName[] =
     "Enables the remote copy feature to receive messages";
 const char kRemoteCopyReceiverDescription[] =

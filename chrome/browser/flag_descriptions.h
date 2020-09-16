@@ -2629,6 +2629,9 @@ extern const char kEnableMediaFeedsDescription[];
 extern const char kEnableMediaFeedsBackgroundFetchName[];
 extern const char kEnableMediaFeedsBackgroundFetchDescription[];
 
+extern const char kEnableOopPrintDriversName[];
+extern const char kEnableOopPrintDriversDescription[];
+
 extern const char kRemoteCopyReceiverName[];
 extern const char kRemoteCopyReceiverDescription[];
 
