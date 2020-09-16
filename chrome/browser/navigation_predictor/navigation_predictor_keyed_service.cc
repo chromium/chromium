@@ -4,15 +4,52 @@
 
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_renderer_warmup_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+
+void WritePredictionToConsoleLog(
+    const NavigationPredictorKeyedService::Prediction& prediction) {
+  if (!prediction.web_contents())
+    return;
+
+  base::DictionaryValue message;
+
+  base::ListValue url_list;
+  for (const GURL& url : prediction.sorted_predicted_urls()) {
+    url_list.Append(url.spec());
+  }
+
+  message.SetKey("predictions", std::move(url_list));
+  if (prediction.source_document_url()) {
+    message.SetStringKey("source_url",
+                         prediction.source_document_url()->spec());
+  }
+
+  std::string json_body;
+  if (!base::JSONWriter::Write(message, &json_body)) {
+    NOTREACHED();
+    return;
+  }
+
+  prediction.web_contents()->GetMainFrame()->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kInfo,
+      "JSON Navigation Prediction: " + json_body);
+}
+
+}  // namespace
 
 NavigationPredictorKeyedService::Prediction::Prediction(
     content::WebContents* web_contents,
@@ -157,6 +194,11 @@ void NavigationPredictorKeyedService::OnPredictionUpdated(
                                 prediction_source, sorted_predicted_urls);
   for (auto& observer : observer_list_) {
     observer.OnPredictionUpdated(last_prediction_);
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "console-log-json-navigation-predictions-for-testing")) {
+    WritePredictionToConsoleLog(last_prediction_.value());
   }
 }
 
