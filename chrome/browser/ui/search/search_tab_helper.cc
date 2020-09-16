@@ -212,8 +212,7 @@ void SearchTabHelper::OnTabDeactivated() {
 
 void SearchTabHelper::OnTabClosing() {
   if (search::IsInstantNTP(web_contents_) && chrome_colors_service_)
-    chrome_colors_service_->RevertThemeChangesForTab(
-        web_contents_, chrome_colors::RevertReason::TAB_CLOSED);
+    chrome_colors_service_->RevertThemeChangesForTab(web_contents_);
 }
 
 void SearchTabHelper::DidStartNavigation(
@@ -228,10 +227,8 @@ void SearchTabHelper::DidStartNavigation(
     return;
 
   // When navigating away from NTP we should revert all the unconfirmed state.
-  if (search::IsInstantNTP(web_contents_) && chrome_colors_service_) {
-    chrome_colors_service_->RevertThemeChangesForTab(
-        web_contents_, chrome_colors::RevertReason::NAVIGATION);
-  }
+  if (search::IsInstantNTP(web_contents_) && chrome_colors_service_)
+    chrome_colors_service_->RevertThemeChangesForTab(web_contents_);
 
   if (search::IsNTPOrRelatedURL(navigation_handle->GetURL(), profile())) {
     // Set the title on any pending entry corresponding to the NTP. This

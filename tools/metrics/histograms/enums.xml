@@ -9325,6 +9325,9 @@ histogram as enum -->
 </enum>
 
 <enum name="ChromeColorsRevertReason">
+  <obsolete>
+    Deprecated as of 12/2019.
+  </obsolete>
   <int value="0" label="Menu Cancel"/>
   <int value="1" label="Search provider change"/>
   <int value="2" label="Tab closed"/>
