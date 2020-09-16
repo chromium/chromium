@@ -197,7 +197,7 @@ class ResourceEditor(object):
     # Raise an error on failure.
     if ret == 0:
       error = win32api.GetLastError()
-      print "error", error
+      print ("error", error)
       raise RuntimeError(error)
     self._modified = True
 

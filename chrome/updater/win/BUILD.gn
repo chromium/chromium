@@ -13,6 +13,7 @@ group("win") {
   deps = [
     ":updater",
     "//chrome/updater/win/installer:installer",
+    "//chrome/updater/win/signing",
   ]
 }
 
