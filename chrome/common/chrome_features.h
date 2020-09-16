@@ -221,9 +221,6 @@ extern const base::Feature kEventBasedStatusReporting;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kExportTaggedPDF;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kExternalExtensionDefaultButtonControl;
 
 #if BUILDFLAG(ENABLE_PLUGINS)

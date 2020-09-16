@@ -5999,9 +5999,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordCheck)},
 #endif  // defined(OS_ANDROID)
 
-    {"export-tagged-pdf", flag_descriptions::kExportTaggedPDFName,
-     flag_descriptions::kExportTaggedPDFDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kExportTaggedPDF)},
     {"double-buffer-compositing",
      flag_descriptions::kDoubleBufferCompositingName,
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,

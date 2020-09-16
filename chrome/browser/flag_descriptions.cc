@@ -427,10 +427,6 @@ const char kEnablePasswordsAccountStorageIPHDescription[] =
     "Enables in-product help bubbles about storing passwords in a second, "
     "Gaia-account-scoped storage for signed-in but not syncing users";
 
-const char kExportTaggedPDFName[] = "Export Tagged PDF";
-const char kExportTaggedPDFDescription[] =
-    "When printing to a PDF file, generated a tagged (accessible) PDF.";
-
 const char kFocusMode[] = "Focus Mode";
 const char kFocusModeDescription[] =
     "If enabled, allows the user to switch to Focus Mode";

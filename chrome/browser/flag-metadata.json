@@ -2489,11 +2489,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "export-tagged-pdf",
-    "owners": [ "dmazzoni", "thestig" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "extend-open-in-files-support",
     "owners": [ "ewannpv", "gambard" ],
     "expiry_milestone": 89
