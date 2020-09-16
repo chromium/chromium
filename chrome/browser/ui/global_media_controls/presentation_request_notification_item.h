@@ -23,7 +23,6 @@ class PresentationRequestNotificationItem
     : public media_message_center::MediaNotificationItem {
  public:
   PresentationRequestNotificationItem(
-      const std::string& id,
       MediaNotificationService* notification_service,
       const content::PresentationRequest& request,
       std::unique_ptr<media_router::StartPresentationContext> context);

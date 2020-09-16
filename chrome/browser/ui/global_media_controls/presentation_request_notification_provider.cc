@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/unguessable_token.h"
 #include "chrome/browser/media/router/media_router.h"
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
@@ -137,6 +136,6 @@ void PresentationRequestNotificationProvider::CreateItemForPresentationRequest(
     std::unique_ptr<media_router::StartPresentationContext> context) {
   // This may replace an existing item, which is the right thing to do if we've
   // reached this point.
-  item_.emplace(base::UnguessableToken().ToString(), notification_service_,
-                request, std::move(context));
+  item_.emplace(notification_service_, request, std::move(context));
+  notification_service_->ShowNotification(item_->id());
 }
