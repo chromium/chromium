@@ -913,7 +913,7 @@
       },
       'Lollipop Phone Tester': {
         'swarming': {
-          'shards': 13,
+          'shards': 10,
         },
       },
       'Win10 Tests x64': {
@@ -2004,6 +2004,11 @@
       'android-marshmallow-x86-rel', # crbug.com/1098111
     ],
     'modifications': {
+      'Lollipop Phone Tester': {
+        'swarming': {
+          'shards': 8,
+        },
+      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_browsertests.filter',
