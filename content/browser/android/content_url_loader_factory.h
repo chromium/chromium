@@ -8,8 +8,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "content/browser/loader/non_network_url_loader_factory_base.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_LOADER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_
-#define CONTENT_BROWSER_LOADER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_
+#ifndef CONTENT_PUBLIC_BROWSER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_
+#define CONTENT_PUBLIC_BROWSER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_
 
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -27,7 +28,8 @@ namespace content {
 // - TODO(lukasza): Responding with file contents: duplicated across
 //   FileURLLoaderFactory, ContentURLLoaderFactory (with some additional
 //   code sharing probably possible with ExtensionURLLoaderFactory).
-class NonNetworkURLLoaderFactoryBase : public network::mojom::URLLoaderFactory {
+class CONTENT_EXPORT NonNetworkURLLoaderFactoryBase
+    : public network::mojom::URLLoaderFactory {
  protected:
   // Constructs NonNetworkURLLoaderFactoryBase object that will self-delete once
   // all receivers disconnect (including |factory_receiver| below as well as
@@ -54,4 +56,4 @@ class NonNetworkURLLoaderFactoryBase : public network::mojom::URLLoaderFactory {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_LOADER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_NON_NETWORK_URL_LOADER_FACTORY_BASE_H_

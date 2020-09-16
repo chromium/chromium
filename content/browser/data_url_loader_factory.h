@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_DATA_URL_LOADER_FACTORY_H_
 
 #include "base/macros.h"
-#include "content/browser/loader/non_network_url_loader_factory_base.h"
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

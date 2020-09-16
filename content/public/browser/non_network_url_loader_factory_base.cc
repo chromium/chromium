@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/loader/non_network_url_loader_factory_base.h"
+#include "content/public/browser/non_network_url_loader_factory_base.h"
 
 #include <utility>
 
