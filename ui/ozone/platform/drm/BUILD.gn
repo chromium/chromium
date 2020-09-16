@@ -17,8 +17,8 @@ declare_args() {
 
 source_set("gbm") {
   sources = [
-    "client_native_pixmap_factory_gbm.cc",
-    "client_native_pixmap_factory_gbm.h",
+    "client_native_pixmap_factory_drm.cc",
+    "client_native_pixmap_factory_drm.h",
     "common/display_types.h",
     "common/drm_util.cc",
     "common/drm_util.h",
@@ -112,8 +112,8 @@ source_set("gbm") {
     "host/host_cursor_proxy.h",
     "host/host_drm_device.cc",
     "host/host_drm_device.h",
-    "ozone_platform_gbm.cc",
-    "ozone_platform_gbm.h",
+    "ozone_platform_drm.cc",
+    "ozone_platform_drm.h",
   ]
 
   deps = [

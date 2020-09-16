@@ -184,8 +184,8 @@ Or run for example the Wayland platform:
 
 You can turn properly implemented ozone platforms on and off by setting the
 corresponding flags in your GN configuration. For example
-`ozone_platform_headless=false ozone_platform_gbm=false` will turn off the
-headless and DRM/GBM platforms.
+`ozone_platform_headless=false ozone_platform_drm=false` will turn off the
+headless and DRM (GBM) platforms.
 This will result in a smaller binary and faster builds. To turn ALL platforms
 off by default, set `ozone_auto_platforms=false`.
 
@@ -198,16 +198,16 @@ by default.
 ## Running with Ozone
 
 Specify the platform you want to use at runtime using the `--ozone-platform`
-flag. For example, to run `content_shell` with the GBM platform:
+flag. For example, to run `content_shell` with the DRM (GBM) platform:
 
 ``` shell
-content_shell --ozone-platform=gbm
+content_shell --ozone-platform=drm
 ```
 
 Caveats:
 
 * `content_shell` always runs at 800x600 resolution.
-* For the GBM platform, you may need to terminate your X server (or any other
+* For the DRM (GBM) platform, you may need to terminate your X server (or any other
   display server) prior to testing.
 * During development, you may need to configure
   [sandboxing](linux/sandboxing.md) or to disable it.

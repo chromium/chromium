@@ -14,6 +14,10 @@ declare_args() {
 
   # Select platforms automatically. Turn this off for manual control.
   ozone_auto_platforms = use_ozone
+
+  # TODO(petermcneeley): Backwards compatiblity support for VM images.
+  # Remove when deprecated. (https://crbug.com/1122009)
+  ozone_platform_gbm = -1
 }
 
 declare_args() {
@@ -24,8 +28,8 @@ declare_args() {
   # Compile the 'cast' platform.
   ozone_platform_cast = false
 
-  # Compile the 'gbm' platform.
-  ozone_platform_gbm = false
+  # Compile the 'drm' platform.
+  ozone_platform_drm = false
 
   # Compile the 'headless' platform.
   ozone_platform_headless = false
@@ -64,7 +68,7 @@ declare_args() {
       }
     } else if (is_chromeos) {
       ozone_platform = "x11"
-      ozone_platform_gbm = true
+      ozone_platform_drm = true
       ozone_platform_x11 = true
 
       # Enable the Ozone Wayland platform for ChromiumOS codesearch-gen bots
@@ -84,6 +88,12 @@ declare_args() {
       ozone_platform_scenic = true
     }
   }
+
+  # TODO(petermcneeley): Backwards compatiblity support for VM images.
+  # Remove when deprecated. (https://crbug.com/1122009)
+  if (ozone_platform_gbm != -1) {
+    ozone_platform_drm = ozone_platform_gbm
+  }
 }
 
 import(ozone_extra_path)
@@ -94,9 +104,20 @@ _ozone_extra_directory = get_path_info(ozone_extra_path, "dir")
 ozone_external_platform_visibility = [ "$_ozone_extra_directory/*" ]
 
 if (is_a_target_toolchain) {
-  assert(use_ozone || !(ozone_platform_cast || ozone_platform_gbm ||
+  assert(use_ozone || !(ozone_platform_cast || ozone_platform_drm ||
                             ozone_platform_headless || ozone_platform_x11 ||
                             ozone_platform_wayland || ozone_platform_windows ||
                             ozone_platform_scenic),
          "Must set use_ozone to select ozone platforms")
+}
+
+# TODO(petermcneeley): Backwards compatiblity support for VM images.
+# Remove when deprecated. (https://crbug.com/1122009)
+
+assert(ozone_platform_gbm == -1 || ozone_platform_drm == ozone_platform_gbm)
+
+ozone_platform_gbm = ozone_platform_drm
+
+if (ozone_platform == "gbm") {
+  ozone_platform = "drm"
 }

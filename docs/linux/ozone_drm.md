@@ -33,12 +33,13 @@ Googlers should checkout chromium source code as described here:
 [Building Chromium on a corporate Linux
 workstation](https://companydoc.corp.google.com/company/teams/chrome/build_instructions.md?cl=head)
 
-We want to build on linux on top of Ozone with gbm platform. The
-following instructions builds chromium targets along with minigbm
-that lives in the chromium tree `src/third_party/minigbm`. Currently,
-there is no builder for this configuration so while this worked
-(mostly) when this document was written, some experimentation may
-be necessary.
+We want to build on linux on top of Ozone with the DRM 
+(Direct Render Manager) platform which is backed by GBM 
+(Generic Buffer Management). The following instructions builds 
+chromium targets along with minigbm  that lives in the chromium 
+tree `src/third_party/minigbm`. Currently, there is no builder for
+this configuration so while this worked (mostly) when this document 
+was written, some experimentation may be necessary.
 
 Set the gn args for your output dir target `out/Nouveau` with:
 
@@ -48,8 +49,8 @@ Add the following arguments:
 dcheck_always_on = true
 use_ozone = true
 target_os = "chromeos"
-ozone_platform_gbm = true
-ozone_platform = "gbm"
+ozone_platform_drm = true
+ozone_platform = "drm"
 use_system_minigbm = false
 target_sysroot = "//build/linux/debian_jessie_amd64-sysroot"
 is_debug = false
@@ -78,7 +79,7 @@ $ sudo usermod -a -G plugdev $USER
 $ sudo usermod -a -G video $USER
 $ sudo usermod -a -G audio $USER
 $ newgrp video
-$ negrrp plugdev
+$ newgrp plugdev
 $ newgrp audio
 $ # Stop pulseaudio if running:
 $ pactl exit
@@ -87,7 +88,7 @@ $ pactl exit
 Run chrome: (Set `CHROMIUM_SRC` to the directory containing your Chrome checkout.)
 
 ```
-$ sudo chvt 8; EGL_PLATFORM=surfaceless $CHROMIUM_SRC/out/Nouveau/chrome --ozone-platform=gbm --force-system-compositor-mode --login-profile=user --user-data-dir=$HOME/.config/google-chrome-gbm --use-gl=egl --enable-wayland-server --login-manager --ash-constrain-pointer-to-root --default-tile-width=512 --default-tile-height=512 --system-developer-mode --crosh-command=/bin/bash
+$ sudo chvt 8; EGL_PLATFORM=surfaceless $CHROMIUM_SRC/out/Nouveau/chrome --ozone-platform=drm --force-system-compositor-mode --login-profile=user --user-data-dir=$HOME/.config/google-chrome-gbm --use-gl=egl --enable-wayland-server --login-manager --ash-constrain-pointer-to-root --default-tile-width=512 --default-tile-height=512 --system-developer-mode --crosh-command=/bin/bash
 ```
 
 Login to Chrome settings should synchronize.

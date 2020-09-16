@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/drm/client_native_pixmap_factory_gbm.h"
+#include "ui/ozone/platform/drm/client_native_pixmap_factory_drm.h"
 
 #include <utility>
 
@@ -12,7 +12,7 @@
 
 namespace ui {
 
-gfx::ClientNativePixmapFactory* CreateClientNativePixmapFactoryGbm() {
+gfx::ClientNativePixmapFactory* CreateClientNativePixmapFactoryDrm() {
   return gfx::CreateClientNativePixmapFactoryDmabuf();
 }
 

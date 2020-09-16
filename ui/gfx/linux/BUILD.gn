@@ -5,7 +5,7 @@
 import("//build/config/ui.gni")
 import("//ui/ozone/ozone.gni")
 
-assert(use_x11 || ozone_platform_gbm || ozone_platform_wayland)
+assert(use_x11 || ozone_platform_drm || ozone_platform_wayland)
 
 source_set("drm") {
   sources = [

@@ -232,7 +232,7 @@ source_set("unit_tests") {
 }
 
 config("client_support_config") {
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     defines = [ "USE_GBM" ]
     if (enable_vulkan) {
       defines += [ "USE_VULKAN" ]
@@ -269,7 +269,7 @@ source_set("client_support") {
     "//third_party/wayland-protocols:vsync_feedback_protocol",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
     deps += [
       "//build/config/linux/libdrm",
@@ -296,7 +296,7 @@ executable("wayland_rects_client") {
     "//ui/gl",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
     defines = [ "USE_GBM" ]
     deps += [
@@ -325,7 +325,7 @@ source_set("simple") {
     "//ui/gl",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
   }
 }
@@ -348,7 +348,7 @@ source_set("fullscreen_shell") {
     "//ui/gl",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
   }
 }
@@ -386,7 +386,7 @@ executable("wayland_subsurface_client") {
     "//ui/gl",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
   }
 }
@@ -407,7 +407,7 @@ source_set("blur") {
     "//ui/gl",
   ]
 
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     configs += [ "//ui/gl:gl_config" ]
   }
 }
@@ -512,7 +512,7 @@ test("wayland_client_perftests") {
   }
 }
 
-if (ozone_platform_gbm) {
+if (ozone_platform_drm) {
   executable("wayland_yuv_client") {
     sources = [ "clients/yuv.cc" ]
 

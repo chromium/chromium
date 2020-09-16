@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/drm/ozone_platform_gbm.h"
+#include "ui/ozone/platform/drm/ozone_platform_drm.h"
 
 #include <gbm.h>
 #include <stdlib.h>
@@ -68,10 +68,10 @@ namespace ui {
 
 namespace {
 
-class OzonePlatformGbm : public OzonePlatform {
+class OzonePlatformDrm : public OzonePlatform {
  public:
-  OzonePlatformGbm() = default;
-  ~OzonePlatformGbm() override = default;
+  OzonePlatformDrm() = default;
+  ~OzonePlatformDrm() override = default;
 
   // OzonePlatform:
   ui::SurfaceFactoryOzone* GetSurfaceFactoryOzone() override {
@@ -91,7 +91,7 @@ class OzonePlatformGbm : public OzonePlatform {
   }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
-      return drm_device_connector_.get();
+    return drm_device_connector_.get();
   }
 
   std::unique_ptr<SystemInputInjector> CreateSystemInputInjector() override {
@@ -110,7 +110,7 @@ class OzonePlatformGbm : public OzonePlatform {
       // method after drm_thread is started.
       binders->Add<ozone::mojom::DrmDevice>(
           base::BindRepeating(
-              &OzonePlatformGbm::CreateDrmDeviceReceiverOnGpuThread,
+              &OzonePlatformDrm::CreateDrmDeviceReceiverOnGpuThread,
               weak_factory_.GetWeakPtr()),
           gpu_task_runner_);
     } else {
@@ -123,7 +123,7 @@ class OzonePlatformGbm : public OzonePlatform {
       // Binder callbacks should directly run on DRM thread.
       binders->Add<ozone::mojom::DrmDevice>(
           base::BindRepeating(
-              &OzonePlatformGbm::CreateDrmDeviceReceiverOnDrmThread,
+              &OzonePlatformDrm::CreateDrmDeviceReceiverOnDrmThread,
               weak_factory_.GetWeakPtr()),
           drm_thread_proxy_->GetDrmThreadTaskRunner());
     }
@@ -295,7 +295,7 @@ class OzonePlatformGbm : public OzonePlatform {
       DrainReceiverRequests();
     } else {
       auto safe_receiver_request_drainer = CreateSafeOnceCallback(
-          base::BindOnce(&OzonePlatformGbm::DrainReceiverRequests,
+          base::BindOnce(&OzonePlatformDrm::DrainReceiverRequests,
                          weak_factory_.GetWeakPtr()));
       drm_thread_proxy_->StartDrmThread(
           std::move(safe_receiver_request_drainer));
@@ -336,15 +336,15 @@ class OzonePlatformGbm : public OzonePlatform {
   std::unique_ptr<DrmDisplayHostManager> display_manager_;
   InitializedHostProperties host_properties_;
 
-  base::WeakPtrFactory<OzonePlatformGbm> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformGbm);
+  base::WeakPtrFactory<OzonePlatformDrm> weak_factory_{this};
+  OzonePlatformDrm(const OzonePlatformDrm&) = delete;
+  OzonePlatformDrm& operator=(const OzonePlatformDrm&) = delete;
 };
 
 }  // namespace
 
-OzonePlatform* CreateOzonePlatformGbm() {
-  return new OzonePlatformGbm;
+OzonePlatform* CreateOzonePlatformDrm() {
+  return new OzonePlatformDrm;
 }
 
 }  // namespace ui

@@ -31,8 +31,8 @@ if (ozone_platform_headless) {
   ozone_platform_deps += [ "platform/headless" ]
 }
 
-if (ozone_platform_gbm) {
-  ozone_platforms += [ "gbm" ]
+if (ozone_platform_drm) {
+  ozone_platforms += [ "drm" ]
   ozone_platform_deps += [ "platform/drm:gbm" ]
   ozone_platform_test_deps += [ "platform/drm:gbm_unittests" ]
 }

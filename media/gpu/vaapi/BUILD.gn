@@ -172,7 +172,7 @@ source_set("common") {
     "//ui/gfx:memory_buffer",
     "//ui/gl",
   ]
-  if (ozone_platform_gbm) {
+  if (ozone_platform_drm) {
     deps += [ "//ui/ozone" ]
   }
 
