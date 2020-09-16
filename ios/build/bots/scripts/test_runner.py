@@ -569,11 +569,26 @@ class TestRunner(object):
     # target. For simulators, '--xctest' is passed to test runner scripts to
     # make it run XCTest based unit test.
     if self.xctest:
-      test_app = test_apps.SimulatorXCTestUnitTestsApp(
-          self.app_path,
-          included_tests=self.test_cases,
-          env_vars=self.env_vars,
-          test_args=self.test_args)
+      # TODO(crbug.com/1085603): Pass in test runner an arg to determine if it's
+      # device test or simulator test and test the arg here.
+      if self.__class__.__name__ == 'SimulatorTestRunner':
+        test_app = test_apps.SimulatorXCTestUnitTestsApp(
+            self.app_path,
+            included_tests=self.test_cases,
+            env_vars=self.env_vars,
+            test_args=self.test_args)
+      elif self.__class__.__name__ == 'DeviceTestRunner':
+        test_app = test_apps.DeviceXCTestUnitTestsApp(
+            self.app_path,
+            included_tests=self.test_cases,
+            env_vars=self.env_vars,
+            test_args=self.test_args)
+      else:
+        raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
+                                ' an unexpected class.')
+
+    # TODO(crbug.com/1085603): Remove when device unit tests have xctest in
+    # configs.
     elif self.xctest_path:
 
       if self.__class__.__name__ == 'DeviceTestRunner':
@@ -1086,7 +1101,9 @@ class DeviceTestRunner(TestRunner):
     Returns:
       A list of strings forming the command to launch the test.
     """
-    if self.xctest_path:
+    # TODO(crbug.com/1085603): Remove self.xctest_path check when device unit
+    # tests have xctest in configs.
+    if self.xctest_path or self.xctest:
       return test_app.command(out_dir, destination, shards)
 
     cmd = [
