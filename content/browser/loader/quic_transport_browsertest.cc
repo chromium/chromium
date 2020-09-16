@@ -147,7 +147,46 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
   ASSERT_TRUE(ExecuteScript(
       shell(), base::StringPrintf(R"JS(
     async function run() {
-      const transport = new QuicTransport('quic-transport:localhost:%d/echo');
+      const transport = new QuicTransport('quic-transport://localhost:%d/echo');
+
+      const writer = transport.sendDatagrams().getWriter();
+      const reader = transport.receiveDatagrams().getReader();
+
+      const data = new Uint8Array([65, 66, 67]);
+      const id = setInterval(() => {
+        writer.write(data);
+      }, 10);
+
+      const {done, value} = await reader.read();
+      clearInterval(id);
+      if (done) {
+        throw Error('Got an unexpected DONE signal');
+      }
+      if (value.length !== 3 ||
+          value[0] !== 65 || value[1] !== 66 || value[2] !== 67) {
+        throw Error('Got invalid data');
+      }
+    }
+
+    run().then(() => { document.title = 'PASS'; },
+               (e) => { console.log(e); document.title = 'FAIL'; });
+)JS",
+                                  server_.server_address().port())));
+
+  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
+}
+
+IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("Title Of Awesomeness")));
+
+  ASSERT_TRUE(ExecuteScript(
+      shell(), base::StringPrintf(R"JS(
+    async function run() {
+      const transport = new WebTransport('quic-transport://localhost:%d/echo');
 
       const writer = transport.sendDatagrams().getWriter();
       const reader = transport.receiveDatagrams().getReader();

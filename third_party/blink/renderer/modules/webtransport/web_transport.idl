@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/web-transport/#web-transport
+[
+    ActiveScriptWrappable,
+    Exposed=(Window,Worker),
+    RuntimeEnabled=QuicTransport
+] interface WebTransport {
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional QuicTransportOptions options = {});
+  [CallWith=ScriptState, RaisesException] Promise<SendStream>
+      createSendStream();
+  // TODO(ricea): This should probably be changed to an attribute in the
+  // standard.
+  ReadableStream receiveStreams();
+
+  [CallWith=ScriptState, RaisesException] Promise<BidirectionalStream>
+      createBidirectionalStream();
+  ReadableStream receiveBidirectionalStreams();
+
+  WritableStream sendDatagrams();
+  ReadableStream receiveDatagrams();
+
+  void close(optional WebTransportCloseInfo closeInfo = {});
+  readonly attribute Promise<void> ready;
+  readonly attribute Promise<WebTransportCloseInfo> closed;
+};

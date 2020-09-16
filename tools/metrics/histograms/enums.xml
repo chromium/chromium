@@ -29163,6 +29163,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3469" label="TimerInstallFromUnload"/>
   <int value="3470" label="ElementAttachInternalsBeforeConstructor"/>
   <int value="3471" label="SMILElementHasRepeatNEventListener"/>
+  <int value="3472" label="WebTransport"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

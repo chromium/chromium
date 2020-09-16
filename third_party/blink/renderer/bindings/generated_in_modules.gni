@@ -1969,6 +1969,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_sentinel.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_node.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_node.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_transport.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_rendering_context.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl2_rendering_context.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_active_info.cc",

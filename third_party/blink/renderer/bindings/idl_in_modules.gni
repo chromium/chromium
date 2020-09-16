@@ -949,6 +949,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webtransport/receive_stream.idl",
           "//third_party/blink/renderer/modules/webtransport/send_stream.idl",
           "//third_party/blink/renderer/modules/webtransport/stream_abort_info.idl",
+          "//third_party/blink/renderer/modules/webtransport/web_transport.idl",
           "//third_party/blink/renderer/modules/webtransport/web_transport_close_info.idl",
           "//third_party/blink/renderer/modules/webusb/navigator_usb.idl",
           "//third_party/blink/renderer/modules/webusb/usb.idl",

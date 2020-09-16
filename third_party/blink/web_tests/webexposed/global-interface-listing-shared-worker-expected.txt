@@ -3671,6 +3671,18 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter url
 [Worker]     method close
 [Worker]     method constructor
+[Worker] interface WebTransport
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     getter ready
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method createBidirectionalStream
+[Worker]     method createSendStream
+[Worker]     method receiveBidirectionalStreams
+[Worker]     method receiveDatagrams
+[Worker]     method receiveStreams
+[Worker]     method sendDatagrams
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter addressSpace

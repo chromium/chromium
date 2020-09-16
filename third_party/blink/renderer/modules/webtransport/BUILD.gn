@@ -18,6 +18,8 @@ blink_modules_sources("webtransport") {
     "receive_stream.h",
     "send_stream.cc",
     "send_stream.h",
+    "web_transport.cc",
+    "web_transport.h",
     "web_transport_stream.h",
   ]
 }

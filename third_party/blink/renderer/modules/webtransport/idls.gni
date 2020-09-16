@@ -7,6 +7,7 @@ modules_idl_files = [
   "quic_transport.idl",
   "receive_stream.idl",
   "send_stream.idl",
+  "web_transport.idl",
 ]
 
 modules_dictionary_idl_files = [
