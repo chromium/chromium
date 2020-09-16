@@ -1159,12 +1159,16 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
+  // TODO(layout-dev): Calculate correct percentage resolution size.
+  LogicalSize percentage_resolution_size = column_size;
+
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.
   NGConstraintSpace fragmentainer_constraint_space =
-      CreateConstraintSpaceForColumns(
-          *container_builder_->ConstraintSpace(), container_writing_mode,
-          column_size, is_first_fragmentainer, /* balance_columns */ false);
+      CreateConstraintSpaceForColumns(*container_builder_->ConstraintSpace(),
+                                      column_size, percentage_resolution_size,
+                                      is_first_fragmentainer,
+                                      /* balance_columns */ false);
 
   return fragmentainer_constraint_space_map_
       .insert(stored_index, fragmentainer_constraint_space)

@@ -262,8 +262,8 @@ bool AttemptSoftBreak(const NGConstraintSpace&,
 // Calculate the constraint space for columns of a multi-column layout.
 NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
-    WritingMode writing_mode,
-    const LogicalSize& column_size,
+    LogicalSize column_size,
+    LogicalSize percentage_resolution_size,
     bool is_first_fragmentainer,
     bool balance_columns);
 

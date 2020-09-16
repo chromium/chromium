@@ -584,7 +584,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     do {
       // Lay out one column. Each column will become a fragment.
       NGConstraintSpace child_space = CreateConstraintSpaceForColumns(
-          ConstraintSpace(), Style().GetWritingMode(), column_size,
+          ConstraintSpace(), column_size, ColumnPercentageResolutionSize(),
           is_first_fragmentainer, balance_columns);
 
       NGFragmentGeometry fragment_geometry =
@@ -1014,7 +1014,7 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
       ConstraintSpace(), Style().GetWritingMode(), /* is_new_fc */ true);
   space_builder.SetFragmentationType(kFragmentColumn);
   space_builder.SetAvailableSize({column_size.inline_size, kIndefiniteSize});
-  space_builder.SetPercentageResolutionSize(column_size);
+  space_builder.SetPercentageResolutionSize(ColumnPercentageResolutionSize());
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
   space_builder.SetIsInsideBalancedColumns();

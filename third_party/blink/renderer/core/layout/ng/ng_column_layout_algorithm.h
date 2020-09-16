@@ -72,6 +72,15 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // such as break-before:avoid or break-after:avoid.
   scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier();
 
+  // Get the percentage resolution size to use for column content (i.e. not
+  // spanners).
+  LogicalSize ColumnPercentageResolutionSize() const {
+    // Percentage block-size on children is resolved against the content-box of
+    // the multicol container (just like in regular block layout), while
+    // percentage inline-size is restricted by the columns.
+    return LogicalSize(column_inline_size_, ChildAvailableSize().block_size);
+  }
+
   NGConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
   NGConstraintSpace CreateConstraintSpaceForSpanner(

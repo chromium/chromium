@@ -679,14 +679,14 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
 
 NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
-    WritingMode writing_mode,
-    const LogicalSize& column_size,
+    LogicalSize column_size,
+    LogicalSize percentage_resolution_size,
     bool is_first_fragmentainer,
     bool balance_columns) {
-  NGConstraintSpaceBuilder space_builder(parent_space, writing_mode,
-                                         /* is_new_fc */ true);
+  NGConstraintSpaceBuilder space_builder(
+      parent_space, parent_space.GetWritingMode(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(column_size);
-  space_builder.SetPercentageResolutionSize(column_size);
+  space_builder.SetPercentageResolutionSize(percentage_resolution_size);
 
   // To ensure progression, we need something larger than 0 here. The spec
   // actually says that fragmentainers have to accept at least 1px of content.
