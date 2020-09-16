@@ -5893,9 +5893,6 @@ crbug.com/878878 virtual/threaded/fast/scroll-snap/snap-scrolls-visual-viewport.
 # Sheriff 2019-12-10
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Timeout ]
 
-# Temporarily disabled for landing changes to front_end/common in DevTools
-crbug.com/1006759 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Pass Failure ]
-
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
 crbug.com/1033852 [ Win7 ] virtual/omt-worker-fetch/external/wpt/fetch/api/idlharness.any.sharedworker.html [ Failure ]
