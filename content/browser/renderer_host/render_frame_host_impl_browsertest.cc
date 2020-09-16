@@ -3714,9 +3714,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleState::kActive, current_rfh->lifecycle_state());
 }
 
+// Test is flaky: crbug.com/1120305.
 // Check that same site navigation correctly resets document_used_web_otp_.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       SameSiteNavigationResetsDocumentUsedWebOTP) {
+                       DISABLED_SameSiteNavigationResetsDocumentUsedWebOTP) {
   const GURL first_url(
       embedded_test_server()->GetURL("/page_with_webotp.html"));
   const GURL second_url(embedded_test_server()->GetURL("/empty.html"));
