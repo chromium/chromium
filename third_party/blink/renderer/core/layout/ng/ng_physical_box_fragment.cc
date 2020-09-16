@@ -51,7 +51,7 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       builder->mathml_paint_info_ ||
       !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
       builder->table_grid_rect_ || builder->table_column_geometries_ ||
-      builder->table_collapsed_borders_.get() ||
+      builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
       builder->table_cell_column_index_;
   size_t byte_size = sizeof(NGPhysicalBoxFragment) +
@@ -64,8 +64,6 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
     if (items_builder->Size())
       byte_size += NGFragmentItems::ByteSizeFor(items_builder->Size());
   }
-  if (builder->HasOutOfFlowFragmentainerDescendants())
-    byte_size += sizeof(NGPhysicalOutOfFlowPositionedNode);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
@@ -179,17 +177,17 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
         descendant.containing_block_fragment);
   }
   if (builder->table_grid_rect_)
-    table_grid_rect_ = *builder->table_grid_rect_;
+    table_grid_rect = *builder->table_grid_rect_;
   if (builder->table_column_geometries_)
-    table_column_geometries_ = *builder->table_column_geometries_;
-  if (builder->table_collapsed_borders_.get())
-    table_collapsed_borders_ = builder->table_collapsed_borders_.get();
+    table_column_geometries = *builder->table_column_geometries_;
+  if (builder->table_collapsed_borders_)
+    table_collapsed_borders = std::move(builder->table_collapsed_borders_);
   if (builder->table_collapsed_borders_geometry_) {
-    table_collapsed_borders_geometry_ =
+    table_collapsed_borders_geometry =
         std::move(builder->table_collapsed_borders_geometry_);
   }
   if (builder->table_cell_column_index_)
-    table_cell_column_index_ = *builder->table_cell_column_index_;
+    table_cell_column_index = *builder->table_cell_column_index_;
 }
 
 scoped_refptr<const NGLayoutResult>

@@ -68,28 +68,28 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   }
 
   PhysicalRect TableGridRect() const {
-    return ComputeRareDataAddress()->table_grid_rect_;
+    return ComputeRareDataAddress()->table_grid_rect;
   }
 
   const NGTableFragmentData::ColumnGeometries* TableColumnGeometries() const {
-    return &ComputeRareDataAddress()->table_column_geometries_;
+    return &ComputeRareDataAddress()->table_column_geometries;
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    return ComputeRareDataAddress()->table_collapsed_borders_.get();
+    return ComputeRareDataAddress()->table_collapsed_borders.get();
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*
   TableCollapsedBordersGeometry() const {
     auto& table_collapsed_borders_geometry =
-        ComputeRareDataAddress()->table_collapsed_borders_geometry_;
+        ComputeRareDataAddress()->table_collapsed_borders_geometry;
     if (!table_collapsed_borders_geometry)
       return nullptr;
     return table_collapsed_borders_geometry.get();
   }
 
   wtf_size_t TableCellColumnIndex() const {
-    return ComputeRareDataAddress()->table_cell_column_index_;
+    return ComputeRareDataAddress()->table_cell_column_index;
   }
 
   const NGPhysicalBoxStrut Borders() const {
@@ -232,12 +232,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     const std::unique_ptr<NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.
-    PhysicalRect table_grid_rect_;
-    NGTableFragmentData::ColumnGeometries table_column_geometries_;
-    scoped_refptr<const NGTableBorders> table_collapsed_borders_;
+    PhysicalRect table_grid_rect;
+    NGTableFragmentData::ColumnGeometries table_column_geometries;
+    scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
-        table_collapsed_borders_geometry_;
-    wtf_size_t table_cell_column_index_;
+        table_collapsed_borders_geometry;
+    wtf_size_t table_cell_column_index;
   };
 
   const NGFragmentItems* ComputeItemsAddress() const {
@@ -277,8 +277,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   LayoutUnit baseline_;
   LayoutUnit last_baseline_;
   NGLink children_[];
-  // borders, padding, and oof_positioned_fragmentainer_descendants come after
-  // |children_| if they are not zero.
+  // fragment_items, borders, padding, and rare_data are after |children_| if
+  // they are not empty/initial.
 };
 
 template <>
