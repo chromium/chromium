@@ -240,13 +240,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
   EXPECT_FALSE(ExtensionControlsPage(active_tab, extension1_id));
 }
 
-#if defined(OS_MAC)
-// Hangy: http://crbug.com/70511
-#define MAYBE_OverrideNewTabIncognito DISABLED_OverrideNewTabIncognito
-#else
-#define MAYBE_OverrideNewTabIncognito OverrideNewTabIncognito
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, MAYBE_OverrideNewTabIncognito) {
+IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
   LoadExtension(data_dir().AppendASCII("newtab"));
 
   // Navigate an incognito tab to the new tab page.  We should get the actual
