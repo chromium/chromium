@@ -42,10 +42,11 @@
 namespace blink {
 
 // static
-PrerenderHandle* PrerenderHandle::Create(Document& document,
-                                         PrerenderClient* client,
-                                         const KURL& url,
-                                         const unsigned prerender_rel_types) {
+PrerenderHandle* PrerenderHandle::Create(
+    Document& document,
+    PrerenderClient* client,
+    const KURL& url,
+    mojom::blink::PrerenderRelType prerender_rel_type) {
   // Prerenders are unlike requests in most ways (for instance, they pass down
   // fragments, and they don't return data), but they do have referrers.
 
@@ -56,10 +57,9 @@ PrerenderHandle* PrerenderHandle::Create(Document& document,
   Referrer referrer = SecurityPolicy::GenerateReferrer(
       context->GetReferrerPolicy(), url, context->OutgoingReferrer());
 
-  mojom::blink::PrerenderAttributesPtr attributes =
-      mojom::blink::PrerenderAttributes::New();
+  auto attributes = mojom::blink::PrerenderAttributes::New();
   attributes->url = url;
-  attributes->rel_types = prerender_rel_types;
+  attributes->rel_type = prerender_rel_type;
   attributes->referrer = mojom::blink::Referrer::New(
       KURL(NullURL(), referrer.referrer), referrer.referrer_policy);
   attributes->initiator_origin = context->GetSecurityOrigin();

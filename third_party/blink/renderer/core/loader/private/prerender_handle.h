@@ -53,10 +53,11 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle>,
   USING_PRE_FINALIZER(PrerenderHandle, Dispose);
 
  public:
-  static PrerenderHandle* Create(Document&,
-                                 PrerenderClient*,
-                                 const KURL&,
-                                 unsigned prerender_rel_types);
+  static PrerenderHandle* Create(
+      Document&,
+      PrerenderClient*,
+      const KURL&,
+      mojom::blink::PrerenderRelType prerender_rel_type);
 
   using PassKey = util::PassKey<PrerenderHandle>;
   PrerenderHandle(PassKey,

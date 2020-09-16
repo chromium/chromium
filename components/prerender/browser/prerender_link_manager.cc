@@ -23,7 +23,6 @@
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -86,7 +85,7 @@ class PrerenderLinkManager::LinkPrerender {
   int launcher_render_process_id;
   int launcher_render_view_id;
   GURL url;
-  uint32_t rel_types;
+  blink::mojom::PrerenderRelType rel_type;
   content::Referrer referrer;
   url::Origin initiator_origin;
   gfx::Size size;
@@ -124,7 +123,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
     : launcher_render_process_id(launcher_render_process_id),
       launcher_render_view_id(launcher_render_view_id),
       url(attributes->url),
-      rel_types(attributes->rel_types),
+      rel_type(attributes->rel_type),
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(attributes->initiator_origin),
       size(attributes->view_size),
@@ -336,7 +335,7 @@ void PrerenderLinkManager::StartPrerenders() {
         manager_->AddPrerenderFromLinkRelPrerender(
             pending_prerender->launcher_render_process_id,
             pending_prerender->launcher_render_view_id, pending_prerender->url,
-            pending_prerender->rel_types, pending_prerender->referrer,
+            pending_prerender->rel_type, pending_prerender->referrer,
             pending_prerender->initiator_origin, pending_prerender->size);
     if (!handle) {
       // This prerender couldn't be launched, it's gone.

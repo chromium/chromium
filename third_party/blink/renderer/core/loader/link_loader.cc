@@ -31,7 +31,6 @@
 
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 
-#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -57,20 +56,23 @@ class WebPrescientNetworking;
 
 namespace {
 
-unsigned PrerenderRelTypesFromRelAttribute(
+// Decide the prerender type based on the link rel attribute. Returns
+// base::nullopt if the attribute doesn't indicate the prerender type.
+base::Optional<mojom::blink::PrerenderRelType> PrerenderRelTypeFromRelAttribute(
     const LinkRelAttribute& rel_attribute,
     Document& document) {
-  unsigned result = 0;
+  base::Optional<mojom::blink::PrerenderRelType> rel_type;
   if (rel_attribute.IsLinkPrerender()) {
-    result |= kPrerenderRelTypePrerender;
     UseCounter::Count(document, WebFeature::kLinkRelPrerender);
+    rel_type = mojom::blink::PrerenderRelType::kPrerender;
   }
   if (rel_attribute.IsLinkNext()) {
-    result |= kPrerenderRelTypeNext;
     UseCounter::Count(document, WebFeature::kLinkRelNext);
+    // Prioritize mojom::blink::PrerenderRelType::kPrerender.
+    if (!rel_type)
+      rel_type = mojom::blink::PrerenderRelType::kNext;
   }
-
-  return result;
+  return rel_type;
 }
 
 }  // namespace
@@ -194,15 +196,16 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, this);
 
-  if (const unsigned prerender_rel_types =
-          PrerenderRelTypesFromRelAttribute(params.rel, document)) {
+  base::Optional<mojom::blink::PrerenderRelType> prerender_rel_type =
+      PrerenderRelTypeFromRelAttribute(params.rel, document);
+  if (prerender_rel_type) {
     if (!prerender_) {
       prerender_ = PrerenderHandle::Create(document, this, params.href,
-                                           prerender_rel_types);
+                                           *prerender_rel_type);
     } else if (prerender_->Url() != params.href) {
       prerender_->Cancel();
       prerender_ = PrerenderHandle::Create(document, this, params.href,
-                                           prerender_rel_types);
+                                           *prerender_rel_type);
     }
     // TODO(gavinp): Handle changes to rel types of existing prerenders.
   } else if (prerender_) {

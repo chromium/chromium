@@ -52,7 +52,6 @@
 #include "content/public/common/url_constants.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
-#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "ui/gfx/geometry/rect.h"
 
 using content::BrowserThread;
@@ -170,13 +169,20 @@ PrerenderManager::AddPrerenderFromLinkRelPrerender(
     int process_id,
     int route_id,
     const GURL& url,
-    const uint32_t rel_types,
+    blink::mojom::PrerenderRelType rel_type,
     const content::Referrer& referrer,
     const url::Origin& initiator_origin,
     const gfx::Size& size) {
-  Origin origin = rel_types & blink::kPrerenderRelTypePrerender
-                      ? ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN
-                      : ORIGIN_LINK_REL_NEXT;
+  Origin origin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
+  switch (rel_type) {
+    case blink::mojom::PrerenderRelType::kPrerender:
+      origin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
+      break;
+    case blink::mojom::PrerenderRelType::kNext:
+      origin = ORIGIN_LINK_REL_NEXT;
+      break;
+  }
+
   SessionStorageNamespace* session_storage_namespace = nullptr;
   // Unit tests pass in a process_id == -1.
   if (process_id != -1) {

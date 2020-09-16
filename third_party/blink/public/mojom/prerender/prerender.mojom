@@ -40,9 +40,17 @@ interface PrerenderHandle {
   Abandon();
 };
 
+enum PrerenderRelType {
+  // https://html.spec.whatwg.org/C/#link-type-prerender
+  kPrerender,
+
+  // https://html.spec.whatwg.org/C/#link-type-next
+  kNext,
+};
+
 struct PrerenderAttributes {
   url.mojom.Url url;
-  uint32 rel_types;
+  PrerenderRelType rel_type;
   blink.mojom.Referrer referrer;
   url.mojom.Origin initiator_origin;
   gfx.mojom.Size view_size;

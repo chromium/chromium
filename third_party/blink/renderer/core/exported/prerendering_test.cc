@@ -36,7 +36,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -79,7 +78,9 @@ class MockPrerender : public mojom::blink::PrerenderHandle {
   ~MockPrerender() override = default;
 
   const KURL& Url() const { return attributes_->url; }
-  uint32_t RelTypes() const { return attributes_->rel_types; }
+  mojom::blink::PrerenderRelType RelType() const {
+    return attributes_->rel_type;
+  }
 
   // Returns the number of times |Cancel| was called.
   size_t CancelCount() const { return cancel_count_; }
@@ -260,8 +261,7 @@ TEST_F(PrerenderingTest, SinglePrerender) {
       PrerenderProcessor()->ReleasePrerender();
   EXPECT_TRUE(prerender);
   EXPECT_EQ(KURL("http://prerender.com/"), prerender->Url());
-  EXPECT_EQ(static_cast<unsigned>(kPrerenderRelTypePrerender),
-            prerender->RelTypes());
+  EXPECT_EQ(mojom::blink::PrerenderRelType::kPrerender, prerender->RelType());
 
   EXPECT_EQ(1u, PrerenderProcessor()->AddCount());
   EXPECT_EQ(0u, prerender->CancelCount());

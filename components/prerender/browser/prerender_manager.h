@@ -26,6 +26,7 @@
 #include "components/prerender/common/prerender_final_status.h"
 #include "components/prerender/common/prerender_origin.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -110,7 +111,7 @@ class PrerenderManager : public content::RenderProcessHostObserver,
       int process_id,
       int route_id,
       const GURL& url,
-      uint32_t rel_types,
+      blink::mojom::PrerenderRelType rel_type,
       const content::Referrer& referrer,
       const url::Origin& initiator_origin,
       const gfx::Size& size);
