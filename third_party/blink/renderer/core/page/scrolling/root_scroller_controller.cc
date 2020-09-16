@@ -90,8 +90,10 @@ PaintLayerScrollableArea* GetScrollableArea(const Element& element) {
     return frame_view->LayoutViewport();
   }
 
-  DCHECK(element.GetLayoutObject()->IsBox());
-  return ToLayoutBox(element.GetLayoutObject())->GetScrollableArea();
+  if (!element.GetLayoutBoxForScrolling())
+    return nullptr;
+
+  return element.GetLayoutBoxForScrolling()->GetScrollableArea();
 }
 
 }  // namespace

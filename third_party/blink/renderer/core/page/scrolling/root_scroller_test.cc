@@ -2749,6 +2749,54 @@ TEST_F(ImplicitRootScrollerSimTest, AppliedAtFractionalZoom) {
       << "<iframe> should remain promoted when URL bar is hidden";
 }
 
+// Ensure that a scrollable fieldset doesn't get promoted to root scroller.
+// With FieldsetNG, a scrollable fieldset creates an anonymous LayoutBox that
+// doesn't have an associated Node. RootScroller is premised on the fact that a
+// scroller is associated with a Node. It'd be non-trivial work to make this
+// work without a clear benefit so for now ensure it doesn't get promoted and
+// doesn't cause any crashes. https://crbug.com/1125621.
+TEST_F(ImplicitRootScrollerSimTest, FieldsetNGCantBeRootScroller) {
+  // This test is specifically ensuring we avoid crashing with the LayoutNG
+  // version of fieldset since it uses an anonymous LayoutBox for scrolling.
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+          <!DOCTYPE html>
+          <style>
+            ::-webkit-scrollbar {
+              width: 0px;
+              height: 0px;
+            }
+            body, html {
+              width: 100%;
+              height: 100%;
+              margin: 0px;
+            }
+            fieldset {
+              width: 100%;
+              height: 100%;
+              overflow: scroll;
+              border: 0;
+              margin: 0;
+              padding: 0;
+            }
+            div {
+              height: 200%;
+            }
+          </style>
+          <fieldset>
+            <div></div>
+          </fieldset>
+      )HTML");
+  Compositor().BeginFrame();
+
+  EXPECT_TRUE(GetDocument().GetLayoutView()->IsEffectiveRootScroller());
+}
+
 class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
  public:
   void CheckHitTestAtBottomOfScreen(Element* target) {

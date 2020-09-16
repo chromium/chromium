@@ -2372,10 +2372,16 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
             *owner);
       }
     } else {
-      GetLayoutBox()
-          ->GetDocument()
-          .GetRootScrollerController()
-          .ConsiderForImplicit(*GetLayoutBox()->GetNode());
+      // In some cases, the LayoutBox may not be associated with a Node (e.g.
+      // <input> and <fieldset> can generate anonymous LayoutBoxes for their
+      // scrollers). We don't care about those cases for root scroller so
+      // simply avoid these. https://crbug.com/1125621.
+      if (GetLayoutBox()->GetNode()) {
+        GetLayoutBox()
+            ->GetDocument()
+            .GetRootScrollerController()
+            .ConsiderForImplicit(*GetLayoutBox()->GetNode());
+      }
     }
   }
 
