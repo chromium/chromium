@@ -9,13 +9,11 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.SyncStatusObserver;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
@@ -41,8 +39,6 @@ import org.chromium.components.sync.SystemSyncContentResolverDelegate;
  * {@link #updateAccount(Account)} should be invoked whenever sync account is changed.
  */
 public class AndroidSyncSettings {
-    public static final String TAG = "AndroidSyncSettings";
-
     @SuppressLint("StaticFieldLeak")
     private static AndroidSyncSettings sInstance;
 
@@ -103,13 +99,12 @@ public class AndroidSyncSettings {
 
     /**
      * @param syncContentResolverDelegate an implementation of {@link SyncContentResolverDelegate}.
-     * @param callback Callback that will be called after updating account is finished. Boolean
-     *                 passed to the callback indicates whether syncability was changed.
+     * @param callback Callback that will be called after updating account is finished.
      * @param account The sync account if sync is enabled, null otherwise.
      */
     @VisibleForTesting
     public AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate,
-            @Nullable Callback<Boolean> callback, @Nullable Account account) {
+            @Nullable Runnable callback, @Nullable Account account) {
         mContractAuthority = getContractAuthority();
         mSyncContentResolverDelegate = syncContentResolverDelegate;
 
@@ -189,11 +184,10 @@ public class AndroidSyncSettings {
 
     /**
      * Must be called when a new account is signed in.
-     * @param callback Callback that will be called after updating account is finished. Boolean
-     *                 passed to the callback indicates whether syncability was changed.
+     * @param callback Callback that will be called after updating account is finished.
      */
     @VisibleForTesting
-    public void updateAccount(Account account, @Nullable Callback<Boolean> callback) {
+    public void updateAccount(Account account, @Nullable Runnable callback) {
         synchronized (mLock) {
             mAccount = account;
             updateSyncability(callback);
@@ -237,9 +231,10 @@ public class AndroidSyncSettings {
             if (value == mChromeSyncEnabled || mAccount == null) return;
             mChromeSyncEnabled = value;
 
-            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-            mSyncContentResolverDelegate.setSyncAutomatically(mAccount, mContractAuthority, value);
-            StrictMode.setThreadPolicy(oldPolicy);
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                mSyncContentResolverDelegate.setSyncAutomatically(
+                        mAccount, mContractAuthority, value);
+            }
         }
         notifyObservers();
     }
@@ -250,12 +245,12 @@ public class AndroidSyncSettings {
      * This is what causes the "Chrome" option to appear in Settings -> Accounts -> Sync .
      * This function must be called within a synchronized block.
      */
-    private void updateSyncability(@Nullable final Callback<Boolean> callback) {
+    private void updateSyncability(@Nullable final Runnable callback) {
         boolean shouldBeSyncable = mAccount != null
                 && !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC);
         if (mIsSyncable == shouldBeSyncable) {
-            if (callback != null) callback.onResult(false);
+            if (callback != null) callback.run();
             return;
         }
 
@@ -291,7 +286,7 @@ public class AndroidSyncSettings {
                     }
                 }
 
-                if (callback != null) callback.onResult(true);
+                if (callback != null) callback.run();
             });
         });
     }
@@ -306,19 +301,19 @@ public class AndroidSyncSettings {
             boolean oldChromeSyncEnabled = mChromeSyncEnabled;
             boolean oldMasterSyncEnabled = mMasterSyncEnabled;
 
-            StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-            if (mAccount != null) {
-                mIsSyncable =
-                        mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
-                        > 0;
-                mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
-                        mAccount, mContractAuthority);
-            } else {
-                mIsSyncable = false;
-                mChromeSyncEnabled = false;
+            try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                if (mAccount != null) {
+                    mIsSyncable =
+                            mSyncContentResolverDelegate.getIsSyncable(mAccount, mContractAuthority)
+                            > 0;
+                    mChromeSyncEnabled = mSyncContentResolverDelegate.getSyncAutomatically(
+                            mAccount, mContractAuthority);
+                } else {
+                    mIsSyncable = false;
+                    mChromeSyncEnabled = false;
+                }
+                mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
             }
-            mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
-            StrictMode.setThreadPolicy(oldPolicy);
 
             return oldChromeSyncEnabled != mChromeSyncEnabled
                     || oldMasterSyncEnabled != mMasterSyncEnabled;

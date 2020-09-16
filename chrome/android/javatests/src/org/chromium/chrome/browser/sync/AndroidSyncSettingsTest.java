@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -112,12 +111,11 @@ public class AndroidSyncSettingsTest {
 
     private AndroidSyncSettings mAndroidSyncSettings;
     private CountingMockSyncContentResolverDelegate mSyncContentResolverDelegate;
-    private String mAuthority;
     private Account mAccount;
     private Account mAlternateAccount;
-    private MockSyncSettingsObserver mSyncSettingsObserver;
     private CallbackHelper mCallbackHelper;
     private int mNumberOfCallsToWait;
+    private String mAuthority = AndroidSyncSettings.getContractAuthority();
 
     @Before
     public void setUp() throws Exception {
@@ -125,19 +123,22 @@ public class AndroidSyncSettingsTest {
 
         mNumberOfCallsToWait = 0;
         mCallbackHelper = new CallbackHelper();
-        setupTestAccounts();
-
         mSyncContentResolverDelegate = new CountingMockSyncContentResolverDelegate();
-        mAuthority = AndroidSyncSettings.getContractAuthority();
+
+        FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
+        AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
+        mAccount = AccountUtils.createAccountFromName("account@example.com");
+        fakeAccountManagerFacade.addAccount(mAccount);
+        mAlternateAccount = AccountUtils.createAccountFromName("alternate@example.com");
+        fakeAccountManagerFacade.addAccount(mAlternateAccount);
     }
 
     private void createAndroidSyncSettings() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAndroidSyncSettings = new AndroidSyncSettings(mSyncContentResolverDelegate,
-                    (Boolean result) -> mCallbackHelper.notifyCalled(), mAccount);
+            mAndroidSyncSettings = new AndroidSyncSettings(
+                    mSyncContentResolverDelegate, () -> mCallbackHelper.notifyCalled(), mAccount);
         });
-        mNumberOfCallsToWait++;
-        mCallbackHelper.waitForCallback(0, mNumberOfCallsToWait);
+        mCallbackHelper.waitForCallback(0, ++mNumberOfCallsToWait);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
             Assert.assertTrue(
@@ -145,15 +146,6 @@ public class AndroidSyncSettingsTest {
         } else {
             Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
         }
-    }
-
-    private void setupTestAccounts() {
-        FakeAccountManagerFacade fakeAccountManagerFacade = new FakeAccountManagerFacade(null);
-        AccountManagerFacadeProvider.setInstanceForTests(fakeAccountManagerFacade);
-        mAccount = AccountUtils.createAccountFromName("account@example.com");
-        fakeAccountManagerFacade.addAccount(mAccount);
-        mAlternateAccount = AccountUtils.createAccountFromName("alternate@example.com");
-        fakeAccountManagerFacade.addAccount(mAlternateAccount);
     }
 
     private void setMasterSyncAllowsChromeSync() throws InterruptedException {
@@ -190,20 +182,9 @@ public class AndroidSyncSettingsTest {
         });
     }
 
-    private void updateAccountSync(Account account) throws TimeoutException {
-        updateAccount(account);
-        mCallbackHelper.waitForCallback(0, mNumberOfCallsToWait);
-    }
-
-    private void updateAccount(Account account) {
-        updateAccountWithCallback(account, (Boolean result) -> {
-            mCallbackHelper.notifyCalled();
-        });
-    }
-
-    private void updateAccountWithCallback(Account account, Callback<Boolean> callback) {
-        mAndroidSyncSettings.updateAccount(account, callback);
-        mNumberOfCallsToWait++;
+    private void updateAccountAndWait(Account account) throws TimeoutException {
+        mAndroidSyncSettings.updateAccount(account, () -> mCallbackHelper.notifyCalled());
+        mCallbackHelper.waitForCallback(0, ++mNumberOfCallsToWait);
     }
 
     @Test
@@ -216,12 +197,12 @@ public class AndroidSyncSettingsTest {
         Assert.assertEquals(1, mSyncContentResolverDelegate.mSetIsSyncableCalls.get());
         Assert.assertEquals(1, mSyncContentResolverDelegate.mRemovePeriodicSyncCalls.get());
 
-        updateAccountSync(null);
+        updateAccountAndWait(null);
 
         // mAccount was set to be not syncable.
         Assert.assertEquals(2, mSyncContentResolverDelegate.mSetIsSyncableCalls.get());
         Assert.assertEquals(1, mSyncContentResolverDelegate.mRemovePeriodicSyncCalls.get());
-        updateAccount(mAlternateAccount);
+        updateAccountAndWait(mAlternateAccount);
         // mAlternateAccount was set to be syncable and not have periodic syncs.
         Assert.assertEquals(3, mSyncContentResolverDelegate.mSetIsSyncableCalls.get());
         Assert.assertEquals(2, mSyncContentResolverDelegate.mRemovePeriodicSyncCalls.get());
@@ -333,7 +314,7 @@ public class AndroidSyncSettingsTest {
         mSyncContentResolverDelegate.waitForLastNotificationCompleted();
         Assert.assertTrue("account should be synced", mAndroidSyncSettings.isSyncEnabled());
 
-        updateAccount(mAlternateAccount);
+        updateAccountAndWait(mAlternateAccount);
         enableChromeSyncOnUiThread();
         mSyncContentResolverDelegate.waitForLastNotificationCompleted();
         Assert.assertTrue(
@@ -343,11 +324,11 @@ public class AndroidSyncSettingsTest {
         mSyncContentResolverDelegate.waitForLastNotificationCompleted();
         Assert.assertFalse(
                 "alternate account should not be synced", mAndroidSyncSettings.isSyncEnabled());
-        updateAccount(mAccount);
+        updateAccountAndWait(mAccount);
         Assert.assertTrue("account should still be synced", mAndroidSyncSettings.isSyncEnabled());
 
         // Ensure we don't erroneously re-use cached data.
-        updateAccount(null);
+        updateAccountAndWait(null);
         Assert.assertFalse(
                 "null account should not be synced", mAndroidSyncSettings.isSyncEnabled());
     }
@@ -384,7 +365,7 @@ public class AndroidSyncSettingsTest {
                 mSyncContentResolverDelegate.mGetSyncAutomaticallyCalls.get());
 
         // Do a bunch of reads for alternate account.
-        updateAccount(mAlternateAccount);
+        updateAccountAndWait(mAlternateAccount);
         mAndroidSyncSettings.doesMasterSyncSettingAllowChromeSync();
         mAndroidSyncSettings.isSyncEnabled();
         mAndroidSyncSettings.isChromeSyncEnabled();
@@ -414,12 +395,12 @@ public class AndroidSyncSettingsTest {
                 syncSettingsObserver.receivedNotification());
 
         syncSettingsObserver.clearNotification();
-        updateAccount(mAlternateAccount);
+        updateAccountAndWait(mAlternateAccount);
         Assert.assertTrue("switching to account with different settings should notify",
                 syncSettingsObserver.receivedNotification());
 
         syncSettingsObserver.clearNotification();
-        updateAccount(mAccount);
+        updateAccountAndWait(mAccount);
         Assert.assertTrue("switching to account with different settings should notify",
                 syncSettingsObserver.receivedNotification());
 
@@ -448,14 +429,11 @@ public class AndroidSyncSettingsTest {
 
         Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
 
-        updateAccountWithCallback(null, (Boolean result) -> {
-            Assert.assertTrue(result);
-            mCallbackHelper.notifyCalled();
-        });
-        mCallbackHelper.waitForCallback(0, mNumberOfCallsToWait);
+        updateAccountAndWait(null);
+        Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) <= 0);
 
         Assert.assertEquals(0, mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority));
-        updateAccount(mAccount);
+        updateAccountAndWait(mAccount);
         Assert.assertTrue(mSyncContentResolverDelegate.getIsSyncable(mAccount, mAuthority) > 0);
     }
 
