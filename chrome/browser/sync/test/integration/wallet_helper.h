@@ -90,7 +90,8 @@ sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
                                          const std::string& last_four,
                                          const std::string& billing_address_id,
-                                         const std::string& nickname = "");
+                                         const std::string& nickname = "",
+                                         int instrument_id = 1);
 
 sync_pb::SyncEntity CreateSyncPaymentsCustomerData(
     const std::string& customer_id);

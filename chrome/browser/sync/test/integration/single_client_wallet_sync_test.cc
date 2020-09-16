@@ -588,7 +588,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"card-1", /*last_four=*/"0001",
-                            kDefaultBillingAddressID, /*nickname=*/""),
+                            kDefaultBillingAddressID, /*nickname=*/"",
+                            /*instrument_id=*/123),
        CreateSyncWalletAddress(/*name=*/"address-1", /*company=*/"Company-1"),
        CreateDefaultSyncPaymentsCustomerData(),
        CreateSyncCreditCardCloudTokenData(/*cloud_token_data_id=*/"data-1")});
@@ -600,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   std::vector<CreditCard*> cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(ASCIIToUTF16("0001"), cards[0]->LastFourDigits());
+  EXPECT_EQ(123, cards[0]->instrument_id());
   // When no nickname is returned from Sync server, credit card's nickname is
   // empty.
   EXPECT_TRUE(cards[0]->nickname().empty());
@@ -617,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   GetFakeServer()->SetWalletData(
       {CreateSyncWalletCard(/*name=*/"new-card", /*last_four=*/"0002",
                             kDefaultBillingAddressID,
-                            /*nickname=*/"Grocery Card"),
+                            /*nickname=*/"Grocery Card", /*instrument_id=*/321),
        CreateSyncWalletAddress(/*name=*/"new-address", /*company=*/"Company-2"),
        CreateSyncPaymentsCustomerData(/*customer_id=*/"different"),
        CreateSyncCreditCardCloudTokenData(/*cloud_token_data_id=*/"data-2")});
@@ -628,6 +630,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   cards = pdm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(ASCIIToUTF16("0002"), cards[0]->LastFourDigits());
+  EXPECT_EQ(321, cards[0]->instrument_id());
   EXPECT_EQ(ASCIIToUTF16("Grocery Card"), cards[0]->nickname());
   profiles = pdm->GetServerProfiles();
   ASSERT_EQ(1uL, profiles.size());
