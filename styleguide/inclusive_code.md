@@ -105,9 +105,9 @@ changing their meanings, but particular instances may need other replacements.
 For a long list of changes, see [this bug](https://crbug.com/842296). Some
 examples:
 
-* ["Blacklist"->"Blocklist" in interventions-internals UI.](https://crrev.com/1055905)
-* [Remove "whitelist" and "blacklist" from extension docs.](https://crrev.com/1056027)
-* [Declarative Net Request: Replace usages of 'blacklist' and 'whitelist'.](https://crrev.com/1094141)
+* ["Blacklist"->"Blocklist" in interventions-internals UI.](https://crrev.com/c/1055905)
+* [Remove "whitelist" and "blacklist" from extension docs.](https://crrev.com/c/1056027)
+* [Declarative Net Request: Replace usages of 'blacklist' and 'whitelist'.](https://crrev.com/c/1094141)
 
 ## Thanks
 
