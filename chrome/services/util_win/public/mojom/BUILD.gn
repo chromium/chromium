@@ -14,4 +14,40 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//ui/gfx/image/mojom",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.AntiVirusProduct"
+          cpp = "::metrics::SystemProfileProto_AntiVirusProduct"
+        },
+        {
+          mojom = "chrome.mojom.CertificateType"
+          cpp = "::CertificateInfo::Type"
+        },
+        {
+          mojom = "chrome.mojom.FileFilterSpec"
+          cpp = "::ui::FileFilterSpec"
+        },
+        {
+          mojom = "chrome.mojom.InspectionResult"
+          cpp = "::ModuleInspectionResult"
+          move_only = true
+        },
+        {
+          mojom = "chrome.mojom.SelectFileDialogType"
+          cpp = "::ui::SelectFileDialog::Type"
+        },
+      ]
+      traits_headers = [ "util_win_mojom_traits.h" ]
+      traits_sources = [ "util_win_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//chrome/browser/win/conflicts:module_info",
+        "//third_party/metrics_proto",
+        "//ui/shell_dialogs",
+      ]
+    },
+  ]
 }

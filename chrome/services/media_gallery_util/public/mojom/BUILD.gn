@@ -11,4 +11,17 @@ mojom("mojom") {
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.AttachedImage"
+          cpp = "::metadata::AttachedImage"
+        },
+      ]
+      traits_headers = [ "media_parser_mojom_traits.h" ]
+      traits_sources = [ "media_parser_mojom_traits.cc" ]
+    },
+  ]
 }

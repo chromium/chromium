@@ -6,17 +6,17 @@
 #define CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_RENDER_SETTINGS_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
-#include "chrome/services/printing/public/mojom/pdf_render_settings.mojom.h"
+#include "chrome/services/printing/public/mojom/pdf_render_settings.mojom-shared.h"
 #include "printing/pdf_render_settings.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<printing::mojom::PdfRenderSettings::Mode,
+struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
                   printing::PdfRenderSettings::Mode> {
-  static printing::mojom::PdfRenderSettings::Mode ToMojom(
+  static printing::mojom::PdfRenderSettings_Mode ToMojom(
       printing::PdfRenderSettings::Mode mode) {
-    using MojomMode = printing::mojom::PdfRenderSettings::Mode;
+    using MojomMode = printing::mojom::PdfRenderSettings_Mode;
     using PrintMode = printing::PdfRenderSettings::Mode;
     switch (mode) {
       case PrintMode::NORMAL:
@@ -37,12 +37,12 @@ struct EnumTraits<printing::mojom::PdfRenderSettings::Mode,
 #endif
     }
     NOTREACHED() << "Unknown mode " << static_cast<int>(mode);
-    return printing::mojom::PdfRenderSettings::Mode::NORMAL;
+    return printing::mojom::PdfRenderSettings_Mode::NORMAL;
   }
 
-  static bool FromMojom(printing::mojom::PdfRenderSettings::Mode input,
+  static bool FromMojom(printing::mojom::PdfRenderSettings_Mode input,
                         printing::PdfRenderSettings::Mode* output) {
-    using MojomMode = printing::mojom::PdfRenderSettings::Mode;
+    using MojomMode = printing::mojom::PdfRenderSettings_Mode;
     using PrintMode = printing::PdfRenderSettings::Mode;
     switch (input) {
       case MojomMode::NORMAL:

@@ -20,14 +20,8 @@ per-file *_messages.cc=file://ipc/SECURITY_OWNERS
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
 
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
-
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
-
-per-file *.typemap=set noparent
-per-file *.typemap=file://ipc/SECURITY_OWNERS
 
 # Changes to Mojo interfaces require a security review to avoid
 # introducing new sandbox escapes.

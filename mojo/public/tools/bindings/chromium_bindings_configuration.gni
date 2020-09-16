@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-_typemap_imports = [ "//chrome/typemaps.gni" ]
+_typemap_imports = []
 
 _typemaps = []
 foreach(typemap_import, _typemap_imports) {

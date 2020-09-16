@@ -20,4 +20,22 @@ mojom("mojom") {
     sources += [ "zip_file_creator.mojom" ]
     public_deps += [ "//components/services/filesystem/public/mojom" ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.SafeArchiveAnalyzerResults"
+          cpp = "::safe_browsing::ArchiveAnalyzerResults"
+        },
+      ]
+      traits_headers = [ "//chrome/common/safe_browsing/zip_analyzer.h" ]
+      traits_private_headers = [ "safe_archive_analyzer_param_traits.h" ]
+      traits_public_deps = [
+        "//chrome/common/safe_browsing:proto",
+        "//components/safe_browsing:buildflags",
+        "//components/safe_browsing/core:csd_proto",
+      ]
+    },
+  ]
 }

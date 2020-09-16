@@ -6,51 +6,51 @@
 #define CHROME_SERVICES_PRINTING_PUBLIC_MOJOM_PDF_TO_PWG_RASTER_CONVERTER_MOJOM_TRAITS_H_
 
 #include "build/build_config.h"
-#include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom-shared.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/pwg_raster_settings.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<printing::mojom::PwgRasterSettings::TransformType,
+struct EnumTraits<printing::mojom::PwgRasterSettings_TransformType,
                   printing::PwgRasterTransformType> {
-  static printing::mojom::PwgRasterSettings::TransformType ToMojom(
+  static printing::mojom::PwgRasterSettings_TransformType ToMojom(
       printing::PwgRasterTransformType transform_type) {
     switch (transform_type) {
       case printing::PwgRasterTransformType::TRANSFORM_NORMAL:
-        return printing::mojom::PwgRasterSettings::TransformType::
+        return printing::mojom::PwgRasterSettings_TransformType::
             TRANSFORM_NORMAL;
       case printing::PwgRasterTransformType::TRANSFORM_ROTATE_180:
-        return printing::mojom::PwgRasterSettings::TransformType::
+        return printing::mojom::PwgRasterSettings_TransformType::
             TRANSFORM_ROTATE_180;
       case printing::PwgRasterTransformType::TRANSFORM_FLIP_HORIZONTAL:
-        return printing::mojom::PwgRasterSettings::TransformType::
+        return printing::mojom::PwgRasterSettings_TransformType::
             TRANSFORM_FLIP_HORIZONTAL;
       case printing::PwgRasterTransformType::TRANSFORM_FLIP_VERTICAL:
-        return printing::mojom::PwgRasterSettings::TransformType::
+        return printing::mojom::PwgRasterSettings_TransformType::
             TRANSFORM_FLIP_VERTICAL;
     }
     NOTREACHED() << "Unknown transform type "
                  << static_cast<int>(transform_type);
-    return printing::mojom::PwgRasterSettings::TransformType::TRANSFORM_NORMAL;
+    return printing::mojom::PwgRasterSettings_TransformType::TRANSFORM_NORMAL;
   }
 
-  static bool FromMojom(printing::mojom::PwgRasterSettings::TransformType input,
+  static bool FromMojom(printing::mojom::PwgRasterSettings_TransformType input,
                         printing::PwgRasterTransformType* output) {
     switch (input) {
-      case printing::mojom::PwgRasterSettings::TransformType::TRANSFORM_NORMAL:
+      case printing::mojom::PwgRasterSettings_TransformType::TRANSFORM_NORMAL:
         *output = printing::PwgRasterTransformType::TRANSFORM_NORMAL;
         return true;
-      case printing::mojom::PwgRasterSettings::TransformType::
+      case printing::mojom::PwgRasterSettings_TransformType::
           TRANSFORM_ROTATE_180:
         *output = printing::PwgRasterTransformType::TRANSFORM_ROTATE_180;
         return true;
-      case printing::mojom::PwgRasterSettings::TransformType::
+      case printing::mojom::PwgRasterSettings_TransformType::
           TRANSFORM_FLIP_HORIZONTAL:
         *output = printing::PwgRasterTransformType::TRANSFORM_FLIP_HORIZONTAL;
         return true;
-      case printing::mojom::PwgRasterSettings::TransformType::
+      case printing::mojom::PwgRasterSettings_TransformType::
           TRANSFORM_FLIP_VERTICAL:
         *output = printing::PwgRasterTransformType::TRANSFORM_FLIP_VERTICAL;
         return true;
@@ -61,34 +61,34 @@ struct EnumTraits<printing::mojom::PwgRasterSettings::TransformType,
 };
 
 template <>
-struct EnumTraits<printing::mojom::PwgRasterSettings::DuplexMode,
+struct EnumTraits<printing::mojom::PwgRasterSettings_DuplexMode,
                   printing::mojom::DuplexMode> {
-  static printing::mojom::PwgRasterSettings::DuplexMode ToMojom(
+  static printing::mojom::PwgRasterSettings_DuplexMode ToMojom(
       printing::mojom::DuplexMode duplex_mode) {
     switch (duplex_mode) {
       case printing::mojom::DuplexMode::kUnknownDuplexMode:
         break;
       case printing::mojom::DuplexMode::kSimplex:
-        return printing::mojom::PwgRasterSettings::DuplexMode::SIMPLEX;
+        return printing::mojom::PwgRasterSettings_DuplexMode::SIMPLEX;
       case printing::mojom::DuplexMode::kLongEdge:
-        return printing::mojom::PwgRasterSettings::DuplexMode::LONG_EDGE;
+        return printing::mojom::PwgRasterSettings_DuplexMode::LONG_EDGE;
       case printing::mojom::DuplexMode::kShortEdge:
-        return printing::mojom::PwgRasterSettings::DuplexMode::SHORT_EDGE;
+        return printing::mojom::PwgRasterSettings_DuplexMode::SHORT_EDGE;
     }
     NOTREACHED() << "Unknown duplex mode " << static_cast<int>(duplex_mode);
-    return printing::mojom::PwgRasterSettings::DuplexMode::SIMPLEX;
+    return printing::mojom::PwgRasterSettings_DuplexMode::SIMPLEX;
   }
 
-  static bool FromMojom(printing::mojom::PwgRasterSettings::DuplexMode input,
+  static bool FromMojom(printing::mojom::PwgRasterSettings_DuplexMode input,
                         printing::mojom::DuplexMode* output) {
     switch (input) {
-      case printing::mojom::PwgRasterSettings::DuplexMode::SIMPLEX:
+      case printing::mojom::PwgRasterSettings_DuplexMode::SIMPLEX:
         *output = printing::mojom::DuplexMode::kSimplex;
         return true;
-      case printing::mojom::PwgRasterSettings::DuplexMode::LONG_EDGE:
+      case printing::mojom::PwgRasterSettings_DuplexMode::LONG_EDGE:
         *output = printing::mojom::DuplexMode::kLongEdge;
         return true;
-      case printing::mojom::PwgRasterSettings::DuplexMode::SHORT_EDGE:
+      case printing::mojom::PwgRasterSettings_DuplexMode::SHORT_EDGE:
         *output = printing::mojom::DuplexMode::kShortEdge;
         return true;
     }

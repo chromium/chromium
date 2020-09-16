@@ -33,4 +33,40 @@ mojom("mojom") {
   if (is_win) {
     sources += [ "pdf_to_emf_converter.mojom" ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "printing.mojom.PdfRenderSettings"
+          cpp = "::printing::PdfRenderSettings"
+        },
+        {
+          mojom = "printing.mojom.PdfRenderSettings::Mode"
+          cpp = "::printing::PdfRenderSettings::Mode"
+        },
+      ]
+      traits_headers = [ "pdf_render_settings_mojom_traits.h" ]
+      traits_sources = [ "pdf_render_settings_mojom_traits.cc" ]
+      traits_public_deps = [ "//printing" ]
+    },
+    {
+      types = [
+        {
+          mojom = "printing.mojom.PwgRasterSettings::TransformType"
+          cpp = "::printing::PwgRasterTransformType"
+        },
+        {
+          mojom = "printing.mojom.PwgRasterSettings"
+          cpp = "::printing::PwgRasterSettings"
+        },
+      ]
+      traits_headers = [ "pdf_to_pwg_raster_converter_mojom_traits.h" ]
+      traits_sources = [ "pdf_to_pwg_raster_converter_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//printing",
+        "//printing/mojom",
+      ]
+    },
+  ]
 }

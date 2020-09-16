@@ -7,6 +7,18 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "proxy.mojom" ]
-
   public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "cups_proxy.mojom.HttpHeader"
+          cpp = "ipp_converter::HttpHeader"
+        },
+      ]
+      traits_headers = [ "proxy_mojom_traits.h" ]
+      traits_sources = [ "proxy_mojom_traits.cc" ]
+      traits_public_deps = [ "//chrome/services/ipp_parser/public/cpp" ]
+    },
+  ]
 }

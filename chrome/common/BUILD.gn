@@ -774,6 +774,21 @@ mojom("mojo_bindings") {
   ]
 
   component_deps = [ "//content/public/common" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.WebApplicationInfo"
+          cpp = "::WebApplicationInfo"
+        },
+      ]
+      traits_headers = [ "web_application_info.h" ]
+      traits_private_headers =
+          [ "web_application_info_provider_param_traits.h" ]
+      traits_deps = [ "//ipc" ]
+    },
+  ]
 }
 
 if (enable_print_preview && !is_chromeos) {
