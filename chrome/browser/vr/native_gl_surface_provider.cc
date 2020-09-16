@@ -52,7 +52,7 @@ GLuint NativeGlSurfaceProvider::FlushSurface(SkSurface* surface,
   DCHECK(result);
   GLuint texture_id = info.fID;
   DCHECK_NE(texture_id, 0u);
-  surface->getCanvas()->getGrContext()->resetContext();
+  gr_context_->resetContext();
   glBindFramebufferEXT(GL_FRAMEBUFFER, main_fbo_);
 
   return texture_id;
