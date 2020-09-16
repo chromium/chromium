@@ -45,6 +45,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
           chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
       override;
   media_session::mojom::MediaSessionService* GetMediaSessionService() override;
+  std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate()
+      const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeShellDelegate);

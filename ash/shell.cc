@@ -80,6 +80,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -112,6 +113,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
+#include "ash/system/nearby_share/nearby_share_controller_impl.h"
 #include "ash/system/network/sms_observer.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
@@ -1154,6 +1156,9 @@ void Shell::Init(
   // The |shelf_config_| needs |app_list_controller_| and |system_tray_model_|
   // to initialize itself.
   shelf_config_->Init();
+
+  nearby_share_delegate_ = shell_delegate_->CreateNearbyShareDelegate();
+  nearby_share_controller_ = std::make_unique<NearbyShareControllerImpl>();
 
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();

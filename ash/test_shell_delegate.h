@@ -47,6 +47,8 @@ class TestShellDelegate : public ShellDelegate {
       mojo::PendingReceiver<
           chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver)
       override;
+  std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate()
+      const override;
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);

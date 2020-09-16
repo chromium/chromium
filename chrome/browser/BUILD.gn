@@ -4188,6 +4188,8 @@ static_library("browser") {
       "metrics/perf/random_selector.h",
       "metrics/perf/windowed_incognito_observer.cc",
       "metrics/perf/windowed_incognito_observer.h",
+      "nearby_sharing/nearby_share_delegate_impl.cc",
+      "nearby_sharing/nearby_share_delegate_impl.h",
       "nearby_sharing/sharesheet/nearby_share_action.cc",
       "nearby_sharing/sharesheet/nearby_share_action.h",
       "notifications/arc_application_notifier_controller.cc",

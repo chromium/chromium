@@ -34,6 +34,7 @@ class CaptureModeDelegate;
 class ScreenshotDelegate;
 class BackGestureContextualNudgeDelegate;
 class BackGestureContextualNudgeController;
+class NearbyShareDelegate;
 
 // Delegate of the Shell.
 class ASH_EXPORT ShellDelegate {
@@ -59,6 +60,9 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<BackGestureContextualNudgeDelegate>
   CreateBackGestureContextualNudgeDelegate(
       BackGestureContextualNudgeController* controller) = 0;
+
+  virtual std::unique_ptr<ash::NearbyShareDelegate> CreateNearbyShareDelegate()
+      const = 0;
 
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
