@@ -5114,13 +5114,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUseImprovedLabelDisambiguation)},
 
-#if defined(OS_ANDROID)
-    {"cct-target-translate-language",
-     flag_descriptions::kCCTTargetTranslateLanguageName,
-     flag_descriptions::kCCTTargetTranslateLanguageDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTTargetTranslateLanguage)},
-#endif
-
     {"native-file-system-api", flag_descriptions::kNativeFileSystemAPIName,
      flag_descriptions::kNativeFileSystemAPIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kNativeFileSystemAPI)},

@@ -124,7 +124,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kCCTRedirectPreconnect,
     &kCCTReportParallelRequestStatus,
     &kCCTResourcePrefetch,
-    &kCCTTargetTranslateLanguage,
     &kDarkenWebsitesCheckboxInThemesSetting,
     &kDontAutoHideBrowserControls,
     &kChromeShareHighlightsAndroid,
@@ -214,7 +213,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kUpdateNotificationSchedulingIntegration,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
     &kUsageStatsFeature,
-    &kVideoPersistence,
     &kVrBrowsingFeedback,
     &kWebApkAdaptiveIcon,
     &kPrefetchNotificationSchedulingIntegration,
@@ -355,9 +353,6 @@ const base::Feature kCCTReportParallelRequestStatus{
 
 const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kCCTTargetTranslateLanguage{
-    "CCTTargetTranslateLanguage", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDontAutoHideBrowserControls{
     "DontAutoHideBrowserControls", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -638,9 +633,6 @@ const base::Feature kUsageStatsFeature{"UsageStats",
 
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kVideoPersistence{"VideoPersistence",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

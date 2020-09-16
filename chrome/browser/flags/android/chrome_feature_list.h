@@ -35,7 +35,6 @@ extern const base::Feature kCCTPostMessageAPI;
 extern const base::Feature kCCTRedirectPreconnect;
 extern const base::Feature kCCTReportParallelRequestStatus;
 extern const base::Feature kCCTResourcePrefetch;
-extern const base::Feature kCCTTargetTranslateLanguage;
 extern const base::Feature kDontAutoHideBrowserControls;
 extern const base::Feature kChromeShareHighlightsAndroid;
 extern const base::Feature kChromeShareQRCode;
@@ -130,7 +129,6 @@ extern const base::Feature
     kUpdateNotificationScheduleServiceImmediateShowOption;
 extern const base::Feature kUsageStatsFeature;
 extern const base::Feature kUserMediaScreenCapturing;
-extern const base::Feature kVideoPersistence;
 extern const base::Feature kVrBrowsingFeedback;
 extern const base::Feature kWebApkAdaptiveIcon;
 extern const base::Feature kPrefetchNotificationSchedulingIntegration;
