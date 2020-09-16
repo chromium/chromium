@@ -225,7 +225,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
 
   ui_credential.display_username = GetDisplayUsername(credential.username);
   ui_credential.has_script =
-      ShouldOfferAutomaticPasswordChange() &&
+      !credential.username.empty() && ShouldOfferAutomaticPasswordChange() &&
       password_script_fetcher_->IsScriptAvailable(
           url::Origin::Create(credential.url.GetOrigin()));
 

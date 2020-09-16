@@ -452,6 +452,33 @@ TEST_F(PasswordCheckManagerTest,
           /*has_script=*/true)));
 }
 
+TEST_F(PasswordCheckManagerTest,
+       CorrectlyCreatesUIStructWithPasswordScriptsEmptyUsername) {
+  InitializeManager();
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitAndEnableFeature(
+      password_manager::features::kPasswordChangeInSettings);
+  store().AddLogin(MakeSavedPassword(kExampleCom, ""));
+  store().AddCompromisedCredentials(MakeCompromised(kExampleCom, ""));
+
+  RunUntilIdle();
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  // Scripts are not offered if username is empty.
+  EXPECT_THAT(
+      manager().GetCompromisedCredentials(),
+      ElementsAre(ExpectCompromisedCredentialForUI(
+          base::ASCIIToUTF16("No username"), base::ASCIIToUTF16("example.com"),
+          base::nullopt, "https://example.com/",
+          InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_script=*/false)));
+}
+
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
