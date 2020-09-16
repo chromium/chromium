@@ -991,8 +991,10 @@ void ThreadedInputHandler::RootLayerStateMayHaveChanged() {
   UpdateRootLayerStateForSynchronousInputHandler();
 }
 
-void ThreadedInputHandler::DidUnregisterScrollbar(ElementId scroll_element_id) {
-  scrollbar_controller_->DidUnregisterScrollbar(scroll_element_id);
+void ThreadedInputHandler::DidUnregisterScrollbar(
+    ElementId scroll_element_id,
+    ScrollbarOrientation orientation) {
+  scrollbar_controller_->DidUnregisterScrollbar(scroll_element_id, orientation);
 }
 
 void ThreadedInputHandler::ScrollOffsetAnimationFinished() {

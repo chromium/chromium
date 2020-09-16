@@ -6,6 +6,7 @@
 #define CC_INPUT_COMPOSITOR_INPUT_INTERFACES_H_
 
 #include "base/time/time.h"
+#include "cc/input/scrollbar.h"
 #include "cc/paint/element_id.h"
 
 namespace viz {
@@ -44,7 +45,8 @@ class InputDelegateForCompositor {
 
   // Called to let the input handler know that a scrollbar for the given
   // elementId has been removed.
-  virtual void DidUnregisterScrollbar(ElementId scroll_element_id) = 0;
+  virtual void DidUnregisterScrollbar(ElementId scroll_element_id,
+                                      ScrollbarOrientation orientation) = 0;
 
   // Called to let the input handler know that a scroll offset animation has
   // completed.

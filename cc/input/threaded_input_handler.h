@@ -104,7 +104,8 @@ class CC_EXPORT ThreadedInputHandler : public InputDelegateForCompositor {
   void DidCommit() override;
   void DidActivatePendingTree() override;
   void RootLayerStateMayHaveChanged() override;
-  void DidUnregisterScrollbar(ElementId scroll_element_id) override;
+  void DidUnregisterScrollbar(ElementId scroll_element_id,
+                              ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished() override;
   bool IsCurrentlyScrolling() const override;
   bool IsActivelyPrecisionScrolling() const override;
@@ -159,6 +160,8 @@ class CC_EXPORT ThreadedInputHandler : public InputDelegateForCompositor {
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
                            AnimatedScrollYielding);
+  FRIEND_TEST_ALL_PREFIXES(ScrollUnifiedLayerTreeHostImplTest,
+                           AutoscrollOnDeletedScrollbar);
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, AutoscrollTaskAbort);
 
   // This method gets the scroll offset for a regular scroller, or the combined

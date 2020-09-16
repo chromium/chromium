@@ -513,7 +513,8 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
 
   void RegisterScrollbarAnimationController(ElementId scroll_element_id,
                                             float initial_opacity);
-  void DidUnregisterScrollbarLayer(ElementId scroll_element_id);
+  void DidUnregisterScrollbarLayer(ElementId scroll_element_id,
+                                   ScrollbarOrientation orientation);
   ScrollbarAnimationController* ScrollbarAnimationControllerForElementId(
       ElementId scroll_element_id) const;
   void FlashAllScrollbars(bool did_scroll);

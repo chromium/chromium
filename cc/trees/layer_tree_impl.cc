@@ -1965,9 +1965,11 @@ void LayerTreeImpl::UnregisterScrollbar(
   if (scrollbar_ids.horizontal == Layer::INVALID_ID &&
       scrollbar_ids.vertical == Layer::INVALID_ID) {
     element_id_to_scrollbar_layer_ids_.erase(scroll_element_id);
-    if (IsActiveTree()) {
-      host_impl_->DidUnregisterScrollbarLayer(scroll_element_id);
-    }
+  }
+
+  if (IsActiveTree()) {
+    host_impl_->DidUnregisterScrollbarLayer(scroll_element_id,
+                                            scrollbar_layer->orientation());
   }
 }
 
