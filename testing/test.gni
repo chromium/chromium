@@ -45,7 +45,14 @@ if ((is_linux && !is_chromeos) || is_mac || is_win ||
 #   use_raw_android_executable: Use executable() rather than android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   win_test_enable_cfi_linker: (Win) Enable CFI linker for this test binary.
+#   is_xctest: (iOS, optional) whether to build the executable as XCTest.
+#      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
+#      for build targets.
 template("test") {
+  if (!is_ios) {
+    assert(!defined(invoker.is_xctest) || !invoker.is_xctest,
+           "is_xctest can be set only for iOS builds")
+  }
   if (is_android) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
@@ -293,7 +300,10 @@ template("test") {
       outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
     }
 
-    if (enable_run_ios_unittests_with_xctest) {
+    force_xctest = enable_run_ios_unittests_with_xctest ||
+                   (defined(invoker.is_xctest) && invoker.is_xctest)
+
+    if (force_xctest) {
       ios_test_target_type = "ios_xctest_test"
     } else {
       ios_test_target_type = "ios_app_bundle"
@@ -302,7 +312,7 @@ template("test") {
     target(ios_test_target_type, _test_target) {
       testonly = true
 
-      if (enable_run_ios_unittests_with_xctest && build_with_chromium) {
+      if (force_xctest && build_with_chromium) {
         xctest_module_target = "//base/test:google_test_runner"
       }
 
