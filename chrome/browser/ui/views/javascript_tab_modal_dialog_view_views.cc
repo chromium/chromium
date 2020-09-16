@@ -37,7 +37,7 @@ bool JavaScriptTabModalDialogViewViews::ShouldShowCloseButton() const {
 }
 
 views::View* JavaScriptTabModalDialogViewViews::GetInitiallyFocusedView() {
-  auto* text_box = message_box_view_->text_box();
+  auto* text_box = message_box_view_->GetVisiblePromptField();
   return text_box ? text_box : views::DialogDelegate::GetInitiallyFocusedView();
 }
 

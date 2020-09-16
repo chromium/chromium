@@ -132,4 +132,46 @@ TEST_F(MessageBoxViewTest, CheckHasVisibleCheckBox) {
   EXPECT_TRUE(message_box_->HasVisibleCheckBox());
 }
 
+TEST_F(MessageBoxViewTest, CheckGetVisiblePromptField) {
+  EXPECT_FALSE(message_box_->GetVisiblePromptField());
+
+  // Set the prompt field.
+  message_box_->SetPromptField(base::string16());
+  EXPECT_TRUE(message_box_->GetVisiblePromptField());
+}
+
+TEST_F(MessageBoxViewTest, CheckGetInputText) {
+  EXPECT_TRUE(message_box_->GetInputText().empty());
+
+  // Set the prompt field with an empty string. The returned text is still
+  // empty.
+  message_box_->SetPromptField(base::string16());
+  EXPECT_TRUE(message_box_->GetInputText().empty());
+
+  const base::string16 prompt = base::ASCIIToUTF16("prompt");
+  message_box_->SetPromptField(prompt);
+  EXPECT_FALSE(message_box_->GetInputText().empty());
+  EXPECT_EQ(prompt, message_box_->GetInputText());
+
+  // After user types some text, the returned input text should change to the
+  // user input.
+  views::Textfield* text_field = message_box_->GetVisiblePromptField();
+  const base::string16 input = base::ASCIIToUTF16("new input");
+  text_field->SetText(input);
+  EXPECT_FALSE(message_box_->GetInputText().empty());
+  EXPECT_EQ(input, message_box_->GetInputText());
+}
+
+TEST_F(MessageBoxViewTest, CheckIsCheckBoxSelected) {
+  EXPECT_FALSE(message_box_->IsCheckBoxSelected());
+
+  // Set and show a checkbox.
+  message_box_->SetCheckBoxLabel(base::ASCIIToUTF16("test checkbox"));
+  EXPECT_FALSE(message_box_->IsCheckBoxSelected());
+
+  // Select the checkbox.
+  message_box_->SetCheckBoxSelected(true);
+  EXPECT_TRUE(message_box_->IsCheckBoxSelected());
+}
+
 }  // namespace views

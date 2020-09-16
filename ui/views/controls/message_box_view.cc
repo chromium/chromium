@@ -134,8 +134,13 @@ MessageBoxView::MessageBoxView(const base::string16& message,
 
 MessageBoxView::~MessageBoxView() = default;
 
+views::Textfield* MessageBoxView::GetVisiblePromptField() {
+  return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_ : nullptr;
+}
+
 base::string16 MessageBoxView::GetInputText() {
-  return prompt_field_ ? prompt_field_->GetText() : base::string16();
+  return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_->GetText()
+                                                      : base::string16();
 }
 
 bool MessageBoxView::HasVisibleCheckBox() const {
@@ -143,7 +148,7 @@ bool MessageBoxView::HasVisibleCheckBox() const {
 }
 
 bool MessageBoxView::IsCheckBoxSelected() {
-  return checkbox_ && checkbox_->GetChecked();
+  return checkbox_ && checkbox_->GetVisible() && checkbox_->GetChecked();
 }
 
 void MessageBoxView::SetCheckBoxLabel(const base::string16& label) {
@@ -212,7 +217,7 @@ void MessageBoxView::SetPromptField(const base::string16& default_prompt) {
 void MessageBoxView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   if (details.child == this && details.is_add) {
-    if (prompt_field_)
+    if (prompt_field_ && prompt_field_->GetVisible())
       prompt_field_->SelectAll(true);
 
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);

@@ -45,10 +45,11 @@ class VIEWS_EXPORT MessageBoxView : public View {
 
   ~MessageBoxView() override;
 
-  // Returns the text box.
-  views::Textfield* text_box() { return prompt_field_; }
+  // Returns the visible prompt field, returns nullptr otherwise.
+  views::Textfield* GetVisiblePromptField();
 
-  // Returns user entered data in the prompt field.
+  // Returns user entered data in the prompt field, returns an empty string if
+  // no visible prompt field.
   base::string16 GetInputText();
 
   // Returns true if this message box has a visible checkbox, false otherwise.

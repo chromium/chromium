@@ -121,8 +121,8 @@ views::View* AppModalDialogViewViews::GetContentsView() {
 }
 
 views::View* AppModalDialogViewViews::GetInitiallyFocusedView() {
-  if (message_box_view_->text_box())
-    return message_box_view_->text_box();
+  if (message_box_view_->GetVisiblePromptField())
+    return message_box_view_->GetVisiblePromptField();
   return views::DialogDelegate::GetInitiallyFocusedView();
 }
 
