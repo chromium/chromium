@@ -60,6 +60,11 @@ XRFrameProvider::XRFrameProvider(XRSystem* xr)
       immersive_presentation_provider_(xr->GetExecutionContext()),
       last_has_focus_(xr->IsFrameFocused()) {}
 
+void XRFrameProvider::AddImmersiveSessionStartCallback(
+    ImmersiveSessionStartCallback callback) {
+  immersive_session_start_callbacks_.push_back(std::move(callback));
+}
+
 void XRFrameProvider::OnSessionStarted(
     XRSession* session,
     device::mojom::blink::XRSessionPtr session_ptr) {
@@ -72,6 +77,13 @@ void XRFrameProvider::OnSessionStarted(
     DCHECK(session_ptr->submit_frame_sink);
 
     immersive_session_ = session;
+
+    if (!immersive_session_start_callbacks_.IsEmpty()) {
+      Vector<ImmersiveSessionStartCallback> callbacks;
+      immersive_session_start_callbacks_.swap(callbacks);
+      for (auto& callback : callbacks)
+        std::move(callback).Run();
+    }
 
     immersive_data_provider_.Bind(
         std::move(session_ptr->data_provider),

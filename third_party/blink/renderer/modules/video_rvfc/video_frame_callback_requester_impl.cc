@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_request_callback_collection.h"
+#include "third_party/blink/renderer/modules/xr/navigator_xr.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
+#include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -80,21 +84,82 @@ void VideoFrameCallbackRequesterImpl::OnWebMediaPlayerCreated() {
     GetSupplementable()->GetWebMediaPlayer()->RequestVideoFrameCallback();
 }
 
-void VideoFrameCallbackRequesterImpl::ScheduleCallbackExecution() {
-  TRACE_EVENT1("blink",
-               "VideoFrameCallbackRequesterImpl::ScheduleCallbackExecution",
+void VideoFrameCallbackRequesterImpl::ScheduleWindowRaf() {
+  GetSupplementable()
+      ->GetDocument()
+      .GetScriptedAnimationController()
+      .ScheduleVideoFrameCallbacksExecution(
+          WTF::Bind(&VideoFrameCallbackRequesterImpl::OnExecution,
+                    WrapWeakPersistent(this)));
+}
+
+void VideoFrameCallbackRequesterImpl::ScheduleExecution() {
+  TRACE_EVENT1("blink", "VideoFrameCallbackRequesterImpl::ScheduleExecution",
                "did_schedule", !pending_execution_);
 
   if (pending_execution_)
     return;
 
   pending_execution_ = true;
-  GetSupplementable()
-      ->GetDocument()
-      .GetScriptedAnimationController()
-      .ScheduleVideoFrameCallbacksExecution(
-          WTF::Bind(&VideoFrameCallbackRequesterImpl::OnRenderingSteps,
-                    WrapWeakPersistent(this)));
+
+  if (TryScheduleImmersiveXRSessionRaf())
+    return;
+
+  ScheduleWindowRaf();
+}
+
+void VideoFrameCallbackRequesterImpl::OnImmersiveSessionStart() {
+  listening_for_immersive_session_ = false;
+  TryScheduleImmersiveXRSessionRaf();
+}
+
+void VideoFrameCallbackRequesterImpl::OnXrFrame(bool ended, double timestamp) {
+  if (ended) {
+    // The immersive XRSession has ended, and we shouldn't run callbacks as part
+    // of XRSession.rAF. Instead, ask to be run as part of the next window.rAF
+    // callbacks.
+    ScheduleWindowRaf();
+    return;
+  }
+
+  OnExecution(timestamp);
+}
+
+bool VideoFrameCallbackRequesterImpl::TryScheduleImmersiveXRSessionRaf() {
+  auto& document = GetSupplementable()->GetDocument();
+
+  // Nothing to do here, we will be notified via OnImmersiveSessionStart() when
+  // a new immersive session starts.
+  if (listening_for_immersive_session_)
+    return false;
+
+  // Do not force the lazy creation of the NavigatorXR by accessing it through
+  // NavigatorXR::From(). If it doesn't exist already exist, the webpage isn't
+  // using XR.
+  if (!NavigatorXR::AlreadyExists(document))
+    return false;
+
+  auto* system = NavigatorXR::From(document)->xr();
+
+  if (!system)
+    return false;
+
+  XRSession* session = system->frameProvider()->immersive_session();
+
+  if (session && !session->ended()) {
+    session->ScheduleVideoFrameCallbacksExecution(WTF::Bind(
+        &VideoFrameCallbackRequesterImpl::OnXrFrame, WrapWeakPersistent(this)));
+
+    return true;
+  }
+
+  DCHECK(!listening_for_immersive_session_);
+  system->frameProvider()->AddImmersiveSessionStartCallback(
+      WTF::Bind(&VideoFrameCallbackRequesterImpl::OnImmersiveSessionStart,
+                WrapWeakPersistent(this)));
+  listening_for_immersive_session_ = true;
+
+  return false;
 }
 
 void VideoFrameCallbackRequesterImpl::OnRequestVideoFrameCallback() {
@@ -107,7 +172,7 @@ void VideoFrameCallbackRequesterImpl::OnRequestVideoFrameCallback() {
   if (callback_collection_->IsEmpty())
     return;
 
-  ScheduleCallbackExecution();
+  ScheduleExecution();
 }
 
 void VideoFrameCallbackRequesterImpl::ExecuteVideoFrameCallbacks(
@@ -165,15 +230,15 @@ void VideoFrameCallbackRequesterImpl::ExecuteVideoFrameCallbacks(
   callback_collection_->ExecuteFrameCallbacks(high_res_now_ms, metadata);
 }
 
-void VideoFrameCallbackRequesterImpl::OnRenderingSteps(double high_res_now_ms) {
-  DCHECK(pending_execution_);
+void VideoFrameCallbackRequesterImpl::OnExecution(double high_res_now_ms) {
   TRACE_EVENT1("blink", "VideoFrameCallbackRequesterImpl::OnRenderingSteps",
                "has_callbacks", !callback_collection_->IsEmpty());
-
   pending_execution_ = false;
 
   // Callbacks could have been canceled from the time we scheduled their
   // execution.
+  // We could also be executing a leftover callback scheduled through the
+  // ScriptedAnimationController, right after exiting an immersive XR session.
   if (callback_collection_->IsEmpty())
     return;
 
@@ -204,7 +269,7 @@ void VideoFrameCallbackRequesterImpl::OnRenderingSteps(double high_res_now_ms) {
   // extra rendering steps would be wasteful.
   if (is_hfr && !callback_collection_->IsEmpty() &&
       consecutive_stale_frames_ < 2) {
-    ScheduleCallbackExecution();
+    ScheduleExecution();
   }
 }
 

@@ -26,6 +26,8 @@ class XRWebGLLayer;
 // pose information for a given XRDevice.
 class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
  public:
+  using ImmersiveSessionStartCallback = base::OnceClosure;
+
   explicit XRFrameProvider(XRSystem*);
 
   XRSession* immersive_session() const { return immersive_session_; }
@@ -53,6 +55,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   device::mojom::blink::XRFrameDataProvider* GetImmersiveDataProvider() {
     return immersive_data_provider_.get();
   }
+
+  void AddImmersiveSessionStartCallback(ImmersiveSessionStartCallback);
 
   virtual void Trace(Visitor*) const;
 
@@ -119,6 +123,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       non_immersive_data_providers_;
   HeapHashMap<Member<XRSession>, device::mojom::blink::XRFrameDataPtr>
       requesting_sessions_;
+
+  Vector<ImmersiveSessionStartCallback> immersive_session_start_callbacks_;
 
   // This frame ID is XR-specific and is used to track when frames arrive at the
   // XR compositor so that it knows which poses to use, when to apply bounds

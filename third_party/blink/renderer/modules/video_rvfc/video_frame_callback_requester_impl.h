@@ -40,8 +40,11 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   void OnRequestVideoFrameCallback() override;
 
   // Called by ScriptedAnimationController as part of the rendering steps,
-  // right before the execution of window.rAF callbacks.
-  void OnRenderingSteps(double high_res_now_ms);
+  // right before executing window.rAF callbacks. Also called by OnXRFrame().
+  void OnExecution(double high_res_now_ms);
+
+  // Called by XRSession right before executing xr_session.rAF callbacks.
+  void OnXrFrame(bool ended, double timestamp);
 
  private:
   friend class VideoFrameCallbackRequesterImplTest;
@@ -60,10 +63,24 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   void RegisterCallbackForTest(
       VideoFrameRequestCallbackCollection::VideoFrameCallback*);
 
-  // Adds |this| to the ScriptedAnimationController's queue of video.rAF
+  // Queues up |callback_collection_| to be run before the next window.rAF, or
+  // xr_session.rAF if we are an immersive XR session.
+  void ScheduleExecution();
+
+  // Adds |this| to the ScriptedAnimationController's queue of video.rVFC
   // callbacks that should be executed during the next rendering steps.
   // Also causes rendering steps to be scheduled if needed.
-  void ScheduleCallbackExecution();
+  void ScheduleWindowRaf();
+
+  // Check whether there is an immersive XR session, and adds |this| to the list
+  // of video.rVFC callbacks that should be run the next time there is an XR
+  // frame. Requests a new XR frame if needed.
+  // Returns true if we scheduled ourselves, false if there is no immersive XR
+  // session.
+  bool TryScheduleImmersiveXRSessionRaf();
+
+  // Called when an immersive XR Session is started.
+  void OnImmersiveSessionStart();
 
   // Used to keep track of whether or not we have already scheduled a call to
   // ExecuteFrameCallbacks() in the next rendering steps.
@@ -80,6 +97,10 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
   // new frame. Used to abort auto-rescheduling if we aren't consistently
   // getting new frames.
   int consecutive_stale_frames_ = 0;
+
+  // Indicates whether or not we already notified the XR Frame provider that we
+  // want to be notified when a new immersive XR session starts.
+  bool listening_for_immersive_session_ = false;
 
   Member<VideoFrameRequestCallbackCollection> callback_collection_;
 

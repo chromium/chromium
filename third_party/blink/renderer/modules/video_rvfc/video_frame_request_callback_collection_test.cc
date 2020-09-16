@@ -128,8 +128,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CreateCallbackDuringExecution) {
   EXPECT_TRUE(collection()->IsEmpty());
 }
 
-TEST_F(VideoFrameRequestCallbackCollectionTest,
-       CancelCallbgitackDuringExecution) {
+TEST_F(VideoFrameRequestCallbackCollectionTest, CancelCallbackDuringExecution) {
   auto dummy_callback = CreateCallback();
   CallbackId dummy_callback_id =
       collection()->RegisterFrameCallback(dummy_callback.Get());

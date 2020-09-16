@@ -683,6 +683,19 @@ XRSession::GetStationaryReferenceSpace() const {
   return result;
 }
 
+void XRSession::ScheduleVideoFrameCallbacksExecution(
+    ExecuteVfcCallback execute_vfc_callback) {
+  vfc_execution_queue_.push_back(std::move(execute_vfc_callback));
+  MaybeRequestFrame();
+}
+
+void XRSession::ExecuteVideoFrameCallbacks(bool ended, double timestamp) {
+  Vector<ExecuteVfcCallback> execute_vfc_callbacks;
+  vfc_execution_queue_.swap(execute_vfc_callbacks);
+  for (auto& callback : execute_vfc_callbacks)
+    std::move(callback).Run(ended, timestamp);
+}
+
 int XRSession::requestAnimationFrame(V8XRFrameRequestCallback* callback) {
   DVLOG(3) << __func__;
 
@@ -1213,6 +1226,10 @@ void XRSession::ForceEnd(ShutdownPolicy shutdown_policy) {
   ended_ = true;
   pending_frame_ = false;
 
+  // Clear any pending callbacks. The timestamp is ignored by the callee.
+  constexpr double kIgnoredTimestamp = 0.0;
+  ExecuteVideoFrameCallbacks(/* ended */ true, kIgnoredTimestamp);
+
   for (unsigned i = 0; i < input_sources_->length(); i++) {
     auto* input_source = (*input_sources_)[i];
     input_source->OnRemoved();
@@ -1382,7 +1399,8 @@ void XRSession::MaybeRequestFrame() {
 
   // If we have an outstanding callback registered, then we know that the page
   // actually wants frames.
-  bool page_wants_frame = !callback_collection_->IsEmpty();
+  bool page_wants_frame =
+      !callback_collection_->IsEmpty() || !vfc_execution_queue_.IsEmpty();
 
   // A page can process frames if it has its appropriate base layer set and has
   // indicated that it actually wants frames.
@@ -1633,6 +1651,7 @@ void XRSession::OnFrame(
     // happen within these calls. resolving_frame_ will be true for the duration
     // of the callbacks.
     base::AutoReset<bool> resolving(&resolving_frame_, true);
+    ExecuteVideoFrameCallbacks(/* ended */ false, timestamp);
     callback_collection_->ExecuteCallbacks(this, timestamp, presentation_frame);
 
     // The session might have ended in the middle of the frame. Only call
@@ -2063,7 +2082,9 @@ Vector<XRViewData>& XRSession::views() {
 }
 
 bool XRSession::HasPendingActivity() const {
-  return !callback_collection_->IsEmpty() && !ended_;
+  return (!callback_collection_->IsEmpty() ||
+          !vfc_execution_queue_.IsEmpty()) &&
+         !ended_;
 }
 
 void XRSession::Trace(Visitor* visitor) const {

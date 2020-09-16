@@ -58,12 +58,10 @@ class MockFunction : public ScriptFunction {
 class MetadataHelper {
  public:
   static VideoFramePresentationMetadata* GetDefaultMedatada() {
-    DCHECK(initialized);
     return &metadata_;
   }
 
   static std::unique_ptr<VideoFramePresentationMetadata> CopyDefaultMedatada() {
-    DCHECK(initialized);
     auto copy = std::make_unique<VideoFramePresentationMetadata>();
 
     copy->presented_frames = metadata_.presented_frames;
@@ -77,10 +75,10 @@ class MetadataHelper {
     return copy;
   }
 
-  static void InitializeFields(base::TimeTicks now) {
-    if (initialized)
-      return;
-
+  // This method should be called by each test, passing in its own
+  // DocumentLoadTiming::ReferenceMonotonicTime(). Otherwise, we will run into
+  // clamping verification test issues, as described below.
+  static void ReinitializeFields(base::TimeTicks now) {
     // We don't want any time ticks be a multiple of 5us, otherwise, we couldn't
     // tell whether or not the implementation clamped their values. Therefore,
     // we manually set the values for a deterministic test, and make sure we
@@ -101,16 +99,12 @@ class MetadataHelper {
     metadata_.metadata.receive_time =
         now + base::TimeDelta::FromMillisecondsD(17.1234);
     metadata_.metadata.rtp_timestamp = 12345;
-
-    initialized = true;
   }
 
  private:
-  static bool initialized;
   static VideoFramePresentationMetadata metadata_;
 };
 
-bool MetadataHelper::initialized = false;
 VideoFramePresentationMetadata MetadataHelper::metadata_;
 
 // Helper class that compares the parameters used when invoking a callback, with
@@ -326,9 +320,9 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
   testing::Mock::VerifyAndClear(function);
 }
 
-TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters) {
+TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_WindowRaf) {
   auto timing = GetDocument().Loader()->GetTiming();
-  MetadataHelper::InitializeFields(timing.ReferenceMonotonicTime());
+  MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
 
   auto* callback =
       MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
@@ -345,7 +339,68 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters) {
 
   // Run the callbacks directly, since they weren't scheduled to be run by the
   // ScriptedAnimationController.
-  vfc_requester().OnRenderingSteps(now_ms);
+  vfc_requester().OnExecution(now_ms);
+
+  EXPECT_EQ(callback->last_now(), now_ms);
+  EXPECT_TRUE(callback->was_invoked());
+
+  testing::Mock::VerifyAndClear(media_player());
+}
+
+TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_XRSession_rAF) {
+  auto timing = GetDocument().Loader()->GetTiming();
+  MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
+
+  auto* callback =
+      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
+
+  // Register the non-V8 callback.
+  RegisterCallbackDirectly(callback);
+
+  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
+      .WillOnce(Return(ByMove(MetadataHelper::CopyDefaultMedatada())));
+
+  const double now_ms =
+      timing.MonotonicTimeToZeroBasedDocumentTime(base::TimeTicks::Now())
+          .InMillisecondsF();
+
+  // Run the callbacks directly, as if scheduled by the XRSession.
+  vfc_requester().OnXrFrame(/* ended */ false, now_ms);
+
+  EXPECT_EQ(callback->last_now(), now_ms);
+  EXPECT_TRUE(callback->was_invoked());
+
+  testing::Mock::VerifyAndClear(media_player());
+}
+
+TEST_F(VideoFrameCallbackRequesterImplTest, VerifyParameters_XRSession_Ended) {
+  auto timing = GetDocument().Loader()->GetTiming();
+  MetadataHelper::ReinitializeFields(timing.ReferenceMonotonicTime());
+
+  auto* callback =
+      MakeGarbageCollected<VfcRequesterParameterVerifierCallback>(timing);
+
+  // Register the non-V8 callback.
+  RegisterCallbackDirectly(callback);
+
+  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata()).Times(0);
+
+  // Simulate the XRSession ending.
+  vfc_requester().OnXrFrame(/* ended */ true, 0.0);
+
+  // Calbacks should not have been run...
+  testing::Mock::VerifyAndClear(media_player());
+
+  auto now = base::TimeTicks::Now();
+  auto now_ms =
+      timing.MonotonicTimeToZeroBasedDocumentTime(now).InMillisecondsF();
+
+  EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
+      .WillOnce(Return(ByMove(MetadataHelper::CopyDefaultMedatada())));
+
+  // ... But there should have been a call to schedule the callbacks with the
+  // ScriptedAnimationController when the XR session ended.
+  SimulateVideoFrameCallback(now);
 
   EXPECT_EQ(callback->last_now(), now_ms);
   EXPECT_TRUE(callback->was_invoked());

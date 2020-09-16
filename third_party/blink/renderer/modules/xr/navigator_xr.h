@@ -23,6 +23,10 @@ class MODULES_EXPORT NavigatorXR final : public GarbageCollected<NavigatorXR>,
   static NavigatorXR* From(Document&);
   static NavigatorXR& From(Navigator&);
 
+  // Allows us to check whether |Document| has a NavigatorXR, without triggering
+  // its lazy creation.
+  static bool AlreadyExists(Document&);
+
   explicit NavigatorXR(Navigator&);
 
   static XRSystem* xr(Navigator&);

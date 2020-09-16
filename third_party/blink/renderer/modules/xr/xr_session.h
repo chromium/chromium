@@ -77,6 +77,16 @@ class XRSession final
   static constexpr char kAnchorsFeatureNotSupported[] =
       "Anchors feature is not supported by the session.";
 
+  // Runs all the video.requestVideoFrameCallback() callbacks associated with
+  // one HTMLVideoElement.
+  // - |bool| is whether or not the session has ended.
+  // - |double| is the |high_res_now_ms|, derived from
+  //    MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed
+  //    as the "now" parameter when executing rVFC callbacks. In other words, a
+  //    video.rVFC and an xrSession.rAF callback share the same "now" parameters
+  //    if they are run in the same turn of the render loop.
+  using ExecuteVfcCallback = base::OnceCallback<void(bool, double)>;
+
   enum EnvironmentBlendMode {
     kBlendModeOpaque = 0,
     kBlendModeAdditive,
@@ -345,6 +355,10 @@ class XRSession final
   // Sets the metrics reporter for this session. This should only be done once.
   void SetMetricsReporter(std::unique_ptr<MetricsReporter> reporter);
 
+  // Queues up the execution of video.requestVideoFrameCallback() callbacks for
+  // a specific HTMLVideoELement, for the next requestAnimationFrame() call.
+  void ScheduleVideoFrameCallbacksExecution(ExecuteVfcCallback);
+
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -411,6 +425,8 @@ class XRSession final
           hit_test_data);
 
   void HandleShutdown();
+
+  void ExecuteVideoFrameCallbacks(bool ended, double timestamp);
 
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;
@@ -523,6 +539,9 @@ class XRSession final
                              XRSession,
                              HeapMojoWrapperMode::kWithoutContextObserver>
       input_receiver_;
+
+  // Used to schedule video.rVFC callbacks for immersive sessions.
+  Vector<ExecuteVfcCallback> vfc_execution_queue_;
 
   Member<XRFrameRequestCallbackCollection> callback_collection_;
   // Viewer pose in mojo space.
