@@ -334,6 +334,8 @@ extern const char kChromeUITabStripURL[];
 #endif
 
 #if !defined(OS_ANDROID)
+extern const char kChromeUICommanderHost[];
+extern const char kChromeUICommanderURL[];
 extern const char kChromeUITabSearchHost[];
 extern const char kChromeUITabSearchURL[];
 #endif

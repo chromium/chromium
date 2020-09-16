@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
+#include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
@@ -557,6 +558,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Bookmarks are part of NTP on Android.
   if (url.host_piece() == chrome::kChromeUIBookmarksHost)
     return &NewWebUI<BookmarksUI>;
+  if (url.host_piece() == chrome::kChromeUICommanderHost)
+    return &NewWebUI<CommanderUI>;
   // Downloads list on Android uses the built-in download manager.
   if (url.host_piece() == chrome::kChromeUIDownloadsHost)
     return &NewWebUI<DownloadsUI>;

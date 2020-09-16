@@ -11,12 +11,12 @@
 #include "chrome/browser/ui/commander/commander_view_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "chrome/browser/ui/webui/commander/commander_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-
-#include "base/debug/stack_trace.h"
 
 namespace {
 // TODO(lgrey): Temporary
@@ -98,6 +98,11 @@ void CommanderFrontendViews::Show(Browser* browser) {
 
   web_view_->set_owner(parent);
   web_view_->SetSize(kDefaultSize);
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUICommanderURL));
+  CommanderUI* controller = static_cast<CommanderUI*>(
+      web_view_->GetWebContents()->GetWebUI()->GetController());
+  controller->handler()->set_delegate(this);
+
   web_view_ptr_ = widget_->SetContentsView(std::move(web_view_));
 
   widget_->CenterWindow(kDefaultSize);
@@ -145,6 +150,10 @@ void CommanderFrontendViews::OnHeightChanged(int new_height) {
   web_view_ptr_->SetSize(size);
 }
 
+void CommanderFrontendViews::OnHandlerEnabled(bool is_enabled) {
+  is_handler_enabled_ = is_enabled;
+}
+
 void CommanderFrontendViews::OnViewModelUpdated(
     commander::CommanderViewModel view_model) {
   DCHECK(is_showing());
@@ -152,6 +161,13 @@ void CommanderFrontendViews::OnViewModelUpdated(
     Hide();
     return;
   }
+  if (!is_handler_enabled_)
+    // TODO(lgrey): Think through whether it makes sense to stash the view model
+    // and send it when the handler becomes available again.
+    return;
+  CommanderUI* controller = static_cast<CommanderUI*>(
+      web_view_->GetWebContents()->GetWebUI()->GetController());
+  controller->handler()->ViewModelUpdated(std::move(view_model));
   // TODO(lgrey): Pass view model to WebUI.
 }
 

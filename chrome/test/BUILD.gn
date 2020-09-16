@@ -1472,6 +1472,7 @@ if (!is_android) {
       "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
       "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.cc",
       "../browser/ui/webui/chromeos/machine_learning/machine_learning_internals_browsertest.h",
+      "../browser/ui/webui/commander/commander_ui_browsertest.cc",
       "../browser/ui/webui/constrained_web_dialog_ui_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.h",

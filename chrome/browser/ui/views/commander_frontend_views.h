@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/commander/commander_handler.h"
 
 class CommanderWebView;
 
@@ -28,7 +29,8 @@ struct CommanderViewModel;
 // this class is responsible for setting up the infrastructure to host the
 // WebUI in its own widget and mediating between the WebUI implementation and
 // the controller.
-class CommanderFrontendViews : public commander::CommanderFrontend {
+class CommanderFrontendViews : public commander::CommanderFrontend,
+                               public CommanderHandler::Delegate {
  public:
   explicit CommanderFrontendViews(commander::CommanderBackend* backend);
   ~CommanderFrontendViews() override;
@@ -37,17 +39,12 @@ class CommanderFrontendViews : public commander::CommanderFrontend {
   void Show(Browser* browser) override;
   void Hide() override;
 
-  // TODO(lgrey): When the WebUI layer is added, these declarations should
-  // be moved to the CommanderHandler::Delegate interface.
-  // Called when the text is changed in the WebUI interface.
-  void OnTextChanged(const base::string16& text);
-  // Called when an option is selected (clicked or enter pressed) in the WebUI
-  // interface.
-  void OnOptionSelected(size_t option_index, int result_set_id);
-  // Called when the WebUI interface wants to dismiss the UI.
-  void OnDismiss();
-  // Called when the WebUI interface's content height has changed.
-  void OnHeightChanged(int new_height);
+  // CommanderHandler::Delegate overrides;
+  void OnTextChanged(const base::string16& text) override;
+  void OnOptionSelected(size_t option_index, int result_set_id) override;
+  void OnDismiss() override;
+  void OnHeightChanged(int new_height) override;
+  void OnHandlerEnabled(bool is_enabled) override;
 
  private:
   // Receives view model updates from |backend_|.
@@ -83,7 +80,8 @@ class CommanderFrontendViews : public commander::CommanderFrontend {
   std::unique_ptr<CommanderWebView> web_view_;
   // The browser |widget_| is attached to.
   Browser* browser_;
-
+  // Whether the web UI interface is loaded and ready to accept view models.
+  bool is_handler_enabled_ = false;
   base::WeakPtrFactory<CommanderFrontendViews> weak_ptr_factory_{this};
 };
 
