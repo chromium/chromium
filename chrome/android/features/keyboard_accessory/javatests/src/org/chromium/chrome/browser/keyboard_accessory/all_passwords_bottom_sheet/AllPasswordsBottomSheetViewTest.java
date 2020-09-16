@@ -61,6 +61,8 @@ public class AllPasswordsBottomSheetViewTest {
     private Callback<Integer> mDismissHandler;
     @Mock
     private Callback<Credential> mCredentialCallback;
+    @Mock
+    private Callback<String> mSearchQueryCallback;
 
     private PropertyModel mModel;
     private AllPasswordsBottomSheetView mAllPasswordsBottomSheetView;
@@ -73,7 +75,8 @@ public class AllPasswordsBottomSheetViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(mDismissHandler);
+        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
+                mDismissHandler, mSearchQueryCallback);
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
@@ -102,24 +105,7 @@ public class AllPasswordsBottomSheetViewTest {
     @Test
     @MediumTest
     public void testCredentialsChangedByModel() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAllPasswordsBottomSheetView.setVisible(true);
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(
-                                            ANA, mCredentialCallback, IS_PASSWORD_FIELD)));
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(
-                                            NO_ONE, mCredentialCallback, IS_PASSWORD_FIELD)));
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(
-                                            BOB, mCredentialCallback, IS_PASSWORD_FIELD)));
-        });
+        addDefaultCredentialsToTheModel();
 
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(getCredentials().getChildCount(), is(3));
@@ -163,6 +149,8 @@ public class AllPasswordsBottomSheetViewTest {
     @Test
     @MediumTest
     public void testDismissesWhenHidden() {
+        addDefaultCredentialsToTheModel();
+
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
@@ -170,6 +158,35 @@ public class AllPasswordsBottomSheetViewTest {
         verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
     }
 
+    @Test
+    @MediumTest
+    public void testSearchIsCalledOnSearchQueryChange() {
+        addDefaultCredentialsToTheModel();
+        pollUiThread(() -> mAllPasswordsBottomSheetView.getSearchView().setQuery("a", false));
+        verify(mSearchQueryCallback).onResult("a");
+    }
+
+    // Adds three credentials items to the model.
+    private void addDefaultCredentialsToTheModel() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAllPasswordsBottomSheetView.setVisible(true);
+            mModel.get(SHEET_ITEMS)
+                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                    .createCredentialModel(
+                                            ANA, mCredentialCallback, IS_PASSWORD_FIELD)));
+            mModel.get(SHEET_ITEMS)
+                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                    .createCredentialModel(
+                                            NO_ONE, mCredentialCallback, IS_PASSWORD_FIELD)));
+            mModel.get(SHEET_ITEMS)
+                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                    .createCredentialModel(
+                                            BOB, mCredentialCallback, IS_PASSWORD_FIELD)));
+        });
+    }
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
     }
@@ -179,7 +196,8 @@ public class AllPasswordsBottomSheetViewTest {
     }
 
     private RecyclerView getCredentials() {
-        return (RecyclerView) mAllPasswordsBottomSheetView.getContentView();
+        return (RecyclerView) mAllPasswordsBottomSheetView.getContentView().findViewById(
+                R.id.sheet_item_list);
     }
 
     private TextView getCredentialOriginAt(int index) {

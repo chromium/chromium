@@ -180,6 +180,12 @@
       <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the all passwords bottom sheet showing a list of the user's credentials is closed.">
         List of credentials to be filled on touch is closed.
       </message>
+      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_TITLE" desc="The title string for the all passwords bottom sheet showing a list of the user's credentials.">
+        Passwords
+      </message>
+      <message name="IDS_ALL_PASSWORDS_BOTTOM_SHEET_SEARCH_HINT" desc="The label for a search button appears in all passwords bottom sheet.">
+        Search
+      </message>
       <message name="IDS_AUTOFILL_KEYBOARD_ACCESSORY_CONTENT_DESCRIPTION" desc="The text announced by the screen reader when the password suggestions are shown.">
         Passwords available
       </message>

@@ -56,7 +56,8 @@ public class AllPasswordsBottomSheetControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMediator = new AllPasswordsBottomSheetMediator();
-        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(mMediator::onDismissed);
+        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
+                mMediator::onDismissed, mMediator::onQueryTextChange);
         mMediator.initialize(mMockDelegate, mModel);
     }
 
@@ -101,5 +102,19 @@ public class AllPasswordsBottomSheetControllerTest {
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         assertThat(mModel.get(VISIBLE), is(false));
         verify(mMockDelegate).onDismissed();
+    }
+
+    @Test
+    public void testSearchFilterByUsername() {
+        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onQueryTextChange("Bob");
+        assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
+    }
+
+    @Test
+    public void testSearchFilterByURL() {
+        mMediator.showCredentials(TEST_CREDENTIALS, IS_PASSWORD_FIELD);
+        mMediator.onQueryTextChange("subdomain");
+        assertThat(mModel.get(SHEET_ITEMS).size(), is(1));
     }
 }

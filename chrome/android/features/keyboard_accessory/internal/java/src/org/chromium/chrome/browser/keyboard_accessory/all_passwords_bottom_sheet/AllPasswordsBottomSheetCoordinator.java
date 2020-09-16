@@ -44,8 +44,8 @@ class AllPasswordsBottomSheetCoordinator {
      */
     public void initialize(Context context, BottomSheetController sheetController,
             AllPasswordsBottomSheetCoordinator.Delegate delegate) {
-        PropertyModel model =
-                AllPasswordsBottomSheetProperties.createDefaultModel(mMediator::onDismissed);
+        PropertyModel model = AllPasswordsBottomSheetProperties.createDefaultModel(
+                mMediator::onDismissed, mMediator::onQueryTextChange);
         mMediator.initialize(delegate, model);
         setUpModelChangeProcessor(model, new AllPasswordsBottomSheetView(context, sheetController));
     }
