@@ -75,14 +75,6 @@ def ReadTypemap(path):
     return json.load(f)['c++']
 
 
-def ParseTypemapArgs(args):
-  typemaps = [s for s in '\n'.join(args).split('--start-typemap\n') if s]
-  result = {}
-  for typemap in typemaps:
-    result.update(ParseTypemap(typemap))
-  return result
-
-
 def LoadCppTypemapConfig(path):
   configs = {}
   with open(path) as f:
@@ -101,52 +93,6 @@ def LoadCppTypemapConfig(path):
             'non_copyable_non_movable': False,
         }
   return configs
-
-
-def ParseTypemap(typemap):
-  values = {'type_mappings': [], 'public_headers': [], 'traits_headers': []}
-  for line in typemap.split('\n'):
-    if not line:
-      continue
-    key, _, value = line.partition('=')
-    values[key].append(value.lstrip('/'))
-  result = {}
-  mapping_pattern = \
-      re.compile(r"""^([^=]+)           # mojom type
-                     =
-                     ([^[]+)            # native type
-                     (?:\[([^]]+)\])?$  # optional attribute in square brackets
-                 """, re.X)
-  for typename in values['type_mappings']:
-    match_result = mapping_pattern.match(typename)
-    assert match_result, (
-        "Cannot parse entry in the \"type_mappings\" section: %s" % typename)
-
-    mojom_type = match_result.group(1)
-    native_type = match_result.group(2)
-    attributes = []
-    if match_result.group(3):
-      attributes = match_result.group(3).split(',')
-
-    assert mojom_type not in result, (
-        "Cannot map multiple native types (%s, %s) to the same mojom type: %s" %
-        (result[mojom_type]['typename'], native_type, mojom_type))
-
-    result[mojom_type] = {
-        'public_headers': values['public_headers'],
-        'traits_headers': values['traits_headers'],
-        'typename': native_type,
-
-        # Attributes supported for individual mappings.
-        'copyable_pass_by_value': 'copyable_pass_by_value' in attributes,
-        'force_serialize': 'force_serialize' in attributes,
-        'hashable': 'hashable' in attributes,
-        'move_only': 'move_only' in attributes,
-        'non_copyable_non_movable': 'non_copyable_non_movable' in attributes,
-        'nullable_is_same_type': 'nullable_is_same_type' in attributes,
-    }
-  return result
-
 
 def main():
   parser = argparse.ArgumentParser(
@@ -170,10 +116,10 @@ def main():
                       type=str,
                       required=True,
                       help='The path to which to write the generated JSON.')
-  params, typemap_params = parser.parse_known_args()
-  typemaps = ParseTypemapArgs(typemap_params)
+  params, _ = parser.parse_known_args()
+  typemaps = {}
   if params.cpp_config_path:
-    typemaps.update(LoadCppTypemapConfig(params.cpp_config_path))
+    typemaps = LoadCppTypemapConfig(params.cpp_config_path)
   missing = [path for path in params.dependency if not os.path.exists(path)]
   if missing:
     raise IOError('Missing dependencies: %s' % ', '.join(missing))

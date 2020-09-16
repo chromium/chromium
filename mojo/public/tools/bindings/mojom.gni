@@ -140,43 +140,6 @@ if (enable_scrambled_message_ids) {
   message_scrambling_inputs = []
 }
 
-if (enable_mojom_typemapping) {
-  _bindings_configuration_files =
-      [ "//mojo/public/tools/bindings/chromium_bindings_configuration.gni" ]
-  _bindings_configurations = []
-  foreach(config_file, _bindings_configuration_files) {
-    _bindings_configurations += [ read_file(config_file, "scope") ]
-  }
-  foreach(configuration, _bindings_configurations) {
-    # Check that the mojom field of each typemap refers to a mojom that exists.
-    foreach(typemap, configuration.typemaps) {
-      _typemap_config = {
-      }
-      _typemap_config = typemap.config
-      read_file(_typemap_config.mojom, "")
-    }
-  }
-} else {
-  _bindings_configuration_files = []
-  _bindings_configurations = [
-    {
-      typemaps = []
-      component_macro_suffix = ""
-    },
-  ]
-}
-
-if (!is_ios) {
-  _bindings_configurations += [
-    {
-      variant = "blink"
-      component_macro_suffix = "_BLINK"
-      for_blink = true
-      typemaps = []
-    },
-  ]
-}
-
 # Generates targets for building C++, JavaScript and Java bindings from mojom
 # files. The output files will go under the generated file directory tree with
 # the same path as each input file.
@@ -995,12 +958,22 @@ template("mojom") {
   }
 
   # Generate code for variants.
-  if (!defined(invoker.disable_variants) || !invoker.disable_variants) {
-    enabled_configurations = _bindings_configurations
+  default_variant = {
+    component_macro_suffix = ""
+  }
+  if ((!defined(invoker.disable_variants) || !invoker.disable_variants) &&
+      !is_ios) {
+    blink_variant = {
+      variant = "blink"
+      component_macro_suffix = "_BLINK"
+      for_blink = true
+    }
+    enabled_configurations = [
+      default_variant,
+      blink_variant,
+    ]
   } else {
-    first_config = _bindings_configurations[0]
-    assert(!defined(first_config.variant))
-    enabled_configurations = [ first_config ]
+    enabled_configurations = [ default_variant ]
   }
   foreach(bindings_configuration, enabled_configurations) {
     cpp_only = false
@@ -1089,7 +1062,6 @@ template("mojom") {
     type_mappings_target_name = "${target_name}${variant_suffix}__type_mappings"
     type_mappings_path =
         "$target_gen_dir/${target_name}${variant_suffix}__type_mappings"
-    active_typemaps = []
     if (sources_list != []) {
       generator_cpp_output_suffixes = []
       variant_dash_suffix = ""
@@ -1104,17 +1076,6 @@ template("mojom") {
         "${variant_dash_suffix}.cc",
         "${variant_dash_suffix}.h",
       ]
-      foreach(source, sources_list) {
-        # TODO(sammc): Use a map instead of a linear scan when GN supports maps.
-        foreach(typemap, bindings_configuration.typemaps) {
-          _typemap_config = {
-          }
-          _typemap_config = typemap.config
-          if (get_path_info(source, "abspath") == _typemap_config.mojom) {
-            active_typemaps += [ typemap ]
-          }
-        }
-      }
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
       action(generator_target_name) {
@@ -1260,18 +1221,6 @@ template("mojom") {
           public_deps += [ "${full_name}_mojolpm" ]
         }
 
-        foreach(typemap, active_typemaps) {
-          _typemap_config = {
-          }
-          _typemap_config = typemap.config
-
-          if (defined(_typemap_config.deps)) {
-            deps += _typemap_config.deps
-          }
-          if (defined(_typemap_config.public_deps)) {
-            public_deps += _typemap_config.public_deps
-          }
-        }
         foreach(config, cpp_typemap_configs) {
           if (defined(config.traits_deps)) {
             deps += config.traits_deps
@@ -1321,8 +1270,8 @@ template("mojom") {
     }
 
     action(type_mappings_target_name) {
-      inputs = _bindings_configuration_files + mojom_generator_sources +
-               jinja2_sources + [ _typemap_stamp_filename ]
+      inputs =
+          mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
       outputs = [ type_mappings_path ]
       script = "$mojom_generator_root/generate_type_mappings.py"
       deps = [ ":$_typemap_validator_target_name" ]
@@ -1349,46 +1298,12 @@ template("mojom") {
         ]
       }
 
-      if (sources_list != []) {
-        # TODO(sammc): Pass the typemap description in a file to avoid command
-        # line length limitations.
-        typemap_description = []
-        foreach(typemap, active_typemaps) {
-          _typemap_config = {
-          }
-          _typemap_config = typemap.config
-
-          typemap_description += [ "--start-typemap" ]
-          if (defined(_typemap_config.public_headers)) {
-            foreach(value, _typemap_config.public_headers) {
-              typemap_description += [ "public_headers=$value" ]
-            }
-          }
-          if (defined(_typemap_config.traits_headers)) {
-            foreach(value, _typemap_config.traits_headers) {
-              typemap_description += [ "traits_headers=$value" ]
-            }
-          }
-          foreach(value, _typemap_config.type_mappings) {
-            typemap_description += [ "type_mappings=$value" ]
-          }
-
-          # The typemap configuration files are not actually used as inputs here
-          # but this establishes a necessary build dependency to ensure that
-          # typemap changes force a rebuild of affected targets.
-          if (defined(typemap.filename)) {
-            inputs += [ typemap.filename ]
-          }
-        }
-        args += typemap_description
-
-        # Newer GN-based typemaps are aggregated into a single config.
-        inputs += [ _typemap_config_filename ]
-        args += [
-          "--cpp-typemap-config",
-          rebase_path(_typemap_config_filename, root_build_dir),
-        ]
-      }
+      # Newer GN-based typemaps are aggregated into a single config.
+      inputs += [ _typemap_config_filename ]
+      args += [
+        "--cpp-typemap-config",
+        rebase_path(_typemap_config_filename, root_build_dir),
+      ]
     }
 
     group("${target_name}${variant_suffix}_headers") {
@@ -1491,20 +1406,6 @@ template("mojom") {
             public_deps -= [ "${full_name}${variant_suffix}" ]
           }
           public_deps += invoker.component_deps
-        }
-      }
-      foreach(typemap, active_typemaps) {
-        _typemap_config = {
-        }
-        _typemap_config = typemap.config
-        if (defined(_typemap_config.sources)) {
-          sources += _typemap_config.sources
-        }
-        if (defined(_typemap_config.public_deps)) {
-          public_deps += _typemap_config.public_deps
-        }
-        if (defined(_typemap_config.deps)) {
-          deps += _typemap_config.deps
         }
       }
       foreach(config, cpp_typemap_configs) {
