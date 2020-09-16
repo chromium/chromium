@@ -95,15 +95,14 @@
                                  error:(NSError*)error {
   SigninCoordinatorResult signinResult;
   if (error) {
-    DCHECK(!identity);
     // Filter out errors handled internally by ChromeIdentity.
     if (ShouldHandleSigninError(error)) {
-      [self.delegate addAccountSigninManagerFailedWithError:error];
+      [self.delegate addAccountSigninManagerFailedWithError:error
+                                                   identity:identity];
       return;
     }
     signinResult = SigninCoordinatorResultCanceledByUser;
   } else {
-    DCHECK(identity);
     signinResult = self.signinInterrupted ? SigninCoordinatorResultInterrupted
                                           : SigninCoordinatorResultSuccess;
   }

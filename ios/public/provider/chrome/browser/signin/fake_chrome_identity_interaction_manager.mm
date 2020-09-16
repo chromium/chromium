@@ -169,7 +169,7 @@
     // Ensure self is not destroyed in the callback.
     NS_VALID_UNTIL_END_OF_SCOPE FakeChromeIdentityInteractionManager*
         strongSelf = self;
-    _completionCallback(error ? nil : _fakeIdentity, error);
+    _completionCallback(_fakeIdentity, error);
     _completionCallback = nil;
   }
 }

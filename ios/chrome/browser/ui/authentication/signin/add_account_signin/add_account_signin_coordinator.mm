@@ -148,13 +148,14 @@ using signin_metrics::PromoAction;
 
 #pragma mark - AddAccountSigninManagerDelegate
 
-- (void)addAccountSigninManagerFailedWithError:(NSError*)error {
+- (void)addAccountSigninManagerFailedWithError:(NSError*)error
+                                      identity:(ChromeIdentity*)identity {
   DCHECK(error);
   __weak AddAccountSigninCoordinator* weakSelf = self;
   ProceduralBlock dismissAction = ^{
     [weakSelf addAccountSigninManagerFinishedWithSigninResult:
                   SigninCoordinatorResultCanceledByUser
-                                                     identity:nil];
+                                                     identity:identity];
   };
 
   self.alertCoordinator = ErrorCoordinator(

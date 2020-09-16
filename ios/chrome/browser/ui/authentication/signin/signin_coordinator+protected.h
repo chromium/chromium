@@ -14,7 +14,8 @@
 
 // Runs the sign-in completion callback.
 // |signinResult| is the state of sign-in at add account flow completion.
-// |identity| is the identity of the added account.
+// |identity| is the identity of the added account. Can be nil in the case that
+// sign-in is interrupted or canceled before the user has selected an identity.
 // |showAdvancedSettingsSignin| is YES if the user wants to open the
 // advanced settings signin.
 - (void)runCompletionCallbackWithSigninResult:

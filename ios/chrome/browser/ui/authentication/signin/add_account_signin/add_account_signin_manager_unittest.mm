@@ -153,7 +153,7 @@ TEST_F(AddAccountSigninManagerTest, AddAccountIntentWithUserCancel) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
-                                             identity:nil]);
+                                             identity:fake_identity_]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
@@ -172,7 +172,8 @@ TEST_F(AddAccountSigninManagerTest,
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
-      addAccountSigninManagerFailedWithError:[OCMArg any]]);
+      addAccountSigninManagerFailedWithError:[OCMArg any]
+                                    identity:fake_identity_]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
@@ -221,7 +222,7 @@ TEST_F(AddAccountSigninManagerTest, ReauthIntentWithUserCancel) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
-                                             identity:nil]);
+                                             identity:fake_identity_]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
@@ -240,7 +241,8 @@ TEST_F(AddAccountSigninManagerTest,
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
-      addAccountSigninManagerFailedWithError:[OCMArg any]]);
+      addAccountSigninManagerFailedWithError:[OCMArg any]
+                                    identity:fake_identity_]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
