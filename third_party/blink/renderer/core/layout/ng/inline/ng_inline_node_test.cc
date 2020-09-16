@@ -599,11 +599,11 @@ struct StyleChangeData {
   unsigned needs_collect_inlines;
   base::Optional<bool> is_line_dirty;
 } style_change_data[] = {
-    // Changing color, text-decoration, etc. should not re-run
+    // Changing color, etc. should not re-run
     // |CollectInlines()|.
     {"#parent.after { color: red; }", StyleChangeData::kNone, false},
-    {"#parent.after { text-decoration-line: underline; }",
-     StyleChangeData::kNone, false},
+    {"#parent.after { text-decoration-color: red; }", StyleChangeData::kNone,
+     false},
     // Changing fonts should re-run |CollectInlines()|.
     {"#parent.after { font-size: 200%; }", StyleChangeData::kAll, true},
     // Changing from/to out-of-flow should re-rerun |CollectInlines()|.

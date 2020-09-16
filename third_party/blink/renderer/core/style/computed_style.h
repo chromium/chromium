@@ -2134,13 +2134,14 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Text decoration utility functions.
+  bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   void ApplyTextDecorations(const Color& parent_text_decoration_color,
                             bool override_existing_colors);
   void ClearAppliedTextDecorations();
   void RestoreParentTextDecorations(const ComputedStyle& parent_style);
   CORE_EXPORT const Vector<AppliedTextDecoration>& AppliedTextDecorations()
       const;
-  TextDecoration TextDecorationsInEffect() const;
+  CORE_EXPORT TextDecoration TextDecorationsInEffect() const;
 
   // Overflow utility functions.
 
@@ -2939,6 +2940,11 @@ class ComputedStyle : public ComputedStyleBase,
   FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
                            InitialAndInheritedAndNonInheritedVariableNames);
   FRIEND_TEST_ALL_PREFIXES(StyleCascadeTest, ForcedVisitedBackgroundColor);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComputedStyleTest,
+      TextDecorationEqualDoesNotRequireRecomputeInkOverflow);
+  FRIEND_TEST_ALL_PREFIXES(ComputedStyleTest,
+                           TextDecorationNotEqualRequiresRecomputeInkOverflow);
 };
 
 inline bool ComputedStyle::HasAnyPseudoElementStyles() const {

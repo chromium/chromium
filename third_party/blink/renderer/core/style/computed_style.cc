@@ -1711,6 +1711,33 @@ void ComputedStyle::UpdateFontOrientation() {
   SetFontDescription(font_description);
 }
 
+bool ComputedStyle::TextDecorationVisualOverflowEqual(
+    const ComputedStyle& o) const {
+  const Vector<AppliedTextDecoration>& applied_with_this =
+      AppliedTextDecorations();
+  const Vector<AppliedTextDecoration>& applied_with_other =
+      o.AppliedTextDecorations();
+  if (applied_with_this.size() != applied_with_other.size())
+    return false;
+  for (auto decoration_index = 0u; decoration_index < applied_with_this.size();
+       ++decoration_index) {
+    const AppliedTextDecoration& decoration_from_this =
+        applied_with_this[decoration_index];
+    const AppliedTextDecoration& decoration_from_other =
+        applied_with_other[decoration_index];
+    if (decoration_from_this.Thickness() != decoration_from_other.Thickness() ||
+        decoration_from_this.UnderlineOffset() !=
+            decoration_from_other.UnderlineOffset() ||
+        decoration_from_this.Style() != decoration_from_other.Style() ||
+        decoration_from_this.Lines() != decoration_from_other.Lines())
+      return false;
+  }
+  if (TextUnderlinePosition() != o.TextUnderlinePosition())
+    return false;
+
+  return true;
+}
+
 TextDecoration ComputedStyle::TextDecorationsInEffect() const {
   if (HasSimpleUnderlineInternal())
     return TextDecoration::kUnderline;
