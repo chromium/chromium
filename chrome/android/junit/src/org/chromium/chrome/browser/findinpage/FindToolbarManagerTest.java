@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.findinpage;
 
 import android.view.View;
+import android.view.ViewStub;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,11 +17,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.ui.DeferredViewStubInflationProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -36,7 +35,7 @@ public class FindToolbarManagerTest {
     @Mock
     private Tab mTab;
     @Mock
-    private DeferredViewStubInflationProvider<FindToolbar> mViewProvider;
+    private ViewStub mViewStub;
     @Mock
     private FindToolbar mFindToolbar;
 
@@ -44,18 +43,10 @@ public class FindToolbarManagerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.doReturn(mTab).when(mTabModelSelector).getCurrentTab();
-
-        ArgumentCaptor<Callback> captor = ArgumentCaptor.forClass(Callback.class);
-        Mockito.doNothing().when(mViewProvider).whenLoaded(captor.capture());
-        Mockito.doAnswer(invocation -> {
-                   captor.getValue().onResult(mFindToolbar);
-                   return null;
-               })
-                .when(mViewProvider)
-                .inflate();
+        Mockito.doReturn(mFindToolbar).when(mViewStub).inflate();
 
         mFindToolbarManager = new FindToolbarManager(
-                mViewProvider, mTabModelSelector, Mockito.mock(WindowAndroid.class), null);
+                mViewStub, mTabModelSelector, Mockito.mock(WindowAndroid.class), null);
     }
 
     @Test

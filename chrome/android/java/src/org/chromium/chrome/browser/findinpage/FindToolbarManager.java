@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.findinpage;
 
 import android.view.ActionMode;
 import android.view.View;
+import android.view.ViewStub;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.ui.DeferredViewStubInflationProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -17,7 +17,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 public class FindToolbarManager {
     private FindToolbar mFindToolbar;
-    private final DeferredViewStubInflationProvider<FindToolbar> mFindToolbarProvider;
+    private final ViewStub mFindToolbarStub;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
     private final ActionMode.Callback mCallback;
@@ -25,17 +25,15 @@ public class FindToolbarManager {
 
     /**
      * Creates an instance of a {@link FindToolbarManager}.
-     * @param findToolbarProvider The {@link DeferredViewStubInflationProvider} which provides the
-     *         FindToolbar.
+     * @param findToolbarStub The {@link ViewStub} where for the find toolbar.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
      * @param windowAndroid The {@link WindowAndroid} for the containing activity.
      * @param callback The ActionMode.Callback that will be used when selection occurs on the
      *         {@link FindToolbar}.
      */
-    public FindToolbarManager(DeferredViewStubInflationProvider<FindToolbar> findToolbarProvider,
-            TabModelSelector tabModelSelector, WindowAndroid windowAndroid,
-            ActionMode.Callback callback) {
-        mFindToolbarProvider = findToolbarProvider;
+    public FindToolbarManager(ViewStub findToolbarStub, TabModelSelector tabModelSelector,
+            WindowAndroid windowAndroid, ActionMode.Callback callback) {
+        mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
         mWindowAndroid = windowAndroid;
         mCallback = callback;
@@ -73,30 +71,25 @@ public class FindToolbarManager {
      */
     public void showToolbar() {
         if (mFindToolbar == null) {
-            mFindToolbarProvider.whenLoaded(findToolbar -> {
-                mFindToolbar = findToolbar;
-                mFindToolbar.setTabModelSelector(mTabModelSelector);
-                mFindToolbar.setWindowAndroid(mWindowAndroid);
-                mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
-                mFindToolbar.setObserver(new FindToolbarObserver() {
-                    @Override
-                    public void onFindToolbarShown() {
-                        for (FindToolbarObserver observer : mObservers) {
-                            observer.onFindToolbarShown();
-                        }
+            mFindToolbar = (FindToolbar) mFindToolbarStub.inflate();
+            mFindToolbar.setTabModelSelector(mTabModelSelector);
+            mFindToolbar.setWindowAndroid(mWindowAndroid);
+            mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
+            mFindToolbar.setObserver(new FindToolbarObserver() {
+                @Override
+                public void onFindToolbarShown() {
+                    for (FindToolbarObserver observer : mObservers) {
+                        observer.onFindToolbarShown();
                     }
+                }
 
-                    @Override
-                    public void onFindToolbarHidden() {
-                        for (FindToolbarObserver observer : mObservers) {
-                            observer.onFindToolbarHidden();
-                        }
+                @Override
+                public void onFindToolbarHidden() {
+                    for (FindToolbarObserver observer : mObservers) {
+                        observer.onFindToolbarHidden();
                     }
-                });
-                mFindToolbar.activate();
+                }
             });
-            mFindToolbarProvider.inflate();
-            return;
         }
 
         mFindToolbar.activate();
