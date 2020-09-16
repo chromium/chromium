@@ -94,12 +94,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   bool UnloadComponentExtensionIME(Profile* profile,
                                    const std::string& input_method_id);
 
-  // Returns true if |input_method_id| is whitelisted component extension input
+  // Returns true if |input_method_id| is allowlisted component extension input
   // method.
-  bool IsWhitelisted(const std::string& input_method_id);
+  bool IsAllowlisted(const std::string& input_method_id);
 
-  // Returns true if |extension_id| is whitelisted component extension.
-  bool IsWhitelistedExtension(const std::string& extension_id);
+  // Returns true if |extension_id| is allowlisted component extension.
+  bool IsAllowlistedExtension(const std::string& extension_id);
 
   // Returns all IME as InputMethodDescriptors.
   input_method::InputMethodDescriptors GetAllIMEAsInputMethodDescriptor();
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
   bool FindEngineEntry(const std::string& input_method_id,
                        ComponentExtensionIME* out_extension);
 
-  bool IsInLoginLayoutWhitelist(const std::vector<std::string>& layouts);
+  bool IsInLoginLayoutAllowlist(const std::vector<std::string>& layouts);
 
   std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate_;
 

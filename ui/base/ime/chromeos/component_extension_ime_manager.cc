@@ -75,13 +75,13 @@ void ComponentExtensionIMEManager::Initialize(
   delegate_ = std::move(delegate);
   std::vector<ComponentExtensionIME> ext_list = delegate_->ListIME();
   for (const auto& ext : ext_list) {
-    bool extension_exists = IsWhitelistedExtension(ext.id);
+    bool extension_exists = IsAllowlistedExtension(ext.id);
     if (!extension_exists)
       component_extension_imes_[ext.id] = ext;
     for (const auto& ime : ext.engines) {
       const std::string input_method_id =
           extension_ime_util::GetComponentInputMethodID(ext.id, ime.engine_id);
-      if (extension_exists && !IsWhitelisted(input_method_id))
+      if (extension_exists && !IsAllowlisted(input_method_id))
         component_extension_imes_[ext.id].engines.push_back(ime);
       input_method_id_set_.insert(input_method_id);
     }
@@ -109,13 +109,13 @@ bool ComponentExtensionIMEManager::UnloadComponentExtensionIME(
   return true;
 }
 
-bool ComponentExtensionIMEManager::IsWhitelisted(
+bool ComponentExtensionIMEManager::IsAllowlisted(
     const std::string& input_method_id) {
   return input_method_id_set_.find(input_method_id) !=
          input_method_id_set_.end();
 }
 
-bool ComponentExtensionIMEManager::IsWhitelistedExtension(
+bool ComponentExtensionIMEManager::IsAllowlistedExtension(
     const std::string& extension_id) {
   return component_extension_imes_.find(extension_id) !=
          component_extension_imes_.end();
@@ -134,18 +134,13 @@ input_method::InputMethodDescriptors
           extension_ime_util::GetComponentInputMethodID(
               ext.id, ime.engine_id);
       const std::vector<std::string>& layouts = ime.layouts;
-      result.push_back(
-          input_method::InputMethodDescriptor(
-              input_method_id,
-              ime.display_name,
-              ime.indicator,
-              layouts,
-              ime.language_codes,
-              // Enables extension based xkb keyboards on login screen.
-              extension_ime_util::IsKeyboardLayoutExtension(
-                  input_method_id) && IsInLoginLayoutWhitelist(layouts),
-              ime.options_page_url,
-              ime.input_view_url));
+      result.push_back(input_method::InputMethodDescriptor(
+          input_method_id, ime.display_name, ime.indicator, layouts,
+          ime.language_codes,
+          // Enables extension based xkb keyboards on login screen.
+          extension_ime_util::IsKeyboardLayoutExtension(input_method_id) &&
+              IsInLoginLayoutAllowlist(layouts),
+          ime.options_page_url, ime.input_view_url));
     }
   }
   std::stable_sort(result.begin(), result.end(), InputMethodCompare);
@@ -167,7 +162,7 @@ ComponentExtensionIMEManager::GetXkbIMEAsInputMethodDescriptor() {
 bool ComponentExtensionIMEManager::FindEngineEntry(
     const std::string& input_method_id,
     ComponentExtensionIME* out_extension) {
-  if (!IsWhitelisted(input_method_id))
+  if (!IsAllowlisted(input_method_id))
     return false;
 
   std::string extension_id =
@@ -181,7 +176,7 @@ bool ComponentExtensionIMEManager::FindEngineEntry(
   return true;
 }
 
-bool ComponentExtensionIMEManager::IsInLoginLayoutWhitelist(
+bool ComponentExtensionIMEManager::IsInLoginLayoutAllowlist(
     const std::vector<std::string>& layouts) {
   for (const auto& layout : layouts) {
     if (login_layout_set_.find(layout) != login_layout_set_.end())

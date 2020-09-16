@@ -557,7 +557,7 @@ bool InputImeEventRouter::RegisterImeExtension(
   chromeos::input_method::InputMethodDescriptors descriptors;
   // Only creates descriptors for 3rd party IME extension, because the
   // descriptors for component IME extensions are managed by InputMethodUtil.
-  if (!comp_ext_ime_manager->IsWhitelistedExtension(extension_id)) {
+  if (!comp_ext_ime_manager->IsAllowlistedExtension(extension_id)) {
     for (const auto& component : input_components) {
       DCHECK(component.type == INPUT_COMPONENT_TYPE_IME);
 
@@ -1056,7 +1056,7 @@ void InputImeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
   chromeos::ComponentExtensionIMEManager* comp_ext_ime_manager =
       manager->GetComponentExtensionIMEManager();
 
-  if (comp_ext_ime_manager->IsWhitelistedExtension(extension->id())) {
+  if (comp_ext_ime_manager->IsAllowlistedExtension(extension->id())) {
     // Since the first party ime is not allow to uninstall, and when it's
     // unloaded unexpectedly, OS will recover the extension at once.
     // So should not unregister the IMEs. Otherwise the IME icons on the

@@ -1145,7 +1145,7 @@ void InputMethodManagerImpl::LoadNecessaryComponentExtensions(
             unfiltered_input_method_id)) {
       // Legacy IMEs or xkb layouts are alwayes active.
       state->active_input_method_ids.push_back(unfiltered_input_method_id);
-    } else if (component_extension_ime_manager_->IsWhitelisted(
+    } else if (component_extension_ime_manager_->IsAllowlisted(
                    unfiltered_input_method_id)) {
       if (enable_extension_loading_) {
         component_extension_ime_manager_->LoadComponentExtensionIME(
