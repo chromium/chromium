@@ -30,9 +30,16 @@ public class WebViewPackageError {
     private PersistentErrorView mErrorMessage;
     private Activity mContext;
 
-    private static final String OPEN_WEBVIEW_PROVIDER_BUTTON_TEXT =
+    public static final String OPEN_WEBVIEW_PROVIDER_BUTTON_TEXT =
             "Open DevTools in current provider";
-    private static final String CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT = "Change provider";
+    public static final String CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT = "Change provider";
+    // The developer UI application label should be used in the placeholder.
+    public static final String DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE =
+            "%s is not the system's current selected WebView provider";
+    // The developer UI application label should be used in the placeholder.
+    public static final String DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE =
+            "You are using DevTools for (%s) which is not the system's currently selected "
+            + "WebView provider";
 
     private static final String NO_VALID_WEBVIEW_MESSAGE =
             "Cannot find a valid WebView provider installed. "
@@ -76,13 +83,11 @@ public class WebViewPackageError {
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
         CharSequence label = WebViewPackageHelper.loadLabel(mContext);
-        mErrorMessage.setText(String.format(
-                Locale.US, "%s is not the system's current selected WebView provider", label));
+        mErrorMessage.setText(
+                String.format(Locale.US, DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE, label));
         dialogBuilder.setTitle("Different WebView Provider");
-        dialogBuilder.setMessage(String.format(Locale.US,
-                "You are using DevTools for (%s) which is not the system's currently selected "
-                        + "WebView provider",
-                label));
+        dialogBuilder.setMessage(
+                String.format(Locale.US, DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE, label));
 
         boolean canOpenCurrentProvider = canOpenCurrentWebViewProviderDevTools();
         boolean canChangeProvider = canChangeWebViewProvider();
