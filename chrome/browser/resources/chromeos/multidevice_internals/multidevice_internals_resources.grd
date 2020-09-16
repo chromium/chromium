@@ -20,6 +20,14 @@
                file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\browser_tabs_model_form.js"
                use_base_dir="false"
                type="BINDATA"/>
+      <include name="IDR_MULTIDEVICE_INTERNALS_BROWSER_NOTIFICATION_MANAGER_JS"
+               file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\notification_manager.js"
+               use_base_dir="false"
+               type="BINDATA"/>
+      <include name="IDR_MULTIDEVICE_INTERNALS_BROWSER_NOTIFICATION_FORM_JS"
+               file="${root_gen_dir}\chrome\browser\resources\chromeos\multidevice_internals\notification_form.js"
+               use_base_dir="false"
+               type="BINDATA"/>
       <include name="IDR_MULTIDEVICE_INTERNALS_INDEX_HTML"
                file="index.html"
                type="BINDATA"/>

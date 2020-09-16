@@ -19,38 +19,56 @@ namespace multidevice {
 
 namespace {
 
-// Fake Favicon colors used for coloring the fake favicon bitmaps.
-enum class FaviconType {
-  kPink = 0,
-  kRed = 1,
-  kGreen = 2,
-  kBlue = 3,
-  kYellow = 4,
+// Fake image types used for fields that require gfx::Image().
+enum class ImageType {
+  kPink = 1,
+  kRed = 2,
+  kGreen = 3,
+  kBlue = 4,
+  kYellow = 5,
 };
 
-const SkBitmap FaviconNumToBitmap(FaviconType favicon_num) {
+const SkBitmap ImageTypeToBitmap(ImageType image_type_num) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
-  switch (favicon_num) {
-    case FaviconType::kPink:
+  switch (image_type_num) {
+    case ImageType::kPink:
       bitmap.eraseARGB(0, 255, 192, 203);
       break;
-    case FaviconType::kRed:
+    case ImageType::kRed:
       bitmap.eraseARGB(0, 255, 0, 0);
       break;
-    case FaviconType::kGreen:
+    case ImageType::kGreen:
       bitmap.eraseARGB(0, 0, 255, 0);
       break;
-    case FaviconType::kBlue:
+    case ImageType::kBlue:
       bitmap.eraseARGB(0, 0, 0, 255);
       break;
-    case FaviconType::kYellow:
+    case ImageType::kYellow:
       bitmap.eraseARGB(0, 255, 255, 0);
       break;
     default:
       break;
   }
   return bitmap;
+}
+
+phonehub::Notification::AppMetadata DictToAppMetadata(
+    const base::DictionaryValue* app_metadata_dict) {
+  base::string16 visible_app_name;
+  CHECK(app_metadata_dict->GetString("visibleAppName", &visible_app_name));
+
+  std::string package_name;
+  CHECK(app_metadata_dict->GetString("packageName", &package_name));
+
+  int icon_image_type_as_int;
+  CHECK(app_metadata_dict->GetInteger("icon", &icon_image_type_as_int));
+
+  auto icon_image_type = static_cast<ImageType>(icon_image_type_as_int);
+  gfx::Image icon =
+      gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(icon_image_type));
+  return phonehub::Notification::AppMetadata(visible_app_name, package_name,
+                                             icon);
 }
 
 base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata>
@@ -73,14 +91,15 @@ DictToBrowserTabMetadataModel(
     return base::nullopt;
   }
 
-  int favicon_type_as_int;
-  if (!browser_tab_metadata->GetInteger("favicon", &favicon_type_as_int)) {
+  int favicon_image_type_as_int;
+  if (!browser_tab_metadata->GetInteger("favicon",
+                                        &favicon_image_type_as_int)) {
     return base::nullopt;
   }
 
-  auto favicon_type = static_cast<FaviconType>(favicon_type_as_int);
+  auto favicon_image_type = static_cast<ImageType>(favicon_image_type_as_int);
   gfx::Image favicon =
-      gfx::Image::CreateFrom1xBitmap(FaviconNumToBitmap(favicon_type));
+      gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(favicon_image_type));
   return phonehub::BrowserTabsModel::BrowserTabMetadata(
       GURL(url), title, base::Time::FromJsTime(last_accessed_timestamp),
       favicon);
@@ -120,6 +139,16 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setBrowserTabs",
       base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetBrowserTabs,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setNotification",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetNotification,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "removeNotification",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleRemoveNotification,
                           base::Unretained(this)));
 }
 
@@ -276,6 +305,85 @@ void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
 
   if (metadatas[0].has_value())
     PA_LOG(VERBOSE) << "Set second most recent browser tab to" << *metadatas[0];
+}
+
+void MultidevicePhoneHubHandler::HandleSetNotification(
+    const base::ListValue* args) {
+  const base::DictionaryValue* notification_data_dict = nullptr;
+  CHECK(args->GetDictionary(0, &notification_data_dict));
+
+  int id;
+  CHECK(notification_data_dict->GetInteger("id", &id));
+
+  const base::DictionaryValue* app_metadata_dict = nullptr;
+  CHECK(
+      notification_data_dict->GetDictionary("appMetadata", &app_metadata_dict));
+  phonehub::Notification::AppMetadata app_metadata =
+      DictToAppMetadata(app_metadata_dict);
+
+  // JavaScript time stamps don't fit in int.
+  double js_timestamp;
+  CHECK(notification_data_dict->GetDouble("timestamp", &js_timestamp));
+  auto timestamp = base::Time::FromJsTime(js_timestamp);
+
+  int importance_as_int;
+  CHECK(notification_data_dict->GetInteger("importance", &importance_as_int));
+  auto importance =
+      static_cast<phonehub::Notification::Importance>(importance_as_int);
+
+  int inline_reply_id;
+  CHECK(notification_data_dict->GetInteger("inlineReplyId", &inline_reply_id));
+
+  base::Optional<base::string16> opt_title;
+  base::string16 title;
+  if (notification_data_dict->GetString("title", &title) && !title.empty()) {
+    opt_title = title;
+  }
+
+  base::Optional<base::string16> opt_text_content;
+  base::string16 text_content;
+  if (notification_data_dict->GetString("textContent", &text_content) &&
+      !text_content.empty()) {
+    opt_text_content = text_content;
+  }
+
+  base::Optional<gfx::Image> opt_shared_image;
+  int shared_image_type_as_int;
+  if (notification_data_dict->GetInteger("sharedImage",
+                                         &shared_image_type_as_int) &&
+      shared_image_type_as_int) {
+    auto shared_image_type = static_cast<ImageType>(shared_image_type_as_int);
+    opt_shared_image =
+        gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(shared_image_type));
+  }
+
+  base::Optional<gfx::Image> opt_contact_image;
+  int contact_image_type_as_int;
+  if (notification_data_dict->GetInteger("contactImage",
+                                         &contact_image_type_as_int) &&
+      contact_image_type_as_int) {
+    auto shared_contact_image_type =
+        static_cast<ImageType>(contact_image_type_as_int);
+    opt_contact_image = gfx::Image::CreateFrom1xBitmap(
+        ImageTypeToBitmap(shared_contact_image_type));
+  }
+
+  auto notification = phonehub::Notification(
+      id, app_metadata, timestamp, importance, inline_reply_id, opt_title,
+      opt_text_content, opt_shared_image, opt_contact_image);
+
+  PA_LOG(VERBOSE) << "Set notification" << notification;
+  fake_phone_hub_manager_->fake_notification_manager()->SetNotification(
+      std::move(notification));
+}
+
+void MultidevicePhoneHubHandler::HandleRemoveNotification(
+    const base::ListValue* args) {
+  int notification_id = 0;
+  CHECK(args->GetInteger(0, &notification_id));
+  fake_phone_hub_manager_->fake_notification_manager()->RemoveNotification(
+      notification_id);
+  PA_LOG(VERBOSE) << "Removed notification with id " << notification_id;
 }
 
 }  // namespace multidevice

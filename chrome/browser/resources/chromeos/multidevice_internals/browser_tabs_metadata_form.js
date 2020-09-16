@@ -8,19 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './shared_style.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserTabsMetadataModel, FaviconType} from './types.js';
-
-/**
- * Maps a FaviconType to its title label in the dropdown.
- * @type {!Map<FaviconType, String>}
- */
-const faviconTypeToStringMap = new Map([
-  [FaviconType.PINK, 'Pink'],
-  [FaviconType.RED, 'Red'],
-  [FaviconType.GREEN, 'Green'],
-  [FaviconType.BLUE, 'Blue'],
-  [FaviconType.YELLOW, 'Yellow'],
-]);
+import {BrowserTabsMetadataModel, ImageType, imageTypeToStringMap} from './types.js';
 
 Polymer({
   is: 'browser-tabs-metadata-form',
@@ -53,10 +41,10 @@ Polymer({
       value: Date.now(),
     },
 
-    /** @private{FaviconType} */
+    /** @private{ImageType} */
     favicon_: {
       type: Number,
-      value: FaviconType.PINK,
+      value: ImageType.PINK,
     },
 
     /** @private */
@@ -64,11 +52,12 @@ Polymer({
       type: Array,
       value: () => {
         return [
-          FaviconType.PINK,
-          FaviconType.RED,
-          FaviconType.GREEN,
-          FaviconType.BLUE,
-          FaviconType.YELLOW,
+          ImageType.NONE,
+          ImageType.PINK,
+          ImageType.RED,
+          ImageType.GREEN,
+          ImageType.BLUE,
+          ImageType.YELLOW,
         ];
       },
       readonly: true,
@@ -76,12 +65,12 @@ Polymer({
   },
 
   /**
-   * @param {FaviconType} faviconType
+   * @param {ImageType} faviconType
    * @return {String}
    * @private
    */
-  getFaviconTypeName_(faviconType) {
-    return faviconTypeToStringMap.get(faviconType);
+  getImageTypeName_(faviconType) {
+    return imageTypeToStringMap.get(faviconType);
   },
 
   /** @private */
@@ -113,5 +102,15 @@ Polymer({
     }
 
     this.lastAccessedTimeStamp_ = Number(inputValue);
+  },
+
+  /**
+   * @param {*} lhs
+   * @param {*} rhs
+   * @return {boolean}
+   * @private
+   */
+  isEqual_(lhs, rhs) {
+    return lhs === rhs;
   },
 });

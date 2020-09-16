@@ -37,6 +37,8 @@ class MultidevicePhoneHubHandler : public content::WebUIMessageHandler {
   void HandleSetFakePhoneName(const base::ListValue* args);
   void HandleSetFakePhoneStatus(const base::ListValue* args);
   void HandleSetBrowserTabs(const base::ListValue* args);
+  void HandleSetNotification(const base::ListValue* args);
+  void HandleRemoveNotification(const base::ListValue* args);
 
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
 };

@@ -10,6 +10,7 @@ import './browser_tabs_model_form.js';
 import './i18n_setup.js';
 import './phone_name_form.js';
 import './phone_status_model_form.js';
+import './notification_manager.js';
 import './shared_style.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -82,7 +83,7 @@ Polymer({
     /** @private {!FeatureStatus} */
     featureStatus_: {
       type: Number,
-      value: FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE,
+      value: FeatureStatus.ENABLED_AND_CONNECTED,
     },
 
     /** @private */
@@ -160,5 +161,15 @@ Polymer({
   /** @private */
   onPhoneHubFlagButtonClick_() {
     window.open('chrome://flags/#enable-phone-hub');
+  },
+
+  /**
+   * @param {*} lhs
+   * @param {*} rhs
+   * @return {boolean}
+   * @private
+   */
+  isEqual_(lhs, rhs) {
+    return lhs === rhs;
   },
 });

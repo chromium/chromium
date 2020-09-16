@@ -10,31 +10,30 @@
 </style>
 
 <div class="column">
-  <div class="label">URL: </div>
-  <cr-input value="{{url_}}" id="urlInput" auto-validate required
+  <cr-input value="{{url_}}" id="urlInput" auto-validate required label="URL: "
       error-message="This browser tab will be a nullopt if no url input">
   </cr-input>
 </div>
 <div class="column">
-  <div class="label">Title: </div>
-  <cr-input value="{{title_}}" id="titleInput" auto-validate required
+  <cr-input value="{{title_}}" label="Title:" auto-validate required
       error-message="This browser tab will be a nullopt if no title input">
   </cr-input>
 </div>
 <div class="column">
-  <div class="label">Last Accessed (ms): </div>
-  <cr-input value="{{lastAccessedTimeStamp_}}"
+  <cr-input value="{{lastAccessedTimeStamp_}}" label="Last Accessed (ms):"
       id="lastAccessedTimeStampInput" type="number" min="0"
       on-change="onLastAccessTimeStampChanged_"
       auto-validate error-message="Must be greater than 0" required>
   </cr-input>
 </div>
 <div class="column" id="faviconSelector">
-  <div class="label">Favicon selector: </div>
+  <label>Favicon Image Type</label>
   <select id="faviconList" class="md-select"
-    on-change="onFaviconSelected_">
+      on-change="onFaviconSelected_">
     <template is="dom-repeat" items="[[faviconList_]]">
-      <option>[[getFaviconTypeName_(item)]]</option>
+      <option selected="[[isEqual_(item, favicon_)]]">
+        [[getImageTypeName_(item)]]
+      </option>
     </template>
   </select>
 </div>

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {BrowserTabsModel, FeatureStatus, PhoneStatusModel} from './types.js';
+import {BrowserTabsModel, FeatureStatus, Notification, PhoneStatusModel} from './types.js';
 
 /**
  * JavaScript hooks into the native WebUI handler for Phonehub tab.
@@ -49,6 +49,22 @@ export class MultidevicePhoneHubBrowserProxy {
    */
   setBrowserTabs(browserTabsModel) {
     chrome.send('setBrowserTabs', [browserTabsModel]);
+  }
+
+  /**
+   * Sets a notification.
+   * @param {!Notification} notification
+   */
+  setNotification(notification) {
+    chrome.send('setNotification', [notification]);
+  }
+
+  /**
+   * Removes a notification with the id |notificationId|
+   * @param {number} notificationId
+   */
+  removeNotification(notificationId) {
+    chrome.send('removeNotification', [notificationId]);
   }
 }
 

@@ -88,17 +88,32 @@ export const BatterySaverState = {
 };
 
 /**
- * Numerical values should not be changed because they must stay in sync with
- * FaviconType in chromeos/components/phonehub/phone_status_model.cc.
+ * With the exception of NONE, numerical values should not be changed because
+ * they must stay in sync with ImageType in
+ * chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.cc.
  * @enum{number}
  */
-export const FaviconType = {
-  PINK: 0,
-  RED: 1,
-  GREEN: 2,
-  BLUE: 3,
-  YELLOW: 4,
+export const ImageType = {
+  NONE: 0,
+  PINK: 1,
+  RED: 2,
+  GREEN: 3,
+  BLUE: 4,
+  YELLOW: 5,
 };
+
+/**
+ * Maps a ImageType to its title label in the dropdown.
+ * @type {!Map<ImageType, String>}
+ */
+export const imageTypeToStringMap = new Map([
+  [ImageType.NONE, 'None'],
+  [ImageType.PINK, 'Pink'],
+  [ImageType.RED, 'Red'],
+  [ImageType.GREEN, 'Green'],
+  [ImageType.BLUE, 'Blue'],
+  [ImageType.YELLOW, 'Yellow'],
+]);
 
 /**
  * @typedef {{
@@ -117,7 +132,7 @@ export let PhoneStatusModel;
  *   url: string,
  *   title: string,
  *   lastAccessedTimeStamp: number,
- *   favicon: !FaviconType,
+ *   favicon: !ImageType,
  * }}
  */
 export let BrowserTabsMetadataModel;
@@ -130,3 +145,57 @@ export let BrowserTabsMetadataModel;
  * }}
  */
 export let BrowserTabsModel;
+
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * Importance in chromeos/components/phonehub/notification.h.
+ * @enum{number}
+ */
+export const Importance = {
+  UNSPECIFIED: 0,
+  NONE: 1,
+  MIN: 2,
+  LOW: 3,
+  DEFAULT: 4,
+  HIGH: 5,
+};
+
+/**
+ * Maps an Importance to its title label in the dropdown.
+ * @type {!Map<Importance, String>}
+ */
+export const importanceToString = new Map([
+  [Importance.UNSPECIFIED, 'Unspecified'],
+  [Importance.NONE, 'None'],
+  [Importance.MIN, 'Min'],
+  [Importance.LOW, 'Low'],
+  [Importance.DEFAULT, 'Default'],
+  [Importance.HIGH, 'High'],
+]);
+
+/**
+ * @typedef {{
+ *   visibleAppName: string,
+ *   packageName: string,
+ *   icon: !ImageType,
+ * }}
+ */
+export let AppMetadata;
+
+/**
+ * With the exception of the sent property, values match with Notifications in
+ * chromeos/components/phonehub/notification.h
+ * @typedef {{
+ *   sent: boolean,
+ *   id: number,
+ *   appMetadata: !AppMetadata,
+ *   timestamp: number,
+ *   importance: !Importance,
+ *   inlineReplyId: number,
+ *   title: ?string,
+ *   textContent: ?string,
+ *   sharedImage: !ImageType,
+ *   contactImage: !ImageType,
+ * }}
+ */
+export let Notification;
