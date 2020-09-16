@@ -30,14 +30,13 @@ namespace {
 // contained (i.e., do not affect other unit tests).
 class LogStateSaver {
  public:
-  LogStateSaver() : old_min_log_level_(logging::GetMinLogLevel()) {}
-
+  LogStateSaver() = default;
+  LogStateSaver(const LogStateSaver&) = delete;
+  LogStateSaver& operator=(const LogStateSaver&) = delete;
   ~LogStateSaver() { logging::SetMinLogLevel(old_min_log_level_); }
 
  private:
-  int old_min_log_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogStateSaver);
+  int old_min_log_level_ = logging::GetMinLogLevel();
 };
 
 // Test implementation of RecordHistogramChecker interface.
@@ -60,6 +59,10 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 class StatisticsRecorderTest : public testing::TestWithParam<bool> {
+ public:
+  StatisticsRecorderTest(const StatisticsRecorderTest&) = delete;
+  StatisticsRecorderTest& operator=(const StatisticsRecorderTest&) = delete;
+
  protected:
   const int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
 
@@ -122,8 +125,6 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
 
  private:
   LogStateSaver log_state_saver_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatisticsRecorderTest);
 };
 
 // Run all HistogramTest cases with both heap and persistent memory.
@@ -701,6 +702,8 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
       : allocator_(std::move(allocator)) {
     StatisticsRecorder::RegisterHistogramProvider(weak_factory_.GetWeakPtr());
   }
+  TestHistogramProvider(const TestHistogramProvider&) = delete;
+  TestHistogramProvider& operator=(const TestHistogramProvider&) = delete;
 
   void MergeHistogramDeltas() override {
     PersistentHistogramAllocator::Iterator hist_iter(allocator_.get());
@@ -715,8 +718,6 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
  private:
   std::unique_ptr<PersistentHistogramAllocator> allocator_;
   WeakPtrFactory<TestHistogramProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestHistogramProvider);
 };
 
 TEST_P(StatisticsRecorderTest, ImportHistogramsTest) {

@@ -63,12 +63,14 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
     SYNCHRONOUS,
   };
 
-  TestFieldTrialObserver(Type type) : type_(type) {
+  explicit TestFieldTrialObserver(Type type) : type_(type) {
     if (type == SYNCHRONOUS)
       FieldTrialList::SetSynchronousObserver(this);
     else
       FieldTrialList::AddObserver(this);
   }
+  TestFieldTrialObserver(const TestFieldTrialObserver&) = delete;
+  TestFieldTrialObserver& operator=(const TestFieldTrialObserver&) = delete;
 
   ~TestFieldTrialObserver() override {
     if (type_ == SYNCHRONOUS)
@@ -90,8 +92,6 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
   const Type type_;
   std::string trial_name_;
   std::string group_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFieldTrialObserver);
 };
 
 std::string MockEscapeQueryParamValue(const std::string& input) {
@@ -103,6 +103,8 @@ std::string MockEscapeQueryParamValue(const std::string& input) {
 class FieldTrialTest : public ::testing::Test {
  public:
   FieldTrialTest() : trial_list_(nullptr) {}
+  FieldTrialTest(const FieldTrialTest&) = delete;
+  FieldTrialTest& operator=(const FieldTrialTest&) = delete;
 
  private:
   test::TaskEnvironment task_environment_;
@@ -110,8 +112,6 @@ class FieldTrialTest : public ::testing::Test {
   // tests it's cleaner to start from scratch.
   test::ScopedFieldTrialListResetter trial_list_resetter_;
   FieldTrialList trial_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialTest);
 };
 
 // Test registration, and also check that destructors are called for trials.

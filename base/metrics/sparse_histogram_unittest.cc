@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -29,10 +30,13 @@ namespace base {
 // for histogram allocation. False will allocate histograms from the process
 // heap.
 class SparseHistogramTest : public testing::TestWithParam<bool> {
+ public:
+  SparseHistogramTest() : use_persistent_histogram_allocator_(GetParam()) {}
+  SparseHistogramTest(const SparseHistogramTest&) = delete;
+  SparseHistogramTest& operator=(const SparseHistogramTest&) = delete;
+
  protected:
   const int32_t kAllocatorMemorySize = 8 << 20;  // 8 MiB
-
-  SparseHistogramTest() : use_persistent_histogram_allocator_(GetParam()) {}
 
   void SetUp() override {
     if (use_persistent_histogram_allocator_)
@@ -91,9 +95,6 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   PersistentMemoryAllocator* allocator_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SparseHistogramTest);
 };
 
 // Run all HistogramTest cases with both heap and persistent memory.

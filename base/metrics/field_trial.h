@@ -67,7 +67,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -185,6 +184,9 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // assignment (and hence is not yet participating in the trial).
   static const int kNotFinalized;
 
+  FieldTrial(const FieldTrial&) = delete;
+  FieldTrial& operator=(const FieldTrial&) = delete;
+
   // Disables this trial, meaning it always determines the default group
   // has been selected. May be called immediately after construction, or
   // at any time after initialization (should not be interleaved with
@@ -290,6 +292,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
              Probability total_probability,
              const std::string& default_group_name,
              double entropy_value);
+
   virtual ~FieldTrial();
 
   // Return the default group name of the FieldTrial.
@@ -380,8 +383,6 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // When benchmarking is enabled, field trials all revert to the 'default'
   // group.
   static bool enable_benchmarking_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrial);
 };
 
 //------------------------------------------------------------------------------
@@ -416,6 +417,8 @@ class BASE_EXPORT FieldTrialList {
   // |entropy_provider|.
   explicit FieldTrialList(
       std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider);
+  FieldTrialList(const FieldTrialList&) = delete;
+  FieldTrialList& operator=(const FieldTrialList&) = delete;
 
   // Destructor Release()'s references to all registered FieldTrial instances.
   ~FieldTrialList();
@@ -796,8 +799,6 @@ class BASE_EXPORT FieldTrialList {
 
   // Tracks whether CreateTrialsFromCommandLine() has been called.
   bool create_trials_from_command_line_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialList);
 };
 
 }  // namespace base

@@ -17,7 +17,6 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -32,6 +31,8 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
   SampleVectorBase(uint64_t id,
                    Metadata* meta,
                    const BucketRanges* bucket_ranges);
+  SampleVectorBase(const SampleVectorBase&) = delete;
+  SampleVectorBase& operator=(const SampleVectorBase&) = delete;
   ~SampleVectorBase() override;
 
   // HistogramSamples:
@@ -107,8 +108,6 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
 
   // Shares the same BucketRanges with Histogram object.
   const BucketRanges* const bucket_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(SampleVectorBase);
 };
 
 // A sample vector that uses local memory for the counts array.
@@ -116,6 +115,8 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
  public:
   explicit SampleVector(const BucketRanges* bucket_ranges);
   SampleVector(uint64_t id, const BucketRanges* bucket_ranges);
+  SampleVector(const SampleVector&) = delete;
+  SampleVector& operator=(const SampleVector&) = delete;
   ~SampleVector() override;
 
  private:
@@ -125,8 +126,6 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 
   // Simple local storage for counts.
   mutable std::vector<HistogramBase::AtomicCount> local_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SampleVector);
 };
 
 // A sample vector that uses persistent memory for the counts array.
@@ -136,6 +135,8 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
                          const BucketRanges* bucket_ranges,
                          Metadata* meta,
                          const DelayedPersistentAllocation& counts);
+  PersistentSampleVector(const PersistentSampleVector&) = delete;
+  PersistentSampleVector& operator=(const PersistentSampleVector&) = delete;
   ~PersistentSampleVector() override;
 
  private:
@@ -145,8 +146,6 @@ class BASE_EXPORT PersistentSampleVector : public SampleVectorBase {
 
   // Persistent storage for counts.
   DelayedPersistentAllocation persistent_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSampleVector);
 };
 
 // An iterator for sample vectors. This could be defined privately in the .cc

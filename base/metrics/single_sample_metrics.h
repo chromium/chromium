@@ -5,10 +5,10 @@
 #ifndef BASE_METRICS_SINGLE_SAMPLE_METRICS_H_
 #define BASE_METRICS_SINGLE_SAMPLE_METRICS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -64,6 +64,10 @@ class BASE_EXPORT DefaultSingleSampleMetricsFactory
     : public SingleSampleMetricsFactory {
  public:
   DefaultSingleSampleMetricsFactory() = default;
+  DefaultSingleSampleMetricsFactory(const DefaultSingleSampleMetricsFactory&) =
+      delete;
+  DefaultSingleSampleMetricsFactory& operator=(
+      const DefaultSingleSampleMetricsFactory&) = delete;
   ~DefaultSingleSampleMetricsFactory() override = default;
 
   // SingleSampleMetricsFactory:
@@ -72,9 +76,6 @@ class BASE_EXPORT DefaultSingleSampleMetricsFactory
       HistogramBase::Sample min,
       HistogramBase::Sample max,
       uint32_t bucket_count) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultSingleSampleMetricsFactory);
 };
 
 class BASE_EXPORT DefaultSingleSampleMetric : public SingleSampleMetric {

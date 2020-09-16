@@ -21,16 +21,16 @@ namespace {
 // an error if the flag is already set.
 class MakeActive {
  public:
-  MakeActive(std::atomic<bool>* is_active) : is_active_(is_active) {
+  explicit MakeActive(std::atomic<bool>* is_active) : is_active_(is_active) {
     bool was_active = is_active_->exchange(true, std::memory_order_relaxed);
     CHECK(!was_active);
   }
+  MakeActive(const MakeActive&) = delete;
+  MakeActive& operator=(const MakeActive&) = delete;
   ~MakeActive() { is_active_->store(false, std::memory_order_relaxed); }
 
  private:
   std::atomic<bool>* is_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(MakeActive);
 };
 
 }  // namespace

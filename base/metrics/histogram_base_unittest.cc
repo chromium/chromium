@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include <vector>
 
 #include "base/metrics/histogram.h"
@@ -15,15 +16,18 @@
 namespace base {
 
 class HistogramBaseTest : public testing::Test {
- protected:
+ public:
   HistogramBaseTest() {
     // Each test will have a clean state (no Histogram / BucketRanges
     // registered).
     ResetStatisticsRecorder();
   }
 
+  HistogramBaseTest(const HistogramBaseTest&) = delete;
+  HistogramBaseTest& operator=(const HistogramBaseTest&) = delete;
   ~HistogramBaseTest() override = default;
 
+ protected:
   void ResetStatisticsRecorder() {
     // It is necessary to fully destruct any existing StatisticsRecorder
     // before creating a new one.
@@ -33,8 +37,6 @@ class HistogramBaseTest : public testing::Test {
 
  private:
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramBaseTest);
 };
 
 TEST_F(HistogramBaseTest, DeserializeHistogram) {

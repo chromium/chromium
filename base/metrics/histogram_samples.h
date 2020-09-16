@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -129,6 +128,8 @@ class BASE_EXPORT HistogramSamples {
   };
 
   HistogramSamples(uint64_t id, Metadata* meta);
+  HistogramSamples(const HistogramSamples&) = delete;
+  HistogramSamples& operator=(const HistogramSamples&) = delete;
   virtual ~HistogramSamples();
 
   virtual void Accumulate(HistogramBase::Sample value,
@@ -203,8 +204,6 @@ class BASE_EXPORT HistogramSamples {
   // external storage in which case HistogramSamples class cannot take ownership
   // of Metadata*.
   Metadata* meta_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramSamples);
 };
 
 class BASE_EXPORT SampleCountIterator {
