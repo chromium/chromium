@@ -4116,7 +4116,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_CHROMEOS)
 
     {"read-later", flag_descriptions::kReadLaterName,
-     flag_descriptions::kReadLaterDescription, kOsDesktop,
+     flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kReadLater)},
 
     {"tab-groups", flag_descriptions::kTabGroupsName,
