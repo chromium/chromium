@@ -360,6 +360,10 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
 
   ~DragToOpenHandler() override { drag_handle_->RemovePreTargetHandler(this); }
 
+  // Cancels any current drag.
+  void CancelDrag() { drag_in_progress_ = false; }
+
+  // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
       case ui::ET_GESTURE_SCROLL_BEGIN: {
@@ -508,11 +512,12 @@ class WebUITabStripContainerView::IPHController : public TabStripModelObserver {
 WebUITabStripContainerView::WebUITabStripContainerView(
     BrowserView* browser_view,
     views::View* tab_contents_container,
-    views::View* drag_handle,
+    views::View* top_container,
     views::View* omnibox)
     : browser_(browser_view->browser()),
       web_view_(AddChildView(
           std::make_unique<WebUITabStripWebView>(browser_->profile()))),
+      top_container_(top_container),
       tab_contents_container_(tab_contents_container),
       auto_closer_(std::make_unique<AutoCloser>(
           base::Bind(&WebUITabStripContainerView::CloseForEventOutsideTabStrip,
@@ -521,7 +526,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
           tab_contents_container,
           omnibox)),
       drag_to_open_handler_(
-          std::make_unique<DragToOpenHandler>(this, drag_handle)),
+          std::make_unique<DragToOpenHandler>(this, top_container)),
       iph_controller_(std::make_unique<IPHController>(
           browser_,
           browser_view->feature_promo_controller())) {
@@ -559,6 +564,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
 
   DCHECK(tab_contents_container);
   view_observer_.Add(tab_contents_container_);
+  view_observer_.Add(top_container_);
 
   TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
@@ -879,17 +885,23 @@ void WebUITabStripContainerView::ButtonPressed(views::Button* sender,
 }
 
 void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
-  if (observed_view != tab_contents_container_)
-    return;
+  if (observed_view == top_container_) {
+    if (old_top_container_width_ != top_container_->width()) {
+      old_top_container_width_ = top_container_->width();
+      // If somehow we're in the middle of a drag, abort.
+      drag_to_open_handler_->CancelDrag();
+      CloseContainer();
+    }
+  } else if (observed_view == tab_contents_container_) {
+    // TODO(pbos): PreferredSizeChanged seems to cause infinite recursion with
+    // BrowserView::ChildPreferredSizeChanged. InvalidateLayout here should be
+    // replaceable with PreferredSizeChanged.
+    InvalidateLayout();
 
-  // TODO(pbos): PreferredSizeChanged seems to cause infinite recursion with
-  // BrowserView::ChildPreferredSizeChanged. InvalidateLayout here should be
-  // replaceable with PreferredSizeChanged.
-  InvalidateLayout();
-
-  TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
-      web_view_->GetWebContents()->GetWebUI()->GetController());
-  tab_strip_ui->LayoutChanged();
+    TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
+        web_view_->GetWebContents()->GetWebUI()->GetController());
+    tab_strip_ui->LayoutChanged();
+  }
 }
 
 void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
@@ -899,8 +911,6 @@ void WebUITabStripContainerView::OnViewIsDeleting(View* observed_view) {
     tab_counter_ = nullptr;
   else if (observed_view == tab_contents_container_)
     tab_contents_container_ = nullptr;
-  else
-    NOTREACHED();
 }
 
 bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {

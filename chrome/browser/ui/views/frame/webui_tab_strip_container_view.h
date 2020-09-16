@@ -51,7 +51,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
  public:
   WebUITabStripContainerView(BrowserView* browser_view,
                              views::View* tab_contents_container,
-                             views::View* drag_handle,
+                             views::View* top_container,
                              views::View* omnibox);
   ~WebUITabStripContainerView() override;
 
@@ -137,8 +137,14 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
 
   Browser* const browser_;
   views::WebView* const web_view_;
+  views::View* const top_container_;
   views::View* tab_contents_container_;
   views::View* tab_counter_ = nullptr;
+
+  // If the user interacts with Windows in a way that changes the width of the
+  // window, close the top container. This is similar to the auto-close when the
+  // user touches outside the tabstrip.
+  int old_top_container_width_ = 0;
 
   base::Optional<float> current_drag_height_;
 
