@@ -148,10 +148,10 @@ public class TosAndUmaFragmentView extends FrameLayout {
         LinearLayout.LayoutParams spinnerParams =
                 (LinearLayout.LayoutParams) mLoadingSpinnerContainer.getLayoutParams();
 
-        // Adjust the spinner placement. If in portrait mode, the spinner is centered in the region
+        // Adjust the spinner placement. If in portrait mode, the spinner is placed in the region
         // below the title; If in wide screen mode, the spinner is placed in the center of
-        // the entire screen. In all scenarios, because we cannot get the exact size for headline,
-        // the spinner placement is approximately centered.
+        // the entire screen. Because we cannot get the exact size for headline,
+        // the spinner placement is approximately centered in this case.
         if (useWideScreen) {
             int freImageWidth = mImageSize + mVerticalSpacing * 2;
             int spinnerStartMargin =
@@ -165,10 +165,10 @@ public class TosAndUmaFragmentView extends FrameLayout {
             spinnerParams.setMarginStart(spinnerStartMargin);
             spinnerParams.topMargin = spinnerTopMargin;
         } else {
-            // Center the spinner below the title, whose baseline is centered in the screen.
-            // For more information see #setLogoLayoutParams.
-            int spinnerTopMargin =
-                    Math.max(mVerticalSpacing, (height / 2 - mLoadingSpinnerSize) / 2);
+            // Use the same padding between title and logo for the spinner.
+            // TODO(crbug.com/1128123): Switch from top margin to an approach that will center the
+            //  spinner in the bottom half of the screen.
+            int spinnerTopMargin = mImageBottomMargin;
 
             spinnerParams.gravity = Gravity.CENTER_HORIZONTAL;
             spinnerParams.setMarginStart(0);
