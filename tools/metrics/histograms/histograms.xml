@@ -18750,7 +18750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Periodic.Wakeup.DelayTime" units="ms"
-    expires_after="M87">
+    expires_after="2021-07-31">
   <owner>nator@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
@@ -18856,7 +18856,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Unregistration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="M87">
+    enum="BackgroundSyncStatus" expires_after="2021-07-31">
   <owner>nator@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
@@ -162058,7 +162058,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ServiceWorker.PeriodicBackgroundSyncEvent.Time" units="ms"
-    expires_after="M87">
+    expires_after="2021-07-31">
   <owner>nator@chromium.org</owner>
   <owner>platform-capabilities@chromium.org</owner>
   <summary>
