@@ -173,6 +173,9 @@ class ImeCrosPlatform {
   // required to run in the thread creating its remote.
   virtual void RunInMainSequence(ImeSequencedTask task, int task_id) = 0;
 
+  // Returns whether a Chrome OS experimental feature is enabled or not.
+  virtual bool IsFeatureEnabled(const char* feature_name) = 0;
+
   // TODO(https://crbug.com/837156): Provide Logger for main entry.
 };
 

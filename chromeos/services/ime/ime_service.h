@@ -53,6 +53,7 @@ class ImeService : public mojom::ImeService,
                            SimpleDownloadCallback callback) override;
   ImeCrosDownloader* GetDownloader() override;
   void RunInMainSequence(ImeSequencedTask task, int task_id) override;
+  bool IsFeatureEnabled(const char* feature_name) override;
 
   // Callback used when a file download finishes by the |SimpleURLLoader|.
   // On failure, |file| will be empty.
