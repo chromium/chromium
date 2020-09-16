@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +25,10 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
  * suggestions and manual entry points assisting the user in filling forms.
  */
 class KeyboardAccessoryModernView extends KeyboardAccessoryView {
+    private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
+    private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
+    private static final float ARRIVAL_ANIMATION_TENSION = 1f;
+
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
 
@@ -126,7 +132,11 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     @Override
     void setVisible(boolean visible) {
         super.setVisible(visible);
-        if (visible) mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+        if (visible) {
+            mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+            // Animate the suggestions only if the bar wasn't visible already.
+            if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
+        }
     }
 
     void setKeyboardToggleVisibility(boolean hasActiveTab) {
@@ -143,5 +153,20 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     void setShowKeyboardCallback(Runnable showKeyboardCallback) {
         mKeyboardToggle.setOnClickListener(
                 showKeyboardCallback == null ? null : view -> showKeyboardCallback.run());
+    }
+
+    private void animateSuggestionArrival() {
+        if (areAnimationsDisabled()) return;
+        int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
+        float basePosition = mBarItemsView.getX();
+        float start = basePosition
+                - bounceDirection * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
+                        * getContext().getResources().getDisplayMetrics().density;
+        mBarItemsView.setTranslationX(start);
+        ObjectAnimator animator =
+                ObjectAnimator.ofFloat(mBarItemsView, "translationX", start, basePosition);
+        animator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
+        animator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
+        animator.start();
     }
 }
