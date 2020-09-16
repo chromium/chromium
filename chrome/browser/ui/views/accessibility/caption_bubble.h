@@ -112,6 +112,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // The caption bubble manages its own visibility based on whether there's
   // space for it to be shown, and if it has an error or text to display.
   void UpdateBubbleVisibility();
+  void UpdateBubbleAndTitleVisibility();
+
   double GetTextScaleFactor();
   int GetNumLinesVisible();
   void UpdateTextSize();
@@ -123,6 +125,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   // Unowned. Owned by views hierarchy.
   views::Label* label_;
+  views::Label* title_;
   views::Label* error_text_;
   views::ImageView* error_icon_;
   views::View* error_message_;

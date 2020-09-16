@@ -324,6 +324,12 @@ void CaptionBubble::Init() {
   // set the truncate_length to 0 to ensure that it never truncates.
   label->SetTruncateLength(0);
 
+  auto title = std::make_unique<views::Label>();
+  title->SetEnabledColor(gfx::kGoogleGrey500);
+  title->SetBackgroundColor(SK_ColorTRANSPARENT);
+  title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
+
   auto error_text = std::make_unique<views::Label>();
   error_text->SetEnabledColor(SK_ColorWHITE);
   error_text->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -353,6 +359,7 @@ void CaptionBubble::Init() {
   auto close_button = BuildImageButton(vector_icons::kCloseRoundedIcon,
                                        IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
+  title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
 
   error_icon_ = error_message->AddChildView(std::move(error_icon));
@@ -466,12 +473,10 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetName(model_->GetFullText());
     node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
   } else {
-    node_data->SetName(
-        l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_ACCESSIBLE_NAME));
+    node_data->SetName(title_->GetText());
     node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
   }
-  node_data->SetDescription(
-      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_ACCESSIBLE_NAME));
+  node_data->SetDescription(title_->GetText());
   node_data->role = ax::mojom::Role::kCaption;
 }
 
@@ -520,7 +525,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
 void CaptionBubble::OnTextChanged() {
   DCHECK(model_);
   label_->SetText(base::UTF8ToUTF16(model_->GetFullText()));
-  UpdateBubbleVisibility();
+  UpdateBubbleAndTitleVisibility();
 }
 
 void CaptionBubble::OnErrorChanged() {
@@ -540,6 +545,14 @@ void CaptionBubble::OnIsExpandedChanged() {
   // The change of expanded state may cause the title to change visibility, and
   // it surely causes the content height to change, so redraw the bubble.
   Redraw();
+}
+
+void CaptionBubble::UpdateBubbleAndTitleVisibility() {
+  // Show the title if there is room for it and no error.
+  title_->SetVisible(model_ && !model_->HasError() &&
+                     GetNumLinesInLabel() <
+                         static_cast<size_t>(GetNumLinesVisible()));
+  UpdateBubbleVisibility();
 }
 
 void CaptionBubble::UpdateBubbleVisibility() {
@@ -603,9 +616,11 @@ void CaptionBubble::UpdateTextSize() {
                     gfx::Font::FontStyle::NORMAL, kFontSizePx * textScaleFactor,
                     gfx::Font::Weight::NORMAL);
   label_->SetFontList(font_list);
+  title_->SetFontList(font_list);
   error_text_->SetFontList(font_list);
 
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
+  title_->SetLineHeight(kLineHeightDip * textScaleFactor);
   error_text_->SetLineHeight(kLineHeightDip * textScaleFactor);
   error_icon_->SetImageSize(gfx::Size(kErrorImageSizeDip * textScaleFactor,
                                       kErrorImageSizeDip * textScaleFactor));
@@ -617,8 +632,12 @@ void CaptionBubble::UpdateContentSize() {
       (model_ && model_->HasError())
           ? kLineHeightDip * text_scale_factor
           : kLineHeightDip * GetNumLinesVisible() * text_scale_factor;
+  // The title takes up 1 line.
+  int label_height = title_->GetVisible()
+                         ? content_height - kLineHeightDip * text_scale_factor
+                         : content_height;
   label_->SetPreferredSize(
-      gfx::Size(kMaxWidthDip - kSidePaddingDip, content_height));
+      gfx::Size(kMaxWidthDip - kSidePaddingDip, label_height));
   content_container_->SetPreferredSize(gfx::Size(kMaxWidthDip, content_height));
   SetPreferredSize(
       gfx::Size(kMaxWidthDip, content_height +
@@ -627,7 +646,7 @@ void CaptionBubble::UpdateContentSize() {
 }
 
 void CaptionBubble::Redraw() {
-  UpdateBubbleVisibility();
+  UpdateBubbleAndTitleVisibility();
   UpdateContentSize();
   SizeToContents();
 }

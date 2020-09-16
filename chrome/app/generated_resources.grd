@@ -9356,6 +9356,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!-- Live caption. -->
+      <message name="IDS_LIVE_CAPTION_BUBBLE_TITLE" desc="Title of the Live Caption bubble">
+        Live Caption
+      </message>
       <message name="IDS_LIVE_CAPTION_BUBBLE_CLOSE" desc="Tooltip for the Live Caption close button">
         Turn off Live Caption for now
       </message>
@@ -9367,9 +9370,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_LIVE_CAPTION_BUBBLE_ERROR" desc="Error message for the Live Caption bubble when Live Captions are unavailable.">
         Live Caption is not available right now
-      </message>
-      <message name="IDS_LIVE_CAPTION_BUBBLE_ACCESSIBLE_NAME" desc="Label of the Live Caption bubble for accessibility.">
-        Live Caption
       </message>
 
       <!-- Caret browsing. -->
