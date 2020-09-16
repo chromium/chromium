@@ -16,6 +16,8 @@ WebAppRegistrationWaiter::WebAppRegistrationWaiter(PendingAppManager* manager)
         CHECK_EQ(code_, code);
         run_loop_.Quit();
       }));
+  manager_->SetRegistrationsCompleteCallbackForTesting(
+      complete_run_loop_.QuitClosure());
 }
 
 WebAppRegistrationWaiter::~WebAppRegistrationWaiter() {
@@ -28,6 +30,10 @@ void WebAppRegistrationWaiter::AwaitNextRegistration(
   install_url_ = install_url;
   code_ = code;
   run_loop_.Run();
+}
+
+void WebAppRegistrationWaiter::AwaitRegistrationsComplete() {
+  complete_run_loop_.Run();
 }
 
 }  // namespace web_app

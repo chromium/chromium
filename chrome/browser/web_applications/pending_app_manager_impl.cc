@@ -243,8 +243,11 @@ void PendingAppManagerImpl::OnWebContentsReady(WebAppUrlLoader::Result) {
 }
 
 bool PendingAppManagerImpl::RunNextRegistration() {
-  if (pending_registrations_.empty())
+  if (pending_registrations_.empty()) {
+    if (registrations_complete_callback_)
+      std::move(registrations_complete_callback_).Run();
     return false;
+  }
 
   GURL url_to_check = std::move(pending_registrations_.front());
   pending_registrations_.pop_front();
@@ -275,22 +278,9 @@ void PendingAppManagerImpl::OnInstalled(PendingAppInstallTask::Result result) {
 void PendingAppManagerImpl::CurrentInstallationFinished(
     const base::Optional<AppId>& app_id,
     InstallResultCode code) {
-  if (app_id && code == InstallResultCode::kSuccessNewInstall &&
-      base::FeatureList::IsEnabled(
-          features::kDesktopPWAsCacheDuringDefaultInstall)) {
-    const GURL& install_url =
-        current_install_->task->install_options().install_url;
-    bool is_local_resource =
-        install_url.scheme() == content::kChromeUIScheme ||
-        install_url.scheme() == content::kChromeUIUntrustedScheme;
-    // TODO(crbug.com/809304): Call CreateWebContentsIfNecessary() instead of
-    // checking web_contents_ once major migration of default hosted apps to web
-    // apps has completed.
-    // Temporarily using offline manifest migrations (in which |web_contents_|
-    // is nullptr) in order to avoid overwhelming migrated-to web apps with hits
-    // for service worker registrations.
-    if (!install_url.is_empty() && !is_local_resource && web_contents_)
-      pending_registrations_.push_back(install_url);
+  if (app_id && code == InstallResultCode::kSuccessNewInstall) {
+    MaybeEnqueueServiceWorkerRegistration(
+        current_install_->task->install_options());
   }
 
   // Post a task to avoid InstallableManager crashing and do so before
@@ -302,6 +292,37 @@ void PendingAppManagerImpl::CurrentInstallationFinished(
   task_and_callback.swap(current_install_);
   std::move(task_and_callback->callback)
       .Run(task_and_callback->task->install_options().install_url, code);
+}
+
+void PendingAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
+    const ExternalInstallOptions& install_options) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDesktopPWAsCacheDuringDefaultInstall)) {
+    return;
+  }
+
+  if (!install_options.load_and_await_service_worker_registration)
+    return;
+
+  // TODO(crbug.com/809304): Call CreateWebContentsIfNecessary() instead of
+  // checking web_contents_ once major migration of default hosted apps to web
+  // apps has completed.
+  // Temporarily using offline manifest migrations (in which |web_contents_|
+  // is nullptr) in order to avoid overwhelming migrated-to web apps with hits
+  // for service worker registrations.
+  if (!web_contents_)
+    return;
+
+  GURL url = install_options.service_worker_registration_url.value_or(
+      install_options.install_url);
+  if (url.is_empty())
+    return;
+  if (url.scheme() == content::kChromeUIScheme)
+    return;
+  if (url.scheme() == content::kChromeUIUntrustedScheme)
+    return;
+
+  pending_registrations_.push_back(url);
 }
 
 }  // namespace web_app

@@ -103,6 +103,17 @@ struct ExternalInstallOptions {
   // it.
   bool reinstall_placeholder = false;
 
+  // Whether we should load |service_worker_registration_url| after successful
+  // installation to allow the site to install its service worker and set up
+  // offline caching.
+  bool load_and_await_service_worker_registration = true;
+
+  // The URL to use for service worker registration. This is
+  // configurable by sites that wish to be able to track install metrics of the
+  // install_url separate from the service worker registration step. Defaults to
+  // install_url if unset.
+  base::Optional<GURL> service_worker_registration_url;
+
   // A list of app_ids that the Web App System should attempt to uninstall and
   // replace with this app (e.g maintain shelf pins, app list positions).
   std::vector<AppId> uninstall_and_replace;

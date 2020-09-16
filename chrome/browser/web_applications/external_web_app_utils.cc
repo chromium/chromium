@@ -51,6 +51,22 @@ constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerTab[] = "tab";
 constexpr char kLaunchContainerWindow[] = "window";
 
+// kLoadAndAwaitServiceWorkerRegistration is an optional bool that specifies
+// whether to fetch the |kServiceWorkerRegistrationUrl| after installation to
+// allow time for the app to register its service worker. This is done as a
+// second pass after install in order to not block the installation of other
+// background installed apps. No fetch is made if the service worker has already
+// been registered by the |kAppUrl|.
+// Defaults to true.
+constexpr char kLoadAndAwaitServiceWorkerRegistration[] =
+    "load_and_await_service_worker_registration";
+
+// kServiceWorkerRegistrationUrl is an optional string specifying the URL to use
+// for the above |kLoadAndAwaitServiceWorkerRegistration|.
+// Defaults to the |kAppUrl|.
+constexpr char kServiceWorkerRegistrationUrl[] =
+    "service_worker_registration_url";
+
 // kUninstallAndReplace is an optional array of strings which specifies App IDs
 // which the app is replacing. This will transfer OS attributes (e.g the source
 // app's shelf and app list positions on ChromeOS) and then uninstall the source
@@ -176,6 +192,36 @@ base::Optional<ExternalInstallOptions> ParseConfig(
     return base::nullopt;
   }
 
+  bool load_and_await_service_worker_registration = true;
+  value = app_config.FindKey(kLoadAndAwaitServiceWorkerRegistration);
+  if (value) {
+    if (!value->is_bool()) {
+      LOG(ERROR) << file << " had an invalid "
+                 << kLoadAndAwaitServiceWorkerRegistration;
+      return base::nullopt;
+    }
+    load_and_await_service_worker_registration = value->GetBool();
+  }
+
+  base::Optional<GURL> service_worker_registration_url;
+  value = app_config.FindKey(kServiceWorkerRegistrationUrl);
+  if (value) {
+    if (!load_and_await_service_worker_registration) {
+      LOG(ERROR) << file << " should not specify a "
+                 << kServiceWorkerRegistrationUrl << " while "
+                 << kLoadAndAwaitServiceWorkerRegistration << " is disabled";
+    }
+    if (!value->is_string()) {
+      LOG(ERROR) << file << " had an invalid " << kServiceWorkerRegistrationUrl;
+      return base::nullopt;
+    }
+    service_worker_registration_url.emplace(value->GetString());
+    if (!service_worker_registration_url->is_valid()) {
+      LOG(ERROR) << file << " had an invalid " << kServiceWorkerRegistrationUrl;
+      return base::nullopt;
+    }
+  }
+
   value = app_config.FindKey(kUninstallAndReplace);
   std::vector<AppId> uninstall_and_replace_ids;
   if (value) {
@@ -214,6 +260,10 @@ base::Optional<ExternalInstallOptions> ParseConfig(
   install_options.add_to_quick_launch_bar = create_shortcuts;
   install_options.require_manifest = true;
   install_options.uninstall_and_replace = std::move(uninstall_and_replace_ids);
+  install_options.load_and_await_service_worker_registration =
+      load_and_await_service_worker_registration;
+  install_options.service_worker_registration_url =
+      service_worker_registration_url;
   install_options.app_info_factory = std::move(app_info_factory);
 
   return install_options;

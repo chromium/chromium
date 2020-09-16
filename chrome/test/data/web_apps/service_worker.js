@@ -9,6 +9,7 @@ const urlsToCache = [
   'basic-48.png',
   'basic.html',
   'basic.json',
+  'no_service_worker.html',
 ];
 
 self.addEventListener('install', (event) => {

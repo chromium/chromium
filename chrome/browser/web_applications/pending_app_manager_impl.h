@@ -87,6 +87,9 @@ class PendingAppManagerImpl : public PendingAppManager {
   void CurrentInstallationFinished(const base::Optional<std::string>& app_id,
                                    InstallResultCode code);
 
+  void MaybeEnqueueServiceWorkerRegistration(
+      const ExternalInstallOptions& install_options);
+
   Profile* const profile_;
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 

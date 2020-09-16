@@ -113,6 +113,11 @@ void PendingAppManager::ClearRegistrationCallbackForTesting() {
   registration_callback_ = RegistrationCallback();
 }
 
+void PendingAppManager::SetRegistrationsCompleteCallbackForTesting(
+    base::OnceClosure callback) {
+  registrations_complete_callback_ = std::move(callback);
+}
+
 void PendingAppManager::OnRegistrationFinished(const GURL& install_url,
                                                RegistrationResultCode result) {
   if (registration_callback_)

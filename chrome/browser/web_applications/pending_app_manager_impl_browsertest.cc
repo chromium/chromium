@@ -317,6 +317,48 @@ IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, RegistrationSucceeds) {
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
+IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest,
+                       RegistrationAlternateUrlSucceeds) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL install_url(
+      embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
+  GURL registration_url =
+      embedded_test_server()->GetURL("/web_apps/basic.html");
+
+  ExternalInstallOptions install_options = CreateInstallOptions(install_url);
+  install_options.bypass_service_worker_check = true;
+  install_options.service_worker_registration_url = registration_url;
+  InstallApp(std::move(install_options));
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
+  WebAppRegistrationWaiter(&pending_app_manager())
+      .AwaitNextRegistration(registration_url,
+                             RegistrationResultCode::kSuccess);
+  CheckServiceWorkerStatus(
+      install_url,
+      content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+}
+
+IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, RegistrationSkipped) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Delay service worker registration to second load to simulate it not loading
+  // during the initial install pass.
+  GURL install_url(embedded_test_server()->GetURL(
+      "/web_apps/service_worker_on_second_load.html"));
+
+  ExternalInstallOptions install_options = CreateInstallOptions(install_url);
+  install_options.bypass_service_worker_check = true;
+  install_options.load_and_await_service_worker_registration = false;
+  WebAppRegistrationWaiter waiter(&pending_app_manager());
+  InstallApp(std::move(install_options));
+  waiter.AwaitRegistrationsComplete();
+
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result_code_.value());
+  CheckServiceWorkerStatus(install_url,
+                           content::ServiceWorkerCapability::NO_SERVICE_WORKER);
+}
+
 IN_PROC_BROWSER_TEST_P(PendingAppManagerImplBrowserTest, AlreadyRegistered) {
   ASSERT_TRUE(embedded_test_server()->Start());
   {

@@ -112,6 +112,7 @@ class PendingAppManager {
 
   void SetRegistrationCallbackForTesting(RegistrationCallback callback);
   void ClearRegistrationCallbackForTesting();
+  void SetRegistrationsCompleteCallbackForTesting(base::OnceClosure callback);
   void ClearSynchronizeRequestsForTesting();
 
   virtual void Shutdown() = 0;
@@ -127,6 +128,8 @@ class PendingAppManager {
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
+
+  base::OnceClosure registrations_complete_callback_;
 
  private:
   struct SynchronizeRequest {
