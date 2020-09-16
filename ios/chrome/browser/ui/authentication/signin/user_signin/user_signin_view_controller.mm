@@ -461,7 +461,7 @@ enum AuthenticationButtonType {
     if (base::FeatureList::IsEnabled(kPointerSupport)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider =
-          CreateTransparentButtonPointerStyleProvider();
+          CreateOpaqueOrTransparentButtonPointerStyleProvider();
     }
   }
 #endif  // defined(__IPHONE_13_4)
