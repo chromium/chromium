@@ -48,7 +48,6 @@ class ScreenLayoutObserverTest : public AshTestBase {
   void ClickNotification();
   base::string16 GetDisplayNotificationText() const;
   base::string16 GetDisplayNotificationAdditionalText() const;
-  int GetDisplayNotificationPriority() const;
 
   base::string16 GetFirstDisplayName();
 
@@ -104,12 +103,6 @@ base::string16 ScreenLayoutObserverTest::GetDisplayNotificationAdditionalText()
     const {
   const message_center::Notification* notification = GetDisplayNotification();
   return notification ? notification->message() : base::string16();
-}
-
-int ScreenLayoutObserverTest::GetDisplayNotificationPriority() const {
-  constexpr int kInvalidPriority = 71;
-  const message_center::Notification* notification = GetDisplayNotification();
-  return notification ? notification->priority() : kInvalidPriority;
 }
 
 base::string16 ScreenLayoutObserverTest::GetFirstDisplayName() {
@@ -315,11 +308,9 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   UpdateDisplay("400x400/r");
   EXPECT_FALSE(IsNotificationShown());
 
-  // Adding a display still shows a notification.
+  // Adding a display.
   UpdateDisplay("400x400,200x200");
-  EXPECT_TRUE(IsNotificationShown());
-  EXPECT_EQ(message_center::DEFAULT_PRIORITY, GetDisplayNotificationPriority());
-  CloseNotification();
+  EXPECT_FALSE(IsNotificationShown());
 
   const int64_t first_display_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();

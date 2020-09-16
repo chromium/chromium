@@ -411,13 +411,7 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
           base::BindRepeating(&OnNotificationClicked)),
       kNotificationScreenIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  // With the reduce display notifications feature enabled, we only want to show
-  // an add display notification, and it should disappear after a couple
-  // seconds.
-  auto priority = features::IsReduceDisplayNotificationsEnabled()
-                      ? message_center::DEFAULT_PRIORITY
-                      : message_center::SYSTEM_PRIORITY;
-  notification->set_priority(priority);
+  notification->set_priority(message_center::SYSTEM_PRIORITY);
 
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_DISPLAY_NOTIFICATION_CREATED);
@@ -468,17 +462,9 @@ void ScreenLayoutObserver::OnDisplayConfigurationChanged() {
     return;
   }
 
-  // Alerting user of display added and unassociated display are allowed even
-  // when suppressed.
-  const bool exited_mirror = old_display_mode_ == DisplayMode::MIRRORING &&
-                             current_display_mode_ != DisplayMode::MIRRORING;
-  const bool display_added =
-      !exited_mirror && old_info.size() < display_info_.size();
-  const bool allowed_notifications =
-      display_added || should_notify_has_unassociated_display;
-
+  // Alerting user unassociated display are allowed even when suppressed.
   if (features::IsReduceDisplayNotificationsEnabled() &&
-      !allowed_notifications) {
+      !should_notify_has_unassociated_display) {
     return;
   }
 
