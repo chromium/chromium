@@ -22,9 +22,13 @@ This tool helps to inspect accessibility trees of applications. Trees are dumped
 
 ### Run
 
-To dump accessibility tree of application, run
+On Windows run
 `ax_dump_tree --window=id`
-where `id` is HWND on Windows, PID on Linux and Mac.
+where `id` is HWND of a window to dump accessible tree for.
+
+On Mac and Linux, run
+`ax_dump_tree --pid=id`
+where `pid` is process id of an application to dump accessible tree for.
 
 Alternatively, you can indicate an application by its title:
 `ax_dump_tree --pattern=title`
@@ -32,7 +36,7 @@ Alternatively, you can indicate an application by its title:
 Notes:
 * To use a hex window handle prefix it with `0x`.
 * For json output, use the `--json` option
-* To filter certain properties, use `--filters=[path-to-filters.txt]` where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
+* To filter certain properties, use `--filters=[absolute-path-to-filters.txt]` where the filters text file has a series of `@ALLOW` and/or `@DENY` lines. See example-tree-filters.txt in tools/accessibility/inspect.
 * [Mac] You have to turn on Accessibility for Terminal in Security & Privacy System Preferences.
 
 ## Convenience PowerShell scripts

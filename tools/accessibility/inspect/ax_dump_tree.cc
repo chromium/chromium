@@ -12,10 +12,16 @@
 #include "build/build_config.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
 
-char kWindowSwitch[] = "window";
+char kIdSwitch[] =
+#if defined(WINDOWS)
+    "window";
+#else
+    "pid";
+#endif
 char kPatternSwitch[] = "pattern";
 char kFiltersSwitch[] = "filters";
 char kJsonSwitch[] = "json";
+char kHelpSwitch[] = "help";
 
 // Convert from string to int, whether in 0x hex format or decimal format.
 bool StringToInt(std::string str, unsigned* result) {
@@ -44,46 +50,67 @@ gfx::AcceleratedWidget CastToAcceleratedWidget(unsigned window_id) {
 #endif
 }
 
+void PrintHelp() {
+  printf(
+      "ax_dump_tree is a tool designed to dump platform accessible trees "
+      "of running applications.\n");
+  printf("\nusage: ax_dump_tree <options>\n");
+  printf("options:\n");
+#if defined(WINDOWS)
+  printf("  --window\tHWND of a window to dump accessible tree for\n");
+#else
+  printf(
+      "  --pid\t\tprocess id of an application to dump accessible tree for\n");
+#endif
+  printf("  --pattern\ttitle of an application to dump accessible tree for\n");
+  printf(
+      "  --filters\tfile containing property filters used to filter out\n"
+      "  \t\taccessible tree, see example-tree-filters.txt as an example\n");
+  printf("  --json\toutputs tree in JSON format\n");
+}
+
 int main(int argc, char** argv) {
   logging::SetLogMessageHandler(AXDumpTreeLogMessageHandler);
 
   base::AtExitManager at_exit_manager;
 
   base::CommandLine::Init(argc, argv);
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(kHelpSwitch)) {
+    PrintHelp();
+    return 0;
+  }
 
   base::FilePath filters_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          kFiltersSwitch);
+      command_line->GetSwitchValuePath(kFiltersSwitch);
 
-  bool use_json =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kJsonSwitch);
+  bool use_json = command_line->HasSwitch(kJsonSwitch);
 
-  std::string window_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kWindowSwitch);
-  if (!window_str.empty()) {
-    unsigned window_id;
-    if (!StringToInt(window_str, &window_id)) {
+  std::string id_str = command_line->GetSwitchValueASCII(kIdSwitch);
+  if (!id_str.empty()) {
+    unsigned hwnd_or_pid;
+    if (!StringToInt(id_str, &hwnd_or_pid)) {
       LOG(ERROR) << "* Error: Could not convert window id string to integer.";
       return 1;
     }
-    gfx::AcceleratedWidget widget(CastToAcceleratedWidget(window_id));
+    gfx::AcceleratedWidget widget(CastToAcceleratedWidget(hwnd_or_pid));
 
     std::unique_ptr<content::AXTreeServer> server(
         new content::AXTreeServer(widget, filters_path, use_json));
     return 0;
   }
 
-  std::string pattern_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kPatternSwitch);
+  std::string pattern_str = command_line->GetSwitchValueASCII(kPatternSwitch);
   if (!pattern_str.empty()) {
     std::unique_ptr<content::AXTreeServer> server(
         new content::AXTreeServer(pattern_str, filters_path, use_json));
     return 0;
   }
 
-  LOG(ERROR) << "* Error: Neither window handle (--window=[window-handle]) "
-                "nor pattern (--pattern=[pattern]) provided.";
+  LOG(ERROR)
+      << "* Error: no accessible tree was identified to dump. Run with --help "
+         "for help.";
   return 1;
 }
