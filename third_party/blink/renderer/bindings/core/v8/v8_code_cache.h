@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
@@ -55,11 +55,11 @@ class CORE_EXPORT V8CodeCache final {
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
-  GetCompileOptions(V8CacheOptions, const ScriptSourceCode&);
+  GetCompileOptions(mojom::blink::V8CacheOptions, const ScriptSourceCode&);
   static std::tuple<v8::ScriptCompiler::CompileOptions,
                     ProduceCacheOptions,
                     v8::ScriptCompiler::NoCacheReason>
-  GetCompileOptions(V8CacheOptions,
+  GetCompileOptions(mojom::blink::V8CacheOptions,
                     const SingleCachedMetadataHandler*,
                     size_t source_text_length,
                     ScriptSourceLocationType);

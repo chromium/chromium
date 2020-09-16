@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "ui/base/ui_base_switches_util.h"
 
@@ -29,10 +30,6 @@ namespace web_pref {
 // "Zyyy" is the ISO 15924 script code for undetermined script aka Common.
 const char kCommonScript[] = "Zyyy";
 
-#define STATIC_ASSERT_ENUM(a, b)                            \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), \
-                "mismatching enums: " #a)
-
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_MAC, WebSettings::EditingBehavior::kMac);
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_WIN, WebSettings::EditingBehavior::kWin);
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_UNIX, WebSettings::EditingBehavior::kUnix);
@@ -40,17 +37,6 @@ STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_ANDROID,
                    WebSettings::EditingBehavior::kAndroid);
 STATIC_ASSERT_ENUM(EDITING_BEHAVIOR_CHROMEOS,
                    WebSettings::EditingBehavior::kChromeOS);
-
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kDefault,
-                   WebSettings::V8CacheOptions::kDefault);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kNone,
-                   WebSettings::V8CacheOptions::kNone);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kCode,
-                   WebSettings::V8CacheOptions::kCode);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kCodeWithoutHeatCheck,
-                   WebSettings::V8CacheOptions::kCodeWithoutHeatCheck);
-STATIC_ASSERT_ENUM(blink::mojom::V8CacheOptions::kFullCodeWithoutHeatCheck,
-                   WebSettings::V8CacheOptions::kFullCodeWithoutHeatCheck);
 
 STATIC_ASSERT_ENUM(IMAGE_ANIMATION_POLICY_ALLOWED,
                    WebSettings::ImageAnimationPolicy::kAllowed);
@@ -181,7 +167,7 @@ WebPreferences::WebPreferences()
 #endif
       spatial_navigation_enabled(false),
       navigate_on_drag_drop(true),
-      v8_cache_options(blink::mojom::V8CacheOptions::kDefault),
+      v8_cache_options(mojom::blink::V8CacheOptions::kDefault),
       record_whole_document(false),
       cookie_enabled(true),
       accelerated_video_decode_enabled(false),

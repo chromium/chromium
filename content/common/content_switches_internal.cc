@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/debug/debugger.h"

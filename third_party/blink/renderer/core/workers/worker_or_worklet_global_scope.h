@@ -11,9 +11,9 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom-shared.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -52,7 +52,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
       Agent* agent,
       const String& name,
       const base::UnguessableToken& parent_devtools_token,
-      V8CacheOptions,
+      mojom::blink::V8CacheOptions,
       WorkerClients*,
       std::unique_ptr<WebContentSettingsClient>,
       scoped_refptr<WebWorkerFetchContext>,
@@ -141,7 +141,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   WorkerOrWorkletScriptController* ScriptController() {
     return script_controller_.Get();
   }
-  V8CacheOptions GetV8CacheOptions() const { return v8_cache_options_; }
+  mojom::blink::V8CacheOptions GetV8CacheOptions() const {
+    return v8_cache_options_;
+  }
 
   WorkerReportingProxy& ReportingProxy() { return reporting_proxy_; }
 
@@ -234,7 +236,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   Member<SubresourceFilter> subresource_filter_;
 
   Member<WorkerOrWorkletScriptController> script_controller_;
-  const V8CacheOptions v8_cache_options_;
+  const mojom::blink::V8CacheOptions v8_cache_options_;
 
   // TODO(hiroshige): Pass outsideSettings-CSP via
   // outsideSettings-FetchClientSettingsObject.

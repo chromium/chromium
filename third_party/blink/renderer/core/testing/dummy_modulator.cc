@@ -52,8 +52,8 @@ ScriptState* DummyModulator::GetScriptState() {
   return nullptr;
 }
 
-V8CacheOptions DummyModulator::GetV8CacheOptions() const {
-  return kV8CacheOptionsDefault;
+mojom::blink::V8CacheOptions DummyModulator::GetV8CacheOptions() const {
+  return mojom::blink::V8CacheOptions::kDefault;
 }
 
 bool DummyModulator::IsScriptingDisabled() const {

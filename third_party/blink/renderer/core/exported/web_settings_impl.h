@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_SETTINGS_IMPL_H_
 
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -183,7 +184,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetUseLegacyBackgroundSizeShorthandBehavior(bool) override;
   void SetViewportStyle(WebViewportStyle) override;
   void SetUseWideViewport(bool) override;
-  void SetV8CacheOptions(V8CacheOptions) override;
+  void SetV8CacheOptions(mojom::blink::V8CacheOptions) override;
   void SetValidationMessageTimerMagnification(int) override;
   void SetViewportEnabled(bool) override;
   void SetViewportMetaEnabled(bool) override;

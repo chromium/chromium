@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -93,7 +94,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
     const ScriptFetchOptions& options,
     const TextPosition& text_position,
     ExceptionState& exception_state,
-    V8CacheOptions v8_cache_options,
+    mojom::blink::V8CacheOptions v8_cache_options,
     SingleCachedMetadataHandler* cache_handler,
     ScriptSourceLocationType source_location_type,
     ModuleRecordProduceCacheData** out_produce_cache_data) {
@@ -101,10 +102,11 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   v8::Local<v8::Module> module;
 
   // Module scripts currently don't support |kEagerCompile| which can be
-  // used for |kV8CacheOptionsFullCodeWithoutHeatCheck|, so use
-  // |kV8CacheOptionsCodeWithoutHeatCheck| instead.
-  if (v8_cache_options == kV8CacheOptionsFullCodeWithoutHeatCheck) {
-    v8_cache_options = kV8CacheOptionsCodeWithoutHeatCheck;
+  // used for |mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck|, so use
+  // |mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck| instead.
+  if (v8_cache_options ==
+      mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck) {
+    v8_cache_options = mojom::blink::V8CacheOptions::kCodeWithoutHeatCheck;
   }
 
   v8::ScriptCompiler::CompileOptions compile_options;
