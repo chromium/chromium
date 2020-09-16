@@ -41,8 +41,8 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         mojom::kSmartLockSubpagePath,
         mojom::SearchResultIcon::kLock,
         mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kSmartLock}},
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kSmartLockUnlockOrSignIn}},
        {IDS_OS_SETTINGS_TAG_MULTIDEVICE_FORGET,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
@@ -67,11 +67,11 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         {.subpage = mojom::Subpage::kMultiDeviceFeatures},
         {IDS_OS_SETTINGS_TAG_MULTIDEVICE_ALT1, SearchConcept::kAltTagEnd}},
        {IDS_OS_SETTINGS_TAG_MULTIDEVICE_SMART_LOCK,
-        mojom::kMultiDeviceFeaturesSubpagePath,
+        mojom::kSmartLockSubpagePath,
         mojom::SearchResultIcon::kLock,
         mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kSmartLock}}});
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kSmartLockOnOff}}});
   return *tags;
 }
 
