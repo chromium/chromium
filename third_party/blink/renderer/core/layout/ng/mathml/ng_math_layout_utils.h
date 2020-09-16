@@ -31,10 +31,12 @@ bool IsValidMathMLFraction(const NGBlockNode&);
 bool IsValidMathMLScript(const NGBlockNode&);
 bool IsValidMathMLRadical(const NGBlockNode&);
 
+// https://mathml-refresh.github.io/mathml-core/#dfn-default-rule-thickness
 inline float RuleThicknessFallback(const ComputedStyle& style) {
-  // This function returns a value for the default rule thickness (TeX's
-  // \xi_8) to be used as a fallback when we lack a MATH table.
-  return 0.05f * style.FontSize();
+  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  if (!font_data)
+    return 0;
+  return font_data->GetFontMetrics().UnderlineThickness().value_or(0);
 }
 
 LayoutUnit MathAxisHeight(const ComputedStyle& style);
