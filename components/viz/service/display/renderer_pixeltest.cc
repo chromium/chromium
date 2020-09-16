@@ -31,8 +31,10 @@
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/software_renderer.h"
 #include "components/viz/service/display/viz_pixel_test.h"
+#include "components/viz/test/buildflags.h"
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
+#include "components/viz/test/test_types.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -1766,6 +1768,7 @@ class VideoRendererPixelTestBase : public VizPixelTest {
   std::unique_ptr<media::VideoResourceUpdater> video_resource_updater_;
 };
 
+#if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 class VideoRendererPixelHiLoTest
     : public VideoRendererPixelTestBase,
       public testing::WithParamInterface<std::tuple<RendererType, bool>> {
@@ -1834,6 +1837,7 @@ TEST_P(VideoRendererPixelHiLoTest, ClippedYUVRect) {
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_clipped.png")),
       cc::FuzzyPixelOffByOneComparator(true)));
 }
+#endif  // #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 
 class VideoRendererPixelTest
     : public VideoRendererPixelTestBase,
@@ -4956,12 +4960,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
 
-using ColorSpacePair =
-    std::tuple<RendererType, gfx::ColorSpace, gfx::ColorSpace, bool>;
+using PrimaryID = gfx::ColorSpace::PrimaryID;
+using TransferID = gfx::ColorSpace::TransferID;
 
 class ColorTransformPixelTest
     : public VizPixelTest,
-      public testing::WithParamInterface<ColorSpacePair> {
+      public testing::WithParamInterface<
+          std::tuple<RendererType, gfx::ColorSpace, gfx::ColorSpace, bool>> {
  public:
   ColorTransformPixelTest() : VizPixelTest(std::get<0>(GetParam())) {
     // Note that this size of 17 is not random -- it is chosen to match the
@@ -4984,6 +4989,15 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
+    // SkColorSpace doesn't support piecewise transfer functions so skip those
+    // with SkiaRenderer.
+    if (!is_gl_renderer() &&
+        (src_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR ||
+         dst_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR)) {
+      LOG(ERROR) << "Skipping piecewise HDR function with Skia";
+      return;
+    }
+
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
     std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
@@ -5098,11 +5112,6 @@ TEST_P(ColorTransformPixelTest, Basic) {
   Basic();
 }
 
-using PrimaryID = gfx::ColorSpace::PrimaryID;
-using TransferID = gfx::ColorSpace::TransferID;
-using MatrixID = gfx::ColorSpace::MatrixID;
-using RangeID = gfx::ColorSpace::RangeID;
-
 gfx::ColorSpace src_color_spaces[] = {
     // This will be replaced by an ICC-based space (which can't be initialized
     // here).
@@ -5115,6 +5124,7 @@ gfx::ColorSpace src_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
+    // Piecewise HDR transfer functions skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.5, 1.5),
     gfx::ColorSpace::CreateHDR10(50.f),
     gfx::ColorSpace::CreateHDR10(250.f),
@@ -5131,31 +5141,8 @@ gfx::ColorSpace dst_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
+    // Piecewise HDR transfer functions are skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.25, 2.5),
-};
-
-// Skia renderer doesn't support piecewise-HDR or custom-white-point PQ yet, so
-// use a separate color space list for Skia renderer tests.
-gfx::ColorSpace sk_src_color_spaces[] = {
-    gfx::ColorSpace(),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
-};
-gfx::ColorSpace sk_dst_color_spaces[] = {
-    gfx::ColorSpace(),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::BT709),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
 };
 
 gfx::ColorSpace intermediate_color_spaces[] = {
@@ -5163,42 +5150,21 @@ gfx::ColorSpace intermediate_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::IEC61966_2_1_HDR),
 };
 
-bool color_space_premul_values[] = {
-    true,
-    false,
-};
-
 INSTANTIATE_TEST_SUITE_P(
-    FromColorSpaceGL,
+    FromColorSpace,
     ColorTransformPixelTest,
-    testing::Combine(testing::Values(RendererType::kGL),
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypesNoDawn()),
                      testing::ValuesIn(src_color_spaces),
                      testing::ValuesIn(intermediate_color_spaces),
-                     testing::ValuesIn(color_space_premul_values)));
+                     testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
-    ToColorSpaceGL,
+    ToColorSpace,
     ColorTransformPixelTest,
-    testing::Combine(testing::Values(RendererType::kGL),
+    testing::Combine(testing::ValuesIn(GetGpuRendererTypesNoDawn()),
                      testing::ValuesIn(intermediate_color_spaces),
                      testing::ValuesIn(dst_color_spaces),
-                     testing::ValuesIn(color_space_premul_values)));
-
-INSTANTIATE_TEST_SUITE_P(
-    FromColorSpaceSkia,
-    ColorTransformPixelTest,
-    testing::Combine(testing::Values(RendererType::kSkiaGL),
-                     testing::ValuesIn(sk_src_color_spaces),
-                     testing::ValuesIn(intermediate_color_spaces),
-                     testing::ValuesIn(color_space_premul_values)));
-
-INSTANTIATE_TEST_SUITE_P(
-    ToColorSpaceSkia,
-    ColorTransformPixelTest,
-    testing::Combine(testing::Values(RendererType::kSkiaGL),
-                     testing::ValuesIn(intermediate_color_spaces),
-                     testing::ValuesIn(sk_dst_color_spaces),
-                     testing::ValuesIn(color_space_premul_values)));
+                     testing::Bool()));
 
 #endif  // !defined(OS_ANDROID)
 
