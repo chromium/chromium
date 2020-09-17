@@ -1099,6 +1099,10 @@ component("ash") {
     "system/palette/tools/metalayer_mode.h",
     "system/phonehub/continue_browsing_chip.cc",
     "system/phonehub/continue_browsing_chip.h",
+    "system/phonehub/onboarding_view.cc",
+    "system/phonehub/onboarding_view.h",
+    "system/phonehub/phone_hub_interstitial_view.cc",
+    "system/phonehub/phone_hub_interstitial_view.h",
     "system/phonehub/phone_hub_tray.cc",
     "system/phonehub/phone_hub_tray.h",
     "system/phonehub/phone_status_view.cc",
@@ -1605,6 +1609,7 @@ component("ash") {
 
   public_deps = [
     "//ash/public/cpp",
+    "//ash/public/cpp/resources:ash_public_unscaled_resources",
     "//ash/public/cpp/vector_icons",
     "//ash/resources/vector_icons",
     "//ash/strings",
