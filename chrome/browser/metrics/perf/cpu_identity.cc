@@ -57,6 +57,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"06_5E", "Skylake"},
     {"06_5F", "Goldmont"},    // Denverton
     {"06_7A", "GoldmontPlus"},
+    {"06_8C", "Tigerlake"},
     {"06_8E", "Kabylake"},
     {"06_9E", "Kabylake"},
     {"0F_03", "Prescott"},

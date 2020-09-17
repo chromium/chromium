@@ -90,7 +90,7 @@ void ExtractVersionNumbers(const std::string& version,
 // Returns if a micro-architecture supports LBR callgraph profiling.
 bool MicroarchitectureHasLBRCallgraph(const std::string& uarch) {
   return uarch == "Haswell" || uarch == "Broadwell" || uarch == "Skylake" ||
-         uarch == "Kabylake";
+         uarch == "Kabylake" || uarch == "Tigerlake";
 }
 
 // Returns if a kernel release supports LBR callgraph profiling.
@@ -125,7 +125,7 @@ const char kPerfITLBMissCyclesCmdIvyBridge[] =
 const char kPerfDTLBMissCyclesCmdIvyBridge[] =
     "perf record -a -e dtlb_load_misses.walk_duration -g -c 160001";
 
-// TLB miss cycles for Skylake and Kabylake.
+// TLB miss cycles for Skylake, Kabylake, Tigerlake.
 const char kPerfITLBMissCyclesCmdSkylake[] =
     "perf record -a -e itlb_misses.walk_pending -c 30001";
 
@@ -157,7 +157,8 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   const char* dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdIvyBridge;
   const char* lbr_cmd = kPerfLBRCmd;
 
-  if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake") {
+  if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
+      cpu_uarch == "Tigerlake") {
     itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdSkylake;
     dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdSkylake;
   }
@@ -171,8 +172,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   if (cpu_uarch == "IvyBridge" || cpu_uarch == "Haswell" ||
       cpu_uarch == "Broadwell" || cpu_uarch == "SandyBridge" ||
       cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
-      cpu_uarch == "Silvermont" || cpu_uarch == "Airmont" ||
-      cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
+      cpu_uarch == "Tigerlake" || cpu_uarch == "Silvermont" ||
+      cpu_uarch == "Airmont" || cpu_uarch == "Goldmont" ||
+      cpu_uarch == "GoldmontPlus") {
     cmds.push_back(WeightAndValue(50.0, kPerfCyclesCmd));
     // Haswell and newer big Intel cores support LBR callstack profiling. This
     // requires kernel support, which was added in kernel 4.4, and it was

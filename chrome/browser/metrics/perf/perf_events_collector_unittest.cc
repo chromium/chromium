@@ -449,7 +449,40 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
   cpuid.release = "3.18.0";
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
-  ASSERT_GE(cmds.size(), 2UL);
+  ASSERT_GE(cmds.size(), 3UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
+  // We have both FP and LBR based callstacks.
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
+  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphCmd);
+  auto found =
+      std::find_if(cmds.begin(), cmds.end(),
+                   [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                     return cmd.value == kPerfLBRCmd;
+                   });
+  EXPECT_NE(cmds.end(), found);
+  found = std::find_if(cmds.begin(), cmds.end(),
+                       [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                         return cmd.value == kPerfLLCMissesPreciseCmd;
+                       });
+  EXPECT_NE(cmds.end(), found);
+  found = std::find_if(cmds.begin(), cmds.end(),
+                       [](const RandomSelector::WeightAndValue& cmd) -> bool {
+                         return cmd.value == kPerfITLBMissCyclesCmdSkylake;
+                       });
+  EXPECT_NE(cmds.end(), found);
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x8C;  // Tigerlake
+  cpuid.model_name = "";
+  cpuid.release = "5.4.64";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpu(cpuid);
+  ASSERT_GE(cmds.size(), 3UL);
   EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
   // We have both FP and LBR based callstacks.
   EXPECT_EQ(cmds[1].value, kPerfFPCallgraphCmd);
