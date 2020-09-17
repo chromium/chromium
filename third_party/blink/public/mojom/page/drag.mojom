@@ -45,11 +45,11 @@ struct DragItemString {
   mojo_base.mojom.String16 string_data;
 
   // Title associated with a link. Only valid when string_type == "text/uri-list".
-  mojo_base.mojom.String16 title;
+  mojo_base.mojom.String16? title;
 
   // Stores the base URL for the contained markup. Only valid when string_type
   // == "text/html".
-  url.mojom.Url base_url;
+  url.mojom.Url? base_url;
 };
 
 // Used for dragging a list of files.
@@ -66,7 +66,7 @@ struct DragItemBinary {
   url.mojom.Url source_url;
   mojo_base.mojom.FilePath filename_extension;
   // Content-Disposition response header.
-  string content_disposition;
+  string? content_disposition;
 };
 
 // Used for dragging files using the FileSystem API.
@@ -86,9 +86,9 @@ union DragItem {
 // Holds data that may be exchanged through a drag-n-drop operation.
 struct DragData {
   array<DragItem> items;
-  string file_system_id;  // Only used when dragging into Blink to represent a
-                          // new isolated file system to access the dropped
-                          // files.
+  string? file_system_id;  // Only used when dragging into Blink to represent a
+                           // new isolated file system to access the dropped
+                           // files.
 
   // Used for DragItemString when string_type == "downloadurl".
   network.mojom.ReferrerPolicy referrer_policy =

@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -40,9 +41,11 @@ WTF::String StructTraits<
 }
 
 // static
-blink::KURL StructTraits<
+base::Optional<blink::KURL> StructTraits<
     blink::mojom::DragItemStringDataView,
     blink::WebDragData::Item>::base_url(const blink::WebDragData::Item& item) {
+  if (item.base_url.IsNull())
+    return base::nullopt;
   return item.base_url;
 }
 
@@ -52,9 +55,8 @@ bool StructTraits<
     blink::WebDragData::Item>::Read(blink::mojom::DragItemStringDataView data,
                                     blink::WebDragData::Item* out) {
   blink::WebDragData::Item item;
-  WTF::String string_type;
-  base::string16 string_data, title;
-  blink::KURL url;
+  WTF::String string_type, string_data, title;
+  base::Optional<blink::KURL> url;
   if (!data.ReadStringType(&string_type) ||
       !data.ReadStringData(&string_data) || !data.ReadTitle(&title) ||
       !data.ReadBaseUrl(&url))
@@ -62,9 +64,9 @@ bool StructTraits<
 
   item.storage_type = blink::WebDragData::Item::kStorageTypeString;
   item.string_type = string_type;
-  item.string_data = blink::WebString::FromUTF16(string_data);
-  item.title = blink::WebString::FromUTF16(title);
-  item.base_url = url;
+  item.string_data = string_data;
+  item.title = title;
+  item.base_url = url.value_or(blink::KURL());
   *out = std::move(item);
   return true;
 }
@@ -244,6 +246,8 @@ StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::items(
 // static
 WTF::String StructTraits<blink::mojom::DragDataDataView, blink::WebDragData>::
     file_system_id(const blink::WebDragData& drag_data) {
+  // Only used when dragging into Blink.
+  DCHECK(drag_data.FilesystemId().IsNull());
   return drag_data.FilesystemId();
 }
 

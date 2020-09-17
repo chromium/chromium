@@ -35,7 +35,8 @@ DropData DropDataBuilder::Build(const WebDragData& drag_data) {
         }
         if (base::EqualsASCII(str_type, ui::kMimeTypeURIList)) {
           result.url = blink::WebStringToGURL(item.string_data);
-          result.url_title = item.title.Utf16();
+          if (!item.title.IsNull())
+            result.url_title = item.title.Utf16();
           break;
         }
         if (base::EqualsASCII(str_type, ui::kMimeTypeDownloadURL)) {
@@ -45,7 +46,8 @@ DropData DropDataBuilder::Build(const WebDragData& drag_data) {
         }
         if (base::EqualsASCII(str_type, ui::kMimeTypeHTML)) {
           result.html = WebString::ToOptionalString16(item.string_data);
-          result.html_base_url = item.base_url;
+          if (!item.base_url.IsNull())
+            result.html_base_url = item.base_url;
           break;
         }
         result.custom_data.insert(
@@ -69,8 +71,10 @@ DropData DropDataBuilder::Build(const WebDragData& drag_data) {
         result.file_contents_filename_extension =
             item.binary_data_filename_extension.Utf8();
 #endif
-        result.file_contents_content_disposition =
-            item.binary_data_content_disposition.Utf8();
+        if (!item.binary_data_content_disposition.IsNull()) {
+          result.file_contents_content_disposition =
+              item.binary_data_content_disposition.Utf8();
+        }
         break;
       case WebDragData::Item::kStorageTypeFilename:
         // TODO(varunjain): This only works on chromeos. Support win/mac/gtk.
