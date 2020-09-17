@@ -82,9 +82,6 @@ class BrowserControlsNavigationStateHandler
   // Last value supplied to the delegate.
   base::Optional<content::BrowserControlsState> last_state_;
 
-  // True if an error page is showing.
-  bool is_showing_error_page_ = false;
-
   // This is cached as WebContents::IsCrashed() does not always return the
   // right thing.
   bool is_crashed_ = false;
