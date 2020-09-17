@@ -137,7 +137,9 @@ public class TabModelSelectorTabObserver
             for (int j = 0; j < comprehensiveTabList.getCount(); j++) {
                 Tab tab = comprehensiveTabList.getTabAt(j);
                 tab.removeObserver(this);
-                CriticalPersistedTabData.from(tab).removeObserver(this);
+                if (tab.isInitialized()) {
+                    CriticalPersistedTabData.from(tab).removeObserver(this);
+                }
                 onTabUnregistered(tab);
             }
         }
