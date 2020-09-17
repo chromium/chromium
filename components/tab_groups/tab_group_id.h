@@ -18,6 +18,11 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupId {
   // call on a valid TabGroupId.
   static TabGroupId FromRawToken(base::Token token);
 
+  // Should only be used if intending to populate the TabGroupId by reference,
+  // using a valid existing ID. Primarily needed for the Tab Groups extensions
+  // API.
+  static TabGroupId CreateEmpty();
+
   TabGroupId(const TabGroupId& other);
 
   TabGroupId& operator=(const TabGroupId& other);
@@ -27,6 +32,8 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupId {
   bool operator<(const TabGroupId& other) const;
 
   const base::Token& token() const { return token_; }
+
+  bool is_empty() { return token_.is_zero(); }
 
   std::string ToString() const;
 

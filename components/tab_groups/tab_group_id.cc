@@ -16,6 +16,11 @@ TabGroupId TabGroupId::FromRawToken(base::Token token) {
   return TabGroupId(token);
 }
 
+// static
+TabGroupId TabGroupId::CreateEmpty() {
+  return TabGroupId(base::Token());
+}
+
 TabGroupId::TabGroupId(const TabGroupId& other) = default;
 
 TabGroupId& TabGroupId::operator=(const TabGroupId& other) = default;
