@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
@@ -62,7 +63,11 @@ const char ModelLoader::kClientModelUrlPrefix[] =
 const char ModelLoader::kClientModelNamePattern[] =
     "client_model_v5%s_variation_%d.pb";
 const char ModelLoader::kClientModelFinchExperiment[] =
+#if BUILDFLAG(FULL_SAFE_BROWSING)
     "ClientSideDetectionModel";
+#else
+    "ClientSideDetectionModelOnAndroid";
+#endif
 const char ModelLoader::kClientModelFinchParam[] =
     "ModelNum";
 const char kUmaModelDownloadResponseMetricName[] =
