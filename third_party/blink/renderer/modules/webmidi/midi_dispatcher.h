@@ -41,7 +41,6 @@ class MIDIDispatcher : public midi::mojom::blink::MidiSessionClient {
   };
 
   explicit MIDIDispatcher(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       ExecutionContext* execution_context);
   ~MIDIDispatcher() override;
 
@@ -84,8 +83,6 @@ class MIDIDispatcher : public midi::mojom::blink::MidiSessionClient {
 
   mojo::Receiver<midi::mojom::blink::MidiSessionClient> receiver_{this};
   mojo::Remote<midi::mojom::blink::MidiSessionProvider> midi_session_provider_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace blink
