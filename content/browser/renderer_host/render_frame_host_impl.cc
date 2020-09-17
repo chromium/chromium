@@ -4638,8 +4638,8 @@ void RenderFrameHostImpl::DidChangeFrameOwnerProperties(
 
 void RenderFrameHostImpl::DidChangeOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {
-  frame_tree_node_->render_manager()->DidChangeOpener(
-      opener_frame_token.value_or(base::UnguessableToken()), GetSiteInstance());
+  frame_tree_node_->render_manager()->DidChangeOpener(opener_frame_token,
+                                                      GetSiteInstance());
 }
 
 void RenderFrameHostImpl::DidChangeCSPAttribute(

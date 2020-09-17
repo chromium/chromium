@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_client.mojom-forward.h"
@@ -124,7 +125,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                                               bool has_user_gesture);
 
   void SimulateDidChangeOpener(
-      const base::UnguessableToken& opener_frame_token);
+      const base::Optional<base::UnguessableToken>& opener_frame_token);
 
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);

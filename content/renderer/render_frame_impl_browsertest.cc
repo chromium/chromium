@@ -143,7 +143,7 @@ class RenderFrameImplTest : public RenderViewTest {
     RenderFrameImpl::CreateFrame(
         kSubframeRouteId, std::move(stub_interface_provider),
         std::move(stub_browser_interface_broker), MSG_ROUTING_NONE,
-        base::UnguessableToken(), kFrameProxyRouteId, MSG_ROUTING_NONE,
+        base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
         frame_replication_state, &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),

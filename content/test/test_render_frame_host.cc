@@ -390,7 +390,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
 }
 
 void TestRenderFrameHost::SimulateDidChangeOpener(
-    const base::UnguessableToken& opener_frame_token) {
+    const base::Optional<base::UnguessableToken>& opener_frame_token) {
   DidChangeOpener(opener_frame_token);
 }
 

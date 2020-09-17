@@ -68,8 +68,9 @@ const char* ToString(network::mojom::CoopAccessReportType report_type) {
   }
 }
 
-base::UnguessableToken GetFrameToken(FrameTreeNode* frame,
-                                     SiteInstance* site_instance) {
+base::Optional<base::UnguessableToken> GetFrameToken(
+    FrameTreeNode* frame,
+    SiteInstance* site_instance) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
   if (rfh->GetSiteInstance() == site_instance)
     return rfh->GetFrameToken();
@@ -79,7 +80,7 @@ base::UnguessableToken GetFrameToken(FrameTreeNode* frame,
   if (proxy)
     return proxy->GetFrameToken();
 
-  return base::UnguessableToken::Null();
+  return base::nullopt;
 }
 
 // Find all the related windows that might try to access the new document in
@@ -279,7 +280,7 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
   RenderFrameHostImpl* accessing_rfh = accessing_node->current_frame_host();
   SiteInstance* site_instance = accessing_rfh->GetSiteInstance();
 
-  base::UnguessableToken accessed_window_token =
+  base::Optional<base::UnguessableToken> accessed_window_token =
       GetFrameToken(accessed_node, site_instance);
   if (!accessed_window_token)
     return;
@@ -310,7 +311,7 @@ void CrossOriginOpenerPolicyReporter::MonitorAccesses(
   }
 
   accessing_rfh->GetAssociatedLocalMainFrame()->InstallCoopAccessMonitor(
-      report_type, accessed_window_token, std::move(remote_reporter));
+      report_type, *accessed_window_token, std::move(remote_reporter));
 }
 
 // static

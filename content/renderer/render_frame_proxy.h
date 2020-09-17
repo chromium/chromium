@@ -97,7 +97,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   static RenderFrameProxy* CreateFrameProxy(
       int routing_id,
       int render_view_routing_id,
-      const base::UnguessableToken& opener_frame_token,
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
       int parent_routing_id,
       const FrameReplicationState& replicated_state,
       const base::UnguessableToken& frame_token,

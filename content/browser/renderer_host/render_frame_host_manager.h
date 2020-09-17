@@ -263,8 +263,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // proxies (e.g., window.open that targets a RemoteFrame by name).  The
   // updated opener will be forwarded to any other RenderFrameProxies and
   // RenderFrames for this FrameTreeNode.
-  void DidChangeOpener(const base::UnguessableToken& opener_frame_token,
-                       SiteInstance* source_site_instance);
+  void DidChangeOpener(
+      const base::Optional<base::UnguessableToken>& opener_frame_token,
+      SiteInstance* source_site_instance);
 
   // Creates and initializes a RenderFrameHost.
   std::unique_ptr<RenderFrameHostImpl> CreateSpeculativeRenderFrame(

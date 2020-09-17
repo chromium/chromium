@@ -855,7 +855,7 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   RenderFrameProxyHost* proxy =
       contents()->GetRenderManager()->GetRenderFrameProxyHost(instance);
   EXPECT_TRUE(proxy);
-  EXPECT_EQ(proxy->GetFrameToken(), opener_frame_token);
+  EXPECT_EQ(*opener_frame_token, proxy->GetFrameToken());
 
   // Ensure that committing the navigation removes the proxy.
   navigation->Commit();

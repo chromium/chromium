@@ -3092,8 +3092,9 @@ void LocalFrame::BindReportingObserver(
 void LocalFrame::UpdateOpener(
     const base::Optional<base::UnguessableToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromFrame(this)) {
-    auto* opener_frame = LocalFrame::ResolveFrame(
-        opener_frame_token.value_or(base::UnguessableToken()));
+    Frame* opener_frame = nullptr;
+    if (opener_frame_token)
+      opener_frame = Frame::ResolveFrame(opener_frame_token.value());
     SetOpenerDoNotNotify(opener_frame);
   }
 }

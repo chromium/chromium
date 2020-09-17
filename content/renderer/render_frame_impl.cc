@@ -1585,7 +1585,7 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     int previous_routing_id,
-    const base::UnguessableToken& opener_frame_token,
+    const base::Optional<base::UnguessableToken>& opener_frame_token,
     int parent_routing_id,
     int previous_sibling_routing_id,
     const base::UnguessableToken& frame_token,
@@ -1631,14 +1631,16 @@ void RenderFrameImpl::CreateFrame(
     render_frame->InitializeBlameContext(FromRoutingID(parent_routing_id));
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state.unique_name);
+    WebFrame* opener = nullptr;
+    if (opener_frame_token)
+      opener = WebFrame::FromFrameToken(opener_frame_token.value());
     web_frame = parent_web_frame->CreateLocalChild(
         replicated_state.scope, WebString::FromUTF8(replicated_state.name),
         replicated_state.frame_policy, render_frame,
         render_frame->blink_interface_registry_.get(),
         previous_sibling_web_frame,
         frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
-        replicated_state.frame_owner_element_type, frame_token,
-        WebFrame::FromFrameToken(opener_frame_token));
+        replicated_state.frame_owner_element_type, frame_token, opener);
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.

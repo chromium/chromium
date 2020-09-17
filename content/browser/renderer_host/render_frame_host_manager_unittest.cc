@@ -1255,7 +1255,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpener) {
   EXPECT_NE(site_instance1, rfh2->GetSiteInstance());
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(base::UnguessableToken());
+  rfh2->SimulateDidChangeOpener(base::nullopt);
 
   // Ensure the opener is cleared.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1276,7 +1276,7 @@ TEST_P(RenderFrameHostManagerTest, DisownSameSiteOpener) {
   EXPECT_TRUE(contents()->HasOpener());
 
   // Disown the opener from rfh1.
-  rfh1->SimulateDidChangeOpener(base::UnguessableToken());
+  rfh1->SimulateDidChangeOpener(base::nullopt);
 
   // Ensure the opener is cleared even if it is in the same process.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1312,7 +1312,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerDuringNavigation) {
   contents()->GetMainFrame()->PrepareForCommit();
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(base::UnguessableToken());
+  rfh2->SimulateDidChangeOpener(base::nullopt);
 
   // Ensure the opener is cleared.
   EXPECT_FALSE(contents()->HasOpener());
@@ -1361,7 +1361,7 @@ TEST_P(RenderFrameHostManagerTest, DisownOpenerAfterNavigation) {
       entry1->GetTransitionType());
 
   // Disown the opener from rfh2.
-  rfh2->SimulateDidChangeOpener(base::UnguessableToken());
+  rfh2->SimulateDidChangeOpener(base::nullopt);
   EXPECT_FALSE(contents()->HasOpener());
 }
 
@@ -2161,8 +2161,8 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWithCycleOnOpenerChain) {
       tab1_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
   auto tab2_opener_frame_token =
       tab2_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
-  EXPECT_EQ(tab2_proxy->GetFrameToken(), tab1_opener_frame_token);
-  EXPECT_EQ(tab1_proxy->GetFrameToken(), tab2_opener_frame_token);
+  EXPECT_EQ(*tab1_opener_frame_token, tab2_proxy->GetFrameToken());
+  EXPECT_EQ(*tab2_opener_frame_token, tab1_proxy->GetFrameToken());
 
   // Setting tab2_proxy's opener required an extra IPC message to be set, since
   // the opener's frame token wasn't available when tab2_proxy was created.
@@ -2209,7 +2209,7 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWhenOpenerPointsToSelf) {
   // Verify that the proxy's opener points to itself.
   auto opener_frame_token =
       opener_manager->GetOpenerFrameToken(rfh2->GetSiteInstance());
-  EXPECT_EQ(opener_proxy->GetFrameToken(), opener_frame_token);
+  EXPECT_EQ(*opener_frame_token, opener_proxy->GetFrameToken());
 
   // Setting the opener in opener_proxy required an extra IPC message, since
   // the opener's frame_token wasn't available when opener_proxy was created.
