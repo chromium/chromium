@@ -2476,7 +2476,7 @@
   {
     "name": "explore-sites",
     "owners": [ "chili", "dewittj" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 95
   },
   {
     "name": "extend-open-in-files-support",
