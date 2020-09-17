@@ -78,8 +78,8 @@ public class CustomTabActivityTabFactory {
 
     /** Creates a {@link TabModelSelector} for the custom tab. */
     public TabModelSelectorImpl createTabModelSelector() {
-        mTabModelSelector = new TabModelSelectorImpl(mActivity, mActivity, mPersistencePolicy,
-                mTabModelFilterFactory,
+        mTabModelSelector = new TabModelSelectorImpl(mActivity, mActivityWindowAndroid::get,
+                mActivity, mPersistencePolicy, mTabModelFilterFactory,
                 () -> NextTabPolicy.LOCATIONAL, mAsyncTabParamsManager.get(), false, false, false);
         return mTabModelSelector;
     }

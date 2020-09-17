@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -41,17 +42,14 @@ public abstract class TabModelJniBridge implements TabModel {
      */
     private boolean mIsTabbedActivityForSync;
 
-    public TabModelJniBridge(boolean isIncognito, boolean isTabbedActivity) {
-        mIsIncognito = isIncognito;
+    public TabModelJniBridge(@NonNull Profile profile, boolean isTabbedActivity) {
+        mIsIncognito = profile.isOffTheRecord();
         mIsTabbedActivityForSync = isTabbedActivity;
     }
 
     /** Initializes the native-side counterpart to this class. */
-    protected void initializeNative() {
+    protected void initializeNative(Profile profile) {
         assert mNativeTabModelJniBridge == 0;
-        // TODO(https://crbug.com/1099642): Pass the correct OTR profile.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        if (mIsIncognito) profile = profile.getPrimaryOTRProfile();
         mNativeTabModelJniBridge = TabModelJniBridgeJni.get().init(
                 TabModelJniBridge.this, profile, mIsTabbedActivityForSync);
     }

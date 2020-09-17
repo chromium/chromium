@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
@@ -84,13 +85,13 @@ public class TabModelImpl extends TabModelJniBridge {
      */
     private boolean mIsUndoSupported = true;
 
-    public TabModelImpl(boolean incognito, boolean isTabbedActivity, TabCreator regularTabCreator,
-            TabCreator incognitoTabCreator, TabModelSelectorUma uma,
+    public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
+            TabCreator regularTabCreator, TabCreator incognitoTabCreator, TabModelSelectorUma uma,
             TabModelOrderController orderController, TabContentManager tabContentManager,
             TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
             boolean supportUndo) {
-        super(incognito, isTabbedActivity);
+        super(profile, isTabbedActivity);
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mUma = uma;
@@ -103,10 +104,9 @@ public class TabModelImpl extends TabModelJniBridge {
         mIsUndoSupported = supportUndo;
         mObservers = new ObserverList<TabModelObserver>();
         // The call to initializeNative() should be as late as possible, as it results in calling
-        // observers on the native side, which may in turn call |addObserver()| on this object. This
-        // needs to be before the call to getProfile() to ensure native is running.
-        initializeNative();
-        mRecentlyClosedBridge = new RecentlyClosedBridge(getProfile());
+        // observers on the native side, which may in turn call |addObserver()| on this object.
+        initializeNative(profile);
+        mRecentlyClosedBridge = new RecentlyClosedBridge(profile);
     }
 
     @Override

@@ -261,9 +261,9 @@ public class TabWindowManager implements ActivityStateListener {
             TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
                     selectorIndex, mergeTabs);
             TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory();
-            return new TabModelSelectorImpl(activity, tabCreatorManager, persistencePolicy,
-                    tabModelFilterFactory, nextTabPolicySupplier,
-                    AsyncTabParamsManager.getInstance(), true, true, false);
+            return new TabModelSelectorImpl(activity, /*windowAndroidSupplier=*/null,
+                    tabCreatorManager, persistencePolicy, tabModelFilterFactory,
+                    nextTabPolicySupplier, AsyncTabParamsManager.getInstance(), true, true, false);
         }
     }
 }

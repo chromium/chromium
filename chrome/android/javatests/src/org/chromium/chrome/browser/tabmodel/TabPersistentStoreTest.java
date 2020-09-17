@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -110,27 +111,26 @@ public class TabPersistentStoreTest {
                         }
                     });
             mTabModelOrderController = new TabModelOrderControllerImpl(this);
+            NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
 
             Callable<TabModelImpl> callable = new Callable<TabModelImpl>() {
                 @Override
                 public TabModelImpl call() {
-                    return new TabModelImpl(false, false,
+                    return new TabModelImpl(Profile.getLastUsedRegularProfile(), false,
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), null,
                             mTabModelOrderController, null, mTabPersistentStore,
-                            ()
-                                    -> NextTabPolicy.HIERARCHICAL,
-                            AsyncTabParamsManager.getInstance(), TestTabModelSelector.this, true);
+                            nextTabPolicySupplier, AsyncTabParamsManager.getInstance(),
+                            TestTabModelSelector.this, true);
                 }
             };
-            TabModel regularTabModel = TestThreadUtils.runOnUiThreadBlocking(callable);
-            IncognitoTabModel incognitoTabModel = new IncognitoTabModelImpl(
-                    new IncognitoTabModelImplCreator(getTabCreatorManager().getTabCreator(false),
+            TabModelImpl regularTabModel = TestThreadUtils.runOnUiThreadBlocking(callable);
+            IncognitoTabModel incognitoTabModel =
+                    new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(null,
+                            getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), null,
                             mTabModelOrderController, null, mTabPersistentStore,
-                            ()
-                                    -> NextTabPolicy.HIERARCHICAL,
-                            AsyncTabParamsManager.getInstance(), this));
+                            nextTabPolicySupplier, AsyncTabParamsManager.getInstance(), this));
             initialize(regularTabModel, incognitoTabModel);
         }
 

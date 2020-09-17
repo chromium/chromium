@@ -10,7 +10,9 @@ import android.os.Handler;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -56,9 +58,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     private CloseAllTabsDelegate mCloseAllTabsDelegate;
 
+    private final Supplier<WindowAndroid> mWindowAndroidSupplier;
+
     /**
      * Builds a {@link TabModelSelectorImpl} instance.
      * @param activity An {@link Activity} instance.
+     * @param windowAndroidSupplier A supplier of {@link WindowAndroid} instance which is passed
+     *         down to {@link IncognitoTabModelImplCreator} for creating {@link IncognitoTabModel}.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
      * @param persistencePolicy A {@link TabPersistencePolicy} instance.
      * @param tabModelFilterFactory
@@ -66,12 +72,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      * @param asyncTabParamsManager
      * @param supportUndo Whether a tab closure can be undone.
      */
-    public TabModelSelectorImpl(Activity activity, TabCreatorManager tabCreatorManager,
-            TabPersistencePolicy persistencePolicy, TabModelFilterFactory tabModelFilterFactory,
+    public TabModelSelectorImpl(Activity activity,
+            @Nullable Supplier<WindowAndroid> windowAndroidSupplier,
+            TabCreatorManager tabCreatorManager, TabPersistencePolicy persistencePolicy,
+            TabModelFilterFactory tabModelFilterFactory,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, boolean supportUndo,
             boolean isTabbedActivity, boolean startIncognito) {
         super(tabCreatorManager, tabModelFilterFactory, startIncognito);
+        mWindowAndroidSupplier = windowAndroidSupplier;
         mUma = new TabModelSelectorUma(activity);
         final TabPersistentStoreObserver persistentStoreObserver =
                 new TabPersistentStoreObserver() {
@@ -128,14 +137,16 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(false);
         ChromeTabCreator incognitoTabCreator =
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
-        TabModel normalModel = new TabModelImpl(false, mIsTabbedActivityForSync, regularTabCreator,
-                incognitoTabCreator, mUma, mOrderController, mTabContentManager, mTabSaver,
-                mNextTabPolicySupplier, mAsyncTabParamsManager, this, mIsUndoSupported);
-        IncognitoTabModel incognitoModel =
-                new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(regularTabCreator,
+        TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
+                mIsTabbedActivityForSync, regularTabCreator, incognitoTabCreator, mUma,
+                mOrderController, mTabContentManager, mTabSaver, mNextTabPolicySupplier,
+                mAsyncTabParamsManager, this, mIsUndoSupported);
+        regularTabCreator.setTabModel(normalModel, mOrderController);
+
+        IncognitoTabModel incognitoModel = new IncognitoTabModelImpl(
+                new IncognitoTabModelImplCreator(mWindowAndroidSupplier, regularTabCreator,
                         incognitoTabCreator, mUma, mOrderController, mTabContentManager, mTabSaver,
                         mNextTabPolicySupplier, mAsyncTabParamsManager, this));
-        regularTabCreator.setTabModel(normalModel, mOrderController);
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }

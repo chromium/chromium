@@ -11,6 +11,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -116,13 +117,15 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 return false;
             }
         };
-        mNormalTabModel =
-                new TabModelSelectorTestTabModel(false, orderController, tabContentManager,
-                        tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, delegate);
 
-        mIncognitoTabModel =
-                new TabModelSelectorTestIncognitoTabModel(orderController, tabContentManager,
-                        tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, delegate);
+        mNormalTabModel = new TabModelSelectorTestTabModel(Profile.getLastUsedRegularProfile(),
+                orderController, tabContentManager, tabPersistentStore, nextTabPolicySupplier,
+                asyncTabParamsManager, delegate);
+
+        mIncognitoTabModel = new TabModelSelectorTestIncognitoTabModel(
+                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
+                tabContentManager, tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager,
+                delegate);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
     }
@@ -133,11 +136,11 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     public static class TabModelSelectorTestTabModel extends TabModelImpl {
         private Set<TabModelObserver> mObserverSet = new HashSet<>();
 
-        public TabModelSelectorTestTabModel(boolean incognito,
+        public TabModelSelectorTestTabModel(Profile profile,
                 TabModelOrderController orderController, TabContentManager tabContentManager,
                 TabPersistentStore tabPersistentStore, NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
-            super(incognito, false, null, null, null, orderController, tabContentManager,
+            super(profile, false, null, null, null, orderController, tabContentManager,
                     tabPersistentStore, nextTabPolicySupplier, asyncTabParamsManager, modelDelegate,
                     false);
         }
@@ -164,12 +167,13 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
      */
     public static class TabModelSelectorTestIncognitoTabModel
             extends TabModelSelectorTestTabModel implements IncognitoTabModel {
-        public TabModelSelectorTestIncognitoTabModel(TabModelOrderController orderController,
-                TabContentManager tabContentManager, TabPersistentStore tabPersistentStore,
-                NextTabPolicySupplier nextTabPolicySupplier,
+        public TabModelSelectorTestIncognitoTabModel(Profile profile,
+                TabModelOrderController orderController, TabContentManager tabContentManager,
+                TabPersistentStore tabPersistentStore, NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
-            super(true, orderController, tabContentManager, tabPersistentStore,
-                    nextTabPolicySupplier, asyncTabParamsManager, modelDelegate);
+            super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
+                    tabContentManager, tabPersistentStore, nextTabPolicySupplier,
+                    asyncTabParamsManager, modelDelegate);
         }
 
         @Override
