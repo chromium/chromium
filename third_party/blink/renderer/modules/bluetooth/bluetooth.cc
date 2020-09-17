@@ -160,6 +160,13 @@ static void ConvertRequestDeviceOptions(
       result->optional_services.push_back(validated_optional_service);
     }
   }
+
+  if (options->hasOptionalManufacturerData()) {
+    for (const uint16_t manufacturer_code :
+         options->optionalManufacturerData()) {
+      result->optional_manufacturer_data.push_back(manufacturer_code);
+    }
+  }
 }
 
 ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,

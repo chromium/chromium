@@ -59,6 +59,10 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
   bool IsAllowedToAccessAtLeastOneService(
       content::RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override;
+  bool IsAllowedToAccessManufacturerData(
+      content::RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id,
+      uint16_t manufacturer_code) override;
   std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
       content::RenderFrameHost* frame) override;
 };

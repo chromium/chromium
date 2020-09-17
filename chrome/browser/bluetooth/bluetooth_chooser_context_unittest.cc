@@ -32,6 +32,7 @@ namespace {
 constexpr char kDeviceAddressKey[] = "device-address";
 constexpr char kDeviceNameKey[] = "name";
 constexpr char kServicesKey[] = "services";
+constexpr char kManufacturerDataKey[] = "manufacturer-data";
 constexpr char kWebBluetoothDeviceIdKey[] = "web-bluetooth-device-id";
 
 const uint32_t kGamepadBluetoothClass = 0x0508;
@@ -53,9 +54,10 @@ const BluetoothUUID kBatteryServiceUUID(kBatteryServiceUUIDString);
 const BluetoothUUID kBloodPressureUUID(kBloodPressureUUIDString);
 const BluetoothUUID kCyclingPowerUUID(kCyclingPowerUUIDString);
 
-WebBluetoothRequestDeviceOptionsPtr CreateOptionsForServices(
+WebBluetoothRequestDeviceOptionsPtr CreateOptionsForServicesAndManufacturerData(
     const std::vector<BluetoothUUID>& filter_services,
-    const std::vector<BluetoothUUID>& optional_services) {
+    const std::vector<BluetoothUUID>& optional_services,
+    const std::vector<uint16_t>& optional_manufacturer_data) {
   auto filter = blink::mojom::WebBluetoothLeScanFilter::New();
   filter->services = filter_services;
 
@@ -65,12 +67,26 @@ WebBluetoothRequestDeviceOptionsPtr CreateOptionsForServices(
   auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
   options->filters = std::move(scan_filters);
   options->optional_services = optional_services;
+  options->optional_manufacturer_data = optional_manufacturer_data;
   return options;
 }
 
 WebBluetoothRequestDeviceOptionsPtr CreateOptionsForServices(
+    const std::vector<BluetoothUUID>& filter_services,
+    const std::vector<BluetoothUUID>& optional_services) {
+  return CreateOptionsForServicesAndManufacturerData(
+      filter_services, optional_services, /*optional_manufacturer_data=*/{});
+}
+
+WebBluetoothRequestDeviceOptionsPtr CreateOptionsForServices(
     const std::vector<BluetoothUUID>& filter_services) {
-  return CreateOptionsForServices(filter_services, {});
+  return CreateOptionsForServices(filter_services, /*optional_services=*/{});
+}
+
+WebBluetoothRequestDeviceOptionsPtr CreateOptionsForManufacturerData(
+    const std::vector<uint16_t>& optional_manufacturer_data) {
+  return CreateOptionsForServicesAndManufacturerData(
+      /*services=*/{}, /*optional_services=*/{}, optional_manufacturer_data);
 }
 
 }  // namespace
@@ -163,8 +179,10 @@ class BluetoothChooserContextTest : public testing::Test {
 TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
   const std::vector<BluetoothUUID> services = {kGlucoseUUID,
                                                kBloodPressureUUID};
+  const std::vector<uint16_t> manufacturer_codes = {0x0001, 0x0002};
   WebBluetoothRequestDeviceOptionsPtr options =
-      CreateOptionsForServices(services);
+      CreateOptionsForServicesAndManufacturerData(
+          services, /*optional_services=*/{}, manufacturer_codes);
 
   BluetoothChooserContext* context = GetChooserContext(profile());
 
@@ -203,6 +221,11 @@ TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
   expected_services.SetBoolKey(kGlucoseUUIDString, /*val=*/true);
   expected_services.SetBoolKey(kBloodPressureUUIDString, /*val=*/true);
   expected_object.SetKey(kServicesKey, std::move(expected_services));
+  base::Value expected_manufacturer_data(base::Value::Type::LIST);
+  expected_manufacturer_data.Append(0x01);
+  expected_manufacturer_data.Append(0x02);
+  expected_object.SetKey(kManufacturerDataKey,
+                         std::move(expected_manufacturer_data));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       origin_objects = context->GetGrantedObjects(foo_origin_, foo_origin_);
@@ -408,6 +431,55 @@ TEST_F(BluetoothChooserContextTest, CheckGrantWithOptionalServices) {
   for (const auto& service : optional_services) {
     EXPECT_TRUE(context->IsAllowedToAccessService(foo_origin_, foo_origin_,
                                                   device_id, service));
+  }
+}
+
+// Check that permissions for manufacturer data are granted and updated
+// properly.
+TEST_F(BluetoothChooserContextTest, CheckGrantWithOptionalManufacturerData) {
+  BluetoothChooserContext* context = GetChooserContext(profile());
+
+  // Grant permission with only manufacturer data.
+  {
+    const std::vector<uint16_t> optional_manufacturer_data({0x0001, 0x0002});
+    WebBluetoothRequestDeviceOptionsPtr options =
+        CreateOptionsForManufacturerData(optional_manufacturer_data);
+    EXPECT_CALL(mock_permission_observer_,
+                OnChooserObjectPermissionChanged(
+                    ContentSettingsType::BLUETOOTH_GUARD,
+                    ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+    blink::WebBluetoothDeviceId device_id =
+        context->GrantServiceAccessPermission(
+            foo_origin_, foo_origin_, fake_device1_.get(), options.get());
+
+    for (const uint16_t manufacturer_code : optional_manufacturer_data) {
+      EXPECT_TRUE(context->IsAllowedToAccessManufacturerData(
+          foo_origin_, foo_origin_, device_id, manufacturer_code));
+    }
+    EXPECT_FALSE(context->IsAllowedToAccessManufacturerData(
+        foo_origin_, foo_origin_, device_id, 0x0003));
+  }
+
+  // Grant permission again with different manufacturer data.
+  {
+    const std::vector<uint16_t> optional_manufacturer_data({0x0002, 0x0003});
+    WebBluetoothRequestDeviceOptionsPtr options =
+        CreateOptionsForManufacturerData(optional_manufacturer_data);
+    EXPECT_CALL(mock_permission_observer_,
+                OnChooserObjectPermissionChanged(
+                    ContentSettingsType::BLUETOOTH_GUARD,
+                    ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+    blink::WebBluetoothDeviceId device_id =
+        context->GrantServiceAccessPermission(
+            foo_origin_, foo_origin_, fake_device1_.get(), options.get());
+
+    for (const uint16_t manufacturer_code : optional_manufacturer_data) {
+      EXPECT_TRUE(context->IsAllowedToAccessManufacturerData(
+          foo_origin_, foo_origin_, device_id, manufacturer_code));
+    }
+    // Access permission for manufacturer code 0x0001 should still be available.
+    EXPECT_TRUE(context->IsAllowedToAccessManufacturerData(
+        foo_origin_, foo_origin_, device_id, 0x0001));
   }
 }
 

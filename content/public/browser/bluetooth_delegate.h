@@ -87,6 +87,14 @@ class CONTENT_EXPORT BluetoothDelegate {
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) = 0;
 
+  // This should return true if |frame| has permission to access data associated
+  // with |manufacturer_code| from advertisement packets from the device with
+  // |device_id|.
+  virtual bool IsAllowedToAccessManufacturerData(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id,
+      uint16_t manufacturer_code) = 0;
+
   // This should return a list of devices that the origin in |frame| has been
   // allowed to access. Access permission is granted with
   // GrantServiceAccessPermission() and can be revoked by the user in the

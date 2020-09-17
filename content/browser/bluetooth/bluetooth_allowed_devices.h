@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
@@ -69,6 +70,12 @@ class CONTENT_EXPORT BluetoothAllowedDevices final {
       const blink::WebBluetoothDeviceId& device_id,
       const device::BluetoothUUID& service_uuid) const;
 
+  // Returns true if access has been previously granted for manufacturer data
+  // corresponding to |manufacturer_code|.
+  bool IsAllowedToAccessManufacturerData(
+      const blink::WebBluetoothDeviceId& device_id,
+      const uint16_t manufacturer_code) const;
+
   bool IsAllowedToGATTConnect(
       const blink::WebBluetoothDeviceId& device_id) const;
 
@@ -88,6 +95,10 @@ class CONTENT_EXPORT BluetoothAllowedDevices final {
                              bool,
                              blink::WebBluetoothDeviceIdHash>
       DeviceIdToConnectableMap;
+  using DeviceIdToManufacturerDataMap =
+      std::unordered_map<blink::WebBluetoothDeviceId,
+                         base::flat_set<uint16_t>,
+                         blink::WebBluetoothDeviceIdHash>;
 
   // Returns an id guaranteed to be unique for the map. The id is randomly
   // generated so that an origin can't guess the id used in another origin.
@@ -96,10 +107,14 @@ class CONTENT_EXPORT BluetoothAllowedDevices final {
       const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options,
       std::unordered_set<device::BluetoothUUID, device::BluetoothUUIDHash>*
           unionOfServices);
+  void AddManufacturerDataTo(
+      const blink::mojom::WebBluetoothRequestDeviceOptionsPtr& options,
+      base::flat_set<uint16_t>* manufacturer_codes);
 
   DeviceAddressToIdMap device_address_to_id_map_;
   DeviceIdToAddressMap device_id_to_address_map_;
   DeviceIdToServicesMap device_id_to_services_map_;
+  DeviceIdToManufacturerDataMap device_id_to_manufacturers_map_;
   DeviceIdToConnectableMap device_id_to_connectable_map_;
 
   // Keep track of all device_ids in the map.

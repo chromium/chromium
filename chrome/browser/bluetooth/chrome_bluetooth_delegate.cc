@@ -93,6 +93,16 @@ bool ChromeBluetoothDelegate::IsAllowedToAccessAtLeastOneService(
       frame->GetMainFrame()->GetLastCommittedOrigin(), device_id);
 }
 
+bool ChromeBluetoothDelegate::IsAllowedToAccessManufacturerData(
+    RenderFrameHost* frame,
+    const WebBluetoothDeviceId& device_id,
+    uint16_t manufacturer_code) {
+  return GetBluetoothChooserContext(frame)->IsAllowedToAccessManufacturerData(
+      frame->GetLastCommittedOrigin(),
+      frame->GetMainFrame()->GetLastCommittedOrigin(), device_id,
+      manufacturer_code);
+}
+
 std::vector<blink::mojom::WebBluetoothDevicePtr>
 ChromeBluetoothDelegate::GetPermittedDevices(content::RenderFrameHost* frame) {
   auto* context = GetBluetoothChooserContext(frame);

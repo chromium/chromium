@@ -55,7 +55,7 @@ WebBluetoothDeviceId FakeBluetoothDelegate::GrantServiceAccessPermission(
       GetOrCreateDeviceIdForDeviceAddress(frame, device->GetAddress());
   device_id_to_name_map_[device_id] =
       device->GetName() ? *device->GetName() : std::string();
-  GrantUnionOfServicesForDevice(device_id, options);
+  GrantUnionOfServicesAndManufacturerDataForDevice(device_id, options);
   return device_id;
 }
 
@@ -84,6 +84,18 @@ bool FakeBluetoothDelegate::IsAllowedToAccessAtLeastOneService(
     return false;
 
   return !id_to_services_it->second.empty();
+}
+
+bool FakeBluetoothDelegate::IsAllowedToAccessManufacturerData(
+    RenderFrameHost* frame,
+    const blink::WebBluetoothDeviceId& device_id,
+    const uint16_t manufacturer_code) {
+  auto id_to_manufacturer_data_it =
+      device_id_to_manufacturer_code_map_.find(device_id);
+  if (id_to_manufacturer_data_it == device_id_to_manufacturer_code_map_.end())
+    return false;
+
+  return base::Contains(id_to_manufacturer_data_it->second, manufacturer_code);
 }
 
 std::vector<blink::mojom::WebBluetoothDevicePtr>
@@ -115,7 +127,7 @@ WebBluetoothDeviceId FakeBluetoothDelegate::GetOrCreateDeviceIdForDeviceAddress(
   return device_id;
 }
 
-void FakeBluetoothDelegate::GrantUnionOfServicesForDevice(
+void FakeBluetoothDelegate::GrantUnionOfServicesAndManufacturerDataForDevice(
     const WebBluetoothDeviceId& device_id,
     const blink::mojom::WebBluetoothRequestDeviceOptions* options) {
   if (!options)
@@ -139,6 +151,11 @@ void FakeBluetoothDelegate::GrantUnionOfServicesForDevice(
 
   for (const BluetoothUUID& uuid : options->optional_services)
     granted_services.insert(uuid);
+
+  base::flat_set<uint16_t>& granted_manufacturer_data =
+      device_id_to_manufacturer_code_map_[device_id];
+  for (const uint16_t manufacturer_code : options->optional_manufacturer_data)
+    granted_manufacturer_data.insert(manufacturer_code);
 }
 
 FakeBluetoothDelegate::AddressToIdMap&

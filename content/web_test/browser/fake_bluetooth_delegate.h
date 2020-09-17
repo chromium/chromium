@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
@@ -64,15 +65,22 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   bool IsAllowedToAccessAtLeastOneService(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override;
+  bool IsAllowedToAccessManufacturerData(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id,
+      const uint16_t manufacturer_code) override;
   std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
       RenderFrameHost* frame) override;
 
  private:
-  using AddressToIdMap = std::map<std::string, blink::WebBluetoothDeviceId>;
+  using AddressToIdMap =
+      base::flat_map<std::string, blink::WebBluetoothDeviceId>;
   using OriginPair = std::pair<url::Origin, url::Origin>;
-  using IdToServicesMap = std::map<blink::WebBluetoothDeviceId,
-                                   base::flat_set<device::BluetoothUUID>>;
-  using IdToNameMap = std::map<blink::WebBluetoothDeviceId, std::string>;
+  using IdToServicesMap = base::flat_map<blink::WebBluetoothDeviceId,
+                                         base::flat_set<device::BluetoothUUID>>;
+  using IdToNameMap = base::flat_map<blink::WebBluetoothDeviceId, std::string>;
+  using IdToManufacturerCodesMap =
+      base::flat_map<blink::WebBluetoothDeviceId, base::flat_set<uint16_t>>;
 
   // Finds an existing WebBluetoothDeviceId for |device_address| for |frame| or
   // creates a new ID for the Bluetooth device on the current frame.
@@ -82,7 +90,7 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
 
   // Adds the union of |options->filters->services| and
   // |options->optional_services| to the allowed services for |device_id|.
-  void GrantUnionOfServicesForDevice(
+  void GrantUnionOfServicesAndManufacturerDataForDevice(
       const blink::WebBluetoothDeviceId& device_id,
       const blink::mojom::WebBluetoothRequestDeviceOptions* options);
   AddressToIdMap& GetAddressToIdMapForOrigin(RenderFrameHost* frame);
@@ -98,6 +106,7 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   // the service permissions and device names from all of the origins.
   IdToServicesMap device_id_to_services_map_;
   IdToNameMap device_id_to_name_map_;
+  IdToManufacturerCodesMap device_id_to_manufacturer_code_map_;
 };
 
 }  // namespace content

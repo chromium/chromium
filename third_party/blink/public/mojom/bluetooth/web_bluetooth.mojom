@@ -110,6 +110,7 @@ struct WebBluetoothLeScanFilter {
 struct WebBluetoothRequestDeviceOptions {
   array<WebBluetoothLeScanFilter>? filters;
   array<bluetooth.mojom.UUID> optional_services;
+  array<uint16> optional_manufacturer_data;
   bool accept_all_devices;
 };
 
@@ -161,7 +162,7 @@ struct WebBluetoothAdvertisingEvent {
   bool rssi_is_set;
   uint8 rssi;
   map<uint16, array<uint8>> manufacturer_data;
-  map<string, array<uint8>> service_data;
+  map<bluetooth.mojom.UUID, array<uint8>> service_data;
 };
 
 struct WebBluetoothRemoteGATTDescriptor {

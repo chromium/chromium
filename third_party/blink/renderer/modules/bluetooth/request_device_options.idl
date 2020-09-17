@@ -7,5 +7,6 @@
 dictionary RequestDeviceOptions {
     sequence<BluetoothLEScanFilterInit>  filters;
     sequence<BluetoothServiceUUID> optionalServices = [];
+    [RuntimeEnabled=WebBluetoothWatchAdvertisements] sequence<unsigned short> optionalManufacturerData = [];
     boolean acceptAllDevices = false;
 };

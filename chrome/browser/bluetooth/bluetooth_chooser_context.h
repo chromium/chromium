@@ -75,7 +75,12 @@ class BluetoothChooserContext : public permissions::ChooserContextBase {
   bool IsAllowedToAccessService(const url::Origin& requesting_origin,
                                 const url::Origin& embedding_origin,
                                 const blink::WebBluetoothDeviceId& device_id,
-                                device::BluetoothUUID service);
+                                const device::BluetoothUUID& service);
+  bool IsAllowedToAccessManufacturerData(
+      const url::Origin& requesting_origin,
+      const url::Origin& embedding_origin,
+      const blink::WebBluetoothDeviceId& device_id,
+      uint16_t manufacturer_code);
 
   static blink::WebBluetoothDeviceId GetObjectDeviceId(
       const base::Value& object);
@@ -85,6 +90,10 @@ class BluetoothChooserContext : public permissions::ChooserContextBase {
   base::string16 GetObjectDisplayName(const base::Value& object) override;
 
  private:
+  base::Value FindDeviceObject(const url::Origin& requesting_origin,
+                               const url::Origin& embedding_origin,
+                               const blink::WebBluetoothDeviceId& device_id);
+
   // This map records the generated Web Bluetooth IDs for devices discovered via
   // the Scanning API. Each requesting/embedding origin pair has its own version
   // of this map so that IDs cannot be correlated between cross-origin sites.

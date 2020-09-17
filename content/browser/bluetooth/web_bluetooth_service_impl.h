@@ -382,6 +382,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       const blink::WebBluetoothDeviceId& device_id);
   bool IsAllowedToAccessService(const blink::WebBluetoothDeviceId& device_id,
                                 const device::BluetoothUUID& service);
+  bool IsAllowedToAccessManufacturerData(
+      const blink::WebBluetoothDeviceId& device_id,
+      uint16_t manufacturer_code);
 
   // Returns true if at least |ble_scan_discovery_session_| or
   // |watch_advertisements_discovery_session_| is active.

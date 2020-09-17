@@ -174,7 +174,8 @@ bool IsValidRequestScanOptions(
 
 class WebBluetoothServiceImpl::AdvertisementClient {
  public:
-  virtual void SendEvent(blink::mojom::WebBluetoothAdvertisingEvent& event) = 0;
+  virtual void SendEvent(
+      const blink::mojom::WebBluetoothAdvertisingEvent& event) = 0;
 
   bool is_connected() { return client_.is_connected(); }
 
@@ -185,7 +186,8 @@ class WebBluetoothServiceImpl::AdvertisementClient {
           blink::mojom::WebBluetoothAdvertisementClient> client_info)
       : client_(std::move(client_info)),
         web_contents_(static_cast<WebContentsImpl*>(
-            WebContents::FromRenderFrameHost(service->render_frame_host_))) {
+            WebContents::FromRenderFrameHost(service->render_frame_host_))),
+        service_(service) {
     // Using base::Unretained() is safe here because all instances of this class
     // will be owned by |service|.
     client_.set_disconnect_handler(
@@ -197,6 +199,7 @@ class WebBluetoothServiceImpl::AdvertisementClient {
 
   mojo::AssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient> client_;
   WebContentsImpl* web_contents_;
+  WebBluetoothServiceImpl* service_;
 };
 
 class WebBluetoothServiceImpl::WatchAdvertisementsClient
@@ -217,9 +220,29 @@ class WebBluetoothServiceImpl::WatchAdvertisementsClient
   }
 
   // AdvertisementClient implementation:
-  void SendEvent(blink::mojom::WebBluetoothAdvertisingEvent& event) override {
-    if (event.device->id == device_id_)
-      client_->AdvertisingEvent(event.Clone());
+  void SendEvent(
+      const blink::mojom::WebBluetoothAdvertisingEvent& event) override {
+    if (event.device->id != device_id_)
+      return;
+
+    auto filtered_event = event.Clone();
+    base::EraseIf(
+        filtered_event->uuids, [this](const device::BluetoothUUID& uuid) {
+          return !service_->IsAllowedToAccessService(device_id_, uuid);
+        });
+    base::EraseIf(
+        filtered_event->service_data,
+        [this](const std::pair<device::BluetoothUUID, std::vector<uint8_t>>&
+                   entry) {
+          return !service_->IsAllowedToAccessService(device_id_, entry.first);
+        });
+    base::EraseIf(
+        filtered_event->manufacturer_data,
+        [this](const std::pair<uint16_t, std::vector<uint8_t>>& entry) {
+          return !service_->IsAllowedToAccessManufacturerData(device_id_,
+                                                              entry.first);
+        });
+    client_->AdvertisingEvent(std::move(filtered_event));
   }
 
   blink::WebBluetoothDeviceId device_id() const { return device_id_; }
@@ -253,13 +276,18 @@ class WebBluetoothServiceImpl::ScanningClient
   }
 
   // AdvertisingClient implementation:
-  void SendEvent(blink::mojom::WebBluetoothAdvertisingEvent& event) override {
+  void SendEvent(
+      const blink::mojom::WebBluetoothAdvertisingEvent& event) override {
+    // TODO(https://crbug.com/1108958): Filter out advertisement data if not
+    // included in the filters, optionalServices, or optionalManufacturerData.
+    auto filtered_event = event.Clone();
     if (options_->accept_all_advertisements) {
       if (prompt_controller_)
-        AddFilteredDeviceToPrompt(event.device->id.str(), event.name);
+        AddFilteredDeviceToPrompt(filtered_event->device->id.str(),
+                                  filtered_event->name);
 
       if (allow_send_event_)
-        client_->AdvertisingEvent(event.Clone());
+        client_->AdvertisingEvent(std::move(filtered_event));
 
       return;
     }
@@ -276,16 +304,17 @@ class WebBluetoothServiceImpl::ScanningClient
     for (auto& filter : options_->filters.value()) {
       // Check to see if there is a direct match against the advertisement name
       if (filter->name.has_value()) {
-        if (!event.name.has_value() ||
-            filter->name.value() != event.name.value()) {
+        if (!filtered_event->name.has_value() ||
+            filter->name.value() != filtered_event->name.value()) {
           continue;
         }
       }
 
       // Check if there is a name prefix match
       if (filter->name_prefix.has_value()) {
-        if (!event.name.has_value() ||
-            !base::StartsWith(event.name.value(), filter->name_prefix.value(),
+        if (!filtered_event->name.has_value() ||
+            !base::StartsWith(filtered_event->name.value(),
+                              filter->name_prefix.value(),
                               base::CompareCase::SENSITIVE)) {
           continue;
         }
@@ -295,8 +324,8 @@ class WebBluetoothServiceImpl::ScanningClient
       if (filter->services.has_value()) {
         auto it = std::find_if(
             filter->services.value().begin(), filter->services.value().end(),
-            [&event](const BluetoothUUID& filter_uuid) {
-              return base::Contains(event.uuids, filter_uuid);
+            [&filtered_event](const BluetoothUUID& filter_uuid) {
+              return base::Contains(filtered_event->uuids, filter_uuid);
             });
         if (it == filter->services.value().end())
           continue;
@@ -306,10 +335,11 @@ class WebBluetoothServiceImpl::ScanningClient
       // filters.
 
       if (prompt_controller_)
-        AddFilteredDeviceToPrompt(event.device->id.str(), event.name);
+        AddFilteredDeviceToPrompt(filtered_event->device->id.str(),
+                                  filtered_event->name);
 
       if (allow_send_event_)
-        client_->AdvertisingEvent(event.Clone());
+        client_->AdvertisingEvent(std::move(filtered_event));
       return;
     }
   }
@@ -651,11 +681,8 @@ void WebBluetoothServiceImpl::DeviceAdvertisementReceived(
   manufacturer_data.insert(manufacturer_data_map.begin(),
                            manufacturer_data_map.end());
 
-  std::vector<std::pair<std::string, std::vector<uint8_t>>> services;
-  for (auto& it : service_data_map)
-    services.emplace_back(it.first.canonical_value(), it.second);
-  result->service_data = base::flat_map<std::string, std::vector<uint8_t>>(
-      services.begin(), services.end());
+  auto& service_data = result->service_data;
+  service_data.insert(service_data_map.begin(), service_data_map.end());
 
   // TODO(https://crbug.com/1087007): These two classes can potentially be
   // combined into the same container.
@@ -2206,9 +2233,8 @@ bool WebBluetoothServiceImpl::IsAllowedToAccessAtLeastOneService(
       return false;
     return delegate->IsAllowedToAccessAtLeastOneService(render_frame_host_,
                                                         device_id);
-  } else {
-    return allowed_devices().IsAllowedToAccessAtLeastOneService(device_id);
   }
+  return allowed_devices().IsAllowedToAccessAtLeastOneService(device_id);
 }
 
 bool WebBluetoothServiceImpl::IsAllowedToAccessService(
@@ -2222,9 +2248,24 @@ bool WebBluetoothServiceImpl::IsAllowedToAccessService(
       return false;
     return delegate->IsAllowedToAccessService(render_frame_host_, device_id,
                                               service);
-  } else {
-    return allowed_devices().IsAllowedToAccessService(device_id, service);
   }
+  return allowed_devices().IsAllowedToAccessService(device_id, service);
+}
+
+bool WebBluetoothServiceImpl::IsAllowedToAccessManufacturerData(
+    const blink::WebBluetoothDeviceId& device_id,
+    uint16_t manufacturer_code) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothNewPermissionsBackend)) {
+    BluetoothDelegate* delegate =
+        GetContentClient()->browser()->GetBluetoothDelegate();
+    if (!delegate)
+      return false;
+    return delegate->IsAllowedToAccessManufacturerData(
+        render_frame_host_, device_id, manufacturer_code);
+  }
+  return allowed_devices().IsAllowedToAccessManufacturerData(device_id,
+                                                             manufacturer_code);
 }
 
 bool WebBluetoothServiceImpl::HasActiveDiscoverySession() {
