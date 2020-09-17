@@ -5,6 +5,7 @@
 #include "components/viz/common/features.h"
 
 #include "base/command_line.h"
+#include "base/system/sys_info.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
@@ -113,6 +114,10 @@ bool IsUsingSkiaRenderer() {
   // Viz for webview requires SkiaRenderer.
   if (IsUsingVizForWebView())
     return true;
+
+  // https://crbug.com/1126490 Mali-400 with <= 512 MB is currently broken.
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
+    return false;
 
   return base::FeatureList::IsEnabled(kUseSkiaRenderer) ||
          base::FeatureList::IsEnabled(kVulkan);
