@@ -1,7 +1,14 @@
 [
   {
     "prefix": "module-top-level-await",
-    "bases": [],
+    "bases": [
+      "external/wpt/html/webappapis/dynamic-markup-insertion/document-write",
+      "external/wpt/html/semantics/scripting-1/the-script-element/module",
+      "fast/dom/HTMLScriptElement/module-script.html",
+      "fast/dom/script-module-with-export-leak.html",
+      "fast/loader/invalid-module-specifier.html",
+      "http/tests/devtools/isolated-code-cache/"
+    ],
     "args": ["--enable-features=TopLevelAwait"]
   },
   {

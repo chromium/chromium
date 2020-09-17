@@ -1672,6 +1672,11 @@ crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document
 crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-immediate-promise.html [ Skip ]
 crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-import.html [ Skip ]
 crbug.com/1022182 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-promise.html [ Skip ]
+crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-4-tla.html [ Pass ]
+crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-delayed.html [ Pass ]
+crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-immediate-promise.html [ Pass ]
+crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-import.html [ Pass ]
+crbug.com/1022182 virtual/module-top-level-await/external/wpt/html/webappapis/dynamic-markup-insertion/document-write/module-tla-promise.html [ Pass ]
 
 crbug.com/676270 [ Mac ] external/wpt/css/css-text/hyphens/hyphens-auto-001.html [ Failure ]
 crbug.com/1022415 [ Mac ] external/wpt/css/css-text/hyphens/hyphens-auto-010.html [ Failure ]
