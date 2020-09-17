@@ -532,18 +532,16 @@ class ContentSettingGeolocationBubbleModel
   // ContentSettingBubbleModel:
   void OnManageButtonClicked() override;
   void OnDoneButtonClicked() override;
+  void CommitChanges() override;
 
  private:
   // Initialize the bubble with the elements specific to the scenario when
   // geolocation is disabled on the system (OS) level.
   void InitializeSystemGeolocationPermissionBubble();
 
-  // Whether or not to show the bubble UI specific to when geolocation
+  // Whether or not we are showing the bubble UI specific to when geolocation
   // permissions are turned off on a system level.
-  bool ShouldShowSystemGeolocationPermissions();
-
-  // Boolean indicating if geolocation is allowed by our Content Settings
-  bool is_allowed_ = false;
+  bool show_system_geolocation_bubble_ = false;
 };
 
 #if !defined(OS_ANDROID)

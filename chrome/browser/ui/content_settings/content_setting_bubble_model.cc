@@ -1310,30 +1310,35 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     : ContentSettingSingleRadioGroup(delegate,
                                      web_contents,
                                      ContentSettingsType::GEOLOCATION) {
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
-  if (!content_settings)
-    return;
-
-  is_allowed_ =
-      content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
-
-  // If the permission is turned off in MacOS system preferences, overwrite
-  // the bubble to enable the user to trigger the system dialog.
-  if (ShouldShowSystemGeolocationPermissions()) {
 #if defined(OS_MAC)
-    InitializeSystemGeolocationPermissionBubble();
-    set_radio_group(RadioGroup());
-    return;
-#endif  // defined(OS_MAC)
+  if (base::FeatureList::IsEnabled(
+          ::features::kMacCoreLocationImplementation)) {
+    PageSpecificContentSettings* content_settings =
+        PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+    if (!content_settings)
+      return;
+
+    bool is_allowed =
+        content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+
+    GeolocationSystemPermissionManager* permission_delegate =
+        g_browser_process->platform_part()->location_permission_manager();
+    SystemPermissionStatus permission =
+        permission_delegate->GetSystemPermission();
+    if (permission != SystemPermissionStatus::kAllowed && is_allowed) {
+      // If the permission is turned off in MacOS system preferences, overwrite
+      // the bubble to enable the user to trigger the system dialog.
+      InitializeSystemGeolocationPermissionBubble();
+    }
   }
+#endif  // defined(OS_MAC)
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
     default;
 
 void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
-  if (ShouldShowSystemGeolocationPermissions()) {
+  if (show_system_geolocation_bubble_) {
 #if defined(OS_MAC)
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
         GURL(kLocationSettingsURI), web_contents());
@@ -1347,9 +1352,16 @@ void ContentSettingGeolocationBubbleModel::OnManageButtonClicked() {
     delegate()->ShowContentSettingsPage(ContentSettingsType::GEOLOCATION);
 }
 
-#if defined(OS_MAC)
+void ContentSettingGeolocationBubbleModel::CommitChanges() {
+  if (show_system_geolocation_bubble_)
+    return;
+
+  ContentSettingBubbleModel::CommitChanges();
+}
+
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
+#if defined(OS_MAC)
   set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
   clear_message();
   AddListItem(ContentSettingBubbleModel::ListItem(
@@ -1358,22 +1370,9 @@ void ContentSettingGeolocationBubbleModel::
       l10n_util::GetStringUTF16(IDS_TURNED_OFF), false, true, 0));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_PREFERENCES_LINK));
-}
+  set_radio_group(RadioGroup());
+  show_system_geolocation_bubble_ = true;
 #endif  // defined(OS_MAC)
-
-bool ContentSettingGeolocationBubbleModel::
-    ShouldShowSystemGeolocationPermissions() {
-#if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacCoreLocationImplementation)) {
-    GeolocationSystemPermissionManager* permission_delegate =
-        g_browser_process->platform_part()->location_permission_manager();
-    SystemPermissionStatus permission =
-        permission_delegate->GetSystemPermission();
-    return (permission != SystemPermissionStatus::kAllowed) && is_allowed_;
-  }
-#endif
-  return false;
 }
 
 // ContentSettingSubresourceFilterBubbleModel ----------------------------------
