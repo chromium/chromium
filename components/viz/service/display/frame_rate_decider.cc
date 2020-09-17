@@ -45,6 +45,12 @@ FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
       hw_support_for_multiple_refresh_rates_(
           hw_support_for_multiple_refresh_rates),
       supports_set_frame_rate_(supports_set_frame_rate) {
+  // For sources which have no preference, allow lowering them to up to
+  // 24Hz.
+  double interval_in_seconds = 1.0 / 24.0;
+  frame_interval_for_sinks_with_no_preference_ =
+      base::TimeDelta::FromSecondsD(interval_in_seconds);
+
   surface_manager_->AddObserver(this);
 }
 
@@ -116,18 +122,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (!multiple_refresh_rates_supported())
     return;
 
-  // If lowering the refresh rate is supported by the platform then we do this
-  // in all cases where the content drawing onscreen animates at a fixed rate.
-  // This includes surfaces backed by videos or media streams (since the frame
-  // rate provided by LayerTree is an estimate, it is not considered a fixed
-  // frame source). This allows the platform to refresh the screen at a lower
-  // rate which is power efficient.
-  //
-  // However if we're using a synthetic begin frame source, then the
-  // optimization is restricted to cases with multiple media streams. This is
-  // because using this for all video cases results in dropped frame regressions
-  // which need to be investigated (see crbug.com/976583).
   int num_of_frame_sinks_with_fixed_interval = 0;
+  int num_of_frame_sinks_with_no_preference = 0;
   for (const auto& frame_sink_id : frame_sinks_drawn_in_previous_frame_) {
     auto type = mojom::CompositorFrameSinkType::kUnspecified;
     auto interval =
@@ -138,20 +134,21 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         DCHECK_EQ(interval, BeginFrameArgs::MinInterval());
         continue;
       case mojom::CompositorFrameSinkType::kVideo:
-        if (hw_support_for_multiple_refresh_rates_)
-          num_of_frame_sinks_with_fixed_interval++;
+        num_of_frame_sinks_with_fixed_interval++;
         break;
       case mojom::CompositorFrameSinkType::kMediaStream:
         num_of_frame_sinks_with_fixed_interval++;
         break;
       case mojom::CompositorFrameSinkType::kLayerTree:
-        continue;
+        if (interval == BeginFrameArgs::MaxInterval()) {
+          num_of_frame_sinks_with_no_preference++;
+        }
+        break;
     }
   }
 
-  const int min_frame_sinks_to_toggle =
-      hw_support_for_multiple_refresh_rates_ ? 1 : 2;
-  if (num_of_frame_sinks_with_fixed_interval < min_frame_sinks_to_toggle) {
+  if (!ShouldToggleFrameInterval(num_of_frame_sinks_with_fixed_interval,
+                                 num_of_frame_sinks_with_no_preference)) {
     TRACE_EVENT_INSTANT0(
         "viz",
         "FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded - not enough "
@@ -172,6 +169,9 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =
         client_->GetPreferredFrameIntervalForFrameSinkId(frame_sink_id);
+    if (interval == BeginFrameArgs::MaxInterval()) {
+      interval = frame_interval_for_sinks_with_no_preference_;
+    }
     if (!min_frame_sink_interval) {
       min_frame_sink_interval = interval;
       continue;
@@ -181,8 +181,12 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
       all_frame_sinks_have_same_interval = false;
     min_frame_sink_interval = std::min(*min_frame_sink_interval, interval);
   }
-  if (!min_frame_sink_interval)
-    min_frame_sink_interval = BeginFrameArgs::MinInterval();
+
+  // A redraw was done with no onscreen content getting updated, avoid updating
+  // the interval in this case.
+  if (!min_frame_sink_interval) {
+    return;
+  }
 
   TRACE_EVENT_INSTANT1("viz",
                        "FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded",
@@ -212,6 +216,29 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   }
 
   SetPreferredInterval(new_preferred_interval);
+}
+
+bool FrameRateDecider::ShouldToggleFrameInterval(
+    int num_of_frame_sinks_with_fixed_interval,
+    int num_of_frame_sinks_with_no_preference) const {
+  // If there is no fixed rate content, we don't try to lower the frame rate.
+  if (num_of_frame_sinks_with_fixed_interval == 0)
+    return false;
+
+  // If lowering the refresh rate is supported by the platform then we try to
+  // do this in all cases where any content drawing onscreen animates at a
+  // fixed rate. This includes surfaces backed by videos or media streams.
+  if (hw_support_for_multiple_refresh_rates_)
+    return num_of_frame_sinks_with_fixed_interval > 0;
+
+  // If we're reducing frame rate for the display compositor, as opposed to the
+  // underlying platform compositor or physical display, then restrict it to
+  // cases with multiple animating sources that can be lowered. We should be
+  // able to do it for all video cases but this results in dropped frame
+  // regressions which need to be investigated (see crbug.com/976583).
+  return num_of_frame_sinks_with_fixed_interval +
+             num_of_frame_sinks_with_no_preference >
+         1;
 }
 
 void FrameRateDecider::SetPreferredInterval(
