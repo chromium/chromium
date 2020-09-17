@@ -34,6 +34,9 @@ class WebElement(object):
   def GetProperty(self,name):
     return self._Execute(Command.GET_ELEMENT_PROPERTY, {'name': name})
 
+  def GetComputedLabel(self):
+    return self._Execute(Command.GET_ELEMENT_COMPUTED_LABEL)
+
   def Click(self):
     self._Execute(Command.CLICK_ELEMENT)
 

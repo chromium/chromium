@@ -538,6 +538,14 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testStartStop(self):
     pass
 
+  def testGetComputedLabel(self):
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/accessibility.html'))
+    element = self._driver.FindElement('css selector', '#first-header')
+    # print >> sys.stdout, "element.GetText: ", element.GetText()
+    computedLabel = element.GetComputedLabel()
+    self.assertEquals(computedLabel, 'header content')
+
   def testLoadUrl(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
 

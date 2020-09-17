@@ -148,6 +148,12 @@ Status ExecuteIsElementEnabled(Session* session,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value);
 
+Status ExecuteGetComputedLabel(Session* session,
+                               WebView* web_view,
+                               const std::string& element_id,
+                               const base::DictionaryValue& params,
+                               std::unique_ptr<base::Value>* value);
+
 Status ExecuteIsElementDisplayed(Session* session,
                                  WebView* web_view,
                                  const std::string& element_id,

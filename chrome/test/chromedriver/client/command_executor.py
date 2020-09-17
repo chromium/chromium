@@ -79,6 +79,8 @@ class Command(object):
       _Method.GET, '/session/:sessionId/element/:id/attribute/:name')
   GET_ELEMENT_PROPERTY = (
       _Method.GET, '/session/:sessionId/element/:id/property/:name')
+  GET_ELEMENT_COMPUTED_LABEL = (
+      _Method.GET, '/session/:sessionId/element/:id/computedlabel')
   ELEMENT_EQUALS = (
       _Method.GET, '/session/:sessionId/element/:id/equals/:other')
   GET_COOKIES = (_Method.GET, '/session/:sessionId/cookie')

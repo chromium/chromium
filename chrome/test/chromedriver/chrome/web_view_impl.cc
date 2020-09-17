@@ -925,6 +925,26 @@ Status WebViewImpl::PrintToPDF(const base::DictionaryValue& params,
   return Status(kOk);
 }
 
+Status WebViewImpl::GetNodeIdByElement(const std::string& frame,
+                                       const base::DictionaryValue& element,
+                                       int* node_id) {
+  int context_id;
+  Status status = GetContextIdForFrame(this, frame, &context_id);
+  if (status.IsError())
+    return status;
+  base::ListValue args;
+  args.Append(element.CreateDeepCopy());
+  bool found_node;
+  status = internal::GetNodeIdFromFunction(
+      client_.get(), context_id, "function(element) { return element; }", args,
+      &found_node, node_id, w3c_compliant_);
+  if (status.IsError())
+    return status;
+  if (!found_node)
+    return Status(kNoSuchElement, "no node ID for given element");
+  return Status(kOk);
+}
+
 Status WebViewImpl::SetFileInputFiles(const std::string& frame,
                                       const base::DictionaryValue& element,
                                       const std::vector<base::FilePath>& files,
@@ -937,21 +957,10 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     return target->SetFileInputFiles(frame, element, files, append);
   }
 
-  int context_id;
-  Status status = GetContextIdForFrame(this, frame, &context_id);
-  if (status.IsError())
-    return status;
-  base::ListValue args;
-  args.Append(element.CreateDeepCopy());
-  bool found_node;
   int node_id;
-  status = internal::GetNodeIdFromFunction(
-      client_.get(), context_id, "function(element) { return element; }",
-      args, &found_node, &node_id, w3c_compliant_);
+  Status status = GetNodeIdByElement(frame, element, &node_id);
   if (status.IsError())
     return status;
-  if (!found_node)
-    return Status(kUnknownError, "no node ID for file input");
 
   base::ListValue file_list;
   // if the append flag is true, we need to retrieve the files that

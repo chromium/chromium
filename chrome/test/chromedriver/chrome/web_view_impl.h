@@ -165,6 +165,10 @@ class WebViewImpl : public WebView {
                                  int y,
                                  int xoffset,
                                  int yoffset) override;
+  Status GetNodeIdByElement(const std::string& frame,
+                            const base::DictionaryValue& element,
+                            int* node_id) override;
+
   bool IsNonBlocking() const override;
   bool IsOOPIF(const std::string& frame_id) override;
   FrameTracker* GetFrameTracker() const override;
@@ -274,7 +278,6 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
                              bool* found_node,
                              int* node_id,
                              bool w3c_compliant);
-
 }  // namespace internal
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_IMPL_H_
