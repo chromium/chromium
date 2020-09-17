@@ -156,16 +156,12 @@ std::unique_ptr<VideoFrameMapper> VaapiDmaBufVideoFrameMapper::Create(
   return video_frame_mapper;
 }
 
-// While kDecode and H264PROFILE_MAIN are set here,  the mode and profile are
-// not required for VaapiWrapper to perform pixel format conversion.
-// TODO(crbug.com/898423): Create a VaapiWrapper only for pixel format
-// conversion. Either mode or profile isn't required to create the VaapiWrapper.
 VaapiDmaBufVideoFrameMapper::VaapiDmaBufVideoFrameMapper(
     VideoPixelFormat format)
     : VideoFrameMapper(format),
-      vaapi_wrapper_(VaapiWrapper::CreateForVideoCodec(VaapiWrapper::kDecode,
-                                                       H264PROFILE_MAIN,
-                                                       base::DoNothing())) {}
+      vaapi_wrapper_(VaapiWrapper::Create(VaapiWrapper::kVideoProcess,
+                                          VAProfileNone,
+                                          base::DoNothing())) {}
 
 VaapiDmaBufVideoFrameMapper::~VaapiDmaBufVideoFrameMapper() {}
 
