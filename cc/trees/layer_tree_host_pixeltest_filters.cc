@@ -360,11 +360,9 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
   }
 };
 
-// TODO(sgilhuly): Enable these tests for Skia Dawn, and switch over to using
-// viz::GetGpuRendererTypes().
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
-                         ::testing::ValuesIn(viz::GetGpuRendererTypesNoDawn()),
+                         ::testing::ValuesIn(viz::GetGpuRendererTypes()),
                          ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
