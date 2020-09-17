@@ -4,6 +4,12 @@
 
 import("//components/signin/features.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 # This target forms the core of the IdentityManager implementation
 # (//components/signin/public/identity_manager/identity_manager.*).
 source_set("identity_manager") {
@@ -18,8 +24,6 @@ source_set("identity_manager") {
     "account_tracker_service.h",
     "accounts_cookie_mutator_impl.cc",
     "accounts_cookie_mutator_impl.h",
-    "child_account_info_fetcher_android.cc",
-    "child_account_info_fetcher_android.h",
     "diagnostics_provider_impl.cc",
     "diagnostics_provider_impl.h",
     "gaia_cookie_manager_service.cc",
@@ -39,12 +43,6 @@ source_set("identity_manager") {
     "profile_oauth2_token_service_builder.h",
     "profile_oauth2_token_service_delegate.cc",
     "profile_oauth2_token_service_delegate.h",
-    "profile_oauth2_token_service_delegate_android.cc",
-    "profile_oauth2_token_service_delegate_android.h",
-    "profile_oauth2_token_service_delegate_chromeos.cc",
-    "profile_oauth2_token_service_delegate_chromeos.h",
-    "profile_oauth2_token_service_delegate_ios.h",
-    "profile_oauth2_token_service_delegate_ios.mm",
     "profile_oauth2_token_service_observer.h",
     "ubertoken_fetcher_impl.cc",
     "ubertoken_fetcher_impl.h",
@@ -72,6 +70,12 @@ source_set("identity_manager") {
   ]
 
   if (is_android) {
+    sources += [
+      "child_account_info_fetcher_android.cc",
+      "child_account_info_fetcher_android.h",
+      "profile_oauth2_token_service_delegate_android.cc",
+      "profile_oauth2_token_service_delegate_android.h",
+    ]
     deps += [
       "//components/signin/core/browser/android:jni_headers",
       "//components/signin/internal/base",
@@ -87,6 +91,10 @@ source_set("identity_manager") {
   }
 
   if (is_chromeos) {
+    sources += [
+      "profile_oauth2_token_service_delegate_chromeos.cc",
+      "profile_oauth2_token_service_delegate_chromeos.h",
+    ]
     public_deps += [ "//chromeos/components/account_manager" ]
 
     deps += [
@@ -110,6 +118,10 @@ source_set("identity_manager") {
   }
 
   if (is_ios) {
+    sources += [
+      "profile_oauth2_token_service_delegate_ios.h",
+      "profile_oauth2_token_service_delegate_ios.mm",
+    ]
     configs += [ "//build/config/compiler:enable_arc" ]
 
     deps += [ "//components/signin/public/identity_manager/ios" ]
@@ -133,10 +145,6 @@ source_set("unit_tests") {
     "oauth_multilogin_helper_unittest.cc",
     "oauth_multilogin_token_fetcher_unittest.cc",
     "primary_account_manager_unittest.cc",
-    "primary_account_policy_manager_impl_unittest.cc",
-    "profile_oauth2_token_service_delegate_android_unittest.cc",
-    "profile_oauth2_token_service_delegate_chromeos_unittest.cc",
-    "profile_oauth2_token_service_delegate_ios_unittest.mm",
     "profile_oauth2_token_service_delegate_unittest.cc",
     "profile_oauth2_token_service_unittest.cc",
     "ubertoken_fetcher_impl_unittest.cc",
@@ -168,13 +176,20 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_android) {
+    sources += [ "profile_oauth2_token_service_delegate_android_unittest.cc" ]
+  }
+
   if (is_chromeos) {
-    sources -= [ "primary_account_policy_manager_impl_unittest.cc" ]
+    sources += [ "profile_oauth2_token_service_delegate_chromeos_unittest.cc" ]
 
     deps += [ "//chromeos/components/account_manager" ]
+  } else {
+    sources += [ "primary_account_policy_manager_impl_unittest.cc" ]
   }
 
   if (is_ios) {
+    sources += [ "profile_oauth2_token_service_delegate_ios_unittest.mm" ]
     configs += [ "//build/config/compiler:enable_arc" ]
 
     deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
