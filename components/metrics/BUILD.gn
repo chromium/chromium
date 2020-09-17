@@ -8,6 +8,12 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 static_library("demographic_metrics_provider") {
   sources = [
     "demographic_metrics_provider.cc",
@@ -48,11 +54,6 @@ static_library("metrics") {
     "delegating_provider.h",
     "drive_metrics_provider.cc",
     "drive_metrics_provider.h",
-    "drive_metrics_provider_android.cc",
-    "drive_metrics_provider_ios.mm",
-    "drive_metrics_provider_linux.cc",
-    "drive_metrics_provider_mac.mm",
-    "drive_metrics_provider_win.cc",
     "enabled_state_provider.cc",
     "enabled_state_provider.h",
     "entropy_state.cc",
@@ -75,8 +76,6 @@ static_library("metrics") {
     "log_decoder.h",
     "log_store.h",
     "machine_id_provider.h",
-    "machine_id_provider_nonwin.cc",
-    "machine_id_provider_win.cc",
     "metrics_log.cc",
     "metrics_log.h",
     "metrics_log_manager.cc",
@@ -119,7 +118,6 @@ static_library("metrics") {
     "stability_metrics_provider.cc",
     "stability_metrics_provider.h",
     "system_memory_stats_recorder.h",
-    "system_memory_stats_recorder_linux.cc",
     "ukm_demographic_metrics_provider.h",
     "unsent_log_store.cc",
     "unsent_log_store.h",
@@ -155,7 +153,23 @@ static_library("metrics") {
     deps += [ ":serialization" ]
   }
 
+  if (is_android) {
+    sources += [ "drive_metrics_provider_android.cc" ]
+  }
+
+  if (is_ios) {
+    sources += [ "drive_metrics_provider_ios.mm" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "drive_metrics_provider_linux.cc",
+      "system_memory_stats_recorder_linux.cc",
+    ]
+  }
+
   if (is_mac) {
+    sources += [ "drive_metrics_provider_mac.mm" ]
     frameworks = [
       # The below are all needed for drive_metrics_provider_mac.mm.
       "CoreFoundation.framework",
@@ -167,12 +181,15 @@ static_library("metrics") {
 
   if (is_win) {
     sources += [
+      "drive_metrics_provider_win.cc",
+      "machine_id_provider_win.cc",
       "system_session_analyzer/system_session_analyzer_win.cc",
       "system_session_analyzer/system_session_analyzer_win.h",
     ]
-    sources -= [ "machine_id_provider_nonwin.cc" ]
     deps += [ "//components/browser_watcher:stability_client" ]
     libs = [ "wevtapi.lib" ]
+  } else {
+    sources += [ "machine_id_provider_nonwin.cc" ]
   }
 
   if (is_fuchsia) {
@@ -442,7 +459,6 @@ source_set("unit_tests") {
     "histogram_encoder_unittest.cc",
     "library_support/histogram_manager_unittest.cc",
     "log_decoder_unittest.cc",
-    "machine_id_provider_nonwin_unittest.cc",
     "metrics_log_manager_unittest.cc",
     "metrics_log_store_unittest.cc",
     "metrics_log_unittest.cc",
@@ -492,11 +508,12 @@ source_set("unit_tests") {
   ]
 
   if (is_win) {
-    sources -= [ "machine_id_provider_nonwin_unittest.cc" ]
     sources += [
       "machine_id_provider_win_unittest.cc",
       "system_session_analyzer/system_session_analyzer_win_unittest.cc",
     ]
+  } else {
+    sources += [ "machine_id_provider_nonwin_unittest.cc" ]
   }
 
   if (is_linux || is_chromeos) {
