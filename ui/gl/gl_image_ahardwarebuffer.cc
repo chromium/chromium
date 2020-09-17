@@ -76,9 +76,8 @@ class GLImageAHardwareBuffer::ScopedHardwareBufferFenceSyncImpl
 
     gfx::GpuFenceHandle handle;
     handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-    handle.native_fd =
-        base::FileDescriptor(fence_fd.release(), /*auto_close=*/true);
-    gfx::GpuFence gpu_fence(handle);
+    handle.owned_fd = std::move(fence_fd);
+    gfx::GpuFence gpu_fence(std::move(handle));
     auto gl_fence = GLFence::CreateFromGpuFence(gpu_fence);
     gl_fence->ServerWait();
   }

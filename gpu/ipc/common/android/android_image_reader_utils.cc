@@ -25,13 +25,12 @@ base::ScopedFD CreateEglFenceAndExportFd() {
     LOG(ERROR) << "Unable to get a gpu fence object.";
     return base::ScopedFD();
   }
-  gfx::GpuFenceHandle fence_handle =
-      gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle());
+  gfx::GpuFenceHandle fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
   if (fence_handle.is_null()) {
     LOG(ERROR) << "Gpu fence handle is null";
     return base::ScopedFD();
   }
-  return base::ScopedFD(fence_handle.native_fd.fd);
+  return std::move(fence_handle.owned_fd);
 }
 
 bool DeleteAImageAsync(AImage* image,

@@ -1287,17 +1287,17 @@ void InProcessCommandBuffer::CreateGpuFence(uint32_t gpu_fence_id,
   // Pass a cloned handle to the GPU process since the source ClientGpuFence
   // may go out of scope before the queued task runs.
   gfx::GpuFence* gpu_fence = gfx::GpuFence::FromClientGpuFence(source);
-  gfx::GpuFenceHandle handle =
-      gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle());
+  gfx::GpuFenceHandle handle = gpu_fence->GetGpuFenceHandle().Clone();
 
-  ScheduleGpuTask(base::BindOnce(
-      &InProcessCommandBuffer::CreateGpuFenceOnGpuThread,
-      gpu_thread_weak_ptr_factory_.GetWeakPtr(), gpu_fence_id, handle));
+  ScheduleGpuTask(
+      base::BindOnce(&InProcessCommandBuffer::CreateGpuFenceOnGpuThread,
+                     gpu_thread_weak_ptr_factory_.GetWeakPtr(), gpu_fence_id,
+                     std::move(handle)));
 }
 
 void InProcessCommandBuffer::CreateGpuFenceOnGpuThread(
     uint32_t gpu_fence_id,
-    const gfx::GpuFenceHandle& handle) {
+    gfx::GpuFenceHandle handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   UpdateActiveUrl();
 
@@ -1310,7 +1310,8 @@ void InProcessCommandBuffer::CreateGpuFenceOnGpuThread(
   gles2::GpuFenceManager* gpu_fence_manager = decoder_->GetGpuFenceManager();
   DCHECK(gpu_fence_manager);
 
-  if (gpu_fence_manager->CreateGpuFenceFromHandle(gpu_fence_id, handle))
+  if (gpu_fence_manager->CreateGpuFenceFromHandle(gpu_fence_id,
+                                                  std::move(handle)))
     return;
 
   // The insertion failed. This shouldn't happen, force context loss to avoid

@@ -188,8 +188,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void OnSwapBuffersCompleted(const SwapBuffersCompleteParams& params);
   void OnBufferPresented(uint64_t swap_id,
                          const gfx::PresentationFeedback& feedback);
-  void OnGetGpuFenceHandleComplete(uint32_t gpu_fence_id,
-                                   const gfx::GpuFenceHandle&);
+  void OnGetGpuFenceHandleComplete(uint32_t gpu_fence_id, gfx::GpuFenceHandle);
   void OnReturnData(const std::vector<uint8_t>& data);
 
   // Try to read an updated copy of the state from shared memory, and calls

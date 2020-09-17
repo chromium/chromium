@@ -28,9 +28,8 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
   wayland_overlay_config->enable_blend = input.enable_blend;
   wayland_overlay_config->access_fence_handle =
       !input.gpu_fence || input.gpu_fence->GetGpuFenceHandle().is_null()
-          ? base::Optional<gfx::GpuFenceHandle>()
-          : base::Optional<gfx::GpuFenceHandle>(
-                gfx::CloneHandleForIPC(input.gpu_fence->GetGpuFenceHandle()));
+          ? gfx::GpuFenceHandle()
+          : input.gpu_fence->GetGpuFenceHandle().Clone();
 
   return wayland_overlay_config;
 }

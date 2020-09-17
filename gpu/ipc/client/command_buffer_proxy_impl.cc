@@ -579,9 +579,11 @@ void CommandBufferProxyImpl::CreateGpuFence(uint32_t gpu_fence_id,
     return;
   }
 
+  // IPC accepts handles by const reference. However, on platforms where the
+  // handle is backed by base::ScopedFD, const is casted away and the handle is
+  // forcibly taken from you.
   gfx::GpuFence* gpu_fence = gfx::GpuFence::FromClientGpuFence(source);
-  gfx::GpuFenceHandle handle =
-      gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle());
+  gfx::GpuFenceHandle handle = gpu_fence->GetGpuFenceHandle().Clone();
   Send(new GpuCommandBufferMsg_CreateGpuFenceFromHandle(route_id_, gpu_fence_id,
                                                         handle));
 }
@@ -607,9 +609,9 @@ void CommandBufferProxyImpl::GetGpuFence(
 
 void CommandBufferProxyImpl::OnGetGpuFenceHandleComplete(
     uint32_t gpu_fence_id,
-    const gfx::GpuFenceHandle& handle) {
+    gfx::GpuFenceHandle handle) {
   // Always consume the provided handle to avoid leaks on error.
-  auto gpu_fence = std::make_unique<gfx::GpuFence>(handle);
+  auto gpu_fence = std::make_unique<gfx::GpuFence>(std::move(handle));
 
   GetGpuFenceTaskMap::iterator it = get_gpu_fence_tasks_.find(gpu_fence_id);
   if (it == get_gpu_fence_tasks_.end()) {

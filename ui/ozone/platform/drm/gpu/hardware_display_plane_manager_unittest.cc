@@ -1037,9 +1037,8 @@ FakeFenceFD::FakeFenceFD() {
 std::unique_ptr<gfx::GpuFence> FakeFenceFD::GetGpuFence() const {
   gfx::GpuFenceHandle handle;
   handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-  handle.native_fd =
-      base::FileDescriptor(HANDLE_EINTR(dup(read_fd.get())), true);
-  return std::make_unique<gfx::GpuFence>(handle);
+  handle.owned_fd = base::ScopedFD(HANDLE_EINTR(dup(read_fd.get())));
+  return std::make_unique<gfx::GpuFence>(std::move(handle));
 }
 
 void FakeFenceFD::Signal() const {

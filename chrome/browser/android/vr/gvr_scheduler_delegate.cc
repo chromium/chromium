@@ -811,7 +811,7 @@ void GvrSchedulerDelegate::WebVrSendRenderNotification(bool was_rendered) {
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence = gl_fence->GetGpuFence();
     submit_client_->OnSubmitFrameGpuFence(
-        gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle()));
+        gpu_fence->GetGpuFenceHandle().Clone());
   } else {
     // Renderer is waiting for the previous frame to render, unblock it now.
     submit_client_->OnSubmitFrameRendered();

@@ -45,8 +45,8 @@ std::unique_ptr<gfx::GpuFence> CreateMergedGpuFenceFromFDs(
   if (merged_fd.is_valid()) {
     gfx::GpuFenceHandle handle;
     handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-    handle.native_fd = base::FileDescriptor(std::move(merged_fd));
-    return std::make_unique<gfx::GpuFence>(handle);
+    handle.owned_fd = std::move(merged_fd);
+    return std::make_unique<gfx::GpuFence>(std::move(handle));
   }
 
   return nullptr;
@@ -305,7 +305,7 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
       LOG(ERROR) << "Received invalid gpu fence";
       return false;
     }
-    fence_fd = gpu_fence_handle.native_fd.fd;
+    fence_fd = gpu_fence_handle.owned_fd.get();
   }
 
   if (!atomic_plane->SetPlaneData(plane_list->atomic_property_set.get(),

@@ -45,9 +45,10 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
   static gfx::GpuFenceHandleType type(const gfx::GpuFenceHandle& handle) {
     return handle.type;
   }
-  static mojo::PlatformHandle native_fd(const gfx::GpuFenceHandle& handle);
+  static mojo::PlatformHandle native_fd(gfx::GpuFenceHandle& handle);
   static bool Read(gfx::mojom::GpuFenceHandleDataView data,
                    gfx::GpuFenceHandle* handle);
+  static void SetToNull(gfx::GpuFenceHandle* handle);
 };
 
 }  // namespace mojo

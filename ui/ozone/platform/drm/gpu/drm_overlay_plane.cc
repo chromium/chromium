@@ -20,7 +20,7 @@ std::unique_ptr<gfx::GpuFence> CloneGpuFence(
   if (!gpu_fence)
     return nullptr;
   return std::make_unique<gfx::GpuFence>(
-      gfx::CloneHandleForIPC(gpu_fence->GetGpuFenceHandle()));
+      gpu_fence->GetGpuFenceHandle().Clone());
 }
 
 }  // namespace

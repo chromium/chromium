@@ -9,13 +9,13 @@
 
 namespace mojo {
 
-mojo::PlatformHandle StructTraits<
-    gfx::mojom::GpuFenceHandleDataView,
-    gfx::GpuFenceHandle>::native_fd(const gfx::GpuFenceHandle& handle) {
+mojo::PlatformHandle
+StructTraits<gfx::mojom::GpuFenceHandleDataView,
+             gfx::GpuFenceHandle>::native_fd(gfx::GpuFenceHandle& handle) {
 #if defined(OS_POSIX)
   if (handle.type != gfx::GpuFenceHandleType::kAndroidNativeFenceSync)
     return mojo::PlatformHandle();
-  return mojo::PlatformHandle(base::ScopedFD(handle.native_fd.fd));
+  return mojo::PlatformHandle(std::move(handle.owned_fd));
 #else
   return mojo::PlatformHandle();
 #endif
@@ -28,9 +28,7 @@ bool StructTraits<gfx::mojom::GpuFenceHandleDataView, gfx::GpuFenceHandle>::
 
   if (out->type == gfx::GpuFenceHandleType::kAndroidNativeFenceSync) {
 #if defined(OS_POSIX)
-    constexpr bool auto_close = true;
-    out->native_fd =
-        base::FileDescriptor(data.TakeNativeFd().ReleaseFD(), auto_close);
+    out->owned_fd = data.TakeNativeFd().TakeFD();
     return true;
 #else
     NOTREACHED();
@@ -38,6 +36,14 @@ bool StructTraits<gfx::mojom::GpuFenceHandleDataView, gfx::GpuFenceHandle>::
 #endif
   }
   return true;
+}
+
+void StructTraits<gfx::mojom::GpuFenceHandleDataView,
+                  gfx::GpuFenceHandle>::SetToNull(gfx::GpuFenceHandle* handle) {
+  handle->type = gfx::GpuFenceHandleType::kEmpty;
+#if defined(OS_POSIX)
+  handle->owned_fd.reset();
+#endif
 }
 
 }  // namespace mojo

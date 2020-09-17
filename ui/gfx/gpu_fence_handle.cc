@@ -14,28 +14,26 @@
 
 namespace gfx {
 
-GpuFenceHandle::GpuFenceHandle() : type(GpuFenceHandleType::kEmpty) {}
+GpuFenceHandle::GpuFenceHandle() = default;
 
-GpuFenceHandle::GpuFenceHandle(const GpuFenceHandle& other) = default;
+GpuFenceHandle::GpuFenceHandle(GpuFenceHandle&& other) = default;
 
-GpuFenceHandle& GpuFenceHandle::operator=(const GpuFenceHandle& other) =
-    default;
+GpuFenceHandle& GpuFenceHandle::operator=(GpuFenceHandle&& other) = default;
 
-GpuFenceHandle::~GpuFenceHandle() {}
+GpuFenceHandle::~GpuFenceHandle() = default;
 
-GpuFenceHandle CloneHandleForIPC(const GpuFenceHandle& source_handle) {
-  switch (source_handle.type) {
+GpuFenceHandle GpuFenceHandle::Clone() const {
+  switch (type) {
     case GpuFenceHandleType::kEmpty:
-      NOTREACHED();
-      return source_handle;
+      break;
     case GpuFenceHandleType::kAndroidNativeFenceSync: {
       gfx::GpuFenceHandle handle;
 #if defined(OS_POSIX)
       handle.type = GpuFenceHandleType::kAndroidNativeFenceSync;
-      int duped_handle = HANDLE_EINTR(dup(source_handle.native_fd.fd));
+      const int duped_handle = HANDLE_EINTR(dup(owned_fd.get()));
       if (duped_handle < 0)
         return GpuFenceHandle();
-      handle.native_fd = base::FileDescriptor(duped_handle, true);
+      handle.owned_fd = base::ScopedFD(duped_handle);
 #endif
       return handle;
     }

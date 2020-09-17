@@ -323,7 +323,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void SetGetBufferOnGpuThread(int32_t shm_id, base::WaitableEvent* completion);
 
   void CreateGpuFenceOnGpuThread(uint32_t gpu_fence_id,
-                                 const gfx::GpuFenceHandle& handle);
+                                 gfx::GpuFenceHandle handle);
   void GetGpuFenceOnGpuThread(
       uint32_t gpu_fence_id,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback);

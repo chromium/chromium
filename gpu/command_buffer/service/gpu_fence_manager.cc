@@ -40,9 +40,8 @@ bool GpuFenceManager::CreateGpuFence(uint32_t client_id) {
   return true;
 }
 
-bool GpuFenceManager::CreateGpuFenceFromHandle(
-    uint32_t client_id,
-    const gfx::GpuFenceHandle& handle) {
+bool GpuFenceManager::CreateGpuFenceFromHandle(uint32_t client_id,
+                                               gfx::GpuFenceHandle handle) {
   // The handle must be valid. The fallback kEmpty type cannot be duplicated.
   if (handle.is_null())
     return false;
@@ -52,7 +51,7 @@ bool GpuFenceManager::CreateGpuFenceFromHandle(
   if (it != gpu_fence_entries_.end())
     return false;
 
-  gfx::GpuFence gpu_fence(handle);
+  gfx::GpuFence gpu_fence(std::move(handle));
   auto entry = std::make_unique<GpuFenceEntry>();
   entry->gl_fence_ = gl::GLFence::CreateFromGpuFence(gpu_fence);
   if (!entry->gl_fence_)

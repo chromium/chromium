@@ -607,7 +607,7 @@ void ArCoreGl::OnTransportFrameAvailable(const gfx::Transform& uv_transform) {
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence2 = gl_fence->GetGpuFence();
     submit_client_->OnSubmitFrameGpuFence(
-        gfx::CloneHandleForIPC(gpu_fence2->GetGpuFenceHandle()));
+        gpu_fence2->GetGpuFenceHandle().Clone());
   }
   // We finished processing a frame, unblock a potentially waiting next frame.
   webxr_->TryDeferredProcessing();
@@ -674,7 +674,7 @@ void ArCoreGl::OnWebXrTokenSignaled(int16_t frame_index,
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence2 = gl_fence->GetGpuFence();
     submit_client_->OnSubmitFrameGpuFence(
-        gfx::CloneHandleForIPC(gpu_fence2->GetGpuFenceHandle()));
+        gpu_fence2->GetGpuFenceHandle().Clone());
   }
   // We finished processing a frame, unblock a potentially waiting next frame.
   webxr_->TryDeferredProcessing();

@@ -230,11 +230,10 @@ base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
   return base::TimeTicks::Now() - start;
 }
 
-void XRFrameTransport::OnSubmitFrameGpuFence(
-    const gfx::GpuFenceHandle& handle) {
+void XRFrameTransport::OnSubmitFrameGpuFence(gfx::GpuFenceHandle handle) {
   // We just received a GpuFence, unblock WaitForGpuFenceReceived.
   waiting_for_previous_frame_fence_ = false;
-  previous_frame_fence_ = std::make_unique<gfx::GpuFence>(handle);
+  previous_frame_fence_ = std::make_unique<gfx::GpuFence>(std::move(handle));
 }
 
 base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {

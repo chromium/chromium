@@ -14,38 +14,13 @@
 
 namespace gfx {
 
-GpuFence::GpuFence(const GpuFenceHandle& handle) : type_(handle.type) {
-  switch (type_) {
-    case GpuFenceHandleType::kEmpty:
-      break;
-    case GpuFenceHandleType::kAndroidNativeFenceSync:
-#if defined(OS_POSIX)
-      owned_fd_.reset(handle.native_fd.fd);
-#else
-      NOTREACHED();
-#endif
-      break;
-  }
-}
+GpuFence::GpuFence(GpuFenceHandle fence_handle)
+    : fence_handle_(std::move(fence_handle)) {}
 
 GpuFence::~GpuFence() = default;
 
-GpuFenceHandle GpuFence::GetGpuFenceHandle() const {
-  gfx::GpuFenceHandle handle;
-  switch (type_) {
-    case GpuFenceHandleType::kEmpty:
-      break;
-    case GpuFenceHandleType::kAndroidNativeFenceSync:
-#if defined(OS_POSIX)
-      handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-      handle.native_fd = base::FileDescriptor(owned_fd_.get(),
-                                              /*auto_close=*/false);
-#else
-      NOTREACHED();
-#endif
-      break;
-  }
-  return handle;
+const GpuFenceHandle& GpuFence::GetGpuFenceHandle() const {
+  return fence_handle_;
 }
 
 ClientGpuFence GpuFence::AsClientGpuFence() {
@@ -58,14 +33,15 @@ GpuFence* GpuFence::FromClientGpuFence(ClientGpuFence gpu_fence) {
 }
 
 void GpuFence::Wait() {
-  switch (type_) {
+  switch (fence_handle_.type) {
     case GpuFenceHandleType::kEmpty:
       break;
     case GpuFenceHandleType::kAndroidNativeFenceSync:
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
       static const int kInfiniteSyncWaitTimeout = -1;
-      DCHECK_GE(owned_fd_.get(), 0);
-      if (sync_wait(owned_fd_.get(), kInfiniteSyncWaitTimeout) < 0) {
+      DCHECK_GE(fence_handle_.owned_fd.get(), 0);
+      if (sync_wait(fence_handle_.owned_fd.get(), kInfiniteSyncWaitTimeout) <
+          0) {
         LOG(FATAL) << "Failed while waiting for gpu fence fd";
       }
 #else
@@ -112,7 +88,8 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
 base::TimeTicks GpuFence::GetMaxTimestamp() const {
   base::TimeTicks timestamp;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  FenceStatus status = GetStatusChangeTime(owned_fd_.get(), &timestamp);
+  FenceStatus status =
+      GetStatusChangeTime(fence_handle_.owned_fd.get(), &timestamp);
   DCHECK_EQ(status, FenceStatus::kSignaled);
   return timestamp;
 #endif

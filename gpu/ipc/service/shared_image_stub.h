@@ -75,7 +75,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
 #endif
 
   bool UpdateSharedImage(const Mailbox& mailbox,
-                         const gfx::GpuFenceHandle& in_fence_handle);
+                         gfx::GpuFenceHandle in_fence_handle);
 
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
@@ -87,7 +87,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnCreateGMBSharedImage(GpuChannelMsg_CreateGMBSharedImage_Params params);
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,
-                           const gfx::GpuFenceHandle& in_fence_handle);
+                           gfx::GpuFenceHandle in_fence_handle);
 #if defined(OS_ANDROID)
   void OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
                                   const Mailbox& in_mailbox,

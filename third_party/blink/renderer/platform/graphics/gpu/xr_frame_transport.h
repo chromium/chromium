@@ -72,7 +72,7 @@ class PLATFORM_EXPORT XRFrameTransport final
   // XRPresentationClient
   void OnSubmitFrameTransferred(bool success) override;
   void OnSubmitFrameRendered() override;
-  void OnSubmitFrameGpuFence(const gfx::GpuFenceHandle&) override;
+  void OnSubmitFrameGpuFence(gfx::GpuFenceHandle) override;
 
   HeapMojoReceiver<device::mojom::blink::XRPresentationClient,
                    XRFrameTransport,

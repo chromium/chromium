@@ -135,9 +135,8 @@ std::unique_ptr<gfx::GpuFence> VulkanImplementationGbm::ExportVkFenceToGpuFence(
 
   gfx::GpuFenceHandle gpu_fence_handle;
   gpu_fence_handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-  gpu_fence_handle.native_fd =
-      base::FileDescriptor(fence_fd, true /* auto_close */);
-  return std::make_unique<gfx::GpuFence>(gpu_fence_handle);
+  gpu_fence_handle.owned_fd = base::ScopedFD(fence_fd);
+  return std::make_unique<gfx::GpuFence>(std::move(gpu_fence_handle));
 }
 
 VkSemaphore VulkanImplementationGbm::CreateExternalSemaphore(

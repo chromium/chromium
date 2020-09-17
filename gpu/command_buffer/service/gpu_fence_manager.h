@@ -48,8 +48,7 @@ class GPU_GLES2_EXPORT GpuFenceManager {
 
   bool CreateGpuFence(uint32_t client_id);
 
-  bool CreateGpuFenceFromHandle(uint32_t client_id,
-                                const gfx::GpuFenceHandle& handle);
+  bool CreateGpuFenceFromHandle(uint32_t client_id, gfx::GpuFenceHandle handle);
 
   bool IsValidGpuFence(uint32_t client_id);
 

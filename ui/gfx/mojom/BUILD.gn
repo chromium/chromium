@@ -79,6 +79,8 @@ mojom("mojom") {
         {
           mojom = "gfx.mojom.GpuFenceHandle"
           cpp = "::gfx::GpuFenceHandle"
+          move_only = true
+          nullable_is_same_type = true
         },
       ]
       traits_headers = [ "gpu_fence_handle_mojom_traits.h" ]

@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -128,13 +130,12 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
   return true;
 }
 
-bool SharedImageStub::UpdateSharedImage(
-    const Mailbox& mailbox,
-    const gfx::GpuFenceHandle& in_fence_handle) {
+bool SharedImageStub::UpdateSharedImage(const Mailbox& mailbox,
+                                        gfx::GpuFenceHandle in_fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::UpdateSharedImage");
   std::unique_ptr<gfx::GpuFence> in_fence;
   if (!in_fence_handle.is_null())
-    in_fence.reset(new gfx::GpuFence(in_fence_handle));
+    in_fence = std::make_unique<gfx::GpuFence>(std::move(in_fence_handle));
   if (!mailbox.IsSharedImage()) {
     LOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
                   "non-SharedImage mailbox.";
@@ -291,13 +292,12 @@ void SharedImageStub::OnCreateGMBSharedImage(
   sync_point_client_state_->ReleaseFenceSync(params.release_id);
 }
 
-void SharedImageStub::OnUpdateSharedImage(
-    const Mailbox& mailbox,
-    uint32_t release_id,
-    const gfx::GpuFenceHandle& in_fence_handle) {
+void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
+                                          uint32_t release_id,
+                                          gfx::GpuFenceHandle in_fence_handle) {
   TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateSharedImage");
 
-  if (!UpdateSharedImage(mailbox, in_fence_handle))
+  if (!UpdateSharedImage(mailbox, std::move(in_fence_handle)))
     return;
 
   SyncToken sync_token(sync_point_client_state_->namespace_id(),
