@@ -23,6 +23,7 @@
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 
 using sandbox::bpf_dsl::Allow;
+using sandbox::bpf_dsl::Arg;
 using sandbox::bpf_dsl::Error;
 using sandbox::bpf_dsl::ResultExpr;
 using sandbox::bpf_dsl::Trap;
@@ -42,7 +43,21 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return Error(ENOSYS);
 #if !defined(OS_CHROMEOS)
     case __NR_fallocate:
+      return Allow();
 #endif  // defined(OS_CHROMEOS)
+    case __NR_fcntl: {
+      // The Nvidia driver uses flags not in the baseline policy
+      // fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW)
+      // https://crbug.com/1128175
+      const Arg<int> cmd(1);
+      const Arg<long> long_arg(2);
+
+      const uint64_t kAllowedMask = F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW;
+      if (cmd == F_ADD_SEALS && (long_arg & ~kAllowedMask) == 0)
+        return Allow();
+
+      break;
+    }
     case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -59,6 +74,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     // The Nvidia driver uses flags not in the baseline policy
     // (MAP_LOCKED | MAP_EXECUTABLE | MAP_32BIT)
     case __NR_mmap:
+      return Allow();
 #endif
     // We also hit this on the linux_chromeos bot but don't yet know what
     // weird flags were involved.
@@ -74,22 +90,23 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_prlimit64:
       return RestrictPrlimit64(GetPolicyPid());
     default:
-      if (SyscallSets::IsEventFd(sysno))
-        return Allow();
+      break;
+  }
+  if (SyscallSets::IsEventFd(sysno))
+    return Allow();
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_X11)
-      if (SyscallSets::IsSystemVSharedMemory(sysno))
-        return Allow();
+  if (SyscallSets::IsSystemVSharedMemory(sysno))
+    return Allow();
 #endif
 
-      auto* broker_process = SandboxLinux::GetInstance()->broker_process();
-      if (broker_process->IsSyscallAllowed(sysno)) {
-        return Trap(BrokerProcess::SIGSYS_Handler, broker_process);
-      }
-
-      // Default on the baseline policy.
-      return BPFBasePolicy::EvaluateSyscall(sysno);
+  auto* broker_process = SandboxLinux::GetInstance()->broker_process();
+  if (broker_process->IsSyscallAllowed(sysno)) {
+    return Trap(BrokerProcess::SIGSYS_Handler, broker_process);
   }
+
+  // Default on the baseline policy.
+  return BPFBasePolicy::EvaluateSyscall(sysno);
 }
 
 }  // namespace policy
