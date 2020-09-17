@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -309,6 +310,22 @@ class BrowserView : public BrowserWindow,
     return feature_promo_controller_.get();
   }
 
+  // Callback for listening for link-opening-from-gesture events (i.e. only
+  // those resulting from direct user action).
+  using OnLinkOpeningFromGestureCallback =
+      base::RepeatingCallback<void(WindowOpenDisposition)>;
+  using OnLinkOpeningFromGestureCallbackList =
+      base::RepeatingCallbackList<OnLinkOpeningFromGestureCallback::RunType>;
+  using OnLinkOpeningFromGestureSubscription =
+      std::unique_ptr<OnLinkOpeningFromGestureCallbackList::Subscription>;
+
+  // Listens to the "link opened from gesture" event. Callback will be called
+  // when a link is opened from user interaction in the same browser window, but
+  // before the tabstrip is actually modified. Useful for doing certain types
+  // of animations (e.g. "flying link" animation in tablet mode).
+  OnLinkOpeningFromGestureSubscription AddOnLinkOpeningFromGestureCallback(
+      OnLinkOpeningFromGestureCallback callback);
+
   // BrowserWindow:
   void Show() override;
   void ShowInactive() override;
@@ -382,6 +399,7 @@ class BrowserView : public BrowserWindow,
   ExtensionsContainer* GetExtensionsContainer() override;
   void ToolbarSizeChanged(bool is_animating) override;
   void TabDraggingStatusChanged(bool is_dragging) override;
+  void LinkOpeningFromGesture(WindowOpenDisposition disposition) override;
   void FocusAppMenu() override;
   void FocusBookmarksToolbar() override;
   void FocusInactivePopupForAccessibility() override;
@@ -916,6 +934,8 @@ class BrowserView : public BrowserWindow,
   std::unique_ptr<AccessibilityFocusHighlight> accessibility_focus_highlight_;
 
   std::unique_ptr<FeaturePromoControllerViews> feature_promo_controller_;
+
+  OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 
 #if defined(OS_CHROMEOS)
   // |loading_animation_tracker_| is used to measure animation smoothness for

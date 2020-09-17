@@ -514,9 +514,9 @@ WebUITabStripContainerView::WebUITabStripContainerView(
     views::View* tab_contents_container,
     views::View* top_container,
     views::View* omnibox)
-    : browser_(browser_view->browser()),
+    : browser_view_(browser_view),
       web_view_(AddChildView(
-          std::make_unique<WebUITabStripWebView>(browser_->profile()))),
+          std::make_unique<WebUITabStripWebView>(browser_view_->GetProfile()))),
       top_container_(top_container),
       tab_contents_container_(tab_contents_container),
       auto_closer_(std::make_unique<AutoCloser>(
@@ -528,10 +528,10 @@ WebUITabStripContainerView::WebUITabStripContainerView(
       drag_to_open_handler_(
           std::make_unique<DragToOpenHandler>(this, top_container)),
       iph_controller_(std::make_unique<IPHController>(
-          browser_,
+          browser_view->browser(),
           browser_view->feature_promo_controller())) {
   TRACE_EVENT0("ui", "WebUITabStripContainerView.Init");
-  DCHECK(UseTouchableTabStrip(browser_));
+  DCHECK(UseTouchableTabStrip(browser_view_->browser()));
 
   SetVisible(false);
   animation_.Reset(0.0);
@@ -568,7 +568,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
 
   TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
       web_view_->GetWebContents()->GetWebUI()->GetController());
-  tab_strip_ui->Initialize(browser_, this);
+  tab_strip_ui->Initialize(browser_view_->browser(), this);
 }
 
 WebUITabStripContainerView::~WebUITabStripContainerView() {
@@ -634,8 +634,7 @@ views::NativeViewHost* WebUITabStripContainerView::GetNativeViewHost() {
 std::unique_ptr<views::View> WebUITabStripContainerView::CreateTabCounter() {
   DCHECK_EQ(nullptr, tab_counter_);
 
-  auto tab_counter =
-      CreateWebUITabCounterButton(this, browser_->tab_strip_model());
+  auto tab_counter = CreateWebUITabCounterButton(this, browser_view_);
 
   tab_counter_ = tab_counter.get();
   view_observer_.Add(tab_counter_);
@@ -661,7 +660,7 @@ void WebUITabStripContainerView::FinishAnimationForTesting() {
 
 const ui::AcceleratorProvider*
 WebUITabStripContainerView::GetAcceleratorProvider() const {
-  return BrowserView::GetBrowserViewForBrowser(browser_);
+  return browser_view_;
 }
 
 void WebUITabStripContainerView::CloseContainer() {
@@ -731,9 +730,8 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     WebUITabStripOpenCloseReason reason) {
   if (target_visible) {
     immersive_revealed_lock_.reset(
-        BrowserView::GetBrowserViewForBrowser(browser_)
-            ->immersive_mode_controller()
-            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES));
+        browser_view_->immersive_mode_controller()->GetRevealedLock(
+            ImmersiveModeController::ANIMATE_REVEAL_YES));
 
     SetVisible(true);
     PreferredSizeChanged();
@@ -821,7 +819,8 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
     tab_groups::TabGroupId group) {
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
-  TabGroupEditorBubbleView::Show(browser_, group, nullptr, rect, this);
+  TabGroupEditorBubbleView::Show(browser_view_->browser(), group, nullptr, rect,
+                                 this);
 }
 
 TabStripUILayout WebUITabStripContainerView::GetLayout() {

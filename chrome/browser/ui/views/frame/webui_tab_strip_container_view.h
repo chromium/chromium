@@ -135,7 +135,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // views::AccessiblePaneView
   bool SetPaneFocusAndFocusDefault() override;
 
-  Browser* const browser_;
+  BrowserView* const browser_view_;
   views::WebView* const web_view_;
   views::View* const top_container_;
   views::View* tab_contents_container_;

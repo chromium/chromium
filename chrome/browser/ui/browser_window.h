@@ -304,6 +304,12 @@ class BrowserWindow : public ui::BaseWindow {
   // Called when the associated window's tab dragging status changed.
   virtual void TabDraggingStatusChanged(bool is_dragging) = 0;
 
+  // Called when a link is opened in the window from a user gesture.
+  // Link will be opened with |disposition|.
+  // TODO(crbug.com/1129028): see if this can't be piped through TabStripModel
+  // events instead.
+  virtual void LinkOpeningFromGesture(WindowOpenDisposition disposition) = 0;
+
   // Focuses the app menu like it was a menu bar.
   //
   // Not used on the Mac, which has a "normal" menu bar.

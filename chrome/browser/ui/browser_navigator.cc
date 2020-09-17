@@ -673,6 +673,12 @@ void Navigate(NavigateParams* params) {
     if (params->tabstrip_index != -1)
       params->tabstrip_add_types |= TabStripModel::ADD_FORCE_INDEX;
 
+    // Maybe notify that an open operation has been done from a gesture.
+    // TODO(crbug.com/1129028): preferably pipe this information through the
+    // TabStripModel instead. See bug for deeper discussion.
+    if (params->user_gesture && source_browser == params->browser)
+      params->browser->window()->LinkOpeningFromGesture(params->disposition);
+
     DCHECK(contents_to_insert);
     // The navigation should insert a new tab into the target Browser.
     params->browser->tab_strip_model()->AddWebContents(

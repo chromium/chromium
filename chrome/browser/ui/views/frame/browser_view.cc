@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
@@ -173,6 +174,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/display/screen.h"
@@ -1492,6 +1494,16 @@ void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
     contents_container_->Layout();
   }
 #endif
+}
+
+BrowserView::OnLinkOpeningFromGestureSubscription
+BrowserView::AddOnLinkOpeningFromGestureCallback(
+    OnLinkOpeningFromGestureCallback callback) {
+  return link_opened_from_gesture_callbacks_.Add(callback);
+}
+
+void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
+  link_opened_from_gesture_callbacks_.Notify(disposition);
 }
 
 void BrowserView::FocusBookmarksToolbar() {
