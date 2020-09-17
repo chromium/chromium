@@ -19,6 +19,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/safety_tip_test_utils.h"
+#include "chrome/browser/reputation/safety_tips_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_features.h"
@@ -212,6 +213,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
+    InitializeSafetyTipConfig();
     InProcessBrowserTest::SetUp();
   }
 
@@ -448,6 +450,20 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kSkeletonMatchTop500);
+}
+
+// Navigate to a domain that would trigger the warning, but doesn't because it
+// fails-safe when the allowlist isn't available.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       NoMatchOnAllowlistMissing) {
+  const GURL kNavigatedUrl = GetURL("googlé.com");
+
+  // Clear out any existing proto.
+  SetSafetyTipsRemoteConfigProto(nullptr);
+
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
 }
 
 // Embedding a top domain should show an interstitial when enabled. If disabled

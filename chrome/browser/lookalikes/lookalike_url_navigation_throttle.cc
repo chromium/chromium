@@ -138,14 +138,20 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::HandleThrottleRequest(
     return content::NavigationThrottle::PROCEED;
   }
 
-  // If the URL is in the component updater allowlist, don't show any warning.
+  // Fetch the component allowlist.
   const auto* proto = GetSafetyTipsRemoteConfigProto();
-  if (proto &&
-      IsUrlAllowlistedBySafetyTipsComponent(proto, url.GetWithEmptyPath())) {
+
+  // When there's no proto (like at browser start), fail-safe and don't block.
+  if (!proto) {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // If the URL is in the allowlist, don't show any warning.
+  // If the URL is in the component allowlist, don't show any warning.
+  if (IsUrlAllowlistedBySafetyTipsComponent(proto, url.GetWithEmptyPath())) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
+  // If the URL is in the local temporary allowlist, don't show any warning.
   if (tab_storage->IsDomainAllowed(url.host())) {
     return content::NavigationThrottle::PROCEED;
   }

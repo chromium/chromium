@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/reputation/safety_tip_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/lookalikes/core/features.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
@@ -88,6 +89,8 @@ class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {};
 // Tests that spoofy hostnames are properly handled in the throttle.
 TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
   base::HistogramTester test;
+
+  InitializeSafetyTipConfig();
 
   const struct TestCase {
     const char* hostname;
