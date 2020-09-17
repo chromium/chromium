@@ -89,6 +89,35 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
   }
 }
 
+NGPhysicalContainerFragment::NGPhysicalContainerFragment(
+    const NGPhysicalContainerFragment& other,
+    NGLink* buffer)
+    : NGPhysicalFragment(other),
+      num_children_(other.num_children_),
+      break_token_(other.break_token_),
+      oof_positioned_descendants_(
+          other.oof_positioned_descendants_
+              ? new Vector<NGPhysicalOutOfFlowPositionedNode>(
+                    *other.oof_positioned_descendants_)
+              : nullptr),
+      buffer_(buffer) {
+  // To ensure the fragment tree is consistent, use the post-layout fragment.
+  for (wtf_size_t i = 0; i < num_children_; ++i) {
+    buffer[i].offset = other.buffer_[i].offset;
+    scoped_refptr<const NGPhysicalFragment> post_layout =
+        other.buffer_[i]->PostLayout();
+    // While making the fragment tree consistent, we need to also clone any
+    // fragmentainer fragments, as they don't nessecerily have their result
+    // stored on the layout-object tree.
+    if (post_layout->IsFragmentainerBox()) {
+      post_layout = NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
+          To<NGPhysicalBoxFragment>(*post_layout));
+    }
+    new (&buffer[i].fragment)
+        scoped_refptr<const NGPhysicalFragment>(std::move(post_layout));
+  }
+}
+
 NGPhysicalContainerFragment::~NGPhysicalContainerFragment() = default;
 
 // additional_offset must be offset from the containing_block.

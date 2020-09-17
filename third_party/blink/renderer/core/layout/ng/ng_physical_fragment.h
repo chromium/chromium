@@ -428,6 +428,8 @@ class CORE_EXPORT NGPhysicalFragment
                      NGFragmentType type,
                      unsigned sub_type);
 
+  NGPhysicalFragment(const NGPhysicalFragment& other);
+
   const ComputedStyle& SlowEffectiveStyle() const;
 
   const Vector<NGInlineItem>& InlineItemsOfContainingBlock() const;

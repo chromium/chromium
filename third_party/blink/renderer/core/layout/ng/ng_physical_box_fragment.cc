@@ -38,6 +38,7 @@ bool HasControlClip(const NGPhysicalBoxFragment& self) {
 
 }  // namespace
 
+// static
 scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
     NGBoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
@@ -54,16 +55,12 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
       builder->table_cell_column_index_;
-  size_t byte_size = sizeof(NGPhysicalBoxFragment) +
-                     sizeof(NGLink) * builder->children_.size() +
-                     (borders.IsZero() ? 0 : sizeof(borders)) +
-                     (padding.IsZero() ? 0 : sizeof(padding)) +
-                     (has_rare_data ? sizeof(RareData) : 0);
-  if (const NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
-    // Omit |NGFragmentItems| if there were no items; e.g., display-lock.
-    if (items_builder->Size())
-      byte_size += NGFragmentItems::ByteSizeFor(items_builder->Size());
-  }
+
+  wtf_size_t num_fragment_items =
+      builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
+  size_t byte_size =
+      ByteSize(num_fragment_items, builder->children_.size(), !borders.IsZero(),
+               !padding.IsZero(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
@@ -75,6 +72,36 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   new (data) NGPhysicalBoxFragment(PassKey(), builder, borders, padding,
                                    has_rare_data, block_or_line_writing_mode);
   return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
+}
+
+// static
+scoped_refptr<const NGPhysicalBoxFragment>
+NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
+    const NGPhysicalBoxFragment& other) {
+  // The size of the new fragment shouldn't differ from the old one.
+  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
+  size_t byte_size =
+      ByteSize(num_fragment_items, other.num_children_, other.has_borders_,
+               other.has_padding_, other.has_rare_data_);
+
+  void* data = ::WTF::Partitions::FastMalloc(
+      byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
+  new (data) NGPhysicalBoxFragment(PassKey(), other);
+  return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
+}
+
+// static
+size_t NGPhysicalBoxFragment::ByteSize(wtf_size_t num_fragment_items,
+                                       wtf_size_t num_children,
+                                       bool has_borders,
+                                       bool has_padding,
+                                       bool has_rare_data) {
+  return sizeof(NGPhysicalBoxFragment) +
+         NGFragmentItems::ByteSizeFor(num_fragment_items) +
+         sizeof(NGLink) * num_children +
+         (has_borders ? sizeof(NGPhysicalBoxStrut) : 0) +
+         (has_padding ? sizeof(NGPhysicalBoxStrut) : 0) +
+         (has_rare_data ? sizeof(NGPhysicalBoxFragment::RareData) : 0);
 }
 
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
@@ -155,6 +182,30 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 #endif
 }
 
+NGPhysicalBoxFragment::NGPhysicalBoxFragment(PassKey key,
+                                             const NGPhysicalBoxFragment& other)
+    : NGPhysicalContainerFragment(other, children_),
+      baseline_(other.baseline_),
+      last_baseline_(other.last_baseline_) {
+  if (has_fragment_items_) {
+    NGFragmentItems* items =
+        const_cast<NGFragmentItems*>(ComputeItemsAddress());
+    new (items) NGFragmentItems(*other.ComputeItemsAddress());
+  }
+  if (has_borders_) {
+    *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) =
+        *other.ComputeBordersAddress();
+  }
+  if (has_padding_) {
+    *const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress()) =
+        *other.ComputePaddingAddress();
+  }
+  if (has_rare_data_) {
+    new (const_cast<RareData*>(ComputeRareDataAddress()))
+        RareData(*other.ComputeRareDataAddress());
+  }
+}
+
 NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
                                           PhysicalSize size)
     : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
@@ -189,6 +240,22 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   if (builder->table_cell_column_index_)
     table_cell_column_index = *builder->table_cell_column_index_;
 }
+
+NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
+    : oof_positioned_fragmentainer_descendants(
+          other.oof_positioned_fragmentainer_descendants),
+      mathml_paint_info(other.mathml_paint_info
+                            ? new NGMathMLPaintInfo(*other.mathml_paint_info)
+                            : nullptr),
+      table_grid_rect(other.table_grid_rect),
+      table_column_geometries(other.table_column_geometries),
+      table_collapsed_borders(other.table_collapsed_borders),
+      table_collapsed_borders_geometry(
+          other.table_collapsed_borders_geometry
+              ? new NGTableFragmentData::CollapsedBordersGeometry(
+                    *other.table_collapsed_borders_geometry)
+              : nullptr),
+      table_cell_column_index(other.table_cell_column_index) {}
 
 scoped_refptr<const NGLayoutResult>
 NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {

@@ -677,7 +677,7 @@ void LayoutBox::UpdateFromStyle() {
 
 void LayoutBox::LayoutSubtreeRoot() {
   if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
-      !NGBlockNode::CanUseNewLayout(*this)) {
+      !NGBlockNode::CanUseNewLayout(*this) && GetCachedLayoutResult()) {
     // If this object is laid out by the legacy engine, while its containing
     // block is laid out by NG, it means that we normally (when laying out
     // starting at the real root, i.e. LayoutView) enter layout of this object
@@ -685,25 +685,43 @@ void LayoutBox::LayoutSubtreeRoot() {
     // structure, which makes legacy layout behave when managed by NG. Make a
     // short detour via NG just to set things up to re-enter legacy layout
     // correctly.
-    if (const NGLayoutResult* result = GetCachedLayoutResult()) {
-      DCHECK_EQ(PhysicalFragmentCount(), 1u);
-      LayoutPoint old_location = Location();
+    DCHECK_EQ(PhysicalFragmentCount(), 1u);
+    LayoutPoint old_location = Location();
 
-      // Make a copy of the cached constraint space, since we'll overwrite the
-      // layout result object as part of performing layout.
-      auto constraint_space = result->GetConstraintSpaceForCaching();
+    // Make a copy of the cached constraint space, since we'll overwrite the
+    // layout result object as part of performing layout.
+    auto constraint_space =
+        GetCachedLayoutResult()->GetConstraintSpaceForCaching();
 
-      NGBlockNode(this).Layout(constraint_space);
+    NGBlockNode(this).Layout(constraint_space);
 
-      // Restore the old location. While it's usually the job of the containing
-      // block to position its children, out-of-flow positioned objects set
-      // their own position, which could be wrong in this case.
-      SetLocation(old_location);
-      return;
-    }
+    // Restore the old location. While it's usually the job of the containing
+    // block to position its children, out-of-flow positioned objects set
+    // their own position, which could be wrong in this case.
+    SetLocation(old_location);
+  } else {
+    UpdateLayout();
   }
 
-  UpdateLayout();
+  // If this box has an associated layout-result, rebuild the spine of the
+  // fragment-tree to ensure consistency.
+  if (PhysicalFragmentCount() &&
+      RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled()) {
+    LayoutBlock* cb = ContainingBlock();
+    while (NGBlockNode::CanUseNewLayout(*cb)) {
+      if (cb->measure_result_) {
+        cb->measure_result_ =
+            NGLayoutResult::CloneWithPostLayoutFragments(*cb->measure_result_);
+      }
+      for (scoped_refptr<const NGLayoutResult>& layout_result :
+           cb->layout_results_) {
+        // Create and set a new identical result.
+        layout_result =
+            NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
+      }
+      cb = cb->ContainingBlock();
+    }
+  }
 }
 
 void LayoutBox::UpdateLayout() {
