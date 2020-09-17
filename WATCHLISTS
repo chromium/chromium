@@ -901,6 +901,9 @@
                   'chrome/android/javatests/src/org/chromium/chrome/browser/browserservices/|'\
                   'chrome/browser/android/customtabs/',
     },
+    'dark_mode': {
+      'filepath': 'third_party/blink/renderer/platform/graphics/dark_mode*',
+    },
     'data_decoder': {
       'filepath': 'services/data_decoder/',
     },
@@ -2429,6 +2432,8 @@
                     'peconn+watch@chromium.org',
                     'peter@chromium.org',
                     'pshmakov+watch@chromium.org'],
+    'dark_mode' : ['prashant@chromium.org',
+                   'prashant.n@samsung.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
     'demo_mode': ['cros-essential-apps-dev+watch@chromium.org'],
