@@ -412,3 +412,34 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_give_sent_packet_to_debug_visitor_after_sent,
     false)
+
+// If true, abort async QPACK header decompression in QuicSpdyStream::OnClose().
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_abort_qpack_on_stream_close,
+          false)
+
+// If true, do not arm PTO for application data until handshake confirmed.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_fix_arm_pto_for_application_data,
+          true)
+
+// If true, cap client suggested initial RTT to 1s if it is longer than 1s.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_cap_large_client_initial_rtt,
+          true)
+
+// If true, fix a potential out of order sending caused by handshake gets
+// confirmed while the coalescer is not empty.
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_out_of_order_sending, true)
+
+// If true, remove processed undecryptable packets.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_fix_undecryptable_packets2,
+          false)
+
+// If true, QUIC BBRv2 will use inflight byte after congestion event to detect
+// queuing during PROBE_UP.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_bbr2_use_post_inflight_to_detect_queuing,
+    false)
