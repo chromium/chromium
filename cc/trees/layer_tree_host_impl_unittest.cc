@@ -11998,6 +11998,37 @@ class LayerTreeHostImplWithBrowserControlsTest : public LayerTreeHostImplTest {
   }
 
  protected:
+  void Scroll(float y) {
+    ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
+              GetInputHandler()
+                  .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 50),
+                                          ui::ScrollInputType::kTouchscreen)
+                                   .get(),
+                               ui::ScrollInputType::kTouchscreen)
+                  .thread);
+    ASSERT_TRUE(
+        GetInputHandler()
+            .ScrollUpdate(UpdateState(gfx::Point(), gfx::Vector2dF(0, y),
+                                      ui::ScrollInputType::kTouchscreen)
+                              .get())
+            .did_scroll);
+    GetInputHandler().ScrollEnd();
+  }
+
+  void RunAnimation() {
+    viz::BeginFrameArgs begin_frame_args = viz::CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, 0, 1, base::TimeTicks::Now());
+    do {
+      did_request_next_frame_ = false;
+      host_impl_->WillBeginImplFrame(begin_frame_args);
+      host_impl_->Animate();
+      host_impl_->DidFinishImplFrame(begin_frame_args);
+
+      begin_frame_args.frame_time += base::TimeDelta::FromMilliseconds(5);
+      begin_frame_args.frame_id.sequence_number++;
+    } while (did_request_next_frame_);
+  }
+
   static const int top_controls_height_;
 };
 
@@ -12454,6 +12485,89 @@ TEST_F(LayerTreeHostImplWithBrowserControlsTest,
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ControlsTopOffset());
 
   GetInputHandler().ScrollEnd();
+}
+
+// Tests that when animating the top controls down, the viewport doesn't counter
+// scroll if it's not already scrolled.
+TEST_F(LayerTreeHostImplWithBrowserControlsTest,
+       AnimationDoesntScrollUnscrolledViewport) {
+  // Initialize with 50px browser controls, 200px contents, and 100px viewport.
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(100, 200));
+
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  ASSERT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+
+  // Scroll down 10px, which should partially hide the browser controls, but
+  // not scroll the viewport.
+  Scroll(10.f);
+  EXPECT_EQ(0.8f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(0.f, host_impl_->viewport().TotalScrollOffset().y());
+
+  // Let the top controls animate back down.
+  RunAnimation();
+
+  EXPECT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+  EXPECT_EQ(0.f, host_impl_->viewport().TotalScrollOffset().y());
+}
+
+// Tests that when animating the top controls down, the viewport counter scrolls
+// if it's partially scrolled down.
+TEST_F(LayerTreeHostImplWithBrowserControlsTest,
+       AnimationScrollsScrolledViewport) {
+  // Initialize with 50px browser controls, 200px contents, and 100px viewport.
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(100, 200));
+
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  ASSERT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+
+  // Scroll down 60px, then up 40px, which should hide the browser controls and
+  // scroll the viewport 10px, then bring the browser controls down 40px.
+  Scroll(60.f);
+  EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(10.f, host_impl_->viewport().TotalScrollOffset().y());
+
+  Scroll(-40.f);
+  EXPECT_EQ(0.8f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(10.f, host_impl_->viewport().TotalScrollOffset().y());
+
+  // Let the top controls animate back down.
+  RunAnimation();
+
+  EXPECT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+  EXPECT_EQ(20.f, host_impl_->viewport().TotalScrollOffset().y());
+}
+
+// Tests that the page animates down with the top controls when
+// BrowserControlParams.only_expand_top_controls_at_page_top is true.
+TEST_F(LayerTreeHostImplWithBrowserControlsTest,
+       AnimationScrollsViewportWhenOnlyExpandTopControlsAtPageTopIsSet) {
+  // Initialize with 50px browser controls, 200px page contents, a 100px
+  // viewport, and only_expand_top_controls_at_page_top enabled.
+  SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(100, 200));
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  layer_tree_impl->SetBrowserControlsParams(
+      {/*top_controls_height=*/50.f, 0.f, 0.f, 0.f, false, false,
+       /*only_expand_top_controls_at_page_top=*/true});
+
+  ASSERT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+
+  // Scroll down 60px, then up 50px, which should hide the browser controls and
+  // scroll the viewport 10px, then unscroll the viewport and bring the browser
+  // controls down 40px.
+  Scroll(60.f);
+  EXPECT_EQ(0.f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(10.f, host_impl_->viewport().TotalScrollOffset().y());
+
+  Scroll(-50.f);
+  EXPECT_EQ(0.8f, host_impl_->active_tree()->CurrentTopControlsShownRatio());
+  EXPECT_EQ(0.f, host_impl_->viewport().TotalScrollOffset().y());
+
+  // Let the top controls animate back down.
+  RunAnimation();
+
+  // With only_expand_top_controls_at_page_top set, the page shouldn't scroll.
+  EXPECT_EQ(1, layer_tree_impl->CurrentTopControlsShownRatio());
+  EXPECT_EQ(0.f, host_impl_->viewport().TotalScrollOffset().y());
 }
 
 // Tests that when we set a child scroller (e.g. a scrolling div) as the outer

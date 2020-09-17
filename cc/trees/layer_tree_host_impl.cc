@@ -3927,12 +3927,16 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   if (browser_controls_offset_manager_->HasAnimation())
     SetNeedsOneBeginImplFrame();
 
-  if (active_tree_->TotalScrollOffset().y() == 0.f)
+  if (active_tree_->TotalScrollOffset().y() == 0.f ||
+      OnlyExpandTopControlsAtPageTop()) {
     return false;
+  }
 
   if (scroll_delta.IsZero())
     return false;
 
+  // This counter-scrolls the page to keep the appearance of the page content
+  // being fixed while the browser controls animate.
   viewport().ScrollBy(scroll_delta,
                       /*viewport_point=*/gfx::Point(),
                       /*is_wheel_scroll=*/false,
