@@ -191,6 +191,14 @@ public class WebLayer {
         return getWebLayerLoader(context).getMajorVersion();
     }
 
+    // Returns true if version checks should be done. This is provided solely for testing, and
+    // specifically testing that does not run on device and load the implementation. It is only
+    // necessary to check this in code paths that don't require WebLayer to load the implementation
+    // and need to be callable in tests.
+    static boolean shouldPerformVersionChecks() {
+        return !"robolectric".equals(Build.FINGERPRINT);
+    }
+
     // Internal version of getSupportedMajorVersion(). This should only be used when you know
     // WebLayer has been initialized. Generally that means calling this from any non-static method.
     static int getSupportedMajorVersionInternal() {
