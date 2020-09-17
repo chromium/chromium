@@ -143,14 +143,9 @@ public class MainSettingsFragmentTest {
         Mockito.doReturn(SEARCH_ENGINE_SHORT_NAME).when(mMockSearchEngine).getShortName();
     }
 
-    /**
-     *  TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being
-     * enabled.
-     */
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
         View view = mSettingsActivityTestRule.getActivity()
@@ -166,12 +161,9 @@ public class MainSettingsFragmentTest {
 
     /**
      * Test for the "Account" section.
-     *
-     * TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being enabled.
      */
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void testStartup() {
         launchSettingsActivity();
 
@@ -215,13 +207,10 @@ public class MainSettingsFragmentTest {
 
     /**
      * Test for the "Account" section.
-     *
-     * TODO(crbug.com/1128924): Add a corresponding test case to support Safety Check being enabled.
      */
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
-    @DisableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID})
     public void testStartupWithMobileIdentityConsistency() {
         launchSettingsActivity();
 
