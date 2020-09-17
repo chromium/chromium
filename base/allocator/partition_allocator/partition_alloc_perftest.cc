@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <atomic>
+#include <limits>
+#include <memory>
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -30,7 +33,7 @@ namespace {
 // Change kTimeLimit to something higher if you need more time to capture a
 // trace.
 constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromSeconds(2);
-constexpr int kWarmupRuns = 5;
+constexpr int kWarmupRuns = 10000;
 constexpr int kTimeCheckInterval = 100000;
 
 // Size constants are mostly arbitrary, but try to simulate something like CSS
@@ -78,12 +81,10 @@ class PartitionAllocator : public Allocator {
   void* Alloc(size_t size) override {
     return alloc_.AllocFlagsNoHooks(0, size);
   }
-  void Free(void* data) override {
-    base::ThreadSafePartitionRoot::FreeNoHooks(data);
-  }
+  void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  base::ThreadSafePartitionRoot alloc_{false};
+  ThreadSafePartitionRoot alloc_{false, false};
 };
 
 class TestLoopThread : public PlatformThread::Delegate {

@@ -5,6 +5,7 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -74,8 +75,8 @@ base::ThreadSafePartitionRoot& Allocator() {
     return *root;
   }
 
-  auto* new_root = new (g_allocator_buffer)
-      base::ThreadSafePartitionRoot(false /* enforce_alignment */);
+  auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot(
+      false /* enforce_alignment */, true /* enable_thread_cache */);
   g_root_.store(new_root, std::memory_order_release);
 
   // Semantically equivalent to base::Lock::Release().
@@ -100,8 +101,9 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
+  // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator{
-      true /* enforce_alignment */};
+      true /* enforce_alignment */, false /* enable_thread_cache */};
   return aligned_allocator->AlignedAllocFlags(base::PartitionAllocNoHooks,
                                               alignment, size);
 }
