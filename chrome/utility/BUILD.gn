@@ -105,6 +105,8 @@ static_library("utility") {
     deps += [
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
+      "//chrome/services/sharing",
+      "//chrome/services/sharing/public/mojom",
       "//chrome/services/speech:lib",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
@@ -156,8 +158,6 @@ static_library("utility") {
   if (is_chromeos) {
     deps += [
       "//chrome/services/file_util",
-      "//chrome/services/sharing",
-      "//chrome/services/sharing/public/mojom:mojom",
       "//chromeos/assistant:buildflags",
       "//chromeos/services/ime:lib",
       "//chromeos/services/ime/public/mojom",
