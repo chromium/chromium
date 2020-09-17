@@ -259,7 +259,7 @@
   INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO(category_group);                    \
   trace_event_internal::ScopedTracer INTERNAL_TRACE_EVENT_UID(tracer);       \
   if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED()) {                       \
-    base::trace_event::TraceEventHandle h =                                  \
+    base::trace_event::TraceEventHandle INTERNAL_TRACE_EVENT_UID(h) =        \
         trace_event_internal::AddTraceEvent(                                 \
             TRACE_EVENT_PHASE_COMPLETE,                                      \
             INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,          \
@@ -267,7 +267,8 @@
             TRACE_EVENT_FLAG_NONE, trace_event_internal::kNoId,              \
             ##__VA_ARGS__);                                                  \
     INTERNAL_TRACE_EVENT_UID(tracer).Initialize(                             \
-        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name, h);          \
+        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,              \
+        INTERNAL_TRACE_EVENT_UID(h));                                        \
   }
 
 #define INTERNAL_TRACE_EVENT_ADD_SCOPED_WITH_FLAGS(category_group, name,     \
@@ -275,14 +276,15 @@
   INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO(category_group);                    \
   trace_event_internal::ScopedTracer INTERNAL_TRACE_EVENT_UID(tracer);       \
   if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED()) {                       \
-    base::trace_event::TraceEventHandle h =                                  \
+    base::trace_event::TraceEventHandle INTERNAL_TRACE_EVENT_UID(h) =        \
         trace_event_internal::AddTraceEvent(                                 \
             TRACE_EVENT_PHASE_COMPLETE,                                      \
             INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,          \
             trace_event_internal::kGlobalScope, trace_event_internal::kNoId, \
             flags, trace_event_internal::kNoId, ##__VA_ARGS__);              \
     INTERNAL_TRACE_EVENT_UID(tracer).Initialize(                             \
-        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name, h);          \
+        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,              \
+        INTERNAL_TRACE_EVENT_UID(h));                                        \
   }
 
 #define INTERNAL_TRACE_EVENT_ADD_SCOPED_WITH_FLOW(category_group, name,      \
@@ -293,14 +295,15 @@
     trace_event_internal::TraceID trace_event_bind_id((bind_id));            \
     unsigned int trace_event_flags =                                         \
         flow_flags | trace_event_bind_id.id_flags();                         \
-    base::trace_event::TraceEventHandle h =                                  \
+    base::trace_event::TraceEventHandle INTERNAL_TRACE_EVENT_UID(h) =        \
         trace_event_internal::AddTraceEvent(                                 \
             TRACE_EVENT_PHASE_COMPLETE,                                      \
             INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,          \
             trace_event_internal::kGlobalScope, trace_event_internal::kNoId, \
             trace_event_flags, trace_event_bind_id.raw_id(), ##__VA_ARGS__); \
     INTERNAL_TRACE_EVENT_UID(tracer).Initialize(                             \
-        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name, h);          \
+        INTERNAL_TRACE_EVENT_UID(category_group_enabled), name,              \
+        INTERNAL_TRACE_EVENT_UID(h));                                        \
   }
 
 // Implementation detail: internal macro to create static category and add
