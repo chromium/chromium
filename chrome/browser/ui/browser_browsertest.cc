@@ -1949,7 +1949,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose3) {
+// Disabled because of timeouts in several builders.
+// https://crbug.com/1129313
+IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
 #if defined(OS_MAC)
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
