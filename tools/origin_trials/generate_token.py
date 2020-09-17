@@ -142,6 +142,7 @@ def main():
   parser.add_argument("--version",
                       help="Token version to use. Currently only version 2"
                       "and version 3 are supported.",
+                      default='3',
                       type=VersionFromArg)
   parser.add_argument("origin",
                       help="Origin for which to enable the feature. This can "
@@ -214,7 +215,7 @@ def main():
     sys.exit(1)
 
   if (not args.version):
-    print("Invalid token version.")
+    print("Invalid token version. Only version 2 and 3 are supported.")
     sys.exit(1)
 
   if (args.is_third_party is not None and args.version[0] != 3):
