@@ -13,12 +13,6 @@
 namespace base {
 namespace ios {
 
-// Returns whether the operating system is iOS 10 or later.
-BASE_EXPORT bool IsRunningOnIOS10OrLater();
-
-// Returns whether the operating system is iOS 11 or later.
-BASE_EXPORT bool IsRunningOnIOS11OrLater();
-
 // Returns whether the operating system is iOS 12 or later.
 BASE_EXPORT bool IsRunningOnIOS12OrLater();
 
