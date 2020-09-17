@@ -3213,7 +3213,7 @@
   {
     "name": "notification-scheduler-debug-options",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "ntp-dismiss-promos",
@@ -4496,12 +4496,12 @@
   {
     "name": "update-notification-scheduling-integration",
     "owners": [ "//chrome/browser/updates/OWNERS" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "update-notification-scheduling-show-immediately",
     "owners": [ "//chrome/browser/updates/OWNERS" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "updated_cellular_activation_ui",
