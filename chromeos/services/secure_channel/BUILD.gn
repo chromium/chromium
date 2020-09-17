@@ -108,6 +108,8 @@ static_library("secure_channel") {
     "nearby_connection_manager.h",
     "nearby_connection_manager_impl.cc",
     "nearby_connection_manager_impl.h",
+    "nearby_initiator_connection_attempt.cc",
+    "nearby_initiator_connection_attempt.h",
     "nearby_initiator_failure_type.cc",
     "nearby_initiator_failure_type.h",
     "nearby_initiator_operation.cc",
