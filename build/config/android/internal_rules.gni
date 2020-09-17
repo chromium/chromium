@@ -988,9 +988,11 @@ if (enable_java_templates) {
         pool = "//build/toolchain:link_pool($default_toolchain)"
       }
 
-      # Lint requires generated sources and generated resources from the build.
-      # Turbine __header targets depend on all generated sources, and the
-      # __assetres targets depend on all generated resources.
+      # Lint only requires generated sources and generated resources from the
+      # build. Since turbine __header targets already depend on and generate all
+      # the generated sources, and the __assetres targets include all generated
+      # resources, lint only needs to depend on the header and assetres targets
+      # rather than the top level java targets.
       if (defined(invoker.deps)) {
         foreach(_dep, invoker.deps) {
           _target_label = get_label_info(_dep, "label_no_toolchain")
@@ -998,12 +1000,16 @@ if (enable_java_templates) {
               filter_exclude([ _target_label ], _java_resource_patterns) !=
               []) {
             deps += [
+              # Strictly speaking the __header target is sufficient, since they
+              # already depend on resources (due to srcjar deps), but prefer to
+              # be more explicit here since if/when __header targets stop
+              # depending on resources (e.g. if R.java generation moves to java
+              # targets), lint will not be affected.
               "${_target_label}__assetres",
               "${_target_label}__header",
             ]
           } else {
-            # Keep non-java deps as they may generate files used only by lint.
-            # e.g. generated suppressions.xml files.
+            # Keep non-java deps as they may generate files used by lint.
             deps += [ _dep ]
           }
         }
@@ -1106,13 +1112,6 @@ if (enable_java_templates) {
           # The full classpath is required for annotation checks like @IntDef.
           "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
         ]
-
-        if (defined(invoker.lint_expected_warnings)) {
-          args += [
-            "--expected-warnings",
-            invoker.lint_expected_warnings,
-          ]
-        }
       }
 
       outputs = [ _stamp_path ]
