@@ -308,7 +308,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // We don't care whether this result contains only spaces if we
   // are breaking after any space. We shouldn't early return either
   // in that case.
-  if (!is_break_after_any_space &&
+  if (!is_break_after_any_space && break_opportunity.non_hangable_run_end &&
       break_opportunity.non_hangable_run_end <= start) {
     // TODO (jfenandez): There may be cases where candidate_break is
     // not a breakable space but we also want to early return for
@@ -332,6 +332,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     result_out->non_hangable_run_end = break_opportunity.non_hangable_run_end;
     if (result_out->is_overflow)
       return ShapeToEnd(start, first_safe, range_start, range_end);
+    break_opportunity.offset = range_end;
   }
   CheckBreakOffset(break_opportunity.offset, start, range_end);
 
@@ -369,9 +370,9 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   // early return if offset >= range_end ?
   if (break_opportunity.offset == range_end)
     reshape_line_end = false;
-  if (!is_break_after_any_space) {
+  if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
     break_opportunity.offset =
-        std::max(start + 1, break_opportunity.non_hangable_run_end);
+        std::max(start + 1, *break_opportunity.non_hangable_run_end);
   }
   unsigned last_safe = break_opportunity.offset;
   if (reshape_line_end) {
@@ -381,9 +382,9 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     // preceding boundary is tried until the available space is sufficient.
     while (true) {
       DCHECK_LE(start, break_opportunity.offset);
-      if (!is_break_after_any_space) {
+      if (!is_break_after_any_space && break_opportunity.non_hangable_run_end) {
         break_opportunity.offset =
-            std::max(start + 1, break_opportunity.non_hangable_run_end);
+            std::max(start + 1, *break_opportunity.non_hangable_run_end);
       }
       last_safe =
           result_->CachedPreviousSafeToBreakOffset(break_opportunity.offset);
