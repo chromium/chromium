@@ -4,6 +4,7 @@
 
 module location.nearby.connections.mojom;
 
+import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/file.mojom";
 
 // Generic result status of NearbyConnections API calls.
@@ -131,6 +132,10 @@ struct AdvertisingOptions {
   // you can initially connect as a kP2pCluster and then trim connections until
   // you match kP2pStar or kP2pPointToPoint before upgrading the bandwidth.
   bool enforce_topology_constraints = true;
+  // Optional. If set, BLE advertisements will be in their "fast advertisement"
+  // form, use this UUID, and non-connectable; if empty, BLE advertisements
+  // will otherwise be normal and connectable.
+  bluetooth.mojom.UUID fast_advertisement_service_uuid;
 };
 
 // Options for a call to NearbyConnections::StartDiscovery().

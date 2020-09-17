@@ -18,6 +18,8 @@
 namespace {
 
 const char kServiceId[] = "NearbySharing";
+const char kFastAdvertisementServiceUuid[] =
+    "0000fef3-0000-1000-8000-00805f9b34fb";
 const location::nearby::connections::mojom::Strategy kStrategy =
     location::nearby::connections::mojom::Strategy::kP2pPointToPoint;
 
@@ -91,9 +93,12 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   incoming_connection_listener_ = listener;
   nearby_connections_->StartAdvertising(
       endpoint_info, kServiceId,
-      AdvertisingOptions::New(kStrategy, std::move(allowed_mediums),
-                              /*auto_upgrade_bandwidth=*/is_high_power,
-                              /*enforce_topology_constraints=*/true),
+      AdvertisingOptions::New(
+          kStrategy, std::move(allowed_mediums),
+          /*auto_upgrade_bandwidth=*/is_high_power,
+          /*enforce_topology_constraints=*/true,
+          /*fast_advertisement_service_uuid=*/
+          device::BluetoothUUID(kFastAdvertisementServiceUuid)),
       std::move(lifecycle_listener), std::move(callback));
 }
 
@@ -124,6 +129,8 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   }
 
   discovery_listener_ = listener;
+  // TODO(b/168659459): Inject kFastAdvertisementServiceUuid once BLE scanning
+  // actually uses it.
   nearby_connections_->StartDiscovery(
       kServiceId, DiscoveryOptions::New(kStrategy),
       endpoint_discovery_listener_.BindNewPipeAndPassRemote(),

@@ -77,6 +77,11 @@ class BleMedium : public api::BleMedium,
   // events we don't care about outside of discovery don't pile up.
   mojo::Receiver<bluetooth::mojom::AdapterObserver> adapter_observer_{this};
 
+  // A map of service IDs (e.g., "NearbySharing") to their respective fast
+  // advertisement UUIDs, as informed by active registered advertisements.
+  std::map<std::string, device::BluetoothUUID>
+      registered_service_id_to_fast_advertisement_service_uuid_map_;
+
   // Keyed by service UUID of the advertisement.
   std::map<device::BluetoothUUID, mojo::Remote<bluetooth::mojom::Advertisement>>
       registered_advertisements_map_;

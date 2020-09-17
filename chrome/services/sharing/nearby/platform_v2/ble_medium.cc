@@ -23,9 +23,14 @@ bool BleMedium::StartAdvertising(
     const std::string& service_id,
     const ByteArray& advertisement,
     const std::string& fast_advertisement_service_uuid) {
+  // Chrome Nearby BLE cannot support regular advertisements; only Fast
+  // Advertisements. Ensure |fast_advertisement_service_uuid| is provided.
+  DCHECK(!fast_advertisement_service_uuid.empty());
+
   StopAdvertising(service_id);
 
-  auto service_uuid = device::BluetoothUUID(service_id);
+  auto service_uuid = device::BluetoothUUID(fast_advertisement_service_uuid);
+
   mojo::PendingRemote<bluetooth::mojom::Advertisement> pending_advertisement;
   bool success = adapter_->RegisterAdvertisement(
       service_uuid,
@@ -35,6 +40,9 @@ bool BleMedium::StartAdvertising(
 
   if (!success || !pending_advertisement.is_valid())
     return false;
+
+  registered_service_id_to_fast_advertisement_service_uuid_map_.emplace(
+      service_id, service_uuid);
 
   auto& remote_advertisement =
       registered_advertisements_map_
@@ -47,13 +55,22 @@ bool BleMedium::StartAdvertising(
 }
 
 bool BleMedium::StopAdvertising(const std::string& service_id) {
-  auto it =
-      registered_advertisements_map_.find(device::BluetoothUUID(service_id));
-  if (it == registered_advertisements_map_.end())
+  auto uuid_it =
+      registered_service_id_to_fast_advertisement_service_uuid_map_.find(
+          service_id);
+  if (uuid_it ==
+      registered_service_id_to_fast_advertisement_service_uuid_map_.end()) {
+    return true;
+  }
+
+  auto advertisement_it = registered_advertisements_map_.find(uuid_it->second);
+  registered_service_id_to_fast_advertisement_service_uuid_map_.erase(uuid_it);
+
+  if (advertisement_it == registered_advertisements_map_.end())
     return true;
 
-  bool success = it->second->Unregister();
-  registered_advertisements_map_.erase(it);
+  bool success = advertisement_it->second->Unregister();
+  registered_advertisements_map_.erase(advertisement_it);
 
   return success;
 }

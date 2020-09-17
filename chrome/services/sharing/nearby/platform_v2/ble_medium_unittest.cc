@@ -24,11 +24,12 @@ namespace chrome {
 
 namespace {
 
-const char kServiceName[] = "NearbySharing";
-const char kServiceId1[] = "00000000-0000-0000-0000-000000000001";
+const char kServiceId1[] = "NearbySharing";
+const char kServiceId2[] = "PhoneHub";
 const char kFastAdvertisementServiceId1[] =
-    "00000000-0000-0000-0000-000000000011";
-const char kServiceId2[] = "00000000-0000-0000-0000-000000000002";
+    "00000000-0000-0000-0000-000000000001";
+const char kFastAdvertisementServiceId2[] =
+    "00000000-0000-0000-0000-000000000002";
 const char kDeviceAddress[] = "DeviceAddress";
 const char kDeviceServiceData1Str[] = "Device_Advertisement1";
 const char kDeviceServiceData2Str[] = "Device_Advertisement2";
@@ -223,25 +224,25 @@ class BleMediumTest : public testing::Test {
 
 TEST_F(BleMediumTest, TestAdvertising) {
   ASSERT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId1)));
+      device::BluetoothUUID(kFastAdvertisementServiceId1)));
   ASSERT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId2)));
+      device::BluetoothUUID(kFastAdvertisementServiceId2)));
 
   ble_medium_->StartAdvertising(kServiceId1, ByteArray(kDeviceServiceData1Str),
                                 kFastAdvertisementServiceId1);
   EXPECT_EQ(GetByteVector(kDeviceServiceData1Str),
             *fake_adapter_->GetRegisteredAdvertisementServiceData(
-                device::BluetoothUUID(kServiceId1)));
+                device::BluetoothUUID(kFastAdvertisementServiceId1)));
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId2)));
+      device::BluetoothUUID(kFastAdvertisementServiceId2)));
 
   ble_medium_->StartAdvertising(kServiceId2, ByteArray(kDeviceServiceData2Str),
-                                kFastAdvertisementServiceId1);
+                                kFastAdvertisementServiceId2);
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId1)));
+      device::BluetoothUUID(kFastAdvertisementServiceId1)));
   EXPECT_EQ(GetByteVector(kDeviceServiceData2Str),
             *fake_adapter_->GetRegisteredAdvertisementServiceData(
-                device::BluetoothUUID(kServiceId2)));
+                device::BluetoothUUID(kFastAdvertisementServiceId2)));
 
   {
     base::RunLoop run_loop;
@@ -251,9 +252,9 @@ TEST_F(BleMediumTest, TestAdvertising) {
   }
 
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId1)));
+      device::BluetoothUUID(kFastAdvertisementServiceId1)));
   EXPECT_TRUE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId2)));
+      device::BluetoothUUID(kFastAdvertisementServiceId2)));
 
   {
     base::RunLoop run_loop;
@@ -263,17 +264,18 @@ TEST_F(BleMediumTest, TestAdvertising) {
   }
 
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId1)));
+      device::BluetoothUUID(kFastAdvertisementServiceId1)));
   EXPECT_FALSE(fake_adapter_->GetRegisteredAdvertisementServiceData(
-      device::BluetoothUUID(kServiceId2)));
+      device::BluetoothUUID(kFastAdvertisementServiceId2)));
 }
 
 TEST_F(BleMediumTest, TestScanning_OneService) {
-  StartScanning(kServiceId1);
+  StartScanning(kFastAdvertisementServiceId1);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(device::BluetoothUUID(kServiceId1),
-                                    GetByteVector(kDeviceServiceData1Str));
+  service_data_map.insert_or_assign(
+      device::BluetoothUUID(kFastAdvertisementServiceId1),
+      GetByteVector(kDeviceServiceData1Str));
 
   NotifyDeviceAdded(kDeviceAddress, service_data_map,
                     /*num_expected_peripherals_discovered=*/1u);
@@ -281,10 +283,11 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   auto& last_peripheral_discovered_args = last_peripheral_discovered_args_[0];
   const auto* first_discovered_ble_peripheral =
       last_peripheral_discovered_args.first;
-  EXPECT_EQ(kServiceId1, last_peripheral_discovered_args.second);
-  VerifyByteArrayEquals(
-      first_discovered_ble_peripheral->GetAdvertisementBytes(kServiceId1),
-      kDeviceServiceData1Str);
+  EXPECT_EQ(kFastAdvertisementServiceId1,
+            last_peripheral_discovered_args.second);
+  VerifyByteArrayEquals(first_discovered_ble_peripheral->GetAdvertisementBytes(
+                            kFastAdvertisementServiceId1),
+                        kDeviceServiceData1Str);
 
   // The same information should be returned on a DeviceChanged event, with
   // the same BlePeripheral reference.
@@ -294,9 +297,11 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   last_peripheral_discovered_args = last_peripheral_discovered_args_[0];
   EXPECT_EQ(first_discovered_ble_peripheral,
             last_peripheral_discovered_args.first);
-  EXPECT_EQ(kServiceId1, last_peripheral_discovered_args.second);
+  EXPECT_EQ(kFastAdvertisementServiceId1,
+            last_peripheral_discovered_args.second);
   VerifyByteArrayEquals(
-      last_peripheral_discovered_args.first->GetAdvertisementBytes(kServiceId1),
+      last_peripheral_discovered_args.first->GetAdvertisementBytes(
+          kFastAdvertisementServiceId1),
       kDeviceServiceData1Str);
 
   // Again, the same BlePeripheral reference should be marked as lost.
@@ -305,20 +310,22 @@ TEST_F(BleMediumTest, TestScanning_OneService) {
   const auto& last_peripheral_lost_args = last_peripheral_lost_args_[0];
   const auto* lost_ble_peripheral = last_peripheral_lost_args.first;
   EXPECT_EQ(first_discovered_ble_peripheral, lost_ble_peripheral);
-  EXPECT_EQ(kServiceId1, last_peripheral_lost_args.second);
+  EXPECT_EQ(kFastAdvertisementServiceId1, last_peripheral_lost_args.second);
 
-  StopScanning(kServiceId1);
+  StopScanning(kFastAdvertisementServiceId1);
 }
 
 TEST_F(BleMediumTest, TestScanning_MultipleServices) {
-  StartScanning(kServiceId1);
-  StartScanning(kServiceId2);
+  StartScanning(kFastAdvertisementServiceId1);
+  StartScanning(kFastAdvertisementServiceId2);
 
   base::flat_map<device::BluetoothUUID, std::vector<uint8_t>> service_data_map;
-  service_data_map.insert_or_assign(device::BluetoothUUID(kServiceId1),
-                                    GetByteVector(kDeviceServiceData1Str));
-  service_data_map.insert_or_assign(device::BluetoothUUID(kServiceId2),
-                                    GetByteVector(kDeviceServiceData2Str));
+  service_data_map.insert_or_assign(
+      device::BluetoothUUID(kFastAdvertisementServiceId1),
+      GetByteVector(kDeviceServiceData1Str));
+  service_data_map.insert_or_assign(
+      device::BluetoothUUID(kFastAdvertisementServiceId2),
+      GetByteVector(kDeviceServiceData2Str));
 
   // Discovering a device with 2 desired service ids should trigger discovery
   // callbacks for both.
@@ -327,31 +334,31 @@ TEST_F(BleMediumTest, TestScanning_MultipleServices) {
   ASSERT_EQ(2u, last_peripheral_discovered_args_.size());
   VerifyByteArrayEquals(
       last_peripheral_discovered_args_[0].first->GetAdvertisementBytes(
-          kServiceId1),
+          kFastAdvertisementServiceId1),
       kDeviceServiceData1Str);
   VerifyByteArrayEquals(
       last_peripheral_discovered_args_[1].first->GetAdvertisementBytes(
-          kServiceId2),
+          kFastAdvertisementServiceId2),
       kDeviceServiceData2Str);
 
   NotifyDeviceRemoved(kDeviceAddress, /*num_expected_peripherals_lost=*/2u);
   ASSERT_EQ(2u, last_peripheral_lost_args_.size());
 
-  StopScanning(kServiceId1);
-  StopScanning(kServiceId2);
+  StopScanning(kFastAdvertisementServiceId1);
+  StopScanning(kFastAdvertisementServiceId2);
 }
 
 TEST_F(BleMediumTest, TestStartAcceptingConnections) {
   // StartAcceptingConnections() should do nothing but still return true.
   EXPECT_TRUE(
-      ble_medium_->StartAcceptingConnections(kServiceName, /*callback=*/{}));
+      ble_medium_->StartAcceptingConnections(kServiceId1, /*callback=*/{}));
 }
 
 TEST_F(BleMediumTest, TestConnect) {
   chrome::BlePeripheral ble_peripheral(bluetooth::mojom::DeviceInfo::New());
 
   // Connect() should do nothing and not return a valid api::BleSocket.
-  EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceName));
+  EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceId1));
 }
 
 }  // namespace chrome

@@ -34,7 +34,9 @@ namespace connections {
 
 namespace {
 
-const char kServiceId[] = "service-id";
+const char kServiceId[] = "NearbySharing";
+const char kFastAdvertisementServiceUuid[] =
+    "0000fef3-0000-1000-8000-00805f9b34fb";
 const char kRemoteEndpointId[] = "remote_endpoint_id";
 const char kEndpointInfo[] = {0x0d, 0x07, 0x07, 0x07, 0x07};
 const char kRemoteEndpointInfo[] = {0x0d, 0x07, 0x06, 0x08, 0x09};
@@ -48,10 +50,12 @@ mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   auto allowed_mediums = mojom::MediumSelection::New(/*bluetooth=*/true,
                                                      /*web_rtc=*/false,
                                                      /*wifi_lan=*/true);
-  return mojom::AdvertisingOptions::New(mojom::Strategy::kP2pPointToPoint,
-                                        std::move(allowed_mediums),
-                                        /*auto_upgrade_bandwidth=*/true,
-                                        /*enforce_topology_constraints=*/true);
+  return mojom::AdvertisingOptions::New(
+      mojom::Strategy::kP2pPointToPoint, std::move(allowed_mediums),
+      /*auto_upgrade_bandwidth=*/true,
+      /*enforce_topology_constraints=*/true,
+      /*fast_advertisement_service_uuid=*/
+      device::BluetoothUUID(kFastAdvertisementServiceUuid));
 }
 
 mojom::ConnectionOptionsPtr CreateConnectionOptions(
