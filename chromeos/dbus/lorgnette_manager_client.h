@@ -42,16 +42,18 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) LorgnetteManagerClient
       const std::string& device_name,
       DBusMethodCallback<lorgnette::ScannerCapabilities> callback) = 0;
 
-  // Request a scanned image using lorgnette's StartScan API and calls
-  // |completion_callback| when completed with a string pointing at the scanned
-  // image data. Image data will be stored in the .png format.
+  // Request a scanned image using lorgnette's StartScan API. As each page is
+  // completed, calls |page_callback| with a string containing the image data.
+  // Calls |completion_callback| when the scan has completed. Image data will
+  // be stored in the .png format.
   //
   // If |progress_callback| is provided, it will be called as scan progress
-  // increases.The progress will be passed as a value from 0-100.
+  // increases. The progress will be passed as a value from 0-100.
   virtual void StartScan(
       std::string device_name,
       const ScanProperties& properties,
-      DBusMethodCallback<std::string> completion_callback,
+      VoidDBusMethodCallback completion_callback,
+      base::RepeatingCallback<void(std::string)> page_callback,
       base::Optional<base::RepeatingCallback<void(int)>> progress_callback) = 0;
 
   // Factory function, creates a new instance and returns ownership.

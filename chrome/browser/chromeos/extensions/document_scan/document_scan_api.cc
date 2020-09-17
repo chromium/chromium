@@ -80,22 +80,29 @@ void DocumentScanScanFunction::OnNamesReceived(
       browser_context())
       ->Scan(
           scanner_name, properties,
-          base::BindOnce(&DocumentScanScanFunction::OnResultsReceived, this));
+          base::BindRepeating(&DocumentScanScanFunction::OnPageReceived, this),
+          base::BindOnce(&DocumentScanScanFunction::OnScanCompleted, this));
 }
 
-void DocumentScanScanFunction::OnResultsReceived(
-    base::Optional<std::string> scanned_image) {
+void DocumentScanScanFunction::OnPageReceived(std::string scanned_image) {
+  // Take only the first page of the scan.
+  if (!scan_data_.has_value()) {
+    scan_data_ = std::move(scanned_image);
+  }
+}
+
+void DocumentScanScanFunction::OnScanCompleted(bool success) {
   // TODO(pstew): Enlist a delegate to display received scan in the UI and
   // confirm that this scan should be sent to the caller. If this is a
   // multi-page scan, provide a means for adding additional scanned images up to
   // the requested limit.
-  if (!scanned_image.has_value()) {
+  if (!scan_data_.has_value() || !success) {
     Respond(Error(kScanImageError));
     return;
   }
 
   std::string image_base64;
-  base::Base64Encode(scanned_image.value(), &image_base64);
+  base::Base64Encode(scan_data_.value(), &image_base64);
   document_scan::ScanResults scan_results;
   scan_results.data_urls.push_back(kPngImageDataUrlPrefix + image_base64);
   scan_results.mime_type = kScannerImageMimeTypePng;

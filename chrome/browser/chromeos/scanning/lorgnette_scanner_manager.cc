@@ -89,20 +89,18 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // LorgnetteScannerManager:
   void Scan(const std::string& scanner_name,
             const LorgnetteManagerClient::ScanProperties& scan_properties,
+            PageCallback page_callback,
             ScanCallback callback) override {
     std::string device_name;
     ScanProtocol protocol;  // Unused.
     if (!GetUsableDeviceNameAndProtocol(scanner_name, device_name, protocol)) {
-      std::move(callback).Run(base::nullopt);
+      std::move(callback).Run(false);
       return;
     }
 
-    GetLorgnetteManagerClient()->StartScan(
-        device_name, scan_properties,
-        base::BindOnce(
-            &LorgnetteScannerManagerImpl::OnScanImageToStringResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::nullopt);
+    GetLorgnetteManagerClient()->StartScan(device_name, scan_properties,
+                                           std::move(callback), page_callback,
+                                           base::nullopt);
   }
 
  private:
@@ -148,12 +146,6 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     }
 
     std::move(callback).Run(capabilities);
-  }
-
-  // Handles the result of calling LorgnetteManagerClient::ScanImageToString().
-  void OnScanImageToStringResponse(ScanCallback callback,
-                                   base::Optional<std::string> scan_data) {
-    std::move(callback).Run(scan_data);
   }
 
   // Uses |response| and zeroconf_scanners_ to rebuild deduped_scanners_.

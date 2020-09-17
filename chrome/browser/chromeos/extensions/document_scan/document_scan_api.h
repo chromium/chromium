@@ -34,8 +34,10 @@ class DocumentScanScanFunction : public ExtensionFunction {
   friend class DocumentScanScanFunctionTest;
 
   void OnNamesReceived(std::vector<std::string> scanner_names);
-  void OnResultsReceived(base::Optional<std::string> scanned_image);
+  void OnPageReceived(std::string scanned_image);
+  void OnScanCompleted(bool success);
 
+  base::Optional<std::string> scan_data_;
   std::unique_ptr<document_scan::Scan::Params> params_;
 };
 

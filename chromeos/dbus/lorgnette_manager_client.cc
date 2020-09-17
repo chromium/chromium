@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -67,7 +68,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // LorgnetteManagerClient override.
   void StartScan(std::string device_name,
                  const ScanProperties& properties,
-                 DBusMethodCallback<std::string> completion_callback,
+                 VoidDBusMethodCallback completion_callback,
+                 base::RepeatingCallback<void(std::string)> page_callback,
                  base::Optional<base::RepeatingCallback<void(int)>>
                      progress_callback) override {
     lorgnette::StartScanRequest request;
@@ -91,8 +93,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(completion_callback), base::nullopt));
+          FROM_HERE, base::BindOnce(std::move(completion_callback), false));
       return;
     }
 
@@ -103,6 +104,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     ScanJobState state;
     state.completion_callback = std::move(completion_callback);
     state.progress_callback = progress_callback;
+    state.page_callback = page_callback;
     state.scan_data_reader = std::move(scan_data_reader);
 
     lorgnette_daemon_proxy_->CallMethod(
@@ -197,8 +199,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // as well as a ScanDataReader which is responsible for reading from the pipe
   // of data into a string.
   struct ScanJobState {
-    DBusMethodCallback<std::string> completion_callback;
+    VoidDBusMethodCallback completion_callback;
     base::Optional<base::RepeatingCallback<void(int)>> progress_callback;
+    base::RepeatingCallback<void(std::string)> page_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
 
@@ -246,16 +249,28 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // Called when scan data read is completed.
   // This is to maintain the lifetime of ScanDataReader instance.
-  void OnScanDataCompleted(DBusMethodCallback<std::string> callback,
-                           std::unique_ptr<ScanDataReader> scan_data_reader,
-                           base::Optional<std::string> data) {
-    std::move(callback).Run(std::move(data));
+  void OnScanDataCompleted(std::string uuid, base::Optional<std::string> data) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!base::Contains(scan_job_state_, uuid)) {
+      LOG(ERROR) << "Received ScanDataCompleted for unrecognized scan job: "
+                 << uuid;
+      return;
+    }
+
+    ScanJobState& state = scan_job_state_[uuid];
+    if (data.has_value()) {
+      state.page_callback.Run(std::move(data.value()));
+    }
+
+    std::move(state.completion_callback).Run(data.has_value());
+    scan_job_state_.erase(uuid);
   }
 
   void OnStartScanResponse(ScanJobState state, dbus::Response* response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!response) {
       LOG(ERROR) << "Failed to obtain StartScanResponse";
-      std::move(state.completion_callback).Run(base::nullopt);
+      std::move(state.completion_callback).Run(false);
       return;
     }
 
@@ -263,13 +278,13 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode StartScanResponse proto";
-      std::move(state.completion_callback).Run(base::nullopt);
+      std::move(state.completion_callback).Run(false);
       return;
     }
 
     if (response_proto.state() == lorgnette::SCAN_STATE_FAILED) {
       LOG(ERROR) << "Starting Scan failed: " << response_proto.failure_reason();
-      std::move(state.completion_callback).Run(base::nullopt);
+      std::move(state.completion_callback).Run(false);
       return;
     }
 
@@ -277,6 +292,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   }
 
   void ScanStatusChangedReceived(dbus::Signal* signal) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     dbus::MessageReader reader(signal);
     lorgnette::ScanStatusChangedSignal signal_proto;
     if (!reader.PopArrayOfBytesAsProto(&signal_proto)) {
@@ -294,7 +310,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (signal_proto.state() == lorgnette::SCAN_STATE_FAILED) {
       LOG(ERROR) << "Scan job " << signal_proto.scan_uuid()
                  << " failed: " << signal_proto.failure_reason();
-      std::move(state.completion_callback).Run(base::nullopt);
+      std::move(state.completion_callback).Run(false);
       scan_job_state_.erase(signal_proto.scan_uuid());
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid()
@@ -302,9 +318,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       ScanDataReader* reader = state.scan_data_reader.get();
       reader->Wait(base::BindOnce(
           &LorgnetteManagerClientImpl::OnScanDataCompleted,
-          weak_ptr_factory_.GetWeakPtr(), std::move(state.completion_callback),
-          std::move(state.scan_data_reader)));
-      scan_job_state_.erase(signal_proto.scan_uuid());
+          weak_ptr_factory_.GetWeakPtr(), signal_proto.scan_uuid()));
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_IN_PROGRESS &&
                state.progress_callback.has_value()) {
       state.progress_callback.value().Run(signal_proto.progress());
@@ -322,7 +336,12 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
 
   // Map from scan UUIDs to ScanDataReader and callbacks for reporting scan
   // progress and completion.
-  base::flat_map<std::string, ScanJobState> scan_job_state_;
+  base::flat_map<std::string, ScanJobState> scan_job_state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Ensures that all callbacks are handled on the same sequence, so that it is
+  // safe to access scan_job_state_ without a lock.
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<LorgnetteManagerClientImpl> weak_ptr_factory_{this};
 };
 

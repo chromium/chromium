@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_FAKE_LORGNETTE_MANAGER_CLIENT_H_
 
 #include <string>
+#include <vector>
 
 #include "base/optional.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
@@ -31,7 +32,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeLorgnetteManagerClient
       DBusMethodCallback<lorgnette::ScannerCapabilities> callback) override;
   void StartScan(std::string device_name,
                  const ScanProperties& properties,
-                 DBusMethodCallback<std::string> completion_callback,
+                 VoidDBusMethodCallback completion_callback,
+                 base::RepeatingCallback<void(std::string)> page_callback,
                  base::Optional<base::RepeatingCallback<void(int)>>
                      progress_callback) override;
 
@@ -45,13 +47,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeLorgnetteManagerClient
       const base::Optional<lorgnette::ScannerCapabilities>&
           capabilities_response);
 
-  // Sets the response returned by ScanImageToString() and StartScan().
-  void SetScanResponse(const base::Optional<std::string>& scan_image_response);
+  // Sets the response returned by StartScan().
+  void SetScanResponse(
+      const base::Optional<std::vector<std::string>>& scan_response);
 
  private:
   base::Optional<lorgnette::ListScannersResponse> list_scanners_response_;
   base::Optional<lorgnette::ScannerCapabilities> capabilities_response_;
-  base::Optional<std::string> scan_image_response_;
+  base::Optional<std::vector<std::string>> scan_response_;
 };
 
 }  // namespace chromeos

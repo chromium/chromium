@@ -27,8 +27,8 @@ class LorgnetteScannerManager : public KeyedService {
       base::OnceCallback<void(std::vector<std::string> scanner_names)>;
   using GetScannerCapabilitiesCallback = base::OnceCallback<void(
       base::Optional<lorgnette::ScannerCapabilities> capabilities)>;
-  using ScanCallback =
-      base::OnceCallback<void(base::Optional<std::string> scan_data)>;
+  using PageCallback = base::RepeatingCallback<void(std::string scan_data)>;
+  using ScanCallback = base::OnceCallback<void(bool success)>;
 
   ~LorgnetteScannerManager() override = default;
 
@@ -46,11 +46,15 @@ class LorgnetteScannerManager : public KeyedService {
       GetScannerCapabilitiesCallback callback) = 0;
 
   // Performs a scan with the scanner specified by |scanner_name| using the
-  // given |scan_properties|. If |scanner_name| does not correspond to a known
-  // scanner, base::nullopt is returned in the callback.
+  // given |scan_properties|. As each scanned page is completed,
+  // |page_callback| is called with the image data for that page. If
+  // |scanner_name| does not correspond to a known scanner, false is returned
+  // in |callback|. After the scan has completed, |callback| will be called
+  // with argument success=true.
   virtual void Scan(
       const std::string& scanner_name,
       const LorgnetteManagerClient::ScanProperties& scan_properties,
+      PageCallback page_callback,
       ScanCallback callback) = 0;
 };
 
