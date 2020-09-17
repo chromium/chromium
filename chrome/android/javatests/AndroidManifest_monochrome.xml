@@ -26,7 +26,7 @@
 android:requestLegacyExternalStorage="true"
 {% endblock %}
 
-{% block extra_application_definitions %}
+{% block base_application_definitions %}
     <meta-data android:name="com.google.ar.core.session_settings"
       android:value="dataset_path,/sdcard/chromium_tests_root/chrome/test/data/xr/dataset.mp4"/>
 {% endblock %}

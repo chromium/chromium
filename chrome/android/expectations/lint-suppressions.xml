@@ -15,7 +15,7 @@ Still reading?
 -->
   <issue id="AcceptsUserCertificates">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
-    <ignore regexp="chrome/android/java/res/xml/network_security_config.xml"/>
+    <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
   <issue id="Autofill">
@@ -124,7 +124,7 @@ Still reading?
   </issue>
   <issue id="InsecureBaseConfiguration">
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
-    <ignore regexp="chrome/android/java/res/xml/network_security_config.xml"/>
+    <ignore regexp="chrome/android/java/res_base/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
   </issue>
   <issue id="Instantiatable" severity="ignore"/>

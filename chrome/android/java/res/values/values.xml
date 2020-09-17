@@ -32,9 +32,6 @@
     <integer name="reload_button_level_reload">0</integer>
     <integer name="reload_button_level_stop">1</integer>
 
-    <!-- Our manage space activity. Default pre-KitKat to be nothing. -->
-    <string name="manage_space_activity"></string>
-
     <!-- Download InfoBar animation. -->
     <integer name="download_infobar_sweep_up_delay">500</integer>
     <integer name="download_infobar_sweep_down_delay">800</integer>

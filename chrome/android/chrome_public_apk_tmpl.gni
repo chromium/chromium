@@ -367,7 +367,11 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":$_unwind_asset_target" ]
     }
 
-    deps += [ "//chrome/android:chrome_all_java" ]
+    _is_bundle = invoker.target_type == "android_app_bundle_module"
+    if (!_is_bundle || !enable_chrome_module ||
+        (!_is_monochrome && !_is_trichrome)) {
+      deps += [ "//chrome/android:chrome_all_java" ]
+    }
 
     # Use a consistent baseline so that it is easy to regenerate by deleting the
     # file and re-building the "android_lint" target.
@@ -471,10 +475,12 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         # would be brought in by the module.
         # This needs to happen for monochrome & trichrome builds of base module if ARCore is enabled.
 
-        deps += [
-          "//chrome/browser/android/vr:ar_java",
-          "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-        ]
+        if (!enable_chrome_module) {
+          deps += [
+            "//chrome/browser/android/vr:ar_java",
+            "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+          ]
+        }
 
         _libarcore_dir = get_label_info(
                              "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
@@ -536,8 +542,10 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         deps += [
           "//android_webview/glue:glue_java",
           "//android_webview/nonembedded:nonembedded_java",
-          "//chrome/android:monochrome_java",
         ]
+        if (!enable_chrome_module || !_is_bundle_module) {
+          deps += [ "//chrome/android:monochrome_java" ]
+        }
 
         if (_include_primary_support) {
           deps += [
@@ -725,5 +733,57 @@ template("monochrome_public_common_apk_or_module_tmpl") {
     ]
     forward_variables_from(invoker, "*", _override_args)
     forward_variables_from(_overrides, _override_args)
+  }
+}
+
+# Generates an AndroidManifest.xml along with an optional second manifest
+# dependent on the original.
+#
+# Variables:
+#   input: The base manifest template with the main application definition.
+#   output: Output path for |input|.
+#   split_input: Path to an alternate manifest that will be built if
+#     definitions_in_split is true.
+#   split_output: Output path for |split_input|.
+#   variables: Variables to pass to the jinja templates.
+#   definitions_in_split: If true will pass skip_definitions=true in the
+#     variables passed to |input| and generate |split_output|.
+template("split_manifest_template") {
+  _definitions_in_split =
+      defined(invoker.definitions_in_split) && invoker.definitions_in_split
+  jinja_template(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "includes",
+                             "input",
+                             "output",
+                             "variables",
+                           ])
+    if (_definitions_in_split) {
+      variables += [ "skip_definitions=true" ]
+    }
+  }
+
+  if (_definitions_in_split) {
+    jinja_template("${target_name}__split") {
+      forward_variables_from(invoker,
+                             [
+                               "includes",
+                               "variables",
+                             ])
+      if (!defined(includes)) {
+        includes = []
+      }
+      includes += [ invoker.input ]
+      input = invoker.split_input
+      output = invoker.split_output
+      variables += [ "base_manifest=${invoker.input}" ]
+    }
+  } else {
+    not_needed(invoker,
+               [
+                 "split_input",
+                 "split_output",
+               ])
   }
 }
