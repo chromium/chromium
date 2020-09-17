@@ -650,6 +650,15 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   EXPECT_EQ(0, details.active_match_ordinal());
   EXPECT_EQ(5, details.number_of_matches());
 
+  // Make sure pressing an arrow key doesn't result in a find request.
+  // See https://crbug.com/1127666
+  auto* helper = find_in_page::FindTabHelper::FromWebContents(web_contents);
+  int find_request_id = helper->current_find_request_id();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
+                                              false, false, false));
+  content::RunUntilInputProcessed(host);
+  EXPECT_EQ(find_request_id, helper->current_find_request_id());
+
   // Find the next match and verify the correct match is highlighted (the
   // one after text that was selected).
   find_bar_controller->Show(true /*find_next*/);
