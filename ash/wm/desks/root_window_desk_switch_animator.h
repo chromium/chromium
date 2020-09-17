@@ -189,6 +189,8 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
       delete;
   ~RootWindowDeskSwitchAnimator() override;
 
+  int ending_desk_index() const { return ending_desk_index_; }
+
   bool starting_desk_screenshot_taken() const {
     return starting_desk_screenshot_taken_;
   }
@@ -223,11 +225,11 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // if necessary based on the last direction as specified in |scroll_delta_x|.
   // |scroll_delta_x| is in touchpad units, it will be converted to display
   // units and then used to shift the animation layer.
-  bool UpdateAnimation(float scroll_delta_x);
+  bool UpdateSwipeAnimation(float scroll_delta_x);
 
-  // Called when a user ends a touchpad gesture. This will animate to the most
+  // Called when a user ends a touchpad swipe. This will animate to the most
   // visible desk.
-  void EndAnimation();
+  void EndSwipeAnimation();
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -256,6 +258,11 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // Gets the x position of the |screenshot_layer_| associated with |index| in
   // its parent layer's coordinates (|animation_layer_owner_->root()|).
   int GetXPositionOfScreenshot(int index);
+
+  // Gets the index of the desk whose screenshot of the animation layer is most
+  // visible to the user. That desk screenshot is the one which aligns the most
+  // with the root window bounds.
+  int GetIndexOfMostVisibleDeskScreenshot() const;
 
   // The root window that this animator is associated with.
   aura::Window* const root_window_;

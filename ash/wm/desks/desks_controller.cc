@@ -332,7 +332,7 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
   return true;
 }
 
-bool DesksController::StartAnimationForGesture(bool move_left) {
+bool DesksController::StartSwipeAnimation(bool move_left) {
   DCHECK(is_enhanced_desk_animations_);
 
   // Activate an adjacent desk. It will replace an ongoing touchpad animation if
@@ -341,16 +341,16 @@ bool DesksController::StartAnimationForGesture(bool move_left) {
                               DesksSwitchSource::kDeskSwitchTouchpad);
 }
 
-void DesksController::UpdateAnimationForGesture(float scroll_delta_x) {
+void DesksController::UpdateSwipeAnimation(float scroll_delta_x) {
   DCHECK(is_enhanced_desk_animations_);
   if (animation_)
-    animation_->Update(scroll_delta_x);
+    animation_->UpdateSwipeAnimation(scroll_delta_x);
 }
 
-void DesksController::EndAnimationForGesture() {
+void DesksController::EndSwipeAnimation() {
   DCHECK(is_enhanced_desk_animations_);
   if (animation_)
-    animation_->End();
+    animation_->EndSwipeAnimation();
 }
 
 bool DesksController::MoveWindowFromActiveDeskTo(

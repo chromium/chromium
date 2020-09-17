@@ -100,25 +100,45 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   return true;
 }
 
-bool DeskActivationAnimation::Update(float scroll_delta_x) {
+bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
   if (!is_continuous_gesture_animation_)
     return false;
 
-  for (const auto& animator : desk_switch_animators_)
-    animator->UpdateAnimation(scroll_delta_x);
+  // List of animators that need a screenshot. It should be either empty or
+  // match the size of |desk_switch_animators_| as all the animations should be
+  // in sync.
+  std::vector<RootWindowDeskSwitchAnimator*> pending_animators;
+  for (const auto& animator : desk_switch_animators_) {
+    if (animator->UpdateSwipeAnimation(scroll_delta_x))
+      pending_animators.push_back(animator.get());
+  }
+
+  // No screenshot needed.
+  if (pending_animators.empty()) {
+    OnEndingDeskScreenshotTaken();
+    return true;
+  }
+
+  // Activate the target desk and take a screenshot.
+  DCHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  ending_desk_index_ = desk_switch_animators_[0]->ending_desk_index();
+  PrepareDeskForScreenshot(ending_desk_index_);
+  for (auto* animator : pending_animators)
+    animator->TakeEndingDeskScreenshot();
   return true;
 }
 
-bool DeskActivationAnimation::End() {
+bool DeskActivationAnimation::EndSwipeAnimation() {
   if (!is_continuous_gesture_animation_)
     return false;
 
+  // End the animation. The animator will determine which desk to animate to,
+  // and update their ending desk index. When the animation is finished we will
+  // activate that desk.
   for (const auto& animator : desk_switch_animators_)
-    animator->EndAnimation();
+    animator->EndSwipeAnimation();
 
-  // TODO(sammiequon): Remove this, this is temporary so we can destroy |this|
-  // before Update and End get filled out.
-  OnDeskSwitchAnimationFinished();
+  ending_desk_index_ = desk_switch_animators_[0]->ending_desk_index();
   return true;
 }
 

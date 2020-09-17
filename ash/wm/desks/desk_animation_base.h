@@ -43,11 +43,11 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   // Updates a current animation by shifting its animating layer.
   // |scroll_delta_x| is the amount of scroll change since the last scroll
   // update event. Returns false if the animation does not support updating.
-  virtual bool Update(float scroll_delta_x);
+  virtual bool UpdateSwipeAnimation(float scroll_delta_x);
 
   // Ends a current animation, animating to a desk determined by the
   // implementatiaion. Returns false if the animation does not support ending.
-  virtual bool End();
+  virtual bool EndSwipeAnimation();
 
   // RootWindowDeskSwitchAnimator::Delegate:
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;

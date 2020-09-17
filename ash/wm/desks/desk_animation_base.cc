@@ -69,11 +69,11 @@ bool DeskAnimationBase::Replace(bool moving_left, DesksSwitchSource source) {
   return false;
 }
 
-bool DeskAnimationBase::Update(float scroll_delta_x) {
+bool DeskAnimationBase::UpdateSwipeAnimation(float scroll_delta_x) {
   return false;
 }
 
-bool DeskAnimationBase::End() {
+bool DeskAnimationBase::EndSwipeAnimation() {
   return false;
 }
 

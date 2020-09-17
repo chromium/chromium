@@ -122,10 +122,10 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
     // Update the continuous desk animation if it has already been started,
     // otherwise start it if it passes the threshold.
     if (scroll_data_->continuous_gesture_started) {
-      DesksController::Get()->UpdateAnimationForGesture(event.x_offset());
+      DesksController::Get()->UpdateSwipeAnimation(event.x_offset());
     } else if (std::abs(scroll_data_->scroll_x) >
                kContinuousGestureMoveThresholdDp) {
-      if (!DesksController::Get()->StartAnimationForGesture(
+      if (!DesksController::Get()->StartSwipeAnimation(
               /*move_left=*/event.x_offset() > 0)) {
         // Starting an animation failed. This can happen if we are on the
         // lockscreen or an ongoing animation from a different source is
@@ -172,7 +172,7 @@ bool WmGestureHandler::EndScroll() {
     return HandleDesksSwitchHorizontalScroll(scroll_x);
 
   if (continuous_gesture_started)
-    DesksController::Get()->EndAnimationForGesture();
+    DesksController::Get()->EndSwipeAnimation();
 
   return continuous_gesture_started;
 }
