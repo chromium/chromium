@@ -4,6 +4,12 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 proto_library("protobuf_http_client_messages_proto") {
   sources = [ "protobuf_http_client_messages.proto" ]
 }
@@ -54,7 +60,6 @@ source_set("base") {
     "running_samples.h",
     "scoped_protobuf_http_request.cc",
     "scoped_protobuf_http_request.h",
-    "scoped_sc_handle_win.h",
     "service_urls.cc",
     "service_urls.h",
     "session_options.cc",
@@ -99,6 +104,10 @@ source_set("base") {
     "//third_party/webrtc_overrides:webrtc_component",
     "//url",
   ]
+
+  if (is_win) {
+    sources += [ "scoped_sc_handle_win.h" ]
+  }
 }
 
 source_set("authorization") {
@@ -129,20 +138,23 @@ source_set("authorization") {
 }
 
 source_set("breakpad") {
-  sources = [
-    "breakpad.h",
-    "breakpad_linux.cc",
-    "breakpad_mac.mm",
-    "breakpad_win.cc",
-  ]
+  sources = [ "breakpad.h" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [ "//base" ]
 
+  if (is_linux || is_chromeos) {
+    sources += [ "breakpad_linux.cc" ]
+  }
+
   if (is_mac) {
+    sources += [ "breakpad_mac.mm" ]
     deps += [ "//third_party/breakpad" ]
-  } else if (is_win) {
+  }
+
+  if (is_win) {
+    sources += [ "breakpad_win.cc" ]
     deps += [ "//third_party/breakpad:breakpad_handler" ]
   }
 }
@@ -199,7 +211,6 @@ source_set("unit_tests") {
   sources = [
     "auto_thread_task_runner_unittest.cc",
     "auto_thread_unittest.cc",
-    "breakpad_win_unittest.cc",
     "buffered_socket_writer_unittest.cc",
     "capabilities_unittest.cc",
     "compound_buffer_unittest.cc",
@@ -233,6 +244,7 @@ source_set("unit_tests") {
   }
 
   if (is_win) {
+    sources += [ "breakpad_win_unittest.cc" ]
     libs = [ "rpcrt4.lib" ]  # For UuidCreate in breakpad_win_unittest.cc.
   }
 }
