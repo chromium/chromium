@@ -440,42 +440,7 @@ static void ThreadSignalHandler(int n, siginfo_t* siginfo, void* sigcontext) {
   *params->success = true;
 }
 
-// ARM EXIDX table contains addresses in sorted order with unwind data, each of
-// 32 bits.
-struct FakeExidx {
-  uintptr_t pc;
-  uintptr_t index_data;
-};
-
 }  // namespace
-
-extern "C" {
-
-_Unwind_Ptr __real_dl_unwind_find_exidx(_Unwind_Ptr, int*);
-
-// Override the default |dl_unwind_find_exidx| function used by libunwind to
-// give a fake unwind table just for the handler function. Otherwise call the
-// original function. Libunwind marks the cursor invalid if it finds even one
-// frame without unwind info. Mocking the info keeps the unwind cursor valid
-// after unwind_init_local() within ThreadSignalHandler().
-__attribute__((visibility("default"), noinline)) _Unwind_Ptr
-__wrap_dl_unwind_find_exidx(_Unwind_Ptr pc, int* length) {
-  if (!CFIBacktraceAndroid::is_chrome_address(pc)) {
-    return __real_dl_unwind_find_exidx(pc, length);
-  }
-  // Fake exidx table that is passed to libunwind to work with chrome functions.
-  // 0x80000000 has high bit set to 1. This means the unwind data is inline and
-  // not in exception table (section 5 EHABI). 0 on the second high byte causes
-  // a 0 proceedure to be lsda. But this is never executed since the pc and sp
-  // will be overridden, before calling unw_step.
-  static const FakeExidx chrome_exidx_data[] = {
-      {CFIBacktraceAndroid::executable_start_addr(), 0x80000000},
-      {CFIBacktraceAndroid::executable_end_addr(), 0x80000000}};
-  *length = base::size(chrome_exidx_data);
-  return reinterpret_cast<_Unwind_Ptr>(chrome_exidx_data);
-}
-
-}  // extern "C"
 
 namespace tracing {
 
