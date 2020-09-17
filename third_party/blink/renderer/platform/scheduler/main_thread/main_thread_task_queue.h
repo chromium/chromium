@@ -121,8 +121,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kJavaScriptTimer = 7,
       kHighPriorityLocalFrame = 8,
       kCompositor = 9,  // Main-thread only.
+      kInput = 10,
 
-      kCount = 10
+      kCount = 11
     };
 
     // kPrioritisationTypeWidthBits is the number of bits required
@@ -226,13 +227,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
           frame_scheduler(nullptr),
           freeze_when_keep_active(false) {}
 
-    QueueCreationParams SetFixedPriority(
-        base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
-            priority) {
-      fixed_priority = priority;
-      return *this;
-    }
-
     QueueCreationParams SetFreezeWhenKeepActive(bool value) {
       freeze_when_keep_active = value;
       return *this;
@@ -319,8 +313,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
     QueueType queue_type;
     base::sequence_manager::TaskQueue::Spec spec;
-    base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
-        fixed_priority;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
     bool freeze_when_keep_active;
@@ -335,11 +327,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   ~MainThreadTaskQueue() override;
 
   QueueType queue_type() const { return queue_type_; }
-
-  base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
-  FixedPriority() const {
-    return fixed_priority_;
-  }
 
   bool CanBeDeferred() const { return queue_traits_.can_be_deferred; }
 
@@ -437,8 +424,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   const QueueType queue_type_;
-  const base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
-      fixed_priority_;
   const QueueTraits queue_traits_;
   const bool freeze_when_keep_active_;
 

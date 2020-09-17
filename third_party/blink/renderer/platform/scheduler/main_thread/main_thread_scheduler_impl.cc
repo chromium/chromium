@@ -183,15 +183,16 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     base::Optional<base::Time> initial_virtual_time)
     : sequence_manager_(std::move(sequence_manager)),
       helper_(sequence_manager_.get(), this),
-      idle_helper_(&helper_,
-                   this,
-                   "MainThreadSchedulerIdlePeriod",
-                   base::TimeDelta(),
-                   helper_.NewTaskQueue(
-                       MainThreadTaskQueue::QueueCreationParams(
-                           MainThreadTaskQueue::QueueType::kIdle)
-                           .SetFixedPriority(
-                               TaskQueue::QueuePriority::kBestEffortPriority))),
+      idle_helper_(
+          &helper_,
+          this,
+          "MainThreadSchedulerIdlePeriod",
+          base::TimeDelta(),
+          helper_.NewTaskQueue(
+              MainThreadTaskQueue::QueueCreationParams(
+                  MainThreadTaskQueue::QueueType::kIdle)
+                  .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
+                                             PrioritisationType::kBestEffort))),
       render_widget_scheduler_signals_(this),
       find_in_page_budget_pool_controller_(
           new FindInPageBudgetPoolController(this)),
@@ -207,8 +208,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       memory_purge_task_queue_(helper_.NewTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIdle)
-              .SetFixedPriority(
-                  TaskQueue::QueuePriority::kBestEffortPriority))),
+              .SetPrioritisationType(MainThreadTaskQueue::QueueTraits::
+                                         PrioritisationType::kBestEffort))),
       memory_purge_manager_(memory_purge_task_queue_->CreateTaskRunner(
           TaskType::kMainThreadTaskQueueMemoryPurge)),
       non_waking_time_domain_(tick_clock()),
@@ -296,6 +297,11 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
   g_main_thread_scheduler = this;
+
+  // Explicitly set the priority of this queue since it is not managed by
+  // the main thread scheduler.
+  memory_purge_task_queue_->SetQueuePriority(
+      ComputePriority(memory_purge_task_queue_.get()));
 }
 
 MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
@@ -2614,19 +2620,19 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
     return frame_scheduler->ComputePriority(task_queue);
   }
 
-  base::Optional<TaskQueue::QueuePriority> fixed_priority =
-      task_queue->FixedPriority();
-  if (fixed_priority) {
-    return fixed_priority.value();
+  switch (task_queue->GetPrioritisationType()) {
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor:
+      return main_thread_only().compositor_priority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kInput:
+      return TaskQueue::QueuePriority::kHighestPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort:
+      return TaskQueue::QueuePriority::kBestEffortPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular:
+      return TaskQueue::QueuePriority::kNormalPriority;
+    default:
+      NOTREACHED();
+      return TaskQueue::QueuePriority::kNormalPriority;
   }
-
-  if (task_queue->GetPrioritisationType() ==
-      MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
-    return main_thread_only().compositor_priority;
-  }
-
-  // Default priority.
-  return TaskQueue::QueuePriority::kNormalPriority;
 }
 
 void MainThreadSchedulerImpl::OnBeginNestedRunLoop() {

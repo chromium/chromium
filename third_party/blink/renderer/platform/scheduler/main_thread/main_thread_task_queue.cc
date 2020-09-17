@@ -107,7 +107,6 @@ MainThreadTaskQueue::MainThreadTaskQueue(
     MainThreadSchedulerImpl* main_thread_scheduler)
     : TaskQueue(std::move(impl), spec),
       queue_type_(params.queue_type),
-      fixed_priority_(params.fixed_priority),
       queue_traits_(params.queue_traits),
       freeze_when_keep_active_(params.freeze_when_keep_active),
       web_scheduling_priority_(params.web_scheduling_priority),

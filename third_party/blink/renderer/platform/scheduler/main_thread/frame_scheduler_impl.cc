@@ -1005,11 +1005,18 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   if (queue_priority_pair != resource_loading_task_queue_priorities_.end())
     return queue_priority_pair->value;
 
-  base::Optional<TaskQueue::QueuePriority> fixed_priority =
-      task_queue->FixedPriority();
-
-  if (fixed_priority)
-    return fixed_priority.value();
+  // TODO(kdillon): Ordering here is relative to the experiments below. Cleanup
+  // unused experiment logic so that this switch can be merged with the
+  // prioritisation type decisions below.
+  switch (task_queue->GetPrioritisationType()) {
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::
+        kInternalScriptContinuation:
+      return TaskQueue::QueuePriority::kVeryHighPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort:
+      return TaskQueue::QueuePriority::kBestEffortPriority;
+    default:
+      break;
+  }
 
   // TODO(shaseley): This should use lower priorities if the frame is
   // deprioritized. Change this once we refactor and add frame policy/priorities
