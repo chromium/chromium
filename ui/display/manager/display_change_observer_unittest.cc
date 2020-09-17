@@ -32,7 +32,7 @@ float ComputeDeviceScaleFactor(float diagonal_inch,
   float diagonal_pixel = std::sqrt(std::pow(resolution.width(), 2) +
                                    std::pow(resolution.height(), 2));
   float dpi = diagonal_pixel / diagonal_inch;
-  return DisplayChangeObserver::FindDeviceScaleFactor(dpi);
+  return DisplayChangeObserver::FindDeviceScaleFactor(dpi, resolution);
 }
 
 std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
@@ -196,12 +196,20 @@ TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
 
 TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
   // sanity check
-  EXPECT_EQ(1.25f, DisplayChangeObserver::FindDeviceScaleFactor(150));
-  EXPECT_EQ(1.6f, DisplayChangeObserver::FindDeviceScaleFactor(180));
-  EXPECT_EQ(kDsf_1_777, DisplayChangeObserver::FindDeviceScaleFactor(220));
-  EXPECT_EQ(2.f, DisplayChangeObserver::FindDeviceScaleFactor(230));
-  EXPECT_EQ(kDsf_2_252, DisplayChangeObserver::FindDeviceScaleFactor(270));
-  EXPECT_EQ(kDsf_2_666, DisplayChangeObserver::FindDeviceScaleFactor(300));
+  EXPECT_EQ(1.25f,
+            DisplayChangeObserver::FindDeviceScaleFactor(150, gfx::Size()));
+  EXPECT_EQ(1.6f,
+            DisplayChangeObserver::FindDeviceScaleFactor(180, gfx::Size()));
+  EXPECT_EQ(kDsf_1_777,
+            DisplayChangeObserver::FindDeviceScaleFactor(220, gfx::Size()));
+  EXPECT_EQ(2.f,
+            DisplayChangeObserver::FindDeviceScaleFactor(230, gfx::Size()));
+  EXPECT_EQ(2.4f,
+            DisplayChangeObserver::FindDeviceScaleFactor(270, gfx::Size()));
+  EXPECT_EQ(kDsf_2_252, DisplayChangeObserver::FindDeviceScaleFactor(
+                            0, gfx::Size(3000, 2000)));
+  EXPECT_EQ(kDsf_2_666,
+            DisplayChangeObserver::FindDeviceScaleFactor(310, gfx::Size()));
   constexpr struct Data {
     const float diagonal_size;
     const gfx::Size resolution;
@@ -225,6 +233,7 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
       {10.1f,  {1920, 1200}, kDsf_1_777, {1080, 675},  false},
       {11.0f,  {2160, 1440}, 2.f,        {1080, 720},  false},
       {12.3f,  {3000, 2000}, kDsf_2_252, {1332, 888},  true},
+      {15.6f,  {3840, 2160}, 2.4f,       {1600, 900},  true},
       {13.1f,  {3840, 2160}, kDsf_2_666, {1440, 810},  false},
       // clang-format on
   };
@@ -263,10 +272,12 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
 
   float max_scale_factor = kDsf_2_666;
   // Erroneous values should still work.
-  EXPECT_EQ(1.0f, DisplayChangeObserver::FindDeviceScaleFactor(-100.0f));
-  EXPECT_EQ(1.0f, DisplayChangeObserver::FindDeviceScaleFactor(0.0f));
-  EXPECT_EQ(max_scale_factor,
-            DisplayChangeObserver::FindDeviceScaleFactor(10000.0f));
+  EXPECT_EQ(1.0f,
+            DisplayChangeObserver::FindDeviceScaleFactor(-100.0f, gfx::Size()));
+  EXPECT_EQ(1.0f,
+            DisplayChangeObserver::FindDeviceScaleFactor(0.0f, gfx::Size()));
+  EXPECT_EQ(max_scale_factor, DisplayChangeObserver::FindDeviceScaleFactor(
+                                  10000.0f, gfx::Size()));
 }
 
 TEST_P(DisplayChangeObserverTest,

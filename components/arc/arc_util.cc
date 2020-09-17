@@ -309,6 +309,8 @@ int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor) {
   constexpr float kEpsilon = 0.001;
   if (std::abs(device_scale_factor - display::kDsf_2_252) < kEpsilon)
     return 280;
+  if (std::abs(device_scale_factor - 2.4f) < kEpsilon)
+    return 280;
   if (std::abs(device_scale_factor - 1.6f) < kEpsilon)
     return 213;  // TVDPI
   if (std::abs(device_scale_factor - display::kDsf_1_777) < kEpsilon)

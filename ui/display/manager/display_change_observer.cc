@@ -47,9 +47,8 @@ struct DeviceScaleFactorDPIThreshold {
 // Update the list of zoom levels whenever a new device scale factor is added
 // here. See zoom level list in /ui/display/manager/display_util.cc
 const DeviceScaleFactorDPIThreshold kThresholdTableForInternal[] = {
-    {300.f, kDsf_2_666},  {270.0f, kDsf_2_252}, {230.0f, 2.0f},
-    {220.0f, kDsf_1_777}, {180.0f, 1.6f},       {150.0f, 1.25f},
-    {0.0f, 1.0f},
+    {310.f, kDsf_2_666}, {270.0f, 2.4f},  {230.0f, 2.0f}, {220.0f, kDsf_1_777},
+    {180.0f, 1.6f},      {150.0f, 1.25f}, {0.0f, 1.0f},
 };
 
 // Returns a list of display modes for the given |output| that doesn't exclude
@@ -355,16 +354,9 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
                         ? kInchInMm * mode_info->size().width() /
                               snapshot->physical_size().width()
                         : 0;
-  constexpr gfx::Size k225DisplaySizeHack(3000, 2000);
-
   if (snapshot->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
     new_info.set_native(true);
-    // This is a stopgap hack to deal with b/74845106. Unfortunately, some old
-    // devices (like evt) does not have a firmware fix, so we need to keep this.
-    if (mode_info->size() == k225DisplaySizeHack)
-      device_scale_factor = kDsf_2_252;
-    else if (dpi)
-      device_scale_factor = FindDeviceScaleFactor(dpi);
+    device_scale_factor = FindDeviceScaleFactor(dpi, mode_info->size());
   } else {
     ManagedDisplayMode mode;
     if (display_manager_->GetSelectedModeForDisplayId(snapshot->display_id(),
@@ -414,10 +406,19 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 }
 
 // static
-float DisplayChangeObserver::FindDeviceScaleFactor(float dpi) {
-  for (size_t i = 0; i < base::size(kThresholdTableForInternal); ++i) {
-    if (dpi >= kThresholdTableForInternal[i].dpi)
-      return kThresholdTableForInternal[i].device_scale_factor;
+float DisplayChangeObserver::FindDeviceScaleFactor(
+    float dpi,
+    const gfx::Size& size_in_pixels) {
+  // Nocturne has special scale factor 3000/1332=2.252.. for the panel 3kx2k.
+  constexpr gfx::Size k225DisplaySizeHack(3000, 2000);
+
+  if (size_in_pixels == k225DisplaySizeHack)
+    return kDsf_2_252;
+  else {
+    for (size_t i = 0; i < base::size(kThresholdTableForInternal); ++i) {
+      if (dpi >= kThresholdTableForInternal[i].dpi)
+        return kThresholdTableForInternal[i].device_scale_factor;
+    }
   }
   return 1.0f;
 }

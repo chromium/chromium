@@ -57,7 +57,9 @@ class DISPLAY_MANAGER_EXPORT DisplayChangeObserver
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
   // Exposed for testing.
-  DISPLAY_EXPORT static float FindDeviceScaleFactor(float dpi);
+  DISPLAY_EXPORT static float FindDeviceScaleFactor(
+      float dpi,
+      const gfx::Size& size_in_pixels);
 
  private:
   friend class DisplayChangeObserverTest;

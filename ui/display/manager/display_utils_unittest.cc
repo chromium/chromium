@@ -62,7 +62,7 @@ TEST_F(DisplayUtilTest, DisplayZoomsWithInternal) {
   float previous_dsf = 0.f;
   for (const auto& dpi : kDpis) {
     SCOPED_TRACE(base::StringPrintf("dpi=%f", dpi));
-    float dsf = DisplayChangeObserver::FindDeviceScaleFactor(dpi);
+    float dsf = DisplayChangeObserver::FindDeviceScaleFactor(dpi, gfx::Size());
     // Make sure each dpis is mapped to different dsf.
     EXPECT_NE(previous_dsf, dsf);
     previous_dsf = dsf;
