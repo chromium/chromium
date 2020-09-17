@@ -166,8 +166,18 @@ LineIndexer::~LineIndexer() {}
 
 std::string LineIndexer::IndexBy(const gfx::NativeViewAccessible node) const {
   std::string line_index = ":unknown";
-  if (map.find(node) != map.end()) {
-    line_index = map.at(node);
+  if (IsBrowserAccessibilityCocoa(node)) {
+    auto iter = map.find(node);
+    if (iter != map.end()) {
+      line_index = iter->second;
+    }
+  } else if (IsAXUIElement(node)) {
+    for (auto& iter : map) {
+      if (CFEqual(iter.first, node)) {
+        line_index = iter.second;
+        break;
+      }
+    }
   }
   return line_index;
 }

@@ -347,7 +347,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   }
 
   // Accessible object
-  if ([value isKindOfClass:[BrowserAccessibilityCocoa class]]) {
+  if (IsBrowserAccessibilityCocoa(value) || IsAXUIElement(value)) {
     return base::Value(NodeToLineIndex(value, line_indexer));
   }
 
@@ -421,9 +421,9 @@ base::Value AccessibilityTreeFormatterMac::PopulateArray(
 }
 
 std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
-    id cocoa_node,
+    id node,
     const LineIndexer* line_indexer) const {
-  return kConstValuePrefix + line_indexer->IndexBy(cocoa_node);
+  return kConstValuePrefix + line_indexer->IndexBy(node);
 }
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
