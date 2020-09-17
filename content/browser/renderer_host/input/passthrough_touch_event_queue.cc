@@ -145,7 +145,6 @@ void PassthroughTouchEventQueue::ProcessTouchAck(
 
 void PassthroughTouchEventQueue::OnGestureScrollEvent(
     const GestureEventWithLatencyInfo& gesture_event) {
-  // Turn events sent during gesture scrolls to be async.
   if (gesture_event.event.GetType() ==
       blink::WebInputEvent::Type::kGestureScrollUpdate) {
     send_touch_events_async_ = true;
@@ -155,12 +154,11 @@ void PassthroughTouchEventQueue::OnGestureScrollEvent(
 void PassthroughTouchEventQueue::OnGestureEventAck(
     const GestureEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result) {
-  // When the scroll finishes allow TouchEvents to be blocking again.
-  if (event.event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
-    send_touch_events_async_ = false;
-  } else if (event.event.GetType() ==
-             blink::WebInputEvent::Type::kGestureScrollUpdate) {
-    send_touch_events_async_ = true;
+  // Turn events sent during gesture scrolls to be async.
+  if (event.event.GetType() ==
+      blink::WebInputEvent::Type::kGestureScrollUpdate) {
+    send_touch_events_async_ =
+        (ack_result == blink::mojom::InputEventResultState::kConsumed);
   }
 }
 
