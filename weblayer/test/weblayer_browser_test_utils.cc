@@ -95,4 +95,37 @@ void InitializeAutofillWithEventForwarding(
       std::make_unique<StubAutofillProvider>(on_received_form_data));
 }
 
+OneShotNavigationObserver::OneShotNavigationObserver(Shell* shell)
+    : tab_(shell->tab()) {
+  tab_->GetNavigationController()->AddObserver(this);
+}
+
+OneShotNavigationObserver::~OneShotNavigationObserver() {
+  tab_->GetNavigationController()->RemoveObserver(this);
+}
+
+void OneShotNavigationObserver::WaitForNavigation() {
+  run_loop_.Run();
+}
+
+void OneShotNavigationObserver::NavigationCompleted(Navigation* navigation) {
+  completed_ = true;
+  Finish(navigation);
+}
+
+void OneShotNavigationObserver::NavigationFailed(Navigation* navigation) {
+  Finish(navigation);
+}
+
+void OneShotNavigationObserver::Finish(Navigation* navigation) {
+  is_error_page_ = navigation->IsErrorPage();
+  is_download_ = navigation->IsDownload();
+  is_reload_ = navigation->IsReload();
+  was_stop_called_ = navigation->WasStopCalled();
+  load_error_ = navigation->GetLoadError();
+  http_status_code_ = navigation->GetHttpStatusCode();
+  navigation_state_ = navigation->GetState();
+  run_loop_.Quit();
+}
+
 }  // namespace weblayer

@@ -24,6 +24,7 @@
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/test_navigation_observer.h"
+#include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {
 
@@ -284,7 +285,10 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, PauseResume) {
   // Add an initial navigation to avoid the tab being deleted if the first
   // navigation is a download, since we use the tab for convenience in the
   // lambda.
+  OneShotNavigationObserver observer(shell());
   shell()->tab()->GetNavigationController()->Navigate(GURL("about:blank"));
+  observer.WaitForNavigation();
+
   set_started_callback(base::BindLambdaForTesting([&](Download* download) {
     download->Pause();
     GURL url = embedded_test_server()->GetURL(

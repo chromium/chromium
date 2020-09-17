@@ -84,59 +84,6 @@ class NavigationObserverImpl : public NavigationObserver {
   Callback failed_callback_;
 };
 
-class OneShotNavigationObserver : public NavigationObserver {
- public:
-  explicit OneShotNavigationObserver(Shell* shell) : tab_(shell->tab()) {
-    tab_->GetNavigationController()->AddObserver(this);
-  }
-
-  ~OneShotNavigationObserver() override {
-    tab_->GetNavigationController()->RemoveObserver(this);
-  }
-
-  void WaitForNavigation() { run_loop_.Run(); }
-
-  bool completed() { return completed_; }
-  bool is_error_page() { return is_error_page_; }
-  bool is_download() { return is_download_; }
-  bool is_reload() { return is_reload_; }
-  bool was_stop_called() { return was_stop_called_; }
-  Navigation::LoadError load_error() { return load_error_; }
-  int http_status_code() { return http_status_code_; }
-  NavigationState navigation_state() { return navigation_state_; }
-
- private:
-  // NavigationObserver implementation:
-  void NavigationCompleted(Navigation* navigation) override {
-    completed_ = true;
-    Finish(navigation);
-  }
-
-  void NavigationFailed(Navigation* navigation) override { Finish(navigation); }
-
-  void Finish(Navigation* navigation) {
-    is_error_page_ = navigation->IsErrorPage();
-    is_download_ = navigation->IsDownload();
-    is_reload_ = navigation->IsReload();
-    was_stop_called_ = navigation->WasStopCalled();
-    load_error_ = navigation->GetLoadError();
-    http_status_code_ = navigation->GetHttpStatusCode();
-    navigation_state_ = navigation->GetState();
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  Tab* tab_;
-  bool completed_ = false;
-  bool is_error_page_ = false;
-  bool is_download_ = false;
-  bool is_reload_ = false;
-  bool was_stop_called_ = false;
-  Navigation::LoadError load_error_ = Navigation::kNoError;
-  int http_status_code_ = 0;
-  NavigationState navigation_state_ = NavigationState::kWaitingResponse;
-};
-
 }  // namespace
 
 class NavigationBrowserTest : public WebLayerBrowserTest {
