@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_H_
 
+#include "base/callback.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 
@@ -23,6 +24,10 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   WaylandEventWatcher& operator=(const WaylandEventWatcher&) = delete;
   ~WaylandEventWatcher() override;
 
+  // Sets a callback that that shutdowns the browser in case of unrecoverable
+  // error. Can only be set once.
+  void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
+
   // Starts polling for events from the wayland connection file descriptor.
   // This method assumes connection is already estabilished and input objects
   // are already bound and properly initialized.
@@ -39,12 +44,18 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   bool StartWatchingFd(base::WatchableIOMessagePumpPosix::Mode mode);
   void MaybePrepareReadQueue();
 
+  // Checks if |display_| has any error set. If so, |shutdown_cb_| is executed
+  // and false is returned.
+  bool CheckForErrors();
+
   base::MessagePumpForUI::FdWatchController controller_;
 
   wl_display* const display_;  // Owned by WaylandConnection.
 
   bool watching_ = false;
   bool prepared_ = false;
+
+  base::OnceCallback<void()> shutdown_cb_;
 };
 
 }  // namespace ui
