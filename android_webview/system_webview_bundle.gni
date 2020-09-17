@@ -47,6 +47,9 @@ template("system_webview_bundle") {
                                "uncompress_shared_libraries",
                              ])
       android_manifest = "//weblayer/browser/java/AndroidManifest.xml"
+
+      # The manifest depends on the package name from the base build config.
+      android_manifest_dep = _base_module_build_config_target
       deps = [
         "//weblayer/browser/java",
         _base_module_build_config_target,
