@@ -188,6 +188,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'directory-tree'));
     chrome.test.assertTrue(
+        await remoteCall.checkNextTabFocus(appId, 'pinned-toggle'));
+    chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'share-menu-button'));
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'delete-button'));

@@ -538,6 +538,83 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
 };
 
 /**
+ * Verify that the "Available Offline" toggle in the action bar appears and
+ * changes according to the selection.
+ */
+testcase.driveAvailableOfflineActionBar = async () => {
+  // Open Files app on Drive.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+
+  // Check the "Available Offline" toggle is currently hidden as no file is
+  // currently selected.
+  await remoteCall.waitForElement(
+      appId, '#action-bar #pinned-toggle-wrapper[hidden]');
+
+  // Select a hosted file.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="Test Document.gdoc"]');
+
+  // Wait for the entry to be selected.
+  await remoteCall.waitForElement(appId, '.table-row[selected]');
+
+  // Check the "Available Offline" toggle is shown in the action bar, but
+  // disabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle[disabled]:not([checked])');
+
+  // Now select a non-hosted file.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Check the "Available Offline" toggle is now enabled, and pin the file.
+  await remoteCall.waitAndClickElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle:not([disabled]):not([checked])');
+
+  // Wait for the file to be pinned.
+  await remoteCall.waitForElement(
+      appId, '#file-list .pinned[file-name="hello.txt"]');
+
+  // Check the "Available Offline" toggle is enabled and checked.
+  await remoteCall.waitForElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle[checked]:not([disabled])');
+
+  // Select another file that is not pinned.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="world.ogv"]');
+
+  // Check the "Available Offline" toggle is enabled and unchecked.
+  await remoteCall.waitForElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle:not([disabled]):not([checked])');
+
+  // Reselect the previously pinned file.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Check the "Available Offline" toggle is enabled and checked.
+  await remoteCall.waitForElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle[checked]:not([disabled])');
+
+  // Focus on the directory tree.
+  await remoteCall.focus(appId, ['#directory-tree']);
+
+  // Check the "Available Offline" toggle is still available in the action bar.
+  await remoteCall.waitForElement(
+      appId,
+      '#action-bar #pinned-toggle-wrapper:not([hidden]) ' +
+          '#pinned-toggle[checked]:not([disabled])');
+};
+
+/**
  * Tests following links to folders.
  */
 testcase.driveLinkToDirectory = async () => {

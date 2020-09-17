@@ -522,6 +522,7 @@ body.files-ng div.splitter.splitter-active .splitter-button .icon {
   background: none;
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
   color: var(--google-grey-700);
+  font-size: 14px;
   height: 56px;
   overflow: hidden;
 }
@@ -538,7 +539,6 @@ body.check-select .dialog-header:not(.files-ng) {
 
 body.check-select .dialog-header.files-ng {
   color: var(--google-blue-600);
-  font-size: 14px;
 }
 
 /* Display a grey border during check-select mode if we're in a dialog. (This
@@ -1277,6 +1277,18 @@ html[dir='rtl'] #search-box .clear {
 
 #search-box.has-text .clear {
   visibility: visible;
+}
+
+/* Pinned file toggle */
+.dialog-header.files-ng #pinned-toggle-wrapper {
+  display: flex;
+  flex: none;
+}
+
+.dialog-header.files-ng #pinned-toggle-label {
+  color: var(--google-grey-700);
+  margin-inline-end: 16px;
+  margin-inline-start: 12px;
 }
 
 /* Container for the detail and thumbnail list views. */

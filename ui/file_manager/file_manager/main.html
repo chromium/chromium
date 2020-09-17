@@ -363,6 +363,10 @@
       <div id="files-selected-label"></div>
       <div class="spacer"></div>
       <div id="action-bar">
+        <div id="pinned-toggle-wrapper" hidden>
+          <span id="pinned-toggle-label">$i18n{OFFLINE_COLUMN_LABEL}</span>
+          <cr-toggle id="pinned-toggle" command="#toggle-pinned"></cr-toggle>
+        </div>
         <button id="tasks" class="combobutton menu-button" menu="#tasks-menu"
                 tabindex="0" hidden
                 aria-label="$i18n{TASKS_BUTTON_LABEL}">

@@ -1803,7 +1803,7 @@ CommandHandler.COMMANDS_['volume-switch-9'] =
  */
 CommandHandler.COMMANDS_['toggle-pinned'] = new class extends Command {
   execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = fileManager.getSelection().entries;
     const actionsController = fileManager.actionsController;
 
     actionsController.getActionsForEntries(entries).then(
@@ -1828,7 +1828,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends Command {
 
   /** @override */
   canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const entries = fileManager.getSelection().entries;
     const command = event.command;
     const actionsController = fileManager.actionsController;
 

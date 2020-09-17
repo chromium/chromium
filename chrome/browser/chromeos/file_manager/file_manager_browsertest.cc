@@ -635,6 +635,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("driveBackupPhotos"),
                       TestCase("driveAvailableOfflineGearMenu"),
                       TestCase("driveAvailableOfflineDirectoryGearMenu"),
+                      TestCase("driveAvailableOfflineActionBar"),
                       TestCase("driveLinkToDirectory"),
                       TestCase("driveLinkOpenFileThroughLinkedDirectory"),
                       TestCase("driveLinkOpenFileThroughTransitiveLink"),
