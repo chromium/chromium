@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.ui.base.LocalizationUtils;
@@ -451,6 +452,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // This is important because the first run, when completed, will re-launch the original
         // intent. The re-launched intent will still need to know to avoid the FRE.
         FirstRunStatus.setEphemeralSkipFirstRun(true);
+
+        // This pref is written to have a value of true during the FRE's startup. If the user
+        // presses the accept ToS button, this pref's value is overridden with their choice.
+        // However, when the FRE is skipped, that initial value is the opposite of what we want, so
+        // manually set it to false here.
+        // TODO(https://crbug.com/1128955): Remove this once the default is not written on startup.
+        PrivacyPreferencesManager.getInstance().setUsageAndCrashReporting(false);
 
         launchPendingIntentAndFinish();
     }
