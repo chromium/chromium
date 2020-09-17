@@ -18,7 +18,9 @@
 #include "ash/system/message_center/fullscreen_notification_blocker.h"
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
+#include "ash/system/phonehub/phone_hub_notification_controller.h"
 #include "base/command_line.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -95,6 +97,11 @@ MessageCenterController::MessageCenterController() {
           switches::kSuppressMessageCenterPopups)) {
     all_popup_blocker_ =
         std::make_unique<PopupNotificationBlocker>(MessageCenter::Get());
+  }
+
+  if (chromeos::features::IsPhoneHubEnabled()) {
+    phone_hub_notification_controller_ =
+        std::make_unique<PhoneHubNotificationController>();
   }
 
   // Set the system notification source display name ("Chrome OS" or "Chromium
