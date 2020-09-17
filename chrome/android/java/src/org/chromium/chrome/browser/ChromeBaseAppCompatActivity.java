@@ -15,6 +15,7 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -33,6 +34,9 @@ public class ChromeBaseAppCompatActivity
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         mNightModeStateProvider = createNightModeStateProvider();
+
+        // If the activity locale will be overridden enable using language splits.
+        AppLocaleUtils.maybeInstallActivitySplitCompat(this);
 
         Configuration config = new Configuration();
         // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so

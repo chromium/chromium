@@ -8,6 +8,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.google.android.play.core.splitcompat.SplitCompat;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
@@ -66,6 +67,16 @@ public class AppLocaleUtils {
                 ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, languageName);
         if (BundleUtils.isBundle()) {
             ensureLaguageSplitInstalled(languageName);
+        }
+    }
+
+    /**
+     * Enable access to language split for bundle builds with an override language set.
+     * @param context Activity context to enable downloaded language splits on.
+     */
+    public static void maybeInstallActivitySplitCompat(Context context) {
+        if (GlobalAppLocaleController.getInstance().isOverridden() && BundleUtils.isBundle()) {
+            SplitCompat.installActivity(context);
         }
     }
 
