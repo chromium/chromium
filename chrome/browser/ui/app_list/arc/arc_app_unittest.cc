@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/task_runner_util.h"
@@ -27,6 +28,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/arc_apps.h"
@@ -65,6 +67,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/arc/arc_prefs.h"
@@ -92,7 +95,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
@@ -305,6 +310,24 @@ void WaitForIconUpdates(Profile* profile, const std::string& app_id) {
 
   icon_loader.FetchImage(app_id);
   delegate.WaitForIconUpdates(1);
+}
+
+void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
+  ASSERT_FALSE(src.isNull());
+  ASSERT_FALSE(dst.isNull());
+
+  const std::vector<ui::ScaleFactor>& scale_factors =
+      ui::GetSupportedScaleFactors();
+  ASSERT_EQ(2U, scale_factors.size());
+
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForScaleFactor(scale_factor);
+    ASSERT_TRUE(src.HasRepresentation(scale));
+    ASSERT_TRUE(dst.HasRepresentation(scale));
+    ASSERT_TRUE(
+        gfx::test::AreBitmapsEqual(src.GetRepresentation(scale).GetBitmap(),
+                                   dst.GetRepresentation(scale).GetBitmap()));
+  }
 }
 
 enum class ArcState {
@@ -1142,7 +1165,11 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
   ArcDefaultAppTest& operator=(const ArcDefaultAppTest&) = delete;
   ~ArcDefaultAppTest() override = default;
 
-  void SetUp() override { ArcAppModelBuilderRecreate::SetUp(); }
+  void SetUp() override {
+    ArcAppModelBuilderRecreate::SetUp();
+    app_instance()->set_icon_response_type(
+        arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
+  }
 
  protected:
   // ArcAppModelBuilderTest:
@@ -1154,6 +1181,87 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
 
   // Returns true if test needs to wait for default apps on setup.
   virtual bool IsWaitDefaultAppsNeeded() const { return true; }
+
+  void GetImageSkia(std::map<int, base::FilePath>& file_paths,
+                    gfx::ImageSkia& output_image_skia) {
+    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+      base::FilePath file_path = file_paths[scale_factor];
+      ASSERT_TRUE(base::PathExists(file_path));
+
+      std::string unsafe_icon_data;
+      ASSERT_TRUE(base::ReadFileToString(file_path, &unsafe_icon_data));
+
+      float scale = ui::GetScaleForScaleFactor(scale_factor);
+
+      SkBitmap bitmap;
+      gfx::PNGCodec::Decode(
+          reinterpret_cast<const unsigned char*>(&unsafe_icon_data.front()),
+          unsafe_icon_data.length(), &bitmap);
+
+      if (bitmap.width() != roundf(size_in_dip * scale) ||
+          bitmap.height() != roundf(size_in_dip * scale)) {
+        SkBitmap dst;
+        float kAndroidAdaptiveIconPaddingPercentage = 1.0f / 8.0f;
+        int padding = bitmap.width() * kAndroidAdaptiveIconPaddingPercentage;
+        ASSERT_TRUE(bitmap.extractSubset(
+            &dst, RectToSkIRect(gfx::Rect(padding, padding,
+                                          bitmap.width() - 2 * padding,
+                                          bitmap.height() - 2 * padding))));
+        bitmap = dst;
+      }
+
+      const SkBitmap resized = skia::ImageOperations::Resize(
+          bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
+          roundf(size_in_dip * scale), roundf(size_in_dip * scale));
+      output_image_skia.AddRepresentation(gfx::ImageSkiaRep(resized, scale));
+    }
+  }
+
+  void GenerateAppIcon(gfx::ImageSkia& output_image_skia) {
+    base::FilePath base_path;
+    const bool valid_path =
+        base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
+    DCHECK(valid_path);
+
+    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    std::map<int, base::FilePath> foreground_paths;
+    std::map<int, base::FilePath> background_paths;
+    std::map<float, int> scale_to_size;
+    for (auto scale_factor : ui::GetSupportedScaleFactors()) {
+      foreground_paths[scale_factor] =
+          base_path.Append("arc_default_apps")
+              .Append("test_app1")
+              .Append(ArcAppIconDescriptor(size_in_dip, scale_factor)
+                          .GetForegroundIconName());
+      background_paths[scale_factor] =
+          base_path.Append("arc_default_apps")
+              .Append("test_app1")
+              .Append(ArcAppIconDescriptor(size_in_dip, scale_factor)
+                          .GetBackgroundIconName());
+
+      float scale = ui::GetScaleForScaleFactor(scale_factor);
+      scale_to_size[ui::GetScaleForScaleFactor(scale_factor)] =
+          roundf(size_in_dip * scale);
+    }
+
+    gfx::ImageSkia foreground;
+    GetImageSkia(foreground_paths, foreground);
+
+    gfx::ImageSkia background;
+    GetImageSkia(background_paths, background);
+
+    output_image_skia = gfx::ImageSkiaOperations::CreateMaskedImage(
+        gfx::ImageSkiaOperations::CreateSuperimposedImage(background,
+                                                          foreground),
+        apps::LoadMaskImage(scale_to_size));
+
+    for (auto& scale_factor : ui::GetSupportedScaleFactors()) {
+      // Force the icon to be loaded.
+      output_image_skia.GetRepresentation(
+          ui::GetScaleForScaleFactor(scale_factor));
+    }
+  }
 };
 
 class ArcAppLauncherForDefaultAppTest : public ArcDefaultAppTest {
@@ -2582,6 +2690,30 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
   // No more updates are expected.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1UL, delegate.update_image_count());
+}
+
+TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
+  if (!base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
+    return;
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+
+  const std::string app_id = ArcAppTest::GetAppId(fake_default_apps()[0]);
+
+  SendRefreshAppList(fake_default_apps());
+
+  // Wait AppServiceAppItem to finish loading icon for the 3 fake default
+  // installed apps.
+  do {
+    content::RunAllTasksUntilIdle();
+  } while (model_updater()->update_image_count() <
+           ui::GetSupportedScaleFactors().size() * 3);
+
+  gfx::ImageSkia src_image_skia;
+  GenerateAppIcon(src_image_skia);
+
+  VerifyIcon(src_image_skia, model_updater()->FindItem(app_id)->icon());
 }
 
 TEST_P(ArcAppModelIconTest, LoadManyIcons) {

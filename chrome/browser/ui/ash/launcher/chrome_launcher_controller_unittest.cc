@@ -703,7 +703,7 @@ class ChromeLauncherControllerTest
       app_list_syncable_service_->ProcessSyncChanges(FROM_HERE,
                                                      combined_sync_list);
     }
-    app_service_test_.FlushMojoCalls();
+    content::RunAllTasksUntilIdle();
   }
 
   // Set the index at which the chrome icon should be.
