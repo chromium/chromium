@@ -2800,6 +2800,7 @@ enum WebFeature {
   // The above items are available in M86 branch.
 
   kWebTransport = 3472,
+  kIdleDetectionPermissionRequested = 3473,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

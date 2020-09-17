@@ -33,7 +33,7 @@
 
   await dp.Browser.grantPermissions({
     origin: location.origin,
-    permissions: ['notifications'],
+    permissions: ['idleDetection'],
   });
 
   // Prepare and run IdleDetector.

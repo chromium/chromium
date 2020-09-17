@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(url, url,
-                                     ContentSettingsType::NOTIFICATIONS,
+                                     ContentSettingsType::IDLE_DETECTION,
                                      std::string(), CONTENT_SETTING_ALLOW);
   ui_test_utils::NavigateToURL(browser(), url);
 

@@ -137,7 +137,7 @@ bool IdleManagerImpl::HasPermission(const url::Origin& origin) {
       BrowserContext::GetPermissionController(browser_context_);
   DCHECK(permission_controller);
   PermissionStatus status = permission_controller->GetPermissionStatus(
-      PermissionType::NOTIFICATIONS, origin.GetURL(), origin.GetURL());
+      PermissionType::IDLE_DETECTION, origin.GetURL(), origin.GetURL());
   return status == PermissionStatus::GRANTED;
 }
 
