@@ -4,7 +4,6 @@ per-file collapse_radio_button_tests.js=sauski@google.com
 per-file cookies_page_test.js=sauski@google.com
 per-file do_not_track_toggle_test.js=sauski@google.com
 per-file metrics_reporting_tests.js=sauski@google.com
-per-file passwords_leak_detection_toggle_test.js=sauski@google.com
 per-file personalization_options_test.js=sauski@google.com
 per-file privacy_page_test.js=sauski@google.com
 per-file recent_site_permissions_test.js=sauski@google.com
@@ -22,7 +21,6 @@ per-file site_list_entry_tests.js=sauski@google.com
 per-file site_list_tests.js=sauski@google.com
 per-file site_settings_page_test.js=sauski@google.com
 per-file test_privacy_page_browser_proxy.js=sauski@google.com
-per-file test_safe_browsing_browser_proxy.js=sauski@google.com
 per-file test_site_settings_prefs_browser_proxy.js=sauski@google.com
 
 # COMPONENT: UI>Settings

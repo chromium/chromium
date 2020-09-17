@@ -49,24 +49,20 @@ suite('CrSettingsSecurityPageTest', function() {
         document.createElement('settings-security-page'));
     page.prefs = {
       profile: {password_manager_leak_detection: {value: false}},
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
-      },
       safebrowsing: {
-        enabled: {value: true},
         scout_reporting_enabled: {value: true},
-        enhanced: {value: false}
       },
       generated: {
         safe_browsing: {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: SafeBrowsingSetting.STANDARD,
         },
+        password_leak_detection: {value: true, userControlDisabled: false},
       },
       dns_over_https:
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
     };
+    page.set('syncStatus', {signedIn: false, hasError: false});
     document.body.appendChild(page);
     page.$$('#safeBrowsingEnhanced').updateCollapsed();
     page.$$('#safeBrowsingStandard').updateCollapsed();
@@ -100,6 +96,30 @@ suite('CrSettingsSecurityPageTest', function() {
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
+  });
+
+  test('PasswordsLeakDetectionSubLabel', function() {
+    const toggle = page.$$('#passwordsLeakToggle');
+    const defaultSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    const activeWhenSignedInSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
+        ' ' +
+        loadTimeData.getString(
+            'passwordsLeakDetectionSignedOutEnabledDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.profile.password_manager_leak_detection.value', true);
+    flush();
+    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
+
+    page.set('syncStatus', {signedIn: true});
+    flush();
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('syncStatus', {signedIn: true, hasError: true});
+    flush();
+    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
   });
 
   test('LogSafeBrowsingExtendedToggle', async function() {
@@ -504,24 +524,20 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
         document.createElement('settings-security-page'));
     page.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
-      },
       safebrowsing: {
-        enabled: {value: true},
         scout_reporting_enabled: {value: true},
-        enhanced: {value: false}
       },
       generated: {
         safe_browsing: {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: SafeBrowsingSetting.STANDARD,
         },
+        password_leak_detection: {value: true, userControlDisabled: false},
       },
       dns_over_https:
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
     };
+    page.set('syncStatus', {signedIn: true, hasError: false});
     document.body.appendChild(page);
     flush();
   });

@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './collapse_radio_button.js';
 import './disable_safebrowsing_dialog.js';
-import './passwords_leak_detection_toggle.js';
 import './secure_dns.js';
 import '../controls/settings_toggle_button.m.js';
 import '../icons.m.js';
@@ -17,6 +16,7 @@ import '../settings_shared_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -46,6 +46,7 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [
+    I18nBehavior,
     PrefsBehavior,
     RouteObserverBehavior,
   ],
@@ -204,6 +205,22 @@ Polymer({
   getDisabledExtendedSafeBrowsing_() {
     return this.getPref('generated.safe_browsing').value !==
         SafeBrowsingSetting.STANDARD;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getPasswordsLeakToggleSubLabel_() {
+    let subLabel = this.i18n('passwordsLeakDetectionGeneralDescription');
+    if (this.getPref('profile.password_manager_leak_detection').value &&
+        (!this.syncStatus.signedIn ||
+         !!this.syncStatus.signedIn && !!this.syncStatus.hasError)) {
+      subLabel +=
+          ' ' +  // Whitespace is a valid sentence separator w.r.t. i18n.
+          this.i18n('passwordsLeakDetectionSignedOutEnabledDescription');
+    }
+    return subLabel;
   },
 
   /** @private */

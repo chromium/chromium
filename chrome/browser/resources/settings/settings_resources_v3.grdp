@@ -505,11 +505,6 @@
            use_base_dir="false"
            preprocess="true"
            compress="false" type="BINDATA" />
-  <include name="IDR_SETTINGS_PRIVACY_PAGE_PASSWORDS_LEAK_DETECTION_TOGGLE_JS"
-           file="${root_gen_dir}/chrome/browser/resources/settings/privacy_page/passwords_leak_detection_toggle.js"
-           use_base_dir="false"
-           preprocess="true"
-           compress="false" type="BINDATA" />
   <include name="IDR_SETTINGS_PRIVACY_PAGE_PERSONALIZATION_OPTIONS_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/privacy_page/personalization_options.m.js"
            use_base_dir="false"

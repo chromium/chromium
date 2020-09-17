@@ -229,14 +229,11 @@ suite('HappinessTrackingSurveys', function() {
         cookie_session_only: {value: false},
         cookie_primary_setting:
             {type: chrome.settingsPrivate.PrefType.NUMBER, value: 0},
+        password_manager_leak_detection: {value: false},
       },
       profile: {password_manager_leak_detection: {value: false}},
       dns_over_https:
           {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-      signin: {
-        allowed_on_next_startup:
-            {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true}
-      },
     };
     document.body.appendChild(page);
     return flushTasks();

@@ -38,12 +38,7 @@
         padding-bottom: 12px;
       }
 
-      settings-passwords-leak-detection-toggle,
-      settings-toggle-button:not([disabled]) {
-        pointer-events: all;
-      }
-
-      #safeBrowsingReportingToggle {
+      settings-toggle-button {
         padding-inline-end: 0;
         padding-inline-start: 0;
       }
@@ -137,11 +132,13 @@
                 disabled="[[getDisabledExtendedSafeBrowsing_(
                               prefs.generated.safe_browsing.*)]]">
             </settings-toggle-button>
-            <settings-passwords-leak-detection-toggle id="passwordsLeakToggle"
-                class="collapsable"
-                prefs="{{prefs}}"
-                sync-status="[[syncStatus]]">
-            </settings-passwords-leak-detection-toggle>
+            <settings-toggle-button id="passwordsLeakToggle"
+                label="$i18n{passwordsLeakDetectionLabel}"
+                pref="{{prefs.generated.password_leak_detection}}"
+                sub-label="[[getPasswordsLeakToggleSubLabel_(
+                              prefs.profile.password_manager_leak_detection.*,
+                              syncStatus.*)]]">
+            </settings-toggle-button>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingDisabled" no-collapse

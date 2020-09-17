@@ -115,7 +115,6 @@ js_type_check("closure_compile") {
     ":passwords_and_autofill_fake_data",
 
     #":passwords_export_test",
-    #":passwords_leak_detection_toggle_test",
     #":passwords_section_test",
     #":passwords_section_test_cros",
     #":payments_section_test",

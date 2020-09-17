@@ -45,7 +45,6 @@ js_type_check("closure_compile_module") {
     ":cookies_page",
     ":disable_safebrowsing_dialog",
     ":do_not_track_toggle",
-    ":passwords_leak_detection_toggle",
     ":personalization_options.m",
     ":privacy_page",
     ":privacy_page_browser_proxy.m",
@@ -117,17 +116,6 @@ js_library("do_not_track_toggle") {
     "../controls:settings_toggle_button.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("passwords_leak_detection_toggle") {
-  deps = [
-    "..:metrics_browser_proxy",
-    "../people_page:sync_browser_proxy.m",
-    "../prefs:prefs_behavior.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
@@ -267,7 +255,6 @@ html_to_js("v3_ready_elements") {
     "cookies_page.js",
     "disable_safebrowsing_dialog.js",
     "do_not_track_toggle.js",
-    "passwords_leak_detection_toggle.js",
     "privacy_page.js",
     "secure_dns.js",
     "secure_dns_input.js",
