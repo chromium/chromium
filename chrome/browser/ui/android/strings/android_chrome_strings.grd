@@ -2417,9 +2417,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
 
       <!-- Strings for Incognito Interstitial. -->
       <message name="IDS_INCOGNITO_INTERSTITIAL_TITLE" desc="The title of the incognito interstitial bottom sheet.">
-        Use incognito to sign in temporarily
+        Use Incognito to sign in temporarily
       </message>
-
+      <message name="IDS_INCOGNITO_INTERSTITIAL_MESSAGE" desc="The content of incognito interstitial which is shown when a user is in the sign-in flow and they want to go incognito mode to sign in temporarily. Before they go incognito mode they would be presented with this incognito interstitial which would inform them about how they can clear sign-in information in incognito, how their activity may be visbile to others and the possibility of cookies and other incognito data being used across other already open incognito tabs.">
+        To clear your sign-in information and other data from Chrome, close all incognito tabs. 
+        
+In Incognito, your activity might still be visible to websites that you visit, your employer or school and your Internet service provider.
+        
+Cookies and other data may be used across open Incognito tabs.
+      </message>
       <!-- Strings for Streamlined Signin and Unified Consent. -->
       <message name="IDS_SIGNIN_TITLE" desc="Title for the screen that asks users to sign-in and turn on Sync. [CHAR-LIMIT=27]">
         Turn on sync?
