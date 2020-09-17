@@ -106,7 +106,14 @@ Polymer({
    */
   onActionButtonTap_() {
     assert(this.selectedLanguage_);
-    this.languageHelper.setProspectiveUILanguage(this.selectedLanguage_.code);
+    const languageCode = this.selectedLanguage_.code;
+    this.languageHelper.setProspectiveUILanguage(languageCode);
+    // If the language isn't enabled yet, it should be added and moved to top.
+    // If it's already present, we don't do anything.
+    if (!this.languageHelper.isLanguageEnabled(languageCode)) {
+      this.languageHelper.enableLanguage(languageCode);
+      this.languageHelper.moveLanguageToFront(languageCode);
+    }
     settings.recordSettingChange();
     settings.LanguagesMetricsProxyImpl.getInstance().recordInteraction(
         settings.LanguagesPageInteraction.RESTART);

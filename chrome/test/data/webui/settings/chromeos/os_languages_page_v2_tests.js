@@ -323,7 +323,7 @@ suite('languages page', () => {
       assertTrue(actionButton.disabled);
     });
 
-    test('sets device language and restarts device', async () => {
+    test('setting device language restarts device', async () => {
       // selects a language
       dialogItems[0].click();  // en-CA
       assertFalse(actionButton.disabled);
@@ -336,6 +336,44 @@ suite('languages page', () => {
           await metricsProxy.whenCalled('recordInteraction'));
       await lifetimeProxy.whenCalled('signOutAndRestart');
     });
+
+    test(
+        'setting device language adds it to front of enabled language if not present',
+        async () => {
+          languageHelper.setPrefValue(
+              'settings.language.preferred_languages', 'en-US,sw');
+          // selects a language
+          dialogItems[0].click();  // en-CA
+          assertFalse(actionButton.disabled);
+
+          actionButton.click();
+          assertEquals(
+              'en-CA',
+              await browserProxy.whenCalled('setProspectiveUILanguage'));
+          assertTrue(
+              languageHelper.getPref('settings.language.preferred_languages')
+                  .value.startsWith('en-CA'));
+        });
+
+    test(
+        'setting device language does not move already enabled language to front',
+        async () => {
+          languageHelper.setPrefValue(
+              'settings.language.preferred_languages', 'en-US,sw,en-CA');
+          Polymer.dom.flush();
+
+          // selects a language
+          dialogItems[0].click();  // en-CA
+          assertFalse(actionButton.disabled);
+
+          actionButton.click();
+          assertEquals(
+              'en-CA',
+              await browserProxy.whenCalled('setProspectiveUILanguage'));
+          assertFalse(
+              languageHelper.getPref('settings.language.preferred_languages')
+                  .value.startsWith('en-CA'));
+        });
 
     // Test that searching languages works whether the displayed or native
     // language name is queried.
