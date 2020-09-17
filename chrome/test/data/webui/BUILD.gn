@@ -347,6 +347,7 @@ if (include_js_tests) {
       "media/media_feeds_webui_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
+      "read_later/read_later_browsertest.js",
       "usb_internals_browsertest.js",
     ]
 
@@ -456,6 +457,7 @@ group("closure_compile") {
     "nearby_share/shared:closure_compile",
     "new_tab_page:closure_compile",
     "print_preview:closure_compile",
+    "read_later:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
     "tab_strip:closure_compile",

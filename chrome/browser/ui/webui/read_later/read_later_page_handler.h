@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_READ_LATER_READ_LATER_PAGE_HANDLER_H_
 
+#include <string>
+
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -45,7 +47,7 @@ class ReadLaterPageHandler : public read_later::mojom::PageHandler {
   // Converts |last_update_time| from microseconds since epoch in Unix-like
   // system (Jan 1, 1970), since this is how ReadingListEntry's |update_time| is
   // stored, to a localized representation as a delay (e.g. "5 minutes ago").
-  base::string16 GetTimeSinceLastUpdate(int64_t last_update_time);
+  std::string GetTimeSinceLastUpdate(int64_t last_update_time);
 
   mojo::Receiver<read_later::mojom::PageHandler> receiver_;
   mojo::Remote<read_later::mojom::Page> page_;

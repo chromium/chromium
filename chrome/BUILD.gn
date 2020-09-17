@@ -1316,6 +1316,7 @@ group("extra_resources") {
       "//chrome/browser/resources:nearby_internals_resources",
       "//chrome/browser/resources:nearby_share_dialog_resources",
       "//chrome/browser/resources:new_tab_page_resources",
+      "//chrome/browser/resources:read_later_resources",
       "//chrome/browser/resources:settings_resources",
     ]
   }

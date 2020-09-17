@@ -5683,6 +5683,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
+      <!-- Read Later menu -->
+      <message name="IDS_READ_LATER_MENU_TITLE" desc="Title of the Read later menu">
+        Read later
+      </message>
+      <message name="IDS_READ_LATER_MENU_UNREAD_HEADER" desc="Header for section of unread Read later items.">
+        UNREAD
+      </message>
+      <message name="IDS_READ_LATER_MENU_READ_HEADER" desc="Header for section of read Read later items.">
+        PAGES YOU'VE READ
+      </message>
+
       <!--Tooltip strings-->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
         Click to go back, hold to see history

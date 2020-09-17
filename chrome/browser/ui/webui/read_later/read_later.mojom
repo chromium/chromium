@@ -4,7 +4,6 @@
 
 module read_later.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // Read later entries grouped by read/unread status.
@@ -17,9 +16,9 @@ struct ReadLaterEntriesByStatus {
 struct ReadLaterEntry {
   string title;
   url.mojom.Url url;
-  mojo_base.mojom.String16 display_url;
+  string display_url;
   int64 update_time;
-  mojo_base.mojom.String16 display_time_since_update;
+  string display_time_since_update;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

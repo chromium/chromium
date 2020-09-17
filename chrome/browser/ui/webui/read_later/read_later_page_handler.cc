@@ -6,11 +6,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -98,13 +97,13 @@ read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
 
   entry_data->title = entry->Title();
   entry_data->url = entry->URL();
-  entry_data->display_url = url_formatter::FormatUrl(
+  entry_data->display_url = base::UTF16ToUTF8(url_formatter::FormatUrl(
       entry->URL(),
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlTrimAfterHost,
-      net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
+      net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   entry_data->update_time = entry->UpdateTime();
   entry_data->display_time_since_update =
       GetTimeSinceLastUpdate(entry->UpdateTime());
@@ -112,13 +111,14 @@ read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
   return entry_data;
 }
 
-base::string16 ReadLaterPageHandler::GetTimeSinceLastUpdate(
+std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
     int64_t last_update_time) {
   const int64_t now = TimeToUS(clock_->Now());
   if (last_update_time > now)
-    return base::string16();
+    return std::string();
   const base::TimeDelta elapsed_time =
       base::TimeDelta::FromMicroseconds(now - last_update_time);
-  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
-                                ui::TimeFormat::LENGTH_SHORT, elapsed_time);
+  return base::UTF16ToUTF8(
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                             ui::TimeFormat::LENGTH_SHORT, elapsed_time));
 }

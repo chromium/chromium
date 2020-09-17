@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/read_later_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/read_later_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/read_later_resources_map.h"
+            type="resource_map_header" />
+    <output filename="read_later_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_APP_JS"
+               file="${root_gen_dir}/chrome/browser/resources/read_later/app.js"
+               use_base_dir="false"
+               type="BINDATA" />
+      <include name="IDR_READ_LATER_API_PROXY_JS"
+               file="read_later_api_proxy.js"
+               type="BINDATA" />
+      <include name="IDR_READ_LATER_HTML"
+               file="read_later.html"
+               type="BINDATA" />
+      <include name="IDR_READ_LATER_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/read_later/read_later_item.js"
+               type="BINDATA"
+               use_base_dir="false"/>
+      <include name="IDR_READ_LATER_MOJO_LITE_JS"
+               file="${root_gen_dir}/chrome/browser/ui/webui/read_later/read_later.mojom-lite.js"
+               use_base_dir="false"
+               type="BINDATA" />
+    </includes>
+  </release>
+</grit>

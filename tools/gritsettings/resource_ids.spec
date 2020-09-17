@@ -178,8 +178,11 @@
   "chrome/browser/resources/print_preview/print_preview_pdf_resources.grd": {
     "includes": [1750],
   },
-  "chrome/browser/resources/settings/os_settings_resources_vulcanized.grd": {
+  "chrome/browser/resources/read_later/read_later_resources.grd": {
     "includes": [1760],
+  },
+  "chrome/browser/resources/settings/os_settings_resources_vulcanized.grd": {
+    "includes": [1770],
   },
   "chrome/browser/resources/settings/os_settings_resources.grd": {
     "includes": [1780],

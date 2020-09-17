@@ -7,15 +7,37 @@
 #include <utility>
 
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/grit/read_later_resources.h"
+#include "chrome/grit/read_later_resources_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/webui/web_ui_util.h"
+
+namespace {
+constexpr char kGeneratedPath[] =
+    "@out_folder@/gen/chrome/browser/resources/read_later/";
+}
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIReadLaterHost);
+  source->AddResourcePath("read_later.mojom-lite.js",
+                          IDR_READ_LATER_MOJO_LITE_JS);
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"title", IDS_READ_LATER_MENU_TITLE},
+      {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
+      {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
+  };
+  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
+      kGeneratedPath, IDR_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

@@ -1,0 +1,47 @@
+<style include="mwb-shared-style">
+  #header {
+    align-items: center;
+    font-size: 15px;
+    margin: 0;
+    padding: var(--mwb-list-item-vertical-margin)
+             var(--mwb-list-item-horizontal-margin);
+  }
+
+  #read-later-list {
+    max-height: 458px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .sub-heading {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-secondary-text-font-size);
+    padding: var(--mwb-list-item-vertical-margin)
+             0
+             calc(var(--mwb-list-item-vertical-margin) / 2)
+             var(--mwb-list-item-horizontal-margin);
+  }
+
+  .sub-heading::after {
+    border-bottom: 1px solid var(--cr-secondary-text-color);
+    content: '';
+    display: block;
+    margin-top: calc(var(--mwb-list-item-vertical-margin) / 2);
+  }
+</style>
+
+<div id="header">$i18n{title}</div>
+<div id="read-later-list">
+  <div class="sub-heading">$i18n{unreadHeader}</div>
+  <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
+    <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
+        data="[[item]]" on-click="onItemClick_">
+    </read-later-item>
+  </template>
+  <div class="sub-heading">$i18n{readHeader}</div>
+  <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
+    <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
+        data="[[item]]" on-click="onItemClick_">
+    </read-later-item>
+  </template>
+</div>

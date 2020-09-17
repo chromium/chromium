@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://read-later/=../../chrome/browser/resources/read_later/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":read_later_app_test",
+    ":test_read_later_api_proxy",
+  ]
+}
+
+js_library("read_later_app_test") {
+  deps = [
+    ":test_read_later_api_proxy",
+    "..:chai_assert",
+    "//chrome/browser/resources/read_later:app",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_read_later_api_proxy") {
+  deps = [
+    "..:test_browser_proxy.m",
+    "//chrome/browser/resources/read_later:read_later_api_proxy",
+    "//chrome/browser/ui/webui/read_later:mojo_bindings_js_library_for_compile",
+  ]
+}

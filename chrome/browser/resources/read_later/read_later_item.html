@@ -1,0 +1,32 @@
+<style>
+  .text-container {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .primary-text,
+  .secondary-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .primary-text {
+    color: var(--cr-primary-text-color);
+    font-size: var(--mwb-primary-text-font-size);
+    margin-bottom: 3px;
+  }
+
+  .secondary-text {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-secondary-text-font-size);
+  }
+</style>
+
+<div class="text-container">
+  <div class="primary-text">[[data.title]]</div>
+  <div class="secondary-text">
+    [[data.displayUrl]] - [[data.displayTimeSinceUpdate]]
+  </div>
+</div>
