@@ -5,7 +5,7 @@
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 // eslint-disable-next-line no-unused-vars
-import {ResolutionList} from '../type.js';
+import {ResolutionList, VideoConfig} from '../type.js';
 
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {
@@ -78,6 +78,16 @@ export class DeviceInfoUpdater {
      * @private
      */
     this.camera3DevicesInfo_ = this.queryMojoDevicesInfo_();
+
+    /**
+     * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
+     * @const {!Promise<function(!VideoConfig): boolean>}
+     * @private
+     */
+    this.videoConfigFilter_ = (async () => {
+      const board = await browserProxy.getBoard();
+      return board === 'grunt' ? ({height}) => height < 720 : () => true;
+    })();
 
     /**
      * Promise of first update.
@@ -175,7 +185,9 @@ export class DeviceInfoUpdater {
       return null;
     }
     const deviceInfos = await this.devicesInfo_;
-    return Promise.all(deviceInfos.map((d) => Camera3DeviceInfo.create(d)));
+    const videoConfigFilter = await this.videoConfigFilter_;
+    return Promise.all(
+        deviceInfos.map((d) => Camera3DeviceInfo.create(d, videoConfigFilter)));
   }
 
   /**

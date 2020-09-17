@@ -71,13 +71,15 @@ export class Camera3DeviceInfo {
   }
 
   /**
-   * Create a Camera3DeviceInfo by given device info and the mojo device
+   * Creates a Camera3DeviceInfo by given device info and the mojo device
    *     operator.
    * @param {!MediaDeviceInfo} deviceInfo
+   * @param {function(!VideoConfig): boolean} videoConfigFilter Filters the
+   *     available video capability exposed by device.
    * @return {!Promise<!Camera3DeviceInfo>}
    * @throws {!Error} Thrown when the device operation is not supported.
    */
-  static async create(deviceInfo) {
+  static async create(deviceInfo, videoConfigFilter) {
     const deviceId = deviceInfo.deviceId;
 
     const deviceOperator = await DeviceOperator.getInstance();
@@ -87,10 +89,12 @@ export class Camera3DeviceInfo {
     const facing = await deviceOperator.getCameraFacing(deviceId);
     const photoResolution = await deviceOperator.getPhotoResolutions(deviceId);
     const videoConfigs = await deviceOperator.getVideoConfigs(deviceId);
+    const filteredVideoConfigs = videoConfigs.filter(videoConfigFilter);
     const supportedFpsRanges =
         await deviceOperator.getSupportedFpsRanges(deviceId);
 
     return new Camera3DeviceInfo(
-        deviceInfo, facing, photoResolution, videoConfigs, supportedFpsRanges);
+        deviceInfo, facing, photoResolution, filteredVideoConfigs,
+        supportedFpsRanges);
   }
 }
