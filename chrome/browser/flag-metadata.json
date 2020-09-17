@@ -1278,16 +1278,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-chrome-duet",
-    "owners": [ "mdjones" ],
-    "expiry_milestone": 82
-  },
-  {
-    "name": "enable-chrome-duet-labels",
-    "owners": [ "mdjones" ],
-    "expiry_milestone": 79
-  },
-  {
     "name": "enable-clipboard-provider-image-suggestions",
     "owners": [ "rkgibson", "gangwu", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 90
