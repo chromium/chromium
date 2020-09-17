@@ -708,10 +708,8 @@ class NeverTranslateMenuItemTranslateBrowserTest
 
 // Test that clicking and unclicking a never translate item ends up being a
 // no-op.
-// Disabled due to flakiness on P (crbug.com/1114795).
-IN_PROC_BROWSER_TEST_P(
-    NeverTranslateMenuItemTranslateBrowserTest,
-    DISABLED_TranslateInfoBarToggleAndToggleBackNeverTranslateItem) {
+IN_PROC_BROWSER_TEST_P(NeverTranslateMenuItemTranslateBrowserTest,
+                       TranslateInfoBarToggleAndToggleBackNeverTranslateItem) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   auto* infobar_service = InfoBarService::FromWebContents(web_contents);
 
