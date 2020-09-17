@@ -139,6 +139,17 @@ bool CopyCBORBytestring(std::array<uint8_t, N>* out,
   return ExtractArray(bytestring, /*pos=*/0, out);
 }
 
+constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
+  return {value & 0xFF, value >> 8 & 0xFF, value >> 16 & 0xFF,
+          value >> 24 & 0xFF};
+}
+
+constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
+  return {value & 0xFF,       value >> 8 & 0xFF,  value >> 16 & 0xFF,
+          value >> 24 & 0xFF, value >> 32 & 0xFF, value >> 40 & 0xFF,
+          value >> 48 & 0xFF, value >> 56 & 0xFF};
+}
+
 }  // namespace fido_parsing_utils
 }  // namespace device
 

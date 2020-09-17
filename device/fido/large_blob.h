@@ -47,6 +47,7 @@ using LargeBlobKey = std::array<uint8_t, kLargeBlobKeyLength>;
 
 constexpr size_t kLargeBlobDefaultMaxFragmentLength = 960;
 constexpr size_t kLargeBlobReadEncodingOverhead = 64;
+constexpr size_t kLargeBlobArrayNonceLength = 12;
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobArrayFragment {
   LargeBlobArrayFragment(std::vector<uint8_t> bytes, size_t offset);
@@ -130,10 +131,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) LargeBlobData {
 
  private:
   LargeBlobData(std::vector<uint8_t> ciphertext,
-                std::vector<uint8_t> nonce,
+                base::span<const uint8_t, kLargeBlobArrayNonceLength> nonce,
                 int64_t orig_size);
   std::vector<uint8_t> ciphertext_;
-  std::vector<uint8_t> nonce_;
+  std::array<uint8_t, kLargeBlobArrayNonceLength> nonce_;
   int64_t orig_size_;
 };
 

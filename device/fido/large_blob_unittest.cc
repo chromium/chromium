@@ -27,10 +27,11 @@ const std::array<uint8_t, 17> kInvalidLargeBlobArray = {
 
 // An "valid" CBOR large blob array with two entries. The first entry is not a
 // valid large blob map structure. The second entry is valid.
-const std::array<uint8_t, 35> kValidLargeBlobArray = {
+const std::array<uint8_t, 45> kValidLargeBlobArray = {
     0x82, 0xA2, 0x02, 0x42, 0x11, 0x11, 0x03, 0x02, 0xA3, 0x01, 0x42, 0x22,
-    0x22, 0x02, 0x42, 0x33, 0x33, 0x03, 0x02, 0x53, 0x5b, 0xaa, 0xd2, 0x7a,
-    0x26, 0x68, 0x34, 0x9e, 0xc3, 0x90, 0xd3, 0x9a, 0x1c, 0x0a, 0xae};
+    0x22, 0x02, 0x4C, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+    0x30, 0x31, 0x32, 0x03, 0x02, 0x9b, 0x33, 0x75, 0x6c, 0x0a, 0x84, 0xdf,
+    0x32, 0xcc, 0xd0, 0xc8, 0x96, 0xea, 0xa7, 0x99, 0x13};
 
 TEST_F(FidoLargeBlobTest, VerifyLargeBlobArrayIntegrityValid) {
   std::vector<uint8_t> large_blob_array =
@@ -113,7 +114,7 @@ TEST_F(FidoLargeBlobTest, LargeBlobArrayWriter_PopUnevenly) {
 // Test popping the large blob array in a fragment size that evenly divides the
 // length of the array.
 TEST_F(FidoLargeBlobTest, LargeBlobArrayFragments_PopEvenly) {
-  const size_t fragment_size = 7;
+  const size_t fragment_size = 9;
   const size_t expected_fragments = kValidLargeBlobArray.size() / fragment_size;
   size_t fragments = 0;
   ASSERT_EQ(0u, kValidLargeBlobArray.size() % fragment_size);

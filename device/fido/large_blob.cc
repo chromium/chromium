@@ -6,6 +6,8 @@
 #include "base/containers/span.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
+#include "crypto/aead.h"
+#include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
@@ -15,6 +17,21 @@ namespace device {
 namespace {
 // The number of bytes the large blob validation hash is truncated to.
 constexpr size_t kTruncatedHashBytes = 16;
+constexpr std::array<uint8_t, 4> kLargeBlobADPrefix = {'b', 'l', 'o', 'b'};
+constexpr size_t kAssociatedDataLength = kLargeBlobADPrefix.size() + 8;
+
+std::array<uint8_t, kAssociatedDataLength> GenerateLargeBlobAdditionalData(
+    size_t size) {
+  std::array<uint8_t, kAssociatedDataLength> additional_data;
+  const std::array<uint8_t, 8>& size_array =
+      fido_parsing_utils::Uint64LittleEndian(size);
+  std::copy(kLargeBlobADPrefix.begin(), kLargeBlobADPrefix.end(),
+            additional_data.begin());
+  std::copy(size_array.begin(), size_array.end(),
+            additional_data.begin() + kLargeBlobADPrefix.size());
+  return additional_data;
+}
+
 }  // namespace
 
 LargeBlobArrayFragment::LargeBlobArrayFragment(const std::vector<uint8_t> bytes,
@@ -150,7 +167,8 @@ base::Optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
   }
   auto nonce_it =
       map.find(cbor::Value(static_cast<int>(LargeBlobDataKeys::kNonce)));
-  if (nonce_it == map.end() || !nonce_it->second.is_bytestring()) {
+  if (nonce_it == map.end() || !nonce_it->second.is_bytestring() ||
+      nonce_it->second.GetBytestring().size() != kLargeBlobArrayNonceLength) {
     return base::nullopt;
   }
   auto orig_size_it =
@@ -159,21 +177,25 @@ base::Optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
     return base::nullopt;
   }
   return LargeBlobData(ciphertext_it->second.GetBytestring(),
-                       nonce_it->second.GetBytestring(),
+                       base::make_span<kLargeBlobArrayNonceLength>(
+                           nonce_it->second.GetBytestring()),
                        orig_size_it->second.GetUnsigned());
 }
 
-LargeBlobData::LargeBlobData(std::vector<uint8_t> ciphertext,
-                             std::vector<uint8_t> nonce,
-                             int64_t orig_size)
-    : ciphertext_(std::move(ciphertext)),
-      nonce_(std::move(nonce)),
-      orig_size_(std::move(orig_size)) {}
+LargeBlobData::LargeBlobData(
+    std::vector<uint8_t> ciphertext,
+    base::span<const uint8_t, kLargeBlobArrayNonceLength> nonce,
+    int64_t orig_size)
+    : ciphertext_(std::move(ciphertext)), orig_size_(std::move(orig_size)) {
+  std::copy(nonce.begin(), nonce.end(), nonce_.begin());
+}
 LargeBlobData::LargeBlobData(LargeBlobKey key, std::vector<uint8_t> blob) {
-  // TODO(nsatragno): implement encrypting the data. For now, just store and
-  // return the blob as plaintext.
   orig_size_ = blob.size();
-  ciphertext_ = blob;
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+  aead.Init(key);
+  crypto::RandBytes(nonce_);
+  ciphertext_ =
+      aead.Seal(blob, nonce_, GenerateLargeBlobAdditionalData(orig_size_));
 }
 LargeBlobData::LargeBlobData(LargeBlobData&&) = default;
 LargeBlobData& LargeBlobData::operator=(LargeBlobData&&) = default;
@@ -186,9 +208,10 @@ bool LargeBlobData::operator==(const LargeBlobData& other) const {
 
 base::Optional<std::vector<uint8_t>> LargeBlobData::Decrypt(
     LargeBlobKey key) const {
-  // TODO(nsatragno): implement decrypting the data. For now, store and return
-  // the blob as plaintext.
-  return ciphertext_;
+  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
+  aead.Init(key);
+  return aead.Open(ciphertext_, nonce_,
+                   GenerateLargeBlobAdditionalData(orig_size_));
 }
 
 cbor::Value::MapValue LargeBlobData::AsCBOR() const {

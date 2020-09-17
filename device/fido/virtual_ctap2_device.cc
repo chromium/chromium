@@ -70,11 +70,6 @@ constexpr uint8_t kSupportedPermissionsMask =
     static_cast<uint8_t>(pin::Permissions::kCredentialManagement) |
     static_cast<uint8_t>(pin::Permissions::kBioEnrollment);
 
-constexpr std::array<uint8_t, 4> Uint32LittleEndian(int64_t value) {
-  return {value & 0xFF, value >> 8 & 0xFF, value >> 16 & 0xFF,
-          value >> 24 & 0xFF};
-}
-
 struct PinUvAuthTokenPermissions {
   uint8_t permissions;
   base::Optional<std::string> rp_id;
@@ -2199,7 +2194,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
   if (offset_it == request_map.end() || !offset_it->second.is_unsigned()) {
     return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
   }
-  const size_t offset = offset_it->second.GetUnsigned();
+  const uint64_t offset = offset_it->second.GetUnsigned();
 
   const auto get_it = request_map.find(
       cbor::Value(static_cast<uint8_t>(LargeBlobsRequestKey::kGet)));
@@ -2221,7 +2216,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
     if (length_it != request_map.end()) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
-    const size_t get = get_it->second.GetUnsigned();
+    const uint64_t get = get_it->second.GetUnsigned();
     if (get > max_fragment_length) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidLength;
     }
@@ -2246,7 +2241,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
       if (length_it == request_map.end() || !length_it->second.is_unsigned()) {
         return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
       }
-      const size_t length = length_it->second.GetUnsigned();
+      const uint64_t length = length_it->second.GetUnsigned();
       if (length > config_.available_large_blob_storage) {
         return CtapDeviceResponseCode::kCtap2ErrLargeBlobStorageFull;
       }
@@ -2302,7 +2297,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnLargeBlobs(
                            kPinUvAuthTokenSafetyPadding.begin(),
                            kPinUvAuthTokenSafetyPadding.end());
       pinauth_bytes.insert(pinauth_bytes.end(), {0x0c, 0x00});
-      auto offset_vec = Uint32LittleEndian(offset);
+      auto offset_vec = fido_parsing_utils::Uint32LittleEndian(offset);
       pinauth_bytes.insert(pinauth_bytes.end(), offset_vec.begin(),
                            offset_vec.end());
       pinauth_bytes.insert(pinauth_bytes.end(), set.begin(), set.end());
