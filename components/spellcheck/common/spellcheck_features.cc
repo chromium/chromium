@@ -26,7 +26,7 @@ bool UseBrowserSpellChecker() {
 
 #if defined(OS_WIN)
 const base::Feature kWinUseBrowserSpellChecker{
-    "WinUseBrowserSpellChecker", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WinUseBrowserSpellChecker", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kWinDelaySpellcheckServiceInit{
     "WinDelaySpellcheckServiceInit", base::FEATURE_DISABLED_BY_DEFAULT};
