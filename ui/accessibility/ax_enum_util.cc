@@ -2117,29 +2117,33 @@ ax::mojom::MarkerType ParseMarkerType(const char* marker_type) {
 
 const char* ToString(ax::mojom::MoveDirection move_direction) {
   switch (move_direction) {
-    case ax::mojom::MoveDirection::kForward:
-      return "forward";
+    case ax::mojom::MoveDirection::kNone:
+      return "none";
     case ax::mojom::MoveDirection::kBackward:
       return "backward";
+    case ax::mojom::MoveDirection::kForward:
+      return "forward";
   }
 
   return "";
 }
 
 ax::mojom::MoveDirection ParseMoveDirection(const char* move_direction) {
-  if (0 == strcmp(move_direction, "forward"))
-    return ax::mojom::MoveDirection::kForward;
+  if (0 == strcmp(move_direction, "none"))
+    return ax::mojom::MoveDirection::kNone;
   if (0 == strcmp(move_direction, "backward"))
     return ax::mojom::MoveDirection::kBackward;
-  return ax::mojom::MoveDirection::kForward;
+  if (0 == strcmp(move_direction, "forward"))
+    return ax::mojom::MoveDirection::kForward;
+  return ax::mojom::MoveDirection::kNone;
 }
 
 const char* ToString(ax::mojom::Command command) {
   switch (command) {
+    case ax::mojom::Command::kNone:
+      return "none";
     case ax::mojom::Command::kClearSelection:
       return "clearSelection";
-    case ax::mojom::Command::kCut:
-      return "cut";
     case ax::mojom::Command::kDelete:
       return "delete";
     case ax::mojom::Command::kDictate:
@@ -2148,30 +2152,26 @@ const char* ToString(ax::mojom::Command command) {
       return "extendSelection";
     case ax::mojom::Command::kFormat:
       return "format";
+    case ax::mojom::Command::kHistory:
+      return "history";
     case ax::mojom::Command::kInsert:
       return "insert";
     case ax::mojom::Command::kMarker:
       return "marker";
     case ax::mojom::Command::kMoveSelection:
       return "moveSelection";
-    case ax::mojom::Command::kPaste:
-      return "paste";
-    case ax::mojom::Command::kReplace:
-      return "replace";
     case ax::mojom::Command::kSetSelection:
       return "setSelection";
-    case ax::mojom::Command::kType:
-      return "type";
   }
 
   return "";
 }
 
 ax::mojom::Command ParseCommand(const char* command) {
+  if (0 == strcmp(command, "none"))
+    return ax::mojom::Command::kNone;
   if (0 == strcmp(command, "clearSelection"))
     return ax::mojom::Command::kClearSelection;
-  if (0 == strcmp(command, "cut"))
-    return ax::mojom::Command::kCut;
   if (0 == strcmp(command, "delete"))
     return ax::mojom::Command::kDelete;
   if (0 == strcmp(command, "dictate"))
@@ -2180,27 +2180,190 @@ ax::mojom::Command ParseCommand(const char* command) {
     return ax::mojom::Command::kExtendSelection;
   if (0 == strcmp(command, "format"))
     return ax::mojom::Command::kFormat;
+  if (0 == strcmp(command, "history"))
+    return ax::mojom::Command::kHistory;
   if (0 == strcmp(command, "insert"))
     return ax::mojom::Command::kInsert;
   if (0 == strcmp(command, "marker"))
     return ax::mojom::Command::kMarker;
   if (0 == strcmp(command, "moveSelection"))
     return ax::mojom::Command::kMoveSelection;
-  if (0 == strcmp(command, "paste"))
-    return ax::mojom::Command::kPaste;
-  if (0 == strcmp(command, "replace"))
-    return ax::mojom::Command::kReplace;
   if (0 == strcmp(command, "setSelection"))
     return ax::mojom::Command::kSetSelection;
-  if (0 == strcmp(command, "type"))
-    return ax::mojom::Command::kType;
+  return ax::mojom::Command::kNone;
+}
 
-  // Return the default command.
-  return ax::mojom::Command::kType;
+const char* ToString(ax::mojom::InputEventType input_event_type) {
+  switch (input_event_type) {
+    case ax::mojom::InputEventType::kNone:
+      return "none";
+    case ax::mojom::InputEventType::kInsertText:
+      return "insertText";
+    case ax::mojom::InputEventType::kInsertLineBreak:
+      return "insertLineBreak";
+    case ax::mojom::InputEventType::kInsertParagraph:
+      return "insertParagraph";
+    case ax::mojom::InputEventType::kInsertOrderedList:
+      return "insertOrderedList";
+    case ax::mojom::InputEventType::kInsertUnorderedList:
+      return "insertUnorderedList";
+    case ax::mojom::InputEventType::kInsertHorizontalRule:
+      return "insertHorizontalRule";
+    case ax::mojom::InputEventType::kInsertFromPaste:
+      return "insertFromPaste";
+    case ax::mojom::InputEventType::kInsertFromDrop:
+      return "insertFromDrop";
+    case ax::mojom::InputEventType::kInsertFromYank:
+      return "insertFromYank";
+    case ax::mojom::InputEventType::kInsertTranspose:
+      return "insertTranspose";
+    case ax::mojom::InputEventType::kInsertReplacementText:
+      return "insertReplacementText";
+    case ax::mojom::InputEventType::kInsertCompositionText:
+      return "insertCompositionText";
+    case ax::mojom::InputEventType::kDeleteWordBackward:
+      return "deleteWordBackward";
+    case ax::mojom::InputEventType::kDeleteWordForward:
+      return "deleteWordForward";
+    case ax::mojom::InputEventType::kDeleteSoftLineBackward:
+      return "deleteSoftLineBackward";
+    case ax::mojom::InputEventType::kDeleteSoftLineForward:
+      return "deleteSoftLineForward";
+    case ax::mojom::InputEventType::kDeleteHardLineBackward:
+      return "deleteHardLineBackward";
+    case ax::mojom::InputEventType::kDeleteHardLineForward:
+      return "deleteHardLineForward";
+    case ax::mojom::InputEventType::kDeleteContentBackward:
+      return "deleteContentBackward";
+    case ax::mojom::InputEventType::kDeleteContentForward:
+      return "deleteContentForward";
+    case ax::mojom::InputEventType::kDeleteByCut:
+      return "deleteByCut";
+    case ax::mojom::InputEventType::kDeleteByDrag:
+      return "deleteByDrag";
+    case ax::mojom::InputEventType::kHistoryUndo:
+      return "historyUndo";
+    case ax::mojom::InputEventType::kHistoryRedo:
+      return "historyRedo";
+    case ax::mojom::InputEventType::kFormatBold:
+      return "formatBold";
+    case ax::mojom::InputEventType::kFormatItalic:
+      return "formatItalic";
+    case ax::mojom::InputEventType::kFormatUnderline:
+      return "formatUnderline";
+    case ax::mojom::InputEventType::kFormatStrikeThrough:
+      return "formatStrikeThrough";
+    case ax::mojom::InputEventType::kFormatSuperscript:
+      return "formatSuperscript";
+    case ax::mojom::InputEventType::kFormatSubscript:
+      return "formatSubscript";
+    case ax::mojom::InputEventType::kFormatJustifyCenter:
+      return "formatJustifyCenter";
+    case ax::mojom::InputEventType::kFormatJustifyFull:
+      return "formatJustifyFull";
+    case ax::mojom::InputEventType::kFormatJustifyRight:
+      return "formatJustifyRight";
+    case ax::mojom::InputEventType::kFormatJustifyLeft:
+      return "formatJustifyLeft";
+    case ax::mojom::InputEventType::kFormatIndent:
+      return "formatIndent";
+    case ax::mojom::InputEventType::kFormatOutdent:
+      return "formatOutdent";
+    case ax::mojom::InputEventType::kFormatRemove:
+      return "formatRemove";
+    case ax::mojom::InputEventType::kFormatSetBlockTextDirection:
+      return "formatSetBlockTextDirection";
+  }
+
+  return "";
+}
+
+ax::mojom::InputEventType ParseInputEventType(const char* input_event_type) {
+  if (0 == strcmp(input_event_type, "none"))
+    return ax::mojom::InputEventType::kNone;
+  if (0 == strcmp(input_event_type, "insertText"))
+    return ax::mojom::InputEventType::kInsertText;
+  if (0 == strcmp(input_event_type, "insertLineBreak"))
+    return ax::mojom::InputEventType::kInsertLineBreak;
+  if (0 == strcmp(input_event_type, "insertParagraph"))
+    return ax::mojom::InputEventType::kInsertParagraph;
+  if (0 == strcmp(input_event_type, "insertOrderedList"))
+    return ax::mojom::InputEventType::kInsertOrderedList;
+  if (0 == strcmp(input_event_type, "insertUnorderedList"))
+    return ax::mojom::InputEventType::kInsertUnorderedList;
+  if (0 == strcmp(input_event_type, "insertHorizontalRule"))
+    return ax::mojom::InputEventType::kInsertHorizontalRule;
+  if (0 == strcmp(input_event_type, "insertFromPaste"))
+    return ax::mojom::InputEventType::kInsertFromPaste;
+  if (0 == strcmp(input_event_type, "insertFromDrop"))
+    return ax::mojom::InputEventType::kInsertFromDrop;
+  if (0 == strcmp(input_event_type, "insertFromYank"))
+    return ax::mojom::InputEventType::kInsertFromYank;
+  if (0 == strcmp(input_event_type, "insertTranspose"))
+    return ax::mojom::InputEventType::kInsertTranspose;
+  if (0 == strcmp(input_event_type, "insertReplacementText"))
+    return ax::mojom::InputEventType::kInsertReplacementText;
+  if (0 == strcmp(input_event_type, "insertCompositionText"))
+    return ax::mojom::InputEventType::kInsertCompositionText;
+  if (0 == strcmp(input_event_type, "deleteWordBackward"))
+    return ax::mojom::InputEventType::kDeleteWordBackward;
+  if (0 == strcmp(input_event_type, "deleteWordForward"))
+    return ax::mojom::InputEventType::kDeleteWordForward;
+  if (0 == strcmp(input_event_type, "deleteSoftLineBackward"))
+    return ax::mojom::InputEventType::kDeleteSoftLineBackward;
+  if (0 == strcmp(input_event_type, "deleteSoftLineForward"))
+    return ax::mojom::InputEventType::kDeleteSoftLineForward;
+  if (0 == strcmp(input_event_type, "deleteHardLineBackward"))
+    return ax::mojom::InputEventType::kDeleteHardLineBackward;
+  if (0 == strcmp(input_event_type, "deleteHardLineForward"))
+    return ax::mojom::InputEventType::kDeleteHardLineForward;
+  if (0 == strcmp(input_event_type, "deleteContentBackward"))
+    return ax::mojom::InputEventType::kDeleteContentBackward;
+  if (0 == strcmp(input_event_type, "deleteContentForward"))
+    return ax::mojom::InputEventType::kDeleteContentForward;
+  if (0 == strcmp(input_event_type, "deleteByCut"))
+    return ax::mojom::InputEventType::kDeleteByCut;
+  if (0 == strcmp(input_event_type, "deleteByDrag"))
+    return ax::mojom::InputEventType::kDeleteByDrag;
+  if (0 == strcmp(input_event_type, "historyUndo"))
+    return ax::mojom::InputEventType::kHistoryUndo;
+  if (0 == strcmp(input_event_type, "historyRedo"))
+    return ax::mojom::InputEventType::kHistoryRedo;
+  if (0 == strcmp(input_event_type, "formatBold"))
+    return ax::mojom::InputEventType::kFormatBold;
+  if (0 == strcmp(input_event_type, "formatItalic"))
+    return ax::mojom::InputEventType::kFormatItalic;
+  if (0 == strcmp(input_event_type, "formatUnderline"))
+    return ax::mojom::InputEventType::kFormatUnderline;
+  if (0 == strcmp(input_event_type, "formatStrikeThrough"))
+    return ax::mojom::InputEventType::kFormatStrikeThrough;
+  if (0 == strcmp(input_event_type, "formatSuperscript"))
+    return ax::mojom::InputEventType::kFormatSuperscript;
+  if (0 == strcmp(input_event_type, "formatSubscript"))
+    return ax::mojom::InputEventType::kFormatSubscript;
+  if (0 == strcmp(input_event_type, "formatJustifyCenter"))
+    return ax::mojom::InputEventType::kFormatJustifyCenter;
+  if (0 == strcmp(input_event_type, "formatJustifyFull"))
+    return ax::mojom::InputEventType::kFormatJustifyFull;
+  if (0 == strcmp(input_event_type, "formatJustifyRight"))
+    return ax::mojom::InputEventType::kFormatJustifyRight;
+  if (0 == strcmp(input_event_type, "formatJustifyLeft"))
+    return ax::mojom::InputEventType::kFormatJustifyLeft;
+  if (0 == strcmp(input_event_type, "formatIndent"))
+    return ax::mojom::InputEventType::kFormatIndent;
+  if (0 == strcmp(input_event_type, "formatOutdent"))
+    return ax::mojom::InputEventType::kFormatOutdent;
+  if (0 == strcmp(input_event_type, "formatRemove"))
+    return ax::mojom::InputEventType::kFormatRemove;
+  if (0 == strcmp(input_event_type, "formatSetBlockTextDirection"))
+    return ax::mojom::InputEventType::kFormatSetBlockTextDirection;
+  return ax::mojom::InputEventType::kNone;
 }
 
 const char* ToString(ax::mojom::TextBoundary text_boundary) {
   switch (text_boundary) {
+    case ax::mojom::TextBoundary::kNone:
+      return "none";
     case ax::mojom::TextBoundary::kCharacter:
       return "character";
     case ax::mojom::TextBoundary::kFormat:
@@ -2245,8 +2408,8 @@ const char* ToString(ax::mojom::TextBoundary text_boundary) {
 }
 
 ax::mojom::TextBoundary ParseTextBoundary(const char* text_boundary) {
-  if (0 == strcmp(text_boundary, "object"))
-    return ax::mojom::TextBoundary::kObject;
+  if (0 == strcmp(text_boundary, "none"))
+    return ax::mojom::TextBoundary::kNone;
   if (0 == strcmp(text_boundary, "character"))
     return ax::mojom::TextBoundary::kCharacter;
   if (0 == strcmp(text_boundary, "format"))
@@ -2257,6 +2420,8 @@ ax::mojom::TextBoundary ParseTextBoundary(const char* text_boundary) {
     return ax::mojom::TextBoundary::kLineStart;
   if (0 == strcmp(text_boundary, "lineStartOrEnd"))
     return ax::mojom::TextBoundary::kLineStartOrEnd;
+  if (0 == strcmp(text_boundary, "object"))
+    return ax::mojom::TextBoundary::kObject;
   if (0 == strcmp(text_boundary, "pageEnd"))
     return ax::mojom::TextBoundary::kPageEnd;
   if (0 == strcmp(text_boundary, "pageStart"))
@@ -2283,43 +2448,7 @@ ax::mojom::TextBoundary ParseTextBoundary(const char* text_boundary) {
     return ax::mojom::TextBoundary::kWordStart;
   if (0 == strcmp(text_boundary, "wordStartOrEnd"))
     return ax::mojom::TextBoundary::kWordStartOrEnd;
-  return ax::mojom::TextBoundary::kObject;
-}
-
-const char* ToString(ax::mojom::TextDecorationStyle text_decoration_style) {
-  switch (text_decoration_style) {
-    case ax::mojom::TextDecorationStyle::kNone:
-      return "none";
-    case ax::mojom::TextDecorationStyle::kSolid:
-      return "solid";
-    case ax::mojom::TextDecorationStyle::kDashed:
-      return "dashed";
-    case ax::mojom::TextDecorationStyle::kDotted:
-      return "dotted";
-    case ax::mojom::TextDecorationStyle::kDouble:
-      return "double";
-    case ax::mojom::TextDecorationStyle::kWavy:
-      return "wavy";
-  }
-
-  return "";
-}
-
-ax::mojom::TextDecorationStyle ParseTextDecorationStyle(
-    const char* text_decoration_style) {
-  if (0 == strcmp(text_decoration_style, "none"))
-    return ax::mojom::TextDecorationStyle::kNone;
-  if (0 == strcmp(text_decoration_style, "solid"))
-    return ax::mojom::TextDecorationStyle::kSolid;
-  if (0 == strcmp(text_decoration_style, "dashed"))
-    return ax::mojom::TextDecorationStyle::kDashed;
-  if (0 == strcmp(text_decoration_style, "dotted"))
-    return ax::mojom::TextDecorationStyle::kDotted;
-  if (0 == strcmp(text_decoration_style, "double"))
-    return ax::mojom::TextDecorationStyle::kDouble;
-  if (0 == strcmp(text_decoration_style, "wavy"))
-    return ax::mojom::TextDecorationStyle::kWavy;
-  return ax::mojom::TextDecorationStyle::kNone;
+  return ax::mojom::TextBoundary::kNone;
 }
 
 const char* ToString(ax::mojom::TextAlign text_align) {
@@ -2353,8 +2482,8 @@ ax::mojom::TextAlign ParseTextAlign(const char* text_align) {
   return ax::mojom::TextAlign::kNone;
 }
 
-const char* ToString(ax::mojom::WritingDirection text_direction) {
-  switch (text_direction) {
+const char* ToString(ax::mojom::WritingDirection writing_direction) {
+  switch (writing_direction) {
     case ax::mojom::WritingDirection::kNone:
       return "none";
     case ax::mojom::WritingDirection::kLtr:
@@ -2370,16 +2499,17 @@ const char* ToString(ax::mojom::WritingDirection text_direction) {
   return "";
 }
 
-ax::mojom::WritingDirection ParseTextDirection(const char* text_direction) {
-  if (0 == strcmp(text_direction, "none"))
+ax::mojom::WritingDirection ParseWritingDirection(
+    const char* writing_direction) {
+  if (0 == strcmp(writing_direction, "none"))
     return ax::mojom::WritingDirection::kNone;
-  if (0 == strcmp(text_direction, "ltr"))
+  if (0 == strcmp(writing_direction, "ltr"))
     return ax::mojom::WritingDirection::kLtr;
-  if (0 == strcmp(text_direction, "rtl"))
+  if (0 == strcmp(writing_direction, "rtl"))
     return ax::mojom::WritingDirection::kRtl;
-  if (0 == strcmp(text_direction, "ttb"))
+  if (0 == strcmp(writing_direction, "ttb"))
     return ax::mojom::WritingDirection::kTtb;
-  if (0 == strcmp(text_direction, "btt"))
+  if (0 == strcmp(writing_direction, "btt"))
     return ax::mojom::WritingDirection::kBtt;
   return ax::mojom::WritingDirection::kNone;
 }
@@ -2440,6 +2570,42 @@ ax::mojom::TextStyle ParseTextStyle(const char* text_style) {
   if (0 == strcmp(text_style, "overline"))
     return ax::mojom::TextStyle::kOverline;
   return ax::mojom::TextStyle::kNone;
+}
+
+const char* ToString(ax::mojom::TextDecorationStyle text_decoration_style) {
+  switch (text_decoration_style) {
+    case ax::mojom::TextDecorationStyle::kNone:
+      return "none";
+    case ax::mojom::TextDecorationStyle::kSolid:
+      return "solid";
+    case ax::mojom::TextDecorationStyle::kDashed:
+      return "dashed";
+    case ax::mojom::TextDecorationStyle::kDotted:
+      return "dotted";
+    case ax::mojom::TextDecorationStyle::kDouble:
+      return "double";
+    case ax::mojom::TextDecorationStyle::kWavy:
+      return "wavy";
+  }
+
+  return "";
+}
+
+ax::mojom::TextDecorationStyle ParseTextDecorationStyle(
+    const char* text_decoration_style) {
+  if (0 == strcmp(text_decoration_style, "none"))
+    return ax::mojom::TextDecorationStyle::kNone;
+  if (0 == strcmp(text_decoration_style, "solid"))
+    return ax::mojom::TextDecorationStyle::kSolid;
+  if (0 == strcmp(text_decoration_style, "dashed"))
+    return ax::mojom::TextDecorationStyle::kDashed;
+  if (0 == strcmp(text_decoration_style, "dotted"))
+    return ax::mojom::TextDecorationStyle::kDotted;
+  if (0 == strcmp(text_decoration_style, "double"))
+    return ax::mojom::TextDecorationStyle::kDouble;
+  if (0 == strcmp(text_decoration_style, "wavy"))
+    return ax::mojom::TextDecorationStyle::kWavy;
+  return ax::mojom::TextDecorationStyle::kNone;
 }
 
 const char* ToString(ax::mojom::AriaCurrentState aria_current_state) {

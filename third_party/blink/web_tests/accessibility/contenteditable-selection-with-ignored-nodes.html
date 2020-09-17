@@ -81,7 +81,7 @@ async_test((t) => {
       focusObject: axTextBox,
       focusOffset: 0,
       selectedText: ''});
-    expectedIntents.push('AXEventIntent(setSelection,character,forward)');
+    expectedIntents.push('AXEventIntent(setSelection,none,character,forward)');
 
     const textBox = document.getElementById('textbox');
     textBox.focus();
@@ -94,7 +94,7 @@ async_test((t) => {
       focusObject: axLine2,
       focusOffset: 0,
       selectedText: '\xA0\n'});  // '\xA0' == &nbsp;
-    expectedIntents.push('AXEventIntent(extendSelection,lineStart,forward)');
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
 
     eventSender.keyDown('ArrowDown', ['shiftKey']);
   });
@@ -106,7 +106,7 @@ async_test((t) => {
       focusObject: axLine3,
       focusOffset: 0,
       selectedText: '\xA0\nApple\n\n'});
-    expectedIntents.push('AXEventIntent(extendSelection,lineStart,forward)');
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
 
     eventSender.keyDown('ArrowDown', ['shiftKey']);
   });
@@ -118,7 +118,7 @@ async_test((t) => {
       focusObject: axLine3Text,
       focusOffset: 6,
       selectedText: '\xA0\nApple\n\nBanana'});
-    expectedIntents.push('AXEventIntent(extendSelection,lineStart,forward)');
+    expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
 
     eventSender.keyDown('ArrowDown', ['shiftKey']);
   });

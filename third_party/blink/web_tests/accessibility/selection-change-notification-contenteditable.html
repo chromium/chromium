@@ -14,18 +14,15 @@
 
 // Wait until layout has settled to avoid notification spam.
 async_test_after_layout_and_paint((t) => {
-  const element = document.getElementById('contentEditable');
-  element.focus();
-
   const axElement = accessibilityController.accessibleElementById('contentEditable');
   axElement.setNotificationListener(t.step_func((notification, intents) => {
-    // Focus notification will come asynchronously after layout
+    // Focus notification will come asynchronously.
     if (notification == 'Focus')
       return;
 
     if (notification == 'SelectedTextChanged') {
       assert_array_equals(intents,
-                          ['AXEventIntent(setSelection,character,forward)']);
+                          ['AXEventIntent(setSelection,none,character,forward)']);
       axElement.unsetNotificationListener();
       t.done();
       return;
@@ -34,6 +31,8 @@ async_test_after_layout_and_paint((t) => {
     assert_unreached('Unexpected notification: ' + notification);
   }));
 
+  const element = document.getElementById('contentEditable');
+  element.focus();
   const p = document.getElementById('p');
   const range = document.createRange();
   range.setStart(p.firstChild, 0);

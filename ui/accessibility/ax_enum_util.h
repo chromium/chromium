@@ -98,25 +98,25 @@ AX_BASE_EXPORT ax::mojom::MoveDirection ParseMoveDirection(
 AX_BASE_EXPORT const char* ToString(ax::mojom::Command command);
 AX_BASE_EXPORT ax::mojom::Command ParseCommand(const char* command);
 
+// ax::mojom::InputEventType
+AX_BASE_EXPORT const char* ToString(ax::mojom::InputEventType input_event_type);
+AX_BASE_EXPORT ax::mojom::InputEventType ParseInputEventType(
+    const char* input_event_type);
+
 // ax::mojom::TextBoundary
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextBoundary text_boundary);
 AX_BASE_EXPORT ax::mojom::TextBoundary ParseTextBoundary(
     const char* text_boundary);
-
-// ax:mojom::TextDecorationStyle
-AX_BASE_EXPORT const char* ToString(
-    ax::mojom::TextDecorationStyle text_decoration_style);
-AX_BASE_EXPORT ax::mojom::TextDecorationStyle ParseTextDecorationStyle(
-    const char* text_decoration_style);
 
 // ax::mojom::TextAlign
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextAlign text_align);
 AX_BASE_EXPORT ax::mojom::TextAlign ParseTextAlign(const char* text_align);
 
 // ax::mojom::WritingDirection
-AX_BASE_EXPORT const char* ToString(ax::mojom::WritingDirection text_direction);
-AX_BASE_EXPORT ax::mojom::WritingDirection ParseTextDirection(
-    const char* text_direction);
+AX_BASE_EXPORT const char* ToString(
+    ax::mojom::WritingDirection writing_direction);
+AX_BASE_EXPORT ax::mojom::WritingDirection ParseWritingDirection(
+    const char* writing_direction);
 
 // ax::mojom::TextPosition
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextPosition text_position);
@@ -126,6 +126,12 @@ AX_BASE_EXPORT ax::mojom::TextPosition ParseTextPosition(
 // ax::mojom::TextStyle
 AX_BASE_EXPORT const char* ToString(ax::mojom::TextStyle text_style);
 AX_BASE_EXPORT ax::mojom::TextStyle ParseTextStyle(const char* text_style);
+
+// ax:mojom::TextDecorationStyle
+AX_BASE_EXPORT const char* ToString(
+    ax::mojom::TextDecorationStyle text_decoration_style);
+AX_BASE_EXPORT ax::mojom::TextDecorationStyle ParseTextDecorationStyle(
+    const char* text_decoration_style);
 
 // ax::mojom::AriaCurrentState
 AX_BASE_EXPORT const char* ToString(

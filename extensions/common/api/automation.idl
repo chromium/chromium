@@ -341,7 +341,6 @@
   // to the tree, each node that's added, removed, or changed, will appear
   // in exactly one TreeChange, with one of these types.
   //
-  //
   // nodeCreated means that this node was added to the tree and its parent is
   // new as well, so it's just one node in a new subtree that was added.
   enum TreeChangeType {
@@ -437,27 +436,71 @@ enum MarkerType {
   suggestion
 };
 
-// The following three enums are associated with an AutomationEvent.
+// The following three enums are associated with an $(ref:automation.AutomationIntent).
 
-// A command associated with an AutomationEvent.
-enum EventCommandType {
+// A command associated with an $(ref:automation.AutomationIntent).
+enum IntentCommandType {
   clearSelection,
-  cut,
   delete,
   dictate,
   extendSelection,
   format,
+  history,
   insert,
   marker,
   moveSelection,
-  paste,
-  replace,
-  setSelection,
-  type
+  setSelection
 };
 
-// A text boundary associated with an AutomationEvent.
-enum EventTextBoundaryType {
+// The type of an input event associated with an $(ref:automation.AutomationIntent). It describes an edit
+// command, e.g. IntentCommandType.insert, in more detail.
+enum IntentInputEventType {
+  // Insertion.
+  insertText,
+  insertLineBreak,
+  insertParagraph,
+  insertOrderedList,
+  insertUnorderedList,
+  insertHorizontalRule,
+  insertFromPaste,
+  insertFromDrop,
+  insertFromYank,
+  insertTranspose,
+  insertReplacementText,
+  insertCompositionText,
+  // Deletion.
+  deleteWordBackward,
+  deleteWordForward,
+  deleteSoftLineBackward,
+  deleteSoftLineForward,
+  deleteHardLineBackward,
+  deleteHardLineForward,
+  deleteContentBackward,
+  deleteContentForward,
+  deleteByCut,
+  deleteByDrag,
+  // History.
+  historyUndo,
+  historyRedo,
+  // Formatting.
+  formatBold,
+  formatItalic,
+  formatUnderline,
+  formatStrikeThrough,
+  formatSuperscript,
+  formatSubscript,
+  formatJustifyCenter,
+  formatJustifyFull,
+  formatJustifyRight,
+  formatJustifyLeft,
+  formatIndent,
+  formatOutdent,
+  formatRemove,
+  formatSetBlockTextDirection
+};
+
+// A text boundary associated with an $(ref:automation.AutomationIntent).
+enum IntentTextBoundaryType {
   character,
   format,
   lineEnd,
@@ -479,10 +522,10 @@ enum EventTextBoundaryType {
   wordStartOrEnd
 };
 
-// A move direction associated with an AutomationEvent.
-enum EventMoveDirectionType {
-  forward,
-  backward
+// A move direction associated with an $(ref:automation.AutomationIntent).
+enum IntentMoveDirectionType {
+  backward,
+  forward
 };
 
 // A sort applied to a table row or column header.
@@ -599,14 +642,14 @@ enum GeneratedEventType {
   callback QueryCallback = void(AutomationNode node);
 
   [nocompile, noinline_doc] dictionary AutomationIntent {
-    // A command associated with this AutomationEvent.
-    EventCommandType command;
+    // A command associated with this AutomationIntent.
+    IntentCommandType command;
 
-    // A text boundary associated with this AutomationEvent.
-    EventTextBoundaryType textBoundary;
+    // A text boundary associated with this AutomationIntent.
+    IntentTextBoundaryType textBoundary;
 
-    // A move direction associated with this AutomationEvent.
-    EventMoveDirectionType moveDirection;
+    // A move direction associated with this AutomationIntent.
+    IntentMoveDirectionType moveDirection;
   };
 
   // An event in the Automation tree.
@@ -623,14 +666,15 @@ enum GeneratedEventType {
     // The source of this event.
     DOMString eventFrom;
 
+    // Any mouse coordinates associated with this event.
     long mouseX;
     long mouseY;
 
-    // Intents associated with this event.
+    // A list of $(ref:automation.AutomationIntent)s associated with this event.
     AutomationIntent[] intents;
 
     // Stops this event from further processing except for any remaining
-    // listeners on $(ref:AutomationEvent.target).
+    // listeners on $(ref:automation.AutomationEvent.target).
     static void stopPropagation();
   };
 

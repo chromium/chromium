@@ -11,6 +11,7 @@ bool StructTraits<ax::mojom::EventIntentDataView, ui::AXEventIntent>::Read(
     ax::mojom::EventIntentDataView data,
     ui::AXEventIntent* out) {
   out->command = data.command();
+  out->input_event_type = data.input_event_type();
   out->text_boundary = data.text_boundary();
   out->move_direction = data.move_direction();
   return true;

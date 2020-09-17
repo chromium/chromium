@@ -2394,6 +2394,8 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
   for (const auto& intent : event.event_intents) {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetKey("command", base::Value(ui::ToString(intent.command)));
+    dict.SetKey("inputEventType",
+                base::Value(ui::ToString(intent.input_event_type)));
     dict.SetKey("textBoundary",
                 base::Value(ui::ToString(intent.text_boundary)));
     dict.SetKey("moveDirection",
