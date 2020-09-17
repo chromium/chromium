@@ -11,16 +11,20 @@
 #include "base/optional.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_registry.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view)
     : browser_view_(browser_view),
+      snooze_service_(std::make_unique<FeaturePromoSnoozeService>(
+          browser_view->browser()->profile())),
       tracker_(feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_view->browser()->profile())) {
   DCHECK(tracker_);
@@ -40,6 +44,9 @@ FeaturePromoControllerViews::~FeaturePromoControllerViews() {
 bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
     const base::Feature& iph_feature,
     const FeaturePromoBubbleParams& params) {
+  if (snooze_service_->IsBlocked(iph_feature))
+    return false;
+
   if (!tracker_->ShouldTriggerHelpUI(iph_feature))
     return false;
 
@@ -51,7 +58,12 @@ bool FeaturePromoControllerViews::MaybeShowPromoWithParams(
   anchor_view_tracker_.SetView(params.anchor_view);
 
   current_iph_feature_ = &iph_feature;
-  promo_bubble_ = FeaturePromoBubbleView::Create(std::move(params));
+  promo_bubble_ = FeaturePromoBubbleView::Create(
+      std::move(params),
+      base::BindRepeating(&FeaturePromoControllerViews::OnUserSnooze,
+                          base::Unretained(this), iph_feature),
+      base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
+                          base::Unretained(this), iph_feature));
   widget_observer_.Add(promo_bubble_->GetWidget());
 
   return true;
@@ -65,6 +77,16 @@ bool FeaturePromoControllerViews::MaybeShowPromo(
   if (!params)
     return false;
   return MaybeShowPromoWithParams(iph_feature, *params);
+}
+
+void FeaturePromoControllerViews::OnUserSnooze(
+    const base::Feature& iph_feature) {
+  snooze_service_->OnUserSnooze(iph_feature);
+}
+
+void FeaturePromoControllerViews::OnUserDismiss(
+    const base::Feature& iph_feature) {
+  snooze_service_->OnUserDismiss(iph_feature);
 }
 
 bool FeaturePromoControllerViews::BubbleIsShowing(

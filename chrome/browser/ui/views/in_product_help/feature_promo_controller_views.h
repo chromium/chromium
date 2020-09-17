@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_FEATURE_PROMO_CONTROLLER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_IN_PRODUCT_HELP_FEATURE_PROMO_CONTROLLER_VIEWS_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/views/in_product_help/feature_promo_controller.h"
@@ -15,6 +17,7 @@
 class BrowserView;
 class FeaturePromoBubbleView;
 struct FeaturePromoBubbleParams;
+class FeaturePromoSnoozeService;
 
 namespace base {
 struct Feature;
@@ -59,14 +62,26 @@ class FeaturePromoControllerViews : public FeaturePromoController,
     return promo_bubble_;
   }
 
+  FeaturePromoSnoozeService* snooze_service_for_testing() {
+    return snooze_service_.get();
+  }
+
  private:
   // Called when PromoHandle is destroyed to finish the promo.
   void FinishContinuedPromo() override;
 
   void HandleBubbleClosed();
 
+  // Call these methods when the user actively snooze or dismiss the IPH.
+  void OnUserSnooze(const base::Feature& iph_feature);
+  void OnUserDismiss(const base::Feature& iph_feature);
+
   // The browser window this instance is responsible for.
   BrowserView* const browser_view_;
+
+  // Snooze service that is notified when a user snoozes or dismisses the promo.
+  // Ask this service for display permission before |tracker_|.
+  std::unique_ptr<FeaturePromoSnoozeService> snooze_service_;
 
   // IPH backend that is notified of user events and decides whether to
   // trigger IPH.

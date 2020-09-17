@@ -26,6 +26,8 @@ const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebUITabStripFeature{"IPH_WebUITabStrip",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHDesktopSnoozeFeature{"IPH_DesktopSnoozeFeature",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

@@ -10,6 +10,7 @@
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/in_product_help/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -114,6 +115,17 @@ TEST_F(FeaturePromoControllerViewsTest, ShowsBubble) {
                                                     DefaultBubbleParams()));
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_TRUE(controller_->promo_bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest, SnoozeServiceBlocksPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(0);
+  controller_->snooze_service_for_testing()->OnUserDismiss(kTestIPHFeature);
+  EXPECT_FALSE(controller_->MaybeShowPromoWithParams(kTestIPHFeature,
+                                                     DefaultBubbleParams()));
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+  EXPECT_FALSE(controller_->promo_bubble_for_testing());
+  controller_->snooze_service_for_testing()->Reset(kTestIPHFeature);
 }
 
 TEST_F(FeaturePromoControllerViewsTest, PromoEndsWhenRequested) {
