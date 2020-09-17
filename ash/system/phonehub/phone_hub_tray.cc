@@ -22,6 +22,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -47,15 +48,21 @@ constexpr int kPaddingBetweenTitleAndSeparator = 3;
 // such as phone status, task continuation, etc.
 class PhoneHubView : public views ::View {
  public:
-  explicit PhoneHubView(TrayBubbleView* bubble_view)
+  explicit PhoneHubView(TrayBubbleView* bubble_view,
+                        chromeos::phonehub::PhoneHubManager* phone_hub_manager)
       : bubble_view_(bubble_view) {
     auto setup_layered_view = [](views::View* view) {
       view->SetPaintToLayer();
       view->layer()->SetFillsBoundsOpaquely(false);
     };
 
-    setup_layered_view(
-        bubble_view_->AddChildView(std::make_unique<PhoneStatusView>()));
+    chromeos::phonehub::PhoneModel* phone_model =
+        phone_hub_manager->GetPhoneModel();
+
+    if (phone_model) {
+      setup_layered_view(bubble_view->AddChildView(
+          std::make_unique<PhoneStatusView>(phone_model)));
+    }
 
     AddSeparator();
 
@@ -178,6 +185,8 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   if (bubble_)
     return;
 
+  DCHECK(phone_hub_manager_);
+
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
   init_params.parent_window = GetBubbleWindowContainer();
@@ -195,7 +204,8 @@ void PhoneHubTray::ShowBubble(bool show_by_click) {
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
-  bubble_view->AddChildView(std::make_unique<PhoneHubView>(bubble_view));
+  bubble_view->AddChildView(
+      std::make_unique<PhoneHubView>(bubble_view, phone_hub_manager_));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view,
                                                 false /* is_persistent */);

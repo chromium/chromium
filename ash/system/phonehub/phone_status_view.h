@@ -6,22 +6,27 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_STATUS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/power/power_status.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/top_shortcut_button.h"
+#include "chromeos/components/phonehub/phone_model.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {
 class ImageView;
-}
+class Label;
+}  // namespace views
 
 namespace ash {
 
 // The header row at the top of the Phone Hub panel, showing phone title and
 // status (wifi, volime, etc.).
-class ASH_EXPORT PhoneStatusView : public TriView,
-                                   public views::ButtonListener {
+class ASH_EXPORT PhoneStatusView
+    : public TriView,
+      public views::ButtonListener,
+      public chromeos::phonehub::PhoneModel::Observer {
  public:
-  PhoneStatusView();
+  explicit PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model);
   ~PhoneStatusView() override;
   PhoneStatusView(PhoneStatusView&) = delete;
   PhoneStatusView operator=(PhoneStatusView&) = delete;
@@ -29,12 +34,30 @@ class ASH_EXPORT PhoneStatusView : public TriView,
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // chromeos::phonehub::PhoneHubModel::Observer:
+  void OnModelChanged() override;
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(PhoneStatusViewTest, MobileProviderVisibility);
+  FRIEND_TEST_ALL_PREFIXES(PhoneStatusViewTest, PhoneStatusLabelsContent);
+
+  // Update the labels and icons in the view to display current phone status.
+  void Update();
+
+  void UpdateMobileStatus();
+  void UpdateBatteryStatus();
+  PowerStatus::BatteryImageInfo CalculateBatteryInfo();
+
   void ConfigureTriViewContainer(TriView::Container container);
 
-  views::ImageView* wifi_icon_ = nullptr;
-  views::ImageView* volume_icon_ = nullptr;
+  chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
+
+  // Owned by views hierarchy.
+  views::Label* phone_name_label_ = nullptr;
+  views::ImageView* signal_icon_ = nullptr;
+  views::Label* mobile_provider_label_ = nullptr;
   views::ImageView* battery_icon_ = nullptr;
+  views::Label* battery_label_ = nullptr;
   TopShortcutButton* settings_button_ = nullptr;
 };
 
