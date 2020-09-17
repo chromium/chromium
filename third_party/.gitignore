@@ -91,7 +91,7 @@
 /google_benchmark/src
 /google_toolbox_for_mac/src
 /googlemac
-/grpc
+/grpc/src
 /gvr-android-sdk/common_library.aar
 /gvr-android-sdk/test-libraries/controller_test_api.aar
 /gvr-android-sdk/libgvr_shim_static_*.a

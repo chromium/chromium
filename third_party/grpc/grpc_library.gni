@@ -22,6 +22,7 @@ template("cc_grpc_library") {
                              "sources",
                              "use_protobuf_full",
                              "import_dirs",
+                             "proto_in_dir",
                            ])
     remove_configs = [ "//build/config/compiler:chromium_code" ]
     extra_configs = [
