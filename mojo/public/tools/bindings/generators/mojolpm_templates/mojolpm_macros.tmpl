@@ -42,6 +42,8 @@
     ::mojo::AssociatedRemote<{{mojom_type}}> tmp_{{name}}(std::move({{name}}));
     mojolpm::GetContext()->AddInstance(std::move(tmp_{{name}}));
   }
+{%-   elif kind|is_any_handle_kind %}
+  mojolpm::GetContext()->AddInstance(std::move({{name}}));
 {%-   else %}
 {%-     if kind|is_nullable_kind %}
 {%-       set proto_type = kind|cpp_wrapper_proto_type(add_same_module_namespaces=true) %}
