@@ -1087,9 +1087,11 @@ AutomationNodeImpl.prototype = {
       $Array.push(path, parent);
       parent = parent.parent;
     }
-    var event = new AutomationEvent(eventType, this.wrapper, eventFrom, mouseX,
-                                    mouseY, intents);
+    var event = new AutomationEvent(eventType, this.wrapper, eventFrom);
     event.generatedType = generatedEventType;
+    event.mouseX = mouseX;
+    event.mouseY = mouseY;
+    event.intents = intents;
 
     // Dispatch the event through the propagation path in three phases:
     // - capturing: starting from the root and going down to the target's parent

@@ -10,13 +10,13 @@ var allTests = [function testIntents() {
       chrome.automation.EventType.TEXT_SELECTION_CHANGED, (e) => {
         assertEq(1, e.intents.length);
         assertEq(
-            chrome.automation.IntentCommandType.SET_SELECTION,
+            chrome.automation.EventCommandType.SET_SELECTION,
             e.intents[0].command);
         assertEq(
-            chrome.automation.IntentTextBoundaryType.CHARACTER,
+            chrome.automation.EventTextBoundaryType.CHARACTER,
             e.intents[0].textBoundary);
         assertEq(
-            chrome.automation.IntentMoveDirectionType.FORWARD,
+            chrome.automation.EventMoveDirectionType.FORWARD,
             e.intents[0].moveDirection);
         chrome.test.succeed();
       }, true);

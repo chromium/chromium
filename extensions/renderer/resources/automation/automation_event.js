@@ -4,15 +4,12 @@
 
 var utils = require('utils');
 
-function AutomationEventImpl(type, target, eventFrom, mouseX, mouseY, intents) {
+function AutomationEventImpl(type, target, eventFrom) {
   this.propagationStopped = false;
   this.type = type;
   this.target = target;
   this.eventPhase = Event.NONE;
   this.eventFrom = eventFrom;
-  this.mouseX = mouseX;
-  this.mouseY = mouseY;
-  this.intents = intents;
 }
 
 AutomationEventImpl.prototype = {
@@ -29,17 +26,11 @@ utils.expose(AutomationEvent, AutomationEventImpl, {
   functions: [
     'stopPropagation',
   ],
-  properties: [
-    'generatedType',
-  ],
   readonly: [
     'type',
     'target',
     'eventPhase',
     'eventFrom',
-    'mouseX',
-    'mouseY',
-    'intents',
   ],
 });
 

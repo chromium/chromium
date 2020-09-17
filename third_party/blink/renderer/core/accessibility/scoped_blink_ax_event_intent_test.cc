@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {
@@ -24,7 +23,7 @@ TEST_F(ScopedBlinkAXEventIntentTest, SingleIntent) {
 
   {
     ScopedBlinkAXEventIntent scoped_intent(
-        {ax::mojom::blink::Command::kExtendSelection,
+        {ax::mojom::blink::Command::kCut,
          ax::mojom::blink::TextBoundary::kWordEnd,
          ax::mojom::blink::MoveDirection::kForward},
         &GetDocument());
@@ -44,10 +43,10 @@ TEST_F(ScopedBlinkAXEventIntentTest, MultipleIdenticalIntents) {
 
   {
     ScopedBlinkAXEventIntent scoped_intent(
-        {{ax::mojom::blink::Command::kExtendSelection,
+        {{ax::mojom::blink::Command::kCut,
           ax::mojom::blink::TextBoundary::kWordEnd,
           ax::mojom::blink::MoveDirection::kForward},
-         {ax::mojom::blink::Command::kExtendSelection,
+         {ax::mojom::blink::Command::kCut,
           ax::mojom::blink::TextBoundary::kWordEnd,
           ax::mojom::blink::MoveDirection::kForward}},
         &GetDocument());
@@ -69,14 +68,16 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIndividualIntents) {
 
   {
     ScopedBlinkAXEventIntent scoped_intent1(
-        {ax::mojom::blink::Command::kInsert,
-         ax::mojom::blink::InputEventType::kInsertText},
+        {ax::mojom::blink::Command::kType,
+         ax::mojom::blink::TextBoundary::kCharacter,
+         ax::mojom::blink::MoveDirection::kForward},
         &GetDocument());
 
     {
       ScopedBlinkAXEventIntent scoped_intent2(
-          {ax::mojom::blink::Command::kDelete,
-           ax::mojom::blink::InputEventType::kDeleteWordBackward},
+          {ax::mojom::blink::Command::kCut,
+           ax::mojom::blink::TextBoundary::kWordEnd,
+           ax::mojom::blink::MoveDirection::kForward},
           &GetDocument());
 
       EXPECT_TRUE(
@@ -107,8 +108,9 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
 
   {
     ScopedBlinkAXEventIntent scoped_intent1(
-        {{ax::mojom::blink::Command::kInsert,
-          ax::mojom::blink::InputEventType::kInsertText},
+        {{ax::mojom::blink::Command::kType,
+          ax::mojom::blink::TextBoundary::kCharacter,
+          ax::mojom::blink::MoveDirection::kForward},
          {ax::mojom::blink::Command::kSetSelection,
           ax::mojom::blink::TextBoundary::kWordEnd,
           ax::mojom::blink::MoveDirection::kForward}},
@@ -116,9 +118,12 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedMultipleIntents) {
 
     {
       ScopedBlinkAXEventIntent scoped_intent2(
-          {{ax::mojom::blink::Command::kDelete,
-            ax::mojom::blink::InputEventType::kDeleteWordForward},
-           BlinkAXEventIntent{ax::mojom::blink::Command::kClearSelection}},
+          {{ax::mojom::blink::Command::kCut,
+            ax::mojom::blink::TextBoundary::kWordEnd,
+            ax::mojom::blink::MoveDirection::kForward},
+           {ax::mojom::blink::Command::kClearSelection,
+            ax::mojom::blink::TextBoundary::kWordEnd,
+            ax::mojom::blink::MoveDirection::kForward}},
           &GetDocument());
 
       EXPECT_TRUE(
@@ -161,15 +166,17 @@ TEST_F(ScopedBlinkAXEventIntentTest, NestedIdenticalIntents) {
 
   {
     ScopedBlinkAXEventIntent scoped_intent1(
-        {ax::mojom::blink::Command::kInsert,
-         ax::mojom::blink::InputEventType::kInsertText},
+        {ax::mojom::blink::Command::kType,
+         ax::mojom::blink::TextBoundary::kCharacter,
+         ax::mojom::blink::MoveDirection::kForward},
         &GetDocument());
 
     {
       // Create a second, identical intent.
       ScopedBlinkAXEventIntent scoped_intent2(
-          {ax::mojom::blink::Command::kInsert,
-           ax::mojom::blink::InputEventType::kInsertText},
+          {ax::mojom::blink::Command::kType,
+           ax::mojom::blink::TextBoundary::kCharacter,
+           ax::mojom::blink::MoveDirection::kForward},
           &GetDocument());
 
       EXPECT_TRUE(

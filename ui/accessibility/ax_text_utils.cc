@@ -53,10 +53,8 @@ size_t FindAccessibleTextBoundary(const base::string16& text,
                                   size_t start_offset,
                                   ax::mojom::MoveDirection direction,
                                   ax::mojom::TextAffinity affinity) {
-  DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
   size_t text_size = text.size();
   DCHECK_LE(start_offset, text_size);
-  DCHECK_NE(direction, ax::mojom::MoveDirection::kNone);
 
   base::i18n::BreakIterator::BreakType break_type =
       ICUBreakTypeForBoundaryType(boundary);
@@ -125,7 +123,6 @@ size_t FindAccessibleTextBoundary(const base::string16& text,
         if (break_iter.IsStartOfWord(result)) {
           // If we are searching forward and we are still at the start offset,
           // we need to find the next word.
-          DCHECK_NE(direction, ax::mojom::MoveDirection::kNone);
           if (direction == ax::mojom::MoveDirection::kBackward ||
               result != start_offset)
             return result;
@@ -135,14 +132,12 @@ size_t FindAccessibleTextBoundary(const base::string16& text,
         if (break_iter.IsStartOfWord(result)) {
           // If we are searching forward and we are still at the start offset,
           // we need to find the next word.
-          DCHECK_NE(direction, ax::mojom::MoveDirection::kNone);
           if (direction == ax::mojom::MoveDirection::kBackward ||
               result != start_offset)
             return result;
         } else if (break_iter.IsEndOfWord(result)) {
           // If we are searching backward and we are still at the end offset, we
           // need to find the previous word.
-          DCHECK_NE(direction, ax::mojom::MoveDirection::kNone);
           if (direction == ax::mojom::MoveDirection::kForward ||
               result != start_offset)
             return result;

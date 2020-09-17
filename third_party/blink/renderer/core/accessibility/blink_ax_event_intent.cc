@@ -16,195 +16,131 @@ namespace blink {
 BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
     const EditCommand& edit_command) {
   ax::mojom::blink::Command command;
-  ax::mojom::blink::InputEventType input_event_type;
+  // Set default values for move direction and text boundary.
+  ax::mojom::blink::TextBoundary text_boundary =
+      ax::mojom::blink::TextBoundary::kCharacter;
+  ax::mojom::blink::MoveDirection move_direction =
+      ax::mojom::blink::MoveDirection::kForward;
+
   switch (edit_command.GetInputType()) {
     case InputEvent::InputType::kNone:
       return BlinkAXEventIntent();  // An empty intent.
 
     // Insertion.
     case InputEvent::InputType::kInsertText:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertText;
+      command = ax::mojom::blink::Command::kType;
       break;
     case InputEvent::InputType::kInsertLineBreak:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertLineBreak;
+      command = ax::mojom::blink::Command::kType;
+      text_boundary = ax::mojom::blink::TextBoundary::kLineEnd;
       break;
     case InputEvent::InputType::kInsertParagraph:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertParagraph;
+      command = ax::mojom::blink::Command::kType;
+      text_boundary = ax::mojom::blink::TextBoundary::kParagraphEnd;
       break;
     case InputEvent::InputType::kInsertOrderedList:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertOrderedList;
-      break;
     case InputEvent::InputType::kInsertUnorderedList:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertUnorderedList;
+      command = ax::mojom::blink::Command::kFormat;
       break;
     case InputEvent::InputType::kInsertHorizontalRule:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kInsertHorizontalRule;
+      command = ax::mojom::blink::Command::kType;
       break;
     case InputEvent::InputType::kInsertFromPaste:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertFromPaste;
-      break;
     case InputEvent::InputType::kInsertFromDrop:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertFromDrop;
-      break;
     case InputEvent::InputType::kInsertFromYank:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertFromYank;
+      command = ax::mojom::blink::Command::kPaste;
       break;
     case InputEvent::InputType::kInsertTranspose:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type = ax::mojom::blink::InputEventType::kInsertTranspose;
-      break;
     case InputEvent::InputType::kInsertReplacementText:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kInsertReplacementText;
+      command = ax::mojom::blink::Command::kReplace;
       break;
     case InputEvent::InputType::kInsertCompositionText:
-      command = ax::mojom::blink::Command::kInsert;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kInsertCompositionText;
+      command = ax::mojom::blink::Command::kType;
       break;
 
     // Deletion.
+    //
+    // Text boundary indicates up to which point the deletion is applied. For
+    // example, if a soft line break is deleted in the forward direction, then
+    // it means that we are deleting until the next line start.
     case InputEvent::InputType::kDeleteWordBackward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type = ax::mojom::blink::InputEventType::kDeleteWordBackward;
+      text_boundary = ax::mojom::blink::TextBoundary::kWordStart;
+      move_direction = ax::mojom::blink::MoveDirection::kBackward;
       break;
     case InputEvent::InputType::kDeleteWordForward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type = ax::mojom::blink::InputEventType::kDeleteWordForward;
+      text_boundary = ax::mojom::blink::TextBoundary::kWordEnd;
       break;
     case InputEvent::InputType::kDeleteSoftLineBackward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteSoftLineBackward;
+      text_boundary = ax::mojom::blink::TextBoundary::kLineEnd;
+      move_direction = ax::mojom::blink::MoveDirection::kBackward;
       break;
     case InputEvent::InputType::kDeleteSoftLineForward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteSoftLineForward;
+      text_boundary = ax::mojom::blink::TextBoundary::kLineStart;
       break;
     case InputEvent::InputType::kDeleteHardLineBackward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteHardLineBackward;
+      text_boundary = ax::mojom::blink::TextBoundary::kParagraphEnd;
+      move_direction = ax::mojom::blink::MoveDirection::kBackward;
       break;
     case InputEvent::InputType::kDeleteHardLineForward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteHardLineForward;
+      text_boundary = ax::mojom::blink::TextBoundary::kParagraphStart;
       break;
     case InputEvent::InputType::kDeleteContentBackward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteContentBackward;
+      move_direction = ax::mojom::blink::MoveDirection::kBackward;
       break;
     case InputEvent::InputType::kDeleteContentForward:
       command = ax::mojom::blink::Command::kDelete;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kDeleteContentForward;
       break;
     case InputEvent::InputType::kDeleteByCut:
-      command = ax::mojom::blink::Command::kDelete;
-      input_event_type = ax::mojom::blink::InputEventType::kDeleteByCut;
-      break;
     case InputEvent::InputType::kDeleteByDrag:
-      command = ax::mojom::blink::Command::kDelete;
-      input_event_type = ax::mojom::blink::InputEventType::kDeleteByDrag;
+      command = ax::mojom::blink::Command::kCut;
       break;
 
     // History.
     case InputEvent::InputType::kHistoryUndo:
-      command = ax::mojom::blink::Command::kHistory;
-      input_event_type = ax::mojom::blink::InputEventType::kHistoryUndo;
-      break;
     case InputEvent::InputType::kHistoryRedo:
-      command = ax::mojom::blink::Command::kHistory;
-      input_event_type = ax::mojom::blink::InputEventType::kHistoryRedo;
-      break;
+      return BlinkAXEventIntent();  // No accessibility sideeffects for now.
 
     // Formatting.
     case InputEvent::InputType::kFormatBold:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatBold;
-      break;
     case InputEvent::InputType::kFormatItalic:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatItalic;
-      break;
     case InputEvent::InputType::kFormatUnderline:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatUnderline;
-      break;
     case InputEvent::InputType::kFormatStrikeThrough:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatStrikeThrough;
-      break;
     case InputEvent::InputType::kFormatSuperscript:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatSuperscript;
-      break;
     case InputEvent::InputType::kFormatSubscript:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatSubscript;
-      break;
     case InputEvent::InputType::kFormatJustifyCenter:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatJustifyCenter;
-      break;
     case InputEvent::InputType::kFormatJustifyFull:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatJustifyFull;
-      break;
     case InputEvent::InputType::kFormatJustifyRight:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatJustifyRight;
-      break;
     case InputEvent::InputType::kFormatJustifyLeft:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatJustifyLeft;
-      break;
     case InputEvent::InputType::kFormatIndent:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatIndent;
-      break;
     case InputEvent::InputType::kFormatOutdent:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatOutdent;
-      break;
     case InputEvent::InputType::kFormatRemove:
-      command = ax::mojom::blink::Command::kFormat;
-      input_event_type = ax::mojom::blink::InputEventType::kFormatRemove;
-      break;
     case InputEvent::InputType::kFormatSetBlockTextDirection:
       command = ax::mojom::blink::Command::kFormat;
-      input_event_type =
-          ax::mojom::blink::InputEventType::kFormatSetBlockTextDirection;
       break;
 
     case InputEvent::InputType::kNumberOfInputTypes:
-      NOTREACHED()
-          << "Should never be assigned as an input type to |edit_command|.";
-      return BlinkAXEventIntent();
+      NOTREACHED() << "Should never be assigned as an input type.";
+      command = ax::mojom::blink::Command::kType;
+      break;
   }
 
-  return BlinkAXEventIntent(command, input_event_type);
+  return BlinkAXEventIntent(command, text_boundary, move_direction);
 }
 
 // static
 BlinkAXEventIntent BlinkAXEventIntent::FromClearedSelection(
     const SetSelectionBy set_selection_by) {
-  // text boundary and move direction are not needed in this case.
-  return BlinkAXEventIntent(ax::mojom::blink::Command::kClearSelection);
+  // |text_boundary| and |move_direction| are not used in this case.
+  return BlinkAXEventIntent(ax::mojom::blink::Command::kClearSelection,
+                            ax::mojom::blink::TextBoundary::kCharacter,
+                            ax::mojom::blink::MoveDirection::kForward);
 }
 
 // static
@@ -255,9 +191,6 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       break;
     case TextGranularity::kWord:
       switch (move_direction) {
-        case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
-          return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           // All platforms behave the same when moving backward by word.
           text_boundary = ax::mojom::blink::TextBoundary::kWordStart;
@@ -297,9 +230,6 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // This granularity moves either to the start or the end of the current
       // sentence, depending on the direction.
       switch (move_direction) {
-        case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
-          return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kSentenceStart;
           break;
@@ -312,9 +242,6 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // This granularity moves either to the start or the end of the current
       // line, depending on the direction.
       switch (move_direction) {
-        case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
-          return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kLineStart;
           break;
@@ -327,9 +254,6 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // This granularity moves either to the start or the end of the current
       // paragraph, depending on the direction.
       switch (move_direction) {
-        case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
-          return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kParagraphStart;
           break;
@@ -386,15 +310,8 @@ BlinkAXEventIntent BlinkAXEventIntent::FromNewSelection(
                     : ax::mojom::blink::MoveDirection::kBackward);
 }
 
+// Creates an empty (uninitialized) instance.
 BlinkAXEventIntent::BlinkAXEventIntent() = default;
-
-BlinkAXEventIntent::BlinkAXEventIntent(ax::mojom::blink::Command command)
-    : intent_(command), is_initialized_(true) {}
-
-BlinkAXEventIntent::BlinkAXEventIntent(
-    ax::mojom::blink::Command command,
-    ax::mojom::blink::InputEventType input_event_type)
-    : intent_(command, input_event_type), is_initialized_(true) {}
 
 BlinkAXEventIntent::BlinkAXEventIntent(
     ax::mojom::blink::Command command,
@@ -447,8 +364,6 @@ unsigned int BlinkAXEventIntentHash::GetHash(const BlinkAXEventIntent& key) {
 
   unsigned hash = 1u;
   WTF::AddIntToHash(hash, static_cast<const unsigned>(key.intent().command));
-  WTF::AddIntToHash(hash,
-                    static_cast<const unsigned>(key.intent().input_event_type));
   WTF::AddIntToHash(hash,
                     static_cast<const unsigned>(key.intent().text_boundary));
   WTF::AddIntToHash(hash,
