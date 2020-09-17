@@ -5,7 +5,6 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASK_TIME_OBSERVER_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASK_TIME_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -15,6 +14,8 @@ namespace sequence_manager {
 class TaskTimeObserver {
  public:
   TaskTimeObserver() = default;
+  TaskTimeObserver(const TaskTimeObserver&) = delete;
+  TaskTimeObserver& operator=(const TaskTimeObserver&) = delete;
   virtual ~TaskTimeObserver() = default;
 
   // To be called when task is about to start.
@@ -22,9 +23,6 @@ class TaskTimeObserver {
 
   // To be called when task is completed.
   virtual void DidProcessTask(TimeTicks start_time, TimeTicks end_time) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskTimeObserver);
 };
 
 }  // namespace sequence_manager

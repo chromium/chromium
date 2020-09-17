@@ -33,6 +33,8 @@ class BASE_EXPORT WorkQueue {
 
   // Note |task_queue| can be null if queue_type is kNonNestable.
   WorkQueue(TaskQueueImpl* task_queue, const char* name, QueueType queue_type);
+  WorkQueue(const WorkQueue&) = delete;
+  WorkQueue& operator=(const WorkQueue&) = delete;
   ~WorkQueue();
 
   // Associates this work queue with the given work queue sets. This must be
@@ -180,8 +182,6 @@ class BASE_EXPORT WorkQueue {
   const char* const name_;
   EnqueueOrder fence_;
   const QueueType queue_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkQueue);
 };
 
 }  // namespace internal

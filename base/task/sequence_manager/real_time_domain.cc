@@ -10,10 +10,6 @@ namespace base {
 namespace sequence_manager {
 namespace internal {
 
-RealTimeDomain::RealTimeDomain() {}
-
-RealTimeDomain::~RealTimeDomain() = default;
-
 void RealTimeDomain::OnRegisterWithSequenceManager(
     SequenceManagerImpl* sequence_manager) {
   TimeDomain::OnRegisterWithSequenceManager(sequence_manager);

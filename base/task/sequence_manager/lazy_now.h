@@ -6,7 +6,6 @@
 #define BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 
@@ -23,6 +22,8 @@ class BASE_EXPORT LazyNow {
  public:
   explicit LazyNow(TimeTicks now);
   explicit LazyNow(const TickClock* tick_clock);
+  LazyNow(const LazyNow&) = delete;
+  LazyNow& operator=(const LazyNow&) = delete;
 
   LazyNow(LazyNow&& move_from) noexcept;
 
@@ -34,8 +35,6 @@ class BASE_EXPORT LazyNow {
  private:
   const TickClock* tick_clock_;  // Not owned.
   Optional<TimeTicks> now_;
-
-  DISALLOW_COPY_AND_ASSIGN(LazyNow);
 };
 
 }  // namespace sequence_manager

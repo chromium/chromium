@@ -10,9 +10,9 @@
 #include <memory>
 #include <queue>
 #include <set>
+#include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/pending_task.h"
@@ -74,6 +74,8 @@ class BASE_EXPORT TaskQueueImpl {
                 TimeDomain* time_domain,
                 const TaskQueue::Spec& spec);
 
+  TaskQueueImpl(const TaskQueueImpl&) = delete;
+  TaskQueueImpl& operator=(const TaskQueueImpl&) = delete;
   ~TaskQueueImpl();
 
   // Types of queues TaskQueueImpl is maintaining internally.
@@ -308,6 +310,8 @@ class BASE_EXPORT TaskQueueImpl {
   struct DelayedIncomingQueue {
    public:
     DelayedIncomingQueue();
+    DelayedIncomingQueue(const DelayedIncomingQueue&) = delete;
+    DelayedIncomingQueue& operator=(const DelayedIncomingQueue&) = delete;
     ~DelayedIncomingQueue();
 
     void push(Task&& task);
@@ -336,8 +340,6 @@ class BASE_EXPORT TaskQueueImpl {
 
     // Number of pending tasks in the queue that need high resolution timing.
     int pending_high_res_tasks_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(DelayedIncomingQueue);
   };
 
   struct MainThreadOnly {
@@ -540,8 +542,6 @@ class BASE_EXPORT TaskQueueImpl {
   const bool should_monitor_quiescence_;
   const bool should_notify_observers_;
   const bool delayed_fence_allowed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueueImpl);
 };
 
 }  // namespace internal

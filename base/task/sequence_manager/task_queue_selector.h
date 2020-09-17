@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
@@ -31,6 +32,8 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   TaskQueueSelector(scoped_refptr<AssociatedThreadId> associated_thread,
                     const SequenceManager::Settings& settings);
 
+  TaskQueueSelector(const TaskQueueSelector&) = delete;
+  TaskQueueSelector& operator=(const TaskQueueSelector&) = delete;
   ~TaskQueueSelector() override;
 
   // Called to register a queue that can be selected. This function is called
@@ -253,7 +256,6 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   size_t immediate_starvation_count_ = 0;
 
   Observer* task_queue_selector_observer_ = nullptr;  // Not owned.
-  DISALLOW_COPY_AND_ASSIGN(TaskQueueSelector);
 };
 
 }  // namespace internal

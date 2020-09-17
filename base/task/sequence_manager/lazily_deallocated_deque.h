@@ -8,12 +8,12 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -51,8 +51,9 @@ class LazilyDeallocatedDeque {
     kMinimumShrinkIntervalInSeconds = 5
   };
 
-  LazilyDeallocatedDeque() {}
-
+  LazilyDeallocatedDeque() = default;
+  LazilyDeallocatedDeque(const LazilyDeallocatedDeque&) = delete;
+  LazilyDeallocatedDeque& operator=(const LazilyDeallocatedDeque&) = delete;
   ~LazilyDeallocatedDeque() { clear(); }
 
   bool empty() const { return size_ == 0; }
@@ -237,7 +238,8 @@ class LazilyDeallocatedDeque {
           next_(nullptr) {
       DCHECK_GE(capacity_, kMinimumRingSize);
     }
-
+    Ring(const Ring&) = delete;
+    Ring& operator=(const Ring&) = delete;
     ~Ring() {
       while (!empty()) {
         pop_front();
@@ -313,8 +315,6 @@ class LazilyDeallocatedDeque {
     size_t back_index_;
     T* data_;
     std::unique_ptr<Ring> next_;
-
-    DISALLOW_COPY_AND_ASSIGN(Ring);
   };
 
  public:
@@ -370,8 +370,6 @@ class LazilyDeallocatedDeque {
   size_t size_ = 0;
   size_t max_size_ = 0;
   TimeTicks next_resize_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(LazilyDeallocatedDeque);
 };
 
 }  // namespace internal

@@ -15,6 +15,8 @@ namespace sequence_manager {
 class MockTimeDomain : public TimeDomain {
  public:
   explicit MockTimeDomain(TimeTicks initial_now_ticks);
+  MockTimeDomain(const MockTimeDomain&) = delete;
+  MockTimeDomain& operator=(const MockTimeDomain&) = delete;
   ~MockTimeDomain() override;
 
   void SetNowTicks(TimeTicks now_ticks);
@@ -29,8 +31,6 @@ class MockTimeDomain : public TimeDomain {
 
  private:
   TimeTicks now_ticks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTimeDomain);
 };
 
 }  // namespace sequence_manager

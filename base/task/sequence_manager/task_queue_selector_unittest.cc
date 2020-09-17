@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/enqueue_order_generator.h"
@@ -37,12 +36,11 @@ namespace task_queue_selector_unittest {
 class MockObserver : public TaskQueueSelector::Observer {
  public:
   MockObserver() = default;
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
   MOCK_METHOD1(OnTaskQueueEnabled, void(internal::TaskQueueImpl*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class TaskQueueSelectorForTest : public TaskQueueSelector {
@@ -54,13 +52,14 @@ class TaskQueueSelectorForTest : public TaskQueueSelector {
   using TaskQueueSelector::SetImmediateStarvationCountForTest;
   using TaskQueueSelector::SetOperationOldest;
 
-  TaskQueueSelectorForTest(scoped_refptr<AssociatedThreadId> associated_thread)
+  explicit TaskQueueSelectorForTest(
+      scoped_refptr<AssociatedThreadId> associated_thread)
       : TaskQueueSelector(associated_thread, SequenceManager::Settings()) {}
 };
 
 class TaskQueueSelectorTest : public testing::Test {
  public:
-  explicit TaskQueueSelectorTest()
+  TaskQueueSelectorTest()
       : test_closure_(BindRepeating(&TaskQueueSelectorTest::TestFunction)),
         associated_thread_(AssociatedThreadId::CreateBound()),
         selector_(associated_thread_) {}

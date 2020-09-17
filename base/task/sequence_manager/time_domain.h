@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/task/common/intrusive_heap.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -36,6 +35,8 @@ class TaskQueueImpl;
 // into a global wake-up, which ultimately gets passed to the ThreadController.
 class BASE_EXPORT TimeDomain {
  public:
+  TimeDomain(const TimeDomain&) = delete;
+  TimeDomain& operator=(const TimeDomain&) = delete;
   virtual ~TimeDomain();
 
   // Returns LazyNow in TimeDomain's time.
@@ -152,7 +153,6 @@ class BASE_EXPORT TimeDomain {
   int pending_high_res_wake_up_count_ = 0;
 
   scoped_refptr<internal::AssociatedThreadId> associated_thread_;
-  DISALLOW_COPY_AND_ASSIGN(TimeDomain);
 };
 
 }  // namespace sequence_manager

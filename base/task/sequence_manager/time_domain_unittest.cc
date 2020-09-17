@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -39,6 +38,8 @@ class TestTimeDomain : public TimeDomain {
  public:
   TestTimeDomain() : now_(TimeTicks() + TimeDelta::FromSeconds(1)) {}
 
+  TestTimeDomain(const TestTimeDomain&) = delete;
+  TestTimeDomain& operator=(const TestTimeDomain&) = delete;
   ~TestTimeDomain() override = default;
 
   using TimeDomain::MoveReadyDelayedTasksToWorkQueues;
@@ -72,8 +73,6 @@ class TestTimeDomain : public TimeDomain {
 
  private:
   TimeTicks now_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTimeDomain);
 };
 
 class TimeDomainTest : public testing::Test {

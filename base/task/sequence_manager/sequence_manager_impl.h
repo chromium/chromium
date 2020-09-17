@@ -11,6 +11,7 @@
 #include <memory>
 #include <random>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -80,6 +80,8 @@ class BASE_EXPORT SequenceManagerImpl
  public:
   using Observer = SequenceManager::Observer;
 
+  SequenceManagerImpl(const SequenceManagerImpl&) = delete;
+  SequenceManagerImpl& operator=(const SequenceManagerImpl&) = delete;
   ~SequenceManagerImpl() override;
 
   // Assume direct control over current thread and create a SequenceManager.
@@ -432,8 +434,6 @@ class BASE_EXPORT SequenceManagerImpl
   }
 
   WeakPtrFactory<SequenceManagerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceManagerImpl);
 };
 
 }  // namespace internal

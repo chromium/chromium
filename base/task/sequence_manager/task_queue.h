@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
@@ -138,6 +137,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // TODO(altimin): Make this private after TaskQueue/TaskQueueImpl refactoring.
   TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
             const TaskQueue::Spec& spec);
+  TaskQueue(const TaskQueue&) = delete;
+  TaskQueue& operator=(const TaskQueue&) = delete;
 
   // Information about task execution.
   //
@@ -381,8 +382,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   int enabled_voter_count_ = 0;
   int voter_count_ = 0;
   const char* name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueue);
 };
 
 }  // namespace sequence_manager

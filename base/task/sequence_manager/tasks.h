@@ -29,6 +29,8 @@ struct BASE_EXPORT PostedTask {
                       Nestable nestable = Nestable::kNestable,
                       TaskType task_type = kTaskTypeNone);
   PostedTask(PostedTask&& move_from) noexcept;
+  PostedTask(const PostedTask&) = delete;
+  PostedTask& operator=(const PostedTask&) = delete;
   ~PostedTask();
 
   OnceClosure callback;
@@ -41,8 +43,6 @@ struct BASE_EXPORT PostedTask {
   scoped_refptr<SequencedTaskRunner> task_runner;
   // The time at which the task was queued.
   TimeTicks queue_time;
-
-  DISALLOW_COPY_AND_ASSIGN(PostedTask);
 };
 
 // Represents a time at which a task wants to run. Tasks scheduled for the

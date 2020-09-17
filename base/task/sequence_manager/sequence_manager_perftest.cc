@@ -56,6 +56,8 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 class PerfTestTimeDomain : public MockTimeDomain {
  public:
   PerfTestTimeDomain() : MockTimeDomain(TimeTicks::Now()) {}
+  PerfTestTimeDomain(const PerfTestTimeDomain&) = delete;
+  PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
   Optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
@@ -72,9 +74,6 @@ class PerfTestTimeDomain : public MockTimeDomain {
     if (NumberOfScheduledWakeUps() == 1u)
       RequestDoWork();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PerfTestTimeDomain);
 };
 
 enum class PerfTestType {

@@ -11,7 +11,6 @@
 #include <atomic>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 
 namespace base {
@@ -23,6 +22,8 @@ namespace internal {
 class BASE_EXPORT EnqueueOrderGenerator {
  public:
   EnqueueOrderGenerator();
+  EnqueueOrderGenerator(const EnqueueOrderGenerator&) = delete;
+  EnqueueOrderGenerator& operator=(const EnqueueOrderGenerator&) = delete;
   ~EnqueueOrderGenerator();
 
   // Can be called from any thread.
@@ -33,7 +34,6 @@ class BASE_EXPORT EnqueueOrderGenerator {
 
  private:
   std::atomic<uint64_t> counter_;
-  DISALLOW_COPY_AND_ASSIGN(EnqueueOrderGenerator);
 };
 
 }  // namespace internal

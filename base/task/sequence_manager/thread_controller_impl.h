@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -32,6 +31,8 @@ class SequenceManagerImpl;
 class BASE_EXPORT ThreadControllerImpl : public ThreadController,
                                          public RunLoop::NestingObserver {
  public:
+  ThreadControllerImpl(const ThreadControllerImpl&) = delete;
+  ThreadControllerImpl& operator=(const ThreadControllerImpl&) = delete;
   ~ThreadControllerImpl() override;
 
   // TODO(https://crbug.com/948051): replace |funneled_sequence_manager| with
@@ -127,8 +128,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
 #endif
 
   WeakPtrFactory<ThreadControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadControllerImpl);
 };
 
 }  // namespace internal

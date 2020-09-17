@@ -40,6 +40,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   ThreadControllerWithMessagePumpImpl(
       std::unique_ptr<MessagePump> message_pump,
       const SequenceManager::Settings& settings);
+  ThreadControllerWithMessagePumpImpl(
+      const ThreadControllerWithMessagePumpImpl&) = delete;
+  ThreadControllerWithMessagePumpImpl& operator=(
+      const ThreadControllerWithMessagePumpImpl&) = delete;
   ~ThreadControllerWithMessagePumpImpl() override;
 
   using ShouldScheduleWork = WorkDeduplicator::ShouldScheduleWork;
@@ -197,8 +201,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // Reset at the start of each unit of work to cover the work itself and then
   // transition to the next one.
   base::Optional<HangWatchScopeEnabled> hang_watch_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadControllerWithMessagePumpImpl);
 };
 
 }  // namespace internal
