@@ -134,9 +134,9 @@ static_library("libxml") {
   # Do not expand this visibility list without first consulting with the
   # Security Team.
   visibility = [
+    ":libxml_utils",
     ":xml_reader",
     ":xml_writer",
-    ":libxml_utils",
     "//chromecast/internal",
     "//testing/libfuzzer/*",
     "//third_party/blink/renderer/*",
@@ -154,11 +154,6 @@ static_library("libxml") {
   # Commented out sources are libxml2 files we do not want to include. They are
   # here to make it easy to identify files which are new.
   sources = [
-    "linux/config.h",
-    "linux/include/libxml/xmlversion.h",
-    "mac/config.h",
-    "mac/include/libxml/xmlversion.h",
-
     #"src/DOCBparser.c",
     "src/HTMLparser.c",
     "src/HTMLtree.c",
@@ -227,8 +222,6 @@ static_library("libxml") {
     "src/include/libxml/xpath.h",
     "src/include/libxml/xpathInternals.h",
     "src/include/libxml/xpointer.h",
-    "src/include/win32config.h",
-    "src/include/wsockcompat.h",
 
     #"src/legacy.c",
     "src/libxml.h",
@@ -279,8 +272,6 @@ static_library("libxml") {
     #"src/xpointer.c",
     #"src/xzlib.c",
     "src/xzlib.h",
-    "win32/config.h",
-    "win32/include/libxml/xmlversion.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -291,7 +282,28 @@ static_library("libxml") {
     ":libxml_warnings",
   ]
 
+  if (is_linux || is_chromeos) {
+    sources += [
+      "linux/config.h",
+      "linux/include/libxml/xmlversion.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac/config.h",
+      "mac/include/libxml/xmlversion.h",
+    ]
+  }
+
   if (is_win) {
+    sources += [
+      "src/include/win32config.h",
+      "src/include/wsockcompat.h",
+      "win32/config.h",
+      "win32/include/libxml/xmlversion.h",
+    ]
+
     # libxml2 already defines WIN32_LEAN_AND_MEAN.
     configs -= [ "//build/config/win:lean_and_mean" ]
   }
