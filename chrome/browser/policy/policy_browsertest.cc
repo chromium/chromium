@@ -59,8 +59,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -219,10 +217,6 @@
 
 #if !defined(OS_MAC)
 #include "base/compiler_specific.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/app_window/native_app_window.h"
-#include "ui/base/window_open_disposition.h"
 #endif
 
 #if !defined(OS_ANDROID)
@@ -252,11 +246,6 @@ namespace {
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
-
-#if !defined(OS_MAC)
-const base::FilePath::CharType kUnpackedFullscreenAppName[] =
-    FILE_PATH_LITERAL("fullscreen_app");
-#endif  // !defined(OS_MAC)
 
 // Arbitrary port range for testing the WebRTC UDP port policy.
 const char kTestWebRtcUdpPortRange[] = "10000-10100";
@@ -345,51 +334,6 @@ class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
 
   DISALLOW_COPY_AND_ASSIGN(TestAudioObserver);
 };
-#endif
-
-#if !defined(OS_MAC)
-
-// Observer used to wait for the creation of a new app window.
-class TestAddAppWindowObserver
-    : public extensions::AppWindowRegistry::Observer {
- public:
-  explicit TestAddAppWindowObserver(extensions::AppWindowRegistry* registry);
-  ~TestAddAppWindowObserver() override;
-
-  // extensions::AppWindowRegistry::Observer:
-  void OnAppWindowAdded(extensions::AppWindow* app_window) override;
-
-  extensions::AppWindow* WaitForAppWindow();
-
- private:
-  extensions::AppWindowRegistry* registry_;  // Not owned.
-  extensions::AppWindow* window_;            // Not owned.
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAddAppWindowObserver);
-};
-
-TestAddAppWindowObserver::TestAddAppWindowObserver(
-    extensions::AppWindowRegistry* registry)
-    : registry_(registry), window_(nullptr) {
-  registry_->AddObserver(this);
-}
-
-TestAddAppWindowObserver::~TestAddAppWindowObserver() {
-  registry_->RemoveObserver(this);
-}
-
-void TestAddAppWindowObserver::OnAppWindowAdded(
-    extensions::AppWindow* app_window) {
-  window_ = app_window;
-  run_loop_.Quit();
-}
-
-extensions::AppWindow* TestAddAppWindowObserver::WaitForAppWindow() {
-  run_loop_.Run();
-  return window_;
-}
-
 #endif
 
 #if !defined(OS_CHROMEOS)
@@ -1186,66 +1130,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, UrlKeyedAnonymizedDataCollection) {
   EXPECT_FALSE(prefs->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
-
-#if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedBrowser) {
-  PolicyMap policies;
-  policies.Set(key::kFullscreenAllowed, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  BrowserWindow* browser_window = browser()->window();
-  ASSERT_TRUE(browser_window);
-
-  EXPECT_FALSE(browser_window->IsFullscreen());
-  chrome::ToggleFullscreenMode(browser());
-  EXPECT_FALSE(browser_window->IsFullscreen());
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedApp) {
-  PolicyMap policies;
-  policies.Set(key::kFullscreenAllowed, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  scoped_refptr<const extensions::Extension> extension =
-      LoadUnpackedExtension(kUnpackedFullscreenAppName);
-  ASSERT_TRUE(extension);
-
-  // Launch an app that tries to open a fullscreen window.
-  TestAddAppWindowObserver add_window_observer(
-      extensions::AppWindowRegistry::Get(browser()->profile()));
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
-  extensions::AppWindow* window = add_window_observer.WaitForAppWindow();
-  ASSERT_TRUE(window);
-
-  // Verify that the window is not in fullscreen mode.
-  EXPECT_FALSE(window->GetBaseWindow()->IsFullscreen());
-
-  // We have to wait for the navigation to commit since the JS object
-  // registration is delayed (see AppWindowCreateFunction::RunAsync).
-  EXPECT_TRUE(content::WaitForLoadStop(window->web_contents()));
-
-  // Verify that the window cannot be toggled into fullscreen mode via apps
-  // APIs.
-  EXPECT_TRUE(content::ExecuteScript(
-      window->web_contents(),
-      "chrome.app.window.current().fullscreen();"));
-  EXPECT_FALSE(window->GetBaseWindow()->IsFullscreen());
-
-  // Verify that the window cannot be toggled into fullscreen mode from within
-  // Chrome (e.g., using keyboard accelerators).
-  window->Fullscreen();
-  EXPECT_FALSE(window->GetBaseWindow()->IsFullscreen());
-}
-#endif
 
 #if defined(OS_CHROMEOS)
 

@@ -1690,6 +1690,8 @@ if (!is_android) {
 
     if (!is_mac) {
       data_deps += [ "//chrome:packed_resources" ]
+      sources +=
+          [ "../browser/policy/full_screen_allowed_policy_browsertest.cc" ]
     }
 
     if (enable_captive_portal_detection) {
