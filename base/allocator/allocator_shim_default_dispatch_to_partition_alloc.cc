@@ -97,15 +97,63 @@ void* PartitionCalloc(const AllocatorDispatch*,
   return Allocator().AllocFlagsNoHooks(base::PartitionAllocZeroFill, n * size);
 }
 
+base::ThreadSafePartitionRoot* AlignedAllocator() {
+  // Since the general-purpose allocator uses the thread cache, this one cannot.
+  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator{
+      true /* enforce_alignment */, false /* enable_thread_cache */};
+  return aligned_allocator.get();
+}
+
 void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
-  // Since the general-purpose allocator uses the thread cache, this one cannot.
-  static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator{
-      true /* enforce_alignment */, false /* enable_thread_cache */};
-  return aligned_allocator->AlignedAllocFlags(base::PartitionAllocNoHooks,
-                                              alignment, size);
+  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
+                                               alignment, size);
+}
+
+void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
+                            size_t size,
+                            size_t alignment,
+                            void* context) {
+  return AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
+                                               alignment, size);
+}
+
+// aligned_realloc documentation is
+// https://docs.microsoft.com/ja-jp/cpp/c-runtime-library/reference/aligned-realloc
+// TODO(tasak): Expand the given memory block to the given size if possible.
+// This realloc always free the original memory block and allocates a new memory
+// block.
+// TODO(tasak): Implement PartitionRoot<thread_safe>::AlignedReallocFlags and
+// use it.
+void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
+                              void* address,
+                              size_t size,
+                              size_t alignment,
+                              void* context) {
+  void* new_ptr = nullptr;
+  if (size > 0) {
+    new_ptr = AlignedAllocator()->AlignedAllocFlags(base::PartitionAllocNoHooks,
+                                                    alignment, size);
+  } else {
+    // size == 0 and address != null means just "free(address)".
+    if (address)
+      base::ThreadSafePartitionRoot::FreeNoHooks(address);
+  }
+  // The original memory block (specified by address) is unchanged if ENOMEM.
+  if (!new_ptr)
+    return nullptr;
+  // TODO(tasak): Need to compare the new alignment with the address' alignment.
+  // If the two alignments are not the same, need to return nullptr with EINVAL.
+  if (address) {
+    size_t usage = base::ThreadSafePartitionRoot::GetAllocatedSize(address);
+    size_t copy_size = usage > size ? size : usage;
+    memcpy(new_ptr, address, copy_size);
+
+    base::ThreadSafePartitionRoot::FreeNoHooks(address);
+  }
+  return new_ptr;
 }
 
 void* PartitionRealloc(const AllocatorDispatch*,
@@ -139,9 +187,9 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr,                   /* batch_malloc_function */
     nullptr,                   /* batch_free_function */
     nullptr,                   /* free_definite_size_function */
-    nullptr,                   /* aligned_malloc_function */
-    nullptr,                   /* aligned_realloc_function */
-    nullptr,                   /* aligned_free_function */
+    &PartitionAlignedAlloc,    /* aligned_malloc_function */
+    &PartitionAlignedRealloc,  /* aligned_realloc_function */
+    &PartitionFree,            /* aligned_free_function */
     nullptr,                   /* next */
 };
 

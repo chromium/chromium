@@ -101,6 +101,18 @@ __declspec(restrict) void* _recalloc_base(void* block,
   return new_block;
 }
 
+__declspec(restrict) void* _malloc_base(size_t size) {
+  return malloc(size);
+}
+
+__declspec(restrict) void* _calloc_base(size_t n, size_t size) {
+  return calloc(n, size);
+}
+
+void _free_base(void* block) {
+  free(block);
+}
+
 __declspec(restrict) void* _recalloc(void* block, size_t count, size_t size) {
   return _recalloc_base(block, count, size);
 }
