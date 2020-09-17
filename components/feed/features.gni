@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/android/channel.gni")
+
 declare_args() {
   enable_feed_in_chrome = is_android
-  enable_feed_v2 = is_android
+  enable_feed_v2 = is_android && android_channel != "stable"
 }
