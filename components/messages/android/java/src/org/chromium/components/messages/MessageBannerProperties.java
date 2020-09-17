@@ -28,8 +28,15 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
+    // TODO(crbug.com/1123947): remove this since on_dismissed is not a property of the view?
+    public static final WritableObjectPropertyKey<Runnable> ON_DISMISSED =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
                     DESCRIPTION, ICON, SECONDARY_ICON, SECONDARY_ICON_CONTENT_DESCRIPTION};
+
+    public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
+            new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
+                    DESCRIPTION, ICON, ON_DISMISSED};
 }

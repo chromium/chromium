@@ -9,7 +9,9 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageBannerProperties.java",
     "java/src/org/chromium/components/messages/MessageBannerView.java",
     "java/src/org/chromium/components/messages/MessageBannerViewBinder.java",
+    "java/src/org/chromium/components/messages/MessageContainer.java",
     "java/src/org/chromium/components/messages/MessageStateHandler.java",
+    "java/src/org/chromium/components/messages/SingleActionMessage.java",
   ]
   resources_package = "org.chromium.components.messages"
   deps = [
@@ -46,6 +48,7 @@ android_library("javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",
+    "java/src/org/chromium/components/messages/SingleActionMessageTest.java",
   ]
   resources_package = "org.chromium.components.messages"
   deps = [

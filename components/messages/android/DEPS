@@ -1,5 +1,6 @@
 include_rules = [
   "+ui/android",
+  "+base/test/android",
   "+content/public/test/android",
   "+components/browser_ui/banners/android",
 ]

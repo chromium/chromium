@@ -14,5 +14,8 @@
     <dimen name="message_icon_padding">12dp</dimen>
     <dimen name="message_button_padding">16dp</dimen>
     <dimen name="message_divider_margin">12dp</dimen>
+    <dimen name="message_shadow_top_margin">8dp</dimen>
+    <dimen name="message_shadow_lateral_margin">12dp</dimen>
+    <dimen name="message_shadow_bottom_margin">16dp</dimen>
 
 </resources>

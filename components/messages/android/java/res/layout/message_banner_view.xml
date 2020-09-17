@@ -13,6 +13,10 @@
     android:layout_height="@dimen/message_banner_height"
     android:layout_width="match_parent"
     android:orientation="horizontal"
+    android:layout_marginTop="@dimen/message_shadow_top_margin"
+    android:layout_marginBottom="@dimen/message_shadow_bottom_margin"
+    android:layout_marginStart="@dimen/message_shadow_lateral_margin"
+    android:layout_marginEnd="@dimen/message_shadow_lateral_margin"
     android:elevation="@dimen/message_banner_elevation"
     android:background="@drawable/message_bg_tinted">
 
