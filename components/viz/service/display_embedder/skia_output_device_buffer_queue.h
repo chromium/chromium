@@ -117,7 +117,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
     bool operator()(const OverlayData& lhs, const gpu::Mailbox& rhs) const;
     bool operator()(const gpu::Mailbox& lhs, const OverlayData& rhs) const;
   };
-  // A set for all overlays. The set uses overlay_data->mailbox() as the unique
+  // A set for all overlays. The set uses overlay_data.mailbox() as the unique
   // key.
   base::flat_set<OverlayData, OverlayDataComparator> overlays_;
 

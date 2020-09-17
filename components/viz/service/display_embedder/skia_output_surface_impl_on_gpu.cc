@@ -995,51 +995,21 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
   // GL is used on MacOS and GL doesn't need semaphores.
   DCHECK(begin_semaphores.empty());
   DCHECK(end_semaphores.empty());
-  std::vector<gpu::Mailbox> render_pass_overlay_mailboxes;
   for (auto& overlay : overlays) {
     if (!overlay.ddl)
       continue;
+
     base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
     }
 
-    constexpr auto kOverlayUsage =
-        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY |
-        gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
     const auto& characterization = overlay.ddl->characterization();
-
-    ResourceFormat resource_format;
-    switch (characterization.colorType()) {
-      case kRGBA_8888_SkColorType:
-        resource_format = ResourceFormat::RGBA_8888;
-        break;
-      case kBGRA_8888_SkColorType:
-        resource_format = ResourceFormat::BGRA_8888;
-        break;
-      case kRGBA_F16_SkColorType:
-        resource_format = ResourceFormat::RGBA_F16;
-        break;
-      default:
-        resource_format = ResourceFormat::RGBA_8888;
-        NOTREACHED();
-    }
-
-    // TODO(https://crbug.com/1100728): reuse shared images.
+    auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
     DCHECK(overlay.mailbox.IsZero());
-    overlay.mailbox = gpu::Mailbox::GenerateForSharedImage();
-    shared_image_factory_->CreateSharedImage(
-        overlay.mailbox, resource_format,
-        gfx::Size(characterization.width(), characterization.height()),
-        gfx::ColorSpace(*characterization.colorSpace()),
-        characterization.origin(), characterization.imageInfo().alphaType(),
-        gpu::kNullSurfaceHandle, kOverlayUsage);
-    auto representation = shared_image_representation_factory_->ProduceSkia(
-        overlay.mailbox, context_state_.get());
-    DCHECK(representation);
-
-    auto scoped_access = representation->BeginScopedWriteAccess(
+    overlay.mailbox = backing->mailbox();
+    auto scoped_access = backing->BeginScopedWriteAccess(
         /*final_msaa_count=*/0, characterization.surfaceProps(),
         /*begin_semaphores=*/nullptr,
         /*end_semaphores=*/nullptr,
@@ -1048,17 +1018,16 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     DCHECK(result);
     context_state_->gr_context()->flushAndSubmit();
     scoped_access.reset();
-    representation->SetCleared();
-
-    render_pass_overlay_mailboxes.push_back(overlay.mailbox);
+    backing->SetCleared();
+    in_flight_render_pass_overlay_backings_.insert(std::move(backing));
   }
   promise_image_access_helper_.EndAccess();
-
   output_device_->ScheduleOverlays(std::move(overlays));
 
-  for (const auto& mailbox : render_pass_overlay_mailboxes) {
-    shared_image_factory_->DestroySharedImage(mailbox);
-  }
+  // Release any backings which are not reused by the current frame, probably
+  // because the properties of render passes are changed or render passes are
+  // removed.
+  available_render_pass_overlay_backings_.clear();
 #else
   DCHECK(image_contexts.empty());
   output_device_->ScheduleOverlays(std::move(overlays));
@@ -1466,6 +1435,26 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     }
   }
 
+#if defined(OS_APPLE)
+  // |available_render_pass_overlay_backings_| are used or released in
+  // ScheduleOverlays() for every frames.
+  DCHECK(available_render_pass_overlay_backings_.empty());
+
+  // Erase mailboxes of render pass overlays from |params.released_overlays| and
+  // move released backings for those render pass overlays from
+  // |in_flight_render_pass_overlay_backings_| to
+  // |available_render_pass_overlay_backings_| for reusing.
+  base::EraseIf(params.released_overlays, [this](const gpu::Mailbox& mailbox) {
+    auto it = in_flight_render_pass_overlay_backings_.find(mailbox);
+    if (it == in_flight_render_pass_overlay_backings_.end())
+      return false;
+    available_render_pass_overlay_backings_.push_back(std::move(*it));
+    in_flight_render_pass_overlay_backings_.erase(it);
+    return true;
+  });
+
+#endif
+
   PostTaskToClientThread(
       base::BindOnce(did_swap_buffer_complete_callback_, params, pixel_size));
 }
@@ -1515,5 +1504,73 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
   gr_context()->checkAsyncWorkCompletion();
   ScheduleCheckReadbackCompletion();
 }
+
+#if defined(OS_APPLE)
+std::unique_ptr<gpu::SharedImageRepresentationSkia>
+SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
+    const SkSurfaceCharacterization& characterization) {
+  ResourceFormat resource_format;
+  switch (characterization.colorType()) {
+    case kRGBA_8888_SkColorType:
+      resource_format = ResourceFormat::RGBA_8888;
+      break;
+    case kBGRA_8888_SkColorType:
+      resource_format = ResourceFormat::BGRA_8888;
+      break;
+    case kRGBA_F16_SkColorType:
+      resource_format = ResourceFormat::RGBA_F16;
+      break;
+    default:
+      resource_format = ResourceFormat::RGBA_8888;
+      NOTREACHED();
+  }
+
+  gfx::Size size(characterization.width(), characterization.height());
+  gfx::ColorSpace color_space(*characterization.colorSpace());
+
+  auto it = std::find_if(
+      available_render_pass_overlay_backings_.begin(),
+      available_render_pass_overlay_backings_.end(),
+      [&characterization, &resource_format, &size, &color_space](
+          const std::unique_ptr<gpu::SharedImageRepresentationSkia>& backing) {
+        return backing->format() == resource_format &&
+               backing->size() == size &&
+               backing->color_space() == color_space &&
+               backing->surface_origin() == characterization.origin() &&
+               backing->alpha_type() ==
+                   characterization.imageInfo().alphaType();
+      });
+
+  if (it != available_render_pass_overlay_backings_.end()) {
+    auto backing = std::move(*it);
+    available_render_pass_overlay_backings_.erase(it);
+    return backing;
+  }
+
+  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                 gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                 gpu::SHARED_IMAGE_USAGE_RASTER;
+
+  bool result = shared_image_factory_->CreateSharedImage(
+      mailbox, resource_format, size, color_space, characterization.origin(),
+      characterization.imageInfo().alphaType(), gpu::kNullSurfaceHandle,
+      kOverlayUsage);
+  if (!result) {
+    LOG(ERROR) << "CreateSharedImage() failed.";
+    return nullptr;
+  }
+
+  auto backing = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_.get());
+  DCHECK(backing);
+
+  // The |backing| will keep a ref on the shared image, so the image will not be
+  // released until |backing| is released.
+  shared_image_factory_->DestroySharedImage(mailbox);
+
+  return backing;
+}
+#endif
 
 }  // namespace viz

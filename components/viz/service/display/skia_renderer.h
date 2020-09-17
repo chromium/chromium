@@ -362,7 +362,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
         const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const;
   };
   // a set for locks of overlays which are waiting for releasing.
-  // The set is using lock->mailbox() as the unique key.
+  // The set is using lock.mailbox() as the unique key.
   base::flat_set<DisplayResourceProvider::ScopedReadLockSharedImage,
                  ScopedReadLockComparator>
       awaiting_release_overlay_locks_;

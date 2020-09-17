@@ -854,7 +854,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   for (const auto& mailbox : released_overlays) {
     auto it = awaiting_release_overlay_locks_.find(mailbox);
     if (it == awaiting_release_overlay_locks_.end()) {
-      DLOG(ERROR) << "Got an unexpected mailbox";
+      DLOG(FATAL) << "Got an unexpected mailbox";
       continue;
     }
     awaiting_release_overlay_locks_.erase(it);

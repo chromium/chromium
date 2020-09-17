@@ -268,6 +268,12 @@ class SkiaOutputSurfaceImplOnGpu
   // after a short delay.
   void CheckReadbackCompletion();
 
+#if defined(OS_APPLE)
+  std::unique_ptr<gpu::SharedImageRepresentationSkia>
+  GetOrCreateRenderPassOverlayBacking(
+      const SkSurfaceCharacterization& characterization);
+#endif
+
   class ReleaseCurrent {
    public:
     ReleaseCurrent(scoped_refptr<gl::GLSurface> gl_surface,
@@ -347,6 +353,34 @@ class SkiaOutputSurfaceImplOnGpu
 
   int num_readbacks_pending_ = 0;
   bool readback_poll_pending_ = false;
+
+#if defined(OS_APPLE)
+  using UniqueBackingPtr = std::unique_ptr<gpu::SharedImageRepresentationSkia>;
+  class BackingComparator {
+   public:
+    using is_transparent = void;
+    bool operator()(const UniqueBackingPtr& lhs,
+                    const UniqueBackingPtr& rhs) const {
+      return lhs->mailbox() < rhs->mailbox();
+    }
+    bool operator()(const UniqueBackingPtr& lhs,
+                    const gpu::Mailbox& rhs) const {
+      return lhs->mailbox() < rhs;
+    }
+    bool operator()(const gpu::Mailbox& lhs,
+                    const UniqueBackingPtr& rhs) const {
+      return lhs < rhs->mailbox();
+    }
+  };
+  // Render pass overlay backings are in flight.
+  // The base::flat_set uses backing->mailbox() as the unique key.
+  base::flat_set<UniqueBackingPtr, BackingComparator>
+      in_flight_render_pass_overlay_backings_;
+
+  // Render pass overlay backings are available for reusing.
+  std::vector<std::unique_ptr<gpu::SharedImageRepresentationSkia>>
+      available_render_pass_overlay_backings_;
+#endif
 
   THREAD_CHECKER(thread_checker_);
 
