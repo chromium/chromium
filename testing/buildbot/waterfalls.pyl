@@ -698,26 +698,6 @@
         },
         'os_type': 'android',
       },
-      'android-cronet-kitkat-arm-rel': {
-        'mixins': [
-          'kitkat',
-          'hammerhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
-      'android-cronet-lollipop-arm-rel': {
-        'mixins': [
-          'lollipop',
-          'hammerhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
       'android-cronet-marshmallow-arm64-rel': {
         'mixins': [
           'marshmallow',

@@ -146,35 +146,11 @@ ci.android_builder(
     notifies = ["cronet"],
 )
 
-# TODO(https://crbug.com/1105234) Remove this once the builder is no longer
-# triggering it
-ci.android_builder(
-    name = "android-cronet-kitkat-arm-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "cronet|test",
-        short_name = "k",
-    ),
-    notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
-)
-
 ci.android_builder(
     name = "android-cronet-arm-rel-kitkat-tests",
     console_view_entry = ci.console_view_entry(
         category = "cronet|test",
         short_name = "k",
-    ),
-    notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
-)
-
-# TODO(https://crbug.com/1105234) Remove this once the builder is no longer
-# triggering it
-ci.android_builder(
-    name = "android-cronet-lollipop-arm-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "cronet|test",
-        short_name = "l",
     ),
     notifies = ["cronet"],
     triggered_by = [builder_name("android-cronet-arm-rel")],

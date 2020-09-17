@@ -715,42 +715,12 @@ ci.android_builder(
     notifies = ["cronet"],
 )
 
-# TODO(https://crbug.com/1105234) Remove this once the builder is no longer
-# triggering it
-ci.android_builder(
-    name = "android-cronet-kitkat-arm-rel",
-    branch_selector = branches.STANDARD_RELEASES,
-    console_view_entry = ci.console_view_entry(
-        category = "cronet|test",
-        short_name = "k",
-    ),
-    cq_mirrors_console_view = settings.cq_mirrors_console_name,
-    main_console_view = main_console_if_on_branch(),
-    notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
-)
-
 ci.android_builder(
     name = "android-cronet-arm-rel-kitkat-tests",
     branch_selector = branches.STANDARD_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "cronet|test",
         short_name = "k",
-    ),
-    cq_mirrors_console_view = settings.cq_mirrors_console_name,
-    main_console_view = main_console_if_on_branch(),
-    notifies = ["cronet"],
-    triggered_by = [builder_name("android-cronet-arm-rel")],
-)
-
-# TODO(https://crbug.com/1105234) Remove this once the builder is no longer
-# triggering it
-ci.android_builder(
-    name = "android-cronet-lollipop-arm-rel",
-    branch_selector = branches.STANDARD_RELEASES,
-    console_view_entry = ci.console_view_entry(
-        category = "cronet|test",
-        short_name = "l",
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = main_console_if_on_branch(),
@@ -783,18 +753,6 @@ ci.android_builder(
     executable = "recipe:cronet",
     notifies = ["cronet"],
     os = os.ANDROID,
-)
-
-# TODO(https://crbug.com/1105234) Remove this once the builder is no longer
-# triggering it
-ci.android_builder(
-    name = "android-cronet-marshmallow-arm64-rel",
-    console_view_entry = ci.console_view_entry(
-        category = "cronet|test",
-        short_name = "m",
-    ),
-    notifies = ["cronet"],
-    triggered_by = ["android-cronet-arm64-rel"],
 )
 
 ci.android_builder(
