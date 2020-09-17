@@ -4347,6 +4347,7 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeaders) {
        {"hello", "bye", "cookie", "val1; val2"}}};
 
   for (size_t i = 0; i < base::size(test_cases); ++i) {
+    SCOPED_TRACE(i);
     SpdyTestUtil spdy_test_util;
     spdy::SpdySerializedFrame req(
         spdy_test_util.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
@@ -4372,147 +4373,20 @@ TEST_F(SpdyNetworkTransactionTest, ResponseHeaders) {
     EXPECT_EQ("hello!", out.response_data);
 
     scoped_refptr<HttpResponseHeaders> headers = out.response_info.headers;
-    EXPECT_TRUE(headers);
+    ASSERT_TRUE(headers);
+    EXPECT_EQ("HTTP/1.1 200", headers->GetStatusLine());
     size_t iter = 0;
     std::string name, value;
     size_t expected_header_index = 0;
     while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-      ASSERT_LT(expected_header_index, test_cases[i].expected_header_count)
-          << i;
-      EXPECT_EQ(name, test_cases[i].expected_headers[2 * expected_header_index])
-          << i;
+      ASSERT_LT(expected_header_index, test_cases[i].expected_header_count);
+      EXPECT_EQ(name,
+                test_cases[i].expected_headers[2 * expected_header_index]);
       EXPECT_EQ(value,
-                test_cases[i].expected_headers[2 * expected_header_index + 1])
-          << i;
+                test_cases[i].expected_headers[2 * expected_header_index + 1]);
       ++expected_header_index;
     }
-    EXPECT_EQ(expected_header_index, test_cases[i].expected_header_count) << i;
-  }
-}
-
-// Verify that various response headers parse vary fields correctly through the
-// HTTP layer, and the response matches the request.
-TEST_F(SpdyNetworkTransactionTest, ResponseHeadersVary) {
-  // Modify the following data to change/add test cases:
-  struct ResponseTests {
-    bool vary_matches;
-    int num_headers[2];
-    const char* extra_headers[2][16];
-  } test_cases[] = {
-      // Test the case of a multi-valued cookie.  When the value is delimited
-      // with NUL characters, it needs to be unfolded into multiple headers.
-      {true,
-       {1, 3},
-       {{"cookie", "val1,val2", nullptr},
-        {spdy::kHttp2StatusHeader, "200", spdy::kHttp2PathHeader, "/index.php",
-         "vary", "cookie", nullptr}}},
-      {// Multiple vary fields.
-       true,
-       {2, 4},
-       {{"friend", "barney", "enemy", "snaggletooth", nullptr},
-        {spdy::kHttp2StatusHeader, "200", spdy::kHttp2PathHeader, "/index.php",
-         "vary", "friend", "vary", "enemy", nullptr}}},
-      {// Test a '*' vary field.
-       true,
-       {1, 3},
-       {{"cookie", "val1,val2", nullptr},
-        {spdy::kHttp2StatusHeader, "200", spdy::kHttp2PathHeader, "/index.php",
-         "vary", "*", nullptr}}},
-      {// Test w/o a vary field.
-       false,
-       {1, 2},
-       {{"cookie", "val1,val2", nullptr},
-        {spdy::kHttp2StatusHeader, "200", spdy::kHttp2PathHeader, "/index.php",
-         nullptr}}},
-
-      {// Multiple comma-separated vary fields.
-       true,
-       {2, 3},
-       {{"friend", "barney", "enemy", "snaggletooth", nullptr},
-        {spdy::kHttp2StatusHeader, "200", spdy::kHttp2PathHeader, "/index.php",
-         "vary", "friend,enemy", nullptr}}}};
-
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
-    SpdyTestUtil spdy_test_util;
-
-    // Construct the request.
-    spdy::SpdySerializedFrame frame_req(spdy_test_util.ConstructSpdyGet(
-        test_cases[i].extra_headers[0], test_cases[i].num_headers[0], 1,
-        LOWEST));
-
-    MockWrite writes[] = {
-        CreateMockWrite(frame_req, 0),
-    };
-
-    // Construct the reply.
-    const char** expected_res_extra_headers = test_cases[i].extra_headers[1];
-    int expected_res_num_headers = test_cases[i].num_headers[1];
-    spdy::SpdyHeaderBlock reply_headers;
-    AppendToHeaderBlock(expected_res_extra_headers, expected_res_num_headers,
-                        &reply_headers);
-    spdy::SpdySerializedFrame frame_reply(
-        spdy_test_util.ConstructSpdyReply(1, std::move(reply_headers)));
-
-    spdy::SpdySerializedFrame body(
-        spdy_test_util.ConstructSpdyDataFrame(1, true));
-    MockRead reads[] = {
-        CreateMockRead(frame_reply, 1), CreateMockRead(body, 2),
-        MockRead(ASYNC, 0, 3)  // EOF
-    };
-
-    // Attach the headers to the request.
-    int header_count = test_cases[i].num_headers[0];
-
-    HttpRequestInfo request;
-    request.method = "GET";
-    request.url = GURL(kDefaultUrl);
-    request.traffic_annotation =
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-    for (int ct = 0; ct < header_count; ct++) {
-      const char* header_key = test_cases[i].extra_headers[0][ct * 2];
-      const char* header_value = test_cases[i].extra_headers[0][ct * 2 + 1];
-      request.extra_headers.SetHeader(header_key, header_value);
-    }
-
-    SequencedSocketData data(reads, writes);
-
-    NormalSpdyTransactionHelper helper(request, DEFAULT_PRIORITY, log_,
-                                       nullptr);
-
-    helper.RunToCompletion(&data);
-    TransactionHelperResult out = helper.output();
-
-    EXPECT_EQ(OK, out.rv) << i;
-    EXPECT_EQ("HTTP/1.1 200", out.status_line) << i;
-    EXPECT_EQ("hello!", out.response_data) << i;
-
-    // Test the response information.
-    EXPECT_EQ(out.response_info.vary_data.is_valid(),
-              test_cases[i].vary_matches) << i;
-
-    // Check the headers.
-    scoped_refptr<HttpResponseHeaders> headers = out.response_info.headers;
-    ASSERT_TRUE(headers) << i;
-    size_t iter = 0;
-    std::string name, value, lines;
-    while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-      lines.append(name);
-      lines.append(": ");
-      lines.append(value);
-      lines.append("\n");
-    }
-
-    // Remove ":status" and ":path" field from HTTP response.
-    // See SpdyHeadersToHttpResponse().
-    ASSERT_EQ(expected_res_extra_headers[0], spdy::kHttp2StatusHeader);
-    ASSERT_EQ(expected_res_extra_headers[2], spdy::kHttp2PathHeader);
-    ASSERT_GT(expected_res_num_headers, 1);
-    spdy::SpdyHeaderBlock http_reply_headers;
-    AppendToHeaderBlock(&expected_res_extra_headers[4],
-                        expected_res_num_headers - 2, &http_reply_headers);
-    std::string expected_http_reply =
-        spdy_test_util.ConstructSpdyReplyString(http_reply_headers);
-    EXPECT_EQ(expected_http_reply, lines) << i;
+    EXPECT_EQ(expected_header_index, test_cases[i].expected_header_count);
   }
 }
 
@@ -4521,24 +4395,13 @@ TEST_F(SpdyNetworkTransactionTest, InvalidResponseHeaders) {
   struct InvalidResponseHeadersTests {
     int num_headers;
     const char* headers[10];
-  } test_cases[] = {
-      // Response headers missing status header
-      {
-          3,
-          {spdy::kHttp2PathHeader, "/index.php", "cookie", "val1", "cookie",
-           "val2", nullptr},
-      },
-      // Response headers missing version header
-      {
-          1, {spdy::kHttp2PathHeader, "/index.php", "status", "200", nullptr},
-      },
-      // Response headers with no headers
-      {
-          0, {nullptr},
-      },
-  };
+  } test_cases[] = {// Response headers missing status header
+                    {2, {"cookie", "val1", "cookie", "val2", nullptr}},
+                    // Response headers with no headers
+                    {0, {nullptr}}};
 
   for (size_t i = 0; i < base::size(test_cases); ++i) {
+    SCOPED_TRACE(i);
     SpdyTestUtil spdy_test_util;
 
     spdy::SpdySerializedFrame req(
