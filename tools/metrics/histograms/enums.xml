@@ -53353,7 +53353,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions"/>
   <int value="1203" label="Show Emoji Suggestions"/>
-  <int value="1204" label="Change System Language"/>
+  <int value="1204" label="Change Device Language"/>
   <int value="1205" label="Offer Translation"/>
   <int value="1206" label="Add Input Method"/>
   <int value="1207" label="Spell Check"/>

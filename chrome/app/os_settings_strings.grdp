@@ -250,41 +250,38 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" translateable="false" desc="A page under “Languages and input” section in the OS settings page that users can add, remove and manage input methods.">
     Input
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SYSTEM_LANGUAGE_TITLE" translateable="false" desc="The label for the section where users can see their display language. This language will be used for system surfaces (launcher, shelf, and notifications etc.) and the preferred application language if it’s provided by the application developer.">
-    System display language
+  <message name="IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE" desc="The label for the section where users can see their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
+    Device language
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_SYSTEM_LANGUAGE_DESCRIPTION" translateable="false" desc="The description for the section where users can see their display language. This language will be used for system surfaces (launcher, shelf, and notifications etc.) and the preferred application language if it’s provided by the application developer.">
-    System features like launcher, Settings and Files will appear in this language.
-  </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_SYSTEM_LANGUAGE_BUTTON_LABEL" translateable="false" desc="The label for the button where users can change their display language. This language will be used for system surfaces (launcher, shelf, and notifications etc.) and the preferred application language if it’s provided by the application developer.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_LABEL" desc="The label for the button where users can change their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
     Change
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_SYSTEM_LANGUAGE_BUTTON_DESCRIPTION" translateable="false" desc="The description read by screenreader for the button where users can change their display language. This language will be used for system surfaces (launcher, shelf, and notifications etc.) and the preferred application language if it’s provided by the application developer.">
-    Change system language. Current language is <ph name="LANGUAGE">$1<ex>English</ex></ph>. System features like launcher, Settings and Files will appear in the language you choose.
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_DESCRIPTION" desc="The description read by screenreader for the button where users can change their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
+    Change device language. Current language is <ph name="LANGUAGE">$1<ex>English</ex></ph>.
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog to change device language.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE" desc="Title for the dialog to change device language.">
     Change device language
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_DESCRIPTION" translateable="false" desc="Description for the dialog to change device language.">
-    The change in device language requires a restart. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_DESCRIPTION" desc="Description for the dialog to change device language.">
+    You need to restart your Chromebook to change the device language. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL" translateable="false" desc="Label for the button where users can confirm the selected language and restart the device.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL" desc="Label for the button where users can confirm the selected language and restart the device.">
     Confirm and restart
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" translateable="false" desc="The label of the section in the language settings page where users can add languages they read to an ordered list. The web content languages will be served in the order of the list.">
-    Languages you read
+  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" desc="Title of section that lets users choose the language for apps and websites. The web content languages will be served in the order of the list.">
+    Languages for apps and websites
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" translateable="false" desc="The description of the section in the language settings page where users can add languages they read to an ordered list. The web content languages will be served in the order of the list.">
-    Add and order languages you read. Apps and websites will be displayed in the most preferred language available. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION" desc="Description for section that lets users choose the language for apps and websites. The web content languages will be served in the order of the list.">
+    Apps and websites that support multiple languages will use the first supported language from this list. Language preferences sync to Chrome browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL" translateable="false" desc="The label of the toggle that enables the prompt to translate a page to users.">
-   The language is used when translating pages
+  <message name="IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL" desc="The label of the toggle that enables the prompt to translate a page to users.">
+    Language used when translating pages
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL" translateable="false" desc="The label of the toggle that enables the prompt to translate a page to users.">
+  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL" desc="Title for setting that allows the system to offer to translate websites that appear in other languages.">
    Translation suggestion
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL" translateable="false" desc="The sublabel of the toggle that enables the prompt to translate a page to users.">
-    Allow the system to offer to translate web pages when it detects languages you don't read
+  <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL" desc="Description for setting that allows the system to offer to translate websites that appear in other languages.">
+    Offer to translate websites in other languages
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_METHOD_LIST_TITLE" translateable="false" desc="Title for the current input method in the header for the collapsible list of enabled input methods (keyboard layouts and input method editors).">
     Input methods

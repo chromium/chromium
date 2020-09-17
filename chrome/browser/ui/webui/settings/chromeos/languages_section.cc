@@ -66,12 +66,12 @@ const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kLanguages}},
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_SYSTEM_LANGUAGE,
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE,
        mojom::kLanguagesSubpagePath,
        mojom::SearchResultIcon::kGlobe,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kChangeSystemLanguage}},
+       {.setting = mojom::Setting::kChangeDeviceLanguage}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE,
        mojom::kLanguagesSubpagePath,
        mojom::SearchResultIcon::kGlobe,
@@ -259,13 +259,11 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"systemLanguageTitle", IDS_OS_SETTINGS_LANGUAGES_SYSTEM_LANGUAGE_TITLE},
-      {"systemLanguageDescription",
-       IDS_OS_SETTINGS_LANGUAGES_SYSTEM_LANGUAGE_DESCRIPTION},
-      {"changeSystemLanguageLabel",
-       IDS_OS_SETTINGS_LANGUAGES_CHANGE_SYSTEM_LANGUAGE_BUTTON_LABEL},
-      {"changeSystemLanguageButtonDescription",
-       IDS_OS_SETTINGS_LANGUAGES_CHANGE_SYSTEM_LANGUAGE_BUTTON_DESCRIPTION},
+      {"deviceLanguageTitle", IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE},
+      {"changeDeviceLanguageLabel",
+       IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_LABEL},
+      {"changeDeviceLanguageButtonDescription",
+       IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_DESCRIPTION},
       {"languagesPreferenceTitle",
        IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE},
       {"languagesPreferenceDescription",
@@ -451,7 +449,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kLanguages, mojom::SearchResultIcon::kGlobe,
       mojom::SearchResultDefaultRank::kMedium, mojom::kLanguagesSubpagePath);
   static constexpr mojom::Setting kLanguagesPageSettings[] = {
-      mojom::Setting::kChangeSystemLanguage,
+      mojom::Setting::kChangeDeviceLanguage,
       mojom::Setting::kOfferTranslation,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,

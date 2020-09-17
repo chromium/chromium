@@ -290,7 +290,7 @@ suite('languages page', () => {
     setup(() => {
       assertFalse(
           !!languagesPage.$$('os-settings-change-device-language-dialog'));
-      languagesPage.$$('#changeSystemLanguage').click();
+      languagesPage.$$('#changeDeviceLanguage').click();
       Polymer.dom.flush();
 
       dialog = languagesPage.$$('os-settings-change-device-language-dialog');

@@ -63,7 +63,7 @@ Polymer({
       type: Object,
       value: () => new Set([
         chromeos.settings.mojom.Setting.kAddLanguage,
-        chromeos.settings.mojom.Setting.kChangeSystemLanguage,
+        chromeos.settings.mojom.Setting.kChangeDeviceLanguage,
         chromeos.settings.mojom.Setting.kOfferTranslation,
       ]),
     },
@@ -101,14 +101,14 @@ Polymer({
   },
 
   /** @private */
-  onChangeSystemLanguageClick_() {
+  onChangeDeviceLanguageClick_() {
     this.showChangeDeviceLanguageDialog_ = true;
   },
 
   /** @private */
   onChangeDeviceLanguageDialogClose_() {
     this.showChangeDeviceLanguageDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$.changeSystemLanguage));
+    cr.ui.focusWithoutInk(assert(this.$.changeDeviceLanguage));
   },
 
   /**
@@ -116,9 +116,9 @@ Polymer({
    * @return {string}
    * @private
    */
-  getChangeSystemLanguageButtonDescription_(language) {
+  getChangeDeviceLanguageButtonDescription_(language) {
     return this.i18n(
-        'changeSystemLanguageButtonDescription',
+        'changeDeviceLanguageButtonDescription',
         this.getLanguageDisplayName_(language));
   },
 

@@ -8,6 +8,7 @@
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
@@ -26,7 +27,7 @@
 
 <dom-module id="os-settings-languages-page-v2">
   <template>
-    <style include="settings-shared action-link">
+    <style include="settings-shared action-link iron-flex">
       h2 {
         padding-inline-start: var(--cr-section-padding);
       }
@@ -39,40 +40,43 @@
         margin-bottom: var(--cr-section-vertical-margin);
       }
 
+      #addLanguages {
+        margin-top: 16px;
+      }
+
       #addLanguagesIcon {
         --iron-icon-fill-color: var(--cr-link-color);
-        margin-inline-end: 4px;
+        margin-inline-end: 12px;
       }
     </style>
 
     <div route-path="default">
-      <h2 aria-hidden="true">$i18n{systemLanguageTitle}</h2>
-      <span class="settings-box first" aria-hidden="true">
-        $i18n{systemLanguageDescription}
-      </span>
-      <div class="settings-box continuation embedded bottom-margin">
-        <div class="start" aria-hidden="true">
-          [[getLanguageDisplayName_(languages.prospectiveUILanguage)]]
+      <div class="cr-row first">
+        <div class="flex cr-padded-text" aria-hidden="true">
+          $i18n{deviceLanguageTitle}
+          <div class="secondary">
+            [[getLanguageDisplayName_(languages.prospectiveUILanguage)]]
+          </div>
         </div>
-        <cr-button id="changeSystemLanguage"
-            on-click="onChangeSystemLanguageClick_"
-            aria-label="[[getChangeSystemLanguageButtonDescription_(
+        <cr-button id="changeDeviceLanguage"
+            on-click="onChangeDeviceLanguageClick_"
+            aria-label="[[getChangeDeviceLanguageButtonDescription_(
               languages.prospectiveUILanguage)]]"
-            deep-link-focus-id$="[[Setting.kChangeSystemLanguage]]">
-          $i18n{changeSystemLanguageLabel}
+            deep-link-focus-id$="[[Setting.kChangeDeviceLanguage]]">
+          $i18n{changeDeviceLanguageLabel}
         </cr-button>
       </div>
 
-      <div class="hr">
+      <div class="hr bottom-margin">
         <h2 aria-hidden="true">$i18n{languagesPreferenceTitle}</h2>
-        <settings-localized-link class="settings-box first"
+        <settings-localized-link class="cr-row first bottom-margin"
             localized-string="[[i18nAdvanced(
               'languagesPreferenceDescription')]]">
         </settings-localized-link>
         <div class="list-frame vertical-list" id="languagesList">
           <template is="dom-repeat" items="[[languages.enabled]]">
             <div class="list-item">
-              <div class="start" id="displayText-[[index]]"
+              <div class="flex" id="displayText-[[index]]"
                   aria-hidden="true">
                 <div title="[[item.language.nativeDisplayName]]">
                   [[item.language.displayName]]

@@ -170,7 +170,7 @@ enum Setting {
   kShowInputOptionsInShelf = 1201,
   kShowPersonalInformationSuggestions = 1202,
   kShowEmojiSuggestions = 1203,
-  kChangeSystemLanguage = 1204,
+  kChangeDeviceLanguage = 1204,
   kOfferTranslation = 1205,
   kAddInputMethod = 1206,
   kSpellCheck = 1207,

@@ -874,10 +874,10 @@
   <message name="IDS_OS_SETTINGS_TAG_INPUT" translateable="false" desc="Text for search result item which, when clicked, navigates the user to input settings.">
     Input
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_SYSTEM_LANGUAGE" translateable="false" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with allows users to change system display language.">
-    Change system language
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with allows users to change device language.">
+    Change device language
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_OFFER_TRANSLATION" translateable="false" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with a toggle to enable/disable translation prompts.">
+  <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_OFFER_TRANSLATION" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with a toggle to enable/disable translation prompts.">
     Translation suggestion
   </message>
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE" desc="Text for search result item which, when clicked, navigates the user to languages and input settings, with an option to add a new language.">
