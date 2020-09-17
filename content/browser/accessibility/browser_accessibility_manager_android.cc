@@ -33,15 +33,11 @@ BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
   // The Java layer handles the root scroll offset.
   use_root_scroll_offsets_when_computing_bounds_ = false;
 
-  if (web_contents_accessibility_)
-    web_contents_accessibility_->set_root_manager(this);
   Initialize(initial_tree);
 }
 
-BrowserAccessibilityManagerAndroid::~BrowserAccessibilityManagerAndroid() {
-  if (web_contents_accessibility_)
-    web_contents_accessibility_->set_root_manager(nullptr);
-}
+BrowserAccessibilityManagerAndroid::~BrowserAccessibilityManagerAndroid() =
+    default;
 
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerAndroid::GetEmptyDocument() {

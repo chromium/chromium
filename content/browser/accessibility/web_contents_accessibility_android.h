@@ -24,7 +24,7 @@ class WebContentsImpl;
 
 // Bridges BrowserAccessibilityManagerAndroid and Java WebContentsAccessibility.
 // A RenderWidgetHostConnector runs behind to manage the connection. Referenced
-// by BrowserAccessibilityManagerAndroid for main frame (root manager) only.
+// by BrowserAccessibilityManagerAndroid for main frame only.
 // The others for subframes should acquire this instance through the root
 // manager to access Java layer.
 //
@@ -244,10 +244,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   void UpdateFrameInfo(float page_scale);
 
-  void set_root_manager(BrowserAccessibilityManagerAndroid* manager) {
-    root_manager_ = manager;
-  }
-
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
@@ -274,6 +270,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
  private:
+  BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager();
+
   BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id);
 
   void CollectStats();
@@ -294,8 +292,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   float page_scale_ = 1.f;
 
   bool use_zoom_for_dsf_enabled_;
-
-  BrowserAccessibilityManagerAndroid* root_manager_;
 
   // Manages the connection between web contents and the RenderFrameHost that
   // receives accessibility events.
