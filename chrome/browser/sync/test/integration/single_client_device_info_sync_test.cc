@@ -158,23 +158,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
 
-class SingleClientDeviceInfoWithTransportModeSyncTest
-    : public SingleClientDeviceInfoSyncTest {
- public:
-  SingleClientDeviceInfoWithTransportModeSyncTest() {
-    scoped_list_.InitAndEnableFeature(switches::kSyncDeviceInfoInTransportMode);
-  }
-
-  ~SingleClientDeviceInfoWithTransportModeSyncTest() override {}
-
- private:
-  base::test::ScopedFeatureList scoped_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleClientDeviceInfoWithTransportModeSyncTest);
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoWithTransportModeSyncTest,
-                       CommitLocalDevice) {
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
 
 #if defined(OS_CHROMEOS)
@@ -199,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoWithTransportModeSyncTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoWithTransportModeSyncTest,
-                       DownloadRemoteDevices) {
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       DownloadRemoteDevices_TransportOnly) {
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
 

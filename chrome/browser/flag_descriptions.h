@@ -1293,9 +1293,6 @@ extern const char kSuggestionsWithSubStringMatchDescription[];
 extern const char kSyncAutofillWalletOfferDataName[];
 extern const char kSyncAutofillWalletOfferDataDescription[];
 
-extern const char kSyncDeviceInfoInTransportModeName[];
-extern const char kSyncDeviceInfoInTransportModeDescription[];
-
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 

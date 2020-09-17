@@ -28,12 +28,9 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
   // Only some special whitelisted types (and control types) are allowed in
   // standalone transport mode.
   syncer::ModelTypeSet allowed_types(
-      syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
+      syncer::DEVICE_INFO, syncer::USER_CONSENTS, syncer::SECURITY_EVENTS,
       syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE);
   allowed_types.PutAll(syncer::ControlTypes());
-  if (base::FeatureList::IsEnabled(switches::kSyncDeviceInfoInTransportMode)) {
-    allowed_types.Put(syncer::DEVICE_INFO);
-  }
   return allowed_types;
 }
 

@@ -295,11 +295,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillCreditCardUploadName,
      flag_descriptions::kAutofillCreditCardUploadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillUpstream)},
-    {"enable-sync-device-info-in-transport-mode",
-     flag_descriptions::kSyncDeviceInfoInTransportModeName,
-     flag_descriptions::kSyncDeviceInfoInTransportModeDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kSyncDeviceInfoInTransportMode)},
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(

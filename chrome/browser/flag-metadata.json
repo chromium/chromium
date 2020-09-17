@@ -2174,11 +2174,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "enable-sync-device-info-in-transport-mode",
-    "owners": [ "//components/sync/OWNERS", "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-system-webapps",
     "owners": [ "calamity" ],
     "expiry_milestone": 78

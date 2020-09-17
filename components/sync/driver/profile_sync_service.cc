@@ -1404,6 +1404,7 @@ bool ProfileSyncService::UseTransportOnlyMode() const {
 
 ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
   ModelTypeSet allowed_types = {
+      DEVICE_INFO,
       SECURITY_EVENTS,
       SHARING_MESSAGE,
       SUPERVISED_USER_SETTINGS,
@@ -1423,10 +1424,6 @@ ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
   if (enable_passwords_account_storage_ &&
       !GetUserSettings()->IsUsingSecondaryPassphrase()) {
     allowed_types.Put(PASSWORDS);
-  }
-
-  if (base::FeatureList::IsEnabled(switches::kSyncDeviceInfoInTransportMode)) {
-    allowed_types.Put(DEVICE_INFO);
   }
 
   // Outside the #if so non-Chrome OS developers will hit it before uploading.
