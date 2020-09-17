@@ -198,11 +198,13 @@ base::android::ScopedJavaGlobalRef<jobject>
 ManualFillingViewAndroid::GetOrCreateJavaObject() {
   if (java_object_internal_)
     return java_object_internal_;
-  ui::ViewAndroid* view_android = controller_->container_view();
-  DCHECK(view_android);
+  if (controller_->container_view() == nullptr ||
+      controller_->container_view()->GetWindowAndroid() == nullptr) {
+    return nullptr;  // No window attached (yet or anymore).
+  }
   java_object_internal_.Reset(Java_ManualFillingComponentBridge_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      view_android->GetWindowAndroid()->GetJavaObject()));
+      controller_->container_view()->GetWindowAndroid()->GetJavaObject()));
   return java_object_internal_;
 }
 
