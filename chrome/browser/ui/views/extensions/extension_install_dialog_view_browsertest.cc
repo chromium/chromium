@@ -164,7 +164,13 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 
 // Tests that a scrollbar isn't shown for this regression case.
 // See crbug.com/385570 for details.
-IN_PROC_BROWSER_TEST_F(ScrollbarTest, DISABLED_ScrollbarRegression) {
+// TODO(http://crbug.com/988934): Flaky on some Mac release bots.
+#if defined(OS_MAC) && defined(NDEBUG)
+#define MAYBE_ScrollbarRegression DISABLED_ScrollbarRegression
+#else
+#define MAYBE_ScrollbarRegression ScrollbarRegression
+#endif
+IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
   base::string16 permission_string(base::ASCIIToUTF16(
       "Read and modify your data on *.facebook.com"));
   PermissionMessages permissions;
