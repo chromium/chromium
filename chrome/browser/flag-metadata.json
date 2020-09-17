@@ -419,7 +419,7 @@
   {
     "name": "block-external-form-redirects-no-gesture",
     "owners": [ "jochen", "tedchoc" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "bluetooth-aggressive-appearance-filter",
