@@ -336,18 +336,6 @@ class TestAudioObserver : public chromeos::CrasAudioHandler::AudioObserver {
 };
 #endif
 
-#if !defined(OS_CHROMEOS)
-extensions::MessagingDelegate::PolicyPermission IsNativeMessagingHostAllowed(
-    content::BrowserContext* browser_context,
-    const std::string& native_host_name) {
-  extensions::MessagingDelegate* messaging_delegate =
-      extensions::ExtensionsAPIClient::Get()->GetMessagingDelegate();
-  EXPECT_NE(messaging_delegate, nullptr);
-  return messaging_delegate->IsNativeMessagingHostAllowed(browser_context,
-                                                          native_host_name);
-}
-#endif
-
 }  // namespace
 
 #if defined(OS_WIN)
@@ -1511,60 +1499,6 @@ IN_PROC_BROWSER_TEST_F(PolicyVariationsServiceTest, VariationsURLIsValid) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "restrict", &value));
   EXPECT_EQ("restricted", value);
 }
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistSelective) {
-  base::ListValue blacklist;
-  blacklist.AppendString("host.name");
-  PolicyMap policies;
-  policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
-  EXPECT_EQ(
-      extensions::MessagingDelegate::PolicyPermission::ALLOW_ALL,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingBlocklistWildcard) {
-  base::ListValue blacklist;
-  blacklist.AppendString("*");
-  PolicyMap policies;
-  policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
-  EXPECT_EQ(
-      extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, NativeMessagingAllowlist) {
-  base::ListValue blacklist;
-  blacklist.AppendString("*");
-  base::ListValue allowlist;
-  allowlist.AppendString("host.name");
-  PolicyMap policies;
-  policies.Set(key::kNativeMessagingBlocklist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, blacklist.Clone(),
-               nullptr);
-  policies.Set(key::kNativeMessagingAllowlist, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, allowlist.Clone(),
-               nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_EQ(extensions::MessagingDelegate::PolicyPermission::ALLOW_ALL,
-            IsNativeMessagingHostAllowed(browser()->profile(), "host.name"));
-  EXPECT_EQ(
-      extensions::MessagingDelegate::PolicyPermission::DISALLOW,
-      IsNativeMessagingHostAllowed(browser()->profile(), "other.host.name"));
-}
-
 #endif  // !defined(CHROME_OS)
 
 #if !defined(OS_CHROMEOS)

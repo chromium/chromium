@@ -1659,7 +1659,10 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
-      sources += [ "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc" ]
+      sources += [
+        "../browser/policy/native_messaging_policy_browsertest.cc",
+        "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
+      ]
     }
 
     if (include_js_tests) {
