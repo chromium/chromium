@@ -20,15 +20,10 @@
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #endif
 
-#if defined(OS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace content {
 namespace {
 
 #if defined(OS_ANDROID)
-const char* kGoogleSans = "Google Sans";
 const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto",
                                           "Droid Sans Mono",
@@ -69,9 +64,7 @@ const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto Condensed",
                                           "Roboto Condensed",
                                           "Roboto Condensed",
-                                          "Roboto",
-                                          kGoogleSans,
-                                          kGoogleSans};
+                                          "Roboto"};
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Arimo",
@@ -211,17 +204,6 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
     ASSERT_TRUE(first_font_name);
     ASSERT_TRUE(first_font_name->is_string());
     ASSERT_GT(first_font_name->GetString().size(), 0u);
-#if defined(OS_ANDROID)
-    // Skip Android Google Sans test on Pixel devices < Marshmallow SDK level,
-    // as the firmware font files do not contain this font.
-    bool at_least_marshmallow =
-        base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_MARSHMALLOW;
-    if (!at_least_marshmallow &&
-        std::string(kExpectedFontFamilyNames[i]) == std::string(kGoogleSans)) {
-      continue;
-    }
-#endif
     ASSERT_EQ(first_font_name->GetString(), kExpectedFontFamilyNames[i]);
   }
 }
