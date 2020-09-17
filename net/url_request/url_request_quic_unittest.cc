@@ -470,9 +470,10 @@ TEST_P(URLRequestQuicTest, CancelPushIfCached_SomeCached) {
   EXPECT_TRUE(end_entry_2->HasParams());
   EXPECT_EQ(-400, GetNetErrorCodeFromParams(*end_entry_2));
 
-#if !defined(OS_FUCHSIA) && !defined(OS_IOS)
+#if !defined(OS_FUCHSIA) && !defined(OS_IOS) && !defined(OS_APPLE)
   // TODO(crbug.com/813631): Make this work on Fuchsia.
   // TODO(crbug.com/1032568): Make this work on iOS.
+  // TODO(crbug.com/1128459): Turn this on for ARM mac.
 
   // Wait until the server has processed all errors which is
   // happening asynchronously
