@@ -2,7 +2,7 @@
 # To use this:
 #   1) Move Xcode.app to the same directory as this file.
 #   2) Rename Xcode.app to xcode_binaries
-#   3) Call `cipd create --pkg-def xcode_binaries.yaml`
+#   3) Call `cipd create --pkg-def build/xcode_binaries.yaml`
 # To deploy the newly created cipd package across the fleet, modify
 # mac_toolchain.py to point to the new cipd hash.
 #
