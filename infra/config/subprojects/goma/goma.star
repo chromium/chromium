@@ -52,6 +52,7 @@ def fyi_goma_canary_builder(*, name, **kwargs):
         name = name,
         builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -155,6 +156,7 @@ def fyi_goma_rbe_canary_builder(
         execution_timeout = 10 * time.hour,
         goma_backend = goma_backend,
         os = os,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -215,6 +217,7 @@ def fyi_goma_latest_client_builder(*, name, os = os.LINUX_DEFAULT, **kwargs):
         builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         os = os,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -315,6 +318,7 @@ def fyi_goma_rbe_latest_client_builder(
         execution_timeout = 10 * time.hour,
         goma_backend = goma_backend,
         os = os,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
@@ -394,6 +398,7 @@ def goma_builder(
         builder_group = "chromium.goma",
         builderless = builderless,
         os = os,
+        goma_use_luci_auth = True,
         **kwargs
     )
 
