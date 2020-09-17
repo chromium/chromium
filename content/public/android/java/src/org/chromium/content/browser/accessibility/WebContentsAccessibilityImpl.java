@@ -275,6 +275,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                             if (exitEvent != null) {
                                 requestSendAccessibilityEvent(exitEvent);
                                 mLastHoverId = virtualViewId;
+                            } else if (virtualViewId != View.NO_ID
+                                    && mLastHoverId != virtualViewId) {
+                                // If IDs become mismatched, or on first hover, this will sync the
+                                // values again so all further hovers have correct event pairing.
+                                mLastHoverId = virtualViewId;
                             }
                         }
 
