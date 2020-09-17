@@ -1,6 +1,6 @@
 # Getting started with MojoLPM
 
-*** note
+***
 **Note:** Using MojoLPM to fuzz your Mojo interfaces is intended to be simple,
 but there are edge-cases that may require a very detailed understanding of the
 Mojo implementation to fix. If you run into problems that you can't understand
@@ -45,6 +45,10 @@ implemented in the browser process and exposed to the renderer process, but
 there isn't a very simple way to enumerate these, so you may need to look
 through some of the source code to find an interesting one.
 
+A few of the places which bind many of these cross-privilege interfaces are
+`content/browser/browser_interface_binders.cc` and
+`content/browser/render_process_host_impl.cc`, specifically `RenderProcessHostImpl::RegisterMojoInterfaces`.
+
 For the rest of this guide, we'll write a new fuzzer for
 `blink.mojom.CodeCacheHost`, which is defined in
 `third_party/blink/public/mojom/loader/code_cache.mojom`.
@@ -67,11 +71,17 @@ leads us to `content/browser/renderer_host/code_cache_host_impl.h` and
 
 ## Find the unittest for the implementation
 
+Specifically, we're looking for a browser-process side unittest (so not in
+`//third_party/blink`). We want the unittest for the browser side implementation
+of that Mojo interface - in many cases if such exists, it will be directly next
+to the implementation source, ie. in this case we would be most likely to find
+them in `content/browser/renderer_host/code_cache_host_impl_unittest.cc`.
+
 Unfortunately, it doesn't look like `CodeCacheHostImpl` has a unittest, so we'll
 have to go through the process of understanding how to create a valid instance
 ourselves in order to fuzz this interface.
 
-Since this interface runs in the Browser process, and is part of `/content`,
+Since this implementation runs in the Browser process, and is part of `/content`,
 we're going to create our new fuzzer in `/content/test/fuzzer`.
 
 ## Add our testcase proto
@@ -83,17 +93,27 @@ interfaces to uncover more complex issues. For our case, this will be a simple
 file:
 
 ```
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Message format for the MojoLPM fuzzer for the CodeCacheHost interface.
+
 syntax = "proto2";
 
 package content.fuzzing.code_cache_host.proto;
 
 import "third_party/blink/public/mojom/loader/code_cache.mojom.mojolpm.proto";
 
-message NewCodeCacheHost {
+// Bind a new CodeCacheHost remote
+message NewCodeCacheHostAction {
   required uint32 id = 1;
 }
 
-message RunUntilIdle {
+// Run the specific sequence for (an indeterminate) period. This is not
+// intended to create a specific ordering, but to allow the fuzzer to delay a
+// later task until previous tasks have completed.
+message RunThreadAction {
   enum ThreadId {
     IO = 0;
     UI = 1;
@@ -102,22 +122,27 @@ message RunUntilIdle {
   required ThreadId id = 1;
 }
 
+// Actions that can be performed by the fuzzer.
 message Action {
   oneof action {
-    NewCodeCacheHost new_code_cache_host = 1;
-    RunUntilIdle run_until_idle = 2;
-    mojolpm.blink.mojom.CodeCacheHost.RemoteMethodCall code_cache_host_call = 3;
+    NewCodeCacheHostAction new_code_cache_host = 1;
+    RunThreadAction run_thread = 2;
+    mojolpm.blink.mojom.CodeCacheHost.RemoteAction
+        code_cache_host_remote_action = 3;
   }
 }
 
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
 message Sequence {
-  repeated uint32 action_indexes = 1 [packed=true];
+  repeated uint32 action_indexes = 1 [packed = true];
 }
 
+// Testcase is the top-level message type interpreted by the fuzzer.
 message Testcase {
   repeated Action actions = 1;
   repeated Sequence sequences = 2;
-  repeated uint32 sequence_indexes = 3 [packed=true];
+  repeated uint32 sequence_indexes = 3 [packed = true];
 }
 ```
 
@@ -186,15 +211,53 @@ DEFINE_BINARY_PROTO_FUZZER(
 ```
 
 You should now be able to build and run this fuzzer (it, of course, won't do
-very much) to check that everything is lined up right so far.
+very much) to check that everything is lined up right so far. Recommended GN
+arguments:
+
+```
+# DCHECKS are really useful when getting your fuzzer up and running correctly,
+# but will often get in the way when running actual fuzzing, so we will disable
+# this later.
+dcheck_always_on = true
+# Without this flag, our fuzzer target won't exist.
+enable_mojom_fuzzer = true
+# ASAN is super useful for fuzzing, but in this case we just want it to help us
+# debug the inevitable lifetime issues while we get everything set-up correctly!
+is_asan = true
+is_component_build = true
+is_debug = false
+optimize_for_fuzzing = true
+use_goma = true
+use_libfuzzer = true
+```
+
 
 ## Handle global process setup
 
 Now we need to add some basic setup code so that our process has something that
 mostly resembles a normal Browser process; if you look in the file this is
-`CodeCacheHostFuzzerEnvironment`, which adds a global environment instance that
+`ContentFuzzerEnvironment`, which adds a global environment instance that
 will handle setting up this basic environment, which will be reused for all of
-our testcases, since starting threads is expensive and slow.
+our testcases, since starting threads is expensive and slow. This code should
+also be responsible for setting up any "stateless" (or more-or-less stateless)
+code that is required for your interface to run - examples are initializing the
+Mojo Core, and loading ICU datafiles. 
+
+A key difference between our needs here and those of a normal unittest is that 
+we very likely do not want to be running in a special single-threaded mode. We
+want to be able to trigger issues related to threading, sequencing and ordering,
+and making sure that the UI, IO and threadpool threads behave as close to a 
+normal browser process as possible is desirable.
+
+It's likely better to be conservative here - while it might appear that an 
+interface to be tested has no interaction with the UI thread, and so we could 
+save some resources by only having a real IO thread, it's often very difficult
+to establish this with certainty.
+
+In practice, the most efficient way forward will be to copy the existing
+`Environment` setup from another MojoLPM fuzzer and adapting that to the 
+context in which the interface to be fuzzed will actually run.
+
 
 ## Handle per-testcase setup
 
@@ -244,6 +307,17 @@ careful of here is that everything happens on the correct thread/sequence. Many
 Browser-process objects have specific expectations, and will end up with very
 different behaviour if they are created or used from the wrong context.
 
+**The most important thing to be careful of here is that everything happens on
+the correct thread/sequence. Many Browser-process objects have specific
+expectations, and will end up with very different behaviour if they are created
+or used from the wrong context. Test code doesn't always behave the same way, so
+try to check the behaviour in the real Browser.**
+
+**The second most important thing to be aware of is to make sure that the fuzzer
+has the same control over lifetimes of objects that a renderer process would
+normally have - the best way to check this is to make sure that you've found and
+understood the browser process code that would usually bind that interface.**
+
 ## Integrate with the generated MojoLPM fuzzer code
 
 Finally, we need to do a little bit more plumbing, to rig up this infrastructure
@@ -262,28 +336,31 @@ void CodeCacheHostTestcase::NextAction() {
         return;
       }
       const auto& action =
-        testcase_.actions(action_idx % testcase_.actions_size());
+          testcase_.actions(action_idx % testcase_.actions_size());
+      if (action.ByteSizeLong() > max_action_size_) {
+        return;
+      }
       switch (action.action_case()) {
-        case content::fuzzing::code_cache_host::proto::Action::kNewCodeCacheHost: {
+        case Action::kNewCodeCacheHost:
           cch_context_.AddCodeCacheHost(
             action.new_code_cache_host().id(),
             action.new_code_cache_host().render_process_id(),
             action.new_code_cache_host().origin_id());
-        } break;
+          break;
 
-        case content::fuzzing::code_cache_host::proto::Action::kRunUntilIdle: {
+        case Action::kRunUntilIdle:
           if (action.run_until_idle().id()) {
             content::RunUIThreadUntilIdle();
           } else {
             content::RunIOThreadUntilIdle();
           }
-        } break;
+          break;
 
-        case content::fuzzing::code_cache_host::proto::Action::kCodeCacheHostCall: {
+        case Action::kCodeCacheHostCall:
           mojolpm::HandleRemoteMethodCall(action.code_cache_host_call());
-        } break;
+          break;
 
-        case content::fuzzing::code_cache_host::proto::Action::ACTION_NOT_SET:
+        case Action::ACTION_NOT_SET:
           break;
       }
     }
@@ -328,16 +405,133 @@ Let the fuzzer run for a while, and keep periodically checking in in case it's
 fallen over. It's likely you'll have made a few mistakes somewhere along the way
 but hopefully soon you'll have the fuzzer running 'clean' for a few hours.
 
+If you run into DCHECK failures in deserialization, see the section below marked
+[triage].
+
+## Expand it to include all relevant interfaces
+
+`CodeCacheHost` is a very simple interface, and it doesn't have any dependencies
+on other interfaces. In reality, most Mojo interfaces are much more complex, and
+fuzzing their implementations thoroughly will require more work. We'll take a
+quick look at a more complex interface, the `BlobRegistry`. If we look at
+`blob_registry.mojom`:
+
+```
+// This interface is the primary access point from renderer to the browser's
+// blob system. This interface provides methods to register new blobs and get
+// references to existing blobs.
+interface BlobRegistry {
+  // Registers a new blob with the blob registry.
+  // TODO(mek): Make this method non-sync and get rid of the UUID parameter once
+  // enough of the rest of the system doesn't rely on the UUID anymore.
+  [Sync] Register(pending_receiver<blink.mojom.Blob> blob, string uuid,
+                  string content_type, string content_disposition,
+                  array<DataElement> elements) => ();
+
+  // Creates a new blob out of a data pipe.
+  // |length_hint| is only used as a hint, to decide if the blob should be
+  // stored in memory or on disk. Registration will still succeed even if less
+  // or more bytes are read from the pipe. The resulting SerializedBlob can be
+  // inspected to see how many bytes actually did end up being read from
+  // the pipe. Pass 0 if nothing is known about the expected size.
+  // If something goes wrong (for example the blob system doesn't have enough
+  // available space to store all the data from the stream) null will be
+  // returned.
+  RegisterFromStream(string content_type, string content_disposition,
+                     uint64 length_hint,
+                     handle<data_pipe_consumer> data,
+                     pending_associated_remote<ProgressClient>? progress_client)
+      => (SerializedBlob? blob);
+
+  // Returns a reference to an existing blob. Should not be used by new code,
+  // is only exposed to make converting existing blob using code easier.
+  // TODO(mek): Remove when crbug.com/740744 is resolved.
+  [Sync] GetBlobFromUUID(pending_receiver<Blob> blob, string uuid) => ();
+
+  // Returns a BlobURLStore for a specific origin.
+  URLStoreForOrigin(url.mojom.Origin origin,
+                    pending_associated_receiver<blink.mojom.BlobURLStore> url_store);
+};
+```
+
+We can see that this interface references multiple other interfaces; there are 
+several different kinds of reference that we need to worry about:
+
+**Additional fuzzable interfaces** - if an interface method can return a 
+pending_remote<> or take a pending_receiver<> to an interface Foo, then we
+want our fuzzer to fuzz those interfaces too.
+
+Here we would want to add `blink.mojom.Blob.RemoteAction` and
+`blink.mojom.BlobURLStore.AssociatedRemoteAction` to the possible actions
+that our fuzzer protobufs can take.
+
+**Renderer-hosted interfaces** - if an interface method takes a pending_remote<>
+(or returns a pending_receiver<>), then we'll also want to add response handling
+to our fuzzer. This lets the fuzzer send fuzzer-side implementations of mojo
+interfaces, and handle fuzzing the values returned if those methods are called.
+
+Here we can see `blink.mojom.ProgressClient` is needed, but we can also see that
+we pass `blink.mojom.DataElement` structures to `BlobRegistry.Register`. These
+can contain `remote<blink.mojom.Blob>`, so we also need to support
+`blink.mojom.Blob`.
+
+These are handled similarly to the `RemoteAction`s, but the type that we need to
+add to our proto is instead `blink.mojom.ProgressClient.ReceiverAction`, and so
+on.
+
+We can continue applying this logic recursively to all of the interfaces that
+might be accessed - this comes down to a question of what dependencies are most
+likely to be important in getting good coverage, so the later step of examining
+code coverage may also help in guiding the addition of new interfaces here.
+
+`blob_registry_mojolpm_fuzzer.proto` illustrates how these responses can be added
+to the testcase proto.
+
+## Start fuzzing
+
+Once the fuzzer is up and running, we probably want to remove dcheck_always_on.
+
+```
+enable_mojom_fuzzer = true
+is_asan = true
+is_component_build = true
+is_debug = false
+optimize_for_fuzzing = true
+use_goma = true
+use_libfuzzer = true
+```
+
+The reason for this is that while DCHECKs are often useful when fuzzing (and a
+good indication of potential bugs), the Mojo serialization code often contains
+quite a few DCHECKs, and our fuzzer is essentially serializing untrusted data
+before it can deserialize that data on the Browser-process side. This means
+that we can easily get blocked by a "completely valid" DCHECK during
+serialisation that a compromised renderer would bypass. Removing DCHECKs will
+sometimes let the fuzzer continue in these situations, and will reduce spurious
+results, but if your fuzzer doesn't trigger any of these cases it may be
+beneficial to also fuzz with DCHECKs enabled. We'll discuss this below under
+[triage](#triage-notes).
+
 If your coverage isn't going up at all, then you've probably made a mistake and
 it likely isn't managing to actually interact with the interface you're trying
 to fuzz - try using the code coverage output from the next step to debug what's
 going wrong.
 
+
 ## (Optional) Run coverage
 
 In many cases it's useful to check the code coverage to see if we can benefit
 from adding some manual testcases to get deeper coverage. For this example I
-used the following command:
+used the following gn arguments and command:
+
+```
+enable_mojom_fuzzer = true
+is_component_build = false
+is_debug = false
+use_clang_coverage = true
+use_goma = true
+use_libfuzzer = true
+```
 
 ```
 python tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /dev/shm/corpus" -f content
@@ -380,10 +574,8 @@ actions {
   }
 }
 actions {
-  code_cache_host_call {
-    remote {
-      id: 1
-    }
+  code_cache_host_remote_action {
+    id: 1
     m_did_generate_cacheable_metadata {
       m_cache_type: CodeCacheType_kJavascript
       m_url {
@@ -398,6 +590,7 @@ actions {
           m_bytes {
           }
         }
+      }
       m_expected_response_time {
       }
     }
@@ -462,7 +655,48 @@ We can see that we're now getting some more coverage:
 
 Much better!
 
-[markbrand@google.com]: mailto:markbrand@google.com?subject=[MojoLPM%20Help]:%20&cc=fuzzing@chromium.org
+## Triage notes
+
+MojoLPM fuzzers have a number of common failure modes that are fairly easy to
+distinguish from real bugs in the implementation being fuzzed.
+
+The first of these is any crash on the `fuzzer_thread`. Code in the
+implementation should never, under any circumstances be running on this thread,
+so any crash on this thread is the result of a bug in the fuzzer itself, or
+one of the other causes mentioned below.
+
+The second is DCHECK or other failures during Mojo serialization. Various traits
+assert that they are serializing reasonable values - since we need to reuse this
+serialization code in the fuzzer to produce input to the implementation, we can
+trigger these on the `fuzzer_thread` while processing input to send to the
+implementation.
+
+The example ASAN error output below illustrates an example of both of these
+cases - the error happens on the `fuzzer_thread`, and during serialization.
+
+```
+==2940792==ERROR: AddressSanitizer: ILL on unknown address 0x7fbd9391d0f9 (pc 0x7fbd9391d0f9 bp 0x7fbd24deb3e0 sp 0x7fbd24deb3e0 T5)
+    #0 0x7fbd9391d0f9 in unsigned int base::internal::CheckOnFailure::HandleFailure<unsigned int>() base/numerics/safe_conversions_impl.h:122:5
+    #1 0x7fbd9391ba78 in unsigned int base::internal::checked_cast<unsigned int, base::internal::CheckOnFailure, unsigned long>(unsigned long) base/numerics/safe_conversions.h:114:16
+    #2 0x7fbd9391ba28 in mojo::StructTraits<mojo_base::mojom::BigBufferSharedMemoryRegionDataView, mojo_base::internal::BigBufferSharedMemoryRegion>::size(mojo_base::internal::BigBufferSharedMemoryRegion const&) mojo/public/cpp/base/big_buffer_mojom_traits.cc:17:10
+    #3 0x7fbd7f62fc2e in mojo::internal::Serializer<mojo_base::mojom::BigBufferSharedMemoryRegionDataView, mojo_base::internal::BigBufferSharedMemoryRegion>::Serialize(mojo_base::internal::BigBufferSharedMemoryRegion&, mojo::internal::Buffer*, mojo_base::mojom::internal::BigBufferSharedMemoryRegion_Data::BufferWriter*, mojo::internal::SerializationContext*) gen/mojo/public/mojom/base/big_buffer.mojom-shared.h:182:23
+...
+    #41 0x7fbd955376e8 in base::RunLoop::Run() base/run_loop.cc:124:14
+    #42 0x7fbd95707f83 in base::Thread::Run(base::RunLoop*) base/threading/thread.cc:311:13
+    #43 0x7fbd95708427 in base::Thread::ThreadMain() base/threading/thread.cc:382:3
+    #44 0x7fbd957dfb40 in base::(anonymous namespace)::ThreadFunc(void*) base/threading/platform_thread_posix.cc:81:13
+    #45 0x7fbd403866b9 in start_thread /build/glibc-LK5gWL/glibc-2.23/nptl/pthread_create.c:333
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: ILL (/mnt/scratch0/clusterfuzz/bot/builds/chromium-browser-libfuzzer_linux-release-asan_ae530a86793cd6b8b56ce9af9159ac101396e802/revisions/libfuzzer-linux-release-807440/libmojo_base_shared_typemap_traits.so+0x190f9)
+Thread T5 (fuzzer_thread) created by T0 here:
+    #0 0x56433ef70b3a in pthread_create third_party/llvm/compiler-rt/lib/asan/asan_interceptors.cpp:214:3
+...
+    #14 0x56433f15380c in main third_party/libFuzzer/src/FuzzerMain.cpp:19:10
+    #15 0x7fbd3c38a82f in __libc_start_main /build/glibc-LK5gWL/glibc-2.23/csu/libc-start.c:291
+==2940792==ABORTING
+```
+
+[markbrand@google.com]:mailto:markbrand@google.com?subject=[MojoLPM%20Help]:%20&cc=fuzzing@chromium.org
 [libfuzzer]: https://source.chromium.org/chromium/chromium/src/+/master:testing/libfuzzer/getting_started.md
 [Protocol Buffers]: https://developers.google.com/protocol-buffers/docs/cpptutorial
 [libprotobuf-mutator]: https://source.chromium.org/chromium/chromium/src/+/master:testing/libfuzzer/libprotobuf-mutator.md
