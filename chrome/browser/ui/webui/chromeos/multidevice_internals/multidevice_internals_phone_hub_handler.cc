@@ -234,9 +234,6 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
   const base::DictionaryValue* phones_status_dict = nullptr;
   CHECK(args->GetDictionary(0, &phones_status_dict));
 
-  base::string16 phone_name;
-  CHECK(phones_status_dict->GetString("phoneName", &phone_name));
-
   int mobile_status_as_int;
   CHECK(phones_status_dict->GetInteger("mobileStatus", &mobile_status_as_int));
   auto mobile_status = static_cast<phonehub::PhoneStatusModel::MobileStatus>(
