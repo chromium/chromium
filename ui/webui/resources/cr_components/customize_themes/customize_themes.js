@@ -78,8 +78,9 @@ export class CustomizeThemesElement extends mixinBehaviors
 
   /** @override */
   disconnectedCallback() {
-    super.disconnectedCallback();
+    this.revertThemeChanges();
     this.callbackRouter_.removeListener(assert(this.setThemeListenerId_));
+    super.disconnectedCallback();
   }
 
   confirmThemeChanges() {
