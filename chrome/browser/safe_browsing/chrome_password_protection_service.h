@@ -246,9 +246,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   // Returns the profile PasswordStore associated with this instance.
   password_manager::PasswordStore* GetProfilePasswordStore() const;
 
-  // Returns the account PasswordStore associated with this instance. The
-  // account password store contains passwords stored in the account and is
-  // accessible only when the user is signed in.
+  // Returns the GAIA-account-scoped PasswordStore associated with this
+  // instance. The account password store contains passwords stored in the
+  // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStore* GetAccountPasswordStore() const;
 
   // Gets the type of sync account associated with current profile or
