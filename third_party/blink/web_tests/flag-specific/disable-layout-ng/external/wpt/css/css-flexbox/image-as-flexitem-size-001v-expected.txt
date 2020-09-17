@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS .flexbox > img 1
+PASS .flexbox > img 2
+PASS .flexbox > img 3
+FAIL .flexbox > img 4 assert_equals: 
+<img src="support/solidblue.png" style="flex: 0 0 30px" data-expected-width="30" data-expected-height="30">
+height expected 30 but got 16
+PASS .flexbox > img 5
+PASS .flexbox > img 6
+PASS .flexbox > img 7
+PASS .flexbox > img 8
+PASS .flexbox > img 9
+PASS .flexbox > img 10
+PASS .flexbox > img 11
+PASS .flexbox > img 12
+PASS .flexbox > img 13
+PASS .flexbox > img 14
+PASS .flexbox > img 15
+PASS .flexbox > img 16
+PASS .flexbox > img 17
+PASS .flexbox > img 18
+Harness: the test ran to completion.
+

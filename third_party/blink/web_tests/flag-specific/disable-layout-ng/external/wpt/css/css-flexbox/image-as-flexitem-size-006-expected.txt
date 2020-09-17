@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+FAIL .flexbox > img 1 assert_equals: 
+<img src="support/solidblue.png" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 16
+PASS .flexbox > img 2
+FAIL .flexbox > img 3 assert_equals: 
+<img src="support/solidblue.png" style="height: 30px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 30
+FAIL .flexbox > img 4 assert_equals: 
+<img src="support/solidblue.png" style="flex: 1 1 30px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 16
+FAIL .flexbox > img 5 assert_equals: 
+<img src="support/solidblue.png" style="min-width: 34px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 34
+FAIL .flexbox > img 6 assert_equals: 
+<img src="support/solidblue.png" style="min-height: 34px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 34
+FAIL .flexbox > img 7 assert_equals: 
+<img src="support/solidblue.png" style="min-width: 30px;
+                                              min-height: 34px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 34
+FAIL .flexbox > img 8 assert_equals: 
+<img src="support/solidblue.png" style="min-width: 34px;
+                                              min-height: 30px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 34
+PASS .flexbox > img 9
+PASS .flexbox > img 10
+PASS .flexbox > img 11
+PASS .flexbox > img 12
+PASS .flexbox > img 13
+PASS .flexbox > img 14
+FAIL .flexbox > img 15 assert_equals: 
+<img src="support/solidblue.png" style="min-width: 30px;
+                                              height: 10px" data-expected-width="40" data-expected-height="40">
+width expected 40 but got 30
+PASS .flexbox > img 16
+PASS .flexbox > img 17
+PASS .flexbox > img 18
+Harness: the test ran to completion.
+
