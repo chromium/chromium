@@ -9,6 +9,12 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See docs/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
 # TODO(crbug.com/1006430): Fix password reuse detection not fully functional on
 # Android.
 password_reuse_detection_support = !is_ios
@@ -124,9 +130,6 @@ static_library("browser") {
     "leak_detection_dialog_utils.h",
     "login_database.cc",
     "login_database.h",
-    "login_database_ios.cc",
-    "login_database_mac.cc",
-    "login_database_win.cc",
     "manage_passwords_referrer.h",
     "multi_store_form_fetcher.cc",
     "multi_store_form_fetcher.h",
@@ -339,11 +342,20 @@ static_library("browser") {
     sources += [ "login_database_posix.cc" ]
   }
 
-  if (is_mac && !is_ios) {
+  if (is_mac) {
     sources += [
+      "login_database_mac.cc",
       "password_recovery_util_mac.cc",
       "password_recovery_util_mac.h",
     ]
+  }
+
+  if (is_ios) {
+    sources += [ "login_database_ios.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "login_database_win.cc" ]
   }
 
   # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
