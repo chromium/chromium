@@ -27,9 +27,8 @@ base::ListValue UsbDevicesToListValue(
     base::Value device_info(base::Value::Type::DICTIONARY);
     device_info.SetStringKey("guid", device.guid);
     device_info.SetStringKey("label", device.label);
-    auto it = device.vm_sharing_info.find(plugin_vm::kPluginVmName);
-    bool shared = it != device.vm_sharing_info.end() && it->second.shared;
-    device_info.SetBoolKey("shared", shared);
+    device_info.SetBoolKey("shared",
+                           device.shared_vm_name == plugin_vm::kPluginVmName);
     usb_devices_list.Append(std::move(device_info));
   }
   return usb_devices_list;
