@@ -210,6 +210,7 @@ void WebFrameWidgetBase::Close(
   widget_base_->Shutdown(std::move(cleanup_runner));
   widget_base_.reset();
   receiver_.reset();
+  input_target_receiver_.reset();
 }
 
 WebLocalFrame* WebFrameWidgetBase::LocalRoot() const {
