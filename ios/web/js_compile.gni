@@ -24,6 +24,9 @@ closure_compiler_path = "//third_party/closure_compiler/compiler/compiler.jar"
 #   deps (optional)
 #     List of targets required by this target.
 #
+#   suppressed_warnings (optional)
+#     List of warnings to suppress.
+#
 #   visibility (optional)
 #     Visibility restrictions.
 #
@@ -49,7 +52,14 @@ template("js_compile_bundle") {
     sources = invoker.sources
     outputs = [ "$target_gen_dir/$_target_name.js" ]
 
-    args = [
+    _additional_args = []
+    if (defined(invoker.suppressed_warnings)) {
+      foreach(_suppressed_warning, invoker.suppressed_warnings) {
+        _additional_args += [ "--jscomp_off=$_suppressed_warning" ]
+      }
+    }
+
+    args = _additional_args + [
              "--compilation_level",
              "SIMPLE_OPTIMIZATIONS",
              "--js_output_file",
