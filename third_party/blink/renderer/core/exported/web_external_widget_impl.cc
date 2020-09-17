@@ -36,14 +36,14 @@ WebExternalWidgetImpl::WebExternalWidgetImpl(
       widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
                                                 std::move(widget),
-                                                /*hidden=*/false)) {
+                                                /*hidden=*/false,
+                                                /*never_composited=*/false)) {
   DCHECK(client_);
 }
 
 WebExternalWidgetImpl::~WebExternalWidgetImpl() = default;
 
 cc::LayerTreeHost* WebExternalWidgetImpl::InitializeCompositing(
-    bool never_composited,
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
@@ -51,9 +51,8 @@ cc::LayerTreeHost* WebExternalWidgetImpl::InitializeCompositing(
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings) {
   widget_base_->InitializeCompositing(
-      never_composited, main_thread_scheduler, task_graph_runner,
-      for_child_local_root_frame, screen_info, std::move(ukm_recorder_factory),
-      settings);
+      main_thread_scheduler, task_graph_runner, for_child_local_root_frame,
+      screen_info, std::move(ukm_recorder_factory), settings);
   return widget_base_->LayerTreeHost();
 }
 

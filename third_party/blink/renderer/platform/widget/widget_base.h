@@ -61,14 +61,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
-      bool hidden);
+      bool hidden,
+      bool never_composited);
   ~WidgetBase() override;
 
   // Initialize the compositor. |settings| is typically null. When |settings| is
   // null the default settings will be used, tests may provide a |settings|
   // object to override the defaults.
   void InitializeCompositing(
-      bool never_composited,
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,
@@ -411,7 +411,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   bool is_hidden_;
 
   // Indicates that we are never visible, so never produce graphical output.
-  bool never_composited_ = false;
+  const bool never_composited_;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

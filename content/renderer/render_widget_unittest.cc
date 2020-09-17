@@ -150,9 +150,7 @@ class MockWebExternalWidgetClient : public blink::WebExternalWidgetClient {
 class InteractiveRenderWidget : public RenderWidget {
  public:
   explicit InteractiveRenderWidget(CompositorDependencies* compositor_deps)
-      : RenderWidget(++next_routing_id_,
-                     compositor_deps,
-                     /*never_composited=*/false) {}
+      : RenderWidget(++next_routing_id_, compositor_deps) {}
 
   void Init(blink::WebWidget* widget, const blink::ScreenInfo& screen_info) {
     Initialize(base::NullCallback(), widget, screen_info);

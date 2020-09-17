@@ -99,13 +99,15 @@ WidgetBase::WidgetBase(
     CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget,
-    bool hidden)
+    bool hidden,
+    bool never_composited)
     : client_(client),
       widget_host_(std::move(widget_host)),
       receiver_(this, std::move(widget)),
       next_previous_flags_(kInvalidNextPreviousFlagsValue),
       use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()),
-      is_hidden_(hidden) {
+      is_hidden_(hidden),
+      never_composited_(never_composited) {
   if (auto* main_thread_scheduler =
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
@@ -119,7 +121,6 @@ WidgetBase::~WidgetBase() {
 }
 
 void WidgetBase::InitializeCompositing(
-    bool never_composited,
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
@@ -162,8 +163,6 @@ void WidgetBase::InitializeCompositing(
     compositor_input_task_runner =
         compositor_thread_scheduler->DefaultTaskRunner();
   }
-
-  never_composited_ = never_composited;
 
   // We only use an external input handler for frame widgets because only
   // frames use the compositor for input handling. Other kinds of widgets
@@ -442,6 +441,10 @@ void WidgetBase::DidBeginMainFrame() {
 
 void WidgetBase::RequestNewLayerTreeFrameSink(
     LayerTreeFrameSinkCallback callback) {
+  // For widgets that are never visible, we don't start the compositor, so we
+  // never get a request for a cc::LayerTreeFrameSink.
+  DCHECK(!never_composited_);
+
   client_->RequestNewLayerTreeFrameSink(std::move(callback));
 }
 

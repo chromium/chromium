@@ -1538,8 +1538,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     render_frame->frame_->SetCommittedFirstRealLoad();
 
   std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-      params->main_frame_widget_routing_id, compositor_deps,
-      render_view->widgets_never_composited());
+      params->main_frame_widget_routing_id, compositor_deps);
 
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1550,7 +1549,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       std::move(params->widget),
       /*is_for_nested_main_frame=*/params->type !=
           mojom::ViewWidgetType::kTopLevel,
-      /*hidden=*/true);
+      /*hidden=*/true, render_view->widgets_never_composited());
 
   render_widget->InitForMainFrame(std::move(show_callback), web_frame_widget,
                                   params->visual_properties.screen_info,
@@ -1704,8 +1703,7 @@ void RenderFrameImpl::CreateFrame(
     // RenderFrameImpl::CreateMainFrame()?
 
     std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-        widget_params->routing_id, compositor_deps,
-        render_view->widgets_never_composited());
+        widget_params->routing_id, compositor_deps);
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1716,7 +1714,7 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
         /*is_for_nested_main_frame=*/false,
-        /*hidden=*/true);
+        /*hidden=*/true, render_view->widgets_never_composited());
 
     render_widget->InitForMainFrame(
         RenderWidget::ShowCallback(), web_frame_widget,
@@ -1754,8 +1752,7 @@ void RenderFrameImpl::CreateFrame(
     // local root with a new compositing, painting, and input coordinate
     // space/context.
     std::unique_ptr<RenderWidget> render_widget = RenderWidget::CreateForFrame(
-        widget_params->routing_id, compositor_deps,
-        render_view->widgets_never_composited());
+        widget_params->routing_id, compositor_deps);
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). We use the new RenderWidget as the client for this
@@ -1766,7 +1763,7 @@ void RenderFrameImpl::CreateFrame(
         std::move(widget_params->frame_widget_host),
         std::move(widget_params->frame_widget),
         std::move(widget_params->widget_host), std::move(widget_params->widget),
-        /*hidden=*/true);
+        /*hidden=*/true, render_view->widgets_never_composited());
 
     // Adds a reference on RenderWidget, making it self-referencing. So it
     // will not be destroyed by scoped_refptr unless Close() has been called

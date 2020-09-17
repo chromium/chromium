@@ -224,30 +224,23 @@ void RenderWidget::InstallCreateForFrameHook(
 
 std::unique_ptr<RenderWidget> RenderWidget::CreateForFrame(
     int32_t widget_routing_id,
-    CompositorDependencies* compositor_deps,
-    bool never_composited) {
+    CompositorDependencies* compositor_deps) {
   if (g_create_render_widget_for_frame) {
-    return g_create_render_widget_for_frame(widget_routing_id, compositor_deps,
-                                            never_composited);
+    return g_create_render_widget_for_frame(widget_routing_id, compositor_deps);
   }
 
-  return std::make_unique<RenderWidget>(widget_routing_id, compositor_deps,
-                                        never_composited);
+  return std::make_unique<RenderWidget>(widget_routing_id, compositor_deps);
 }
 
 RenderWidget* RenderWidget::CreateForPopup(
     int32_t widget_routing_id,
-    CompositorDependencies* compositor_deps,
-    bool never_composited) {
-  return new RenderWidget(widget_routing_id, compositor_deps, never_composited);
+    CompositorDependencies* compositor_deps) {
+  return new RenderWidget(widget_routing_id, compositor_deps);
 }
 
 RenderWidget::RenderWidget(int32_t widget_routing_id,
-                           CompositorDependencies* compositor_deps,
-                           bool never_composited)
-    : routing_id_(widget_routing_id),
-      compositor_deps_(compositor_deps),
-      never_composited_(never_composited) {
+                           CompositorDependencies* compositor_deps)
+    : routing_id_(widget_routing_id), compositor_deps_(compositor_deps) {
   DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(RenderThread::IsMainThread());
   DCHECK(compositor_deps_);
@@ -321,7 +314,7 @@ void RenderWidget::Initialize(ShowCallback show_callback,
   // for a provisional frame, this importantly starts the compositor before
   // the frame is inserted into the frame tree, which impacts first paint
   // metrics.
-  if (!web_widget->IsHidden() && !never_composited_)
+  if (!web_widget->IsHidden())
     web_widget->SetCompositorVisible(true);
 }
 
@@ -453,10 +446,6 @@ void RenderWidget::FocusChanged(bool enable) {
 
 void RenderWidget::RequestNewLayerTreeFrameSink(
     LayerTreeFrameSinkCallback callback) {
-  // For widgets that are never visible, we don't start the compositor, so we
-  // never get a request for a cc::LayerTreeFrameSink.
-  DCHECK(!never_composited_);
-
   GURL url = GetWebWidget()->GetURLForDebugTrace();
   // The |url| is not always available, fallback to a fixed string.
   if (url.is_empty())
@@ -659,7 +648,7 @@ void RenderWidget::InitCompositing(const blink::ScreenInfo& screen_info) {
   TRACE_EVENT0("blink", "RenderWidget::InitializeLayerTreeView");
 
   layer_tree_host_ = webwidget_->InitializeCompositing(
-      never_composited_, compositor_deps_->GetWebMainThreadScheduler(),
+      compositor_deps_->GetWebMainThreadScheduler(),
       compositor_deps_->GetTaskGraphRunner(), for_child_local_root_frame_,
       screen_info, compositor_deps_->CreateUkmRecorderFactory(),
       /*settings=*/nullptr);

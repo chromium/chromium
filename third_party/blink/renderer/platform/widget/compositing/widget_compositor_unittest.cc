@@ -72,7 +72,8 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
             blink::mojom::WidgetHostInterfaceBase>(),
         blink::CrossVariantMojoAssociatedReceiver<
             blink::mojom::WidgetInterfaceBase>(),
-        /* is_hidden */ false);
+        /* is_hidden */ false,
+        /* never_composited */ false);
 
     widget_compositor_ = base::MakeRefCounted<FakeWidgetCompositor>(
         layer_tree_host(), widget_base_->GetWeakPtr(),

@@ -52,7 +52,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
       bool is_for_nested_main_frame,
-      bool hidden);
+      bool hidden,
+      bool never_composited);
   ~WebViewFrameWidget() override;
 
   // WebWidget overrides:

@@ -73,7 +73,8 @@ class CORE_EXPORT WebFrameWidgetBase
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
           widget,
-      bool hidden);
+      bool hidden,
+      bool never_composited);
   ~WebFrameWidgetBase() override;
 
   // Returns the WebFrame that this widget is attached to. It will be a local
@@ -267,7 +268,6 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // WebWidget methods.
   cc::LayerTreeHost* InitializeCompositing(
-      bool never_composited,
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,

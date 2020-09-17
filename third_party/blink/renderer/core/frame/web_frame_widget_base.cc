@@ -171,11 +171,13 @@ WebFrameWidgetBase::WebFrameWidgetBase(
         widget_host,
     CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
         widget,
-    bool hidden)
+    bool hidden,
+    bool never_composited)
     : widget_base_(std::make_unique<WidgetBase>(this,
                                                 std::move(widget_host),
                                                 std::move(widget),
-                                                hidden)),
+                                                hidden,
+                                                never_composited)),
       client_(&client) {
   frame_widget_host_.Bind(
       std::move(frame_widget_host),
@@ -1009,7 +1011,6 @@ WebLocalFrame* WebFrameWidgetBase::FocusedWebLocalFrameInWidget() const {
 }
 
 cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(
-    bool never_composited,
     scheduler::WebThreadScheduler* main_thread_scheduler,
     cc::TaskGraphRunner* task_graph_runner,
     bool for_child_local_root_frame,
@@ -1017,9 +1018,8 @@ cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings) {
   widget_base_->InitializeCompositing(
-      never_composited, main_thread_scheduler, task_graph_runner,
-      for_child_local_root_frame, screen_info, std::move(ukm_recorder_factory),
-      settings);
+      main_thread_scheduler, task_graph_runner, for_child_local_root_frame,
+      screen_info, std::move(ukm_recorder_factory), settings);
   GetPage()->AnimationHostInitialized(*AnimationHost(),
                                       GetLocalFrameViewForAnimationScrolling());
   return widget_base_->LayerTreeHost();

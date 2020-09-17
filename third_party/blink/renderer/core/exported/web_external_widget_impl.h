@@ -32,7 +32,6 @@ class WebExternalWidgetImpl : public WebExternalWidget,
 
   // WebWidget overrides:
   cc::LayerTreeHost* InitializeCompositing(
-      bool never_composited,
       scheduler::WebThreadScheduler* main_thread_scheduler,
       cc::TaskGraphRunner* task_graph_runner,
       bool for_child_local_root_frame,

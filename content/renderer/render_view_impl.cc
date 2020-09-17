@@ -774,8 +774,7 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
       RenderFrameImpl::FromWebFrame(creator)->GetLocalRootRenderWidget();
 
   RenderWidget* popup_widget = RenderWidget::CreateForPopup(
-      widget_routing_id, opener_render_widget->compositor_deps(),
-      /*never_composited=*/false);
+      widget_routing_id, opener_render_widget->compositor_deps());
 
   // The returned WebPagePopup is self-referencing, so the pointer here is not
   // an owning pointer. It is de-referenced by calling Close().
