@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
@@ -909,7 +910,18 @@ void KeySystemConfigSelector::SelectConfig(
 
   std::string key_system_ascii = key_system.Ascii();
   if (!key_systems_->IsSupportedKeySystem(key_system_ascii)) {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+    // CDM support on Mac ARM is known not ready yet. We only notify once per
+    // render process.
+    static bool s_has_notified_unsupported_platform = false;
+    if (!s_has_notified_unsupported_platform) {
+      s_has_notified_unsupported_platform = true;
+      media_permission_->NotifyUnsupportedPlatform();
+    }
+    std::move(cb).Run(Status::kUnsupportedPlatform, nullptr, nullptr);
+#else
     std::move(cb).Run(Status::kUnsupportedKeySystem, nullptr, nullptr);
+#endif
     return;
   }
 
