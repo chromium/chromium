@@ -20,7 +20,15 @@ Polymer({
     browserTabMetadata: {
       type: Object,
       notify: true,
-      computed: 'getMetadata_(url_, title_, lastAccessedTimeStamp_, favicon_)',
+      computed: 'getMetadata_(isValid, url_, title_, lastAccessedTimeStamp_, ' +
+          'favicon_)',
+    },
+
+    /** True if the fields are all filled out. */
+    isValid: {
+      type: Boolean,
+      computed: 'getIsValid_(url_, title_, lastAccessedTimeStamp_, favicon_)',
+      reflectToAttribute: true,
     },
 
     /** @private */
@@ -81,11 +89,21 @@ Polymer({
   },
 
   /**
+   * @return{boolean}
+   * @private
+   */
+  getIsValid_() {
+    return !!this.url_ && !!this.title_ && this.lastAccessedTimeStamp_ > -1 &&
+        this.favicon_ !== ImageType.NONE;
+  },
+
+  /**
    * @return{BrowserTabsMetadataModel}
    * @private
    */
   getMetadata_() {
     return {
+      isValid: this.isValid,
       url: this.url_,
       title: this.title_,
       lastAccessedTimeStamp: this.lastAccessedTimeStamp_,

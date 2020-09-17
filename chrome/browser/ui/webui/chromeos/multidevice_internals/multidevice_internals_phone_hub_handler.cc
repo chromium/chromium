@@ -71,38 +71,46 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
                                              icon);
 }
 
-base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata>
-DictToBrowserTabMetadataModel(
-    const base::DictionaryValue* browser_tab_metadata) {
+void TryAddingMetadata(
+    const std::string& key,
+    const base::DictionaryValue* browser_tab_status_dict,
+    std::vector<phonehub::BrowserTabsModel::BrowserTabMetadata>& metadatas) {
+  const base::DictionaryValue* browser_tab_metadata = nullptr;
+
+  if (!browser_tab_status_dict->GetDictionary(key, &browser_tab_metadata))
+    return;
+
   std::string url;
-  if (!browser_tab_metadata->GetString("url", &url) || url.empty()) {
-    return base::nullopt;
-  }
+  if (!browser_tab_metadata->GetString("url", &url) || url.empty())
+    return;
 
   base::string16 title;
-  if (!browser_tab_metadata->GetString("title", &title) || title.empty()) {
-    return base::nullopt;
-  }
+  if (!browser_tab_metadata->GetString("title", &title) || title.empty())
+    return;
 
   // JavaScript time stamps don't fit in int.
   double last_accessed_timestamp;
   if (!browser_tab_metadata->GetDouble("lastAccessedTimeStamp",
                                        &last_accessed_timestamp)) {
-    return base::nullopt;
+    return;
   }
 
   int favicon_image_type_as_int;
   if (!browser_tab_metadata->GetInteger("favicon",
-                                        &favicon_image_type_as_int)) {
-    return base::nullopt;
+                                        &favicon_image_type_as_int) ||
+      !favicon_image_type_as_int) {
+    return;
   }
 
   auto favicon_image_type = static_cast<ImageType>(favicon_image_type_as_int);
   gfx::Image favicon =
       gfx::Image::CreateFrom1xBitmap(ImageTypeToBitmap(favicon_image_type));
-  return phonehub::BrowserTabsModel::BrowserTabMetadata(
+
+  auto metadata = phonehub::BrowserTabsModel::BrowserTabMetadata(
       GURL(url), title, base::Time::FromJsTime(last_accessed_timestamp),
       favicon);
+
+  metadatas.push_back(metadata);
 }
 
 }  // namespace
@@ -300,34 +308,28 @@ void MultidevicePhoneHubHandler::HandleSetBrowserTabs(
     return;
   }
 
-  base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata> metadata_one;
-  const base::DictionaryValue* browser_tab_one_metadata = nullptr;
-  if (browser_tab_status_dict->GetDictionary("browserTabOneMetadata",
-                                             &browser_tab_one_metadata)) {
-    metadata_one = DictToBrowserTabMetadataModel(browser_tab_one_metadata);
-  }
-
-  base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata> metadata_two;
-  const base::DictionaryValue* browser_tab_two_metadata = nullptr;
-  if (browser_tab_status_dict->GetDictionary("browserTabTwoMetadata",
-                                             &browser_tab_two_metadata)) {
-    metadata_two = DictToBrowserTabMetadataModel(browser_tab_two_metadata);
-  }
-
-  // TODO(hsuregan): Add metadata_three and metadata_four.
-  std::vector<base::Optional<phonehub::BrowserTabsModel::BrowserTabMetadata>>
-      metadatas{{metadata_one, metadata_two}};
-  std::sort(metadatas.begin(), metadatas.end());
+  std::vector<phonehub::BrowserTabsModel::BrowserTabMetadata> metadatas;
+  TryAddingMetadata("browserTabOneMetadata", browser_tab_status_dict,
+                    metadatas);
+  TryAddingMetadata("browserTabTwoMetadata", browser_tab_status_dict,
+                    metadatas);
+  TryAddingMetadata("browserTabThreeMetadata", browser_tab_status_dict,
+                    metadatas);
+  TryAddingMetadata("browserTabFourMetadata", browser_tab_status_dict,
+                    metadatas);
 
   fake_phone_hub_manager_->mutable_phone_model()->SetBrowserTabsModel(
-      phonehub::BrowserTabsModel(is_tab_sync_enabled, metadatas[1],
-                                 metadatas[0]));
+      phonehub::BrowserTabsModel(is_tab_sync_enabled, metadatas));
 
-  if (metadatas[1].has_value())
-    PA_LOG(VERBOSE) << "Set most recent browser tab to" << *metadatas[1];
+  auto browser_tabs_model =
+      fake_phone_hub_manager_->mutable_phone_model()->browser_tabs_model();
+  CHECK(browser_tabs_model.has_value());
 
-  if (metadatas[0].has_value())
-    PA_LOG(VERBOSE) << "Set second most recent browser tab to" << *metadatas[0];
+  // Log the most recently visited browser tab (at index 0) last.
+  for (int i = metadatas.size() - 1; i > -1; --i) {
+    PA_LOG(VERBOSE) << "Set most recent browser tab number " << i
+                    << " to: " << browser_tabs_model->most_recent_tabs()[i];
+  }
 }
 
 void MultidevicePhoneHubHandler::HandleSetNotification(

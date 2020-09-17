@@ -4,6 +4,14 @@
     flex: 1 0 100%;
   }
 
+  :host(:not([is-valid])) {
+    background-color: LightGray;
+  }
+
+  :host([is-valid]) {
+    background-color: LightGreen;
+   }
+
   #faviconSelector {
     align-items: normal;
   }
@@ -11,12 +19,12 @@
 
 <div class="column">
   <cr-input value="{{url_}}" id="urlInput" auto-validate required label="URL: "
-      error-message="This browser tab will be a nullopt if no url input">
+      error-message="This row is invalid">
   </cr-input>
 </div>
 <div class="column">
   <cr-input value="{{title_}}" label="Title:" auto-validate required
-      error-message="This browser tab will be a nullopt if no title input">
+      error-message="This row is invalid">
   </cr-input>
 </div>
 <div class="column">

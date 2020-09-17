@@ -33,26 +33,35 @@ const PhoneStatusModel& CreateFakePhoneStatusModel() {
 
 const char kFakeBrowserTabUrl1[] = "https://www.example.com/tab1";
 const char kFakeBrowserTabName1[] = "Tab 1";
+const base::Time kFakeBrowserTabLastAccessedTimestamp1 =
+    base::Time::FromDoubleT(4);
+
 const char kFakeBrowserTabUrl2[] = "https://www.example.com/tab2";
 const char kFakeBrowserTabName2[] = "Tab 2";
+const base::Time kFakeBrowserTabLastAccessedTimestamp2 =
+    base::Time::FromDoubleT(3);
 
 const BrowserTabsModel::BrowserTabMetadata& CreateFakeBrowserTabMetadata() {
   static const base::NoDestructor<BrowserTabsModel::BrowserTabMetadata>
-      fake_browser_tab_metadata{GURL(kFakeBrowserTabUrl1),
-                                base::UTF8ToUTF16(kFakeBrowserTabName1),
-                                base::Time(), gfx::Image()};
+      fake_browser_tab_metadata{
+          GURL(kFakeBrowserTabUrl1), base::UTF8ToUTF16(kFakeBrowserTabName1),
+          kFakeBrowserTabLastAccessedTimestamp1, gfx::Image()};
   return *fake_browser_tab_metadata;
 }
 
 const BrowserTabsModel& CreateFakeBrowserTabsModel() {
   static const base::NoDestructor<BrowserTabsModel::BrowserTabMetadata>
-      second_browser_tab_metadata{GURL(kFakeBrowserTabUrl2),
-                                  base::UTF8ToUTF16(kFakeBrowserTabName2),
-                                  base::Time(), gfx::Image()};
+      second_browser_tab_metadata{
+          GURL(kFakeBrowserTabUrl2), base::UTF8ToUTF16(kFakeBrowserTabName2),
+          kFakeBrowserTabLastAccessedTimestamp2, gfx::Image()};
+
+  static const base::NoDestructor<
+      std::vector<BrowserTabsModel::BrowserTabMetadata>>
+      most_recent_tabs(
+          {CreateFakeBrowserTabMetadata(), *second_browser_tab_metadata});
 
   static const base::NoDestructor<BrowserTabsModel> fake_browser_tabs_model{
-      /*is_tab_sync_enabled=*/true, CreateFakeBrowserTabMetadata(),
-      *second_browser_tab_metadata};
+      /*is_tab_sync_enabled=*/true, *most_recent_tabs};
 
   return *fake_browser_tabs_model;
 }

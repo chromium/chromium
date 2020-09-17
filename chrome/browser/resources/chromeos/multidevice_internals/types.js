@@ -129,6 +129,7 @@ export let PhoneStatusModel;
 
 /**
  * @typedef {{
+ *   isValid: boolean,
  *   url: string,
  *   title: string,
  *   lastAccessedTimeStamp: number,
@@ -142,6 +143,8 @@ export let BrowserTabsMetadataModel;
  *   isTabSyncEnabled: boolean,
  *   browserTabOneMetadata: ?BrowserTabsMetadataModel,
  *   browserTabTwoMetadata: ?BrowserTabsMetadataModel,
+ *   browserTabThreeMetadata: ?BrowserTabsMetadataModel,
+ *   browserTabFourMetadata: ?BrowserTabsMetadataModel,
  * }}
  */
 export let BrowserTabsModel;

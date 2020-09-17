@@ -25,8 +25,10 @@ const PhoneStatusModel& CreateFakePhoneStatusModel();
 // Fake data for browser tabs.
 extern const char kFakeBrowserTabUrl1[];
 extern const char kFakeBrowserTabName1[];
+extern const base::Time kFakeBrowserTabLastAccessedTimestamp1;
 extern const char kFakeBrowserTabUrl2[];
 extern const char kFakeBrowserTabName2[];
+extern const base::Time kFakeBrowserTabLastAccessedTimestamp2;
 
 // Creates fake browser tab data for use in tests.
 const BrowserTabsModel::BrowserTabMetadata& CreateFakeBrowserTabMetadata();

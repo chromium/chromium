@@ -33,6 +33,25 @@ Polymer({
     browserTabTwoMetadata_: {
       type: Object,
     },
+
+    /** @private{BrowserTabsMetadataModel} */
+    browserTabThreeMetadata_: {
+      type: Object,
+    },
+
+    /** @private{BrowserTabsMetadataModel} */
+    browserTabFourMetadata_: {
+      type: Object,
+    },
+
+    /** @type{number} */
+    nValidTabs_: {
+      type: Number,
+      computed:
+          'computeNValidTabs_(isTabSyncEnabled_, browserTabOneMetadata_, ' +
+          'browserTabTwoMetadata_, browserTabThreeMetadata_, ' +
+          'browserTabFourMetadata_)',
+    },
   },
 
   /** @private{?MultidevicePhoneHubBrowserProxy}*/
@@ -43,14 +62,51 @@ Polymer({
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
   },
 
+  /**
+   * @return {Array<!BrowserTabsMetadataModel>}
+   * @private
+   */
+  getAllBrowserTabMetadatas_() {
+    return [
+      this.browserTabOneMetadata_, this.browserTabTwoMetadata_,
+      this.browserTabThreeMetadata_, this.browserTabFourMetadata_
+    ];
+  },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  computeNValidTabs_() {
+    if (!this.isTabSyncEnabled_) {
+      return 0;
+    }
+
+    return this.getAllBrowserTabMetadatas_().reduce((acc, metadata) => {
+      return acc + (!!metadata && metadata.isValid);
+    }, 0);
+  },
+
   /** @private */
   setFakeBrowserTabModel_() {
+    if (!this.isTabSyncEnabled_) {
+      const syncDisabledBrowserTabsModel = {
+        isTabSyncEnabled: false,
+        browserTabOneMetadata: null,
+        browserTabTwoMetadata: null,
+        browserTabThreeMetadata: null,
+        browserTabFourMetadata: null,
+      };
+      this.browserProxy_.setBrowserTabs(syncDisabledBrowserTabsModel);
+      return;
+    }
+
     const browserTabsModel = {
       isTabSyncEnabled: this.isTabSyncEnabled_,
-      browserTabOneMetadata:
-          this.isTabSyncEnabled_ ? this.browserTabOneMetadata_ : null,
-      browserTabTwoMetadata:
-          this.isTabSyncEnabled_ ? this.browserTabTwoMetadata_ : null,
+      browserTabOneMetadata: this.browserTabOneMetadata_,
+      browserTabTwoMetadata: this.browserTabTwoMetadata_,
+      browserTabThreeMetadata: this.browserTabThreeMetadata_,
+      browserTabFourMetadata: this.browserTabFourMetadata_,
     };
     this.browserProxy_.setBrowserTabs(browserTabsModel);
   },

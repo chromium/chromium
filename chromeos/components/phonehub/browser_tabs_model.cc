@@ -9,6 +9,8 @@
 namespace chromeos {
 namespace phonehub {
 
+const size_t BrowserTabsModel::kMaxMostRecentTabs = 4;
+
 BrowserTabsModel::BrowserTabMetadata::BrowserTabMetadata(
     GURL url,
     const base::string16& title,
@@ -36,23 +38,31 @@ bool BrowserTabsModel::BrowserTabMetadata::operator!=(
 
 bool BrowserTabsModel::BrowserTabMetadata::operator<(
     const BrowserTabMetadata& other) const {
-  return std::tie(last_accessed_timestamp) <
+  // More recently visited tabs should come before earlier visited tabs.
+  return std::tie(last_accessed_timestamp) >
          std::tie(other.last_accessed_timestamp);
 }
 
 BrowserTabsModel::BrowserTabsModel(
     bool is_tab_sync_enabled,
-    const base::Optional<BrowserTabMetadata>& most_recent_tab,
-    const base::Optional<BrowserTabMetadata>& second_most_recent_tab)
+    const std::vector<BrowserTabMetadata>& most_recent_tabs)
     : is_tab_sync_enabled_(is_tab_sync_enabled),
-      most_recent_tab_(most_recent_tab),
-      second_most_recent_tab_(second_most_recent_tab) {
-  if (!is_tab_sync_enabled_ &&
-      (most_recent_tab_.has_value() || second_most_recent_tab_.has_value())) {
+      most_recent_tabs_(most_recent_tabs) {
+  if (!is_tab_sync_enabled_ && !most_recent_tabs_.empty()) {
     PA_LOG(WARNING) << "Tab sync is not enabled, but tab metadata was "
                     << "provided; clearing metadata.";
-    most_recent_tab_.reset();
-    second_most_recent_tab_.reset();
+    most_recent_tabs_.clear();
+    return;
+  }
+
+  std::sort(most_recent_tabs_.begin(), most_recent_tabs_.end());
+  if (most_recent_tabs_.size() > kMaxMostRecentTabs) {
+    PA_LOG(WARNING) << "More than the max number of browser tab metadatas were "
+                       "provided; truncating least recently visited browser "
+                       "tabs' metadatas.";
+    most_recent_tabs_.erase(most_recent_tabs_.begin() + kMaxMostRecentTabs,
+                            most_recent_tabs_.end());
+    return;
   }
 }
 
@@ -62,8 +72,7 @@ BrowserTabsModel::~BrowserTabsModel() = default;
 
 bool BrowserTabsModel::operator==(const BrowserTabsModel& other) const {
   return is_tab_sync_enabled_ == other.is_tab_sync_enabled_ &&
-         most_recent_tab_ == other.most_recent_tab_ &&
-         second_most_recent_tab_ == other.second_most_recent_tab_;
+         most_recent_tabs_ == other.most_recent_tabs_;
 }
 
 bool BrowserTabsModel::operator!=(const BrowserTabsModel& other) const {

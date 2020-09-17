@@ -19,6 +19,8 @@ namespace phonehub {
 // Contains metadata about browser tabs that are open on the user's phone.
 class BrowserTabsModel {
  public:
+  static const size_t kMaxMostRecentTabs;
+
   struct BrowserTabMetadata {
     BrowserTabMetadata(GURL url,
                        const base::string16& title,
@@ -37,14 +39,11 @@ class BrowserTabsModel {
   };
 
   // |is_tab_sync_enabled| indicates whether the Chrome OS device is currently
-  // syncing tab metadata. If that parameter is false, the optional tab
-  // parameters should be null. If it is true, one or both of the parameters may
-  // still be null if the user does not have browser tabs open on their phone.
+  // syncing tab metadata. If that parameter is false, |most_recent_tabs_|
+  // should be empty. If it is true, |most_recent_tabs_| can contain up to four.
   BrowserTabsModel(
       bool is_tab_sync_enabled,
-      const base::Optional<BrowserTabMetadata>& most_recent_tab = base::nullopt,
-      const base::Optional<BrowserTabMetadata>& second_most_recent_tab =
-          base::nullopt);
+      const std::vector<BrowserTabMetadata>& most_recent_tabs = {});
   BrowserTabsModel(const BrowserTabsModel& other);
   ~BrowserTabsModel();
 
@@ -52,17 +51,16 @@ class BrowserTabsModel {
   bool operator!=(const BrowserTabsModel& other) const;
 
   bool is_tab_sync_enabled() const { return is_tab_sync_enabled_; }
-  const base::Optional<BrowserTabMetadata>& most_recent_tab() const {
-    return most_recent_tab_;
-  }
-  const base::Optional<BrowserTabMetadata>& second_most_recent_tab() const {
-    return second_most_recent_tab_;
+
+  const std::vector<BrowserTabMetadata>& most_recent_tabs() const {
+    return most_recent_tabs_;
   }
 
  private:
   bool is_tab_sync_enabled_;
-  base::Optional<BrowserTabMetadata> most_recent_tab_;
-  base::Optional<BrowserTabMetadata> second_most_recent_tab_;
+
+  // Sorted from most recently visited to least recently visited.
+  std::vector<BrowserTabMetadata> most_recent_tabs_;
 };
 
 std::ostream& operator<<(

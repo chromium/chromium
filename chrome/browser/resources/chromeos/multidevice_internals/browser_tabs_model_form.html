@@ -1,23 +1,31 @@
 <style include="cr-shared-style shared-style">
   :host {
     display: flex;
-    height: 250px;
+    height: 500px;
   }
 
   #fieldColumn {
     flex: 2;
   }
+
+  .updates {
+    font-size: 15px;
+  }
 </style>
 
 <div class="column">
+  <div class="emphasize updates" hidden="[[!isTabSyncEnabled_]]">
+    [[nValidTabs_]] valid metadatas
+  </div>
   <cr-button on-click="setFakeBrowserTabModel_" class="internals-button">
     <span class="emphasize">Change Browser Tabs Status</span>
   </cr-button>
   <div class="label">
-    <span class="emphasize">Note:</span> Click the button above to propagate all
-    browser tab status values on the right hand side to the fake phonehub
-    manager. Note that if a field is empty, then that corresponding tab will
-    be nullopt.
+    <span class="emphasize">Note:</span> Click the button above to propagate
+    <span class="emphasize">VALID (green)</span> browser tab status values on
+    the right hand side to the fake phonehub manager. Note that if a field is
+    empty or favicon is set to NONE, then that corresponding tab will not be
+    sent, and the background will be grey.
   </div>
 </div>
 <div class="column" id="fieldColumn">
@@ -37,6 +45,18 @@
       <div class="column">2: </div>
       <browser-tabs-metadata-form
           browser-tab-metadata="{{browserTabTwoMetadata_}}">
+      </browser-tabs-metadata-form>
+    </div>
+    <div class="cr-row">
+      <div class="column">3: </div>
+      <browser-tabs-metadata-form
+          browser-tab-metadata="{{browserTabThreeMetadata_}}">
+      </browser-tabs-metadata-form>
+    </div>
+    <div class="cr-row">
+      <div class="column">4: </div>
+      <browser-tabs-metadata-form
+          browser-tab-metadata="{{browserTabFourMetadata_}}">
       </browser-tabs-metadata-form>
     </div>
   </template>
