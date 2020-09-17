@@ -31,6 +31,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -86,8 +87,14 @@ bool ProfileWriter::TemplateURLServiceIsLoaded() const {
 }
 
 void ProfileWriter::AddPasswordForm(const autofill::PasswordForm& form) {
-  PasswordStoreFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS)->AddLogin(form);
+  DCHECK(profile_);
+
+  if (profile_->GetPrefs()->GetBoolean(
+          password_manager::prefs::kCredentialsEnableService)) {
+    PasswordStoreFactory::GetForProfile(profile_,
+                                        ServiceAccessType::EXPLICIT_ACCESS)
+        ->AddLogin(form);
+  }
 }
 
 void ProfileWriter::AddHistoryPage(const history::URLRows& page,

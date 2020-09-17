@@ -17,6 +17,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/importer/importer_unittest_utils.h"
+#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,12 +28,42 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+using autofill::PasswordForm;
 using bookmarks::BookmarkModel;
 using bookmarks::TitledUrlMatch;
 using bookmarks::UrlAndTitle;
+using password_manager::TestPasswordStore;
+
+scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
+    Profile* profile) {
+  return base::WrapRefCounted(static_cast<TestPasswordStore*>(
+      PasswordStoreFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile,
+              base::BindRepeating(&password_manager::BuildPasswordStore<
+                                  content::BrowserContext, TestPasswordStore>))
+          .get()));
+}
+
+PasswordForm MakePasswordForm() {
+  PasswordForm form;
+  form.url = GURL("https://example.com/");
+  form.signon_realm = form.url.GetOrigin().spec();
+  form.username_value = base::ASCIIToUTF16("user@gmail.com");
+  form.password_value = base::ASCIIToUTF16("s3cre3t");
+  form.in_store = PasswordForm::Store::kProfileStore;
+  return form;
+}
+
+}  // namespace
 
 class TestProfileWriter : public ProfileWriter {
  public:
@@ -283,4 +314,31 @@ TEST_F(ProfileWriterTest, AddKeywords) {
   EXPECT_EQ(turls[1]->keyword(), base::ASCIIToUTF16("key2"));
   EXPECT_EQ(turls[1]->url(), "http://key2.com");
   EXPECT_EQ(turls[1]->short_name(), base::ASCIIToUTF16("n2"));
+}
+
+TEST_F(ProfileWriterTest, AddPassword) {
+  scoped_refptr<TestPasswordStore> store =
+      CreateAndUseTestPasswordStore(profile());
+  PasswordForm form = MakePasswordForm();
+
+  auto profile_writer = base::MakeRefCounted<TestProfileWriter>(profile());
+  profile_writer->AddPasswordForm(form);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(store->stored_passwords().at(form.signon_realm),
+              testing::ElementsAre(form));
+}
+
+TEST_F(ProfileWriterTest, AddPasswordDisabled) {
+  scoped_refptr<TestPasswordStore> store =
+      CreateAndUseTestPasswordStore(profile());
+  profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kCredentialsEnableService, false);
+  PasswordForm form = MakePasswordForm();
+
+  auto profile_writer = base::MakeRefCounted<TestProfileWriter>(profile());
+  profile_writer->AddPasswordForm(form);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(store->stored_passwords(), testing::IsEmpty());
 }
