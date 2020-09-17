@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -359,10 +360,8 @@ void LocalFrameView::ForAllNonThrottledLocalFrameViews(
 // updated, consider updating |ForAllNonThrottledLocalFrameViews| too.
 template <typename Function>
 void LocalFrameView::ForAllThrottledLocalFrameViews(const Function& function) {
-  if (!ShouldThrottleRendering())
-    return;
-
-  function(*this);
+  if (ShouldThrottleRendering())
+    function(*this);
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
@@ -372,6 +371,12 @@ void LocalFrameView::ForAllThrottledLocalFrameViews(const Function& function) {
     if (LocalFrameView* child_view = child_local_frame->View())
       child_view->ForAllThrottledLocalFrameViews(function);
   }
+}
+
+void LocalFrameView::ForAllThrottledLocalFrameViewsForTesting(
+    base::RepeatingCallback<void(LocalFrameView&)> callback) {
+  ForAllThrottledLocalFrameViews(
+      [&callback](LocalFrameView& view) { callback.Run(view); });
 }
 
 template <typename Function>

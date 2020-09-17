@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
@@ -860,6 +861,9 @@ class CORE_EXPORT LocalFrameView final
   template <typename Function>
   void ForAllThrottledLocalFrameViews(const Function&);
 
+  void ForAllThrottledLocalFrameViewsForTesting(
+      base::RepeatingCallback<void(LocalFrameView&)>);
+
   template <typename Function>
   void ForAllRemoteFrameViews(const Function&);
 
@@ -1064,6 +1068,7 @@ class CORE_EXPORT LocalFrameView final
 
   FRIEND_TEST_ALL_PREFIXES(WebViewTest, DeviceEmulationResetScrollbars);
   FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, GraphicsLayerCollection);
+  FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, ForAllThrottledLocalFrameViews);
 };
 
 inline void LocalFrameView::IncrementVisuallyNonEmptyCharacterCount(

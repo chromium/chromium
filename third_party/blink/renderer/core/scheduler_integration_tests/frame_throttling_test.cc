@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback.h"
+#include "base/test/bind_test_util.h"
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
@@ -365,6 +367,37 @@ TEST_P(FrameThrottlingTest,
   EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             frame_document->Lifecycle().GetState());
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+}
+
+TEST_P(FrameThrottlingTest, ForAllThrottledLocalFrameViews) {
+  // Create a document with a hidden cross-origin subframe.
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <iframe id="frame" sandbox src="iframe.html"
+        style="transform: translateY(480px)">
+  )HTML");
+  frame_resource.Complete("<!doctype html>");
+
+  DocumentLifecycle::AllowThrottlingScope throttling_scope(
+      GetDocument().Lifecycle());
+  CompositeFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_document = frame_element->contentDocument();
+  // Hidden cross origin frames are throttled.
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRendering());
+  // Main frame is not throttled.
+  EXPECT_FALSE(GetDocument().View()->ShouldThrottleRendering());
+
+  unsigned throttled_count = 0;
+  auto throttled_callback = base::BindLambdaForTesting(
+      [&throttled_count](LocalFrameView&) { throttled_count++; });
+  GetDocument().View()->ForAllThrottledLocalFrameViewsForTesting(
+      throttled_callback);
+  EXPECT_EQ(1u, throttled_count);
 }
 
 TEST_P(FrameThrottlingTest, HiddenCrossOriginZeroByZeroFramesAreNotThrottled) {
