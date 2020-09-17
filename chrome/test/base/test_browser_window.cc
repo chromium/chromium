@@ -176,7 +176,7 @@ bool TestBrowserWindow::IsBookmarkBarAnimating() const {
 }
 
 bool TestBrowserWindow::IsTabStripEditable() const {
-  return false;
+  return true;
 }
 
 bool TestBrowserWindow::IsToolbarVisible() const {
