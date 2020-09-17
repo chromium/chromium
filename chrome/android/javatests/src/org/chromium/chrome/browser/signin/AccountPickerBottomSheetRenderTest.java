@@ -38,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
@@ -90,6 +91,9 @@ public class AccountPickerBottomSheetRenderTest {
 
     @Mock
     private AccountPickerDelegate mAccountPickerDelegateMock;
+
+    @Mock
+    private IncognitoInterstitialDelegate mIncognitoInterstitialDelegateMock;
 
     private AccountPickerBottomSheetCoordinator mCoordinator;
 
@@ -293,7 +297,8 @@ public class AccountPickerBottomSheetRenderTest {
     private void buildAndShowCollapsedBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(mActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegateMock);
+                    getBottomSheetController(), mAccountPickerDelegateMock,
+                    mIncognitoInterstitialDelegateMock);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
                 R.id.account_picker_continue_as_button)::isShown);

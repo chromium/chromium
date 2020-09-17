@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.incognito.interstitial;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,8 +23,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /**
  * Roboelectric tests class for the incognito interstitial.
@@ -31,7 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 @RunWith(BaseRobolectricTestRunner.class)
 public class IncognitoInterstitialDelegateTest {
     private static final String sIncognitoLearnMoreText = "dummy_chrome_incognito";
-    private static final String sContinueUrlPage = "dummy_url_string.com";
+    private static final String sCurrentUrlPage = "dummy_url_string.com";
 
     @Mock
     private HelpAndFeedback mHelpAndFeedbackMock;
@@ -45,15 +48,24 @@ public class IncognitoInterstitialDelegateTest {
     @Mock
     private TabCreator mIncognitoTabCreatorMock;
 
+    @Mock
+    private TabModel mRegularTabModelMock;
+
+    @Mock
+    private Tab mTabMock;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mActivityMock.getString(R.string.help_context_incognito_learn_more))
                 .thenReturn(sIncognitoLearnMoreText);
+        when(mRegularTabModelMock.getTabAt(anyInt())).thenReturn(mTabMock);
+        when(mRegularTabModelMock.closeTab(mTabMock)).thenReturn(true);
+        when(mTabMock.getUrlString()).thenReturn(sCurrentUrlPage);
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
-        mIncognitoInterstitialDelegate = new IncognitoInterstitialDelegate(
-                mActivityMock, mIncognitoTabCreatorMock, mHelpAndFeedbackMock, sContinueUrlPage);
+        mIncognitoInterstitialDelegate = new IncognitoInterstitialDelegate(mActivityMock,
+                mRegularTabModelMock, mIncognitoTabCreatorMock, mHelpAndFeedbackMock);
     }
 
     @After
@@ -76,6 +88,7 @@ public class IncognitoInterstitialDelegateTest {
     @MediumTest
     public void testOpenCurrentUrlInIncognitoTab() {
         mIncognitoInterstitialDelegate.openCurrentUrlInIncognitoTab();
-        verify(mIncognitoTabCreatorMock).launchUrl(sContinueUrlPage, TabLaunchType.FROM_CHROME_UI);
+        verify(mIncognitoTabCreatorMock).launchUrl(sCurrentUrlPage, TabLaunchType.FROM_CHROME_UI);
+        verify(mRegularTabModelMock).closeTab(mTabMock);
     }
 }

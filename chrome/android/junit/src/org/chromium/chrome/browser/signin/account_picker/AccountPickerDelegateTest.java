@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -75,9 +74,6 @@ public class AccountPickerDelegateTest {
     @Mock
     private Tab mTabMock;
 
-    @Mock
-    private TabCreator mTabCreatorMock;
-
     @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -99,8 +95,8 @@ public class AccountPickerDelegateTest {
         when(IdentityServicesProvider.get().getIdentityManager(any())).thenReturn(mIdentityManager);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
 
-        mDelegate = new AccountPickerDelegate(mWindowAndroidMock, mTabMock, mTabCreatorMock,
-                mWebSigninBridgeFactoryMock, CONTINUE_URL);
+        mDelegate = new AccountPickerDelegate(
+                mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
         when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), eq(mDelegate)))
                 .thenReturn(mWebSigninBridgeMock);
     }

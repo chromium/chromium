@@ -14,15 +14,12 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
-import org.chromium.chrome.browser.incognito.interstitial.IncognitoInterstitialDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -40,35 +37,30 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final Tab mCurrentTab;
-    private final TabCreator mIncognitoTabCreator;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
     private final SigninManager mSigninManager;
     private @Nullable WebSigninBridge mWebSigninBridge;
     private Callback<GoogleServiceAuthError> mOnSignInErrorCallback;
 
+    /**
+     * @param windowAndroid The {@link WindowAndroid} instance of the {@link ChromeActivity}.
+     * @param currentTab The {@Tab} instance where the account picker dialog is displayed.
+     * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
+     *         WebSigninBridge} instances.
+     * @param continueUrl A string representing the URL the user would be redirected to after
+     *         sign-in succeeds.
+     */
     public AccountPickerDelegate(WindowAndroid windowAndroid, Tab currentTab,
-            TabCreator incognitoTabCreator, WebSigninBridge.Factory webSigninBridgeFactory,
-            String continueUrl) {
+            WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
         mWindowAndroid = windowAndroid;
         mActivity = mWindowAndroid.getActivity().get();
         assert mActivity != null : "Activity should not be null!";
         mCurrentTab = currentTab;
-        mIncognitoTabCreator = incognitoTabCreator;
         mWebSigninBridgeFactory = webSigninBridgeFactory;
         mContinueUrl = continueUrl;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-    }
-
-    /**
-     * Creates and return the {@link IncognitoInterstitialDelegate}.
-     */
-    public IncognitoInterstitialDelegate getIncognitoInterstitialDelegate() {
-        IncognitoInterstitialDelegate incognitoInterstitialDelegate =
-                new IncognitoInterstitialDelegate(mActivity, mIncognitoTabCreator,
-                        HelpAndFeedback.getInstance(), mCurrentTab.getUrlString());
-        return incognitoInterstitialDelegate;
     }
 
     /**

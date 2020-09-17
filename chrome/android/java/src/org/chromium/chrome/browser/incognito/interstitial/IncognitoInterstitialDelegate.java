@@ -12,8 +12,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
 /**
  * This class is responsible for the providing the functionality to the "Learn More" and "Continue"
@@ -23,14 +26,24 @@ public class IncognitoInterstitialDelegate {
     private final Activity mActivity;
     private final TabCreator mIncognitoTabCreator;
     private final HelpAndFeedback mHelpAndFeedback;
-    private final String mCurrentUrl;
+    private final TabModel mRegularTabModel;
 
-    public IncognitoInterstitialDelegate(Activity activity, TabCreator incognitoTabCreator,
-            HelpAndFeedback helpAndFeedback, String currentUrl) {
+    /**
+     * @param activity The {@link Activity} which would be used to show the HelpAndFeedback page.
+     * @param regularTabModel A regular {@link TabModel} via which we would close the
+     *         current regular tab in which the interstitial is shown after the user clicked on
+     *         "Continue" in the incognito interstitial.
+     * @param incognitoTabCreator An incognito {@link TabCreator} instance which would be used to
+     *         create incognito tab after the user clicks on "Continue" in the incognito
+     *         interstitial.
+     * @param helpAndFeedback A {@link HelpAndFeedback} instance through which we will load the
+     */
+    public IncognitoInterstitialDelegate(Activity activity, TabModel regularTabModel,
+            TabCreator incognitoTabCreator, HelpAndFeedback helpAndFeedback) {
         mActivity = activity;
+        mRegularTabModel = regularTabModel;
         mIncognitoTabCreator = incognitoTabCreator;
         mHelpAndFeedback = helpAndFeedback;
-        mCurrentUrl = currentUrl;
     }
 
     /**
@@ -45,12 +58,16 @@ public class IncognitoInterstitialDelegate {
     }
 
     /**
-     * Navigates to |mCurrentUrl| in a new incognito tab.
+     * Navigates to the URL currently shown in the regular tab, in a new incognito tab and closes
+     * the current regular tab.
      */
     @MainThread
     void openCurrentUrlInIncognitoTab() {
         // TODO(https://crbug.com/1120334): Add metrics to web sign-in flow.
         ThreadUtils.assertOnUiThread();
-        mIncognitoTabCreator.launchUrl(mCurrentUrl, TabLaunchType.FROM_CHROME_UI);
+        Tab currentRegularTab = TabModelUtils.getCurrentTab(mRegularTabModel);
+        mIncognitoTabCreator.launchUrl(
+                currentRegularTab.getUrlString(), TabLaunchType.FROM_CHROME_UI);
+        assert mRegularTabModel.closeTab(currentRegularTab);
     }
 }
