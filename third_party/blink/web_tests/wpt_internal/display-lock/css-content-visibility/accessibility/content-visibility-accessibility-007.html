@@ -24,7 +24,7 @@ function axElementById(id) {
   return accessibilityController.accessibleElementById(id);
 }
 
-async_test(async(t) => {
+async_test((t) => {
   let axHidden = axElementById("hidden");
   // #hidden is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
   // and has 3 child nodes: "foo" text, "<newline>" text, and #child node.

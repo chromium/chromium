@@ -28,7 +28,7 @@ function axElementById(id) {
 // and has 3 child nodes: "foo" text, "<newline>" text, and #child node.
 // Note that we have the separate <newline> text because it's an AXNodeObject and does
 // not do whitespace collapsing (though this might change in the future).
-async_test(async(t) => {
+async_test((t) => {
   let axHidden = axElementById("hidden");
   t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count when locked"); });
 

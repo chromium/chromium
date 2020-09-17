@@ -37,7 +37,7 @@ function axElementById(id) {
   return accessibilityController.accessibleElementById(id);
 }
 
-async_test(async (t) => {
+async_test((t) => {
   const target = document.getElementById("target");
   let axTarget = axElementById("target");
   t.step(() => { assert_false(axTarget.isIgnored); });
