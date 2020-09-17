@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -107,6 +108,16 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
             if (!mDidStartRestore) return;
 
             removePaintPreview(ExitCause.NAVIGATION_STARTED);
+        }
+
+        @Override
+        public void onHidden(Tab tab, @TabHidingType int hidingType) {
+            if (mPlayerManager == null || !isShowingAndNeedsBadge()) return;
+
+            // If the tab is hidden as a result of pausing the activity we shouldn't remove it.
+            if (hidingType == TabHidingType.ACTIVITY_HIDDEN) return;
+
+            removePaintPreview(ExitCause.TAB_HIDDEN);
         }
     }
 

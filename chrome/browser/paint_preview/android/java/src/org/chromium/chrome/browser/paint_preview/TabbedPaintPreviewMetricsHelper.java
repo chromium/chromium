@@ -21,7 +21,7 @@ public class TabbedPaintPreviewMetricsHelper {
     /** Used for recording the cause for exiting the Paint Preview player. */
     @IntDef({ExitCause.PULL_TO_REFRESH, ExitCause.SNACK_BAR_ACTION, ExitCause.COMPOSITOR_FAILURE,
             ExitCause.TAB_FINISHED_LOADING, ExitCause.LINK_CLICKED, ExitCause.NAVIGATION_STARTED,
-            ExitCause.TAB_DESTROYED})
+            ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN})
     @interface ExitCause {
         int PULL_TO_REFRESH = 0;
         int SNACK_BAR_ACTION = 1;
@@ -30,7 +30,8 @@ public class TabbedPaintPreviewMetricsHelper {
         int LINK_CLICKED = 4;
         int NAVIGATION_STARTED = 5;
         int TAB_DESTROYED = 6;
-        int COUNT = 7;
+        int TAB_HIDDEN = 7;
+        int COUNT = 8;
     }
 
     private static final Map<Integer, String> UPTIME_HISTOGRAM_MAP = new HashMap<>();
@@ -49,6 +50,8 @@ public class TabbedPaintPreviewMetricsHelper {
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedByNavigation");
         UPTIME_HISTOGRAM_MAP.put(ExitCause.TAB_DESTROYED,
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnTabDestroy");
+        UPTIME_HISTOGRAM_MAP.put(ExitCause.TAB_HIDDEN,
+                "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnTabHidden");
     }
 
     private long mShownTime;

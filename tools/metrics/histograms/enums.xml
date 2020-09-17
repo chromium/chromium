@@ -69860,6 +69860,7 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Link Clicked"/>
   <int value="5" label="Navigation Started"/>
   <int value="6" label="Tab Destroyed"/>
+  <int value="7" label="Tab Hidden"/>
 </enum>
 
 <enum name="TabDiscardingEvents">
