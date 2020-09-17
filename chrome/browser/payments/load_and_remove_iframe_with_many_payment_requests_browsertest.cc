@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -10,7 +11,16 @@
 namespace payments {
 namespace {
 
-class LoadAndRemoveIframeWithManyPaymentRequestsTest
+// TODO(crbug.com/1129573): fix flakiness and reenable
+#if defined(OS_MAC)
+#define MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest \
+  DISABLED_LoadAndRemoveIframeWithManyPaymentRequestsTest
+#else
+#define MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest \
+  LoadAndRemoveIframeWithManyPaymentRequestsTest
+#endif
+
+class MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest
     : public PaymentRequestPlatformBrowserTestBase {
  public:
   void RunTest(const std::string& iframe_hostname) {
@@ -28,12 +38,12 @@ class LoadAndRemoveIframeWithManyPaymentRequestsTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(LoadAndRemoveIframeWithManyPaymentRequestsTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest,
                        CrossOriginNoCrash) {
   RunTest(/*iframe_hostname=*/"b.com");
 }
 
-IN_PROC_BROWSER_TEST_F(LoadAndRemoveIframeWithManyPaymentRequestsTest,
+IN_PROC_BROWSER_TEST_F(MAYBE_LoadAndRemoveIframeWithManyPaymentRequestsTest,
                        SameOriginNoCrash) {
   RunTest(/*iframe_hostname=*/"a.com");
 }

@@ -15,8 +15,17 @@ namespace {
 
 class AbortPaymentHandlerTest : public PaymentRequestPlatformBrowserTestBase {};
 
+// TODO(crbug.com/1129578): fix flakiness and reenable
+#if defined(OS_MAC)
+#define MAYBE_CanAbortInvokedInstalledPaymentHandler \
+  DISABLED_CanAbortInvokedInstalledPaymentHandler
+#else
+#define MAYBE_CanAbortInvokedInstalledPaymentHandler \
+  CanAbortInvokedInstalledPaymentHandler
+#endif
+
 IN_PROC_BROWSER_TEST_F(AbortPaymentHandlerTest,
-                       CanAbortInvokedInstalledPaymentHandler) {
+                       MAYBE_CanAbortInvokedInstalledPaymentHandler) {
   std::string method_name = https_server()->GetURL("a.com", "/").spec();
   method_name = method_name.substr(0, method_name.length() - 1);
   ASSERT_NE('/', method_name[method_name.length() - 1]);
