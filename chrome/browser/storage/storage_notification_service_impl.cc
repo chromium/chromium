@@ -38,8 +38,9 @@ const base::TimeDelta GetThrottlingInterval() {
 
 void StorageNotificationServiceImpl::MaybeShowStoragePressureNotification(
     const url::Origin origin) {
-  if (base::TimeTicks::Now() - disk_pressure_notification_last_sent_at_ <
-      GetThrottlingInterval()) {
+  if (!disk_pressure_notification_last_sent_at_.is_null() &&
+      base::TimeTicks::Now() - disk_pressure_notification_last_sent_at_ <
+          GetThrottlingInterval()) {
     return;
   }
 

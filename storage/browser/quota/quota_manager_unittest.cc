@@ -426,6 +426,17 @@ class QuotaManagerTest : public testing::Test {
 
   void GetUsage_WithModifyTestBody(const StorageType type);
 
+  void SetStoragePressureCallback(
+      base::RepeatingCallback<void(url::Origin)> callback) {
+    quota_manager_->SetStoragePressureCallback(std::move(callback));
+  }
+
+  void MaybeRunStoragePressureCallback(const url::Origin& origin,
+                                       int64_t total,
+                                       int64_t available) {
+    quota_manager_->MaybeRunStoragePressureCallback(origin, total, available);
+  }
+
   void set_additional_callback_count(int c) { additional_callback_count_ = c; }
   int additional_callback_count() const { return additional_callback_count_; }
   void DidGetUsageAndQuotaAdditional(QuotaStatusCode status,
@@ -2676,6 +2687,24 @@ TEST_F(QuotaManagerTest, GetUsageAndQuota_SessionOnly) {
   GetUsageAndQuotaForWebApps(kEpheremalOrigin, kPerm);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0, quota());
+}
+
+TEST_F(QuotaManagerTest, MaybeRunStoragePressureCallback) {
+  bool callback_ran = false;
+  auto cb = base::BindRepeating(
+      [](bool* callback_ran, url::Origin origin) { *callback_ran = true; },
+      &callback_ran);
+
+  SetStoragePressureCallback(std::move(cb));
+
+  const int64_t kGBytes = 1024 * 1024 * 1024;
+  MaybeRunStoragePressureCallback(url::Origin(), 100 * kGBytes, 2 * kGBytes);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(callback_ran);
+
+  MaybeRunStoragePressureCallback(url::Origin(), 100 * kGBytes, kGBytes);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(callback_ran);
 }
 
 }  // namespace storage
