@@ -144,8 +144,8 @@ id<GREYMatcher> TitleOfTestPage() {
                                                   IDS_HISTORY_TITLE)),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitHeader),
-                                          nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 
   // Close History.
   id<GREYMatcher> exitMatcher =
