@@ -18,8 +18,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/ime/ime_controller_impl.h"
-#include "ash/shell.h"
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
 
 #if BUILDFLAG(USE_XKBCOMMON)
@@ -31,6 +29,9 @@ struct wl_client;
 struct wl_resource;
 
 namespace exo {
+
+class XkbTracker;
+
 namespace wayland {
 class SerialTracker;
 
@@ -46,12 +47,9 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
 {
 #if BUILDFLAG(USE_XKBCOMMON)
  public:
-  explicit WaylandKeyboardDelegate(wl_resource* keyboard_resource,
-                                   SerialTracker* serial_tracker);
-
-#if defined(OS_CHROMEOS)
+  WaylandKeyboardDelegate(wl_resource* keyboard_resource,
+                          SerialTracker* serial_tracker);
   ~WaylandKeyboardDelegate() override;
-#endif
 
   // Overridden from KeyboardDelegate:
   void OnKeyboardDestroying(Keyboard* keyboard) override;
@@ -78,19 +76,11 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   // Returns the corresponding key given a dom code.
   uint32_t DomCodeToKey(ui::DomCode code) const;
 
-  // Returns a set of Xkb modififers given the current |modifier_flags_|.
-  uint32_t ModifierFlagsToXkbModifiers();
-
-  // Sends the current |modifier_flags_| to the client.
+  // Sends the current modifiers to the client.
   void SendKeyboardModifiers();
 
-#if defined(OS_CHROMEOS)
-  // Send the named keyboard layout to the client.
-  void SendNamedLayout(const std::string& layout_name);
-#endif
-
-  // Send the keyboard layout named by XKB rules to the client.
-  void SendLayout(const xkb_rule_names* names);
+  // Send the current keyboard layout to the client.
+  void SendLayout();
 
   // The client who own this keyboard instance.
   wl_client* client() const;
@@ -98,17 +88,12 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   // The keyboard resource associated with the keyboard.
   wl_resource* const keyboard_resource_;
 
-  // The Xkb state used for the keyboard.
-  std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context_;
-  std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap_;
-  std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
-
-  // The delegate will keep its clients updated with these modifiers. For CrOS
-  // we treat numlock as always on.
-  int modifier_flags_ = ui::EF_NUM_LOCK_ON;
-
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
+
+  // TODO(hidehiko): Move this to the server in order to share it with
+  // zwp_text_input.
+  std::unique_ptr<XkbTracker> xkb_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardDelegate);
 #endif

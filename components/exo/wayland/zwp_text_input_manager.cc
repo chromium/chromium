@@ -7,6 +7,7 @@
 #include <text-input-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
+#include <xkbcommon/xkbcommon.h>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
@@ -16,9 +17,6 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS)
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
-#endif
 
 namespace exo {
 namespace wayland {

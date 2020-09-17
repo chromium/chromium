@@ -128,7 +128,6 @@ source_set("wayland") {
       deps += [
         "//ash",
         "//ash/public/cpp",
-        "//ui/events/ozone/layout",
       ]
     }
   }

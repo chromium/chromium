@@ -115,6 +115,7 @@ static_library("exo") {
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//chromeos/constants",
+      "//ui/events/ozone/layout",
     ]
     sources += [
       "client_controlled_accelerators.cc",
@@ -151,6 +152,8 @@ static_library("exo") {
       "wm_helper_chromeos.h",
       "xdg_shell_surface.cc",
       "xdg_shell_surface.h",
+      "xkb_tracker.cc",
+      "xkb_tracker.h",
     ]
   }
 
