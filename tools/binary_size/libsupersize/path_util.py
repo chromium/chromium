@@ -190,6 +190,16 @@ def GetCppFiltPath(tool_prefix):
   return tool_prefix + 'c++filt'
 
 
+def GetStripPath(tool_prefix):
+  # Chromium's toolchain uses //buildtools/third_party/eu-strip, but first
+  # look for the test-only "fakestrip" for the sake of tests.
+  fake_strip = tool_prefix + 'fakestrip'
+  if os.path.exists(fake_strip):
+    return fake_strip
+  return FromToolsSrcRootRelative(
+      os.path.join('buildtools', 'third_party', 'eu-strip'))
+
+
 def GetNmPath(tool_prefix):
   return tool_prefix + 'nm'
 

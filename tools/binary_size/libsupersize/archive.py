@@ -19,6 +19,7 @@ import shlex
 import string
 import subprocess
 import sys
+import tempfile
 import zipfile
 import zlib
 
@@ -1557,8 +1558,15 @@ def CreateContainerAndSymbols(knobs=None,
   if apk_elf_result:
     section_ranges, elf_overhead_size = _ParseApkElfSectionRanges(
         section_ranges, metadata, apk_elf_result)
-  else:
-    elf_overhead_size = _CalculateElfOverhead(section_ranges, elf_path)
+  elif elf_path:
+    # Strip ELF before capturing section information to avoid recording
+    # debug sections.
+    with tempfile.NamedTemporaryFile(suffix=os.path.basename(elf_path)) as f:
+      strip_path = path_util.GetStripPath(tool_prefix)
+      subprocess.run([strip_path, '-o', f.name, elf_path], check=True)
+      section_ranges = _SectionInfoFromElf(f.name, tool_prefix)
+      elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
+
   if elf_path:
     _AddUnattributedSectionSymbols(raw_symbols, section_ranges)
 
