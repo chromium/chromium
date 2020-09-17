@@ -882,16 +882,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "disable-experimental-accessibility-chromevox-language-switching",
-    "owners": [ "akihiroota", "dmazzoni", "dtseng" ],
-    "expiry_milestone": 86
-  },
-  {
-    "name": "disable-experimental-accessibility-chromevox-search-menus",
-    "owners": [ "akihiroota" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "disable-explicit-dma-fences",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to
@@ -1485,7 +1475,7 @@
   {
     "name": "enable-experimental-accessibility-chromevox-annotations",
     "owners": [ "akihiroota" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "enable-experimental-accessibility-chromevox-tutorial",

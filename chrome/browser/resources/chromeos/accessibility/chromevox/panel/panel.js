@@ -181,15 +181,6 @@ Panel = class {
     Panel.ownerWindow = window;
 
     /** @private {boolean} */
-    Panel.menuSearchEnabled_ = true;
-
-    chrome.commandLinePrivate.hasSwitch(
-        'disable-experimental-accessibility-chromevox-search-menus',
-        (enabled) => {
-          Panel.menuSearchEnabled_ = !enabled;
-        });
-
-    /** @private {boolean} */
     Panel.iTutorialEnabled_ = false;
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-chromevox-tutorial', (enabled) => {
@@ -368,9 +359,7 @@ Panel = class {
       Panel.pendingCallback_ = null;
 
       // Build the top-level menus.
-      const searchMenu = (Panel.menuSearchEnabled_) ?
-          Panel.addSearchMenu('panel_search_menu') :
-          null;
+      const searchMenu = Panel.addSearchMenu('panel_search_menu');
       const jumpMenu = Panel.addMenu('panel_menu_jump');
       const speechMenu = Panel.addMenu('panel_menu_speech');
       const tabsMenu = Panel.addMenu('panel_menu_tabs');

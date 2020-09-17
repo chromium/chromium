@@ -4034,21 +4034,10 @@ const char kExperimentalAccessibilityChromeVoxAnnotationsName[] =
 const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[] =
     "Allows users to create custom annotations for elements using ChromeVox.";
 
-const char kExperimentalAccessibilityChromeVoxLanguageSwitchingName[] =
-    "Disable ChromeVox language switching.";
-const char kExperimentalAccessibilityChromeVoxLanguageSwitchingDescription[] =
-    "Disable ChromeVox language switching, which changes ChromeVox's "
-    "output language upon detection of new language.";
-
 const char kExperimentalAccessibilityChromeVoxTutorialName[] =
     "Enable experimental ChromeVox interactive tutorial.";
 const char kExperimentalAccessibilityChromeVoxTutorialDescription[] =
     "A comprehensive and interactive tutorial for the ChromeVox screen reader.";
-
-const char kExperimentalAccessibilityChromeVoxSearchMenusName[] =
-    "Enable experimental ChromeVox search menus feature.";
-const char kExperimentalAccessibilityChromeVoxSearchMenusDescription[] =
-    "Allows users to search for items in the ChromeVox menu.";
 
 const char kExperimentalAccessibilitySwitchAccessName[] =
     "Experimental feature Switch Access";

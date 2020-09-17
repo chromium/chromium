@@ -116,14 +116,6 @@ OptionsPage = class {
       }
     }
 
-    chrome.commandLinePrivate.hasSwitch(
-        'disable-experimental-accessibility-chromevox-language-switching',
-        (enabled) => {
-          if (enabled) {
-            $('languageSwitchingOption').hidden = true;
-          }
-        });
-
     $('toggleEventStreamFilters').addEventListener('click', function(evt) {
       if ($('eventStreamFilters').hidden) {
         $('eventStreamFilters').hidden = false;

@@ -23,10 +23,6 @@ AX_BASE_EXPORT extern const char
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxAnnotations[];
 AX_BASE_EXPORT extern const char
-    kDisableExperimentalAccessibilityChromeVoxLanguageSwitching[];
-AX_BASE_EXPORT extern const char
-    kDisableExperimentalAccessibilityChromeVoxSearchMenus[];
-AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilityChromeVoxTutorial[];
 AX_BASE_EXPORT extern const char kEnableSwitchAccessPointScanning[];
 

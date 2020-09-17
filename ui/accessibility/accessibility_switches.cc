@@ -36,14 +36,6 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 const char kEnableExperimentalAccessibilityChromeVoxAnnotations[] =
     "enable-experimental-accessibility-chromevox-annotations";
 
-// Disables ChromeVox language switching feature.
-const char kDisableExperimentalAccessibilityChromeVoxLanguageSwitching[] =
-    "disable-experimental-accessibility-chromevox-language-switching";
-
-// Disables ChromeVox search menus feature.
-const char kDisableExperimentalAccessibilityChromeVoxSearchMenus[] =
-    "disable-experimental-accessibility-chromevox-search-menus";
-
 // Enables interactive tutorial for ChromeVox.
 const char kEnableExperimentalAccessibilityChromeVoxTutorial[] =
     "enable-experimental-accessibility-chromevox-tutorial";

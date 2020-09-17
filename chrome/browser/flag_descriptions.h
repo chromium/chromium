@@ -2332,13 +2332,6 @@ extern const char kExoPointerLockDescription[];
 extern const char kExperimentalAccessibilityChromeVoxAnnotationsName[];
 extern const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[];
 
-extern const char kExperimentalAccessibilityChromeVoxLanguageSwitchingName[];
-extern const char
-    kExperimentalAccessibilityChromeVoxLanguageSwitchingDescription[];
-
-extern const char kExperimentalAccessibilityChromeVoxSearchMenusName[];
-extern const char kExperimentalAccessibilityChromeVoxSearchMenusDescription[];
-
 extern const char kExperimentalAccessibilityChromeVoxTutorialName[];
 extern const char kExperimentalAccessibilityChromeVoxTutorialDescription[];
 

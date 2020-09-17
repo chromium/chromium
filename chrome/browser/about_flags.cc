@@ -3465,15 +3465,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilityChromeVoxAnnotations)},
-    {"disable-experimental-accessibility-chromevox-language-switching",
-     flag_descriptions::
-         kExperimentalAccessibilityChromeVoxLanguageSwitchingName,
-     flag_descriptions::
-         kExperimentalAccessibilityChromeVoxLanguageSwitchingDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::
-             kDisableExperimentalAccessibilityChromeVoxLanguageSwitching)},
     {"enable-experimental-accessibility-cursor-colors",
      flag_descriptions::kExperimentalAccessibilityCursorColorsName,
      flag_descriptions::kExperimentalAccessibilityCursorColorsDescription,
@@ -3482,13 +3473,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kKernelnextVMs)},
-    {"disable-experimental-accessibility-chromevox-search-menus",
-     flag_descriptions::kExperimentalAccessibilityChromeVoxSearchMenusName,
-     flag_descriptions::
-         kExperimentalAccessibilityChromeVoxSearchMenusDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kDisableExperimentalAccessibilityChromeVoxSearchMenus)},
     {"enable-experimental-accessibility-chromevox-tutorial",
      flag_descriptions::kExperimentalAccessibilityChromeVoxTutorialName,
      flag_descriptions::kExperimentalAccessibilityChromeVoxTutorialDescription,
