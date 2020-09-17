@@ -158,6 +158,16 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
   return credentials;
 }
 
+base::flat_set<base::string16> ExtractPasswords(
+    SavedPasswordsPresenter::SavedPasswordsView password_forms) {
+  std::vector<base::string16> passwords;
+  passwords.reserve(password_forms.size());
+  for (const auto& form : password_forms) {
+    passwords.push_back(form.password_value);
+  }
+  return base::flat_set<base::string16>(std::move(passwords));
+}
+
 }  // namespace
 
 CredentialView::CredentialView(std::string signon_realm,
@@ -228,7 +238,8 @@ void InsecureCredentialsManager::Init() {
 void InsecureCredentialsManager::StartWeakCheck() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&BulkWeakCheck, presenter_->GetSavedPasswords()),
+      base::BindOnce(&BulkWeakCheck,
+                     ExtractPasswords(presenter_->GetSavedPasswords())),
       base::BindOnce(&InsecureCredentialsManager::OnWeakCheckDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }

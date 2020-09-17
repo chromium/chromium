@@ -58,16 +58,11 @@ int PasswordWeakCheck(const base::string16& password) {
 }  // namespace
 
 base::flat_set<base::string16> BulkWeakCheck(
-    SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
-  std::vector<base::string16> weak_passwords;
-
-  for (const auto& password : saved_passwords) {
-    if (PasswordWeakCheck(password.password_value) <= kLowSeverityScore) {
-      weak_passwords.push_back(password.password_value);
-    }
-  }
-
-  return base::flat_set<base::string16>(std::move(weak_passwords));
+    base::flat_set<base::string16> passwords) {
+  base::EraseIf(passwords, [](const auto& password) {
+    return kLowSeverityScore < PasswordWeakCheck(password);
+  });
+  return passwords;
 }
 
 }  // namespace password_manager

@@ -11,9 +11,10 @@
 
 namespace password_manager {
 
-// Checks each password for weakness.
+// Checks each password for weakness and removes strong passwords from the
+// |passwords|.
 base::flat_set<base::string16> BulkWeakCheck(
-    SavedPasswordsPresenter::SavedPasswordsView passwords);
+    base::flat_set<base::string16> passwords);
 
 }  // namespace password_manager
 
