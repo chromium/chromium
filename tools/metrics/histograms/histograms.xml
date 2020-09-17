@@ -7949,7 +7949,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2021-01-10">
+    expires_after="2021-03-15">
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of times the different sources for showing the app list are used.
@@ -32642,7 +32642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.LensSupportStatus"
-    enum="ContextMenuLensSupportStatus" expires_after="2021-01-10">
+    enum="ContextMenuLensSupportStatus" expires_after="2021-03-15">
   <owner>benwgold@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -138979,7 +138979,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PowerML.NonModelDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-01-03">
+    expires_after="2021-03-15">
   <owner>jiameng@chromium.org</owner>
   <summary>
     What happens after screen is dimmed by powerd by ignoring the model
@@ -191868,7 +191868,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApk.Install.InstallDuration" units="ms"
-    expires_after="2020-12-20">
+    expires_after="2021-03-15">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -191911,7 +191911,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApk.Install.RequestTokenDuration" units="ms"
-    expires_after="2021-01-03">
+    expires_after="2021-03-15">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
@@ -192110,7 +192110,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebApk.Session.TotalDuration2" units="ms"
-    expires_after="2021-01-10">
+    expires_after="2021-03-15">
   <owner>hartmanng@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
