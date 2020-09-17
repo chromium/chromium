@@ -47,15 +47,17 @@
 #include <unistd.h>
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 
 extern char** environ;
 
 // g_orig_argv0 is the original process name found in argv[0].
 // It is set to a copy of argv[0] in setproctitle_init. It is nullptr if
 // setproctitle_init was unsuccessful or not called.
-static char* g_orig_argv0 = nullptr;
+static const char* g_orig_argv0 = nullptr;
 
 // Following pointers hold the initial argv/envp memory range.
 // They are initialized in setproctitle_init and are used to overwrite the
@@ -146,7 +148,8 @@ void setproctitle_init(const char** main_argv) {
     p += strlen(p) + 1;
   }
   char* argv_end = p;
-  for (size_t i = 0; environ[i]; ++i) {
+  size_t environ_size = 0;
+  for (size_t i = 0; environ[i]; ++i, ++environ_size) {
     if (p != environ[i])
       return;
     p += strlen(p) + 1;
@@ -154,19 +157,22 @@ void setproctitle_init(const char** main_argv) {
   char* envp_end = p;
 
   // Move the environment out of the way. Note that we are moving the values,
-  // not the environment array itself.
+  // not the environment array itself. Also note that we preallocate the entire
+  // vector, because a string's underlying data pointer is not stable under
+  // move operations, which could otherwise occur if building up the vector
+  // incrementally.
+  static base::NoDestructor<std::vector<std::string>> environ_copy(
+      environ_size);
   for (size_t i = 0; environ[i]; ++i) {
-    char* copy = strdup(environ[i]);
-    if (!copy)
-      return;
-    environ[i] = copy;
+    (*environ_copy)[i] = environ[i];
+    environ[i] = &(*environ_copy)[i][0];
   }
 
-  char* argv0 = strdup(argv[0]);
   if (!argv[0])
     return;
 
-  g_orig_argv0 = argv0;
+  static base::NoDestructor<std::string> argv0_storage(argv[0]);
+  g_orig_argv0 = argv0_storage->data();
   g_argv_start = argv_start;
   g_argv_end = argv_end;
   g_envp_end = envp_end;

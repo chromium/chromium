@@ -55,9 +55,6 @@ char kLSanDefaultSuppressions[] =
     // impossible, i.e. when enabling leak detection for the first time for a
     // test target with pre-existing leaks.
 
-    // http://crbug.com/356306
-    "leak:content::SetProcessTitleFromCommandLine\n"
-
     // https://crbug.com/755670
     "leak:third_party/yasm/\n"
 

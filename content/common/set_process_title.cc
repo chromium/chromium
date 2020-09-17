@@ -32,6 +32,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
@@ -83,7 +84,9 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
 
     // This prevents program_invocation_short_name from being broken by
     // setproctitle().
-    program_invocation_short_name = strdup(base_name.c_str());
+    static base::NoDestructor<base::FilePath::StringType> base_name_storage;
+    *base_name_storage = std::move(base_name);
+    program_invocation_short_name = &(*base_name_storage)[0];
   }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
