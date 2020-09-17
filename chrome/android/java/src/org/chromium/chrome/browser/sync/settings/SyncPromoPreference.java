@@ -126,12 +126,6 @@ public class SyncPromoPreference extends Preference
             return;
         }
 
-        if (mSigninPromoController != null) {
-            // Don't change the promo type if the new promo is already being shown.
-            setupPersonalizedSyncPromo();
-            return;
-        }
-
         setupPromoHidden();
     }
 
