@@ -5,6 +5,7 @@
 #include <map>
 
 #include "base/feature_list.h"
+#import "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -33,6 +34,10 @@
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
+  // TODO(crbug.com/1129588): Test disabled in iOS14.
+  if (base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS14.");
+  }
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;

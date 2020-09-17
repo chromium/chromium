@@ -153,6 +153,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the collections shortcut are displayed and working.
 - (void)testCollectionShortcuts {
+  // TODO(crbug.com/1129588): Test disabled in iOS14.
+  if (base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS14.");
+  }
   // Check the Bookmarks.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
