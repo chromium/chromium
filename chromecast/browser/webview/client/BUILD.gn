@@ -15,7 +15,10 @@ executable("wayland_webview_client") {
     "//components/exo/wayland:client_support",
     "//skia",
     "//third_party/wayland:wayland_client",
+    "//ui/events:dom_keyboard_layout",
+    "//ui/events:dom_keycode_converter",
     "//ui/events:event_constants",
+    "//ui/events:events_base",
     "//ui/events/types:headers",
     "//ui/gl",
   ]

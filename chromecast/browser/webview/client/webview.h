@@ -16,6 +16,9 @@
 #include "components/exo/wayland/clients/client_base.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -85,12 +88,21 @@ class WebviewClient : public exo::wayland::clients::ClientBase {
   void SendForwardRequest(const std::vector<std::string>& tokens);
   void SendNavigationRequest(const std::vector<std::string>& tokens);
   void SendResizeRequest(const std::vector<std::string>& tokens);
+  void SendKeyRequest(const std::vector<std::string>& tokens);
+
   void SendTouchInput(const Webview* webview,
                       int x,
                       int y,
                       ui::EventType event_type,
                       uint32_t time,
                       int32_t id);
+  void SendKeyEvent(const Webview* webview,
+                    const base::TimeDelta& time,
+                    ui::DomKey dom_key,
+                    ui::DomCode dom_code,
+                    ui::KeyboardCode keyboard_code,
+                    bool down);
+
   void SetPosition(const std::vector<std::string>& tokens);
   void TakeExclusiveAccess();
   void WlDisplayCallback();

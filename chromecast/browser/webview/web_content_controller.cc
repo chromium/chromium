@@ -270,6 +270,20 @@ void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {
         client_->OnError("mouse() not supplied for mouse event");
       }
       break;
+    case ui::ET_KEY_PRESSED:
+    case ui::ET_KEY_RELEASED:
+      if (ev.has_key()) {
+        ui::KeyEvent evt(type,
+                         static_cast<ui::KeyboardCode>(ev.key().key_code()),
+                         static_cast<ui::DomCode>(ev.key().dom_code()),
+                         ev.flags(), ui::DomKey(ev.key().dom_key()),
+                         base::TimeTicks() +
+                             base::TimeDelta::FromMicroseconds(ev.timestamp()));
+        handler->OnKeyEvent(&evt);
+      } else {
+        client_->OnError("key() not supplied for key event");
+      }
+      break;
     default:
       break;
   }

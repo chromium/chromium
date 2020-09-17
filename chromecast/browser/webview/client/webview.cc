@@ -17,6 +17,8 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace chromecast {
@@ -34,6 +36,7 @@ constexpr char kListCommand[] = "list";
 constexpr char kNavigateCommand[] = "navigate";
 constexpr char kResizeCommand[] = "resize";
 constexpr char kPositionCommand[] = "position";
+constexpr char kKeyCommand[] = "key";
 
 void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
   WebviewClient* webview_client = static_cast<WebviewClient*>(data);
@@ -51,6 +54,7 @@ void BufferReleaseCallback(void* data, wl_buffer* /* buffer */) {
 }  // namespace
 
 using chromecast::webview::InputEvent;
+using chromecast::webview::KeyInput;
 using chromecast::webview::TouchInput;
 using chromecast::webview::WebviewRequest;
 using chromecast::webview::WebviewResponse;
@@ -312,6 +316,8 @@ void WebviewClient::InputCallback() {
     SendBackRequest(tokens);
   else if (tokens[1] == kForwardCommand)
     SendForwardRequest(tokens);
+  else if (tokens[1] == kKeyCommand)
+    SendKeyRequest(tokens);
 
   std::cout << "Enter command: ";
   std::cout.flush();
@@ -432,6 +438,59 @@ void WebviewClient::SendResizeRequest(const std::vector<std::string>& tokens) {
   }
   webview->buffer =
       CreateBuffer(gfx::Size(width, height), drm_format_, bo_usage_);
+}
+
+void WebviewClient::SendKeyRequest(const std::vector<std::string>& tokens) {
+  int id;
+  if (tokens.size() != 3 || !base::StringToInt(tokens[0], &id) ||
+      tokens[2].empty()) {
+    LOG(ERROR) << "Usage: ID key [dom_code]";
+    return;
+  }
+
+  const auto& webview = webviews_[id];
+
+  ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(tokens[2]);
+  if (dom_code == ui::DomCode::NONE) {
+    LOG(ERROR) << "Unknown DomCode CodeString: " << tokens[2];
+    return;
+  }
+
+  ui::DomKey dom_key;
+  ui::KeyboardCode keyboard_code;
+  if (!ui::DomCodeToUsLayoutDomKey(dom_code, 0 /* flags */, &dom_key,
+                                   &keyboard_code)) {
+    LOG(ERROR) << "Could not convert DomCode to US Layout key: " << tokens[2];
+    return;
+  }
+
+  SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
+               dom_key, dom_code, keyboard_code, true);
+  SendKeyEvent(webview.get(), base::Time::Now().ToDeltaSinceWindowsEpoch(),
+               dom_key, dom_code, keyboard_code, false);
+}
+
+void WebviewClient::SendKeyEvent(const Webview* webview,
+                                 const base::TimeDelta& time,
+                                 ui::DomKey dom_key,
+                                 ui::DomCode dom_code,
+                                 ui::KeyboardCode keyboard_code,
+                                 bool down) {
+  auto key_input = std::make_unique<KeyInput>();
+  key_input->set_key_code(keyboard_code);
+  key_input->set_dom_code(static_cast<int32_t>(dom_code));
+  key_input->set_dom_key(static_cast<int32_t>(dom_key));
+
+  auto key_event = std::make_unique<InputEvent>();
+  key_event->set_event_type(down ? ui::EventType::ET_KEY_PRESSED
+                                 : ui::EventType::ET_KEY_RELEASED);
+  key_event->set_timestamp(time.InMicroseconds());
+  key_event->set_allocated_key(key_input.release());
+
+  WebviewRequest key_request;
+  key_request.set_allocated_input(key_event.release());
+  if (!webview->client->Write(key_request))
+    LOG(ERROR) << "Key request failed";
 }
 
 void WebviewClient::SendTouchInput(const Webview* webview,
