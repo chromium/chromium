@@ -11,17 +11,26 @@
 #include "chromeos/printing/ppd_cache.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
 
 namespace chromeos {
+namespace {
+
+network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return g_browser_process->system_network_context_manager()
+      ->GetURLLoaderFactory();
+}
+
+}  // namespace
 
 scoped_refptr<PpdProvider> CreatePpdProvider(Profile* profile) {
   base::FilePath ppd_cache_path =
       profile->GetPath().Append(FILE_PATH_LITERAL("PPDCache"));
 
   return PpdProvider::Create(g_browser_process->GetApplicationLocale(),
-                             g_browser_process->system_network_context_manager()
-                                 ->GetURLLoaderFactory(),
+                             base::BindRepeating(&GetURLLoaderFactory),
                              PpdCache::Create(ppd_cache_path),
                              version_info::GetVersion());
 }
