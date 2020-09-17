@@ -581,23 +581,6 @@ TEST_F('CrExtensionsShortcutTest', 'ScopeChange', function() {
   this.runMochaTest(extension_shortcut_tests.TestNames.ScopeChange);
 });
 
-// eslint-disable-next-line no-var
-var CrExtensionsShortcutInputTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/shortcut_input_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_shortcut_input_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsShortcutInputTest', 'Basic', function() {
-  this.runMochaTest(extension_shortcut_input_tests.TestNames.Basic);
-});
-
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Pack Dialog Tests
 

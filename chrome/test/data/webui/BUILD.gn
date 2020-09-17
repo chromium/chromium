@@ -53,6 +53,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_search_field_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_elements/iron_list_focus_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/cr_focus_row_behavior_test.m.js",
+      "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/sync_test_util.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/test_sync_browser_proxy.m.js",
