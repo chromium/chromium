@@ -65,10 +65,9 @@
     'release': {
       'gn_args': 'is_debug=false',
     },
-    # TODO(rmhasan): Add back GOMA support when you can start the goma proxy
-    # in a recipe.
+
     'release_bot': {
-      'mixins': ['release', 'static'],
+      'mixins': ['release', 'static', 'goma'],
     },
 
     'static': {
