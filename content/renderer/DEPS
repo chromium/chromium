@@ -9,6 +9,7 @@ include_rules = [
   "+components/metrics:single_sample_metrics",
   "+components/payments",
   "+components/url_formatter",
+  "+components/variations/net",
   "+components/viz/client",
   "+components/viz/common",
   # *********************************** NOTE ***********************************

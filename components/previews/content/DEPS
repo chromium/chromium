@@ -6,6 +6,7 @@ include_rules = [
   "+components/prefs",
   "+components/optimization_guide",
   "+components/previews/core",
+  "+components/variations",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",

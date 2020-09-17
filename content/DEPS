@@ -26,7 +26,6 @@ include_rules = [
 
   "+components/services/filesystem",
   "+components/services/font/public",
-  "+components/variations",
 
   "+crypto",
   "+grit/blink_resources.h",
