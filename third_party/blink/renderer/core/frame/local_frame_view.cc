@@ -199,22 +199,12 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
   }
 }
 
-// Default value and parameter name for how long we want to delay the
-// compositor commit beyond the start of document lifdecycle updates to avoid
+// Default value for how long we want to delay the
+// compositor commit beyond the start of document lifecycle updates to avoid
 // flash between navigations. The delay should be small enough so that it won't
 // confuse users expecting a new page to appear after navigation and the omnibar
 // has updated the url display.
-constexpr int kPaintHoldingCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
-constexpr char kPaintHoldingCommitDelayParameterName[] = "commit_delay";
-
-// Get the field trial parameter value for Paint Holding.
-base::TimeDelta GetCommitDelayForPaintHolding() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPaintHolding));
-  return base::TimeDelta::FromMilliseconds(
-      base::GetFieldTrialParamByFeatureAsInt(
-          blink::features::kPaintHolding, kPaintHoldingCommitDelayParameterName,
-          kPaintHoldingCommitDelayDefaultInMs));
-}
+constexpr int kCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
 
 }  // namespace
 
@@ -4454,16 +4444,15 @@ void LocalFrameView::BeginLifecycleUpdates() {
   // updates start. Doing so allows us to update the page lifecycle but not
   // present the results to screen until we see first contentful paint is
   // available or until a timer expires.
-  // This is enabled only if kPaintHolding is enabled, and
-  // the document loading is regular HTML served over HTTP/HTTPs.
-  // And only defer commits once. This method gets called multiple times,
-  // and we do not want to defer a second time if we have already done
-  // so once and resumed commits already.
+  // This is enabled only when the document loading is regular HTML served
+  // over HTTP/HTTPs. And only defer commits once. This method gets called
+  // multiple times, and we do not want to defer a second time if we have
+  // already done so once and resumed commits already.
   if (document &&
       document->DeferredCompositorCommitIsAllowed() &&
       !have_deferred_commits_) {
-    chrome_client.StartDeferringCommits(GetFrame(),
-                                        GetCommitDelayForPaintHolding());
+    chrome_client.StartDeferringCommits(
+        GetFrame(), base::TimeDelta::FromMilliseconds(kCommitDelayDefaultInMs));
     have_deferred_commits_ = true;
   }
 

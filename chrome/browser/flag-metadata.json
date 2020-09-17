@@ -1900,11 +1900,6 @@
     "expiry_milestone": 87
   },
   {
-    "name": "enable-paint-holding",
-    "owners": [ "schenney", "paint-dev" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-palm-max-touch-major",
     "owners": [ "robsc", "napper", "adlr" ],
     // Added feature to possibly disable/enable this functionality, combined

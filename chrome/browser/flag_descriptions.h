@@ -1051,9 +1051,6 @@ extern const char kUpdateHoverAtBeginFrameDescription[];
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
 
-extern const char kPaintHoldingName[];
-extern const char kPaintHoldingDescription[];
-
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 

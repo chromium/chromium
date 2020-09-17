@@ -1827,13 +1827,6 @@ const char kOverscrollHistoryNavigationName[] = "Overscroll history navigation";
 const char kOverscrollHistoryNavigationDescription[] =
     "History navigation in response to horizontal overscroll.";
 
-const char kPaintHoldingName[] =
-    "Delay the commit to screen for same-origin navigations";
-const char kPaintHoldingDescription[] =
-    "Enables a delay before commiting the page to screen when navigating "
-    "between pages in the same origin. This may help avoid a flash of unstyled "
-    "content for same-origin navigations";
-
 const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";

@@ -5027,10 +5027,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kHardwareMediaKeyHandling)},
 #endif
 
-    {"enable-paint-holding", flag_descriptions::kPaintHoldingName,
-     flag_descriptions::kPaintHoldingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPaintHolding)},
-
 #if defined(OS_CHROMEOS)
     {"app-service-adaptive-icon",
      flag_descriptions::kAppServiceAdaptiveIconName,
