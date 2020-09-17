@@ -2,7 +2,6 @@ include_rules = [
   # Allow inclusion of specific components that we depend on.
   # See comment in content/DEPS for which components are allowed.
   "+components/tracing",
-  "+components/variations/child_process_field_trial_syncer.h",
   "+components/webcrypto",
   "+components/services/font/public",
 

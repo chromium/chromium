@@ -12,7 +12,6 @@ include_rules = [
   "+components/security_interstitials/core",
   "+components/ssl_errors",
   "+components/user_prefs",
-  "+components/variations",
   "+components/version_info",
   "+components/wifi",
   "+content/public/browser",
