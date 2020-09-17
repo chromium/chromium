@@ -13,6 +13,6 @@ const base::Feature kSupervisedUserInitiatedExtensionInstall{
     "SupervisedUserInitiatedExtensionInstall",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kEduCoexistenceFlowV2{"kEduCoexistenceV2",
+const base::Feature kEduCoexistenceFlowV2{"EduCoexistenceV2",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace supervised_users
