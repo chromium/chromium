@@ -20,6 +20,7 @@ using autofill::CreateBoolCallback;
 using autofill::CreateStringCallback;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
+using autofill::kNotSetRendererID;
 using base::SysNSStringToUTF8;
 
 namespace password_manager {

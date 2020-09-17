@@ -12,10 +12,6 @@
 @class CRWJSInjectionReceiver;
 class GURL;
 
-namespace {
-constexpr int kNotSetRendererID = -1;
-}
-
 namespace base {
 class DictionaryValue;
 }

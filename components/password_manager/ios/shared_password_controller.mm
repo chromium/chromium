@@ -648,7 +648,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   if (params.type == "password_form_removed") {
     _passwordManager->OnPasswordFormRemoved(
         _delegate.passwordManagerDriver, self.formHelper.fieldDataManager.get(),
-        FormRendererId(params.unique_form_id));
+        params.unique_form_id);
   }
 }
 

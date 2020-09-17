@@ -1964,7 +1964,7 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
   WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
   FormActivityParams params;
   params.type = "password_form_removed";
-  params.unique_form_id = 0;
+  params.unique_form_id = FormRendererId(0);
   params.frame_id = mainFrameID;
 
   [passwordController_.sharedPasswordController webState:web_state()
@@ -2003,7 +2003,7 @@ TEST_F(PasswordControllerTest,
   WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
   FormActivityParams params;
   params.type = "password_form_removed";
-  params.unique_form_id = 0;
+  params.unique_form_id = FormRendererId(0);
   params.frame_id = mainFrameID;
 
   [passwordController_.sharedPasswordController webState:web_state()

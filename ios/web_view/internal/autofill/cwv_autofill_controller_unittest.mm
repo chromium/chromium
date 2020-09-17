@@ -55,6 +55,8 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::FormRendererId;
+using autofill::FieldRendererId;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -64,9 +66,9 @@ namespace {
 
 const char kApplicationLocale[] = "en-US";
 NSString* const kTestFormName = @"FormName";
-uint32_t kTestUniqueFormID = 0;
+FormRendererId kTestUniqueFormID = FormRendererId(0);
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
-uint32_t kTestUniqueFieldID = 1;
+FieldRendererId kTestUniqueFieldID = FieldRendererId(1);
 NSString* const kTestFieldValue = @"FieldValue";
 NSString* const kTestDisplayDescription = @"DisplayDescription";
 

@@ -194,9 +194,9 @@ AutofillSuggestionState::AutofillSuggestionState(
 
   FormSuggestionProviderQuery* formQuery = [[FormSuggestionProviderQuery alloc]
       initWithFormName:base::SysUTF8ToNSString(params.form_name)
-          uniqueFormID:FormRendererId(params.unique_form_id)
+          uniqueFormID:params.unique_form_id
        fieldIdentifier:base::SysUTF8ToNSString(params.field_identifier)
-         uniqueFieldID:FieldRendererId(params.unique_field_id)
+         uniqueFieldID:params.unique_field_id
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
             typedValue:base::SysUTF8ToNSString(
@@ -346,9 +346,8 @@ AutofillSuggestionState::AutofillSuggestionState(
               (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   [self processPage:webState];
   _suggestionState.reset(new AutofillSuggestionState(
-      params.form_name, FormRendererId(params.unique_form_id),
-      params.field_identifier, FieldRendererId(params.unique_field_id),
-      params.frame_id, params.value));
+      params.form_name, params.unique_form_id, params.field_identifier,
+      params.unique_field_id, params.frame_id, params.value));
   _accessoryViewUpdateBlock = [accessoryViewUpdateBlock copy];
   [self retrieveSuggestionsForForm:params webState:webState];
 }
