@@ -162,11 +162,21 @@ SupervisedUserNavigationThrottle::CheckURL() {
   bool skip_manual_parent_filter =
       url_filter_->ShouldSkipParentManualAllowlistFiltering(
           navigation_handle()->GetWebContents()->GetOutermostWebContents());
-  bool got_result = url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
-      url,
-      base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
-                     weak_ptr_factory_.GetWeakPtr(), url),
-      skip_manual_parent_filter);
+  bool got_result = false;
+
+  if (navigation_handle()->IsInMainFrame()) {
+    got_result = url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
+        url,
+        base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
+                       weak_ptr_factory_.GetWeakPtr(), url),
+        skip_manual_parent_filter);
+  } else {
+    got_result = url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+        url, navigation_handle()->GetWebContents()->GetURL(),
+        base::BindOnce(&SupervisedUserNavigationThrottle::OnCheckDone,
+                       weak_ptr_factory_.GetWeakPtr(), url));
+  }
+
   DCHECK_EQ(got_result, behavior_ != SupervisedUserURLFilter::INVALID);
   // If we got a "not blocked" result synchronously, don't defer.
   deferred_ = !got_result || (behavior_ == SupervisedUserURLFilter::BLOCK);
@@ -224,6 +234,7 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
     supervised_user_error_page::FilteringBehaviorReason reason,
     bool uncertain) {
   DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
+
   // If we got a result synchronously, pass it back to ShowInterstitialIfNeeded.
   if (!deferred_)
     behavior_ = behavior;

@@ -132,6 +132,12 @@ class SupervisedUserURLFilter {
       FilteringBehaviorCallback callback,
       bool skip_manual_parent_filter = false) const;
 
+  // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
+  bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+      const GURL& url,
+      const GURL& main_frame_url,
+      FilteringBehaviorCallback callback) const;
+
   // Gets all the allowlists that the url is part of. Returns id->name of each
   // allowlist.
   std::map<std::string, base::string16> GetMatchingAllowlistTitles(
@@ -188,6 +194,9 @@ class SupervisedUserURLFilter {
 
  private:
   friend class SupervisedUserURLFilterTest;
+
+  bool RunAsyncChecker(const GURL& url,
+                       FilteringBehaviorCallback callback) const;
 
   void SetContents(std::unique_ptr<Contents> url_matcher);
 

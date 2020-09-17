@@ -291,15 +291,12 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
     return;
 
   const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
-  bool skip_manual_parent_filter =
-      url_filter_->ShouldSkipParentManualAllowlistFiltering(web_contents());
-  url_filter_->GetFilteringBehaviorForURLWithAsyncChecks(
-      web_contents()->GetLastCommittedURL(),
+  url_filter_->GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+      last_committed_url, web_contents()->GetLastCommittedURL(),
       base::BindOnce(&SupervisedUserNavigationObserver::URLFilterCheckCallback,
                      weak_ptr_factory_.GetWeakPtr(), last_committed_url,
                      render_frame_host->GetProcess()->GetID(),
-                     render_frame_host->GetRoutingID()),
-      skip_manual_parent_filter);
+                     render_frame_host->GetRoutingID()));
 }
 
 void SupervisedUserNavigationObserver::GoBack() {

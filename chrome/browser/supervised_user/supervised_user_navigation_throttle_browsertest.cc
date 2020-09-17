@@ -657,6 +657,37 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
+                       IframesWithSameDomainAsMainFrameAllowed) {
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+  SupervisedUserURLFilter* filter = service->GetURLFilter();
+
+  // Set the default behavior to block.
+  filter->SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+
+  // The async checker will make rpc calls to check if the url should be
+  // blocked or not. This may cause flakiness.
+  filter->ClearAsyncURLChecker();
+
+  base::RunLoop().RunUntilIdle();
+
+  // Allows |www.example.com|.
+  AllowlistHost(kExampleHost);
+
+  // |with_frames_same_domain.html| contains subframes with "a.example.com" and
+  // "b.example.com", and "c.example2.com" urls.
+  GURL allowed_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/with_iframes_same_domain.html");
+
+  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  auto blocked_frames = GetBlockedFrames();
+  EXPECT_EQ(blocked_frames.size(), 1u);
+  EXPECT_EQ(GetBlockedFrameURL(blocked_frames[0]).host(), "www.c.example2.com");
+}
+
 class SupervisedUserNavigationThrottleNotSupervisedTest
     : public SupervisedUserNavigationThrottleTest {
  protected:
