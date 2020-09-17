@@ -10,8 +10,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -24,15 +22,10 @@ namespace platform_keys {
 // so as future work can introduce a global device-wide KPM instance.
 class KeyPermissionsManagerUserService : public KeyedService {
  public:
-  explicit KeyPermissionsManagerUserService(Profile* profile);
+  KeyPermissionsManagerUserService();
   ~KeyPermissionsManagerUserService() override;
 
-  KeyPermissionsManager* key_permissions_manager() {
-    return &key_permissions_manager_;
-  }
-
- private:
-  KeyPermissionsManager key_permissions_manager_;
+  virtual KeyPermissionsManager* key_permissions_manager() = 0;
 };
 
 class KeyPermissionsManagerUserServiceFactory
