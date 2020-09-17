@@ -122,9 +122,11 @@ void SearchingForNodeTool::Trace(Visitor* visitor) const {
 }
 
 void SearchingForNodeTool::Draw(float scale) {
-  Node* node = hovered_node_.Get();
   if (!hovered_node_)
     return;
+
+  Node* node = hovered_node_.Get();
+
   bool append_element_info = (node->IsElementNode() || node->IsTextNode()) &&
                              !omit_tooltip_ && highlight_config_->show_info &&
                              node->GetLayoutObject() &&
@@ -136,6 +138,10 @@ void SearchingForNodeTool::Draw(float scale) {
                                      *highlight_config_);
   }
   overlay_->EvaluateInOverlay("drawHighlight", highlight.AsProtocolValue());
+}
+
+bool SearchingForNodeTool::SupportsPersistentOverlays() {
+  return true;
 }
 
 bool SearchingForNodeTool::HandleInputEvent(LocalFrameView* frame_view,
@@ -293,6 +299,10 @@ NodeHighlightTool::NodeHighlightTool(
 
 bool NodeHighlightTool::ForwardEventsToOverlay() {
   return false;
+}
+
+bool NodeHighlightTool::SupportsPersistentOverlays() {
+  return true;
 }
 
 bool NodeHighlightTool::HideOnHideHighlight() {

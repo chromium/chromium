@@ -1,0 +1,4 @@
+Verifies that Overlay.setShowGridOverlays works together with Overlay.setInspectMode.
+Expected 0 track size labels; actual: 0
+Expected 3 track size labels; actual: 3
+

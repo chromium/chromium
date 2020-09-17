@@ -195,6 +195,10 @@ bool InspectTool::ForwardEventsToOverlay() {
   return true;
 }
 
+bool InspectTool::SupportsPersistentOverlays() {
+  return false;
+}
+
 bool InspectTool::HideOnMouseMove() {
   return false;
 }
@@ -388,6 +392,7 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
   visitor->Trace(overlay_host_);
   visitor->Trace(dom_agent_);
   visitor->Trace(inspect_tool_);
+  visitor->Trace(persistent_tool_);
   visitor->Trace(hinge_);
   visitor->Trace(document_to_ax_context_);
   InspectorBaseAgent::Trace(visitor);
@@ -466,6 +471,9 @@ Response InspectorOverlayAgent::disable() {
   resize_timer_active_ = false;
   frame_overlay_.reset();
   frame_resource_name_ = 0;
+  if (persistent_tool_)
+    persistent_tool_->Dispose();
+  persistent_tool_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
   dom_agent_->RemoveDOMListener(this);
@@ -714,25 +722,28 @@ Response InspectorOverlayAgent::highlightNode(
 Response InspectorOverlayAgent::setShowGridOverlays(
     std::unique_ptr<protocol::Array<protocol::Overlay::GridNodeHighlightConfig>>
         grid_node_highlight_configs) {
-  if (grid_node_highlight_configs->size() == 0) {
-    PickTheRightTool();
-    return Response::Success();
+  if (persistent_tool_)
+    persistent_tool_->Dispose();
+  persistent_tool_ = nullptr;
+
+  if (grid_node_highlight_configs->size()) {
+    GridHighlightTool* grid_tool = MakeGarbageCollected<GridHighlightTool>();
+    for (std::unique_ptr<protocol::Overlay::GridNodeHighlightConfig>& config :
+         *grid_node_highlight_configs) {
+      Node* node = nullptr;
+      Response response = dom_agent_->AssertNode(config->getNodeId(), node);
+      if (!response.IsSuccess())
+        return response;
+      grid_tool->AddGridConfig(node,
+                               InspectorOverlayAgent::ToGridHighlightConfig(
+                                   config->getGridHighlightConfig()));
+    }
+    grid_tool->Init(this, GetFrontend());
+    persistent_tool_ = grid_tool;
   }
 
-  GridHighlightTool* grid_highlight_tool =
-      MakeGarbageCollected<GridHighlightTool>();
-  for (size_t i = 0; i < grid_node_highlight_configs->size(); ++i) {
-    protocol::Overlay::GridNodeHighlightConfig* config =
-        (*grid_node_highlight_configs)[i].get();
-    Node* node = nullptr;
-    Response response = dom_agent_->AssertNode(config->getNodeId(), node);
-    if (!response.IsSuccess())
-      return response;
-    grid_highlight_tool->AddGridConfig(
-        node, InspectorOverlayAgent::ToGridHighlightConfig(
-                  config->getGridHighlightConfig()));
-  };
-  SetInspectTool(grid_highlight_tool);
+  PickTheRightTool();
+
   return Response::Success();
 }
 
@@ -1019,16 +1030,21 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   overlay_page_->SetDefaultPageScaleLimits(1 / emulation_scale,
                                            1 / emulation_scale);
   overlay_page_->GetVisualViewport().SetScale(1 / emulation_scale);
-
   overlay_frame->SetPageZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
 
   Reset(viewport_size);
 
-  if (inspect_tool_)
-    inspect_tool_->Draw(WindowToViewportScale());
+  float scale = WindowToViewportScale();
+
+  if (inspect_tool_) {
+    inspect_tool_->Draw(scale);
+    if (persistent_tool_ && inspect_tool_->SupportsPersistentOverlays())
+      persistent_tool_->Draw(scale);
+  }
+
   if (hinge_)
-    hinge_->Draw(WindowToViewportScale());
+    hinge_->Draw(scale);
 
   OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kInspector);
@@ -1345,6 +1361,8 @@ void InspectorOverlayAgent::PickTheRightTool() {
   } else if (!paused_in_debugger_message_.Get().IsNull()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
         v8_session_, paused_in_debugger_message_.Get());
+  } else if (persistent_tool_) {
+    inspect_tool = persistent_tool_;
   }
 
   SetInspectTool(inspect_tool);
@@ -1377,11 +1395,13 @@ void InspectorOverlayAgent::SetInspectTool(InspectTool* inspect_tool) {
   if (!view || !frame)
     return;
 
-  if (inspect_tool_)
+  if (inspect_tool_ && inspect_tool_ != persistent_tool_)
     inspect_tool_->Dispose();
 
   if (inspect_tool && enabled_.Get()) {
     inspect_tool_ = inspect_tool;
+    // If the tool supports persistent overlays, the resources of the persistent
+    // tool will be included into the JS resource.
     LoadFrameForTool(inspect_tool->GetDataResourceId());
     EnsureEnableFrameOverlay();
     inspect_tool->Init(this, GetFrontend());

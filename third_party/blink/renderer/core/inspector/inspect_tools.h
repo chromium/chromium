@@ -35,6 +35,7 @@ class SearchingForNodeTool : public InspectTool {
   void Draw(float scale) override;
   void NodeHighlightRequested(Node*);
   void Trace(Visitor* visitor) const override;
+  bool SupportsPersistentOverlays() override;
 
   Member<InspectorDOMAgent> dom_agent_;
   bool ua_shadow_;
@@ -79,6 +80,7 @@ class NodeHighlightTool : public InspectTool {
 
  private:
   bool ForwardEventsToOverlay() override;
+  bool SupportsPersistentOverlays() override;
   bool HideOnMouseMove() override;
   bool HideOnHideHighlight() override;
   void Draw(float scale) override;
@@ -123,6 +125,7 @@ class SourceOrderTool : public InspectTool {
 class GridHighlightTool : public InspectTool {
  public:
   GridHighlightTool() = default;
+  void Draw(float scale) override;
   void AddGridConfig(
       Node* node,
       std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config);
@@ -135,7 +138,6 @@ class GridHighlightTool : public InspectTool {
   bool ForwardEventsToOverlay() override;
   bool HideOnMouseMove() override;
   bool HideOnHideHighlight() override;
-  void Draw(float scale) override;
 
   Vector<std::pair<Member<Node>, std::unique_ptr<InspectorGridHighlightConfig>>>
       grid_node_highlights_;
